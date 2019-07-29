@@ -324,7 +324,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 prms->mmr.outputPixelSkip = params->params.output_pixel_skip;
                 prms->mmr.outputPixelSkipOdd = params->params.output_pixel_skip_odd;
                 prms->mmr.kern_ln_offset = params->params.kern_ln_offset;
-                prms->mmr.kern_sz_height = (params->params.kern_sz_height) ? params->params.kern_sz_height : 5;
+                prms->mmr.kern_sz_height = params->params.kern_sz_height;
                 prms->mmr.src_ln_inc_2 = params->params.src_ln_inc_2;
                 prms->mmr.lut = prms->lut;
 

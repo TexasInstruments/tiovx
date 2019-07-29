@@ -313,7 +313,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 prms->mmr.outputPixelSkip = params->output_pixel_skip;
                 prms->mmr.outputPixelSkipOdd = params->output_pixel_skip_odd;
                 prms->mmr.kern_ln_offset = params->kern_ln_offset;
-                prms->mmr.kern_sz_height = (params->kern_sz_height) ? params->kern_sz_height : 5;
+                prms->mmr.kern_sz_height = params->kern_sz_height;
                 prms->mmr.src_ln_inc_2 = params->src_ln_inc_2;
 
                 prms->debug.fileTapName = NULL;

@@ -87,11 +87,10 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
         ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
-        memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
+        tivx_vpac_nf_bilateral_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
                                                             sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
+        tivx_vpac_nf_bilateral_sigmas_init(&sigmas);
         ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
                                                             sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -152,6 +151,20 @@ typedef struct {
     int width, height;
 } Arg;
 
+typedef struct {
+    const char* testName;
+    CT_Image (*generator)(const char* fileName, int width, int height);
+    const char* fileName;
+    double sigma_s, sigma_r;
+    vx_int32 numTables;
+    vx_int32 shift;
+    vx_df_image dst_format;
+    vx_border_t border;
+    int width, height;
+    int negative_test;
+    int condition;
+} ArgNegative;
+
 
 #define ADD_SIGMAS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sigma_s=1.0/sigma_r=128.0", __VA_ARGS__, 1.0, 128.0))
@@ -182,6 +195,33 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
 
+#define ADD_NUMTABLES_NEGATIVE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/num_tables=1", __VA_ARGS__, 1))
+
+#define ADD_CONV_SHIFT_NEGATIVE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/conv_shift=0", __VA_ARGS__, 0))
+
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=input_interleaved", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_downshift", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_offset", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_pixel_skip", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_pixel_skip_odd", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=kern_ln_offset", __VA_ARGS__, 5)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=kern_sz_height", __VA_ARGS__, 6)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=src_ln_inc_2", __VA_ARGS__, 7)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=adaptive_mode", __VA_ARGS__, 8)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=sub_table_select", __VA_ARGS__, 9)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=num_sigmas", __VA_ARGS__, 10))
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIGMAS, ADD_NUMTABLES_NEGATIVE, ADD_CONV_SHIFT_NEGATIVE, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG, convolve_generate_random, NULL)
+
 TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     PARAMETERS
 )
@@ -208,11 +248,10 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
 
-        memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
+        tivx_vpac_nf_bilateral_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
                                                             sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
+        tivx_vpac_nf_bilateral_sigmas_init(&sigmas);
         ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
                                                             sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -263,4 +302,269 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     }
 }
 
-TESTCASE_TESTS(tivxHwaVpacNfBilateral, testNodeCreation, testGraphProcessing)
+TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
+    PARAMETERS_NEGATIVE
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0;
+    tivx_vpac_nf_bilateral_params_t params;
+    tivx_vpac_nf_bilateral_sigmas_t sigmas;
+    vx_user_data_object param_obj;
+    vx_user_data_object sigma_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    int i;
+
+    CT_Image src = NULL;
+    vx_border_t border = arg_->border;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    {
+        tivxHwaLoadKernels(context);
+
+        ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+        ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        tivx_vpac_nf_bilateral_params_init(&params);
+        ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        tivx_vpac_nf_bilateral_sigmas_init(&sigmas);
+        params.params.output_downshift = arg_->shift;
+
+        sigmas.num_sigmas = arg_->numTables;
+        for(i=0; i < arg_->numTables; i++)
+        {
+            sigmas.sigma_space[i] = arg_->sigma_s + (0.2*i);
+            sigmas.sigma_range[i] = arg_->sigma_r + (20*i);
+        }
+        if(sigmas.num_sigmas > 1)
+        {
+            params.adaptive_mode = 1;
+        }
+
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.input_interleaved = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.input_interleaved = 1;
+                }
+                else
+                {
+                    params.params.input_interleaved = 2;
+                }
+                break;
+            }
+            case 1:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.output_downshift = -8;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.output_downshift = 7;
+                }
+                else
+                {
+                    params.params.output_downshift = 8;
+                }
+                break;
+            }
+            case 2:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.output_offset = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.output_offset = 4095;
+                }
+                else
+                {
+                    params.params.output_offset = 4096;
+                }
+                break;
+            }
+            case 3:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.output_pixel_skip = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.output_pixel_skip = 1;
+                }
+                else
+                {
+                    params.params.output_pixel_skip = 2;
+                }
+                break;
+            }
+            case 4:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.output_pixel_skip_odd = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.output_pixel_skip_odd = 1;
+                }
+                else
+                {
+                    params.params.output_pixel_skip_odd = 2;
+                }
+                break;
+            }
+            case 5:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.kern_ln_offset = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.kern_ln_offset = 4;
+                }
+                else
+                {
+                    params.params.kern_ln_offset = 5;
+                }
+                break;
+            }
+            case 6:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.kern_sz_height = 1;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.kern_sz_height = 5;
+                }
+                else
+                {
+                    params.params.kern_sz_height = 6;
+                }
+                break;
+            }
+            case 7:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.params.src_ln_inc_2 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.params.src_ln_inc_2 = 1;
+                }
+                else
+                {
+                    params.params.src_ln_inc_2 = 2;
+                }
+                break;
+            }
+            case 8:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.adaptive_mode = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.adaptive_mode = 1;
+                }
+                else
+                {
+                    params.adaptive_mode = 2;
+                }
+                break;
+            }
+            case 9:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.sub_table_select = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.sub_table_select = 7;
+                }
+                else
+                {
+                    params.sub_table_select = 8;
+                }
+                break;
+            }
+            case 10:
+            {
+                if (0U == arg_->condition)
+                {
+                    sigmas.num_sigmas = 1;
+                }
+                else if (1U == arg_->condition)
+                {
+                    sigmas.num_sigmas = 8;
+                }
+                else
+                {
+                    sigmas.num_sigmas = 9;
+                }
+                break;
+            }
+        }
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(sigma_obj, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &sigmas, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_obj, src_image, sigma_obj, dst_image), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&src_image));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&sigma_obj));
+
+        ASSERT(dst_image == 0);
+        ASSERT(src_image == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(sigma_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaVpacNfBilateral, testNodeCreation, testGraphProcessing, testNegativeGraph)

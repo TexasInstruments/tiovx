@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_vpac_nf_common_params_t params;
 
     vx_image input = NULL;
     vx_df_image input_fmt;
@@ -126,6 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_common_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -212,6 +214,52 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
                 status = VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
             }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (1U < params.input_interleaved)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter input_interleaved should be either 0 or 1\n");
+        }
+        if ((-8 > params.output_downshift) ||
+            (7 < params.output_downshift))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter output_downshift should be a value between -8 and 7 inclusive\n");
+        }
+        if (4095U < params.output_offset)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter output_offset should be between 0 and 4095 inclusive\n");
+        }
+        if (1U < params.output_pixel_skip)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter output_pixel_skip should be either 0 or 1\n");
+        }
+        if (1U < params.output_pixel_skip_odd)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter output_pixel_skip_odd should be either 0 or 1\n");
+        }
+        if (4U < params.kern_ln_offset)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter kern_ln_offset should be between 0 and 4 inclusive\n");
+        }
+        if ((1U > params.kern_sz_height) ||
+            (5U < params.kern_sz_height))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter kern_sz_height should be a value between 1 and 5 inclusive\n");
+        }
+        if (1U < params.src_ln_inc_2)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter src_ln_inc_2 should be either 0 or 1\n");
         }
     }
 
@@ -385,7 +433,7 @@ void tivx_vpac_nf_common_params_init(tivx_vpac_nf_common_params_t *prms)
         prms->output_pixel_skip = 0u;
         prms->output_pixel_skip_odd = 0u;
         prms->kern_ln_offset = 0u;
-        prms->kern_sz_height = 1u;
+        prms->kern_sz_height = 5u;
         prms->src_ln_inc_2 = 0u;
     }
 }

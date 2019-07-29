@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_vpac_nf_bilateral_params_t bilateral_prms;
 
     vx_image input = NULL;
     vx_df_image input_fmt;
@@ -96,6 +97,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     vx_user_data_object sigmas = NULL;
     vx_char sigmas_name[VX_MAX_REFERENCE_NAME];
     vx_size sigmas_size;
+    tivx_vpac_nf_bilateral_sigmas_t bilateral_sigmas;
 
     vx_image output = NULL;
     vx_df_image output_fmt;
@@ -127,6 +129,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &bilateral_prms, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -134,6 +137,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
 
         tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, VX_USER_DATA_OBJECT_NAME, &sigmas_name, sizeof(sigmas_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, VX_USER_DATA_OBJECT_SIZE, &sigmas_size, sizeof(sigmas_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &bilateral_sigmas, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
         tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
@@ -194,8 +198,73 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
-    /*                   covered by the code-generation script.) > */
+    if (VX_SUCCESS == status)
+    {
+        if (1U < bilateral_prms.params.input_interleaved)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.input_interleaved should be either 0 or 1\n");
+        }
+        if ((-8 > bilateral_prms.params.output_downshift) ||
+            (7 < bilateral_prms.params.output_downshift))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.output_downshift should be a value between -8 and 7 inclusive\n");
+        }
+        if (4095U < bilateral_prms.params.output_offset)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.output_offset should be between 0 and 4095 inclusive\n");
+        }
+        if (1U < bilateral_prms.params.output_pixel_skip)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.output_pixel_skip should be either 0 or 1\n");
+        }
+        if (1U < bilateral_prms.params.output_pixel_skip_odd)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.output_pixel_skip_odd should be either 0 or 1\n");
+        }
+        if (4U < bilateral_prms.params.kern_ln_offset)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.kern_ln_offset should be between 0 and 4 inclusive\n");
+        }
+        if ((1U > bilateral_prms.params.kern_sz_height) ||
+            (5U < bilateral_prms.params.kern_sz_height))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.kern_sz_height should be a value between 1 and 5 inclusive\n");
+        }
+        if (1U < bilateral_prms.params.src_ln_inc_2)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter params.src_ln_inc_2 should be either 0 or 1\n");
+        }
+        if (1U < bilateral_prms.adaptive_mode)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter adaptive_mode should be either 0 or 1\n");
+        }
+        if (7U < bilateral_prms.sub_table_select)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter sub_table_select should be between 0 and 7 inclusive\n");
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if ((1U != bilateral_sigmas.num_sigmas) &&
+            (2U != bilateral_sigmas.num_sigmas) &&
+            (4U != bilateral_sigmas.num_sigmas) &&
+            (8U != bilateral_sigmas.num_sigmas))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter num_sigmas should be either 1, 2, 4, or 8\n");
+        }
+    }
 
     return status;
 }
@@ -343,7 +412,14 @@ void tivx_vpac_nf_bilateral_params_init(tivx_vpac_nf_bilateral_params_t *prms)
     if (NULL != prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_nf_bilateral_params_t));
-
+        prms->params.input_interleaved = 0u;
+        prms->params.output_downshift = 0u;
+        prms->params.output_offset = 0u;
+        prms->params.output_pixel_skip = 0u;
+        prms->params.output_pixel_skip_odd = 0u;
+        prms->params.kern_ln_offset = 0u;
+        prms->params.kern_sz_height = 5u;
+        prms->params.src_ln_inc_2 = 0u;
         prms->adaptive_mode = 0u;
         prms->sub_table_select = 0u;
     }

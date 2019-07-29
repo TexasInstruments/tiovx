@@ -247,6 +247,19 @@ typedef struct {
     int width, height;
 } Arg;
 
+typedef struct {
+    const char* testName;
+    CT_Image (*generator)(const char* fileName, int width, int height);
+    const char* fileName;
+    int cols, rows;
+    vx_int32 shift;
+    void (*convolution_data_generator)(int cols, int rows, vx_int16* data);
+    vx_df_image dst_format;
+    vx_border_t border;
+    int width, height;
+    int negative_test;
+    int condition;
+} ArgNegative;
 
 #define ADD_CONV_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/conv=3x3", __VA_ARGS__, 3, 3)), \
@@ -277,6 +290,30 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
+
+#define ADD_CONV_SIZE_NEGATIVE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/conv=5x5", __VA_ARGS__, 5, 5))
+
+#define ADD_CONV_GENERATORS_NEGATIVE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/conv_fill=identity", __VA_ARGS__, convolution_data_fill_identity))
+
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=input_interleaved", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_downshift", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_offset", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_pixel_skip", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_pixel_skip_odd", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=kern_ln_offset", __VA_ARGS__, 5)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=kern_sz_height", __VA_ARGS__, 6)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=src_ln_inc_2", __VA_ARGS__, 7))
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("testNegative", ADD_CONV_SIZE_NEGATIVE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS_NEGATIVE, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG, convolve_generate_random, NULL)
 
 TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     PARAMETERS
@@ -315,9 +352,9 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
         ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, 1));
 
-        memset(&params, 0, sizeof(tivx_vpac_nf_common_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_common_params_t",
                                                             sizeof(tivx_vpac_nf_common_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        tivx_vpac_nf_common_params_init(&params);
 
         params.output_downshift = arg_->shift;
 
@@ -407,4 +444,219 @@ TEST_WITH_ARG(tivxHWA_VPAC_NF_Generic, testImmediateProcessing, Arg,
 }
 #endif
 
-TESTCASE_TESTS(tivxHwaVpacNfGeneric, testNodeCreation, testGraphProcessing)
+TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
+    PARAMETERS_NEGATIVE
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0;
+    vx_convolution convolution = 0;
+    vx_int16 data[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 };
+    tivx_vpac_nf_common_params_t params;
+    vx_user_data_object param_obj;
+    vx_size conv_max_dim = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    {
+        tivxHwaLoadKernels(context);
+
+        ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+        ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+        VX_CALL(vxQueryContext(context, VX_CONTEXT_CONVOLUTION_MAX_DIMENSION, &conv_max_dim, sizeof(conv_max_dim)));
+
+        if ((vx_size)arg_->cols > conv_max_dim || (vx_size)arg_->rows > conv_max_dim)
+        {
+            printf("%dx%d convolution is not supported. Skip test\n", (int)arg_->cols, (int)arg_->rows);
+            return;
+        }
+
+        ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
+        ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, 1));
+        
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_common_params_t",
+                                                            sizeof(tivx_vpac_nf_common_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        tivx_vpac_nf_common_params_init(&params);
+
+        params.output_downshift = arg_->shift;
+
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.input_interleaved = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.input_interleaved = 1;
+                }
+                else
+                {
+                    params.input_interleaved = 2;
+                }
+                break;
+            }
+            case 1:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.output_downshift = -8;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.output_downshift = 7;
+                }
+                else
+                {
+                    params.output_downshift = 8;
+                }
+                break;
+            }
+            case 2:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.output_offset = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.output_offset = 4095;
+                }
+                else
+                {
+                    params.output_offset = 4096;
+                }
+                break;
+            }
+            case 3:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.output_pixel_skip = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.output_pixel_skip = 1;
+                }
+                else
+                {
+                    params.output_pixel_skip = 2;
+                }
+                break;
+            }
+            case 4:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.output_pixel_skip_odd = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.output_pixel_skip_odd = 1;
+                }
+                else
+                {
+                    params.output_pixel_skip_odd = 2;
+                }
+                break;
+            }
+            case 5:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.kern_ln_offset = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.kern_ln_offset = 4;
+                }
+                else
+                {
+                    params.kern_ln_offset = 5;
+                }
+                break;
+            }
+            case 6:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.kern_sz_height = 1;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.kern_sz_height = 5;
+                }
+                else
+                {
+                    params.kern_sz_height = 6;
+                }
+                break;
+            }
+            case 7:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.src_ln_inc_2 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.src_ln_inc_2 = 1;
+                }
+                else
+                {
+                    params.src_ln_inc_2 = 2;
+                }
+                break;
+            }
+        }
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_nf_common_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&src_image));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(dst_image == 0);
+        ASSERT(src_image == 0);
+        ASSERT(param_obj == 0);
+
+        VX_CALL(vxReleaseConvolution(&convolution));
+        ASSERT(convolution == NULL);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaVpacNfGeneric, testNodeCreation, testGraphProcessing, testNegativeGraph)
