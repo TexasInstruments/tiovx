@@ -495,6 +495,12 @@ typedef struct {
     int mesh_mode;
 } Arg;
 
+typedef struct {
+    const char* testName;
+    int negative_test;
+    int condition;
+} ArgNegative;
+
 #define ADD_VX_BORDERS_WARP_AFFINE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_BORDER_UNDEFINED", __VA_ARGS__, { VX_BORDER_UNDEFINED, {{ 0 }} }))
 
@@ -526,6 +532,26 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_generate_random, NULL, 128, 128), \
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES_LENA, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_read_image_8u, "lena.bmp", 0, 0)
+
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=input_align_12bit", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=luma_interpolation_type", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=init_x", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=init_y", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=yc_mode", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=enable", __VA_ARGS__, 5)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=out_block_width", __VA_ARGS__, 6)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=out_block_height", __VA_ARGS__, 7)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=pixel_pad", __VA_ARGS__, 8)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=subsample_factor", __VA_ARGS__, 9))
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
 
 TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     PARAMETERS
@@ -697,4 +723,277 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     }
 }
 
-TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessing)
+TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIVE)
+{
+    vx_context context = context_->vx_context_;
+    vx_image input = 0, output = 0;
+    vx_matrix matrix = 0;
+    tivx_vpac_ldc_params_t params;
+    tivx_vpac_ldc_region_params_t region_params;
+    tivx_vpac_ldc_mesh_params_t mesh_params; 
+    vx_user_data_object param_obj;
+    vx_user_data_object region_obj;
+    vx_user_data_object mesh_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    const vx_enum matrix_type = VX_TYPE_INT16;
+    const vx_size matrix_rows = 3;
+    const vx_size matrix_cols = 2;
+    const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    {
+        tivxHwaLoadKernels(context);
+
+        ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(matrix = vxCreateMatrix(context, matrix_type, matrix_cols, matrix_rows), VX_TYPE_MATRIX);
+
+        {
+            vx_enum ch_matrix_type;
+            vx_size ch_matrix_rows, ch_matrix_cols, ch_data_size;
+
+            VX_CALL(vxQueryMatrix(matrix, VX_MATRIX_TYPE, &ch_matrix_type, sizeof(ch_matrix_type)));
+            if (matrix_type != ch_matrix_type)
+            {
+                CT_FAIL("check for Matrix attribute VX_MATRIX_TYPE failed\n");
+            }
+            VX_CALL(vxQueryMatrix(matrix, VX_MATRIX_ROWS, &ch_matrix_rows, sizeof(ch_matrix_rows)));
+            if (matrix_rows != ch_matrix_rows)
+            {
+                CT_FAIL("check for Matrix attribute VX_MATRIX_ROWS failed\n");
+            }
+            VX_CALL(vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &ch_matrix_cols, sizeof(ch_matrix_cols)));
+            if (matrix_cols != ch_matrix_cols)
+            {
+                CT_FAIL("check for Matrix attribute VX_MATRIX_COLUMNS failed\n");
+            }
+            VX_CALL(vxQueryMatrix(matrix, VX_MATRIX_SIZE, &ch_data_size, sizeof(ch_data_size)));
+            if (matrix_data_size > ch_data_size)
+            {
+                CT_FAIL("check for Matrix attribute VX_MATRIX_SIZE failed\n");
+            }
+        }
+
+        tivx_vpac_ldc_params_init(&params);
+        tivx_vpac_ldc_mesh_params_init(&mesh_params);
+        tivx_vpac_ldc_region_params_init(&region_params);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t", sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t", sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(mesh_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_mesh_params_t", sizeof(tivx_vpac_ldc_mesh_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.input_align_12bit = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.input_align_12bit = 1;
+                }
+                else
+                {
+                    params.input_align_12bit = 2;
+                }
+                break;
+            }
+            case 1:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.luma_interpolation_type = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.luma_interpolation_type = 1;
+                }
+                else
+                {
+                    params.luma_interpolation_type = 2;
+                }
+                break;
+            }
+            case 2:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.init_x = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.init_x = 8184;
+                }
+                else
+                {
+                    params.init_x = 8192;
+                }
+                break;
+            }
+            case 3:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.init_y = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.init_y = 8190;
+                }
+                else
+                {
+                    params.init_y = 8192;
+                }
+                break;
+            }
+            case 4:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.yc_mode = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.yc_mode = 1;
+                }
+                else
+                {
+                    params.yc_mode = 2;
+                }
+                break;
+            }
+            case 5:
+            {
+                if (0U == arg_->condition)
+                {
+                    region_params.enable = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    region_params.enable = 1;
+                }
+                else
+                {
+                    region_params.enable = 2;
+                }
+                break;
+            }
+            case 6:
+            {
+                if (0U == arg_->condition)
+                {
+                    region_params.out_block_width = 8;
+                }
+                else if (1U == arg_->condition)
+                {
+                    region_params.out_block_width = 248;
+                }
+                else
+                {
+                    region_params.out_block_width = 256;
+                }
+                break;
+            }
+            case 7:
+            {
+                if (0U == arg_->condition)
+                {
+                    region_params.out_block_height = 2;
+                }
+                else if (1U == arg_->condition)
+                {
+                    region_params.out_block_height = 254;
+                }
+                else
+                {
+                    region_params.out_block_height = 256;
+                }
+                break;
+            }
+            case 8:
+            {
+                if (0U == arg_->condition)
+                {
+                    region_params.pixel_pad = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    region_params.pixel_pad = 15;
+                }
+                else
+                {
+                    region_params.pixel_pad = 16;
+                }
+                break;
+            }
+            case 9:
+            {
+                if (0U == arg_->condition)
+                {
+                    mesh_params.subsample_factor = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    mesh_params.subsample_factor = 7;
+                }
+                else
+                {
+                    mesh_params.subsample_factor = 8;
+                }
+                break;
+            }
+        }
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(region_obj, 0, sizeof(tivx_vpac_ldc_region_params_t), &region_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(mesh_obj, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &mesh_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
+                                param_obj,
+                                matrix,
+                                region_obj,
+                                mesh_obj,
+                                NULL,
+                                NULL,
+                                input,
+                                output,
+                                NULL), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseMatrix(&matrix));
+        VX_CALL(vxReleaseImage(&output));
+        VX_CALL(vxReleaseImage(&input));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&region_obj));
+        VX_CALL(vxReleaseUserDataObject(&mesh_obj));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(matrix == 0);
+        ASSERT(output == 0);
+        ASSERT(input == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(region_obj == 0);
+        ASSERT(mesh_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessing, testNegativeGraph)

@@ -378,6 +378,12 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  * \brief Function to initialize LDC Multi Region parameters
  * \ingroup group_vision_function_vpac_ldc
  */
+void tivx_vpac_ldc_region_params_init(tivx_vpac_ldc_region_params_t *prms);
+
+/*!
+ * \brief Function to initialize LDC Multi Region parameters
+ * \ingroup group_vision_function_vpac_ldc
+ */
 void tivx_vpac_ldc_multi_region_params_init(tivx_vpac_ldc_multi_region_params_t *prms);
 
 /*!

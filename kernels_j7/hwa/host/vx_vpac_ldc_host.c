@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_vpac_ldc_params_t params;
 
     vx_matrix warp_matrix = NULL;
     vx_enum warp_matrix_type;
@@ -96,10 +97,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_user_data_object region_prms = NULL;
     vx_char region_prms_name[VX_MAX_REFERENCE_NAME];
     vx_size region_prms_size;
+    tivx_vpac_ldc_region_params_t ldc_region_params;
 
     vx_user_data_object mesh_prms = NULL;
     vx_char mesh_prms_name[VX_MAX_REFERENCE_NAME];
     vx_size mesh_prms_size;
+    tivx_vpac_ldc_mesh_params_t ldc_mesh_params;
 
     vx_image mesh_img = NULL;
     vx_df_image mesh_img_fmt;
@@ -151,6 +154,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         if (NULL != warp_matrix)
         {
@@ -163,12 +167,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         {
             tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_NAME, &region_prms_name, sizeof(region_prms_name)));
             tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_SIZE, &region_prms_size, sizeof(region_prms_size)));
+            tivxCheckStatus(&status, vxCopyUserDataObject(region_prms, 0, sizeof(tivx_vpac_ldc_region_params_t), &ldc_region_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         }
 
         if (NULL != mesh_prms)
         {
             tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_NAME, &mesh_prms_name, sizeof(mesh_prms_name)));
             tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_SIZE, &mesh_prms_size, sizeof(mesh_prms_size)));
+            tivxCheckStatus(&status, vxCopyUserDataObject(mesh_prms, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &ldc_mesh_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         }
 
         if (NULL != mesh_img)
@@ -361,6 +367,90 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'out1_img' and 'out0_img' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+        }
+    }
+
+    /* CUSTOM PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (1U < params.input_align_12bit)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter input_align_12bit should be either 0 or 1\n");
+        }
+        if (1U < params.luma_interpolation_type)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter luma_interpolation_type should be either 0 or 1\n");
+        }
+        if (8191U < params.init_x)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter init_x should be between 0 and 8191 inclusive\n");
+        }
+        else if (0U != params.init_x % 8U)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter init_x should be a multiple of 8\n");
+        }
+        if (8191U < params.init_y)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter init_y should be between 0 and 8191 inclusive\n");
+        }
+        else if (0U != params.init_y % 2U)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter init_y should be a multiple of 2\n");
+        }
+        if (1U < params.yc_mode)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter yc_mode should be either 0 or 1\n");
+        }
+        if (NULL != region_prms)
+        {
+            if (1U < ldc_region_params.enable)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter enable should be either 0 or 1\n");
+            }
+            if ((8U > ldc_region_params.out_block_width) ||
+                (255U < ldc_region_params.out_block_width))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_width should be between 8 and 255 inclusive\n");
+            }
+            else if (0U != ldc_region_params.out_block_width % 8U)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_width should be a multiple of 8\n");
+            }
+            if ((2U > ldc_region_params.out_block_height) ||
+                (255U < ldc_region_params.out_block_height))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_height should be between 2 and 255 inclusive\n");
+            }
+            else if (0U != ldc_region_params.out_block_height % 2U)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_height should be a multiple of 2\n");
+            }
+            if (15U < ldc_region_params.pixel_pad)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Region parameter pixel_pad should be between 0 and 15 inclusive\n");
+            }
+        }
+        if (NULL != mesh_prms)
+        {
+            if (7U < ldc_mesh_params.subsample_factor)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Mesh parameter subsample_factor should be between 0 and 7 inclusive\n");
             }
         }
     }
@@ -564,6 +654,18 @@ vx_status tivxRemoveKernelVpacLdc(vx_context context)
     return status;
 }
 
+void tivx_vpac_ldc_region_params_init(tivx_vpac_ldc_region_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_vpac_ldc_region_params_t));
+        prms->enable = 0u;
+        prms->out_block_width = 8u;
+        prms->out_block_height = 2u;
+        prms->enable = 0u;
+    }
+}
+
 void tivx_vpac_ldc_multi_region_params_init(tivx_vpac_ldc_multi_region_params_t *prms)
 {
     if (NULL != prms)
@@ -577,7 +679,7 @@ void tivx_vpac_ldc_mesh_params_init(tivx_vpac_ldc_mesh_params_t *prms)
     if (NULL != prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_ldc_mesh_params_t));
-        prms->subsample_factor = 8u;
+        prms->subsample_factor = 0u;
     }
 }
 
@@ -606,5 +708,6 @@ void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms)
         prms->luma_interpolation_type = 1U;
         prms->init_x = 0u;
         prms->init_y = 0u;
+        prms->yc_mode = 0U;
     }
 }
