@@ -92,7 +92,6 @@ extern "C" {
  */
 #define TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS      0x0   /*!< \brief A <tt>\ref tivx_raw_image_buffer_access_e</tt>. */
 #define TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER    0x1   /*!< \brief A <tt>\ref tivx_raw_image_pixel_container_e</tt>. */
-#define TIVX_ENUM_RAW_IMAGE_META_LOCATION      0x2   /*!< \brief A <tt>\ref tivx_raw_image_meta_location_e</tt>. */
 
 /*! \brief Maximum number of RAW image exposures that can be contained in a raw image object.
  * \ingroup group_raw_image
@@ -127,9 +126,10 @@ typedef struct _tivx_raw_image_create_params_t {
         valid structures in this array should be equal to the value of num_exposures.  If line_interleaved ==
         vx_true_e, then the format should be the same for each exposure in a single buffer, so the
         number of valid structures in this array should equal 1. */
-    volatile vx_uint32 meta_height;           /*!< \brief Number of lines of meta data (uses the same width as original sensor readout width) */
-    volatile vx_uint32 meta_location;         /*!< \brief Location in memory of the meta rows relative to the exposure image.
-                                                 see \ref tivx_raw_image_meta_location_e */
+    volatile vx_uint32 meta_height_before;    /*!< \brief Number of lines of meta data at top of sensor readout  (before pixel data)
+                                                 (uses the same width as original sensor readout width) */
+    volatile vx_uint32 meta_height_after;     /*!< \brief Number of lines of meta data at bottom of sensor readout  (after pixel data)
+                                                 (uses the same width as original sensor readout width) */
 } tivx_raw_image_create_params_t;
 
 /*! \brief The raw image attributes.
@@ -146,10 +146,10 @@ enum tivx_raw_image_attribute_e {
     TIVX_RAW_IMAGE_LINE_INTERLEAVED = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x3,
     /*! \brief Queries an image for its format (see <tt>\ref tivx_raw_image_format_t</tt>). Read-only. Use a pointer to a <tt>\ref tivx_raw_image_format_t</tt> array. */
     TIVX_RAW_IMAGE_FORMAT = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x4,
-    /*! \brief Queries an image for its meta height. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    TIVX_RAW_IMAGE_META_HEIGHT = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x5,
-    /*! \brief Queries an image for its meta location. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    TIVX_RAW_IMAGE_META_LOCATION = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x6
+    /*! \brief Queries an image for its meta height at top of readout. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
+    TIVX_RAW_IMAGE_META_HEIGHT_BEFORE = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x5,
+    /*! \brief Queries an image for its meta height at bottom of readout. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
+    TIVX_RAW_IMAGE_META_HEIGHT_AFTER = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x6
 };
 
 /*! \brief The raw image buffer access enum.
@@ -161,7 +161,9 @@ enum tivx_raw_image_buffer_access_e {
     /*! \brief For accessing pointer to pixel buffer only */
     TIVX_RAW_IMAGE_PIXEL_BUFFER = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS) + 0x1,
     /*! \brief For accessing pointer to meta buffer only */
-    TIVX_RAW_IMAGE_META_BUFFER = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS) + 0x2
+    TIVX_RAW_IMAGE_META_BEFORE_BUFFER = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS) + 0x2,
+    /*! \brief For accessing pointer to meta buffer only */
+    TIVX_RAW_IMAGE_META_AFTER_BUFFER = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS) + 0x3
 };
 
 /*! \brief The raw image pixel container enum.
@@ -174,17 +176,6 @@ enum tivx_raw_image_pixel_container_e {
     TIVX_RAW_IMAGE_8_BIT = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER) + 0x1,
     /*! \brief Packed 12 bit mode; Three bytes per two pixels in memory. */
     TIVX_RAW_IMAGE_P12_BIT = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER) + 0x2
-};
-
-
-/*! \brief The raw image meta location enum.
- * \ingroup group_raw_image
- */
-enum tivx_raw_image_meta_location_e {
-    /*! \brief Meta data is located before the pixel buffer in memory */
-    TIVX_RAW_IMAGE_META_BEFORE = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_META_LOCATION) + 0x0,
-    /*! \brief Meta data is located after  the pixel buffer in memory */
-    TIVX_RAW_IMAGE_META_AFTER = VX_ENUM_BASE(VX_ID_TI, TIVX_ENUM_RAW_IMAGE_META_LOCATION) + 0x1
 };
 
 /*! \brief Creates an opaque reference to a raw sensor image (including multi-exposure and metadata).

@@ -392,9 +392,9 @@ class RawImageAttribute(Enum) :
     ## OpenVX equivalent = TIVX_RAW_IMAGE_FORMAT
     FORMAT             = ('format', 'tivx_raw_image_format_t')
     ## OpenVX equivalent = TIVX_RAW_IMAGE_META_HEIGHT
-    META_HEIGHT        = ('meta_height', 'vx_uint32')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_LOCATION
-    META_LOCATION      = ('meta_location', 'vx_uint32')
+    META_HEIGHT_BEFORE = ('meta_height_before', 'vx_uint32')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_HEIGHT
+    META_HEIGHT_AFTER  = ('meta_height_after', 'vx_uint32')
 
     def vx_enum_name(attr) :
         return "TIVX_RAW_IMAGE_" + attr.name

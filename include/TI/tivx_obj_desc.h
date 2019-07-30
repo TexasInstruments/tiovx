@@ -81,7 +81,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (512U)
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (584U)
 
 /*!
  * \brief Max possible planes of data in an image
@@ -705,8 +705,10 @@ typedef struct _tivx_obj_desc_raw_image
     tivx_shared_mem_ptr_t mem_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
     /*! \brief image data buffer addresses */
     tivx_shared_mem_ptr_t img_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
-    /*! \brief meta buffer addresses */
-    tivx_shared_mem_ptr_t meta_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief meta before buffer addresses */
+    tivx_shared_mem_ptr_t meta_before_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief meta after buffer addresses */
+    tivx_shared_mem_ptr_t meta_after_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
     /*! \brief create parameters for raw image */
     tivx_raw_image_create_params_t params;
     /*! \brief image plane buffer size */

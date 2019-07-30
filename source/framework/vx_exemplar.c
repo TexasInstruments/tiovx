@@ -455,8 +455,8 @@ static vx_reference ownCreateRawImageFromExemplar(
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_NUM_EXPOSURES, &params.num_exposures, sizeof(params.num_exposures));
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &params.line_interleaved, sizeof(params.line_interleaved));
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format));
-    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT, &params.meta_height, sizeof(params.meta_height));
-    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_LOCATION, &params.meta_location, sizeof(params.meta_location));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after));
 
     if (VX_SUCCESS == status)
     {

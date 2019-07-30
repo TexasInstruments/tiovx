@@ -595,26 +595,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
-            case TIVX_RAW_IMAGE_META_HEIGHT:
+            case TIVX_RAW_IMAGE_META_HEIGHT_BEFORE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.meta_height = *(vx_uint32 *)ptr;
+                    meta->raw_image.meta_height_before = *(vx_uint32 *)ptr;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT_BEFORE error\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
-            case TIVX_RAW_IMAGE_META_LOCATION:
+            case TIVX_RAW_IMAGE_META_HEIGHT_AFTER:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.meta_location = *(vx_uint32 *)ptr;
+                    meta->raw_image.meta_height_after = *(vx_uint32 *)ptr;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_LOCATION error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT_AFTER error\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -947,10 +947,10 @@ static vx_status ownInitMetaFormatWithRawImage(
         sizeof(meta->raw_image.line_interleaved));
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_FORMAT, &meta->raw_image.format,
         sizeof(meta->raw_image.format));
-    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT, &meta->raw_image.meta_height,
-        sizeof(meta->raw_image.meta_height));
-    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_LOCATION, &meta->raw_image.meta_location,
-        sizeof(meta->raw_image.meta_location));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &meta->raw_image.meta_height_before,
+        sizeof(meta->raw_image.meta_height_before));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &meta->raw_image.meta_height_after,
+        sizeof(meta->raw_image.meta_height_after));
 
     return (status);
 }
