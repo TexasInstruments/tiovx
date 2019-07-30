@@ -470,7 +470,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         else if (191U < params.horizontal_search_range)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be between 0 and 255 inclusive\n");
+            VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be between 0 and 191 inclusive\n");
         }
         else if ((191U == params.horizontal_search_range) &&
             (112U < (params.vertical_search_range[0U] + params.vertical_search_range[1U])))
