@@ -370,7 +370,7 @@ extern "C" {
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (16u)
+#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (32u)
 
 /*! \brief Max possible delays in graph
  * \ingroup group_vx_graph_cfg
