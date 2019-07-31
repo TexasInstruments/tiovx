@@ -156,7 +156,7 @@ uint32_t grawfe_pwl_vshort_lut[] =
 
 uint32_t gGlbceAsymTbl[] =
 {
-    #include "glbce_asym_table.txt"
+    0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
 };
 
 int32_t yee_lut[] =
@@ -686,26 +686,6 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
 }
 
-static void tivxVpacVissDccMapLut16to12Params(tivxVpacVissObj *vissObj)
-{
-    Vhwa_LutConfig *lut16to12Cfg;
-
-    if (NULL != vissObj)
-    {
-        lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
-
-        lut16to12Cfg->enable = (uint32_t)FALSE;
-        lut16to12Cfg->inputBits = 12u;
-        lut16to12Cfg->tableAddr = gcfa_lut_16to12;
-
-        vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
-
-        /* Setting config flag to 1,
-         * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;
-    }
-}
-
 static void tivxVpacVissDccMapHistParams(tivxVpacVissObj *vissObj)
 {
     Fcp_HistConfig  *histCfg;
@@ -1013,10 +993,10 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
     {
         cfaCfg = &vissObj->vissCfg.cfaCfg;
         dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
-        }
+    }
 
     if (NULL != dcc_cfa_cfg)
-        {
+    {
         memcpy(cfaCfg->coeff, dcc_cfa_cfg->FirCoefs, FCP_MAX_CFA_COEFF * sizeof(cfaCfg->coeff[0]));
 
         for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
@@ -1036,11 +1016,21 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
 
             cfaCfg->intsShiftPh[0u][cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
             cfaCfg->intsShiftPh[1u][cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
-            }
+        }
         for (cnt = 0u; cnt < FCP_CFA_MAX_SET_THR; cnt++)
-            {
+        {
             cfaCfg->thr[0u][cnt] = dcc_cfa_cfg->Set0Thr[cnt];
             cfaCfg->thr[1u][cnt] = dcc_cfa_cfg->Set1Thr[cnt];
+        }
+
+        {
+            Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
+            lut16to12Cfg->enable    = dcc_cfa_cfg->lut_enable;
+            lut16to12Cfg->inputBits = dcc_cfa_cfg->bitWidth;
+
+            memcpy(gcfa_lut_16to12, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * FLXD_LUT_SIZE);
+            lut16to12Cfg->tableAddr = gcfa_lut_16to12;
+            vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
         }
 
         vissObj->vissCfgRef.cfaCfg = cfaCfg;
@@ -1173,7 +1163,6 @@ void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
     {
-        tivxVpacVissDccMapLut16to12Params(vissObj);
         tivxVpacVissDccMapCCMParams(vissObj, NULL);
         tivxVpacVissDccMapRGB2YUVParams(vissObj);
         tivxVpacVissDccMapRGB2HSVParams(vissObj);
@@ -1489,7 +1478,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
         else if (2u == inst_id)
         {
             pwlCfg = &vissObj->vissCfg.pwlCfg3;
-            lutCfg = &vissObj->vissCfg.decomp2Cfg;
+            lutCfg = &vissObj->vissCfg.decomp3Cfg;
 
             pwlCfg->mask        = 4095u;
             pwlCfg->shift       = 0u;     /* 3 bits  */
@@ -1520,6 +1509,21 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             lutCfg->inputBits   = 20u;
             lutCfg->clip        = 65535;
             lutCfg->tableAddr   = grawfe_pwl_vshort_lut;
+
+            if (1 == vissObj->dcc_out_prms.issRfeDecompand.enable)
+            {
+                int i;
+                dcc_parser_output_params_t  *dcc_out_prms = &vissObj->dcc_out_prms;
+                lutCfg->enable    = dcc_out_prms->issRfeDecompand.enable;
+                pwlCfg->mask      = dcc_out_prms->issRfeDecompand.mask;
+                pwlCfg->shift     = dcc_out_prms->issRfeDecompand.shift;
+                lutCfg->inputBits = dcc_out_prms->issRfeDecompand.bit_depth;
+                lutCfg->clip      = dcc_out_prms->issRfeDecompand.clip;
+                for (i = 0; i < FLXD_LUT_SIZE; i++)
+                {
+                    grawfe_pwl_vshort_lut[i] = dcc_out_prms->issRfeDecompand.lut[i];
+                }
+            }
 
             vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
             vissObj->vissCfgRef.vsLutCfg = lutCfg;
