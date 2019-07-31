@@ -196,8 +196,8 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 5;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 5;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -334,8 +334,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 0;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 0;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -449,8 +449,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 0;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 0;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -612,8 +612,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 0;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 0;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -872,8 +872,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 5;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 5;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -1154,8 +1154,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 5;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 5;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -1767,8 +1767,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     raw_params.format[1].msb = 11;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_16_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 0;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 0;
+    raw_params.meta_height_after = 0;
 
     CT_Image src0 = NULL, src1 = NULL,  src2 = NULL;
 

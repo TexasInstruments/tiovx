@@ -315,7 +315,7 @@ static void tivxCaptureSetCreateParams(
         raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
         format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
         width = raw_image->params.width;
-        height = raw_image->params.height;
+        height = raw_image->params.height + (raw_image->params.meta_height_before + raw_image->params.meta_height_after);
         planes = raw_image->params.num_exposures;
         for (i = 0; i < planes; i++)
         {

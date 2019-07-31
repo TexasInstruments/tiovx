@@ -214,8 +214,8 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         raw_params.format[1].msb = 11;
         raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_16_BIT;
         raw_params.format[2].msb = 11;
-        raw_params.meta_height = 0;
-        raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+        raw_params.meta_height_before = 0;
+        raw_params.meta_height_after = 0;
 
         ASSERT_VX_OBJECT(sample_raw_img =
            tivxCreateRawImage(context, &raw_params),

@@ -372,8 +372,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     params.line_interleaved = vx_true_e;
     params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
     params.format[0].msb = 12;
-    params.meta_height = 0;
-    params.meta_location = TIVX_RAW_IMAGE_META_AFTER;
+    params.meta_height_before = 0;
+    params.meta_height_after = 0;
 
     ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
