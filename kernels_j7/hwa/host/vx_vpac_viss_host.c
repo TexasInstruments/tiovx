@@ -258,21 +258,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             }
         }
 
-        if (NULL != h3a_aew_af)
-        {
-            if ((h3a_aew_af_size != sizeof(tivx_h3a_aew_config)) ||
-                (strncmp(h3a_aew_af_name, "tivx_h3a_aew_config", sizeof(h3a_aew_af_name)) != 0))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'h3a_aew_af' should be a user_data_object of type:\n tivx_h3a_aew_config \n");
-            }
-            else
-            {
-                vxCopyUserDataObject(h3a_aew_af, 0, sizeof(tivx_h3a_aew_config), &h3a_aew_af_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-            }
-        }
-
-
         if (NULL != output0)
         {
             if( (VX_DF_IMAGE_U16 != output0_fmt) &&
@@ -329,7 +314,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "'output4' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
-
 
         if (NULL != h3a_aew_af)
         {
@@ -429,16 +413,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
         }
-
-        if (NULL != h3a_aew_af)
-        {
-            if ((0u != params.h3a_aewb_af_mode) && (1u != params.h3a_aewb_af_mode))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for h3a_aewb_af_mode\n");
-            }
-        }
-
     }
 
     /* PARAMETER RELATIONSHIP CHECKING */
