@@ -254,7 +254,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (48u)
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (64u)
 
 /*!
  * \brief Max number parameter objects supported
