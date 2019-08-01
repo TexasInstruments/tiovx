@@ -238,7 +238,9 @@ typedef struct {
 #define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
     CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_negative", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_negative", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 
 #define PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
@@ -287,6 +289,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.vertical_search_range[0U] = 62;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 63;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 63;
+                }
                 else
                 {
                     params.vertical_search_range[0U] = 63;
@@ -303,6 +313,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.vertical_search_range[1U] = 62;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.vertical_search_range[1U] = 63;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.vertical_search_range[1U] = 63;
+                }
                 else
                 {
                     params.vertical_search_range[1U] = 63;
@@ -318,6 +336,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.horizontal_search_range = 191;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.horizontal_search_range = 192;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.horizontal_search_range = 192;
                 }
                 else
                 {
@@ -338,6 +364,16 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                     params.vertical_search_range[0U] = 56;
                     params.vertical_search_range[1U] = 56;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 57;
+                    params.vertical_search_range[1U] = 57;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 57;
+                    params.vertical_search_range[1U] = 57;
+                }
                 else
                 {
                     params.vertical_search_range[0U] = 57;
@@ -357,11 +393,19 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.horizontal_search_range = 170;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.horizontal_search_range = 171;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.horizontal_search_range = 171;
+                }
                 else
                 {
                     params.horizontal_search_range = 171;
                 }
-                break;                break;
+                break;
             }
             case 5:
             {
@@ -372,6 +416,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.median_filter_enable = 1;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.median_filter_enable = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.median_filter_enable = 2;
                 }
                 else
                 {
@@ -389,6 +441,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.motion_smoothness_factor = 31;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.motion_smoothness_factor = 32;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.motion_smoothness_factor = 32;
+                }
                 else
                 {
                     params.motion_smoothness_factor = 32;
@@ -404,6 +464,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.motion_direction = 3;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.motion_direction = 4;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.motion_direction = 4;
                 }
                 else
                 {
@@ -421,6 +489,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.iir_filter_alpha = 255;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.iir_filter_alpha = 0;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.iir_filter_alpha = 256;
+                }
                 else
                 {
                     params.iir_filter_alpha = 256;
@@ -437,6 +513,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 {
                     params.enable_lk = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.enable_lk = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.enable_lk = 2;
+                }
                 else
                 {
                     params.enable_lk = 2;
@@ -452,6 +536,14 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     height = 128;
+                }
+                else if (2U == arg_->condition)
+                {
+                    height = 144;
+                }
+                else if (3U == arg_->condition)
+                {
+                    height = 144;
                 }
                 else
                 {
@@ -483,7 +575,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                         confidence_histogram), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
 
-        if(2 != arg_->condition)
+        if(2 > arg_->condition)
         {
             ASSERT_NO_FAILURE(vxVerifyGraph(graph));
         }

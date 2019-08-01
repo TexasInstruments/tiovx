@@ -217,7 +217,9 @@ typedef struct {
 #define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
     CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_negative", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_negative", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 
 #define PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIGMAS, ADD_NUMTABLES_NEGATIVE, ADD_CONV_SHIFT_NEGATIVE, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG, convolve_generate_random, NULL)
@@ -359,6 +361,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     params.params.input_interleaved = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.params.input_interleaved = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.input_interleaved = 2;
+                }
                 else
                 {
                     params.params.input_interleaved = 2;
@@ -374,6 +384,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.params.output_downshift = 7;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.params.output_downshift = -9;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.output_downshift = 8;
                 }
                 else
                 {
@@ -391,6 +409,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     params.params.output_offset = 4095;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.params.output_offset = 4096;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.output_offset = 4096;
+                }
                 else
                 {
                     params.params.output_offset = 4096;
@@ -406,6 +432,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.params.output_pixel_skip = 1;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.params.output_pixel_skip = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.output_pixel_skip = 2;
                 }
                 else
                 {
@@ -423,6 +457,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     params.params.output_pixel_skip_odd = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.params.output_pixel_skip_odd = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.output_pixel_skip_odd = 2;
+                }
                 else
                 {
                     params.params.output_pixel_skip_odd = 2;
@@ -438,6 +480,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.params.kern_ln_offset = 4;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.params.kern_ln_offset = 5;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.kern_ln_offset = 5;
                 }
                 else
                 {
@@ -455,6 +505,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     params.params.kern_sz_height = 5;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.params.kern_sz_height = 0;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.kern_sz_height = 6;
+                }
                 else
                 {
                     params.params.kern_sz_height = 6;
@@ -470,6 +528,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 else if (1U == arg_->condition)
                 {
                     params.params.src_ln_inc_2 = 1;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.params.src_ln_inc_2 = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.params.src_ln_inc_2 = 2;
                 }
                 else
                 {
@@ -487,6 +553,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     params.adaptive_mode = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.adaptive_mode = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.adaptive_mode = 2;
+                }
                 else
                 {
                     params.adaptive_mode = 2;
@@ -497,15 +571,23 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.sub_table_select = 0;
+                    params.adaptive_mode = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.sub_table_select = 7;
+                    params.adaptive_mode = 7;
+                }
+                else if (2U == arg_->condition)
+                {
+                    params.adaptive_mode = 8;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.adaptive_mode = 8;
                 }
                 else
                 {
-                    params.sub_table_select = 8;
+                    params.adaptive_mode = 8;
                 }
                 break;
             }
@@ -519,9 +601,17 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
                 {
                     sigmas.num_sigmas = 8;
                 }
-                else
+                else if (2U == arg_->condition)
+                {
+                    sigmas.num_sigmas = 0;
+                }
+                else if (3U == arg_->condition)
                 {
                     sigmas.num_sigmas = 9;
+                }
+                else
+                {
+                    sigmas.num_sigmas = 5;
                 }
                 break;
             }
@@ -538,7 +628,7 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
-        if(2 != arg_->condition)
+        if(2 > arg_->condition)
         {
             ASSERT_NO_FAILURE(vxVerifyGraph(graph));
         }

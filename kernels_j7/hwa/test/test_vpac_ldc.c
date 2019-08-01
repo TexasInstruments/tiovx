@@ -548,7 +548,9 @@ typedef struct {
 #define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
     CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_negative", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_negative", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 
 #define PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
@@ -794,6 +796,14 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     params.input_align_12bit = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.input_align_12bit = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.input_align_12bit = 2;
+                }
                 else
                 {
                     params.input_align_12bit = 2;
@@ -810,11 +820,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     params.luma_interpolation_type = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.luma_interpolation_type = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.luma_interpolation_type = 2;
+                }
                 else
                 {
                     params.luma_interpolation_type = 2;
                 }
-                break;
             }
             case 2:
             {
@@ -826,11 +843,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     params.init_x = 8184;
                 }
-                else
+                else if (2U == arg_->condition)
                 {
                     params.init_x = 8192;
                 }
-                break;
+                else if (3U == arg_->condition)
+                {
+                    params.init_x = 8192;
+                }
+                else
+                {
+                    params.init_x = 4004;
+                }
             }
             case 3:
             {
@@ -840,13 +864,20 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.init_y = 8190;
+                    params.init_y = 8184;
                 }
-                else
+                else if (2U == arg_->condition)
                 {
                     params.init_y = 8192;
                 }
-                break;
+                else if (3U == arg_->condition)
+                {
+                    params.init_y = 8192;
+                }
+                else
+                {
+                    params.init_y = 4001;
+                }
             }
             case 4:
             {
@@ -858,11 +889,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     params.yc_mode = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    params.yc_mode = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    params.yc_mode = 2;
+                }
                 else
                 {
                     params.yc_mode = 2;
                 }
-                break;
             }
             case 5:
             {
@@ -874,11 +912,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     region_params.enable = 1;
                 }
+                else if (2U == arg_->condition)
+                {
+                    region_params.enable = 2;
+                }
+                else if (3U == arg_->condition)
+                {
+                    region_params.enable = 2;
+                }
                 else
                 {
                     region_params.enable = 2;
                 }
-                break;
             }
             case 6:
             {
@@ -890,11 +935,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     region_params.out_block_width = 248;
                 }
-                else
+                else if (2U == arg_->condition)
+                {
+                    region_params.out_block_width = 0;
+                }
+                else if (3U == arg_->condition)
                 {
                     region_params.out_block_width = 256;
                 }
-                break;
+                else
+                {
+                    region_params.out_block_width = 124;
+                }
             }
             case 7:
             {
@@ -906,11 +958,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     region_params.out_block_height = 254;
                 }
-                else
+                else if (2U == arg_->condition)
+                {
+                    region_params.out_block_height = 0;
+                }
+                else if (3U == arg_->condition)
                 {
                     region_params.out_block_height = 256;
                 }
-                break;
+                else
+                {
+                    region_params.out_block_height = 127;
+                }
             }
             case 8:
             {
@@ -922,11 +981,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     region_params.pixel_pad = 15;
                 }
+                else if (2U == arg_->condition)
+                {
+                    region_params.pixel_pad = 16;
+                }
+                else if (3U == arg_->condition)
+                {
+                    region_params.pixel_pad = 16;
+                }
                 else
                 {
                     region_params.pixel_pad = 16;
                 }
-                break;
             }
             case 9:
             {
@@ -938,11 +1004,18 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                 {
                     mesh_params.subsample_factor = 7;
                 }
+                else if (2U == arg_->condition)
+                {
+                    mesh_params.subsample_factor = 8;
+                }
+                else if (3U == arg_->condition)
+                {
+                    mesh_params.subsample_factor = 8;
+                }
                 else
                 {
                     mesh_params.subsample_factor = 8;
                 }
-                break;
             }
         }
 
@@ -965,7 +1038,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
 
-        if(2 != arg_->condition)
+        if(2 > arg_->condition)
         {
             ASSERT_NO_FAILURE(vxVerifyGraph(graph));
         }
