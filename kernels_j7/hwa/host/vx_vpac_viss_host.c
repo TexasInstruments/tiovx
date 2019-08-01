@@ -88,10 +88,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_vpac_viss_params_t params;
 
     vx_user_data_object ae_awb_result = NULL;
     vx_char ae_awb_result_name[VX_MAX_REFERENCE_NAME];
     vx_size ae_awb_result_size;
+    tivx_ae_awb_params_t ae_awb_params;
 
     tivx_raw_image raw = NULL;
     vx_uint32 raw_w;
@@ -125,12 +127,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_user_data_object h3a_aew_af = NULL;
     vx_char h3a_aew_af_name[VX_MAX_REFERENCE_NAME];
     vx_size h3a_aew_af_size;
+    tivx_h3a_aew_config h3a_aew_af_params;
 
     vx_user_data_object dcc_param = NULL;
     vx_char dcc_param_name[VX_MAX_REFERENCE_NAME];
     vx_size dcc_param_size;
-
-    tivx_vpac_viss_params_t params;
 
     if ( (num != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -251,7 +252,26 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
             }
+            else
+            {
+                vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+            }
         }
+
+        if (NULL != h3a_aew_af)
+        {
+            if ((h3a_aew_af_size != sizeof(tivx_h3a_aew_config)) ||
+                (strncmp(h3a_aew_af_name, "tivx_h3a_aew_config", sizeof(h3a_aew_af_name)) != 0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'h3a_aew_af' should be a user_data_object of type:\n tivx_h3a_aew_config \n");
+            }
+            else
+            {
+                vxCopyUserDataObject(h3a_aew_af, 0, sizeof(tivx_h3a_aew_config), &h3a_aew_af_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+            }
+        }
+
 
         if (NULL != output0)
         {
@@ -351,6 +371,16 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output1\n");
+            }
+        }
+        if (NULL != output2)
+        {
+            if ((0u != params.mux_output2) && (1u != params.mux_output2) &&
+                (2u != params.mux_output2) && (3u != params.mux_output2) &&
+                (4u != params.mux_output2) && (5u != params.mux_output2))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output2\n");
             }
         }
         if (NULL != output3)
@@ -493,6 +523,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
+    if (VX_SUCCESS == status)
     {
         if (NULL != output1)
         {
@@ -530,6 +561,85 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     status = VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "Parameters 'output3' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
                 }
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (1U < params.bypass_glbce)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_glbce should be either 0 or 1\n");
+        }
+        if (1U < params.bypass_nsf4)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_nsf4 should be either 0 or 1\n");
+        }
+        if ((NULL != h3a_aew_af) &&
+            (TIVX_VPAC_VISS_H3A_IN_RAW0 != params.h3a_in) &&
+            (TIVX_VPAC_VISS_H3A_IN_RAW1 != params.h3a_in) &&
+            (TIVX_VPAC_VISS_H3A_IN_RAW2 != params.h3a_in) &&
+            (TIVX_VPAC_VISS_H3A_IN_LSC != params.h3a_in))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter h3a_in should be either:\n TIVX_VPAC_VISS_H3A_IN_RAW0 or TIVX_VPAC_VISS_H3A_IN_RAW1 or TIVX_VPAC_VISS_H3A_IN_RAW2 or TIVX_VPAC_VISS_H3A_IN_LSC\n");
+        }
+        if ((NULL != h3a_aew_af) &&
+            (TIVX_VPAC_VISS_H3A_MODE_AEWB != params.h3a_aewb_af_mode) &&
+            (TIVX_VPAC_VISS_H3A_MODE_AF != params.h3a_aewb_af_mode))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter h3a_aewb_af_mode should be either:\n TIVX_VPAC_VISS_H3A_MODE_AEWB or TIVX_VPAC_VISS_H3A_MODE_AF\n");
+        }
+        if ((TIVX_VPAC_VISS_EE_MODE_OFF != params.ee_mode) &&
+            (TIVX_VPAC_VISS_EE_MODE_Y12 != params.ee_mode) &&
+            (TIVX_VPAC_VISS_EE_MODE_Y8 != params.ee_mode))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter ee_mode should be either:\n TIVX_VPAC_VISS_EE_MODE_OFF or TIVX_VPAC_VISS_EE_MODE_Y12 or TIVX_VPAC_VISS_EE_MODE_Y8\n");
+        }
+        if ((TIVX_VPAC_VISS_MUX1_UV12 == params.mux_output1 || TIVX_VPAC_VISS_MUX3_UV8 == params.mux_output3) &&
+            (TIVX_VPAC_VISS_CHROMA_MODE_420 != params.chroma_mode) &&
+            (TIVX_VPAC_VISS_CHROMA_MODE_422 != params.chroma_mode))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter chroma_mode should be either:\n TIVX_VPAC_VISS_CHROMA_MODE_420 or TIVX_VPAC_VISS_CHROMA_MODE_422\n");
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (NULL != ae_awb_result)
+        {
+            if ((TIVX_VPAC_VISS_H3A_IN_RAW0 != ae_awb_params.h3a_source_data) &&
+                (TIVX_VPAC_VISS_H3A_IN_RAW1 != ae_awb_params.h3a_source_data) &&
+                (TIVX_VPAC_VISS_H3A_IN_RAW2 != ae_awb_params.h3a_source_data) &&
+                (TIVX_VPAC_VISS_H3A_IN_LSC != ae_awb_params.h3a_source_data))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter h3a_source_data should be either:\n TIVX_VPAC_VISS_H3A_IN_RAW0 or TIVX_VPAC_VISS_H3A_IN_RAW1 or TIVX_VPAC_VISS_H3A_IN_RAW2 or TIVX_VPAC_VISS_H3A_IN_LSC\n");
+            }
+            if (1U < ae_awb_params.ae_valid)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter ae_valid should be either 0 or 1\n");
+            }
+            if (1U < ae_awb_params.ae_converged)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter ae_converged should be either 0 or 1\n");
+            }
+            if (1U < ae_awb_params.awb_valid)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter awb_valid should be either 0 or 1\n");
+            }
+            if (1U < ae_awb_params.awb_converged)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter awb_converged should be either 0 or 1\n");
             }
         }
     }
@@ -762,5 +872,13 @@ void tivx_ae_awb_params_init(tivx_ae_awb_params_t *prms)
     if (NULL != prms)
     {
         memset(prms, 0x0, sizeof(tivx_ae_awb_params_t));
+    }
+}
+
+void tivx_h3a_aew_config_init(tivx_h3a_aew_config *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_h3a_aew_config));
     }
 }

@@ -642,6 +642,16 @@ void tivx_h3a_data_init(tivx_h3a_data_t *prms);
  */
 void tivx_ae_awb_params_init(tivx_ae_awb_params_t *prms);
 
+/*!
+ * \brief Function to initialize H3A aew Config
+ *
+ * \param prms  [in] Pointer to H3A aew config
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+void tivx_h3a_aew_config_init(tivx_h3a_aew_config *prms);
+
+
 #ifdef __cplusplus
 }
 #endif

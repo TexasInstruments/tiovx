@@ -1933,6 +1933,416 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     }
 }
 
+typedef struct {
+    const char* testName;
+    int negative_test;
+    int condition;
+} ArgNegative;
+
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=mux_output0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=mux_output1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=mux_output2", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=mux_output3", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=mux_output4", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=bypass_glbce", __VA_ARGS__, 5)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=bypass_nsf4", __VA_ARGS__, 6)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=h3a_in", __VA_ARGS__, 7)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=h3a_aewb_af_mode", __VA_ARGS__, 8)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=ee_mode", __VA_ARGS__, 9)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=chroma_mode", __VA_ARGS__, 10)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=h3a_source_data", __VA_ARGS__, 11)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=ae_valid", __VA_ARGS__, 12)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=ae_converged", __VA_ARGS__, 13)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=awb_valid", __VA_ARGS__, 14)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=awb_converged", __VA_ARGS__, 15))
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
+    
+TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
+    PARAMETERS_NEGATIVE)
+{
+    vx_context context = context_->vx_context_;
+    vx_user_data_object configuration = NULL;
+    vx_user_data_object ae_awb_result = NULL;
+    tivx_raw_image raw = NULL;
+    vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
+    vx_distribution histogram = NULL;
+    vx_user_data_object h3a_aew_af = NULL;
+
+    tivx_vpac_viss_params_t params;
+    tivx_ae_awb_params_t ae_awb_params;
+    tivx_h3a_data_t h3a_data;
+
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    tivx_raw_image_create_params_t raw_params;
+    raw_params.width = 128;
+    raw_params.height = 128;
+    raw_params.num_exposures = 3;
+    raw_params.line_interleaved = vx_false_e;
+    raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[0].msb = 11;
+    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    raw_params.format[1].msb = 7;
+    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    raw_params.format[2].msb = 11;
+    raw_params.meta_height = 5;
+    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    {
+        tivxHwaLoadKernels(context);
+
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(y12 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, 128, 128/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, 128, 128/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
+
+        tivx_vpac_viss_params_init(&params);
+        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        tivx_ae_awb_params_init(&ae_awb_params);
+        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        tivx_h3a_data_init(&h3a_data);
+        ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t",
+                                                            sizeof(tivx_h3a_data_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        params.mux_output0 = 0U;
+        params.mux_output1 = 0U;
+        params.mux_output2 = 0U;
+        params.mux_output3 = 0U;
+        params.mux_output4 = 3U;
+        params.bypass_glbce = 0U;
+        params.bypass_nsf4 = 0U;
+        params.h3a_in = 0U;
+        params.h3a_aewb_af_mode = 0U;
+        params.ee_mode = 0U;
+        params.chroma_mode = 0U;
+
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.mux_output0 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.mux_output0 = 4;
+                }
+                else
+                {
+                    params.mux_output0 = 5;
+                }
+                break;
+            }
+            case 1:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.mux_output1 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.mux_output1 = 2;
+                }
+                else
+                {
+                    params.mux_output1 = 3;
+                }
+                break;
+            }
+            case 2:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.mux_output2 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.mux_output2 = 5;
+                }
+                else
+                {
+                    params.mux_output2 = 6;
+                }
+                break;
+            }
+            case 3:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.mux_output3 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.mux_output3 = 2;
+                }
+                else
+                {
+                    params.mux_output3 = 3;
+                }
+                break;
+            }
+            case 4:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.mux_output4 = 1;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.mux_output4 = 3;
+                }
+                else
+                {
+                    params.mux_output4 = 4;
+                }
+                break;
+            }
+            case 5:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.bypass_glbce = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.bypass_glbce = 1;
+                }
+                else
+                {
+                    params.bypass_glbce = 2;
+                }
+                break;
+            }
+            case 6:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.bypass_nsf4 = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.bypass_nsf4 = 1;
+                }
+                else
+                {
+                    params.bypass_nsf4 = 2;
+                }
+                break;
+            }
+            case 7:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.h3a_in = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.h3a_in = 3;
+                }
+                else
+                {
+                    params.h3a_in = 4;
+                }
+                break;
+            }
+            case 8:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.h3a_aewb_af_mode = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.h3a_aewb_af_mode = 1;
+                }
+                else
+                {
+                    params.h3a_aewb_af_mode = 2;
+                }
+                break;
+            }
+            case 9:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.ee_mode = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.ee_mode = 2;
+                }
+                else
+                {
+                    params.ee_mode = 3;
+                }
+                break;
+            }
+            case 10:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.chroma_mode = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.chroma_mode = 1;
+                }
+                else
+                {
+                    params.chroma_mode = 2;
+                }
+                break;
+            }
+            case 11:
+            {
+                if (0U == arg_->condition)
+                {
+                    ae_awb_params.h3a_source_data = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    ae_awb_params.h3a_source_data = 3;
+                }
+                else
+                {
+                    ae_awb_params.h3a_source_data = 4;
+                }
+                break;
+            }
+            case 12:
+            {
+                if (0U == arg_->condition)
+                {
+                    ae_awb_params.ae_valid = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    ae_awb_params.ae_valid = 1;
+                }
+                else
+                {
+                    ae_awb_params.ae_valid = 2;
+                }
+                break;
+            }
+            case 13:
+            {
+                if (0U == arg_->condition)
+                {
+                    ae_awb_params.ae_converged = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    ae_awb_params.ae_converged = 1;
+                }
+                else
+                {
+                    ae_awb_params.ae_converged = 2;
+                }
+                break;
+            }
+            case 14:
+            {
+                if (0U == arg_->condition)
+                {
+                    ae_awb_params.awb_valid = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    ae_awb_params.awb_valid = 1;
+                }
+                else
+                {
+                    ae_awb_params.awb_valid = 2;
+                }
+                break;
+            }
+            case 15:
+            {
+                if (0U == arg_->condition)
+                {
+                    ae_awb_params.awb_converged = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    ae_awb_params.awb_converged = 1;
+                }
+                else
+                {
+                    ae_awb_params.awb_converged = 2;
+                }
+                break;
+            }
+        }
+
+        VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(h3a_aew_af, 0, sizeof(tivx_h3a_data_t), &h3a_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
+                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
+                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseDistribution(&histogram));
+        VX_CALL(vxReleaseImage(&s8_b8_c4));
+        VX_CALL(vxReleaseImage(&uv8_g8_c3));
+        VX_CALL(vxReleaseImage(&y8_r8_c2));
+        VX_CALL(vxReleaseImage(&uv12_c1));
+        VX_CALL(vxReleaseImage(&y12));
+        VX_CALL(tivxReleaseRawImage(&raw));
+        VX_CALL(vxReleaseUserDataObject(&h3a_aew_af));
+        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
+        VX_CALL(vxReleaseUserDataObject(&configuration));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(h3a_aew_af == 0);
+        ASSERT(histogram == 0);
+        ASSERT(s8_b8_c4 == 0);
+        ASSERT(uv8_g8_c3 == 0);
+        ASSERT(y8_r8_c2 == 0);
+        ASSERT(uv12_c1 == 0);
+        ASSERT(y12 == 0);
+        ASSERT(raw == 0);
+        ASSERT(ae_awb_result == 0);
+        ASSERT(configuration == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
 #if defined(BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS)
 #define testMuxNegative testMuxNegative
 #else
@@ -1943,6 +2353,7 @@ TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
                testGraphProcessingFileDcc,
+               testNegativeGraph,
                testMuxNegative /*,
                testMux,
                testGraphProcessing,
