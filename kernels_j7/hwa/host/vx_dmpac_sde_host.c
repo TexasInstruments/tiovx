@@ -68,17 +68,17 @@
 
 static vx_kernel vx_dmpac_sde_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
+static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxKernelDmpacSdeInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
 vx_status tivxAddKernelDmpacSde(vx_context context);
 vx_status tivxRemoveKernelDmpacSde(vx_context context);
 
-static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
+static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     vx_int32 confidence_histogram_offset = 0;
     vx_uint32 confidence_histogram_range = 0;
     vx_size confidence_histogram_numBins = 0;
-    
+
     uint32_t i;
 
     if ( (num != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
@@ -308,7 +308,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxKernelDmpacSdeInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
@@ -374,8 +374,8 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
                     kernel_id,
                     NULL,
                     TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS,
-                    tivxAddKernelDmpacSdeValidate,
-                    tivxAddKernelDmpacSdeInitialize,
+                    tivxKernelDmpacSdeValidate,
+                    tivxKernelDmpacSdeInitialize,
                     NULL);
 
         status = vxGetStatus((vx_reference)kernel);
@@ -471,7 +471,7 @@ vx_status tivxRemoveKernelDmpacSde(vx_context context)
 void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms)
 {
     uint16_t i;
-    
+
     if (NULL != prms)
     {
         memset(prms, 0x0, sizeof(tivx_dmpac_sde_params_t));
@@ -485,7 +485,7 @@ void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms)
         prms->threshold_texture = 0u;
         prms->aggregation_penalty_p1 = 0u;
         prms->aggregation_penalty_p2 = 0u;
-        
+
         for(i = 0u; i < 8u; i++)
         {
             prms->confidence_score_map[i] = i;
