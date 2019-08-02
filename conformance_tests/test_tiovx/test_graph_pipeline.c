@@ -2130,7 +2130,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
                 ct_update_progress(loop_id, loop_cnt+num_buf);
             }
 
-            out_objarr = get_object_array_parent_of_image(out_img, d2, img2, num_buf);
+            out_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_img);
 
             for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
             {

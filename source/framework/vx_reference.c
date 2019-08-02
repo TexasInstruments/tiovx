@@ -681,3 +681,19 @@ vx_bool tivxIsReferenceVirtual(vx_reference ref)
 
     return (ret);
 }
+
+vx_reference tivxGetReferenceParent(vx_reference child_ref)
+{
+    vx_reference ref = NULL;
+
+    if (ownIsValidReference(child_ref) == vx_true_e)
+    {
+        if (vx_true_e == child_ref->is_array_element)
+        {
+            ref = child_ref->scope;
+        }
+    }
+
+    return ref;
+}
+

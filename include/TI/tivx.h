@@ -532,6 +532,16 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
 vx_bool tivxIsReferenceVirtual(vx_reference ref);
 
 /*!
+ * \brief Utility function to extract the parent reference from an element
+ *
+ * \param [in] child_ref     Child reference to query
+ * \return vx_reference in case of success, else NULL
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_reference tivxGetReferenceParent(vx_reference child_ref);
+
+/*!
  * \brief Utility function to know if target is enabled or not
  *
  * \param [in] target_name String specifying the target name
