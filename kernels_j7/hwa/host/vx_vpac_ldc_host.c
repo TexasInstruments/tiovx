@@ -595,7 +595,7 @@ void tivx_vpac_ldc_bandwidth_params_init(tivx_vpac_ldc_bandwidth_params_t *prms)
     }
 }
 
-void tivx_vpac_ldc_tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms)
+void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms)
 {
     if (NULL != prms)
     {
