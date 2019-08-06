@@ -233,6 +233,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                         status = VX_SUCCESS;
+    int32_t                           fvid2_status = FVID2_SOK;
     uint32_t                          size;
     void                             *left_target_ptr;
     void                             *right_target_ptr;
@@ -327,9 +328,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 		sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
 
         /* Submit SDE Request*/
-        status = Fvid2_processRequest(sde_obj->handle, inFrmList,
+        fvid2_status = Fvid2_processRequest(sde_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeProcess: Failed to Submit Request\n");
@@ -342,9 +343,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         /* Wait for Frame Completion */
         tivxEventWait(sde_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        status = Fvid2_getProcessedRequest(sde_obj->handle,
+        fvid2_status = Fvid2_getProcessedRequest(sde_obj->handle,
             inFrmList, outFrmList, 0);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeProcess: Failed to Get Processed Request\n");
@@ -357,18 +358,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         /* Get Histogram */
         if(NULL != confidence_histogram_desc)
         {
-            status = Fvid2_control(sde_obj->handle,
+            fvid2_status = Fvid2_control(sde_obj->handle,
                 VHWA_M2M_IOCTL_SDE_GET_HISTOGRAM,
                 (uint32_t *) confidence_histogram_target_ptr, NULL);
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacSdeProcess: Histogram Request failed\n");
                 status = VX_FAILURE;
-            }
-            else
-            {
-                status = VX_SUCCESS;
             }
         }
     }
@@ -402,6 +399,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                         status = VX_SUCCESS;
+    int32_t                           fvid2_status = FVID2_SOK;
 	uint32_t                          i;
     uint32_t                          aligned_width;
     uint32_t                          aligned_height;
@@ -484,17 +482,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         sde_obj->errEvtPrms.cbFxn     = tivxDmpacSdeErrorCb;
         sde_obj->errEvtPrms.appData   = sde_obj;
 
-        status = Fvid2_control(sde_obj->handle,
+        fvid2_status = Fvid2_control(sde_obj->handle,
             VHWA_M2M_IOCTL_SDE_REGISTER_ERR_CB, &sde_obj->errEvtPrms, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
 			VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Register Error Callback\n");
             status = VX_FAILURE;
-        }
-        else
-        {
-            status = VX_SUCCESS;
         }
     }
 
@@ -570,17 +564,18 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
         memcpy(&sde_obj->sdeParams, params, sizeof(tivx_dmpac_sde_params_t));
 
-        status = Fvid2_control(sde_obj->handle,
+        fvid2_status = Fvid2_control(sde_obj->handle,
             VHWA_M2M_IOCTL_SDE_SET_PARAMS, &sde_obj->sdePrms, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Set parameters request failed\n");
             status = VX_FAILURE;
-        }
-        else
-        {
-            status = VX_SUCCESS;
+            if (FVID2_EALLOC == fvid2_status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxDmpacSdeCreate: Not enough SL2 memory for this configuration\n");
+            }
         }
 
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
