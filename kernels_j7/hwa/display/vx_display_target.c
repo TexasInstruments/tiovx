@@ -335,6 +335,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    int32_t fvid2_status = FVID2_SOK;
     tivx_obj_desc_user_data_object_t *obj_desc_configuration;
     tivx_obj_desc_image_t *obj_desc_image;
     tivxDisplayParams *displayParams = NULL;
@@ -402,6 +403,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             displayParams->waitSem = SemaphoreP_create(0U, &semParams);
             if(NULL == displayParams->waitSem)
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Semaphore Create Failed!\r\n");
             }
             else
@@ -412,10 +414,10 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                                                         &displayParams->createStatus,
                                                         &displayParams->cbParams);
                 if((NULL == displayParams->drvHandle) ||
-                   (displayParams->createStatus.retVal != FVID2_SOK))
+                   (FVID2_SOK != displayParams->createStatus.retVal))
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Create Failed!\r\n");
-                    status = displayParams->createStatus.retVal;
                 }
             }
         }
@@ -469,14 +471,14 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         }
         if(VX_SUCCESS == status)
         {
-            status = Fvid2_control(displayParams->drvHandle,
+            fvid2_status = Fvid2_control(displayParams->drvHandle,
                                    IOCTL_DSS_DISP_SET_DSS_PARAMS,
                                    &displayParams->dispParams,
                                    NULL);
-            if(status != FVID2_SOK)
+            if(FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Set Parameters Failed!\r\n");
                 status = VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Set Parameters Failed!\r\n");
             }
         }
         /* Creating FVID2 frame Q */
@@ -522,6 +524,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    int32_t fvid2_status = FVID2_SOK;
     tivxDisplayParams *displayParams = NULL;
     Fvid2_FrameList frmList;
     uint32_t size;
@@ -549,10 +552,11 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         /* Stop Display */
         if(VX_SUCCESS == status)
         {
-            status = Fvid2_stop(displayParams->drvHandle, NULL);
+            fvid2_status = Fvid2_stop(displayParams->drvHandle, NULL);
 
-            if(VX_SUCCESS != status)
+            if(FVID2_SOK != fvid2_status)
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Stop Failed!\r\n");
             }
         }
@@ -562,17 +566,18 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         {
             do
             {
-                status = Fvid2_dequeue(displayParams->drvHandle,
+                fvid2_status = Fvid2_dequeue(displayParams->drvHandle,
                                        &frmList,
                                        0,
                                        FVID2_TIMEOUT_NONE);
-            } while(VX_SUCCESS == status);
+            } while(FVID2_SOK == fvid2_status);
 
             /* Delete FVID2 handle */
-            status = Fvid2_delete(displayParams->drvHandle, NULL);
+            fvid2_status = Fvid2_delete(displayParams->drvHandle, NULL);
 
-            if(VX_SUCCESS != status)
+            if(FVID2_SOK != fvid2_status)
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Delete Failed!\r\n");
             }
         }
@@ -679,6 +684,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    int32_t fvid2_status = FVID2_SOK;
     tivxDisplayParams *displayParams = NULL;
     tivx_obj_desc_image_t *obj_desc_image;
     void *image_target_ptr1, *image_target_ptr2;
@@ -771,22 +777,25 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 frmList.numFrames  = 1U;
                 frmList.frames[0U] = frm;
                 /* Call Fvid2 Queue */
-                status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
-                if(VX_SUCCESS != status)
+                fvid2_status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
+                if(FVID2_SOK != fvid2_status)
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Unable to queue frame!\r\n");
                 }
             }
             else
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not get frame from queue!\r\n");
             }
 
             if(TRUE == displayParams->firstFrameDisplay)
             {
-                status = Fvid2_start(displayParams->drvHandle, NULL);
+                fvid2_status = Fvid2_start(displayParams->drvHandle, NULL);
                 if(VX_SUCCESS != status)
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not start display!\r\n");
                 }
                 else
@@ -801,12 +810,12 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 do
                 {
                     SemaphoreP_pend(displayParams->waitSem, SemaphoreP_WAIT_FOREVER);
-                    status = Fvid2_dequeue(displayParams->drvHandle,
+                    fvid2_status = Fvid2_dequeue(displayParams->drvHandle,
                                         &frmList,
                                         0U,
                                         FVID2_TIMEOUT_NONE);
-                } while(FVID2_EAGAIN == status);
-                if((1U == frmList.numFrames) && (VX_SUCCESS == status))
+                } while(FVID2_EAGAIN == fvid2_status);
+                if((1U == frmList.numFrames) && (FVID2_SOK == fvid2_status))
                 {
                     frm = frmList.frames[0U];
                     /* Return frame */
@@ -815,6 +824,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 }
                 else /* (1U != frmList.numFrames) || ((VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Dequeue operation failed!\r\n");
                 }
             }
@@ -882,16 +892,18 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             frmList.numFrames  = 1U;
             frmList.frames[0U] = &displayParams->copyFrame[displayParams->currIdx];
             /* Call Fvid2 Queue */
-            status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
-            if(VX_SUCCESS != status)
+            fvid2_status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
+            if(FVID2_SOK != fvid2_status)
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Unable to queue copy frame!\r\n");
             }
             if(TRUE == displayParams->firstFrameDisplay)
             {
-                status = Fvid2_start(displayParams->drvHandle, NULL);
-                if(VX_SUCCESS != status)
+                fvid2_status = Fvid2_start(displayParams->drvHandle, NULL);
+                if(FVID2_SOK != fvid2_status)
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not start display!\r\n");
                 }
                 displayParams->firstFrameDisplay = FALSE;
@@ -902,12 +914,12 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 do
                 {
                     SemaphoreP_pend(displayParams->waitSem, SemaphoreP_WAIT_FOREVER);
-                    status = Fvid2_dequeue(displayParams->drvHandle,
+                    fvid2_status = Fvid2_dequeue(displayParams->drvHandle,
                                            &frmList,
                                            0U,
                                            FVID2_TIMEOUT_NONE);
-                } while(FVID2_EAGAIN == status);
-                if((1U == frmList.numFrames) && (VX_SUCCESS == status))
+                } while(FVID2_EAGAIN == fvid2_status);
+                if((1U == frmList.numFrames) && (FVID2_SOK == fvid2_status))
                 {
                     /* Change Curr Index */
                     if(displayParams->currIdx == 0)
@@ -921,6 +933,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 }
                 else /* (1U != frmList.numFrames) || ((VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
                 {
+                    status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Dequeue operation failed!\r\n");
                 }
             }
