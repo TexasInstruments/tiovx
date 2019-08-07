@@ -309,6 +309,11 @@ typedef enum _tivx_df_image_e {
      * The stride_x for this data format must be set to 0 */
     TIVX_DF_IMAGE_NV12_P12 = VX_DF_IMAGE('N','1','2','P'),
 
+    /*! \brief A single plane of packed 16-bit RGB565 data.
+     *
+     * The stride_x for this data format must be set to 2 */
+    TIVX_DF_IMAGE_RGB565 = VX_DF_IMAGE('R','5','6','5'),
+
 } tivx_df_image_e;
 
 /*! \brief Based on the vx_graph_attribute_e definition.

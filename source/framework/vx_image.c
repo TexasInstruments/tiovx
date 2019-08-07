@@ -84,6 +84,7 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
         case VX_DF_IMAGE_VIRT:
         case TIVX_DF_IMAGE_P12:
         case TIVX_DF_IMAGE_NV12_P12:
+        case TIVX_DF_IMAGE_RGB565:
             is_supported_fourcc = vx_true_e;
             break;
         default:
@@ -179,6 +180,7 @@ static vx_size ownSizeOfChannel(vx_df_image color)
     {
         switch (color)
         {
+            case TIVX_DF_IMAGE_RGB565:
             case VX_DF_IMAGE_S16:
             case VX_DF_IMAGE_U16:
                 size = sizeof(vx_uint16);
@@ -350,7 +352,7 @@ static void ownInitPlane(vx_image image,
         if ( size_of_ch != 0 )
         {
             imagepatch_addr->stride_y = TIVX_ALIGN(
-                        (imagepatch_addr->dim_x*imagepatch_addr->stride_x)/step_x, 
+                        (imagepatch_addr->dim_x*imagepatch_addr->stride_x)/step_x,
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         );
         }
@@ -419,6 +421,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S16:
         case VX_DF_IMAGE_S32:
+        case TIVX_DF_IMAGE_RGB565:
         case TIVX_DF_IMAGE_P12:
             obj_desc->color_space = VX_COLOR_SPACE_NONE;
             break;
@@ -468,6 +471,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
         case VX_DF_IMAGE_S16:
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
+        case TIVX_DF_IMAGE_RGB565:
             obj_desc->planes = 1;
             ownInitPlane(image, 0, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1, 0);
             break;
@@ -1149,6 +1153,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                 {
                                     vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
                                     *ptr = value->U8;
+                                }
+                                else if (format == TIVX_DF_IMAGE_RGB565)
+                                {
+                                    vx_uint16 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                    *ptr = value->U16;
                                 }
                                 else if (format == VX_DF_IMAGE_U16)
                                 {
