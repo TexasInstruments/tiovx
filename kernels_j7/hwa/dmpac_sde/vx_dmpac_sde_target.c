@@ -524,7 +524,20 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             aligned_height += 16;
             aligned_height &= ~15;   /* Must be multiple of 16 */
         }
-		
+        if (SDE_MAX_IMAGE_WIDTH < aligned_width)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Aligned width should be no greater than %d\n", SDE_MAX_IMAGE_WIDTH);
+        }
+        if (SDE_MAX_IMAGE_HEIGHT < aligned_height)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter height should be no greater than %d\n", SDE_MAX_IMAGE_HEIGHT);
+        }
+    }
+    
+    if (VX_SUCCESS == status)
+    {
 		sdePrms->sdeCfg.enableSDE = 1U;
 		sdePrms->sdeCfg.medianFilter = (uint32_t) (params->median_filter_enable);
 		sdePrms->sdeCfg.width = aligned_width;

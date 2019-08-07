@@ -282,6 +282,16 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 aligned_height += 16;
                 aligned_height &= ~15;   /* Must be multiple of 16 */
             }
+            if (2048 < aligned_width)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Aligned width should be no greater than 2048\n");
+            }
+            if (1024 < aligned_height)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                  VX_PRINT(VX_ZONE_ERROR, "Parameter height should be no greater than 1024\n");
+            }
 
             prms->aligned_width = aligned_width;
             prms->aligned_height = aligned_height;
