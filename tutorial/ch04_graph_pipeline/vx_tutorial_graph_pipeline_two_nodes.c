@@ -207,7 +207,8 @@ void vx_tutorial_graph_pipeline_two_nodes()
      * - The position where input and output images are made as graph
      *   parameters. This is because for pipelining, one can only enqueue/dequeue
      *   into a graph parameter
-     * \code */
+     * \code 
+     */
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
     /* output @ n1 index 1, becomes graph parameter 1 */

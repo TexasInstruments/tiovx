@@ -221,7 +221,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
  * \brief Target kernel create function
  *
  * \param kernel [in] target kernel handle
- * \param obj_desc [in] Parameter object descriptors
+ * \param param_obj_desc [in] Parameter object descriptors
  * \param num_params [in] Number of parameter object descriptors
  * \param priv_arg [in] kernel instance priv argument
  */
@@ -236,7 +236,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbCreate(tivx_target_kernel_instance kern
  * \brief Target kernel delete function
  *
  * \param kernel [in] target kernel handle
- * \param obj_desc [in] Parameter object descriptors
+ * \param param_obj_desc [in] Parameter object descriptors
  * \param num_params [in] Number of parameter object descriptors
  * \param priv_arg [in] kernel instance priv argument
  */
@@ -251,7 +251,8 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbDelete(tivx_target_kernel_instance kern
  * \brief Target kernel control function
  *
  * \param kernel [in] target kernel handle
- * \param obj_desc [in] Parameter object descriptors
+ * \param replicated_node_idx [in] If node was replicated, index of replicant to send command to
+ * \param param_obj_desc [in] Parameter object descriptors
  * \param num_params [in] Number of parameter object descriptors
  * \param priv_arg [in] kernel instance priv argument
  */

@@ -264,15 +264,14 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
         /** \endcode */
 
         /**
-         * - Verify and excute the graph using standard OpenVX APIs
-         *
-         * Ouptut image is saved to specified output file.
+         * - Verify the graph using standard OpenVX API
          * \code
          */
         status = vxVerifyGraph(graph);
 
         show_graph_attributes(graph);
         show_node_attributes(node);
+        /** \endcode */
 
         /** export graph to dot file, which can be coverted to jpg using dot tool
          * \code
@@ -280,6 +279,12 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
         tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_user_kernel");
         /** \endcode */
 
+        /**
+         * - Excute the graph using standard OpenVX APIs
+         *
+         * Ouptut image is saved to specified output file.
+         * \code
+         */
         if(status==VX_SUCCESS)
         {
             printf(" Executing graph ...\n");

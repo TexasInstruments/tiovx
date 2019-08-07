@@ -265,8 +265,8 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
                 convert_to_gray_scale,
                 &width, &height, &stride, &df, &data_ptr,
                 &bmp_file_context);
-    /** \endcode */
     #endif
+    /** \endcode */
 
     if(status==VX_SUCCESS)
     {
