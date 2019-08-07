@@ -66,6 +66,7 @@
 #include "test_engine/test.h"
 #include <string.h>
 #include "tivx_utils_file_rd_wr.h"
+#include "tivx_utils_checksum.h"
 
 TESTCASE(tivxHwaDmpacDof, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -110,7 +111,152 @@ static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confiden
     return status;
 }
 
-TEST(tivxHwaDmpacDof, testGraphProcessing)
+typedef struct {
+    const char* testName;
+    int median_filter;
+    int motion_smoothness;
+    int vertical_range;
+    int horizontal_range;
+    int iir_filter;
+    int enable_lk;
+} Arg;
+
+static uint32_t dof_checksums_ref[3*3*3*3*2*2] = {
+    (uint32_t) 0xaec927b9, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0x2c7120b7, (uint32_t) 0x2c7120b7,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0xcb156759, (uint32_t) 0xcb156759,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x1dbdd65d, (uint32_t) 0x1dbdd65d,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x3921f938, (uint32_t) 0x3921f938,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x2129d3b3, (uint32_t) 0x2129d3b3,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7,
+    (uint32_t) 0x868f54c7, (uint32_t) 0x868f54c7
+};
+
+static uint32_t get_checksum(uint16_t median, uint16_t motion, uint16_t vert,
+    uint16_t horiz, uint16_t iir, uint16_t lk)
+{
+    uint16_t a, b, c, d, e, f;
+    a = median;
+    b = motion / 15U;
+    c = (vert - 28U) / 14U;
+    d = (horiz - 85U) / 40U;
+    e = (iir - 1U) / 127U;
+    f = lk;
+    return dof_checksums_ref[(3U * 3U * 3U * 3U * 2U * a) + (3U * 3U * 3U * 2U * b) + (3U * 3U * 2U * c) +
+        (3U * 2U * d) + (2U*e) + f];
+}
+
+#define ADD_MEDIAN_FILTER(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/median_filter=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/median_filter=ON", __VA_ARGS__, 1))
+
+#define ADD_MOTION_SMOOTHNESS_FACTOR(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=16", __VA_ARGS__, 16)), \
+    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=31", __VA_ARGS__, 31))
+
+#define ADD_VERTICAL_SEARCH_RANGE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=28", __VA_ARGS__, 28)), \
+    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=42", __VA_ARGS__, 42)), \
+    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=56", __VA_ARGS__, 56))
+
+#define ADD_HORIZONTAL_SEARCH_RANGE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=85", __VA_ARGS__, 85)), \
+    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=130", __VA_ARGS__, 130)), \
+    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=170", __VA_ARGS__, 170))
+
+#define ADD_IIR_FILTER_ALPHA(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=128", __VA_ARGS__, 128)), \
+    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=255", __VA_ARGS__, 255))
+
+#define ADD_ENABLE_LK(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=ON", __VA_ARGS__, 1))
+
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("dof_real_input", ADD_MEDIAN_FILTER, ADD_MOTION_SMOOTHNESS_FACTOR, ADD_VERTICAL_SEARCH_RANGE, ADD_HORIZONTAL_SEARCH_RANGE, ADD_IIR_FILTER_ALPHA, ADD_ENABLE_LK, ARG)
+
+
+TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
+    PARAMETERS
+)
 {
     vx_context context = context_->vx_context_;
     vx_pyramid input_current = NULL, input_reference = NULL;
@@ -123,24 +269,34 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
     vx_node node_dof = 0;
     vx_node node_dof_vis = 0;
     vx_status status;
+    vx_rectangle_t rect;
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    char output_file[256];
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
         uint32_t width = 256, height = 128;
         uint32_t levels = 2, i;
         vx_enum format = VX_DF_IMAGE_U8;
+        rect.start_x = 4;
+        rect.start_y = 4;
+        rect.end_x = width - 4;
+        rect.end_y = height - 4;
 
         tivxHwaLoadKernels(context);
 
         tivx_dmpac_dof_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.vertical_search_range[0] = 48;
-        params.vertical_search_range[1] = 48;
-        params.horizontal_search_range = 191;
-        params.median_filter_enable = 1;
-        params.motion_smoothness_factor = 24;
+        params.vertical_search_range[0] = arg_->vertical_range;
+        params.vertical_search_range[1] = arg_->vertical_range;
+        params.horizontal_search_range = arg_->horizontal_range;
+        params.median_filter_enable = arg_->median_filter;
+        params.motion_smoothness_factor = arg_->motion_smoothness;
         params.motion_direction = 1; /* 1: forward direction */
+        params.iir_filter_alpha = arg_->iir_filter;
+        params.enable_lk = arg_->enable_lk;
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -185,8 +341,15 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         }
         VX_CALL(vxProcessGraph(graph));
 
-        status = save_image_from_dof(flow_vector_out_img, confidence_img, "output/tivx_test_ofTestCase1");
+        sprintf(output_file, "output/tivx_test_ofTestCase1_%d_%d", arg_->median_filter, arg_->motion_smoothness);
+        status = save_image_from_dof(flow_vector_out_img, confidence_img, output_file);
         ASSERT(status==VX_SUCCESS);
+
+        checksum_expected = get_checksum(arg_->median_filter, arg_->motion_smoothness, arg_->vertical_range,
+            arg_->horizontal_range, arg_->iir_filter, arg_->enable_lk);
+        printf(" Expected checksum: %x\n", checksum_expected);
+        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out_img, rect);
+        printf(" Actual checksum: %x\n", checksum_actual);
 
         VX_CALL(vxReleaseNode(&node_dof));
         VX_CALL(vxReleaseNode(&node_dof_vis));

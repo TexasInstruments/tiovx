@@ -65,7 +65,7 @@
 #include <TI/j7.h>
 #include "test_engine/test.h"
 #include <string.h>
-
+#include "tivx_utils_checksum.h"
 
 TESTCASE(tivxHwaVpacNfBilateral, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -165,6 +165,69 @@ typedef struct {
     int condition;
 } ArgNegative;
 
+static uint32_t nf_bilateral_checksums_ref[7*4] = {
+    (uint32_t) 0xfba17165, (uint32_t) 0x98e85088, (uint32_t) 0xb912ec8e, (uint32_t) 0x9a9761de,
+    (uint32_t) 0xe21b1231, (uint32_t) 0xe621c619, (uint32_t) 0xfe1fd400, (uint32_t) 0xcb17ed56,
+    (uint32_t) 0xbf6d9f22, (uint32_t) 0x7ebd6360, (uint32_t) 0xa49d69ee, (uint32_t) 0xeb481747,
+    (uint32_t) 0x2f3429bb, (uint32_t) 0xfe1fd3fe, (uint32_t) 0x20c52f33, (uint32_t) 0xc38e0a76,
+    (uint32_t) 0x935d6a34, (uint32_t) 0x958e63e8, (uint32_t) 0x8b4e687b, (uint32_t) 0x7786a288,
+    (uint32_t) 0xfe1fd3fb, (uint32_t) 0x8db682d9, (uint32_t) 0x4f60252,  (uint32_t) 0xfdcbe9d5,
+    (uint32_t) 0x9e8b63d6, (uint32_t) 0x31bd5f38, (uint32_t) 0xef45f271, (uint32_t) 0xff09d3f0,
+};
+
+static uint32_t get_checksum(vx_int32 tables, vx_int32 shift)
+{
+    uint16_t a;
+    uint16_t b;
+
+    if (1 == tables)
+    {
+        a = 0U;
+    }
+    else if (2 == tables)
+    {
+        a = 1U;
+    }
+    else if (4 == tables)
+    {
+        a = 2U;
+    }
+    else
+    {
+        a = 3U;
+    }
+
+    if (0 == shift)
+    {
+        b = 0U;
+    }
+    else if (1 == shift)
+    {
+        b = 1U;
+    }
+    else if (2 == shift)
+    {
+        b = 2U;
+    }
+    else if (7 == shift)
+    {
+        b = 3U;
+    }
+    else if (-1 == shift)
+    {
+        b = 4U;
+    }
+    else if (-2 == shift)
+    {
+        b = 5U;
+    }
+    else
+    {
+        b = 6U;
+    }
+
+    return nf_bilateral_checksums_ref[(7U * a) + b];
+}
 
 #define ADD_SIGMAS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sigma_s=1.0/sigma_r=128.0", __VA_ARGS__, 1.0, 128.0))
@@ -192,7 +255,6 @@ typedef struct {
 #endif
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
 
 #define ADD_NUMTABLES_NEGATIVE(testArgName, nextmacro, ...) \
@@ -237,12 +299,19 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node = 0;
     int i;
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    vx_rectangle_t rect;
 
     CT_Image src = NULL;
     vx_border_t border = arg_->border;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
     {
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 640;
+        rect.end_y = 480;
         tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
@@ -283,6 +352,10 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
+
+        checksum_expected = get_checksum(arg_->numTables, arg_->shift);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
