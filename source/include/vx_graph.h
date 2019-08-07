@@ -91,6 +91,8 @@ typedef struct _vx_graph {
         vx_bool is_enable_send_ref_consumed_event;
         /*! Value returned with graph parameter consumed event */
         uint32_t graph_consumed_app_value;
+        /*! \brief Set to an enum value in \ref vx_type_e. */
+        vx_enum type;
     } parameters[TIVX_GRAPH_MAX_PARAMS];
     /*! \brief The number of graph parameters. */
     uint32_t      num_params;

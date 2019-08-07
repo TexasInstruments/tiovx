@@ -477,6 +477,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
+            graph->parameters[graph->num_params].type = VX_TYPE_PARAMETER;
             graph->num_params++;
             tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
             status = VX_SUCCESS;

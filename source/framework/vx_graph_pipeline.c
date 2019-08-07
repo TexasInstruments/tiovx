@@ -115,6 +115,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                     {
                         graph->parameters[i].queue_enable = vx_true_e;
                         graph->parameters[i].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
+                        graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
                         if(graph_parameters_queue_params_list[i].refs_list!=NULL)
                         {
                             uint32_t buf_id;
@@ -293,7 +294,40 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             } while(exit_loop == vx_false_e);
             if(status==VX_SUCCESS)
             {
-                refs[ref_id] = ref;
+                /* If the ref type matches the graph parameter type, return graph parameter */
+                if (ref->type == graph->parameters[graph_parameter_index].type)
+                {
+                    refs[ref_id] = ref;
+                }
+                /* If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
+                /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
+                else if(ref->type==VX_TYPE_OBJECT_ARRAY)
+                {
+                    vx_object_array obj_arr = (vx_object_array)ref;
+
+                    refs[ref_id] = obj_arr->ref[0];
+                }
+                /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
+                /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
+                else if(ref->type==VX_TYPE_PYRAMID)
+                {
+                    vx_pyramid pyr = (vx_pyramid)ref;
+
+                    refs[ref_id] = (vx_reference)pyr->img[0];
+                }
+                /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
+                else if(vx_true_e == ref->is_array_element)
+                {
+                    refs[ref_id] = ref->scope;
+                }
+
+                /* If the ref type doesn't match graph parameter type, throw an error */
+                if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "Returned reference does not match the expected reference at graph parameter %d\n", graph_parameter_index);
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
             }
             else
             {
