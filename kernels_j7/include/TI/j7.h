@@ -83,51 +83,51 @@ extern "C" {
  */
 
 /*! \brief Target name for VPAC NF
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_NF      "RESV00"
 /*! \brief Target name for VPAC LDC1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_LDC1    "RESV01"
 /*! \brief Target name for VPAC LDC2
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_LDC2    "RESV02"
 /*! \brief Target name for VPAC MSC1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_MSC1    "RESV03"
 /*! \brief Target name for VPAC MSC2
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_MSC2    "RESV04"
 /*! \brief Target name for VPAC SDE
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DMPAC_SDE    "RESV05"
 /*! \brief Target name for VPAC DOF
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DMPAC_DOF    "RESV06"
 /*! \brief Target name for VPAC VISS1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VPAC_VISS1   "RESV07"
 /*! \brief Target name for Capture
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_CAPTURE1     "RESV08"
 /*! \brief Target name for Capture
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_CAPTURE2     "RESV09"
 /*! \brief Target name for Display
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DISPLAY1     "RESV10"
 /*! \brief Target name for Display
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DISPLAY2     "RESV11"
 

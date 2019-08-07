@@ -75,9 +75,8 @@ extern "C" {
 
 /*!
  * \brief TIDL params structure
- * \ingroup group_tivx_ext
+ * \ingroup group_vision_function_tidl
  */
-
 typedef struct{
   /** Checksum placeholder for TIDL config params */
   vx_uint8 config_checksum[TIVX_TIDL_J7_CHECKSUM_SIZE];
@@ -96,6 +95,10 @@ typedef struct{
 
 }tivxTIDLJ7Params;
 
+/*!
+ * \brief TIDL params initialization
+ * \ingroup group_vision_function_tidl
+ */
 static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams)
 {
   memset(&tidlParams->config_checksum[0], 0, TIVX_TIDL_J7_CHECKSUM_SIZE);

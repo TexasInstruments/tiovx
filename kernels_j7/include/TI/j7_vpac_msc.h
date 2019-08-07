@@ -298,13 +298,13 @@ typedef struct {
 
 /*!
  * \brief Function to register HWA Kernels on the vpac_msc Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_vpac_msc
  */
 void tivxRegisterHwaTargetVpacMscKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the vpac_msc Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_vpac_msc
  */
 void tivxUnRegisterHwaTargetVpacMscKernels(void);
 

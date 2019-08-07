@@ -146,14 +146,14 @@ typedef struct {
 
 /*!
  * \brief Function to register HWA Kernels on the dmpac_sde Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_dmpac_sde
  */
 void tivxRegisterHwaTargetDmpacSdeKernels(void);
 
 
 /*!
  * \brief Function to un-register HWA Kernels on the dmpac_sde Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_dmpac_sde
  */
 void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
 

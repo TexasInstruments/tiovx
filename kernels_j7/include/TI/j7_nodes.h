@@ -74,11 +74,12 @@ extern "C" {
  *         Passed as an argument to #TIVX_DISPLAY_SELECT_CHANNEL
  *         control command.
  *
+ *  \ingroup group_vision_function_display
  */
 typedef struct
 {
+    /*! Id of the active channel to be displayed */
     uint32_t                   active_channel_id;
-    /**< Id of the active channel to be displayed */
 } tivx_display_select_channel_params_t;
 
 /*! \brief Control Command to select the channel to be displayed.
@@ -93,7 +94,7 @@ typedef struct
  *         This control command uses pointer to structure
  *         tivx_display_select_channel_params_t as an input argument.
  *
- *  \ingroup group_vision_function_vpac_msc
+ *  \ingroup group_vision_function_display
  */
 #define TIVX_DISPLAY_SELECT_CHANNEL       (0x30000000u)
 

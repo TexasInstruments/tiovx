@@ -243,15 +243,27 @@ typedef struct {
 
 /*!
  * \brief Function to register HWA Kernels on the dmpac_dof Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_dmpac_dof
  */
 void tivxRegisterHwaTargetDmpacDofKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the dmpac_dof Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_dmpac_dof
  */
 void tivxUnRegisterHwaTargetDmpacDofKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the arm Target
+ * \ingroup group_vision_function_dmpac_dof
+ */
+void tivxRegisterHwaTargetArmKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the arm Target
+ * \ingroup group_vision_function_dmpac_dof
+ */
+void tivxUnRegisterHwaTargetArmKernels(void);
 
 
 /*! \brief [Graph] Creates a DMPAC_DOF Node.

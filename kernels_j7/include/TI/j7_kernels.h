@@ -76,12 +76,12 @@ extern "C" {
  */
 
 /*! \brief Name for OpenVX Extension kernel module: hwa
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_top
  */
 #define TIVX_MODULE_NAME_HWA    "hwa"
 
 /*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_top
  */
 #define TIVX_MODULE_NAME_TIDL    "tidl"
 
@@ -113,6 +113,7 @@ extern "C" {
  *          every VSYNC. In case of one buffer, kernel needs to maintain a local
  *          copy of the buffer.
  *
+ *  \ingroup group_vision_function_display
  *  @{
  */
 /** \brief Display Kernel does not need to maintain buffer copy i.e. application
@@ -127,7 +128,7 @@ extern "C" {
 
 
 /*********************************
- *      DISPLAY STRUCTURES
+ *      CAPTURE STRUCTURES
  *********************************/
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
@@ -164,86 +165,68 @@ typedef struct {
 
 /*!
  * \brief Used for the Application to load the hwa kernels into the context.
+ * 
+ * This includes Capture, Display, VPAC, and DMPAC kernels
+ * 
  * \ingroup group_vision_function_hwa
  */
 void tivxHwaLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the hwa kernels from the context.
+ * 
+ * This includes Capture, Display, VPAC, and DMPAC kernels
+ * 
  * \ingroup group_vision_function_hwa
  */
 void tivxHwaUnLoadKernels(vx_context context);
 
 /*!
- * \brief Used for the Application to load the TIDL kernels into the context.
- * \ingroup group_vision_function_tidl
+ * \brief Used for the Application to load the tidl kernels into the context.
+ * \ingroup group_vision_function_hwa
  */
 void tivxTIDLLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_tidl
+ * \ingroup group_vision_function_hwa
  */
 void tivxTIDLUnLoadKernels(vx_context context);
 
 /*!
- * \brief Function to register HWA Kernels on the arm Target
- * \ingroup group_vision_function_hwa
- */
-void tivxRegisterHwaTargetArmKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the arm Target
- * \ingroup group_vision_function_hwa
- */
-void tivxUnRegisterHwaTargetArmKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the vpac_viss Target
- * \ingroup group_vision_function_hwa
- */
-void tivxRegisterHwaTargetVpacVissKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the vpac_viss Target
- * \ingroup group_vision_function_hwa
- */
-void tivxUnRegisterHwaTargetVpacVissKernels(void);
-
-/*!
  * \brief Function to register HWA Kernels on the display Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_display
  */
 void tivxRegisterHwaTargetDisplayKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the display Target
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_display
  */
 void tivxUnRegisterHwaTargetDisplayKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the capture Target
- * \ingroup group_tivx_ext
+ * \ingroup group_vision_function_capture
  */
 void tivxRegisterHwaTargetCaptureKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the capture Target
- * \ingroup group_tivx_ext
+ * \ingroup group_vision_function_capture
  */
 void tivxUnRegisterHwaTargetCaptureKernels(void);
 
 
 /*!
  * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_tivx_ext
+ * \ingroup group_vision_function_tidl
  */
 void tivxRegisterTIDLTargetKernels(void);
 
 /*!
  * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_tivx_ext
+ * \ingroup group_vision_function_tidl
  */
 void tivxUnRegisterTIDLTargetKernels(void);
 
