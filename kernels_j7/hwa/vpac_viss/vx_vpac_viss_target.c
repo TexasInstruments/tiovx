@@ -206,6 +206,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                  status = VX_SUCCESS;
+    int32_t                    fvid2_status = FVID2_SOK;
     uint32_t                   cnt;
     uint32_t                   out_start;
     tivxVpacVissObj           *vissObj = NULL;
@@ -434,18 +435,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             /* All Formats, frame size, module enables are set in
              * viss parameters, call this ioctl to set validate and set
              * them in the driver */
-            status = Fvid2_control(vissObj->handle,
+            fvid2_status = Fvid2_control(vissObj->handle,
                 IOCTL_VHWA_M2M_VISS_SET_PARAMS, (void *)vissDrvPrms, NULL);
 
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to set Params in driver\n");
                 status = VX_FAILURE;
-            }
-            else
-            {
-                status = VX_SUCCESS;
             }
         }
     }
@@ -651,6 +648,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                  status = VX_SUCCESS;
+    int32_t                    fvid2_status = FVID2_SOK;
     uint32_t                   cnt;
     uint32_t                   out_start;
     uint32_t                   buf_cnt;
@@ -838,9 +836,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if (VX_SUCCESS == status)
     {
         /* Submit the request to the driver */
-        status = Fvid2_processRequest(vissObj->handle, &vissObj->inFrmList,
+        fvid2_status = Fvid2_processRequest(vissObj->handle, &vissObj->inFrmList,
             &vissObj->outFrmList, FVID2_TIMEOUT_FOREVER);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissProcess: Failed to Submit Request\n");
@@ -851,17 +849,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             /* Wait for Frame Completion */
             tivxEventWait(vissObj->waitForProcessCmpl,
                 TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-            status = Fvid2_getProcessedRequest(vissObj->handle,
+            fvid2_status = Fvid2_getProcessedRequest(vissObj->handle,
                 &vissObj->inFrmList, &vissObj->outFrmList, 0);
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissProcess: Failed to Get Processed Request\n");
                 status = VX_FAILURE;
-            }
-            else
-            {
-                status = VX_SUCCESS;
             }
         }
     }

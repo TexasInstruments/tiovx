@@ -313,6 +313,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                status = VX_SUCCESS;
+    int32_t                  fvid2_status = FVID2_SOK;
     vx_uint32                cnt;
     vx_uint32                idx;
     Vhwa_M2mMscParams       *msc_prms = NULL;
@@ -469,9 +470,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
         msc_obj->num_outputs = cnt;
 
-        status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_PARAMS,
+        fvid2_status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_PARAMS,
             msc_prms, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleCreate: Fvid2_control Failed: Set Params\n");
@@ -479,8 +480,6 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         }
         else
         {
-            status = VX_SUCCESS;
-
             /* Set up Frame List */
             msc_obj->inFrmList.frames[0u] = &msc_obj->inFrm;
 
@@ -571,6 +570,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                status = VX_SUCCESS;
+    int32_t                  fvid2_status = FVID2_SOK;
     uint32_t                 size;
     uint32_t                 cnt;
     uint32_t                 plane_cnt;
@@ -669,9 +669,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         }
 
         /* Submit MSC Request*/
-        status = Fvid2_processRequest(msc_obj->handle, inFrmList,
+        fvid2_status = Fvid2_processRequest(msc_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to Submit Request\n");
@@ -684,9 +684,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         /* Wait for Frame Completion */
         tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        status = Fvid2_getProcessedRequest(msc_obj->handle,
+        fvid2_status = Fvid2_getProcessedRequest(msc_obj->handle,
             inFrmList, outFrmList, 0);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to Get Processed Request\n");
@@ -1017,6 +1017,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = VX_SUCCESS;
+    int32_t                           fvid2_status = FVID2_SOK;
     uint32_t                          cnt;
     tivx_vpac_msc_coefficients_t     *coeffs = NULL;
     void                             *target_ptr;
@@ -1068,9 +1069,9 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
 
     if (VX_SUCCESS == status)
     {
-        status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_COEFF,
+        fvid2_status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_COEFF,
             coeffCfg, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleSetCoeffsCmd: Failed to create coefficients\n");

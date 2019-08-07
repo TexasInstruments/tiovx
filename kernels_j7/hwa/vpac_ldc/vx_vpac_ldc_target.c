@@ -250,6 +250,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status              status = VX_SUCCESS;
+    int32_t                fvid2_status = FVID2_SOK;
     uint32_t               size;
     uint32_t               out_cnt;
     uint32_t               plane_cnt;
@@ -337,9 +338,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         }
 
         /* Submit LDC Request*/
-        status = Fvid2_processRequest(ldc_obj->handle, inFrmList,
+        fvid2_status = Fvid2_processRequest(ldc_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcProcess: Failed to Submit Request\n");
@@ -352,9 +353,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         /* Wait for Frame Completion */
         tivxEventWait(ldc_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        status = Fvid2_getProcessedRequest(ldc_obj->handle,
+        fvid2_status = Fvid2_getProcessedRequest(ldc_obj->handle,
             inFrmList, outFrmList, 0);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcProcess: Failed to Get Processed Request\n");
@@ -371,6 +372,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status                         status = VX_SUCCESS;
+    int32_t                           fvid2_status = FVID2_SOK;
     tivx_vpac_ldc_params_t           *ldc_prms = NULL;
     Ldc_Config                       *ldc_cfg = NULL;
     tivxVpacLdcObj                   *ldc_obj = NULL;
@@ -463,17 +465,13 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_obj->errEvtPrms.cbFxn     = tivxVpacLdcErrorCb;
         ldc_obj->errEvtPrms.appData   = ldc_obj;
 
-        status = Fvid2_control(ldc_obj->handle,
+        fvid2_status = Fvid2_control(ldc_obj->handle,
             IOCTL_VHWA_M2M_LDC_REGISTER_ERR_CB, &ldc_obj->errEvtPrms, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcCreate: Fvid2_control Failed: Register Error Callback\n");
             status = VX_FAILURE;
-        }
-        else
-        {
-            status = VX_SUCCESS;
         }
     }
 
@@ -543,18 +541,15 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         tivxVpacLdcSetAffineConfig(&ldc_cfg->perspTrnsformCfg,
             warp_matrix_desc);
 
-        status = Fvid2_control(ldc_obj->handle,
+        fvid2_status = Fvid2_control(ldc_obj->handle,
             IOCTL_VHWA_M2M_LDC_SET_PARAMS, &ldc_obj->ldc_cfg, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcCreate: Fvid2_control Failed: Set Params \n");
             status = VX_FAILURE;
         }
-        else
-        {
-            status = VX_SUCCESS;
-        }
+
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }

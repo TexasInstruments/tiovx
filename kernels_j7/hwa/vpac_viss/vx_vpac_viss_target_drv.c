@@ -126,7 +126,8 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj)
 static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    int32_t             status = FVID2_SOK;
+    vx_status           status = VX_SUCCESS;
+    int32_t             fvid2_status = FVID2_SOK;
     Rfe_Control         rfeCtrl;
 
     if (NULL != vissCfgRef->lPwlCfg)
@@ -134,9 +135,9 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         /* PWL for Long Input */
         rfeCtrl.module  = RFE_MODULE_PWL1;
         rfeCtrl.pwl1Cfg = vissCfgRef->lPwlCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL1 Config !!!\n");
@@ -146,14 +147,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->lPwlCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->sPwlCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->sPwlCfg) && (FVID2_SOK == fvid2_status))
     {
         /* PWL for Short Input */
         rfeCtrl.module  = RFE_MODULE_PWL2;
         rfeCtrl.pwl2Cfg = vissCfgRef->sPwlCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL2 Config !!!\n");
@@ -163,14 +164,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->sPwlCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->vsPwlCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->vsPwlCfg) && (FVID2_SOK == fvid2_status))
     {
         /* PWL for Very Short Input */
         rfeCtrl.module  = RFE_MODULE_PWL3;
         rfeCtrl.pwl3Cfg = vissCfgRef->vsPwlCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL3 Config !!!\n");
@@ -179,14 +180,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->vsPwlCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->lLutCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->lLutCfg) && (FVID2_SOK == fvid2_status))
     {
         /* PWL Lut for Long Input */
         rfeCtrl.module          = RFE_MODULE_DECOMP_LUT1;
         rfeCtrl.decomp1Cfg      = vissCfgRef->lLutCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL1_LUT Config !!!\n");
@@ -195,14 +196,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->lLutCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->sLutCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->sLutCfg) && (FVID2_SOK == fvid2_status))
     {
         /* PWL Lut for Short Input */
         rfeCtrl.module          = RFE_MODULE_DECOMP_LUT2;
         rfeCtrl.decomp2Cfg      = vissCfgRef->sLutCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL2_LUT Config !!!\n");
@@ -211,14 +212,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->sLutCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->vsLutCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->vsLutCfg) && (FVID2_SOK == fvid2_status))
     {
         /* PWL Lut for Very Short Input */
         rfeCtrl.module          = RFE_MODULE_DECOMP_LUT3;
         rfeCtrl.decomp3Cfg      = vissCfgRef->vsLutCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set PWL3_LUT Config !!!\n");
@@ -227,14 +228,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->vsLutCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->wdr1Cfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->wdr1Cfg) && (FVID2_SOK == fvid2_status))
     {
         /* WDR Merge 1 block configuration */
         rfeCtrl.module       = RFE_MODULE_WDR_MERGE_MA1;
         rfeCtrl.wdrMergeMa1  = vissCfgRef->wdr1Cfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set WDR_MERGE1 Config !!!\n");
@@ -243,13 +244,13 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->wdr1Cfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->wdr2Cfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->wdr2Cfg) && (FVID2_SOK == fvid2_status))
     {
         rfeCtrl.module       = RFE_MODULE_WDR_MERGE_MA2;
         rfeCtrl.wdrMergeMa2  = vissCfgRef->wdr2Cfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set WDR_MERGE2 Config !!!\n");
@@ -258,14 +259,14 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->wdr2Cfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->comp20To16LutCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->comp20To16LutCfg) && (FVID2_SOK == fvid2_status))
     {
         /* Set Companding Lut to convert from 20 to 16bits */
         rfeCtrl.module       = RFE_MODULE_COMP_LUT;
         rfeCtrl.compCfg      = vissCfgRef->comp20To16LutCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set COMP_LUT Config !!!\n");
@@ -274,13 +275,13 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->comp20To16LutCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->dpcOtf) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->dpcOtf) && (FVID2_SOK == fvid2_status))
     {
         rfeCtrl.module       = RFE_MODULE_DPC_OTF;
         rfeCtrl.dpcOtfCfg    = vissCfgRef->dpcOtf;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set DPC_OTF Config !!!\n");
@@ -289,13 +290,13 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->dpcOtf = NULL;
     }
 
-    if ((NULL != vissCfgRef->dpcLut) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->dpcLut) && (FVID2_SOK == fvid2_status))
     {
         rfeCtrl.module       = RFE_MODULE_DPC_LUT;
         rfeCtrl.dpcLutCfg    = vissCfgRef->dpcLut;
         status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set DPC_LUT Config !!!\n");
@@ -304,13 +305,13 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->dpcLut = NULL;
     }
 
-    if ((NULL != vissCfgRef->lscCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->lscCfg) && (FVID2_SOK == fvid2_status))
     {
         rfeCtrl.module      = RFE_MODULE_LSC;
         rfeCtrl.lscConfig   = vissCfgRef->lscCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set LSC Config !!!\n");
@@ -319,13 +320,13 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->lscCfg = NULL;
     }
 
-    if ((NULL != vissCfgRef->wbCfg) && (FVID2_SOK == status))
+    if ((NULL != vissCfgRef->wbCfg) && (FVID2_SOK == fvid2_status))
     {
         rfeCtrl.module       = RFE_MODULE_GAIN_OFST;
         rfeCtrl.wbConfig     = vissCfgRef->wbCfg;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set WhiteBalance Config !!!\n");
@@ -340,9 +341,9 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         rfeCtrl.module   = RFE_MODULE_H3A;
         rfeCtrl.h3aInCfg = vissCfgRef->rfeH3aInCfg;
 
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set H3A Input Config !!!\n");
@@ -357,9 +358,9 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         rfeCtrl.module   = RFE_MODULE_H3A_LUT;
         rfeCtrl.h3aLutCfg = vissCfgRef->h3aLutCfg;
 
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set H3A Input Config !!!\n");
@@ -370,9 +371,9 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
 
     if (NULL != vissCfgRef->h3aCfg)
     {
-        status = Fvid2_control(vissObj->handle, IOCTL_H3A_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_H3A_SET_CONFIG,
             (void *)vissCfgRef->h3aCfg, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetRfeConfig: Failed to set H3A Config !!!\n");
@@ -386,7 +387,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     }
 
     /* Convert FVID2 status to OpenVX Status */
-    if (FVID2_SOK != status)
+    if (FVID2_SOK != fvid2_status)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
@@ -401,7 +402,8 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    int32_t             status = FVID2_SOK;
+    vx_status           status = VX_SUCCESS;
+    int32_t             fvid2_status = FVID2_SOK;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
     Glbce_Control       glbceCtrl;
 
@@ -414,9 +416,9 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
         {
             glbceCtrl.module = GLBCE_MODULE_GLBCE;
             glbceCtrl.glbceCfg = vissCfgRef->glbceCfg;
-            status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
+            fvid2_status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
                 (void *)&glbceCtrl, NULL);
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissSetGlbceConfig: Failed to set GLBCE Config !!!\n");
@@ -429,9 +431,9 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
         {
             glbceCtrl.module = GLBCE_MODULE_FWD_PERCEPT;
             glbceCtrl.fwdPrcptCfg = vissCfgRef->fwdPrcpCfg;
-            status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
+            fvid2_status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
                 (void *)&glbceCtrl, NULL);
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissSetGlbceConfig: Failed to set GLBCE_FWD_PERCEPT Config !!!\n");
@@ -444,9 +446,9 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
         {
             glbceCtrl.module = GLBCE_MODULE_REV_PERCEPT;
             glbceCtrl.revPrcptCfg = vissCfgRef->revPrcpCfg;
-            status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
+            fvid2_status = Fvid2_control(vissObj->handle, IOCTL_GLBCE_SET_CONFIG,
                 (void *)&glbceCtrl, NULL);
-            if (FVID2_SOK != status)
+            if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissSetGlbceConfig: Failed to set GLBCE_REV_PERCEPT Config !!!\n");
@@ -457,7 +459,7 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
     }
 
     /* Convert FVID2 status to OpenVX Status */
-    if (FVID2_SOK != status)
+    if (FVID2_SOK != fvid2_status)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
@@ -472,7 +474,8 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    int32_t             status = FVID2_SOK;
+    vx_status           status = VX_SUCCESS;
+    int32_t             fvid2_status = FVID2_SOK;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
 
     vissDrvPrms = &vissObj->vissPrms;
@@ -480,9 +483,9 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     if (((uint32_t)TRUE == vissDrvPrms->enableNsf4) &&
         (NULL != vissCfgRef->nsf4Cfg))
     {
-        status = Fvid2_control(vissObj->handle, IOCTL_NSF4_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_NSF4_SET_CONFIG,
             (void *)vissCfgRef->nsf4Cfg, NULL);
-        if (FVID2_SOK != status)
+        if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetNsf4Config: Failed to set NFS4 Config !!!\n");
@@ -492,7 +495,7 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     }
 
     /* Convert FVID2 status to OpenVX Status */
-    if (FVID2_SOK != status)
+    if (FVID2_SOK != fvid2_status)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
