@@ -63,7 +63,7 @@ from enum import Enum
 from . import *
 
 
-## Object/Data type (OpenVX equivalent = vx_type_e)
+## Object/Data type (OpenVX equivalent = \ref vx_type_e)
 #
 # \par Example usage:
 # \code
@@ -73,91 +73,91 @@ from . import *
 # \ingroup ENUMS
 #
 class Type(Enum):
-    ## OpenVX equivalent = VX_TYPE_INVALID
+    ## OpenVX equivalent = \ref VX_TYPE_INVALID
     INVALID = 1
-    ## OpenVX equivalent = VX_TYPE_CHAR
+    ## OpenVX equivalent = \ref VX_TYPE_CHAR
     CHAR    = 2
-    ## OpenVX equivalent = VX_TYPE_INT8
+    ## OpenVX equivalent = \ref VX_TYPE_INT8
     INT8    = 3
-    ## OpenVX equivalent = VX_TYPE_UINT8
+    ## OpenVX equivalent = \ref VX_TYPE_UINT8
     UINT8   = 4
-    ## OpenVX equivalent = VX_TYPE_INT16
+    ## OpenVX equivalent = \ref VX_TYPE_INT16
     INT16   = 5
-    ## OpenVX equivalent = VX_TYPE_UINT16
+    ## OpenVX equivalent = \ref VX_TYPE_UINT16
     UINT16  = 6
-    ## OpenVX equivalent = VX_TYPE_INT32
+    ## OpenVX equivalent = \ref VX_TYPE_INT32
     INT32   = 7
-    ## OpenVX equivalent = VX_TYPE_UINT32
+    ## OpenVX equivalent = \ref VX_TYPE_UINT32
     UINT32  = 8
-    ## OpenVX equivalent = VX_TYPE_INT64
+    ## OpenVX equivalent = \ref VX_TYPE_INT64
     INT64   = 9
-    ## OpenVX equivalent = VX_TYPE_UINT64
+    ## OpenVX equivalent = \ref VX_TYPE_UINT64
     UINT64  = 10
-    ## OpenVX equivalent = VX_TYPE_FLOAT32
+    ## OpenVX equivalent = \ref VX_TYPE_FLOAT32
     FLOAT32 = 11
-    ## OpenVX equivalent = VX_TYPE_FLOAT64
+    ## OpenVX equivalent = \ref VX_TYPE_FLOAT64
     FLOAT64 = 12
-    ## OpenVX equivalent = VX_TYPE_ENUM
+    ## OpenVX equivalent = \ref VX_TYPE_ENUM
     ENUM    = 13
-    ## OpenVX equivalent = VX_TYPE_SIZE
+    ## OpenVX equivalent = \ref VX_TYPE_SIZE
     SIZE    = 14
-    ## OpenVX equivalent = VX_TYPE_DF_IMAGE
+    ## OpenVX equivalent = \ref VX_TYPE_DF_IMAGE
     DF_IMAGE= 15
-    ## OpenVX equivalent = VX_TYPE_BOOL
+    ## OpenVX equivalent = \ref VX_TYPE_BOOL
     BOOL    = 16
-    ## OpenVX equivalent = VX_TYPE_REFERENCE
+    ## OpenVX equivalent = \ref VX_TYPE_REFERENCE
     REFERENCE    = 17
-    ## OpenVX equivalent = VX_TYPE_CONTEXT
+    ## OpenVX equivalent = \ref VX_TYPE_CONTEXT
     CONTEXT      = 18
-    ## OpenVX equivalent = VX_TYPE_GRAPH
+    ## OpenVX equivalent = \ref VX_TYPE_GRAPH
     GRAPH        = 19
-    ## OpenVX equivalent = VX_TYPE_NODE
+    ## OpenVX equivalent = \ref VX_TYPE_NODE
     NODE         = 20
-    ## OpenVX equivalent = VX_TYPE_KERNEL
+    ## OpenVX equivalent = \ref VX_TYPE_KERNEL
     KERNEL       = 21
-    ## OpenVX equivalent = VX_TYPE_PARAMETER
+    ## OpenVX equivalent = \ref VX_TYPE_PARAMETER
     PARAMETER    = 22
-    ## OpenVX equivalent = VX_TYPE_DELAY
+    ## OpenVX equivalent = \ref VX_TYPE_DELAY
     DELAY        = 23
-    ## OpenVX equivalent = VX_TYPE_LUT
+    ## OpenVX equivalent = \ref VX_TYPE_LUT
     LUT          = 24
-    ## OpenVX equivalent = VX_TYPE_DISTRIBUTION
+    ## OpenVX equivalent = \ref VX_TYPE_DISTRIBUTION
     DISTRIBUTION = 25
-    ## OpenVX equivalent = VX_TYPE_PYRAMID
+    ## OpenVX equivalent = \ref VX_TYPE_PYRAMID
     PYRAMID      = 26
-    ## OpenVX equivalent = VX_TYPE_THRESHOLD
+    ## OpenVX equivalent = \ref VX_TYPE_THRESHOLD
     THRESHOLD    = 27
-    ## OpenVX equivalent = VX_TYPE_MATRIX
+    ## OpenVX equivalent = \ref VX_TYPE_MATRIX
     MATRIX       = 28
-    ## OpenVX equivalent = VX_TYPE_CONVOLUTION
+    ## OpenVX equivalent = \ref VX_TYPE_CONVOLUTION
     CONVOLUTION  = 29
-    ## OpenVX equivalent = VX_TYPE_SCALAR
+    ## OpenVX equivalent = \ref VX_TYPE_SCALAR
     SCALAR       = 30
-    ## OpenVX equivalent = VX_TYPE_ARRAY
+    ## OpenVX equivalent = \ref VX_TYPE_ARRAY
     ARRAY        = 31
-    ## OpenVX equivalent = VX_TYPE_IMAGE
+    ## OpenVX equivalent = \ref VX_TYPE_IMAGE
     IMAGE        = 32
-    ## OpenVX equivalent = VX_TYPE_REMAP
+    ## OpenVX equivalent = \ref VX_TYPE_REMAP
     REMAP        = 33
-    ## OpenVX equivalent = VX_TYPE_ERROR
+    ## OpenVX equivalent = \ref VX_TYPE_ERROR
     ERROR        = 34
-    ## OpenVX equivalent = VX_TYPE_META_FORMAT
+    ## OpenVX equivalent = \ref VX_TYPE_META_FORMAT
     META_FORMAT  = 35
-    ## OpenVX equivalent = VX_TYPE_OBJECT_ARRAY
+    ## OpenVX equivalent = \ref VX_TYPE_OBJECT_ARRAY
     OBJECT_ARRAY = 36
-    ## OpenVX equivalent = VX_TYPE_RECTANGLE
+    ## OpenVX equivalent = \ref VX_TYPE_RECTANGLE
     RECTANGLE     = 37
-    ## OpenVX equivalent = VX_TYPE_KEYPOINT
+    ## OpenVX equivalent = \ref VX_TYPE_KEYPOINT
     KEYPOINT     = 38
-    ## OpenVX equivalent = VX_TYPE_COORDINATES2D
+    ## OpenVX equivalent = \ref VX_TYPE_COORDINATES2D
     COORDINATES2D = 39
-    ## OpenVX equivalent = VX_TYPE_COORDINATES3D
+    ## OpenVX equivalent = \ref VX_TYPE_COORDINATES3D
     COORDINATES3D = 40
-    ## OpenVX equivalent = VX_TYPE_USER_DATA_OBJECT
+    ## OpenVX equivalent = \ref VX_TYPE_USER_DATA_OBJECT
     USER_DATA_OBJECT = 41
-    ## OpenVX equivalent = TIVX_TYPE_RAW_IMAGE
+    ## OpenVX equivalent = \ref TIVX_TYPE_RAW_IMAGE
     RAW_IMAGE = 42
-    ## OpenVX equivalent = VX_TYPE_TENSOR
+    ## OpenVX equivalent = \ref VX_TYPE_TENSOR
     TENSOR = 43
     ## Used when optional parameters
     NULL = 44
@@ -251,7 +251,7 @@ class Type(Enum):
             return "invalid"
         return "invalid"
 
-## Image data format (OpenVX equivalent = vx_df_image)
+## Image data format (OpenVX equivalent = \ref vx_df_image_e)
 #
 # \par Example usage:
 # \code
@@ -263,37 +263,37 @@ class Type(Enum):
 class DfImage(Enum) :
     ## Place holder for invalid data format
     INVALID = 0
-    ## OpenVX equivalent = VX_DF_IMAGE_VIRT
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_VIRT
     VIRT = 1
-    ## OpenVX equivalent = VX_DF_IMAGE_RGB
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_RGB
     RGB  = 2
-    ## OpenVX equivalent = VX_DF_IMAGE_RGBX
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_RGBX
     RGBX = 3
-    ## OpenVX equivalent = VX_DF_IMAGE_NV12
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_NV12
     NV12 = 4
-    ## OpenVX equivalent = VX_DF_IMAGE_NV21
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_NV21
     NV21 = 5
-    ## OpenVX equivalent = VX_DF_IMAGE_UYVY
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_UYVY
     UYVY = 6
-    ## OpenVX equivalent = VX_DF_IMAGE_YUYV
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_YUYV
     YUYV = 7
-    ## OpenVX equivalent = VX_DF_IMAGE_IYUV
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_IYUV
     IYUV = 8
-    ## OpenVX equivalent = VX_DF_IMAGE_YUV4
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_YUV4
     YUV4 = 9
-    ## OpenVX equivalent = VX_DF_IMAGE_U8
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_U8
     U8   = 10
-    ## OpenVX equivalent = VX_DF_IMAGE_U16
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_U16
     U16  = 11
-    ## OpenVX equivalent = VX_DF_IMAGE_S16
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_S16
     S16  = 12
-    ## OpenVX equivalent = VX_DF_IMAGE_U32
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_U32
     U32  = 13
-    ## OpenVX equivalent = VX_DF_IMAGE_S32
+    ## OpenVX equivalent = \ref VX_DF_IMAGE_S32
     S32  = 14
-    ## OpenVX equivalent = TIVX_DF_IMAGE_P12
+    ## OpenVX equivalent = \ref TIVX_DF_IMAGE_P12
     P12  = 15
-    ## OpenVX equivalent = TIVX_DF_IMAGE_NV12_P12
+    ## OpenVX equivalent = \ref TIVX_DF_IMAGE_NV12_P12
     NV12_P12  = 16
 
     def get_vx_enum_name(df_format) :
@@ -327,7 +327,7 @@ class DfImage(Enum) :
             return 3
         return 1
 
-## Image channel (OpenVX equivalent = vx_channel_e)
+## Image channel (OpenVX equivalent = \ref vx_channel_e)
 #
 # \par Example usage:
 # \code
@@ -337,27 +337,27 @@ class DfImage(Enum) :
 # \ingroup ENUMS
 #
 class Channel(Enum) :
-    ## OpenVX equivalent = VX_CHANNEL_0
+    ## OpenVX equivalent = \ref VX_CHANNEL_0
     C0 = 1
-    ## OpenVX equivalent = VX_CHANNEL_1
+    ## OpenVX equivalent = \ref VX_CHANNEL_1
     C1 = 2
-    ## OpenVX equivalent = VX_CHANNEL_2
+    ## OpenVX equivalent = \ref VX_CHANNEL_2
     C2 = 3
-    ## OpenVX equivalent = VX_CHANNEL_3
+    ## OpenVX equivalent = \ref VX_CHANNEL_3
     C3 = 4
-    ## OpenVX equivalent = VX_CHANNEL_R
+    ## OpenVX equivalent = \ref VX_CHANNEL_R
     R  = 5
-    ## OpenVX equivalent = VX_CHANNEL_G
+    ## OpenVX equivalent = \ref VX_CHANNEL_G
     G  = 6
-    ## OpenVX equivalent = VX_CHANNEL_B
+    ## OpenVX equivalent = \ref VX_CHANNEL_B
     B  = 7
-    ## OpenVX equivalent = VX_CHANNEL_A
+    ## OpenVX equivalent = \ref VX_CHANNEL_A
     A  = 8
-    ## OpenVX equivalent = VX_CHANNEL_Y
+    ## OpenVX equivalent = \ref VX_CHANNEL_Y
     Y  = 9
-    ## OpenVX equivalent = VX_CHANNEL_U
+    ## OpenVX equivalent = \ref VX_CHANNEL_U
     U  = 10
-    ## OpenVX equivalent = VX_CHANNEL_V
+    ## OpenVX equivalent = \ref VX_CHANNEL_V
     V  = 11
 
     def get_vx_enum_name(type) :
@@ -408,25 +408,25 @@ class Cpu(Enum) :
 class Target(Enum) :
     ## Placeholder for invalid target ID
     INVALID = 1
-    ## TIOVX equivalent = TIVX_TARGET_DSP1
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP1
     DSP1    = 2
-    ## TIOVX equivalent = TIVX_TARGET_DSP2
+    ## TIOVX equivalent = \ref TIVX_TARGET_DSP2
     DSP2    = 3
-    ## TIOVX equivalent = TIVX_TARGET_EVE1
+    ## TIOVX equivalent = \ref TIVX_TARGET_EVE1
     EVE1    = 4
-    ## TIOVX equivalent = TIVX_TARGET_EVE2
+    ## TIOVX equivalent = \ref TIVX_TARGET_EVE2
     EVE2    = 5
-    ## TIOVX equivalent = TIVX_TARGET_EVE3
+    ## TIOVX equivalent = \ref TIVX_TARGET_EVE3
     EVE3    = 6
-    ## TIOVX equivalent = TIVX_TARGET_EVE4
+    ## TIOVX equivalent = \ref TIVX_TARGET_EVE4
     EVE4    = 7
-    ## TIOVX equivalent = TIVX_TARGET_A15_0
+    ## TIOVX equivalent = \ref TIVX_TARGET_A15_0
     A15_0   = 8
-    ## TIOVX equivalent = TIVX_TARGET_IPU1_0
+    ## TIOVX equivalent = \ref TIVX_TARGET_IPU1_0
     IPU1_0  = 9
-    ## TIOVX equivalent = TIVX_TARGET_IPU1_1
+    ## TIOVX equivalent = \ref TIVX_TARGET_IPU1_1
     IPU1_1  = 10
-    ## TIOVX equivalent = TIVX_TARGET_IPU2
+    ## TIOVX equivalent = \ref TIVX_TARGET_IPU2
     IPU2    = 11
     ## Used internally by the tool
     DEFAULT = DSP1
@@ -506,7 +506,7 @@ class Target(Enum) :
 
         return Cpu.INVALID
 
-## Conversion Policy (OpenVX equivalent = vx_convert_policy_e)
+## Conversion Policy (OpenVX equivalent = \ref vx_convert_policy_e)
 #
 # \par Example usage:
 # \code
@@ -516,9 +516,9 @@ class Target(Enum) :
 # \ingroup ENUMS
 #
 class Policy(Enum) :
-    ## OpenVX equivalent = VX_CONVERT_POLICY_WRAP
+    ## OpenVX equivalent = \ref VX_CONVERT_POLICY_WRAP
     WRAP      = 1
-    ## OpenVX equivalent = VX_CONVERT_POLICY_SATURATE
+    ## OpenVX equivalent = \ref VX_CONVERT_POLICY_SATURATE
     SATURATE  = 2
 
     def get_vx_enum_name(type) :
@@ -527,7 +527,7 @@ class Policy(Enum) :
     def get_vx_name(type) :
         return "vx_convert_policy_e"
 
-## Round Policy (OpenVX equivalent = vx_round_policy_e)
+## Round Policy (OpenVX equivalent = \ref vx_round_policy_e)
 #
 # \par Example usage:
 # \code
@@ -537,9 +537,9 @@ class Policy(Enum) :
 # \ingroup ENUMS
 #
 class Round(Enum) :
-    ## OpenVX equivalent = VX_ROUND_POLICY_TO_ZERO
+    ## OpenVX equivalent = \ref VX_ROUND_POLICY_TO_ZERO
     TO_ZERO          = 1
-    ## OpenVX equivalent = VX_ROUND_POLICY_TO_NEAREST_EVEN
+    ## OpenVX equivalent = \ref VX_ROUND_POLICY_TO_NEAREST_EVEN
     TO_NEAREST_EVEN  = 2
 
     def get_vx_enum_name(type) :
@@ -548,7 +548,7 @@ class Round(Enum) :
     def get_vx_name(type) :
         return "vx_round_policy_e"
 
-## Non linear filter type (OpenVX equivalent = vx_non_linear_filter_e)
+## Non linear filter type (OpenVX equivalent = \ref vx_non_linear_filter_e)
 #
 # \par Example usage:
 # \code
@@ -558,11 +558,11 @@ class Round(Enum) :
 # \ingroup ENUMS
 #
 class NonLinearFilter(Enum) :
-    ## OpenVX equivalent = VX_NON_LINEAR_FILTER_MEDIAN
+    ## OpenVX equivalent = \ref VX_NONLINEAR_FILTER_MEDIAN
     MEDIAN   = 1
-    ## OpenVX equivalent = VX_NON_LINEAR_FILTER_MIN
+    ## OpenVX equivalent = \ref VX_NONLINEAR_FILTER_MIN
     MIN      = 2
-    ## OpenVX equivalent = VX_NON_LINEAR_FILTER_MAX
+    ## OpenVX equivalent = \ref VX_NONLINEAR_FILTER_MAX
     MAX      = 3
 
     def get_vx_enum_name(type) :
@@ -571,7 +571,7 @@ class NonLinearFilter(Enum) :
     def get_vx_name(type) :
         return "vx_non_linear_filter_e"
 
-## Matrix Patterns (OpenVX equivalent = vx_pattern_e)
+## Matrix Patterns (OpenVX equivalent = \ref vx_pattern_e)
 #
 # \par Example usage:
 # \code
@@ -581,13 +581,13 @@ class NonLinearFilter(Enum) :
 # \ingroup ENUMS
 #
 class Pattern(Enum) :
-    ## OpenVX equivalent = VX_PATTERN_BOX
+    ## OpenVX equivalent = \ref VX_PATTERN_BOX
     BOX      = 1
-    ## OpenVX equivalent = VX_PATTERN_CROSS
+    ## OpenVX equivalent = \ref VX_PATTERN_CROSS
     CROSS    = 2
-    ## OpenVX equivalent = VX_PATTERN_DISK
+    ## OpenVX equivalent = \ref VX_PATTERN_DISK
     DISK     = 3
-    ## OpenVX equivalent = VX_PATTERN_OTHER
+    ## OpenVX equivalent = \ref VX_PATTERN_OTHER
     OTHER    = 4
 
     def get_vx_enum_name(type) :
@@ -596,7 +596,7 @@ class Pattern(Enum) :
     def get_vx_name(type) :
         return "vx_pattern_e"
 
-## Interpolation type (OpenVX equivalent = vx_interpolation_type_e)
+## Interpolation type (OpenVX equivalent = \ref vx_interpolation_type_e)
 #
 # \par Example usage:
 # \code
@@ -606,11 +606,11 @@ class Pattern(Enum) :
 # \ingroup ENUMS
 #
 class InterpolationType(Enum) :
-    ## OpenVX equivalent = VX_INTERPOLLATION_TYPE_NEAREST_NEIGHBOR
+    ## OpenVX equivalent = \ref VX_INTERPOLATION_NEAREST_NEIGHBOR
     NEAREST_NEIGHBOR    = 1
-    ## OpenVX equivalent = VX_INTERPOLLATION_TYPE_BILINEAR
+    ## OpenVX equivalent = \ref VX_INTERPOLATION_BILINEAR
     BILINEAR            = 2
-    ## OpenVX equivalent = VX_INTERPOLLATION_TYPE_AREA
+    ## OpenVX equivalent = \ref VX_INTERPOLATION_AREA
     AREA                = 3
 
     def get_vx_enum_name(type) :
@@ -619,7 +619,7 @@ class InterpolationType(Enum) :
     def get_vx_name(type) :
         return "vx_interpolation_type_e"
 
-## Boolean type (OpenVX equivalent = vx_bool)
+## Boolean type (OpenVX equivalent = \ref vx_bool)
 #
 # \par Example usage:
 # \code
@@ -629,9 +629,9 @@ class InterpolationType(Enum) :
 # \ingroup ENUMS
 #
 class Bool(Enum) :
-    ## OpenVX equivalent = vx_false_e
+    ## OpenVX equivalent = \ref vx_false_e
     FALSE           = 0
-    ## OpenVX equivalent = vx_true_e
+    ## OpenVX equivalent = \ref vx_true_e
     TRUE            = 1
 
     def get_vx_enum_name(type) :
@@ -640,7 +640,7 @@ class Bool(Enum) :
     def get_vx_name(type) :
         return "vx_bool"
 
-## Normalization type (OpenVX equivalent = vx_norm_type_e)
+## Normalization type (OpenVX equivalent = \ref vx_norm_type_e)
 #
 # \par Example usage:
 # \code
@@ -650,9 +650,9 @@ class Bool(Enum) :
 # \ingroup ENUMS
 #
 class Norm(Enum):
-    ## OpenVX equivalent = VX_NORM_L1
+    ## OpenVX equivalent = \ref VX_NORM_L1
     L1 = 1
-    ## OpenVX equivalent = VX_NORM_L2
+    ## OpenVX equivalent = \ref VX_NORM_L2
     L2 = 2
 
     def get_vx_enum_name(type) :
@@ -661,7 +661,7 @@ class Norm(Enum):
     def get_vx_name(type) :
         return "vx_norm_e"
 
-## Parameter direction (OpenVX equivalent = vx_direction_e)
+## Parameter direction (OpenVX equivalent = \ref vx_direction_e)
 #
 # \par Example usage:
 # \code
@@ -671,11 +671,11 @@ class Norm(Enum):
 # \ingroup ENUMS
 #
 class Direction(Enum):
-    ## OpenVX equivalent = VX_INPUT
+    ## OpenVX equivalent = \ref VX_INPUT
     INPUT = 1
-    ## OpenVX equivalent = VX_OUTPUT
+    ## OpenVX equivalent = \ref VX_OUTPUT
     OUTPUT = 2
-    ## OpenVX equivalent = VX_BIDIRECTIONAL
+    ## OpenVX equivalent = \ref VX_BIDIRECTIONAL
     BIDIRECTIONAL = 3
 
     def get_vx_enum_name(type) :
@@ -703,7 +703,7 @@ class Direction(Enum):
         return "INVALID"
 
 
-## Parameter state (OpenVX equivalent = vx_parameter_state_e)
+## Parameter state (OpenVX equivalent = \ref vx_parameter_state_e)
 #
 # \par Example usage:
 # \code
@@ -713,9 +713,9 @@ class Direction(Enum):
 # \ingroup ENUMS
 #
 class ParamState(Enum):
-    ## OpenVX equivalent = VX_PARAMETER_STATE_REQUIRED
+    ## OpenVX equivalent = \ref VX_PARAMETER_STATE_REQUIRED
     REQUIRED = 1
-    ## OpenVX equivalent = VX_PARAMETER_STATE_OPTIONAL
+    ## OpenVX equivalent = \ref VX_PARAMETER_STATE_OPTIONAL
     OPTIONAL = 2
 
     def get_vx_enum_name(type) :
@@ -734,15 +734,15 @@ class ParamState(Enum):
 # \ingroup ENUMS
 #
 class PyramidScale(Enum):
-    ## OpenVX equivalent = VX_SCALE_PYRAMID_HALF
+    ## OpenVX equivalent = \ref VX_SCALE_PYRAMID_HALF
     HALF = 1
-    ## OpenVX equivalent = VX_SCALE_PYRAMID_ORB
+    ## OpenVX equivalent = \ref VX_SCALE_PYRAMID_ORB
     ORB = 2
 
     def get_vx_enum_name(type) :
         return "VX_SCALE_PYRAMID_" + type.name
 
-## Threshold Type (OpenVX equivalent = vx_threshold_type_e)
+## Threshold Type (OpenVX equivalent = \ref vx_threshold_type_e)
 #
 # \par Example usage:
 # \code
@@ -752,9 +752,9 @@ class PyramidScale(Enum):
 # \ingroup ENUMS
 #
 class ThresholdType(Enum):
-    ## OpenVX equivalent = VX_THRESHOLD_TYPE_BINARY
+    ## OpenVX equivalent = \ref VX_THRESHOLD_TYPE_BINARY
     BINARY = 1
-    ## OpenVX equivalent = VX_THRESHOLD_TYPE_RANGE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_TYPE_RANGE
     RANGE = 2
 
     def get_vx_enum_name(type) :
@@ -763,7 +763,7 @@ class ThresholdType(Enum):
     def get_vx_name(type) :
         return "vx_threshold_type_e"
 
-## Termination Criteria (OpenVX equivalent = vx_termination_criteria_e)
+## Termination Criteria (OpenVX equivalent = \ref vx_termination_criteria_e)
 #
 # \par Example usage:
 # \code
@@ -774,11 +774,11 @@ class ThresholdType(Enum):
 # \ingroup ENUMS
 #
 class TermCriteria(Enum):
-    ## OpenVX equivalent = VX_TERM_CRITERIA_ITERATIONS
+    ## OpenVX equivalent = \ref VX_TERM_CRITERIA_ITERATIONS
     ITERATIONS = 1
-    ## OpenVX equivalent = VX_TERM_CRITERIA_EPSILON
+    ## OpenVX equivalent = \ref VX_TERM_CRITERIA_EPSILON
     EPSILON = 2
-    ## OpenVX equivalent = VX_TERM_CRITERIA_BOTH
+    ## OpenVX equivalent = \ref VX_TERM_CRITERIA_BOTH
     BOTH = 3
 
     def get_vx_enum_name(type) :

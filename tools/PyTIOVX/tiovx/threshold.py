@@ -61,7 +61,7 @@
 
 from . import *
 
-## Threshold object (OpenVX equivalent = vx_threshold)
+## Threshold object (OpenVX equivalent = \ref vx_threshold)
 #
 # \par Example Usage: Create a Threshold object
 #
@@ -76,7 +76,7 @@ from . import *
 class Threshold (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateThreshold for more details about the parameters
+    # \see vxCreateThreshold for more details about the parameters
     #
     # \param thr_type [in] Type of threshold. tiovx::enums::ThresholdType
     # \param data_type [in] Data type of threshold value. tiovx::enums::Type

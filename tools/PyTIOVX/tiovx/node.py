@@ -61,7 +61,7 @@
 
 from . import *
 
-## Node object (OpenVX equivalent = vx_node)
+## Node object (OpenVX equivalent = \ref vx_node)
 #
 # This object is base class for specific nodes which inherit from this class.
 # Some basic checks like parameter matching is done by this class.
@@ -366,6 +366,8 @@ class Node (Reference) :
 class NodeAbsDiff (Node) :
     ## Constructor used to create this object
     #
+    # \see vxAbsDiffNode for more details about the parameters
+    #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
     # \param image_out3     [in] Output image
@@ -473,6 +475,8 @@ class NodeAccumulateWeightedImage (Node) :
 class NodeAdd (Node) :
     ## Constructor used to create this object
     #
+    # \see vxAddNode for more details about the parameters
+    #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
     # \param policy3        [in] Addition policy
@@ -503,10 +507,12 @@ class NodeAdd (Node) :
 class NodeSubtract (Node) :
     ## Constructor used to create this object
     #
+    # \see vxSubtractNode for more details about the parameters
+    #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
-    # \param policy3        [in] Subtraction policy
-    # \param image_out4     [in] Output image
+    # \param policy         [in] Subtraction policy
+    # \param image_out3     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
     # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, policy, image_out3, name="default", target=Target.DEFAULT) :
@@ -532,6 +538,8 @@ class NodeSubtract (Node) :
 #
 class NodeAnd (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxAndNode for more details about the parameters
     #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
@@ -560,6 +568,8 @@ class NodeAnd (Node) :
 class NodeXor (Node) :
     ## Constructor used to create this object
     #
+    # \see vxXorNode for more details about the parameters
+    #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
     # \param image_out3     [in] Output image
@@ -586,6 +596,8 @@ class NodeXor (Node) :
 #
 class NodeOr (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxOrNode for more details about the parameters
     #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
@@ -614,6 +626,8 @@ class NodeOr (Node) :
 class NodeNot (Node) :
     ## Constructor used to create this object
     #
+    # \see vxNotNode for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -639,6 +653,8 @@ class NodeNot (Node) :
 class NodeBox3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxBox3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -663,6 +679,8 @@ class NodeBox3x3 (Node) :
 #
 class NodeCannyEdgeDetector (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxCannyEdgeDetectorNode for more details about the parameters
     #
     # \param image_in1      [in] Input image
     # \param hyst_in2       [in] Threshold input
@@ -693,6 +711,8 @@ class NodeCannyEdgeDetector (Node) :
 #
 class NodeChannelCombine (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxChannelCombineNode for more details about the parameters
     #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
@@ -734,6 +754,8 @@ class NodeChannelCombine (Node) :
 class NodeChannelExtract (Node) :
     ## Constructor used to create this object
     #
+    # \see vxChannelExtractNode for more details about the parameters
+    #
     # \param image_in1      [in] First input image
     # \param channel2       [in] Channel to extract
     # \param image_out3     [in] Output image
@@ -760,6 +782,8 @@ class NodeChannelExtract (Node) :
 class NodeColorConvert (Node) :
     ## Constructor used to create this object
     #
+    # \see vxColorConvertNode for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -783,6 +807,8 @@ class NodeColorConvert (Node) :
 #
 class NodeConvertDepth (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxConvertDepthNode for more details about the parameters
     #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
@@ -814,6 +840,8 @@ class NodeConvertDepth (Node) :
 class NodeConvolve (Node) :
     ## Constructor used to create this object
     #
+    # \see vxConvolveNode for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param conv2          [in] Convolution input
     # \param image_out3     [in] Output image
@@ -840,6 +868,8 @@ class NodeConvolve (Node) :
 class NodeDilate3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxDilate3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -864,6 +894,8 @@ class NodeDilate3x3 (Node) :
 #
 class NodeEqualizeHist (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxEqualizeHistNode for more details about the parameters
     #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
@@ -890,6 +922,8 @@ class NodeEqualizeHist (Node) :
 class NodeErode3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxErode3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -914,6 +948,8 @@ class NodeErode3x3 (Node) :
 #
 class NodeFastCorners (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxFastCornersNode for more details about the parameters
     #
     # \param image_in1        [in] Input image
     # \param strength_thresh2 [in] Strength threshold scalar input
@@ -946,6 +982,8 @@ class NodeFastCorners (Node) :
 class NodeGaussian3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxGaussian3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -970,6 +1008,8 @@ class NodeGaussian3x3 (Node) :
 #
 class NodeNonLinearFilter (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxNonLinearFilterNode for more details about the parameters
     #
     # \param function1       [in] Scalar input of nonlinear function
     # \param image_in2       [in] Input image
@@ -999,8 +1039,10 @@ class NodeNonLinearFilter (Node) :
 class NodeHarrisCorners (Node) :
     ## Constructor used to create this object
     #
+    # \see vxHarrisCornersNode for more details about the parameters
+    #
     # \param image_in1        [in] Input image
-    # \param strengh_thresh2  [in] Strength threshold scalar input
+    # \param strength_thresh2 [in] Strength threshold scalar input
     # \param dist3            [in] Min distance scalar input
     # \param sensitivity4     [in] Sensitivity scalar input
     # \param gradient_size5   [in] Gradient size scalar input
@@ -1037,6 +1079,8 @@ class NodeHarrisCorners (Node) :
 class NodeHistogram (Node) :
     ## Constructor used to create this object
     #
+    # \see vxHistogramNode for more details about the parameters
+    #
     # \param image_in1   [in] Input image
     # \param dist2       [in] Output histogram distribution
     # \param name        [in] [optional] Name of the node; Default="default"
@@ -1061,8 +1105,10 @@ class NodeHistogram (Node) :
 class NodeGaussianPyramid (Node) :
     ## Constructor used to create this object
     #
+    # \see vxGaussianPyramidNode for more details about the parameters
+    #
     # \param image_in1   [in] Input image
-    # \param dist2       [in] Output histogram distribution
+    # \param pyr_out2    [out] Output pyramid
     # \param name        [in] [optional] Name of the node; Default="default"
     # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, pyr_out2, name="default", target=Target.DEFAULT) :
@@ -1086,9 +1132,11 @@ class NodeGaussianPyramid (Node) :
 class NodeLaplacianPyramid (Node) :
     ## Constructor used to create this object
     #
+    # \see vxLaplacianPyramidNode for more details about the parameters
+    #
     # \param image_in1   [in] Input image
     # \param pyr_out2    [in] Output pyramid
-    # \param image_in1   [in] Output image
+    # \param image_out3  [in] Output image
     # \param name        [in] [optional] Name of the node; Default="default"
     # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, pyr_out2, image_out3, name="default", target=Target.DEFAULT) :
@@ -1112,6 +1160,8 @@ class NodeLaplacianPyramid (Node) :
 #
 class NodeLaplacianReconstruct (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxLaplacianReconstructNode for more details about the parameters
     #
     # \param pyr_in1     [in] Input pyramid
     # \param image_in2   [in] Input image
@@ -1140,6 +1190,8 @@ class NodeLaplacianReconstruct (Node) :
 class NodeIntegralImage (Node) :
     ## Constructor used to create this object
     #
+    # \see vxIntegralImageNode for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -1164,6 +1216,8 @@ class NodeIntegralImage (Node) :
 #
 class NodeMagnitude (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxMagnitudeNode for more details about the parameters
     #
     # \param image_in1      [in] First input image
     # \param image_in2      [in] Second input image
@@ -1192,6 +1246,8 @@ class NodeMagnitude (Node) :
 class NodeMeanStdDev (Node) :
     ## Constructor used to create this object
     #
+    # \see vxMeanStdDevNode for more details about the parameters
+    #
     # \param image_in1   [in] Input image
     # \param mean2       [in] Mean scalar output
     # \param stddev3     [in] Standard Deviation scalar output
@@ -1219,6 +1275,8 @@ class NodeMeanStdDev (Node) :
 class NodeMedian3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxMedian3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
@@ -1243,6 +1301,8 @@ class NodeMedian3x3 (Node) :
 #
 class NodeMinMaxLoc (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxMinMaxLocNode for more details about the parameters
     #
     # \param image_in1    [in] Input image
     # \param min2         [in] Min output scalar
@@ -1337,6 +1397,8 @@ class NodeMinMaxLoc (Node) :
 class NodeOpticalFlowPyrLK (Node) :
     ## Constructor used to create this object
     #
+    # \see vxOpticalFlowPyrLKNode for more details about the parameters
+    #
     # \param pyr_in1                 [in] First input pyramid
     # \param pyr_in2                 [in] Second input pyramid
     # \param array_in3               [in] First input points array
@@ -1376,6 +1438,8 @@ class NodeOpticalFlowPyrLK (Node) :
 class NodePhase (Node) :
     ## Constructor used to create this object
     #
+    # \see vxPhaseNode for more details about the parameters
+    #
     # \param image_in1       [in] First input image
     # \param image_in2       [in] Second input image
     # \param image_out3      [in] Output image
@@ -1402,6 +1466,8 @@ class NodePhase (Node) :
 #
 class NodeMultiply (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxMultiplyNode for more details about the parameters
     #
     # \param image_in1       [in] First input image
     # \param image_in2       [in] Second input image
@@ -1436,6 +1502,8 @@ class NodeMultiply (Node) :
 class NodeRemap (Node) :
     ## Constructor used to create this object
     #
+    # \see vxRemapNode for more details about the parameters
+    #
     # \param image_in1       [in] First input image
     # \param table_in2       [in] Input remap table
     # \param policy3         [in] Interpolation policy input scalar
@@ -1465,10 +1533,11 @@ class NodeRemap (Node) :
 class NodeScaleImage (Node) :
     ## Constructor used to create this object
     #
-    # \param image_in1       [in] First input image
-    # \param image_out2      [in] Input remap table
+    # \see vxScalImageNode for more details about the parameters
+    #
+    # \param image_in1       [in] Input image
+    # \param image_out2      [in] Output image
     # \param interp3         [in] Interpolation policy input scalar
-    # \param image_out4      [in] Output image
     # \param name            [in] [optional] Name of the node; Default="default"
     # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, interp3, name="default", target=Target.DEFAULT) :
@@ -1493,6 +1562,8 @@ class NodeScaleImage (Node) :
 #
 class NodeHalfScaleGaussian (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxHalfScaleGaussianNode for more details about the parameters
     #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] Output image
@@ -1521,6 +1592,8 @@ class NodeHalfScaleGaussian (Node) :
 class NodeSobel3x3 (Node) :
     ## Constructor used to create this object
     #
+    # \see vxSobel3x3Node for more details about the parameters
+    #
     # \param image_in1      [in] Input image
     # \param image_out2     [in] First output image
     # \param image_out3     [in] Second output image
@@ -1548,6 +1621,8 @@ class NodeSobel3x3 (Node) :
 class NodeTableLookup (Node) :
     ## Constructor used to create this object
     #
+    # \see vxTableLookupNode for more details about the parameters
+    #
     # \param image_in1       [in] First input image
     # \param lut_in2         [in] Input lookup table
     # \param image_out3      [in] Output image
@@ -1574,6 +1649,8 @@ class NodeTableLookup (Node) :
 class NodeThreshold (Node) :
     ## Constructor used to create this object
     #
+    # \see vxThresholdNode for more details about the parameters
+    #
     # \param image_in1       [in] First input image
     # \param thresh_in2      [in] Input threshold
     # \param image_out3      [in] Interpolation policy input scalar
@@ -1598,6 +1675,8 @@ class NodeThreshold (Node) :
 #
 class NodeWarpAffine (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxWarpAffineNode for more details about the parameters
     #
     # \param image_in1       [in] Input image
     # \param matrix_in2      [in] Input affine matrix
@@ -1627,6 +1706,8 @@ class NodeWarpAffine (Node) :
 #
 class NodeWarpPerspective (Node) :
     ## Constructor used to create this object
+    #
+    # \see vxWarpPerspectiveNode for more details about the parameters
     #
     # \param image_in1       [in] Input image
     # \param matrix_in2      [in] Input perspective matrix

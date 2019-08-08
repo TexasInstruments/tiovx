@@ -214,7 +214,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor);
  * \param [in] view_start Array of patch start points in each dimension. This is optional parameter and will be zero when NULL.
  * \param [in] view_end Array of patch end points in each dimension. This is optional parameter and will be dims[] of tensor when NULL.
  * \param [out] map_id The address of a vx_map_id variable where the function returns a map identifier.
- * \arg (*map_id) must eventually be provided as the map_id parameter of a call to <tt>\ref vxUnmapTensorPatch</tt>.
+ * \arg (*map_id) must eventually be provided as the map_id parameter of a call to <tt>\ref tivxUnmapTensorPatch</tt>.
  * \param [out] stride An array of stride in all dimensions in bytes. The stride value at index 0 must be size of the tensor data element type.
  * \param [out] ptr The address of a pointer that the function sets to the
  * address where the requested data can be accessed. The returned (*ptr) address
@@ -245,7 +245,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor);
  * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
  * \retval VX_ERROR_NO_MEMORY Internal memory allocation failed.
  * \ingroup group_tensor
- * \post <tt>\ref vxUnmapTensorPatch </tt> with same (*map_id) value.
+ * \post <tt>\ref tivxUnmapTensorPatch </tt> with same (*map_id) value.
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     vx_tensor tensor,
@@ -264,12 +264,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 * be accessed by the application. Accessing this memory location after the unmap function
 * completes has an undefined behavior.
 * \param [in] tensor The reference to the tensor object to unmap.
-* \param [out] map_id The unique map identifier that was returned by <tt>\ref vxMapTensorPatch</tt> .
+* \param [out] map_id The unique map identifier that was returned by <tt>\ref tivxMapTensorPatch</tt> .
 * \return A <tt>\ref vx_status_e</tt> enumeration.
 * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually a tensor reference.
 * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
 * \ingroup group_object_tensor
-* \pre <tt>\ref vxMapTensorPatch</tt> with same map_id value
+* \pre <tt>\ref tivxMapTensorPatch</tt> with same map_id value
 */
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id);
 

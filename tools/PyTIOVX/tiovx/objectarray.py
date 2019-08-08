@@ -61,13 +61,20 @@
 
 from . import *
 
-## Object Array object (OpenVX equivalent = vx_object_array)
+## Object Array object (OpenVX equivalent = \ref vx_object_array)
 #
 # <b> NOT SUPPORTED in tool </b>
 #
 # \ingroup DATA
 class ObjectArray (Reference) :
-    def __init__(self, type, count, name="default") :
+    ## Constructor used to create this object
+    #
+    # \see  vxCreateObjectArray for more details about the parameters
+    #
+    # \param data_type  [in] Data type. tiovx::enums::Type
+    # \param count      [in] Number of items in the object array
+    # \param name       [in] [optional] Name of the object
+    def __init__(self, data_type, count, name="default") :
         Reference.__init__(self, Type.OBJECTARRAY, name)
         self.item_type = data_type
         self.count = count

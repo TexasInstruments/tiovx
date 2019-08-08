@@ -61,7 +61,7 @@
 
 from . import *
 
-## Pyramid object (OpenVX equivalent = vx_pyramid)
+## Pyramid object (OpenVX equivalent = \ref vx_pyramid)
 #
 # \par Example Usage: Create a Pyramid object having 10 levels
 #
@@ -76,13 +76,13 @@ from . import *
 class Pyramid (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreatePyramid for more details about the parameters
+    # \see vxCreatePyramid for more details about the parameters
     #
     # \param levels [in] Number of pyramid levels
     # \param scale [in] tiovx::enums::PyramidScale
     # \param width [in] Width of highest pyramid level image
     # \param height [in] Height of highest pyramid level image
-    # \param df_image [in] Image data format. tiovx::enums::DfImage
+    # \param df_format [in] Image data format. tiovx::enums::DfImage
     # \param access_type [in] [optional] Memory access type
     # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
     # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file

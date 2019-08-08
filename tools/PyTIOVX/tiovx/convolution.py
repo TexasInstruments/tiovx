@@ -61,7 +61,7 @@
 
 from . import *
 
-## Convolution object (OpenVX equivalent = vx_convolution)
+## Convolution object (OpenVX equivalent = \ref vx_convolution)
 #
 #
 # \par Example Usage: Create a convolution object of 10 rows, 15 coloumns
@@ -77,7 +77,9 @@ from . import *
 class Convolution (Reference) :
     ## Constructor used to create this object
     #
-    # \param coloumns [in] Number of coloumns
+    # \see vxCreateConvolution for more details about the parameters
+    #
+    # \param columns [in] Number of columns
     # \param rows [in] Number of rows
     # \param name [in] [optional] Name of the object
     def __init__(self, columns, rows, name="default") :

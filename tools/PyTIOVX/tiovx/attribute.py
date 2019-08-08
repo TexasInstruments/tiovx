@@ -62,7 +62,7 @@
 from enum import Enum
 from . import *
 
-## Object/Data type (OpenVX equivalent = vx_image_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_image_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -72,21 +72,21 @@ from . import *
 # \ingroup ATTRIBUTES
 #
 class ImageAttribute(Enum) :
-    ## OpenVX equivalent = VX_IMAGE_WIDTH
+    ## OpenVX equivalent = \ref VX_IMAGE_WIDTH
     WIDTH       = ('w', 'vx_uint32')
-    ## OpenVX equivalent = VX_IMAGE_HEIGHT
+    ## OpenVX equivalent = \ref VX_IMAGE_HEIGHT
     HEIGHT      = ('h', 'vx_uint32')
-    ## OpenVX equivalent = VX_IMAGE_FORMAT
+    ## OpenVX equivalent = \ref VX_IMAGE_FORMAT
     FORMAT      = ('fmt', 'vx_df_image')
-    ## OpenVX equivalent = VX_IMAGE_PLANES
+    ## OpenVX equivalent = \ref VX_IMAGE_PLANES
     PLANES      = ('planes', 'vx_size')
-    ## OpenVX equivalent = VX_IMAGE_SPACE
+    ## OpenVX equivalent = \ref VX_IMAGE_SPACE
     SPACE       = ('space', 'vx_enum')
-    ## OpenVX equivalent = VX_IMAGE_RANGE
+    ## OpenVX equivalent = \ref VX_IMAGE_RANGE
     RANGE       = ('range', 'vx_enum')
-    ## OpenVX equivalent = VX_IMAGE_SIZE
+    ## OpenVX equivalent = \ref VX_IMAGE_SIZE
     SIZE        = ('size', 'vx_size')
-    ## OpenVX equivalent = VX_IMAGE_MEMORY_TYPE
+    ## OpenVX equivalent = \ref VX_IMAGE_MEMORY_TYPE
     MEMORY_TYPE = ('memory_type', 'vx_enum')
 
     def vx_enum_name(attr) :
@@ -95,7 +95,7 @@ class ImageAttribute(Enum) :
     def object_type() :
         return Type.IMAGE
 
-## Object/Data type (OpenVX equivalent = vx_pyramid_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_pyramid_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -105,15 +105,15 @@ class ImageAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class PyramidAttribute(Enum) :
-    ## OpenVX equivalent = VX_PYRAMID_LEVELS
+    ## OpenVX equivalent = \ref VX_PYRAMID_LEVELS
     LEVELS      = ('levels', 'vx_size')
-    ## OpenVX equivalent = VX_PYRAMID_SCALE
+    ## OpenVX equivalent = \ref VX_PYRAMID_SCALE
     SCALE       = ('scale', 'vx_float32')
-    ## OpenVX equivalent = VX_PYRAMID_WIDTH
+    ## OpenVX equivalent = \ref VX_PYRAMID_WIDTH
     WIDTH       = ('w', 'vx_uint32')
-    ## OpenVX equivalent = VX_PYRAMID_HEIGHT
+    ## OpenVX equivalent = \ref VX_PYRAMID_HEIGHT
     HEIGHT      = ('h', 'vx_uint32')
-    ## OpenVX equivalent = VX_PYRAMID_FORMAT
+    ## OpenVX equivalent = \ref VX_PYRAMID_FORMAT
     FORMAT      = ('fmt', 'vx_df_image')
 
     def vx_enum_name(attr) :
@@ -122,7 +122,7 @@ class PyramidAttribute(Enum) :
     def object_type() :
         return Type.PYRAMID
 
-## Object/Data type (OpenVX equivalent = vx_array_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_array_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -132,13 +132,13 @@ class PyramidAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class ArrayAttribute(Enum) :
-    ## OpenVX equivalent = VX_ARRAY_ITEMTYPE
+    ## OpenVX equivalent = \ref VX_ARRAY_ITEMTYPE
     ITEMTYPE      = ('item_type', 'vx_enum')
-    ## OpenVX equivalent = VX_ARRAY_NUMITEMS
+    ## OpenVX equivalent = \ref VX_ARRAY_NUMITEMS
     NUMITEMS      = ('num_items', 'vx_size')
-    ## OpenVX equivalent = VX_ARRAY_CAPACITY
+    ## OpenVX equivalent = \ref VX_ARRAY_CAPACITY
     CAPACITY      = ('capacity', 'vx_size')
-    ## OpenVX equivalent = VX_ARRAY_ITEMSIZE
+    ## OpenVX equivalent = \ref VX_ARRAY_ITEMSIZE
     ITEMSIZE      = ('item_size', 'vx_size')
 
     def vx_enum_name(attr) :
@@ -147,7 +147,7 @@ class ArrayAttribute(Enum) :
     def object_type() :
         return Type.ARRAY
 
-## Object/Data type (OpenVX equivalent = vx_scalar_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_scalar_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -156,7 +156,7 @@ class ArrayAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class ScalarAttribute(Enum) :
-    ## OpenVX equivalent = VX_SCALAR_TYPE
+    ## OpenVX equivalent = \ref VX_SCALAR_TYPE
     TYPE      = ('scalar_type', 'vx_enum')
 
     def vx_enum_name(attr) :
@@ -165,7 +165,7 @@ class ScalarAttribute(Enum) :
     def object_type() :
         return Type.SCALAR
 
-## Object/Data type (OpenVX equivalent = vx_convolution_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_convolution_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -175,13 +175,13 @@ class ScalarAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class ConvolutionAttribute(Enum) :
-    ## OpenVX equivalent = VX_CONVOLUTION_ROWS
+    ## OpenVX equivalent = \ref VX_CONVOLUTION_ROWS
     ROWS      = ('row', 'vx_size')
-    ## OpenVX equivalent = VX_CONVOLUTION_COLUMNS
+    ## OpenVX equivalent = \ref VX_CONVOLUTION_COLUMNS
     COLUMNS   = ('col', 'vx_size')
-    ## OpenVX equivalent = VX_CONVOLUTION_SCALE
+    ## OpenVX equivalent = \ref VX_CONVOLUTION_SCALE
     SCALE     = ('scale', 'vx_uint32')
-    ## OpenVX equivalent = VX_CONVOLUTION_SIZE
+    ## OpenVX equivalent = \ref VX_CONVOLUTION_SIZE
     SIZE      = ('size', 'vx_size')
 
     def vx_enum_name(attr) :
@@ -190,7 +190,7 @@ class ConvolutionAttribute(Enum) :
     def object_type() :
         return Type.CONVOLUTION
 
-## Object/Data type (OpenVX equivalent = vx_matrix_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_matrix_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -200,17 +200,17 @@ class ConvolutionAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class MatrixAttribute(Enum) :
-    ## OpenVX equivalent = VX_MATRIX_TYPE
+    ## OpenVX equivalent = \ref VX_MATRIX_TYPE
     TYPE      = ('type', 'vx_enum')
-    ## OpenVX equivalent = VX_MATRIX_ROWS
+    ## OpenVX equivalent = \ref VX_MATRIX_ROWS
     ROWS      = ('h', 'vx_size')
-    ## OpenVX equivalent = VX_MATRIX_COLUMNS
+    ## OpenVX equivalent = \ref VX_MATRIX_COLUMNS
     COLUMNS   = ('w', 'vx_size')
-    ## OpenVX equivalent = VX_MATRIX_SIZE
+    ## OpenVX equivalent = \ref VX_MATRIX_SIZE
     SIZE      = ('size', 'vx_size')
-    ## OpenVX equivalent = VX_MATRIX_ORIGIN
+    ## OpenVX equivalent = \ref VX_MATRIX_ORIGIN
     ORIGIN    = ('origin', 'vx_coordinates2d_t')
-    ## OpenVX equivalent = VX_MATRIX_PATTERN
+    ## OpenVX equivalent = \ref VX_MATRIX_PATTERN
     PATTERN   = ('pattern', 'vx_enum')
 
     def vx_enum_name(attr) :
@@ -219,7 +219,7 @@ class MatrixAttribute(Enum) :
     def object_type() :
         return Type.MATRIX
 
-## Object/Data type (OpenVX equivalent = vx_lut_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_lut_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -229,13 +229,13 @@ class MatrixAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class LutAttribute(Enum) :
-    ## OpenVX equivalent = VX_LUT_TYPE
+    ## OpenVX equivalent = \ref VX_LUT_TYPE
     TYPE      = ('type', 'vx_enum')
-    ## OpenVX equivalent = VX_LUT_COUNT
+    ## OpenVX equivalent = \ref VX_LUT_COUNT
     COUNT     = ('count', 'vx_size')
-    ## OpenVX equivalent = VX_LUT_SIZE
+    ## OpenVX equivalent = \ref VX_LUT_SIZE
     SIZE      = ('size', 'vx_size')
-    ## OpenVX equivalent = VX_LUT_OFFSET
+    ## OpenVX equivalent = \ref VX_LUT_OFFSET
     OFFSET    = ('offset', 'vx_uint32')
 
     def vx_enum_name(attr) :
@@ -244,7 +244,7 @@ class LutAttribute(Enum) :
     def object_type() :
         return Type.LUT
 
-## Object/Data type (OpenVX equivalent = vx_distribution_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_distribution_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -254,17 +254,17 @@ class LutAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class DistributionAttribute(Enum) :
-    ## OpenVX equivalent = VX_DISTRIBUTION_DIMENSIONS
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_DIMENSIONS
     DIMENSIONS  = ('dims', 'vx_size')
-    ## OpenVX equivalent = VX_DISTRIBUTION_OFFSET
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_OFFSET
     OFFSET      = ('offset', 'vx_int32')
-    ## OpenVX equivalent = VX_DISTRIBUTION_RANGE
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_RANGE
     RANGE       = ('range', 'vx_uint32')
-    ## OpenVX equivalent = VX_DISTRIBUTION_BINS
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_BINS
     BINS        = ('bins', 'vx_size')
-    ## OpenVX equivalent = VX_DISTRIBUTION_WINDOW
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_WINDOW
     WINDOW      = ('win', 'vx_uint32')
-    ## OpenVX equivalent = VX_DISTRIBUTION_SIZE
+    ## OpenVX equivalent = \ref VX_DISTRIBUTION_SIZE
     SIZE        = ('size', 'vx_size')
 
     def vx_enum_name(attr) :
@@ -273,7 +273,7 @@ class DistributionAttribute(Enum) :
     def object_type() :
         return Type.DISTRIBUTION
 
-## Object/Data type (OpenVX equivalent = vx_threshold_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_threshold_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -283,19 +283,19 @@ class DistributionAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class ThresholdAttribute(Enum) :
-    ## OpenVX equivalent = VX_THRESHOLD_TYPE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_TYPE
     TYPE             = ('threshold_type', 'vx_enum')
-    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_VALUE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_THRESHOLD_VALUE
     THRESHOLD_VALUE  = ('value', 'vx_int32')
-    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_LOWER
+    ## OpenVX equivalent = \ref VX_THRESHOLD_THRESHOLD_LOWER
     THRESHOLD_LOWER  = ('lower', 'vx_int32')
-    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_UPPER
+    ## OpenVX equivalent = \ref VX_THRESHOLD_THRESHOLD_UPPER
     THRESHOLD_UPPER  = ('upper', 'vx_int32')
-    ## OpenVX equivalent = VX_THRESHOLD_TRUE_VALUE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_TRUE_VALUE
     TRUE_VALUE       = ('true_value', 'vx_int32')
-    ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_FALSE_VALUE
     FALSE_VALUE      = ('false_value', 'vx_int32')
-    ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
+    ## OpenVX equivalent = \ref VX_THRESHOLD_FALSE_VALUE
     DATA_TYPE        = ('threshold_data_type', 'vx_enum')
 
     def vx_enum_name(attr) :
@@ -304,7 +304,7 @@ class ThresholdAttribute(Enum) :
     def object_type() :
         return Type.THRESHOLD
 
-## Object/Data type (OpenVX equivalent = vx_remap_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_remap_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -314,13 +314,13 @@ class ThresholdAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class RemapAttribute(Enum) :
-    ## OpenVX equivalent = VX_REMAP_SOURCE_WIDTH
+    ## OpenVX equivalent = \ref VX_REMAP_SOURCE_WIDTH
     SOURCE_WIDTH         = ('src_w', 'vx_uint32')
-    ## OpenVX equivalent = VX_REMAP_SOURCE_HEIGHT
+    ## OpenVX equivalent = \ref VX_REMAP_SOURCE_HEIGHT
     SOURCE_HEIGHT        = ('src_h', 'vx_uint32')
-    ## OpenVX equivalent = VX_REMAP_DESTINATION_WIDTH
+    ## OpenVX equivalent = \ref VX_REMAP_DESTINATION_WIDTH
     DESTINATION_WIDTH    = ('dst_w', 'vx_uint32')
-    ## OpenVX equivalent = VX_REMAP_DESTINATION_HEIGHT
+    ## OpenVX equivalent = \ref VX_REMAP_DESTINATION_HEIGHT
     DESTINATION_HEIGHT   = ('dst_h', 'vx_uint32')
 
     def vx_enum_name(attr) :
@@ -329,7 +329,7 @@ class RemapAttribute(Enum) :
     def object_type() :
         return Type.REMAP
 
-## Object/Data type (OpenVX equivalent = vx_object_array_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_object_array_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -339,9 +339,9 @@ class RemapAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class ObjectArrayAttribute(Enum) :
-    ## OpenVX equivalent = VX_OBJECT_ARRAY_ITEMTYPE
+    ## OpenVX equivalent = \ref VX_OBJECT_ARRAY_ITEMTYPE
     ITEMTYPE      = ('type', 'vx_enum')
-    ## OpenVX equivalent = VX_OBJECT_ARRAY_NUMITEMS
+    ## OpenVX equivalent = \ref VX_OBJECT_ARRAY_NUMITEMS
     NUMITEMS      = ('num_items', 'vx_size')
 
     def vx_enum_name(attr) :
@@ -350,7 +350,7 @@ class ObjectArrayAttribute(Enum) :
     def object_type() :
         return Type.OBJECT_ARRAY
 
-## Object/Data type (OpenVX equivalent = vx_user_data_object_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_user_data_object_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -360,9 +360,9 @@ class ObjectArrayAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class UserDataObjectAttribute(Enum) :
-    ## OpenVX equivalent = VX_USER_DATA_OBJECT_NAME
+    ## OpenVX equivalent = \ref VX_USER_DATA_OBJECT_NAME
     NAME        = ('name', 'vx_char')
-    ## OpenVX equivalent = VX_USER_DATA_OBJECT_SIZE
+    ## OpenVX equivalent = \ref VX_USER_DATA_OBJECT_SIZE
     SIZE        = ('size', 'vx_size')
 
     def vx_enum_name(attr) :
@@ -371,7 +371,7 @@ class UserDataObjectAttribute(Enum) :
     def object_type() :
         return Type.USER_DATA_OBJECT
 
-## Object/Data type (OpenVX equivalent = tivx_raw_image_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref tivx_raw_image_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -381,19 +381,19 @@ class UserDataObjectAttribute(Enum) :
 # \ingroup ATTRIBUTES
 #
 class RawImageAttribute(Enum) :
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_WIDTH
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_WIDTH
     WIDTH              = ('w', 'vx_uint32')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_HEIGHT
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_HEIGHT
     HEIGHT             = ('h', 'vx_uint32')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_NUM_EXPOSURES
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_NUM_EXPOSURES
     MUM_EXPOSURES      = ('num_exposures', 'vx_uint32')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_LINE_INTERLEAVED
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_LINE_INTERLEAVED
     LINE_INTERLEAVED   = ('line_interleaved', 'vx_bool')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_FORMAT
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_FORMAT
     FORMAT             = ('format', 'tivx_raw_image_format_t')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_HEIGHT
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_META_HEIGHT_BEFORE
     META_HEIGHT_BEFORE = ('meta_height_before', 'vx_uint32')
-    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_HEIGHT
+    ## OpenVX equivalent = \ref TIVX_RAW_IMAGE_META_HEIGHT_AFTER
     META_HEIGHT_AFTER  = ('meta_height_after', 'vx_uint32')
 
     def vx_enum_name(attr) :
@@ -402,7 +402,7 @@ class RawImageAttribute(Enum) :
     def object_type() :
         return Type.RAW_IMAGE
 
-## Object/Data type (OpenVX equivalent = tivx_tensor_attribute_e)
+## Object/Data type (OpenVX equivalent = \ref vx_tensor_attribute_e)
 #
 # \par Example usage:
 # \code
@@ -410,18 +410,24 @@ class RawImageAttribute(Enum) :
 # TensorAttribute.DIMS
 # TensorAttribute.DATA_TYPE
 # TensorAttribute.FIXED_POINT_POSITION
+# TensorAttribute.SCALING_DIVISOR
+# TensorAttribute.SCALING_DIVISOR_FIXED_POINT_POSITION
 # \endcode
 # \ingroup ATTRIBUTES
 #
 class TensorAttribute(Enum) :
-    ## OpenVX equivalent = VX_TENSOR_WIDTH
+    ## OpenVX equivalent = \ref VX_TENSOR_NUMBER_OF_DIMS
     NUMBER_OF_DIMS         = ('number_of_dims', 'vx_size')
-    ## OpenVX equivalent = VX_TENSOR_HEIGHT
+    ## OpenVX equivalent = \ref VX_TENSOR_DIMS
     DIMS                   = ('dims', 'vx_size')
-    ## OpenVX equivalent = VX_TENSOR_NUM_EXPOSURES
+    ## OpenVX equivalent = \ref VX_TENSOR_DATA_TYPE
     DATA_TYPE              = ('data_type', 'vx_enum')
-    ## OpenVX equivalent = VX_TENSOR_LINE_INTERLEAVED
+    ## OpenVX equivalent = \ref VX_TENSOR_FIXED_POINT_POSITION
     FIXED_POINT_POSITION   = ('fixed_point_position', 'vx_int8')
+    ## OpenVX equivalent = \ref TIVX_TENSOR_SCALING_DIVISOR
+    SCALING_DIVISOR        = ('scaling_divisor', 'vx_int8')
+    ## OpenVX equivalent = \ref TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION
+    SCALING_DIVISOR_FIXED_POINT_POSITION   = ('scaling_divisor_fixed_point_position', 'vx_int8')
 
     def vx_enum_name(attr) :
         return "VX_TENSOR_" + attr.name

@@ -61,7 +61,7 @@
 
 from . import *
 
-## Graph object (OpenVX equivalent = vx_graph)
+## Graph object (OpenVX equivalent = \ref vx_graph)
 #
 #
 # \par Example Usage: Create a graph and add nodes to it
@@ -85,6 +85,8 @@ from . import *
 class Graph (Reference) :
     ## Constructor used to create this object
     #
+    # \see vxCreateGraph for more details about the parameters
+    #
     # \param name [in] Name to assign to this context
     def __init__(self, name="default") :
         Reference.__init__(self, Type.GRAPH, name)
@@ -92,7 +94,7 @@ class Graph (Reference) :
 
     ## Add node object to graph
     #
-    # \param ref [in] Object of type Node
+    # \param node [in] Object of type Node
     def add(self,node) :
         self.ref.append(node)
 

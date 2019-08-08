@@ -62,34 +62,35 @@
 from . import *
 
 ## \defgroup PYTIOVX_API PyTIOVX APIs
+# \brief TI Python APIs for autogenerating OpenVX application and kernel plugin code.
 #
 
 ## \defgroup ENUMS 1: Enum APIs
-#
+# \brief Classes corresponding to OpenVX equvalent = \ref vx_enum_e
 # \ingroup PYTIOVX_API
 
 ## \defgroup ATTRIBUTES 2: Attribute APIs
-#
+# \brief Classes corresponding to attribute enumerations of the data types.
 # \ingroup PYTIOVX_API
 
 ## \defgroup DATA 3: Data Object APIs
-#
+# \brief Classes corresponding to OpenVX data object references.
 # \ingroup PYTIOVX_API
 
 ## \defgroup FRAMEWORK 4: Framework Object APIs
-#
+# \brief Classes corresponding to OpenVX framework object references.
 # \ingroup PYTIOVX_API
 
 ## \defgroup KERNEL_CODE 5: Kernel Code APIs
-#
+# \brief Classes corresponding to generating target kernel plugins for a custom kernel.
 # \ingroup PYTIOVX_API
 
 ## \defgroup KERNEL 6: Kernel APIs
-#
+# \brief Classes corresponding to configuring a custom kernel for code generation.
 # \ingroup PYTIOVX_API
 
 ## \defgroup NODE 7: Node APIs
-#
+# \brief Classes corresponding to OpenVX standard Vision Kernel Node APIs.
 # \ingroup PYTIOVX_API
 
 # Reference object (OpenVX equivalent = vx_reference)

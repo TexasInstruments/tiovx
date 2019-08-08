@@ -61,7 +61,7 @@
 
 from . import *
 
-## Array object (OpenVX equivalent = vx_array)
+## Array object (OpenVX equivalent = \ref vx_array)
 #
 #
 # \par Example Usage: Create a array object
@@ -76,6 +76,8 @@ from . import *
 # \ingroup DATA
 class Array (Reference) :
     ## Constructor used to create this object
+    #
+    # \see vxCreateArray for more details about the parameters
     #
     # \param item_type [in] Data type. tiovx::enums::Type
     # \param capacity [in] Number of elements that can be stored in the Array

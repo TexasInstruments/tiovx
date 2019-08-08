@@ -213,8 +213,14 @@ static inline void tivx_uint64_to_uint32(uint64_t val, volatile uint32_t *h, vol
 #endif
 
 /*!
+ * \defgroup group_tivx_c_api TIOVX APIs
+ * \brief TI OpenVX Extension API definitions.
+ */
+
+/*!
  * \defgroup group_tivx_api 1: TIOVX External APIs
  * \brief TI Extension API definitions that are called by the application or user target kernels.
+ * \ingroup group_tivx_c_api
  */
 
 /*!
@@ -402,6 +408,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, volatile uint32_t *h, vol
  * \brief TI internal function definitions used only within the OpenVX framework and are not exposed on external
  *        header files.  Most users will not need to see these unless you are trying to navigate
  *        or modify the framework internals.
+ * \ingroup group_tivx_c_api
  */
 
 /*!

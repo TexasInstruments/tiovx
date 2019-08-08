@@ -61,7 +61,7 @@
 
 from . import *
 
-## Lut object (OpenVX equivalent = vx_lut)
+## Lut object (OpenVX equivalent = \ref vx_lut)
 #
 # \par Example Usage: Create a LUT object of U8 of size 10
 #
@@ -76,7 +76,7 @@ from . import *
 class Lut (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateLUT for more details about the parameters
+    # \see vxCreateLUT for more details about the parameters
     #
     # \param data_type [in] Data type. tiovx::enums::Type
     # \param count [in] Sizeof LUT

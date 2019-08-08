@@ -61,7 +61,7 @@
 
 from . import *
 
-## Context object (OpenVX equivalent = vx_context)
+## Context object (OpenVX equivalent = \ref vx_context)
 #
 #
 # \par Example Usage: Create a context
@@ -79,6 +79,8 @@ from . import *
 # \ingroup FRAMEWORK
 class Context (Reference) :
     ## Constructor used to create this object
+    #
+    # \see vxCreateContext for more details about the parameters
     #
     # \param name [in] Name to assign to this context
     def __init__(self, name="default") :

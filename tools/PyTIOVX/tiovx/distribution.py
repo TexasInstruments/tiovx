@@ -61,7 +61,7 @@
 
 from . import *
 
-## Distribution object (OpenVX equivalent = vx_distribution)
+## Distribution object (OpenVX equivalent = \ref vx_distribution)
 #
 #
 # \par Example Usage: Create a distribution object of 16 bins, 0 offset, 256 range
@@ -77,7 +77,7 @@ from . import *
 class Distribution (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateDistribution for more details about the parameters
+    # \see vxCreateDistribution for more details about the parameters
     #
     # \param num_bins [in] Number of bins
     # \param offset [in] Offset

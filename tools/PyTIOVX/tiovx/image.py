@@ -61,7 +61,7 @@
 
 from . import *
 
-## Image patch object (OpenVX equivalent = vx_imagepatch_addressing_t)
+## Image patch object (OpenVX equivalent = \ref vx_imagepatch_addressing_t)
 #
 # \par Example Usage
 #
@@ -71,7 +71,7 @@ from . import *
 class ImagePatchAddress :
     ## Constructor used to create this object
     #
-    # See vx_imagepatch_addressing_t for more details about the parameters
+    # \see vx_imagepatch_addressing_t for more details about the parameters
     #
     # \param dim_x [in] Width of image
     # \param dim_y [in] Height of image
@@ -89,7 +89,7 @@ class ImagePatchAddress :
         self.step_x = step_x
         self.step_y = step_y
 
-## Image object (OpenVX equivalent = vx_image, vxCreateImage)
+## Image object (OpenVX equivalent = \ref vx_image, specifically returned from \ref vxCreateImage)
 #
 # \par Example Usage: Create a image object of 640x480
 #
@@ -104,7 +104,7 @@ class ImagePatchAddress :
 class Image (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateImage for more details about the parameters
+    # \see vxCreateImage for more details about the parameters
     #
     # \param width [in] Width of image
     # \param height [in] Height of image
@@ -125,7 +125,7 @@ class Image (Reference) :
     def __str__(self):
         return Reference.__str__(self) + ' [ ' + str(self.width) + 'x' + str(self.height) + ':' + self.df_image.name + ' ]'
 
-## Image from channel object (OpenVX equivalent = vx_image, vxCreateImageFromChannel)
+## Image from channel object (OpenVX equivalent = \ref vx_image, specifically returned from \ref vxCreateImageFromChannel)
 #
 # \par Example Usage: Create a image object from R channel of another image object
 #
@@ -140,7 +140,7 @@ class Image (Reference) :
 class ImageFromChannel (Image) :
     ## Constructor used to create this object
     #
-    # See vxCreateImageFromChannel for more details about the parameters
+    # \see vxCreateImageFromChannel for more details about the parameters
     #
     # \param image [in] Source image. Image
     # \param channel [in] Channel to use to create new image. tiovx::enums::Channel
@@ -155,7 +155,7 @@ class ImageFromChannel (Image) :
                 df_image = DfImage.U8
         Image.__init__(self, image.width, image.height, df_image, name)
 
-## Image from handle object (OpenVX equivalent = vx_image, vxCreateImageFromHandle)
+## Image from handle object (OpenVX equivalent = \ref vx_image, specifically returned from \ref vxCreateImageFromHandle)
 #
 # \par Example Usage: Create a image object from handle
 #
@@ -170,7 +170,7 @@ class ImageFromChannel (Image) :
 class ImageFromHandle (Image) :
     ## Constructor used to create this object
     #
-    # See vxCreateImageFromHandle for more details about the parameters
+    # \see vxCreateImageFromHandle for more details about the parameters
     #
     # \param df_image [in] Image data format. tiovx::enums::DfImage
     # \param image_patch_address [in] Data arragement in memory. ImagePatchAddress

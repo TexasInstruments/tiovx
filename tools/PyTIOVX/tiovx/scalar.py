@@ -61,7 +61,7 @@
 
 from . import *
 
-## Scalar object (OpenVX equivalent = vx_scalar)
+## Scalar object (OpenVX equivalent = \ref vx_scalar)
 #
 # \par Example Usage: Create a Scalar object
 #
@@ -77,7 +77,7 @@ from . import *
 class Scalar (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateScalar for more details about the parameters
+    # \see vxCreateScalar for more details about the parameters
     #
     # \param data_type [in] Data type. tiovx::enums::Type
     # \param value [in] Value of type 'data_type'

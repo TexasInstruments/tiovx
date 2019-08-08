@@ -61,7 +61,7 @@
 
 from . import *
 
-## Matrix object (OpenVX equivalent = vx_matrix)
+## Matrix object (OpenVX equivalent = \ref vx_matrix)
 #
 #
 # \par Example Usage: Create a matrix object of size 10x10
@@ -77,19 +77,19 @@ from . import *
 class Matrix (Reference) :
     ## Constructor used to create this object
     #
-    # See vxCreateMatrix for more details about the parameters
+    # \see vxCreateMatrix for more details about the parameters
     #
     # \param data_type [in] Data type. tiovx::enums::Type
-    # \param coloumns [in] Coloumns
+    # \param columns [in] Columns
     # \param rows [in] Rows
     # \param access_type [in] [optional] Memory access type
     # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
     # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file
     # \param name [in] [optional] Name of the object
-    def __init__(self, data_type, column, rows, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
+    def __init__(self, data_type, columns, rows, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
         Reference.__init__(self, Type.MATRIX, name)
         self.data_type = data_type
-        self.column = column
+        self.column = columns
         self.rows = rows
         self.access_type = access_type;
         self.in_file = in_file_addr;
