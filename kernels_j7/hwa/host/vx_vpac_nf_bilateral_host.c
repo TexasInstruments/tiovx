@@ -436,8 +436,8 @@ void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas)
 
         for(i = 0u; i < 8u; i++)
         {
-            sigmas->sigma_space[i] = 0.0;
-            sigmas->sigma_range[i] = 0.0;
+            sigmas->sigma_space[i] = 1.0f;
+            sigmas->sigma_range[i] = 128.0f;
         }
     }
 }

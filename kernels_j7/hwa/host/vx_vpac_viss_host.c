@@ -359,9 +359,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
         if (NULL != output2)
         {
-            if ((0u != params.mux_output2) && (1u != params.mux_output2) &&
-                (2u != params.mux_output2) && (3u != params.mux_output2) &&
-                (4u != params.mux_output2) && (5u != params.mux_output2))
+            if (5u < params.mux_output2)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output2\n");
@@ -369,8 +367,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
         if (NULL != output3)
         {
-            if ((0u != params.mux_output3) && (1u != params.mux_output3) &&
-                (2u != params.mux_output3))
+            if (2u < params.mux_output3)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output3\n");

@@ -660,9 +660,8 @@ void tivx_vpac_ldc_region_params_init(tivx_vpac_ldc_region_params_t *prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_ldc_region_params_t));
         prms->enable = 0u;
-        prms->out_block_width = 8u;
-        prms->out_block_height = 2u;
-        prms->enable = 0u;
+        prms->out_block_width = 16u;
+        prms->out_block_height = 16u;
     }
 }
 
