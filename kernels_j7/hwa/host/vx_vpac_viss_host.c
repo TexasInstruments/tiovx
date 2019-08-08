@@ -127,7 +127,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_user_data_object h3a_aew_af = NULL;
     vx_char h3a_aew_af_name[VX_MAX_REFERENCE_NAME];
     vx_size h3a_aew_af_size;
-    tivx_h3a_aew_config h3a_aew_af_params;
 
     vx_user_data_object dcc_param = NULL;
     vx_char dcc_param_name[VX_MAX_REFERENCE_NAME];

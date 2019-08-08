@@ -1995,8 +1995,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     raw_params.format[1].msb = 7;
     raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     raw_params.format[2].msb = 11;
-    raw_params.meta_height = 5;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    raw_params.meta_height_before = 5;
+    raw_params.meta_height_after = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
