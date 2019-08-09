@@ -16,6 +16,7 @@ ifeq ($(TARGET_CPU),R5F)
     IDIRS       += $(PDK_PATH)/packages
     IDIRS       += $(XDCTOOLS_PATH)/packages
     IDIRS       += $(BIOS_PATH)/packages
+    IDIRS       += $(VISION_APPS_PATH)/
     DEFS        += SOC_J721E
   endif
 else

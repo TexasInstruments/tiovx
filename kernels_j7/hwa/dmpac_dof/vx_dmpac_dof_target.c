@@ -72,6 +72,7 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mDof.h"
 
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 typedef struct
 {
@@ -353,6 +354,10 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
     if (VX_SUCCESS == status)
     {
+        uint64_t cur_time;
+
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         for(pyr_cnt = total_pyr_lvl; pyr_cnt > 0; pyr_cnt--)
         {
             pyr_lvl = pyr_cnt - 1;
@@ -455,7 +460,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                     status = VX_SUCCESS;
                 }
             }
-            
+
             if(VX_SUCCESS == status)
             {
                 /* Submit DOF Request*/
@@ -492,6 +497,13 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 }
             }
         }
+
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_DOF,
+            cur_time,
+            dofObj->dofPrms.coreCfg.width*dofObj->dofPrms.coreCfg.height /* pixels processed */
+            );
 
         if (VX_SUCCESS == status)
         {
