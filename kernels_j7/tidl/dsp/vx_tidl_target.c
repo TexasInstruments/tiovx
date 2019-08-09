@@ -615,7 +615,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             #ifdef TIDL_COPY_NETWORK_BUF
             if (NULL != tidlObj->tidlNet)
             {
-                tivxMemFree(tidlObj, tidlObj->netSize, TIVX_MEM_EXTERNAL);
+                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, TIVX_MEM_EXTERNAL);
             }
             #endif
             if (NULL != tidlObj)
@@ -659,7 +659,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
             #ifdef TIDL_COPY_NETWORK_BUF
             if (NULL != tidlObj->tidlNet)
             {
-                tivxMemFree(tidlObj, tidlObj->netSize, TIVX_MEM_EXTERNAL);
+                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, TIVX_MEM_EXTERNAL);
             }
             #endif
             tivxTIDLFreeMem(tidlObj);
