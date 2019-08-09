@@ -1149,6 +1149,28 @@ TEST(tivxBoundary2, testGraphDataRefBoundary)
 
 }
 
+/* Testing TIVX_EVENT_QUEUE_MAX_SIZE */
+TEST(tivxBoundary2, testEventQueueBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_event_t event;
+    vx_uint32 i;
+
+    for (i = 0; i < TIVX_EVENT_QUEUE_MAX_SIZE; i++)
+    {
+        /* send one user event, this should be received */
+        VX_CALL(vxSendUserEvent(context, i, NULL));
+    }
+
+    for (i = 0; i < TIVX_EVENT_QUEUE_MAX_SIZE; i++)
+    {
+        /* wait for one event, this should be the first one */
+        VX_CALL(vxWaitEvent(context, &event, vx_true_e));
+        ASSERT(event.type==VX_EVENT_USER && event.app_value==i);
+    }
+}
+
+
 /* TIVX_DELAY_MAX_OBJECT */
 TEST(tivxBoundary2, testDelayMaxObjectBoundary)
 {
@@ -2620,6 +2642,29 @@ TEST(tivxNegativeBoundary2, negativeTestGraphDataRefBoundary)
     }
 }
 
+/* Testing TIVX_EVENT_QUEUE_MAX_SIZE */
+TEST(tivxNegativeBoundary2, negativeTestEventQueueBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_event_t event;
+    vx_uint32 i;
+
+    for (i = 0; i < TIVX_EVENT_QUEUE_MAX_SIZE; i++)
+    {
+        /* send one user event, this should be received */
+        VX_CALL(vxSendUserEvent(context, i, NULL));
+    }
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSendUserEvent(context, i, NULL));
+
+    for (i = 0; i < TIVX_EVENT_QUEUE_MAX_SIZE; i++)
+    {
+        /* wait for one event, this should be the first one */
+        VX_CALL(vxWaitEvent(context, &event, vx_true_e));
+        ASSERT(event.type==VX_EVENT_USER && event.app_value==i);
+    }
+}
+
 /* TIVX_LUT_MAX_OBJECTS */
 TEST(tivxNegativeBoundary, negativeTestLUTBoundary)
 {
@@ -3089,6 +3134,7 @@ TESTCASE_TESTS(tivxBoundary2,
         testDelayMaxObjectBoundary,
         testDelayMaxPrmBoundary,
         testGraphDataRefBoundary,
+        testEventQueueBoundary,
         testKernelParamsBoundary
         )
 
@@ -3133,6 +3179,7 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestDelayMaxObjectBoundary,
         negativeTestGraphDataRefBoundary,
         negativeTestKernelParamsBoundary,
+        negativeTestEventQueueBoundary,
         negativeTestDelayMaxPrmBoundary
         )
 

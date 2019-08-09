@@ -142,6 +142,11 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
             elem->param3 = param3;
 
             status = tivxQueuePut(&event_q->ready_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+            if (VX_SUCCESS == status)
+            {
+                tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", index+1);
+            }
         }
         if(status!=VX_SUCCESS)
         {

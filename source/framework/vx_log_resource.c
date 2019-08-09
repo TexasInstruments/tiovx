@@ -411,6 +411,17 @@ void tivxPrintAllResourceStats()
 #endif
 }
 
+static char *test_file_path()
+{
+    char *tivxPlatformGetEnv(char *env_var);
+
+    #if defined(SYSBIOS)
+    return tivxPlatformGetEnv("VX_TEST_DATA_PATH");
+    #else
+    return getenv("VX_TEST_DATA_PATH");
+    #endif
+}
+
 vx_status tivxExportAllResourceMaxUsedValueToFile()
 {
     vx_status status = VX_FAILURE;
@@ -424,8 +435,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile()
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
 
-    /* TODO: figure out a way to make this TIOVX_PATH */
-    snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", "../../../../../", "tivx_config_generated.h");
+    snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", test_file_path(), "output/tivx_config_generated.h");
 
     ofp = fopen(outputFilename, "w");
 
