@@ -77,6 +77,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
 vx_status tivxAddKernelChannelCombine(vx_context context);
 vx_status tivxRemoveKernelChannelCombine(vx_context context);
 
+static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectParams *prms);
+
 static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
@@ -395,7 +397,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
         prms.right_pad = 0U;
         prms.border_mode = VX_BORDER_UNDEFINED;
 
-        tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
+        tivxCheckStatus(&status, tivxKernelConfigChannelCombineValidRect(&prms));
     }
 
     return status;
@@ -516,4 +518,156 @@ vx_status tivxRemoveKernelChannelCombine(vx_context context)
     return status;
 }
 
+static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectParams *prms)
+{
+    vx_status status = VX_SUCCESS;
+    vx_rectangle_t out_rect, rect;
+    vx_uint32 i;
+    vx_df_image fmt;
 
+    if (NULL == prms)
+    {
+        status = VX_FAILURE;
+    }
+    else
+    {
+        if ((prms->num_input_images >
+                TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE) ||
+            (prms->num_output_images >
+                TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE))
+        {
+                status = VX_FAILURE;
+        }
+
+        for (i = 0; i < prms->num_input_images; i ++)
+        {
+            if (NULL == prms->in_img[i])
+            {
+                status = VX_FAILURE;
+                break;
+            }
+        }
+        for (i = 0; i < prms->num_output_images; i ++)
+        {
+            if (NULL == prms->out_img[i])
+            {
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+
+    status |= vxQueryImage(prms->out_img[0], VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
+
+    if (VX_SUCCESS == status)
+    {
+        out_rect.start_x = out_rect.start_y = 0;
+        out_rect.end_x = out_rect.end_y = 0xFFFFFFFF;
+
+        for (i = 0; i < prms->num_input_images; i ++)
+        {
+            status = vxGetValidRegionImage(prms->in_img[i], &rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+            else
+            {
+                if ((i == 0) || 
+                    (fmt != VX_DF_IMAGE_IYUV && fmt != VX_DF_IMAGE_NV12 && 
+                     fmt != VX_DF_IMAGE_NV21 && fmt != VX_DF_IMAGE_YUYV && fmt != VX_DF_IMAGE_UYVY))
+                {
+                    if (rect.start_x > out_rect.start_x)
+                    {
+                        out_rect.start_x = rect.start_x;
+                    }
+                    if (rect.start_y > out_rect.start_y)
+                    {
+                        out_rect.start_y = rect.start_y;
+                    }
+
+                    if (rect.end_x < out_rect.end_x)
+                    {
+                        out_rect.end_x = rect.end_x;
+                    }
+                    if (rect.end_y < out_rect.end_y)
+                    {
+                        out_rect.end_y = rect.end_y;
+                    }
+                }
+                else {
+                    if (rect.start_x*2U > out_rect.start_x)
+                    {
+                        out_rect.start_x = rect.start_x*2U;
+                    }
+                    if (rect.start_y*2U > out_rect.start_y)
+                    {
+                        out_rect.start_y = rect.start_y*2U;
+                    }
+
+                    if (rect.end_x*2U < out_rect.end_x)
+                    {
+                        out_rect.end_x = rect.end_x*2U;
+                    }
+                    if (rect.end_y*2U < out_rect.end_y)
+                    {
+                        out_rect.end_y = rect.end_y*2U;
+                    }
+                }
+            }
+        }
+        for (i = 0; (i < prms->num_output_images) && (VX_SUCCESS == status); i ++)
+        {
+            status = vxGetValidRegionImage(prms->out_img[i], &rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+            else
+            {
+                if (rect.start_x > out_rect.start_x)
+                {
+                    out_rect.start_x = rect.start_x;
+                }
+                if (rect.start_y > out_rect.start_y)
+                {
+                    out_rect.start_y = rect.start_y;
+                }
+
+                if (rect.end_x < out_rect.end_x)
+                {
+                    out_rect.end_x = rect.end_x;
+                }
+                if (rect.end_y < out_rect.end_y)
+                {
+                    out_rect.end_y = rect.end_y;
+                }
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_BORDER_UNDEFINED == prms->border_mode)
+        {
+            out_rect.start_x += prms->left_pad;
+            out_rect.start_y += prms->top_pad;
+            out_rect.end_x -= prms->right_pad;
+            out_rect.end_y -= prms->bot_pad;
+        }
+
+        for (i = 0; i < prms->num_output_images; i ++)
+        {
+            status = vxSetImageValidRectangle(prms->out_img[i], &out_rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+        }
+
+    }
+    return (status);
+}

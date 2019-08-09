@@ -231,7 +231,6 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 else
                 if( dst_desc->format == VX_DF_IMAGE_YUYV)
                 {
-                    vxlib_dst.dim_x = 2*vxlib_dst.dim_x;
                     vxlib_dst.data_type = VXLIB_UINT16;
 
                     status = VXLIB_channelCombine_yuyv_i8u_o8u(
@@ -244,7 +243,6 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
                 else /* format is VX_DF_IMAGE_UYVY */
                 {
-                    vxlib_dst.dim_x = 2*vxlib_dst.dim_x;
                     vxlib_dst.data_type = VXLIB_UINT16;
 
                     status = VXLIB_channelCombine_yuyv_i8u_o8u(

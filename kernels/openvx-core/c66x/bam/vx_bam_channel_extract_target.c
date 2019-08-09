@@ -75,6 +75,7 @@ typedef struct
 {
     uint8_t channel_offset, plane_idx;
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxBamChannelExtractParams;
 
 static tivx_target_kernel vx_channel_extract_target_kernel = NULL;
@@ -90,6 +91,17 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
 static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+
+static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
+    uint8_t *bam_node, uint8_t *bam_port);
 
 static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
@@ -217,14 +229,20 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
         {
             BAM_VXLIB_channelExtract_1of2_i8u_o8u_params params;
 
-            vxlib_src[1].data_type = VXLIB_UINT16;
-
             params.channel_offset = channel_offset;
-
-            kernel_details.compute_kernel_params = (void *)&params;
 
             BAM_VXLIB_channelExtract_1of2_i8u_o8u_getKernelInfo(NULL,
                 &kernel_details.kernel_info);
+
+                kernel_details.kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details.kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                kernel_details.kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+            kernel_details.compute_kernel_params = (void *)&params;
 
             status = tivxBamCreateHandleSingleNode(
                 BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U, buf_params,
@@ -250,7 +268,6 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
 
     tivxInitBufParams(src, &vxlib_src);
     tivxInitBufParams(dst, &vxlib_dst);
-    vxlib_src.data_type = VXLIB_UINT32;
 
     switch(ch->data.enm)
     {
@@ -317,17 +334,16 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
         {
             BAM_VXLIB_channelExtract_1of4_i8u_o8u_params params;
 
-            /* channel_value is VX_CHANNEL_U or VX_CHANNEL_V
-             * consider plane to be 4 bytes per pixel, i.e half the width
-             */
-            vxlib_src.dim_x = vxlib_src.dim_x/2;
-
             params.channel_offset = channel_offset;
 
             kernel_details.compute_kernel_params = (void *)&params;
 
             BAM_VXLIB_channelExtract_1of4_i8u_o8u_getKernelInfo(NULL,
                 &kernel_details.kernel_info);
+
+            kernel_details.kernel_info.kernelExtraInfo.\
+                horzSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF4_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                      + BAM_VXLIB_CHANNELEXTRACT_1OF4_I8U_IO8U_OUTPUT_PORT] = 0.5f;
 
             status = tivxBamCreateHandleSingleNode(
                 BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U, buf_params,
@@ -430,6 +446,384 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
         else
         {
             status = VX_FAILURE;
+        }
+    }
+
+    prms->channel_offset = channel_offset;
+    prms->plane_idx = 0;
+
+    return (status);
+}
+
+static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
+    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
+    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+    vx_status status = VX_SUCCESS;
+    uint8_t channel_offset = 0, plane_idx = 0;
+
+    if (VX_CHANNEL_Y == ch->data.enm)
+    {
+        plane_idx = 0;
+    }
+    else if (VX_CHANNEL_U == ch->data.enm)
+    {
+        plane_idx = 1;
+    }
+    else
+    {
+        plane_idx = 2;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+        node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+
+        BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
+            &kernel_details[*bam_node_cnt].kernel_info);
+
+        /*IYUV's 3 output plains are scaled 1.0, 0.5, 0.5
+          if you select plane_idx 1 or 2, the input and output images needs to be scaled*/
+        if (src->format == VX_DF_IMAGE_IYUV)
+        {
+            if (VX_CHANNEL_U == ch->data.enm)
+            {
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+            }
+            else if (VX_CHANNEL_V == ch->data.enm)
+            {
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+            }
+        }
+    }
+
+    prms->channel_offset = channel_offset;
+    prms->plane_idx = plane_idx;
+
+    return (status);
+}
+
+static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
+    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
+    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+    vx_status status = VX_SUCCESS;
+    uint8_t channel_offset = 0, plane_idx = 0;
+
+    if (VX_CHANNEL_Y == ch->data.enm)
+    {
+        plane_idx = 0;
+    }
+    else
+    {
+        plane_idx = 1;
+    }
+
+    switch(ch->data.enm)
+    {
+        case VX_CHANNEL_Y:
+            channel_offset = 0;
+            break;
+        case VX_CHANNEL_U:
+            if(src->format == VX_DF_IMAGE_NV12)
+            {
+                channel_offset = 0;
+            }
+            else
+            {
+                channel_offset = 1;
+            }
+            break;
+        case VX_CHANNEL_V:
+            if(src->format == VX_DF_IMAGE_NV12)
+            {
+                channel_offset = 1;
+            }
+            else
+            {
+                channel_offset = 0;
+            }
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphNv12Nv21Input: \
+                                    Non existing channel selection\n");
+            status = VX_FAILURE;
+            break;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if(ch->data.enm == VX_CHANNEL_Y)
+        {
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+
+            BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+        }
+        else
+        {
+            BAM_VXLIB_channelExtract_1of2_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of2_i8u_o8u_params*)scratch;
+
+            if ((NULL != kernel_params) &&
+                (*size >= sizeof(BAM_VXLIB_channelExtract_1of2_i8u_o8u_params)))
+            {
+                kernel_params->channel_offset = channel_offset;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U;
+
+                BAM_VXLIB_channelExtract_1of2_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    vertSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELEXTRACT_1OF2_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphNv12Nv21Input: \
+                                        channelExtract_1of2_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                status = VX_FAILURE;
+            }
+        }
+    }
+
+    prms->channel_offset = channel_offset;
+    prms->plane_idx = plane_idx;
+
+    return (status);
+}
+
+static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
+    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
+    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+    vx_status status = VX_SUCCESS;
+    uint8_t channel_offset = 0;
+
+    switch(ch->data.enm)
+    {
+        case VX_CHANNEL_Y:
+            if(src->format == VX_DF_IMAGE_YUYV)
+            {
+                channel_offset = 0;
+            }
+            else
+            {
+                channel_offset = 1;
+            }
+            break;
+        case VX_CHANNEL_U:
+            if(src->format == VX_DF_IMAGE_YUYV)
+            {
+                channel_offset = 1;
+            }
+            else
+            {
+                channel_offset = 0;
+            }
+            break;
+        case VX_CHANNEL_V:
+            if(src->format == VX_DF_IMAGE_YUYV)
+            {
+                channel_offset = 3;
+            }
+            else
+            {
+                channel_offset = 2;
+            }
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
+                                    Non existing channel selection\n");
+            status = VX_FAILURE;
+            break;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if(ch->data.enm == VX_CHANNEL_Y)
+        {
+            BAM_VXLIB_channelExtract_1of2_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of2_i8u_o8u_params*)scratch;
+
+            if ((NULL != kernel_params) &&
+                (*size >= sizeof(BAM_VXLIB_channelExtract_1of2_i8u_o8u_params)))
+            {
+                kernel_params->channel_offset = channel_offset;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U;
+
+                BAM_VXLIB_channelExtract_1of2_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
+                                        channelExtract_1of2_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                status = VX_FAILURE;
+            }
+        }
+        else
+        {
+            BAM_VXLIB_channelExtract_1of4_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of4_i8u_o8u_params*)scratch;
+
+            if ((NULL != kernel_params) &&
+                (*size >= sizeof(BAM_VXLIB_channelExtract_1of4_i8u_o8u_params)))
+            {
+                kernel_params->channel_offset = channel_offset;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U;
+
+                BAM_VXLIB_channelExtract_1of4_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    horzSamplingFactor[BAM_VXLIB_CHANNELEXTRACT_1OF4_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                          + BAM_VXLIB_CHANNELEXTRACT_1OF4_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
+                                        channelExtract_1of4_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                status = VX_FAILURE;
+            }
+        }
+    }
+
+    prms->channel_offset = channel_offset;
+    prms->plane_idx = 0;
+
+    return (status);
+}
+
+static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
+    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
+    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+    vx_status status = VX_SUCCESS;
+    uint8_t channel_offset = 0;
+
+    switch(ch->data.enm)
+    {
+        case VX_CHANNEL_0:
+        case VX_CHANNEL_R:
+            channel_offset = 0;
+            break;
+        case VX_CHANNEL_1:
+        case VX_CHANNEL_G:
+            channel_offset = 1;
+            break;
+        case VX_CHANNEL_2:
+        case VX_CHANNEL_B:
+            channel_offset = 2;
+            break;
+        case VX_CHANNEL_3:
+        case VX_CHANNEL_A:
+            if(src->format == VX_DF_IMAGE_RGBX)
+            {
+                channel_offset = 3;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
+                                        Non existing channel selection\n");
+                status = VX_FAILURE;
+            }
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
+                                    Non existing channel selection\n");
+            status = VX_FAILURE;
+            break;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if(src->format == VX_DF_IMAGE_RGB)
+        {
+            BAM_VXLIB_channelExtract_1of3_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of3_i8u_o8u_params*)scratch;
+
+            if ((NULL != kernel_params) &&
+                (*size >= sizeof(BAM_VXLIB_channelExtract_1of3_i8u_o8u_params)))
+            {
+                kernel_params->channel_offset = channel_offset;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U;
+                
+                BAM_VXLIB_channelExtract_1of3_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
+                                        channelExtract_1of3_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                status = VX_FAILURE;
+            }
+        }
+        else if(src->format == VX_DF_IMAGE_RGBX)
+        {
+            BAM_VXLIB_channelExtract_1of4_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of4_i8u_o8u_params*)scratch;
+
+            if ((NULL != kernel_params) &&
+                (*size >= sizeof(BAM_VXLIB_channelExtract_1of4_i8u_o8u_params)))
+            {
+                kernel_params->channel_offset = channel_offset;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U;
+
+                BAM_VXLIB_channelExtract_1of4_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
+                                        channelExtract_1of4_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                status = VX_FAILURE;
+            }
         }
     }
 
@@ -611,7 +1005,10 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxBamChannelExtractParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxBamChannelExtractParams),
                 TIVX_MEM_EXTERNAL);
         }
@@ -648,6 +1045,18 @@ void tivxAddTargetKernelBamChannelExtract(void)
             tivxKernelBamChannelExtractDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_channel_extract_target_kernel,
+            tivxKernelChannelExtractCreateInBamGraph,
+            tivxKernelChannelExtractGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            MAX4(sizeof(BAM_VXLIB_channelExtract_1of2_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_channelExtract_1of3_i8u_o8u_params), 
+                 sizeof(BAM_VXLIB_channelExtract_1of4_i8u_o8u_params),
+                 sizeof(BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U)),
+            NULL);
     }
 }
 
@@ -655,4 +1064,133 @@ void tivxAddTargetKernelBamChannelExtract(void)
 void tivxRemoveTargetKernelBamChannelExtract(void)
 {
     tivxRemoveTargetKernel(vx_channel_extract_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *src;
+    tivx_obj_desc_scalar_t *ch;
+    tivxBamChannelExtractParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
+
+    src = (tivx_obj_desc_image_t *)obj_desc[
+        TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
+    ch = (tivx_obj_desc_scalar_t *)obj_desc[
+        TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxBamChannelExtractParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxBamChannelExtractParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if ((src->format == VX_DF_IMAGE_RGB) ||
+                (src->format == VX_DF_IMAGE_RGBX))
+            {
+                status = tivxBamChannelExtractInBamGraphRgbRgbxInput(prms, src, ch, 
+                            node_list, kernel_details, bam_node_cnt, scratch, size);
+            }
+            else if ((src->format == VX_DF_IMAGE_YUYV)||
+                    (src->format == VX_DF_IMAGE_UYVY))
+            {               
+                status = tivxBamChannelExtractInBamGraphYuyvUyvyInput(prms, src, ch, 
+                            node_list, kernel_details, bam_node_cnt, scratch, size);
+            }
+            else if ((src->format == VX_DF_IMAGE_NV12) ||
+                    (src->format == VX_DF_IMAGE_NV21))
+            {
+                status = tivxBamChannelExtractInBamGraphNv12Nv21Input(prms, src, ch, 
+                            node_list, kernel_details, bam_node_cnt, scratch, size);
+            }
+            else if ((src->format == VX_DF_IMAGE_IYUV) ||
+                    (src->format == VX_DF_IMAGE_YUV4))
+            {
+                status = tivxBamChannelExtractInBamGraphIyuvYuv4Input(prms, src, ch, 
+                            node_list, kernel_details, bam_node_cnt, scratch, size);
+            }
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph: prms mem allocation failed\n");
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxBamChannelExtractParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxBamChannelExtractParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxBamChannelExtractParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxBamChannelExtractParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                switch (plane) 
+                {
+                    case 0 :
+                        *bam_port = (prms->plane_idx == 0) ? 0 : TIVX_IMAGE_NULL_PLANE;
+                        break;
+                    case 1 :
+                        *bam_port = (prms->plane_idx == 1) ? 1 : TIVX_IMAGE_NULL_PLANE;
+                        break;
+                    case 2 :
+                        *bam_port = (prms->plane_idx == 2) ? 2 : TIVX_IMAGE_NULL_PLANE;
+                        break;
+                    default:
+                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        status = VX_FAILURE;
+                        break;
+                }
+                break;
+            case TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_CHANNELEXTRACT_1OF3_I8U_IO8U_OUTPUT_PORT;
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

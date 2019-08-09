@@ -84,6 +84,14 @@
 #include "tivx_bam_kernel_database.h"
 #include "bam_common.h"
 
+/*!
+ * \brief indicates if a plane is not connected
+ *
+ * \ingroup group_tivx_ext_bam
+ */
+#define TIVX_IMAGE_NULL_PLANE        (255)
+#define TIVX_IMAGE_MULTI_PLANE       (254)
+
 /*! \brief Graph handle
  *
  *         Handle associated with an instance of a BAM graph.
@@ -420,7 +428,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_pre_post_process_f)(tivx_targe
                                                                uint16_t num_params,
                                                                tivx_bam_graph_handle *graph_handle,
                                                                void *priv_arg);
-/*! 
+/*!
  * \brief Allows users to support kernel as part of super node
  *
  *         This is intended to be run after adding the target kernel.

@@ -110,10 +110,11 @@ typedef struct _tivx_data_block_params
     uint32_t block_width_reduction;
     uint32_t block_height_reduction;
     uint32_t opt_x;
+    float xScale;
+    float yScale;
     uint32_t total_block_width_reduction;
     uint32_t total_block_height_reduction;
     uint32_t total_opt_x;
-
 }tivx_data_block_params_t;
 
 typedef struct _tivx_edge_params
@@ -211,20 +212,6 @@ static int32_t getDataBlockOutput(BAM_EdgeParams edge_list[],
                                    int32_t num_edges,
                                    uint8_t node_idx,
                                    uint8_t port_num);
-
-static int32_t findUpstreamEdgeParams(BAM_EdgeParams edge_list[],
-                                     int32_t num_edges,
-                                     uint8_t source_node_id,
-                                     uint8_t source_port_num,
-                                     uint8_t *node_id,
-                                     uint8_t *port_num);
-
-static int32_t findDownstreamEdgeParams(BAM_EdgeParams edge_list[],
-                                     int32_t num_edges,
-                                     uint8_t sink_node_id,
-                                     uint8_t sink_port_num,
-                                     uint8_t *node_id,
-                                     uint8_t *port_num);
 
 static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle);
 
@@ -540,56 +527,6 @@ static int32_t getDataBlockOutput(BAM_EdgeParams edge_list[],
     return 0;
 }
 
-static int32_t findUpstreamEdgeParams(BAM_EdgeParams edge_list[],
-                                     int32_t num_edges,
-                                     uint8_t source_node_id,
-                                     uint8_t source_port_num,
-                                     uint8_t *node_id,
-                                     uint8_t *port_num)
-{
-    int32_t i;
-    int32_t found = 0;
-
-    for(i = 0; i < num_edges; i++)
-    {
-        if(edge_list[i].upStreamNode.id == source_node_id)
-        {
-            if (edge_list[i].upStreamNode.port == source_port_num) {
-                found = 1;
-                *node_id = edge_list[i].downStreamNode.id;
-                *port_num = edge_list[i].downStreamNode.port;
-            }
-        }
-    }
-
-    return found;
-}
-
-static int32_t findDownstreamEdgeParams(BAM_EdgeParams edge_list[],
-                                     int32_t num_edges,
-                                     uint8_t sink_node_id,
-                                     uint8_t sink_port_num,
-                                     uint8_t *node_id,
-                                     uint8_t *port_num)
-{
-    int32_t i;
-    int32_t found = 0;
-
-    for(i = 0; i < num_edges; i++)
-    {
-        if(edge_list[i].downStreamNode.id == sink_node_id)
-        {
-            if (edge_list[i].downStreamNode.port == sink_port_num) {
-                found = 1;
-                *node_id = edge_list[i].upStreamNode.id;
-                *port_num = edge_list[i].upStreamNode.port;
-            }
-        }
-    }
-
-    return found;
-}
-
 
 /*-------------------------------------------------------------------------*/
 /* Function to initialize kernel arguments                                 */
@@ -603,7 +540,6 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     int32_t status = BAM_S_SUCCESS;
     int32_t i, j = 0, k = 0;
     uint8_t node_index;
-    uint8_t boundry_node_id = 0, boundry_node_port = 0;
     float xScale, yScale;
 
     tivx_bam_graph_args_multi_t                 *graph_args          = (tivx_bam_graph_args_multi_t*)args;
@@ -629,7 +565,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
      * - If a graph is defined which this assumption is not true, then this may cause unexpected behaviors.
      * - Additional logic would need to be put in place to traverse the graph topology more accuratly to account for
      *   topologies which are not strictly sequential.
-     * 
+     *
      *   Issue fixed, need more testing but on the DMA callbacks, they still require same block with and height.
      *
      * - Furthermore, this loop assumes that the output block width and height does not go below 1.  If it does, then
@@ -645,7 +581,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint32_t block_height_reduction = 0;
         uint32_t opt_x = 0;
 
-        for(i=0; i<num_graph_outputs; i++) 
+        for(i=0; i<num_graph_outputs; i++)
         {
             block_index = getDataBlockInput(graph_args->edge_list, graph_args->edge_params,
                                    graph_args->num_edges, graph_args->num_nodes-1, i);
@@ -675,6 +611,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint8_t num_transfers;
         if(getNumDownstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, NULL, &num_transfers) != 0)
         {
+            int32_t block_index;
             dma_read_autoinc_args->initParams.numInTransfers   = num_transfers;
             dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
             dma_read_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
@@ -683,49 +620,36 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             {
                 num_bytes = (uint32_t)VXLIB_sizeof(buf_params[i]->data_type);
 
-                if (findUpstreamEdgeParams(graph_args->edge_list, graph_args->num_edges, node_index, i, &boundry_node_id, &boundry_node_port))
-                {
-                    if ((boundry_node_id > 0) && (boundry_node_id < graph_args->num_nodes - 1))
-                    {
-                        xScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.horzSamplingFactor[boundry_node_port];
-                        yScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.vertSamplingFactor[boundry_node_port];
+                block_index = getDataBlockOutput(graph_args->edge_list, graph_args->edge_params, graph_args->num_edges, node_index, i);
 
-                        data_blocks[i].block_params.data_type = buf_params[i]->data_type;
-                        data_blocks[i].block_params.dim_x     = blockDimParams->blockWidth*xScale;
-                        data_blocks[i].block_params.dim_y     = blockDimParams->blockHeight*yScale;
-                        data_blocks[i].block_params.stride_y  = blockDimParams->blockWidth*xScale*num_bytes;
-                        data_blocks[i].set_flag = 1;
-                    }
-                    else
-                    {
-                        status |= VX_FAILURE;
-                        break;
-                    }
+                xScale = data_blocks[block_index].xScale;
+                yScale = data_blocks[block_index].yScale;
 
-                    assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
-                        buf_params[i]->dim_x*num_bytes,/* roiWidth */
-                        buf_params[i]->dim_y,/* roiHeight */
-                        in_block_width*xScale*num_bytes,/*blkWidth */
-                        in_block_height*yScale,/*blkHeight*/
-                        out_block_width*xScale*num_bytes,/* extBlkIncrementX */
-                        out_block_height*yScale,/* extBlkIncrementY */
-                        0U,/* intBlkIncrementX */
-                        0U,/* intBlkIncrementY */
-                        0U,/* roiOffset */
-                        0U,/* blkOffset */
-                        NULL,/* extMemPtr : This will come during process call */
-                        buf_params[i]->stride_y,/* extMemPtrStride */
-                        NULL,/* DMA node will be populating this field */
-                        blockDimParams->blockWidth*xScale*num_bytes,/* interMemPtrStride */
-                        dmaQue /* dmaQueNo */
-                        );
-                    dmaQue = dmaQue ^ 1;
-                }
-                else 
-                {
-                    status |= VX_FAILURE;
-                    break;
-                }
+                data_blocks[block_index].block_params.data_type = buf_params[i]->data_type;
+                data_blocks[block_index].block_params.dim_x     = blockDimParams->blockWidth*xScale;
+                data_blocks[block_index].block_params.dim_y     = blockDimParams->blockHeight*yScale;
+                data_blocks[block_index].block_params.stride_y  = data_blocks[block_index].block_params.dim_x*num_bytes;
+                data_blocks[block_index].set_flag = 1;
+
+                assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
+                    buf_params[i]->dim_x*num_bytes,/* roiWidth */
+                    buf_params[i]->dim_y,/* roiHeight */
+                    in_block_width*xScale*num_bytes,/*blkWidth */
+                    in_block_height*yScale,/*blkHeight*/
+                    out_block_width*xScale*num_bytes,/* extBlkIncrementX */
+                    out_block_height*yScale,/* extBlkIncrementY */
+                    0U,/* intBlkIncrementX */
+                    0U,/* intBlkIncrementY */
+                    0U,/* roiOffset */
+                    0U,/* blkOffset */
+                    NULL,/* extMemPtr : This will come during process call */
+                    buf_params[i]->stride_y,/* extMemPtrStride */
+                    NULL,/* DMA node will be populating this field */
+                    blockDimParams->blockWidth*xScale*num_bytes,/* interMemPtrStride */
+                    dmaQue /* dmaQueNo */
+                    );
+                dmaQue = dmaQue ^ 1;
+
             }
             k = i;
         }
@@ -771,19 +695,22 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             int32_t block_index = getDataBlockInput(graph_args->edge_list, graph_args->edge_params,
                                    graph_args->num_edges, i, j);
 
+            num_bytes = (uint32_t)VXLIB_sizeof(data_blocks[block_index].block_params.data_type);
+
             if(data_blocks[block_index].upstream_node == 0)
             {
                 memcpy(&compute_kernel_args[j], &data_blocks[block_index].block_params, sizeof(VXLIB_bufParams2D_t));
             }
             else
             {
-                xScale = kernel_details[i].kernel_info.kernelExtraInfo.horzSamplingFactor[j];
-                yScale = kernel_details[i].kernel_info.kernelExtraInfo.vertSamplingFactor[j];
+                xScale = data_blocks[block_index].xScale;
+                yScale = data_blocks[block_index].yScale;
 
                 compute_kernel_args[j].data_type = data_blocks[block_index].block_params.data_type;
                 compute_kernel_args[j].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale;
                 compute_kernel_args[j].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
-                compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y*xScale;
+                compute_kernel_args[j].stride_y  = compute_kernel_args[j].dim_x * num_bytes;
+                /*compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y;*/
             }
         }
 
@@ -794,14 +721,14 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
 
             num_bytes = (uint32_t)VXLIB_sizeof(data_blocks[block_index].block_params.data_type);
 
-            xScale = kernel_details[i].kernel_info.kernelExtraInfo.horzSamplingFactor[num_inputs+j];
-            yScale = kernel_details[i].kernel_info.kernelExtraInfo.vertSamplingFactor[num_inputs+j];
+            xScale = data_blocks[block_index].xScale;
+            yScale = data_blocks[block_index].yScale;
 
             compute_kernel_args[j+num_inputs].data_type = data_blocks[block_index].block_params.data_type;
             compute_kernel_args[j+num_inputs].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale/* + data_blocks[block_index].total_opt_x*/;
             compute_kernel_args[j+num_inputs].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
             compute_kernel_args[j+num_inputs].stride_y  = compute_kernel_args[j+num_inputs].dim_x * num_bytes;
-            data_blocks[block_index].block_params.stride_y = (int32_t)(compute_kernel_args[j+num_inputs].stride_y);
+            /*data_blocks[block_index].block_params.stride_y = (int32_t)(compute_kernel_args[j+num_inputs].stride_y);*/
         }
     }
 
@@ -812,6 +739,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint8_t num_transfers;
         if(getNumUpstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers) != 0)
         {
+            int32_t block_index;
             dma_write_autoinc_args->initParams.numOutTransfers  = num_transfers;
             dma_write_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_OUT;
             dma_write_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
@@ -820,45 +748,30 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             {
                 num_bytes = (uint32_t)VXLIB_sizeof(buf_params[k]->data_type);
 
-                if (findDownstreamEdgeParams(graph_args->edge_list, graph_args->num_edges, node_index, i, &boundry_node_id, &boundry_node_port))
-                {
-                    if ((boundry_node_id > 0) && (boundry_node_id < graph_args->num_nodes - 1))
-                    {
-                        int32_t num_inputs = kernel_details[boundry_node_id].kernel_info.numInputDataBlocks;
-                        xScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.horzSamplingFactor[num_inputs+boundry_node_port];
-                        yScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.vertSamplingFactor[num_inputs+boundry_node_port];
-                    }
-                    else
-                    {
-                        status |= VX_FAILURE;
-                        break;
-                    }
+                block_index = getDataBlockInput(graph_args->edge_list, graph_args->edge_params, graph_args->num_edges, node_index, i);
 
-                    assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
-                        buf_params[k]->dim_x*num_bytes,/* roiWidth */
-                        buf_params[k]->dim_y,/* roiHeight */
-                        out_block_width*xScale*num_bytes,/*blkWidth */
-                        out_block_height*yScale,/*blkHeight*/
-                        out_block_width*xScale*num_bytes,/* extBlkIncrementX */
-                        out_block_height*yScale,/* extBlkIncrementY */
-                        0,/* intBlkIncrementX */
-                        0,/* intBlkIncrementY */
-                        0,/* roiOffset */
-                        0,/* blkOffset */
-                        NULL,/* extMemPtr : This will come during process call */
-                        buf_params[k]->stride_y,/* extMemPtrStride */
-                        NULL,/* DMA node will be populating this field */
-                        (int32_t)(((uint32_t)(out_block_width*xScale + optimize_x))*num_bytes),/* interMemPtrStride */
-                        dmaQue /* dmaQueNo */
-                        );
-                    dmaQue = dmaQue ^ 1;
-                    k++;
-                }
-                else 
-                {
-                    status |= VX_FAILURE;
-                    break;
-                }
+                xScale = data_blocks[block_index].xScale;
+                yScale = data_blocks[block_index].yScale;
+
+                assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
+                    buf_params[k]->dim_x*num_bytes,/* roiWidth */
+                    buf_params[k]->dim_y,/* roiHeight */
+                    out_block_width*xScale*num_bytes,/*blkWidth */
+                    out_block_height*yScale,/*blkHeight*/
+                    out_block_width*xScale*num_bytes,/* extBlkIncrementX */
+                    out_block_height*yScale,/* extBlkIncrementY */
+                    0,/* intBlkIncrementX */
+                    0,/* intBlkIncrementY */
+                    0,/* roiOffset */
+                    0,/* blkOffset */
+                    NULL,/* extMemPtr : This will come during process call */
+                    buf_params[k]->stride_y,/* extMemPtrStride */
+                    NULL,/* DMA node will be populating this field */
+                    (int32_t)(((uint32_t)(out_block_width*xScale + optimize_x))*num_bytes),/* interMemPtrStride */
+                    dmaQue /* dmaQueNo */
+                    );
+                dmaQue = dmaQue ^ 1;
+                k++;
             }
         }
     }
@@ -1634,9 +1547,19 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                     /* Now we can know the (2) upstream node characteristics from edge_list */
                     uint32_t upstream_node = edge_list[k].upStreamNode.id;
                     uint32_t upstream_port = edge_list[k].upStreamNode.port;
+                    uint32_t downstream_node = edge_list[k].downStreamNode.id;
+                    uint32_t downstream_port = edge_list[k].downStreamNode.port;
                     int32_t block_width_reduction = 0;
                     int32_t block_height_reduction = 0;
+                    float maxxScale = 0.0;
+                    float maxyScale = 0.0;
+                    float maxInputxScale = 0.0;
+                    float maxInputyScale = 0.0;
+                    float xScale = 0.0;
+                    float yScale = 0.0;
                     int32_t opt_x = 0;
+                    int32_t num_inputs;
+                    int32_t j;
 
                     if(upstream_node > 0)
                     {
@@ -1654,6 +1577,34 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                         }
 
                         data_blocks[i].block_params.data_type = kernel_details[upstream_node].kernel_info.kernelExtraInfo.typeOutputElmt[upstream_port];
+
+                        num_inputs = kernel_details[upstream_node].kernel_info.numInputDataBlocks;
+                        xScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.horzSamplingFactor[num_inputs+upstream_port]);
+                        yScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.vertSamplingFactor[num_inputs+upstream_port]);
+
+                        maxInputxScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.horzSamplingFactor[0]);
+                        maxInputyScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.vertSamplingFactor[0]);
+
+                        for(j = 0; j < num_inputs; j++)
+                        {
+                            if ((float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.horzSamplingFactor[j]) > maxInputxScale)
+                            {
+                                maxInputxScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.horzSamplingFactor[j]);
+                            }
+                            if ((float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.vertSamplingFactor[j]) > maxInputyScale)
+                            {
+                                maxInputyScale = (float)(kernel_details[upstream_node].kernel_info.kernelExtraInfo.vertSamplingFactor[j]);
+                            }
+                        }
+                        xScale = xScale / maxInputxScale;
+                        yScale = yScale / maxInputyScale;
+                    }
+                    else if (upstream_node == 0)
+                    {
+                        maxxScale = 1.0;
+                        maxyScale = 1.0;
+                        xScale = (float)(kernel_details[downstream_node].kernel_info.kernelExtraInfo.horzSamplingFactor[downstream_port]);
+                        yScale = (float)(kernel_details[downstream_node].kernel_info.kernelExtraInfo.vertSamplingFactor[downstream_port]);
                     }
 
                     /* Program size related block params during InitArgs function */
@@ -1661,9 +1612,10 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                     data_blocks[i].block_height_reduction = block_height_reduction;
                     data_blocks[i].opt_x = opt_x;
 
+
                     for(m = 0; m < num_edges; m++)
                     {
-                        /* Find input edge associated with upstream node */
+                        /* Find input edges associated with upstream node */
                         if(edge_list[m].downStreamNode.id == upstream_node)
                         {
                             uint32_t idx = edge_params[m].data_block_index;
@@ -1687,8 +1639,21 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                             {
                                 data_blocks[i].total_opt_x = new_opt_x;
                             }
+
+
+                            if (data_blocks[idx].xScale > maxxScale)
+                            {
+                                maxxScale = data_blocks[idx].xScale;
+                            }
+                            if (data_blocks[idx].yScale > maxyScale)
+                            {
+                                maxyScale = data_blocks[idx].yScale;
+                            }
                         }
                     }
+
+                    data_blocks[i].xScale = xScale * maxxScale;
+                    data_blocks[i].yScale = yScale * maxyScale;
                     break;
                 }
             }
