@@ -76,7 +76,7 @@ extern uint32_t edmaBase[1];
 #endif
 
 #define TIVX_BAM_MAX_EDGES 16
-#define TIVX_BAM_MAX_NODES 10
+#define TIVX_BAM_MAX_NODES 16
 
 #define SOURCE_NODE  0U
 #define COMPUTE_NODE 1U
@@ -707,10 +707,18 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                 yScale = data_blocks[block_index].yScale;
 
                 compute_kernel_args[j].data_type = data_blocks[block_index].block_params.data_type;
-                compute_kernel_args[j].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale;
+                if (exactFlag)
+                {
+                    compute_kernel_args[j].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction))*xScale;
+                }
+                else
+                {
+                    compute_kernel_args[j].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction -
+                                                                          data_blocks[block_index].total_opt_x)) * xScale;
+                }
                 compute_kernel_args[j].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
-                compute_kernel_args[j].stride_y  = compute_kernel_args[j].dim_x * num_bytes;
-                /*compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y;*/
+                /*compute_kernel_args[j].stride_y  = compute_kernel_args[j].dim_x * num_bytes;*/
+                compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y;
             }
         }
 
@@ -725,10 +733,18 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             yScale = data_blocks[block_index].yScale;
 
             compute_kernel_args[j+num_inputs].data_type = data_blocks[block_index].block_params.data_type;
-            compute_kernel_args[j+num_inputs].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale/* + data_blocks[block_index].total_opt_x*/;
+            if (exactFlag)
+            {
+                compute_kernel_args[j+num_inputs].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction))*xScale;
+            }
+            else
+            {
+                compute_kernel_args[j+num_inputs].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction -
+                                                                                 data_blocks[block_index].total_opt_x)) * xScale;
+            }
             compute_kernel_args[j+num_inputs].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
             compute_kernel_args[j+num_inputs].stride_y  = compute_kernel_args[j+num_inputs].dim_x * num_bytes;
-            /*data_blocks[block_index].block_params.stride_y = (int32_t)(compute_kernel_args[j+num_inputs].stride_y);*/
+            data_blocks[block_index].block_params.stride_y = (int32_t)(compute_kernel_args[j+num_inputs].stride_y);
         }
     }
 
@@ -752,7 +768,18 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
 
                 xScale = data_blocks[block_index].xScale;
                 yScale = data_blocks[block_index].yScale;
-
+/*
+                if (block_index == 10 || block_index == 11) {
+                    out_block_width = 58;
+                    out_block_height = 42;
+                    optimize_x = 6;
+                }
+                else {
+                    out_block_width = 60;
+                    out_block_height = 44;
+                    optimize_x = 4;
+                }
+*/
                 assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
                     buf_params[k]->dim_x*num_bytes,/* roiWidth */
                     buf_params[k]->dim_y,/* roiHeight */
@@ -1662,9 +1689,9 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
-        p_graph_sizes->graphObjSize     = 10000;
-        p_graph_sizes->graphScratchSize = 10000;
-        p_graph_sizes->graphcontextSize = 10000;
+        p_graph_sizes->graphObjSize     = 3000*num_nodes;
+        p_graph_sizes->graphScratchSize = 3000*num_nodes;
+        p_graph_sizes->graphcontextSize = 3000*num_nodes;
 
         p_graph_ptrs->graphObj     = tivxMemAlloc(p_graph_sizes->graphObjSize, TIVX_MEM_EXTERNAL);
         p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, TIVX_MEM_EXTERNAL);
