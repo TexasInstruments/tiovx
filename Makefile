@@ -130,8 +130,6 @@ all:
 
 doxy_docs:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
-	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_pytiovx/pytiovx_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_pytiovx/doxy_warnings.txt
-	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/tutorial_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/doxy_warnings.txt
 
 doxy_docs_design:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt
