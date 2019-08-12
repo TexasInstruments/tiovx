@@ -86,52 +86,52 @@ extern "C" {
  */
 
 /*! \brief Name for DSP target class, instance 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DSP1        "DSP-1"
 
 /*! \brief Name for DSP target class, instance 2
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DSP2        "DSP-2"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_EVE1        "EVE-1"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_EVE2        "EVE-2"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_EVE3        "EVE-3"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_EVE4        "EVE-4"
 
 /*! \brief Name for A15 target class, core 0
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_A15_0       "A15-0"
 
 /*! \brief Name for IPU1 target class, core 0
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_0      "IPU1-0"
 
 /*! \brief Name for IPU1 target class, core 1
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_1      "IPU1-1"
 
 /*! \brief Name for IPU2 target class
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU2        "IPU2"
 

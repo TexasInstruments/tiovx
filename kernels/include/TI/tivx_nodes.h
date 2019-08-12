@@ -82,6 +82,7 @@ extern "C" {
  * \param [in] input The input <tt>\ref VX_DF_IMAGE_U8</tt> image.
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_harris_eve
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
                             vx_image  input,
@@ -112,6 +113,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
  * \param [out] outputIR The output <tt>\ref VX_DF_IMAGE_U16</tt> infrared image. Must have half horizontal and vertical dimensions as the input image.
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_rgbir
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
                             vx_image  input,
@@ -150,6 +152,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
  *
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_tidl
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
