@@ -509,6 +509,11 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                                 tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)desc, TIVX_EVENT_TIMEOUT_NO_WAIT);
                             }
                         }
+                        else
+                        {
+                            status = VX_FAILURE;
+                            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n");
+                        }
                     }
                 }
                 for(chId=0; chId<prms->numCh; chId++)
@@ -742,6 +747,10 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
                       prms->captStatus.dequeueCount[cnt],
                       prms->captStatus.dropCount[cnt]);
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Control failed !!!\n");
         }
     }
 }

@@ -793,7 +793,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             if(TRUE == displayParams->firstFrameDisplay)
             {
                 fvid2_status = Fvid2_start(displayParams->drvHandle, NULL);
-                if(VX_SUCCESS != status)
+                if(FVID2_SOK != fvid2_status)
                 {
                     status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not start display!\r\n");
