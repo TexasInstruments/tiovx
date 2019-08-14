@@ -96,8 +96,6 @@ extern "C" {
  *         Reference to vx_scalar is passed as argument with
  *         this control command.
  *         Node returns bit-mask of error status in u32 variable of vx_scalar.
- *
- *
  */
 #define TIVX_DMPAC_SDE_CMD_GET_ERR_STATUS                    (0x10000002u)
 
@@ -131,11 +129,13 @@ typedef struct {
     uint16_t  threshold_texture;
     uint16_t  aggregation_penalty_p1;       /*!< SDE aggragation penalty P1. Optimization penalty constant for small disparity change. P1<=127 */
     uint16_t  aggregation_penalty_p2;       /*!< SDE aggragation penalty P2. Optimization penalty constant for large disparity change. P2<=255 */
-    /*! Defines custom ranges for mapping internal confidence score to one of 8 levels. [Range (0 - 4095)]
+    /*! Defines custom ranges for mapping 7-bit confidence score to one of 8 levels (3-bit confidence value) in each disparity output. ([Range (0 - 127)]
      *    The confidence score will map to level N if it is less than confidence_score_map[N] but greater than or equal to confidence_score_map[N-1]
      *    For example, to map internal confidence scores from 0 to 50 to level 0, and confidence scores from 51 to 108 to level 1,
      *    then set confidence_score_map[0] = 51 and confidence_score_map[1] = 109
-     *    NOTE: Each mapping value must be greater than the values from lower indices of the array */
+     *    \note Each mapping value must be greater than the values from lower indices of the array
+     *    \note confidence_score_map indices 0 - 6 must be less than 127
+     */
     uint16_t  confidence_score_map[8];
 } tivx_dmpac_sde_params_t;
 
@@ -163,8 +163,10 @@ void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
  * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
  * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]
- * \param [out] confidence_histogram (optional) Histogram of the confidence scores.  Must be configured to 128 bins.
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]. <br> 
+ *                     The 3 bit 'Confidence' value is the result of passing the 7-bit confidence score through the user configured
+ *                     \ref tivx_dmpac_sde_params_t::confidence_score_map range table to produce a 3-bit mapping.
+ * \param [out] confidence_histogram (optional) Histogram of the full 7-bit confidence scores.  Must be configured to 128 bins.
  * \see <tt>TIVX_KERNEL_DMPAC_SDE_NAME</tt>
  * \ingroup group_vision_function_dmpac_sde
  * \return <tt>\ref vx_node</tt>.
