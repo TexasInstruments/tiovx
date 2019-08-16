@@ -75,6 +75,7 @@
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mNf.h"
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -257,6 +258,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
     tivx_obj_desc_image_t       *dst;
     Fvid2_FrameList             *inFrmList;
     Fvid2_FrameList             *outFrmList;
+    uint64_t cur_time;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
@@ -342,6 +344,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         nf_generic_obj->nf_cfg.nfCfg.centralPixelWeight = temp_lut[12];
         nf_generic_obj->wgtTbl.filterMode      = NF_FILTER_MODE_GENERIC_2D_FILTER;
 
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         /* Update NF params */
         fvid2_status = Fvid2_control(nf_generic_obj->handle,
             IOCTL_VHWA_M2M_NF_SET_PARAMS, &nf_generic_obj->nf_cfg, NULL);
@@ -408,6 +412,16 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                 "tivxVpacNfGenericProcess: Failed to Get Processed Request\n");
             status = VX_FAILURE;
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_NF,
+            cur_time,
+            dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
+            );
     }
 
     if (VX_SUCCESS == status)

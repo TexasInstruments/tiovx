@@ -76,6 +76,8 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
 
+#include "utils/perf_stats/include/app_perf_stats.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -796,6 +798,8 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
     Fvid2_FrameList          *inFrmList;
     Fvid2_FrameList          *outFrmList;
     tivxVpacMscPmdSubSetInfo *ss_info;
+    uint64_t                 cur_time;
+    tivxVpacMscPmdInstObj    *inst_obj = NULL;
 
     if ((TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS != num_params) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
@@ -852,6 +856,8 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
 
         /* Number of input frames is fixed to 1 */
         inFrmList->numFrames = 1U;
+
+        cur_time = tivxPlatformGetTimeInUsecs();
 
         for (oct_cnt = 0u; oct_cnt < msc_obj->num_pmd_subsets; oct_cnt ++)
         {
@@ -945,6 +951,28 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 status = VX_FAILURE;
                 break;
             }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        inst_obj = msc_obj->inst_obj;
+
+        if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
+        {
+            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
+                cur_time,
+                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                );
+        }
+        else
+        {
+            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
+                cur_time,
+                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                );
         }
     }
 

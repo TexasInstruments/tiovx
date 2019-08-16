@@ -11,6 +11,7 @@ ifeq ($(TARGET_CPU),R5F)
   else
     CSOURCES    := vx_dmpac_sde_target.c
     IDIRS       += $(PDK_PATH)/packages
+    IDIRS       += $(VISION_APPS_PATH)/
     IDIRS       += $(XDCTOOLS_PATH)/packages
     IDIRS       += $(BIOS_PATH)/packages
     DEFS        += SOC_J721E

@@ -77,6 +77,8 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mSde.h"
 
+#include "utils/perf_stats/include/app_perf_stats.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -246,6 +248,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     tivx_obj_desc_distribution_t     *confidence_histogram_desc = NULL;
     Fvid2_FrameList                  *inFrmList;
     Fvid2_FrameList                  *outFrmList;
+    uint64_t cur_time;
 
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
@@ -325,7 +328,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         outFrmList->frames[0U] = &sde_obj->outFrm;
         outFrmList->numFrames = 1U;
         
-		sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
+        sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
+
+        cur_time = tivxPlatformGetTimeInUsecs();
 
         /* Submit SDE Request*/
         fvid2_status = Fvid2_processRequest(sde_obj->handle, inFrmList,
@@ -368,6 +373,20 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 status = VX_FAILURE;
             }
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        Vhwa_M2mSdePrms                  *sdePrms = NULL;
+
+        sdePrms = &sde_obj->sdePrms;
+
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_SDE,
+            cur_time,
+            sdePrms->sdeCfg.width*sdePrms->sdeCfg.height /* pixels processed */
+            );
     }
 
     if (VX_SUCCESS == status)

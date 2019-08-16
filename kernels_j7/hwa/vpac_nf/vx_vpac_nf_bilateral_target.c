@@ -76,6 +76,7 @@
 #include <math.h>
 
 #include "ti/drv/vhwa/include/vhwa_m2mNf.h"
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -263,6 +264,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
     tivx_obj_desc_image_t            *dst;
     Fvid2_FrameList                  *inFrmList;
     Fvid2_FrameList                  *outFrmList;
+    uint64_t cur_time;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
@@ -330,6 +332,8 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         
         nf_bilateral_obj->outFrm.addr[0U] = (uint64_t) dst_target_ptr;
 
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         /* Submit NF Request*/
         fvid2_status = Fvid2_processRequest(nf_bilateral_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
@@ -354,6 +358,16 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
                 "tivxVpacNfBilateralProcess: Failed to Get Processed Request\n");
             status = VX_FAILURE;
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_NF,
+            cur_time,
+            dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
+            );
     }
 
     if (VX_SUCCESS == status)

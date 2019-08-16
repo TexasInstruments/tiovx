@@ -75,6 +75,7 @@
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -260,6 +261,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
     tivxVpacLdcObj        *ldc_obj = NULL;
     Fvid2_FrameList       *inFrmList;
     Fvid2_FrameList       *outFrmList;
+    uint64_t cur_time;
 
     if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
@@ -337,6 +339,8 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             outFrmList->numFrames ++;
         }
 
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         /* Submit LDC Request*/
         fvid2_status = Fvid2_processRequest(ldc_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
@@ -361,6 +365,16 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 "tivxVpacLdcProcess: Failed to Get Processed Request\n");
             status = VX_FAILURE;
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_LDC,
+            cur_time,
+            ldc_obj->ldc_cfg.outputFrameWidth*ldc_obj->ldc_cfg.outputFrameHeight /* pixels processed */
+            );
     }
 
     return (status);

@@ -76,6 +76,8 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
 
+#include "utils/perf_stats/include/app_perf_stats.h"
+
 #include <vx_vpac_msc_scale_coeff.h>
 
 /* ========================================================================== */
@@ -696,6 +698,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     tivxVpacMscHsgObj       *msc_obj = NULL;
     Msc_Coeff               *coeffCfg = NULL;
     vx_enum                  interp_type;
+    uint64_t                cur_time;
+    tivxVpacMscScaleInstObj *inst_obj = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
@@ -805,6 +809,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
                 out_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         /* Submit MSC Request*/
         fvid2_status = Fvid2_processRequest(msc_obj->handle, &msc_obj->inFrmList,
             &msc_obj->outFrmList, FVID2_TIMEOUT_FOREVER);
@@ -828,6 +834,28 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to Get Processed Request\n");
             status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        inst_obj = msc_obj->inst_obj;
+
+        if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
+        {
+            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
+                cur_time,
+                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                );
+        }
+        else
+        {
+            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
+                cur_time,
+                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                );
         }
     }
 

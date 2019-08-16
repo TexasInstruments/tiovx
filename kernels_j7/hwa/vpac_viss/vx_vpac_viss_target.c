@@ -65,6 +65,7 @@
 /* ========================================================================== */
 #include <vx_vpac_viss_target_priv.h>
 
+#include "utils/perf_stats/include/app_perf_stats.h"
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -662,6 +663,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_user_data_object_t *config_desc = NULL;
     tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
     tivx_obj_desc_user_data_object_t *h3a_out_desc = NULL;
+    uint64_t cur_time;
 
     /* Check for mandatory descriptor */
     status = tivxVpacVissCheckInputDesc(num_params, obj_desc);
@@ -835,6 +837,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if (VX_SUCCESS == status)
     {
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         /* Submit the request to the driver */
         fvid2_status = Fvid2_processRequest(vissObj->handle, &vissObj->inFrmList,
             &vissObj->outFrmList, FVID2_TIMEOUT_FOREVER);
@@ -858,6 +862,17 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 status = VX_FAILURE;
             }
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+
+        /* TODO: Figure out how to calculate pixels here */
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
+            cur_time,
+            raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
+            );
     }
 
     /* If the target pointer is non null, descriptor is also non null,
