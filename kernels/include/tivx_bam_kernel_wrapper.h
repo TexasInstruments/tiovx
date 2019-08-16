@@ -90,7 +90,6 @@
  * \ingroup group_tivx_ext_bam
  */
 #define TIVX_IMAGE_NULL_PLANE        (255)
-#define TIVX_IMAGE_MULTI_PLANE       (254)
 
 /*! \brief Graph handle
  *

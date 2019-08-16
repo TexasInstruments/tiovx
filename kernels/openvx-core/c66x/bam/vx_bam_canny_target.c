@@ -81,6 +81,7 @@ typedef struct
     uint32_t gs;
 
     VXLIB_bufParams2D_t vxlib_dst;
+    uint8_t bam_node_num;
 } tivxCannyParams;
 
 #define SOURCE_NODE      0
@@ -103,6 +104,24 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 static vx_status VX_CALLBACK tivxKernelCannyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+
+static vx_status VX_CALLBACK tivxKernelCannyGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
+    uint8_t *bam_node, uint8_t *bam_port);
+
+static vx_status VX_CALLBACK tivxKernelCannyAppendInternalEdges(
+    tivx_target_kernel_instance kernel, BAM_EdgeParams edge_list[], int32_t *bam_edge_cnt);
+
+static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg);
 
 static void tivxCannyFreeMem(tivxCannyParams *prms);
 
@@ -419,7 +438,10 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxCannyParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxCannyFreeMem(prms);
         }
     }
@@ -470,6 +492,15 @@ void tivxAddTargetKernelBamCannyEd(void)
             tivxKernelCannyDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_canny_target_kernel,
+            tivxKernelCannyCreateInBamGraph,
+            tivxKernelCannyGetNodePort,
+            tivxKernelCannyAppendInternalEdges,
+            NULL,
+            tivxKernelCannyPostprocessInBamGraph,
+            sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params),
+            NULL);
     }
 }
 
@@ -477,3 +508,328 @@ void tivxRemoveTargetKernelBamCannyEd(void)
 {
     tivxRemoveTargetKernel(vx_canny_target_kernel);
 }
+
+static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *dst;
+    tivx_obj_desc_threshold_t *thr;
+    tivxCannyParams *prms = NULL;
+    tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CANNY_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        dst = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_CANNY_OUTPUT_IDX];
+        thr = (tivx_obj_desc_threshold_t *)obj_desc[
+            TIVX_KERNEL_CANNY_HYST_IDX];
+        sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
+            TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
+        sc_norm = (tivx_obj_desc_scalar_t *)obj_desc[
+            TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxCannyParams));
+
+            tivxInitBufParams(dst, &prms->vxlib_dst);
+            prms->gs = sc_gs->data.s32;
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if(3 == prms->gs)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+                BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if(5 == prms->gs)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
+                BAM_VXLIB_sobel_5x5_i8u_o16s_o16s_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O16S_O16S;
+                BAM_VXLIB_sobel_7x7_i8u_o16s_o16s_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+            *bam_node_cnt = *bam_node_cnt + 1;
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if(VX_NORM_L1 == sc_norm->data.enm)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
+                BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NORML2_I16S_I16S_O16U;
+                BAM_VXLIB_normL2_i16s_i16s_o16u_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+            *bam_node_cnt = *bam_node_cnt + 1;
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U;
+            BAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+            *bam_node_cnt = *bam_node_cnt + 1;
+
+            prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
+            prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u, TIVX_MEM_EXTERNAL);
+
+            if (NULL == prms->edge_list)
+            {
+                status = VX_ERROR_NO_MEMORY;
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                BAM_VXLIB_doubleThreshold_i16u_i8u_params *kernel_params = (BAM_VXLIB_doubleThreshold_i16u_i8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params)))
+                {
+                    node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+                    node_list[*bam_node_cnt].kernelArgs = NULL;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_DOUBLETHRESHOLD_I16S_I8U;
+
+                    kernel_params->edgeMapLineOffset   = prms->vxlib_dst.stride_y;
+                    kernel_params->edgeList            = prms->edge_list;
+                    kernel_params->edgeListCapacity    = prms->edge_list_size;
+                    kernel_params->loThreshold         = thr->lower;
+                    kernel_params->hiThreshold         = thr->upper;
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = kernel_params;
+
+                    BAM_VXLIB_doubleThreshold_i16u_i8u_getKernelInfo(kernel_params,
+                                                                     &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
+            }
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxCannyParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelCannyAppendInternalEdges(
+    tivx_target_kernel_instance kernel, BAM_EdgeParams edge_list[], int32_t *bam_edge_cnt)
+{
+    tivxCannyParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxCannyParams) == size))
+    {
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_X_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_X_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_Y_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_Y_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_MAG_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_MAG_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 1;
+        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num;
+        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_EDGEMAP_PORT;
+        *bam_edge_cnt = *bam_edge_cnt + 1;
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelCannyGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxCannyParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxCannyParams) == size))
+    {
+        switch (ovx_port)
+        {
+            case TIVX_KERNEL_CANNY_INPUT_IDX:
+                *bam_node = prms->bam_node_num - 3;
+                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_CANNY_OUTPUT_IDX:
+                *bam_node = prms->bam_node_num - 1;
+                *bam_port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}
+
+
+static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+    tivxCannyParams *prms = NULL;
+    tivx_obj_desc_image_t *src, *dst;
+    uint8_t *dst_addr;
+    uint8_t *border_addr_tl, *border_addr_tr, *border_addr_bl;
+    vx_rectangle_t rect;
+    uint32_t size, num_edge_trace_out = 0;
+    uint32_t num_dbl_thr_items = 0;
+
+    src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_INPUT_IDX];
+    dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_OUTPUT_IDX];
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
+    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+        (sizeof(tivxCannyParams) != size))
+    {
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        void *dst_target_ptr;
+
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+
+        rect = dst->valid_roi;
+
+        dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
+            &dst->imagepatch_addr[0U]));
+
+        /* Get the correct offset of the images from the valid roi parameter */
+        rect = src->valid_roi;
+
+        border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            &dst->imagepatch_addr[0U]));
+
+        tivxBamControlNode(*g_handle, prms->bam_node_num,
+                           VXLIB_DOUBLETHRESHOLD_I16U_I8U_CMD_GET_NUM_EDGES,
+                           &num_dbl_thr_items);
+
+        /* Edge Tracing requires 1 pixel border of zeros */
+        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
+        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
+        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
+        {
+            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
+        }
+
+        if (VXLIB_SUCCESS == status)
+        {
+            status = VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
+                prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
+                &num_edge_trace_out);
+        }
+        if (VXLIB_SUCCESS == status)
+        {
+            status = VXLIB_thresholdBinary_i8u_o8u(dst_addr,
+                &prms->vxlib_dst, dst_addr, &prms->vxlib_dst, 128, 255, 0);
+        }
+
+        if (status != VXLIB_SUCCESS)
+        {
+            status = VX_FAILURE;
+        }
+    }
+
+    return status;
+}
+
