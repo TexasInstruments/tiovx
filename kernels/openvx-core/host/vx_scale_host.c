@@ -377,7 +377,7 @@ vx_status tivxAddKernelScale(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ENUM,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
         }

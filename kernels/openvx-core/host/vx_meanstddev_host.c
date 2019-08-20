@@ -241,7 +241,7 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_OUTPUT,
-                        VX_TYPE_FLOAT32,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -251,7 +251,7 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_OUTPUT,
-                        VX_TYPE_FLOAT32,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
         }

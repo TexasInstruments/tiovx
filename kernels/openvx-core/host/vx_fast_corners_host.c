@@ -339,7 +339,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_BOOL,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
