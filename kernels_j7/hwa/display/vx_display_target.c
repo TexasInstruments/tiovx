@@ -196,7 +196,7 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
     switch (obj_desc_img->format)
     {
         case TIVX_DF_IMAGE_RGB565:
-            format->dataFormat = FVID2_DF_RGB16_565;
+            format->dataFormat = FVID2_DF_BGR16_565;
             format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case VX_DF_IMAGE_RGB:
