@@ -696,6 +696,14 @@ TEST_WITH_ARG(tivxPhase, testPhaseSupernode2, format_arg,
     printPerformance(perf_graph, width * height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testPhaseSupernode testPhaseSupernode
+#define testPhaseSupernode2 testPhaseSupernode2
+#else
+#define testPhaseSupernode DISABLED_testPhaseSupernode
+#define testPhaseSupernode2 DISABLED_testPhaseSupernode2
+#endif
+
 TESTCASE_TESTS(tivxPhase, 
                testOnRandom,
                testPhaseSupernode,

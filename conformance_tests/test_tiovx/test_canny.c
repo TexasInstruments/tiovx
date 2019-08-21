@@ -844,6 +844,12 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
     printPerformance(perf_graph, lena->width*lena->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testCannySupernode testCannySupernode
+#else
+#define testCannySupernode DISABLED_testCannySupernode
+#endif
+
 TESTCASE_TESTS(tivxCanny,
                virtImage,
                multipleNode,

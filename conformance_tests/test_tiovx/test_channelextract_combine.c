@@ -593,6 +593,16 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testExtractCombineSupernode testExtractCombineSupernode
+#define testCombineExtractSupernode testCombineExtractSupernode
+#define testChannelExtractSupernode testChannelExtractSupernode
+#else
+#define testExtractCombineSupernode DISABLED_testExtractCombineSupernode
+#define testCombineExtractSupernode DISABLED_testCombineExtractSupernode
+#define testChannelExtractSupernode DISABLED_testChannelExtractSupernode
+#endif
+
 TESTCASE_TESTS(tivxChannelExtractCombine,
         testExtractCombine,
         testCombineExtract,

@@ -922,6 +922,11 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornersSupernode, Arg,
     printPerformance(perf_graph, input0->width * input0->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testHarrisCornersSupernode testHarrisCornersSupernode
+#else
+#define testHarrisCornersSupernode DISABLED_testHarrisCornersSupernode
+#endif
 
 TESTCASE_TESTS(tivxHarrisCorners,
         testMultipleGraphs,

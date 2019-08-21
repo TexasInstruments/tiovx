@@ -390,6 +390,12 @@ TEST_WITH_ARG(tivxThreshold, testThresholdSupernode, format_arg,
     }
 }
 
+#ifdef BUILD_BAM
+#define testThresholdSupernode testThresholdSupernode
+#else
+#define testThresholdSupernode DISABLED_testThresholdSupernode
+#endif
+
 TESTCASE_TESTS(tivxThreshold, 
                testOnRandom,
                testThresholdSupernode)

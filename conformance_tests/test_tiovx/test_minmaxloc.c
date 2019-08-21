@@ -824,6 +824,11 @@ TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
         ct_free_mem(ptbuf);
 }
 
+#ifdef BUILD_BAM
+#define testMinMaxLocSupernode testMinMaxLocSupernode
+#else
+#define testMinMaxLocSupernode DISABLED_testMinMaxLocSupernode
+#endif
 
 TESTCASE_TESTS(tivxMinMaxLoc, 
                testOnRandom, 

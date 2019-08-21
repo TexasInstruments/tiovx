@@ -466,6 +466,11 @@ TEST_WITH_ARG(tivxDilate3x3, testDilate3x3Supernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testDilate3x3Supernode testDilate3x3Supernode
+#else
+#define testDilate3x3Supernode DISABLED_testDilate3x3Supernode
+#endif
 
 TESTCASE_TESTS(tivxDilate3x3, 
                testGraphProcessing,

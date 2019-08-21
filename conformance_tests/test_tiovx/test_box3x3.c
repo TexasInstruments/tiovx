@@ -484,6 +484,12 @@ TEST_WITH_ARG(tivxBox3x3, testBox3x3Supernode, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testBox3x3Supernode testBox3x3Supernode
+#else
+#define testBox3x3Supernode DISABLED_testBox3x3Supernode
+#endif
+
 TESTCASE_TESTS(tivxBox3x3, 
                testGraphProcessing,
                testValidRegion,

@@ -353,6 +353,11 @@ TEST_WITH_ARG(tivxMagnitude, testMagnitudeSupernode, format_arg,
     printPerformance(perf_graph, width * height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testMagnitudeSupernode testMagnitudeSupernode
+#else
+#define testMagnitudeSupernode DISABLED_testMagnitudeSupernode
+#endif
 
 TESTCASE_TESTS(tivxMagnitude, 
                testMagnitudeSupernode)

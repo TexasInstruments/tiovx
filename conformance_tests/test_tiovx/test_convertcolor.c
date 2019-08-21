@@ -999,6 +999,16 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_forma
     printPerformance(perf_graph, width*height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testColConvertSupernodeSingleNode testColConvertSupernodeSingleNode
+#define testColConvertSupernode testColConvertSupernode
+#define testColConvertChannelExtractSupernode testColConvertChannelExtractSupernode
+#else
+#define testColConvertSupernodeSingleNode DISABLED_testColConvertSupernodeSingleNode
+#define testColConvertSupernode DISABLED_testColConvertSupernode
+#define testColConvertChannelExtractSupernode DISABLED_testColConvertChannelExtractSupernode
+#endif
+
 TESTCASE_TESTS(tivxColorConvert, 
                testOnRandomAndNatural,
                testColConvertSupernodeSingleNode,

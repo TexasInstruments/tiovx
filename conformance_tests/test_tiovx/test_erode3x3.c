@@ -471,6 +471,12 @@ TEST_WITH_ARG(tivxErode3x3, testErode3x3Supernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testErode3x3Supernode testErode3x3Supernode
+#else
+#define testErode3x3Supernode DISABLED_testErode3x3Supernode
+#endif
+
 TESTCASE_TESTS(tivxErode3x3, 
                testGraphProcessing, 
                testValidRegion, 

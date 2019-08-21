@@ -537,6 +537,11 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testHalfScaleGaussianSupernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testHalfScaleGaussianSupernode testHalfScaleGaussianSupernode
+#else
+#define testHalfScaleGaussianSupernode DISABLED_testHalfScaleGaussianSupernode
+#endif
 
 TESTCASE_TESTS(tivxHalfScaleGaussian,
         testGraphProcessing,

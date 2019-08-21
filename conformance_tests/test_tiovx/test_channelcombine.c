@@ -383,6 +383,12 @@ TEST_WITH_ARG(tivxChannelCombine, testBasicTest, Arg,
     }
 }
 
+#ifdef BUILD_BAM
+#define testChannelCombineSingleSupernode testChannelCombineSingleSupernode
+#else
+#define testChannelCombineSingleSupernode DISABLED_testChannelCombineSingleSupernode
+#endif
+
 TESTCASE_TESTS(tivxChannelCombine,
         testGraphProcessing,
         testBasicTest,

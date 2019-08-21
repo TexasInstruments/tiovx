@@ -1711,6 +1711,22 @@ TEST_WITH_ARG(tivxSobel3x3, testSobel3x3SupernodeBranches, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testSobel3x3Supernode testSobel3x3Supernode
+#define testSobel3x3SupernodeMultiNode testSobel3x3SupernodeMultiNode
+#define testSobel3x3SupernodeMultiNode2 testSobel3x3SupernodeMultiNode2
+#define testSobel3x3SupernodeMultiNode3 testSobel3x3SupernodeMultiNode3
+#define testSobel3x3SupernodeOptionalParametersX testSobel3x3SupernodeOptionalParametersX
+#define testSobel3x3SupernodeOptionalParametersY testSobel3x3SupernodeOptionalParametersY
+#else
+#define testSobel3x3Supernode DISABLED_testSobel3x3Supernode
+#define testSobel3x3SupernodeMultiNode DISABLED_testSobel3x3SupernodeMultiNode
+#define testSobel3x3SupernodeMultiNode2 DISABLED_testSobel3x3SupernodeMultiNode2
+#define testSobel3x3SupernodeMultiNode3 DISABLED_testSobel3x3SupernodeMultiNode3
+#define testSobel3x3SupernodeOptionalParametersX DISABLED_testSobel3x3SupernodeOptionalParametersX
+#define testSobel3x3SupernodeOptionalParametersY DISABLED_testSobel3x3SupernodeOptionalParametersY
+#endif
+
 TESTCASE_TESTS(tivxSobel3x3, 
                testGraphProcessing, 
                testValidRegion, 

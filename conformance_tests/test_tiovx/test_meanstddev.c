@@ -344,6 +344,12 @@ TEST_WITH_ARG(tivxMeanStdDev, testMeanStdDevSupernode, format_arg,
     printPerformance(perf_graph, width * height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testMeanStdDevSupernode testMeanStdDevSupernode
+#else
+#define testMeanStdDevSupernode DISABLED_testMeanStdDevSupernode
+#endif
+
 TESTCASE_TESTS(tivxMeanStdDev, 
                testOnRandom,
                testMeanStdDevSupernode)

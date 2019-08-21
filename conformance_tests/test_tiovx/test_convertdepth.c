@@ -314,6 +314,11 @@ TEST_WITH_ARG(tivxConvertDepth, testConvertDepthSupernode, cvt_depth_arg, SUPERN
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testConvertDepthSupernode testConvertDepthSupernode
+#else
+#define testConvertDepthSupernode DISABLED_testConvertDepthSupernode
+#endif
 
 TESTCASE_TESTS(tivxConvertDepth, 
                BitExact,

@@ -361,6 +361,12 @@ TEST_WITH_ARG(tivxAddSub, testAddSubSupernode, fuzzy_arg, SUPERNODE_PARAMETERS(A
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testAddSubSupernode testAddSubSupernode
+#else
+#define testAddSubSupernode DISABLED_testAddSubSupernode
+#endif
+
 TESTCASE_TESTS(tivxAddSub, 
                testFuzzy,
                testAddSubSupernode

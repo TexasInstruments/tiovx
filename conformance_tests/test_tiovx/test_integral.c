@@ -231,6 +231,12 @@ TEST_WITH_ARG(tivxIntegral, testIntegralImageSupernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testIntegralImageSupernode testIntegralImageSupernode
+#else
+#define testIntegralImageSupernode DISABLED_testIntegralImageSupernode
+#endif
+
 TESTCASE_TESTS(tivxIntegral, 
                testGraphProcessing,
                testIntegralImageSupernode)

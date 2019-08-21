@@ -484,6 +484,11 @@ TEST_WITH_ARG(tivxConvolve, testConvolveSupernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testConvolveSupernode testConvolveSupernode
+#else
+#define testConvolveSupernode DISABLED_testConvolveSupernode
+#endif
 
 TESTCASE_TESTS(tivxConvolve, 
                testGraphProcessing, 

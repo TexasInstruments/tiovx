@@ -522,6 +522,11 @@ TEST_WITH_ARG(tivxHistogram, testHistogramSupernode, format_arg,
 
 }
 
+#ifdef BUILD_BAM
+#define testHistogramSupernode testHistogramSupernode
+#else
+#define testHistogramSupernode DISABLED_testHistogramSupernode
+#endif
 
 TESTCASE_TESTS(tivxHistogram, 
                testOnRandom,

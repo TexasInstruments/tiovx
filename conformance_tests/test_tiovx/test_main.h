@@ -19,8 +19,12 @@
 #if defined(BUILD_CT_TIOVX)
 TESTCASE(tiovxPerformance)
 TESTCASE(tiovxPerformance2)
+
+#if defined(BUILD_BAM)
 TESTCASE(tiovxSupernodePerformance)
 TESTCASE(tiovxSupernodePerformance2)
+TESTCASE(tivxSuperNode)
+#endif
 
 TESTCASE(tivxGraph)
 TESTCASE(tivxGraphDelay)
@@ -77,6 +81,5 @@ TESTCASE(tivxMaxNodes)
 TESTCASE(tivxGraphPipeline)
 TESTCASE(tivxPackedDataFormat)
 TESTCASE(tivxRawImage)
-TESTCASE(tivxSuperNode)
 #endif
 

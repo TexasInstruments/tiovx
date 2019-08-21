@@ -39,6 +39,14 @@ CFLAGS += -Wno-format-security
 CFLAGS += -Wno-unused-but-set-variable
 endif
 
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))
+DEFS += PLATFORM_PC
+endif
+
+ifeq ($(BUILD_BAM),yes)
+DEFS += BUILD_BAM
+endif
+
 include $(FINALE)
 
 endif

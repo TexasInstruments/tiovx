@@ -315,6 +315,12 @@ TEST_WITH_ARG(tivxBinOp8u, testBinOp8uSupernode, fuzzy_arg, SUPERNODE_PARAMETERS
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testBinOp8uSupernode testBinOp8uSupernode
+#else
+#define testBinOp8uSupernode DISABLED_testBinOp8uSupernode
+#endif
+
 TESTCASE_TESTS(tivxBinOp8u, 
                testFuzzy,
                testBinOp8uSupernode)

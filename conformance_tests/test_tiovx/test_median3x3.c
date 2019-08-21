@@ -471,6 +471,12 @@ TEST_WITH_ARG(tivxMedian3x3, testMedian3x3Supernode, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testMedian3x3Supernode testMedian3x3Supernode
+#else
+#define testMedian3x3Supernode DISABLED_testMedian3x3Supernode
+#endif
+
 TESTCASE_TESTS(tivxMedian3x3, 
                testGraphProcessing, 
                testValidRegion, 

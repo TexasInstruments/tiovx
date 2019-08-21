@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
+#ifdef BUILD_BAM
+
 #include "test_tiovx.h"
 #include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx_ext_super_node.h>
 #include <TI/tivx.h>
+#include "shared_functions.h"
 
 #define MAX_NODES 10
 
@@ -31,8 +34,8 @@ static void referenceAbsDiff(CT_Image src0, CT_Image src1, CT_Image dst)
     uint32_t i, j;
 
     ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
+    ASSERT(src0->width == src1->width && src0->width == dst->width);
+    ASSERT(src0->height == src1->height && src0->height == dst->height);
     ASSERT(src0->format == dst->format && src1->format == dst->format && dst->format == VX_DF_IMAGE_U8);
 
     for (i = 0; i < dst->height; ++i)
@@ -48,8 +51,8 @@ static void referenceAnd(CT_Image src0, CT_Image src1, CT_Image dst)
     uint32_t i, j;
 
     ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
+    ASSERT(src0->width == src1->width && src0->width == dst->width);
+    ASSERT(src0->height == src1->height && src0->height == dst->height);
     ASSERT(src0->format == dst->format && src1->format == dst->format && dst->format == VX_DF_IMAGE_U8);
 
     for (i = 0; i < dst->height; ++i)
@@ -62,8 +65,8 @@ static void referenceOr(CT_Image src0, CT_Image src1, CT_Image dst)
     uint32_t i, j;
 
     ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
+    ASSERT(src0->width == src1->width && src0->width == dst->width);
+    ASSERT(src0->height == src1->height && src0->height == dst->height);
     ASSERT(src0->format == dst->format && src1->format == dst->format && dst->format == VX_DF_IMAGE_U8);
 
     for (i = 0; i < dst->height; ++i)
@@ -76,27 +79,13 @@ static void referenceXor(CT_Image src0, CT_Image src1, CT_Image dst)
     uint32_t i, j;
 
     ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
+    ASSERT(src0->width == src1->width && src0->width == dst->width);
+    ASSERT(src0->height == src1->height && src0->height == dst->height);
     ASSERT(src0->format == dst->format && src1->format == dst->format && dst->format == VX_DF_IMAGE_U8);
 
     for (i = 0; i < dst->height; ++i)
         for (j = 0; j < dst->width; ++j)
             dst->data.y[i * dst->stride + j] = src0->data.y[i * src0->stride + j] ^ src1->data.y[i * src1->stride + j];
-}
-
-static void referenceNot(CT_Image src, CT_Image dst)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT(src->format == dst->format && src->format == VX_DF_IMAGE_U8);
-
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-            dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
 }
 
 static void referenceAdd(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy)
@@ -156,79 +145,6 @@ static void referenceAdd(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_con
         FAIL("Unsupported combination of argument formats: %.4s + %.4s = %.4s", &src0->format, &src1->format, &dst->format);
 
 #undef ADD_LOOP
-}
-
-
-static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT((src->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_S16) || (src->format == VX_DF_IMAGE_S16 && dst->format == VX_DF_IMAGE_U8));
-    ASSERT(policy == VX_CONVERT_POLICY_WRAP || policy == VX_CONVERT_POLICY_SATURATE);
-
-    if (shift > 16) shift = 16;
-    if (shift < -16) shift = -16;
-
-    if (src->format == VX_DF_IMAGE_U8)
-    {
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_WRAP)
-    {
-        // down-conversion + wrap
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] << (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] >> shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_SATURATE)
-    {
-        // down-conversion + saturate
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] << (-shift);
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] >> shift;
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-    }
 }
 
 static int16_t sobel_x_get(int32_t *values)
@@ -346,17 +262,6 @@ void referenceSobel(CT_Image src, vx_border_t border, CT_Image *p_dst_x, CT_Imag
     *p_dst_y = dst_y;
 }
 
-static void referenceAccumulateSquare(CT_Image input, vx_uint32 shift, CT_Image accum)
-{
-    CT_FILL_IMAGE_16S(return, accum,
-            {
-                uint8_t* input_data = CT_IMAGE_DATA_PTR_8U(input, x, y);
-                int32_t res32 = ((int32_t)(*dst_data)) + ((((int32_t)(*input_data))*((int32_t)(*input_data))) >> shift);
-                int16_t res = CT_SATURATE_S16(res32);
-                *dst_data = res;
-            });
-}
-
 
 /*
  * tivxCreateSuperNode Example
@@ -372,7 +277,7 @@ static void referenceAccumulateSquare(CT_Image input, vx_uint32 shift, CT_Image 
  * [0 1 2] [2 3] (first nodelist size is 3, second nodelist size is 2) - 2nd nodelist can't create a supernode because of the common node 2
  * etc
  * NODE_LIST_ARG is setting the parameters for the 2 supernodes
- * first 2 parameters assign the nodelist sizes 
+ * first 2 parameters assign the nodelist sizes
  * last 2 parameters assign the starting positions for the nodelists
  */
 
@@ -447,7 +352,7 @@ TEST_WITH_ARG(tivxSuperNode, test_tivxCreateSuperNode, node_list_arg, SUPER_NODE
     vx_node node_list_1[4], node_list_2[4];
     int widthHardCoded = 640, heightHardCoded = 480;
 
-    
+
     ASSERT_VX_OBJECT(src = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -463,7 +368,7 @@ TEST_WITH_ARG(tivxSuperNode, test_tivxCreateSuperNode, node_list_arg, SUPER_NODE
     ASSERT_VX_OBJECT(node4 = vxNotNode(graph, intermediate_3, dst), VX_TYPE_NODE);
 
 
-    switch (arg_->node_list1_start_index) 
+    switch (arg_->node_list1_start_index)
     {
         case 0:
             node_list_1[0]   = node1;
@@ -490,7 +395,7 @@ TEST_WITH_ARG(tivxSuperNode, test_tivxCreateSuperNode, node_list_arg, SUPER_NODE
     }
 
 
-    switch (arg_->node_list2_start_index) 
+    switch (arg_->node_list2_start_index)
     {
         case 0:
             node_list_2[0]   = node1;
@@ -598,7 +503,7 @@ TEST_WITH_ARG(tivxSuperNode, test_tivxCreateSuperNode, node_list_arg, SUPER_NODE
  * Then it will run graph_verify to verify that test is successfull or not
  * Parameters
  * there are 5 parameters passed to the test
- * first 4 parameters assigns the non zero node indexes for the super node node list. 
+ * first 4 parameters assigns the non zero node indexes for the super node node list.
  * If an index is 0, it means there's no node. And the maximum number of nodes in this node list is 4.
  * 5th parameters says whether the supernode is valid or not (valid = 1, not valid = 0)
  *
@@ -627,10 +532,14 @@ typedef struct {
 #define TEST_EDGE_VECTOR_ARGS1  \
     TEST_EDGE_VECTOR(1, 3, 0, 0,   0),   \
     TEST_EDGE_VECTOR(1, 2, 0, 0,   1),   \
-    TEST_EDGE_VECTOR(2, 4, 5, 0,   1),	 \
-	TEST_EDGE_VECTOR(2, 5, 0, 0,   1),	 \
+    TEST_EDGE_VECTOR(2, 4, 5, 0,   1),   \
+    TEST_EDGE_VECTOR(2, 5, 0, 0,   1),   \
     TEST_EDGE_VECTOR(1, 5, 3, 0,   0),   \
-	
+    TEST_EDGE_VECTOR(1, 3, 4, 5,   0),   \
+    TEST_EDGE_VECTOR(5, 1, 3, 2,   0),   \
+    TEST_EDGE_VECTOR(1, 2, 5, 0,   1),   \
+    TEST_EDGE_VECTOR(1, 2, 5, 4,   1),   \
+
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg, TEST_EDGE_VECTOR_ARGS1)
 {
     int node_count = 4;
@@ -648,10 +557,6 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
     int i = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -761,14 +666,14 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
     VX_CALL(vxReleaseImage(&intermediate_1));
     VX_CALL(vxReleaseImage(&intermediate_2));
     VX_CALL(vxReleaseImage(&intermediate_3));
-	VX_CALL(vxReleaseImage(&intermediate_4));
+    VX_CALL(vxReleaseImage(&intermediate_4));
     VX_CALL(vxReleaseImage(&dst));
     VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseNode(&node3));
     VX_CALL(vxReleaseNode(&node4));
-	VX_CALL(vxReleaseNode(&node5));
+    VX_CALL(vxReleaseNode(&node5));
     VX_CALL(vxReleaseGraph(&graph));
 
 }
@@ -777,28 +682,28 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
  * Same description as testSuperNodeEdgeCompliance1
  * Graph
  *
- * _				   CON_DPTH(4)-->
- *  \				  /
+ * _                   CON_DPTH(4)-->
+ *  \                 /
  *   OR(1)----SOBEL(3)
  * _/                 \
- *                     ACC_SQRD(5)-->
+ *                     SUB(5)-->
  *                    /
  * --NOT(2)-----------
  */
- 
- 
+
+
 #define TEST_EDGE_VECTOR_ARGS2  \
     TEST_EDGE_VECTOR(1, 3, 4, 0,   1),   \
     TEST_EDGE_VECTOR(1, 3, 5, 0,   1),   \
-    TEST_EDGE_VECTOR(1, 2, 4, 5,   1),	\
-	TEST_EDGE_VECTOR(1, 2, 3, 4,   1),	\
+    TEST_EDGE_VECTOR(1, 2, 4, 5,   0),   \
+    TEST_EDGE_VECTOR(1, 2, 3, 4,   0),   \
     TEST_EDGE_VECTOR(2, 3, 4, 5,   1),   \
-    TEST_EDGE_VECTOR(1, 2, 3, 0,   0),  \
+    TEST_EDGE_VECTOR(1, 2, 3, 0,   0),   \
     TEST_EDGE_VECTOR(1, 2, 0, 0,   0),   \
     TEST_EDGE_VECTOR(4, 5, 0, 0,   0),   \
     TEST_EDGE_VECTOR(1, 5, 0, 0,   0),   \
     TEST_EDGE_VECTOR(1, 2, 5, 0,   0),   \
-	
+
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg, TEST_EDGE_VECTOR_ARGS2)
 {
     int node_count = 4;
@@ -806,7 +711,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     vx_status status;
     tivx_super_node super_node = 0;
     vx_image src1, src2, src3, dst1, dst2, intermediate_1, intermediate_2, intermediate_3, intermediate_4;
-	vx_scalar acc_shift = 0, convdepth_shift = 0;
+    vx_scalar convdepth_shift = 0;
+    uint32_t convdepth_shift_val=0;
     CT_Image ref_src1, ref_src2, ref_src3, ref_dst1, ref_dst2, ref_intermediate_1, ref_intermediate_2, ref_intermediate_3, ref_intermediate_4, vxdst1, vxdst2;
     vx_graph graph;
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0, node5 = 0;
@@ -818,10 +724,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     int i = 0;
     vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(convdepth_shift = vxCreateScalar(context, VX_TYPE_INT32, &convdepth_shift_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
@@ -837,7 +740,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     ASSERT_NO_FAILURE(ref_intermediate_3 = ct_allocate_image(widthHardCoded, heightHardCoded, VX_DF_IMAGE_S16));
     ASSERT_NO_FAILURE(ref_intermediate_4 = ct_allocate_image(widthHardCoded, heightHardCoded, VX_DF_IMAGE_S16));
     ASSERT_NO_FAILURE(ref_dst1 = ct_allocate_image(widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8));
-	ASSERT_NO_FAILURE(ref_dst2 = ct_allocate_image(widthHardCoded, heightHardCoded, VX_DF_IMAGE_S16 ));
+    ASSERT_NO_FAILURE(ref_dst2 = ct_allocate_image(widthHardCoded, heightHardCoded, VX_DF_IMAGE_S16 ));
 
     ASSERT_VX_OBJECT(src1 = ct_image_to_vx_image(ref_src1, context), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src2 = ct_image_to_vx_image(ref_src2, context), VX_TYPE_IMAGE);
@@ -850,10 +753,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     ASSERT_VX_OBJECT(node1 = vxOrNode(graph, src1, src2, intermediate_1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node2 = vxNotNode(graph, src3, intermediate_2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxSobel3x3Node(graph, intermediate_1, intermediate_3, intermediate_4), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(node4 = vxConvertDepthNode(graph, intermediate_3, dst1,VX_CONVERT_POLICY_SATURATE, convdepth_shift), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(node5 = vxAccumulateSquareImageNode(graph, intermediate_2, acc_shift, intermediate_4), VX_TYPE_NODE);
-	ASSERT_NO_FAILURE(dst2 = intermediate_4);
-
+    ASSERT_VX_OBJECT(node4 = vxConvertDepthNode(graph, intermediate_3, dst1, VX_CONVERT_POLICY_SATURATE, convdepth_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node5 = vxSubtractNode(graph, intermediate_2, intermediate_4, VX_CONVERT_POLICY_SATURATE, dst2), VX_TYPE_NODE);
 
     for (i = 0; i < node_count; ++i)
     {
@@ -908,10 +809,20 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
             ASSERT_NO_FAILURE(referenceSobel(ref_intermediate_1, border, &ref_intermediate_3, &ref_intermediate_4));
             ASSERT_NO_FAILURE(referenceNot(ref_src3, ref_intermediate_2));
             ASSERT_NO_FAILURE(referenceConvertDepth(ref_intermediate_3, ref_dst1, 0, VX_CONVERT_POLICY_SATURATE));
-            ASSERT_NO_FAILURE(referenceAccumulateSquare(ref_intermediate_2, 0, ref_intermediate_4));
-            ASSERT_NO_FAILURE(ref_dst2 = ref_intermediate_4);
+            ASSERT_NO_FAILURE(referenceSubtractSingle(ref_intermediate_2, ref_intermediate_4, ref_dst2, VX_CONVERT_POLICY_SATURATE));
             ASSERT_NO_FAILURE(vxdst1 = ct_image_from_vx_image(dst1));
             ASSERT_NO_FAILURE(vxdst2 = ct_image_from_vx_image(dst2));
+
+            ASSERT_NO_FAILURE(
+                if (border.mode == VX_BORDER_UNDEFINED)
+                {
+                    ct_adjust_roi(vxdst1,  1, 1, 1, 1);
+                    ct_adjust_roi(ref_dst1, 1, 1, 1, 1);
+                    ct_adjust_roi(vxdst2,  1, 1, 1, 1);
+                    ct_adjust_roi(ref_dst2, 1, 1, 1, 1);
+                }
+            );
+
             ASSERT_EQ_CTIMAGE(ref_dst1, vxdst1);
             ASSERT_EQ_CTIMAGE(ref_dst2, vxdst2);
 
@@ -930,13 +841,14 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
         }
     }
 
+    VX_CALL(vxReleaseScalar(&convdepth_shift));
     VX_CALL(vxReleaseImage(&src1));
     VX_CALL(vxReleaseImage(&src2));
     VX_CALL(vxReleaseImage(&src3));
     VX_CALL(vxReleaseImage(&intermediate_1));
     VX_CALL(vxReleaseImage(&intermediate_2));
     VX_CALL(vxReleaseImage(&intermediate_3));
-	VX_CALL(vxReleaseImage(&intermediate_4));
+    VX_CALL(vxReleaseImage(&intermediate_4));
     VX_CALL(vxReleaseImage(&dst1));
     VX_CALL(vxReleaseImage(&dst2));
     VX_CALL(tivxReleaseSuperNode(&super_node));
@@ -944,15 +856,15 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseNode(&node3));
     VX_CALL(vxReleaseNode(&node4));
-	VX_CALL(vxReleaseNode(&node5));
+    VX_CALL(vxReleaseNode(&node5));
     VX_CALL(vxReleaseGraph(&graph));
 
 }
 
 
-/* 
+/*
  * Same description as testSuperNodeEdgeCompliance1
- * Graph   
+ * Graph
  *                ____
  *                    \
  * _                    XOR(3)
@@ -960,17 +872,17 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
  *   OR(1)---NOT(2)---
  * _/                 \
  *                      NOT(4)-->
- *                   
- * 
+ *
+ *
  */
 #define TEST_EDGE_VECTOR_ARGS3  \
     TEST_EDGE_VECTOR(1, 2, 3, 4,   1),   \
     TEST_EDGE_VECTOR(1, 2, 3, 0,   1),   \
-    TEST_EDGE_VECTOR(2, 3, 4, 0,   1),  \
-    TEST_EDGE_VECTOR(1, 3, 0, 0,   0),  \
+    TEST_EDGE_VECTOR(2, 3, 4, 0,   1),   \
+    TEST_EDGE_VECTOR(1, 3, 0, 0,   0),   \
     TEST_EDGE_VECTOR(3, 4, 3, 0,   0),   \
     TEST_EDGE_VECTOR(2, 3, 0, 0,   1),   \
-    
+
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg, TEST_EDGE_VECTOR_ARGS3)
 {
     int node_count = 4;
@@ -988,10 +900,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
     int i = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(dst1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -1105,9 +1014,9 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
 
 }
 
-/* 
+/*
  * Same description as testSuperNodeEdgeCompliance1
- * Graph   
+ * Graph
  *                __________________
  *               /                  \
  * _          __/                    \
@@ -1127,15 +1036,18 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
     TEST_EDGE_VECTOR(5, 6, 3, 0,   1),   \
     TEST_EDGE_VECTOR(2, 6, 3, 4,   1),   \
     TEST_EDGE_VECTOR(1, 2, 5, 6,   0),   \
-  /*TEST_EDGE_VECTOR(1, 4, 0, 0,   1),   \
-    TEST_EDGE_VECTOR(1, 3, 4, 0,   1),   \
     TEST_EDGE_VECTOR(2, 3, 6, 0,   1),   \
     TEST_EDGE_VECTOR(1, 3, 0, 0,   0),   \
     TEST_EDGE_VECTOR(5, 6, 4, 0,   0),   \
-    TEST_EDGE_VECTOR(1, 6, 3, 4,   1),   \
-    TEST_EDGE_VECTOR(1, 2, 4, 0,   1),   \
-    TEST_EDGE_VECTOR(2, 3, 0, 0,   1),   \*/
-    
+    TEST_EDGE_VECTOR(2, 3, 0, 0,   1),   \
+
+  /* As of now, following ones can not be detected by implementation
+    TEST_EDGE_VECTOR(1, 3, 4, 0,   0),   \
+    TEST_EDGE_VECTOR(1, 6, 3, 4,   0),   \
+    TEST_EDGE_VECTOR(1, 2, 4, 0,   0),   \
+    TEST_EDGE_VECTOR(1, 4, 0, 0,   0),   \
+    */
+
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg, TEST_EDGE_VECTOR_ARGS4)
 {
     int node_count = 4;
@@ -1153,11 +1065,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
     int i = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src4 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -1298,7 +1206,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
  * Following test will set the supernode target to another target than the default one and check if it was correctly set
  * No Parameters
  * Supernode1 (OR(1),NOT(2))
- * Supernode2 (OR(3),NOT(4))
+ * Supernode2 (XOR(3),NOT(4))
  * _
  *  \
  *   OR(1)---NOT(2)\
@@ -1325,9 +1233,7 @@ TEST(tivxSuperNode, testSuperNodeTargetConstraint1)
     char supernodeTarget1[TIVX_TARGET_MAX_NAME], supernodeTarget2[TIVX_TARGET_MAX_NAME];
     char nodeTarget1[TIVX_TARGET_MAX_NAME], nodeTarget2[TIVX_TARGET_MAX_NAME], nodeTarget3[TIVX_TARGET_MAX_NAME], nodeTarget4[TIVX_TARGET_MAX_NAME];
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -1374,7 +1280,7 @@ TEST(tivxSuperNode, testSuperNodeTargetConstraint1)
     VX_CALL(vxQueryNode(node2, TIVX_NODE_TARGET_STRING, &nodeTarget2, sizeof(nodeTarget2)));
     VX_CALL(vxQueryNode(node3, TIVX_NODE_TARGET_STRING, &nodeTarget3, sizeof(nodeTarget3)));
     VX_CALL(vxQueryNode(node4, TIVX_NODE_TARGET_STRING, &nodeTarget4, sizeof(nodeTarget4)));
-    
+
     ASSERT((strncmp(supernodeTarget1, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME) == 0) &&
            (strncmp(supernodeTarget2, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME) == 0) &&
            (strncmp(nodeTarget1, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME) == 0) &&
@@ -1459,7 +1365,7 @@ typedef struct {
     TEST_TARGET_VECTOR(1, 2, 5,   0, 1, 1),   \
     TEST_TARGET_VECTOR(3, 4, 0,   1, 0, 0),   \
     TEST_TARGET_VECTOR(2, 4, 5,   1, 0, 1),   \
-    
+
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeTargetConstraint2, test_target_vector_arg, TEST_TARGET_VECTOR_ARGS)
 {
     int node_count = 3;
@@ -1478,9 +1384,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeTargetConstraint2, test_target_vector_
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2};
     int target_vector[] = {arg_->target0, arg_->target1, arg_->target2};
 
-    
-    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -1562,6 +1466,13 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeTargetConstraint2, test_target_vector_
 
 }
 
+/* On PC, targets get mapped to same target, so this test will fail */
+#ifdef PLATFORM_PC
+#define testSuperNodeTargetConstraint1 DISABLED_testSuperNodeTargetConstraint1
+#else
+#define testSuperNodeTargetConstraint1 testSuperNodeTargetConstraint1
+#endif
+
 TESTCASE_TESTS(tivxSuperNode,
         test_tivxCreateSuperNode,
         testSuperNodeEdgeCompliance1,
@@ -1572,3 +1483,4 @@ TESTCASE_TESTS(tivxSuperNode,
         testSuperNodeTargetConstraint2
         )
 
+#endif

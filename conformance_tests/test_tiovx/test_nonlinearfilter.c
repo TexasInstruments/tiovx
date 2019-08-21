@@ -677,6 +677,11 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testNonLinearFilterSupernode testNonLinearFilterSupernode
+#else
+#define testNonLinearFilterSupernode DISABLED_testNonLinearFilterSupernode
+#endif
 
 TESTCASE_TESTS(tivxNonLinearFilter,
                testVirtualImage,

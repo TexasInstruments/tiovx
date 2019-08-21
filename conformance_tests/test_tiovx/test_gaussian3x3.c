@@ -475,6 +475,12 @@ TEST_WITH_ARG(tivxGaussian3x3, testGaussian3x3Supernode, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testGaussian3x3Supernode testGaussian3x3Supernode
+#else
+#define testGaussian3x3Supernode DISABLED_testGaussian3x3Supernode
+#endif
+
 TESTCASE_TESTS(tivxGaussian3x3, 
                testGraphProcessing, 
                testValidRegion, 

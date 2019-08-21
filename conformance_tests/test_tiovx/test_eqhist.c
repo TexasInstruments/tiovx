@@ -334,6 +334,12 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
     printPerformance(perf_graph, width * height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testEqualizeHistogramSupernode testEqualizeHistogramSupernode
+#else
+#define testEqualizeHistogramSupernode DISABLED_testEqualizeHistogramSupernode
+#endif
+
 TESTCASE_TESTS(tivxEqualizeHistogram, 
                testOnRandom,
                testEqualizeHistogramSupernode)

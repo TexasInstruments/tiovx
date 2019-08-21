@@ -466,6 +466,11 @@ TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
     ct_free_mem(lut1_data);
 }
 
+#ifdef BUILD_BAM
+#define testLutSupernode testLutSupernode
+#else
+#define testLutSupernode DISABLED_testLutSupernode
+#endif
 
 TESTCASE_TESTS(tivxLUT,
                testGraphProcessing,

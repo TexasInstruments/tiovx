@@ -508,6 +508,12 @@ TEST_WITH_ARG(tivxMultiply, testMultiplySupernode, fuzzy_arg, SUPERNODE_ARGS(SAT
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testMultiplySupernode testMultiplySupernode
+#else
+#define testMultiplySupernode DISABLED_testMultiplySupernode
+#endif
+
 TESTCASE_TESTS(tivxMultiply, 
                testFuzzy,
                testMultiplySupernode)

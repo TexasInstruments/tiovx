@@ -234,6 +234,11 @@ TEST_WITH_ARG(tivxNot, testNotSupernode, size_arg, SUPERNODE_NOT_SIZE_ARGS)
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testNotSupernode testNotSupernode
+#else
+#define testNotSupernode DISABLED_testNotSupernode
+#endif
 
 TESTCASE_TESTS(tivxNot, 
                testSizes,

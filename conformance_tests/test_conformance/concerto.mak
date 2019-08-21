@@ -72,6 +72,10 @@ ifeq ($(BUILD_CT_TIOVX_HWA),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_HWA
 endif
 
+ifeq ($(BUILD_BAM),yes)
+CFLAGS      += -DBUILD_BAM
+endif
+
 include $(FINALE)
 
 endif

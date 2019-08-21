@@ -271,6 +271,11 @@ TEST_WITH_ARG(tivxBinOp16s, testBinOp16uSupernode, fuzzy_arg, SUPERNODE_PARAMETE
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#ifdef BUILD_BAM
+#define testBinOp16uSupernode testBinOp16uSupernode
+#else
+#define testBinOp16uSupernode DISABLED_testBinOp16uSupernode
+#endif
 
 TESTCASE_TESTS(tivxBinOp16s, 
                testFuzzy,

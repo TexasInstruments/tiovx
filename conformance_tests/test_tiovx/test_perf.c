@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "shared_functions.h"
 
-#define ENABLE_SUPERNODE   0
+#define ENABLE_SUPERNODE   1
 #define WIDTH           (640)
 #define HEIGHT          (480)
 #define OUTPUT_FILE     "tiovx_performance.html"
@@ -65,8 +65,11 @@ static uint32_t sTiovxKernIdx;
 
 TESTCASE(tiovxPerformance, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tiovxPerformance2, CT_VXContext, ct_setup_vx_context, 0)
+
+#ifdef BUILD_BAM
 TESTCASE(tiovxSupernodePerformance, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tiovxSupernodePerformance2, CT_VXContext, ct_setup_vx_context, 0)
+#endif
 
 static void openFile()
 {
@@ -75,7 +78,7 @@ static void openFile()
 
     if (!perf_file)
     {
-        sz = snprintf(filepath, MAXPATHLENGTH, "%soutput/%s", ct_get_test_file_path(),
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/%s", ct_get_test_file_path(),
             OUTPUT_FILE);
         ASSERT(sz < MAXPATHLENGTH);
 
@@ -158,7 +161,7 @@ static void openSupernodeFile()
 
     if (!spernode_perf_file)
     {
-        sz = snprintf(filepath, MAXPATHLENGTH, "%soutput/%s", ct_get_test_file_path(),
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/%s", ct_get_test_file_path(),
             SUPERNODE_OFILE);
         ASSERT(sz < MAXPATHLENGTH);
 
@@ -198,6 +201,8 @@ static void openSupernodeFile()
         sTiovxKernIdx = 0;
     }
 }
+
+#ifdef BUILD_BAM
 
 TEST(tiovxSupernodePerformance, tiovxSupernodePerfOpenFile)
 {
@@ -245,6 +250,8 @@ void PrintSupernodePerf(vx_perf_t graph, vx_perf_t super_node, vx_perf_t node1, 
         fprintf(spernode_perf_file, "%s\n", " </tr>");
     }
 }
+
+#endif
 
 TEST(tiovxPerformance, tiovxPerfAccumulate)
 {
@@ -4227,7 +4234,9 @@ typedef struct {
     ARITHM_FUZZY_ARGS_(func, SATURATE, WIDTH, HEIGHT, U8, S16, S16),\
     ARITHM_FUZZY_ARGS_(func, SATURATE, WIDTH, HEIGHT, S16, U8, S16),\
     ARITHM_FUZZY_ARGS_(func, SATURATE, WIDTH, HEIGHT, S16, S16, S16)
-    
+
+#ifdef BUILD_BAM
+
 TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAdd, arithm_arg, ARITHM_FUZZY_ARGS(Add))
 {
     int node_count = 3;
@@ -7341,9 +7350,11 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
     }
 }
 
+#endif
+
 TESTCASE_TESTS(tiovxPerformance,
     tiovxPerfOpenFile,
-    /*tiovxPerfAccumulate,
+    tiovxPerfAccumulate,
     tiovxPerfAccumulateSquare,
     tiovxPerfAccumulateWeighted,
     tiovxPerfAdd888,
@@ -7368,11 +7379,11 @@ TESTCASE_TESTS(tiovxPerformance,
     tiovxPerfChannelCombineNV12,
     tiovxPerfChannelExtractRGB,
     tiovxPerfChannelExtractRGBX,
-    tiovxPerfColorConvert,*/
+    tiovxPerfColorConvert,
     tiovxPerfConvertDepth)
 
 TESTCASE_TESTS(tiovxPerformance2,
-    /*tiovxPerfConvolve,
+    tiovxPerfConvolve,
     tiovxPerfEqualizeHistogram,
     tiovxPerfGaussian3x3,
     tiovxPerfGaussianPyramid,
@@ -7399,8 +7410,10 @@ TESTCASE_TESTS(tiovxPerformance2,
     tiovxPerfSobel3x3,
     tiovxPerfThreshold,
     tiovxPerfWarpAffine,
-    tiovxPerfWarpPerspective,*/
+    tiovxPerfWarpPerspective,
     tiovxPerfCloseFile)
+
+#ifdef BUILD_BAM
 
 TESTCASE_TESTS(tiovxSupernodePerformance,
     tiovxSupernodePerfOpenFile,
@@ -7440,3 +7453,5 @@ TESTCASE_TESTS(tiovxSupernodePerformance2,
     tiovxSupernodePerfSobel3x3,
     tiovxSupernodePerfThreshold,
     tiovxSupernodePerfCloseFile)
+
+#endif
