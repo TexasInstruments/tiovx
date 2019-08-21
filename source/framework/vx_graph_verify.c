@@ -1786,12 +1786,14 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
             /* For each parameter */
             for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
             {
-                // if an input/output is null it will be deleted from the supernode edge list
-                // if the bam edge list ever needs NULL assigned to unused ports,
-                // this logic might need modifications to encode the NULL using a 
-                // constant like TIVX_OBJ_DESC_NULL, consequently the tivxKernelSupernodeCreate()
-                // method will need modifications 
-                if (node_cur->parameters[prm_cur_idx] != NULL) {
+                /* if an input/output is null it will be deleted from the supernode edge list
+                 * if the bam edge list ever needs NULL assigned to unused ports,
+                 * this logic might need modifications to encode the NULL using a
+                 * constant like TIVX_OBJ_DESC_NULL, consequently the tivxKernelSupernodeCreate()
+                 * method will need modifications
+                 */
+                if (node_cur->parameters[prm_cur_idx] != NULL)
+                {
                     if(node_cur->parameters[prm_cur_idx]->type == VX_TYPE_IMAGE )
                     {
                         prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
@@ -1820,32 +1822,9 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                     {
                                         if( prm_next_dir == VX_OUTPUT )
                                         {
-                                            vx_reference parent_ref_node_cur, parent_ref_node_next;
-
-                                            parent_ref_node_cur = NULL;
-                                            parent_ref_node_next = NULL;
-
-                                            if (NULL != ref1)
-                                            {
-                                                if (vx_true_e == ref1->is_array_element)
-                                                {
-                                                    parent_ref_node_cur = ref1->scope;
-                                                }
-                                            }
-
-                                            if (NULL != ref2)
-                                            {
-                                                if (vx_true_e == ref2->is_array_element)
-                                                {
-                                                    parent_ref_node_next = ref2->scope;
-                                                }
-                                            }
-
                                             /* check if output data reference of next node is equal to
                                                input data reference of current */
-                                            if( ownGraphIsRefMatch(graph, ref1, ref2) ||
-                                                ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
-                                                ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+                                            if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
                                             {
                                                 /* Node to Node edge */
                                                 if(node_next->super_node == super_node)
@@ -1938,7 +1917,8 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                 /* For each parameter */
                 for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
                 {
-                    if (node_cur->parameters[prm_cur_idx] != NULL) {
+                    if (node_cur->parameters[prm_cur_idx] != NULL)
+                    {
                         if( node_cur->parameters[prm_cur_idx]->type == VX_TYPE_IMAGE )
                         {
                             prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
@@ -1966,32 +1946,9 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                         {
                                             if( (prm_next_dir == VX_INPUT) || (prm_next_dir == VX_BIDIRECTIONAL) )
                                             {
-                                                vx_reference parent_ref_node_cur, parent_ref_node_next;
-
-                                                parent_ref_node_cur = NULL;
-                                                parent_ref_node_next = NULL;
-
-                                                if (NULL != ref1)
-                                                {
-                                                    if (vx_true_e == ref1->is_array_element)
-                                                    {
-                                                        parent_ref_node_cur = ref1->scope;
-                                                    }
-                                                }
-
-                                                if (NULL != ref2)
-                                                {
-                                                    if (vx_true_e == ref2->is_array_element)
-                                                    {
-                                                        parent_ref_node_next = ref2->scope;
-                                                    }
-                                                }
-
                                                 /* check if input data reference of next node is equal to
                                                    output data reference of current */
-                                                if( ownGraphIsRefMatch(graph, ref1, ref2) ||
-                                                    ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
-                                                    ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+                                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
                                                 {
                                                     if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
                                                     {
@@ -2010,6 +1967,23 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                         {
                                                             /* Edge is external to super node */
                                                             /* We found a external output edge */
+                                                            for(i=0; i<num_found_external_refs; i++)
+                                                            {
+                                                                if( ref1 == found_external_refs[i])
+                                                                {
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if(i+1 > num_found_external_refs)
+                                                            {
+                                                                found_external_refs[num_found_external_refs] = ref1;
+                                                                obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
+                                                                obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
+                                                                obj_desc->edge_list[cnt].dst_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                                                                obj_desc->edge_list[cnt].dst_node_prm_idx = num_found_external_refs;
+                                                                cnt++;
+                                                                num_found_external_refs++;
+                                                            }
 
                                                             /* add node_next as output node for super node if not already added */
                                                             status = ownNodeAddOutNode(super_node->node, node_next);
