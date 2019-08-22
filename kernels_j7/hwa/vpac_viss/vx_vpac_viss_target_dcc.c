@@ -362,6 +362,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     if (1u == aewb_result->awb_valid)
     {
         wbCfg = &vsCfg->wbCfg;
+
         /* apply AWB gains in RAWFE when NSF4 is bypassed */
         if (1u == vissObj->bypass_nsf4)
         {
@@ -808,17 +809,13 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
 
     if (NULL != rgb2rgb)
     {
-        /* TODO: RGB2RGB matrix seems to be 3x3 whereas CCM is 3x4 */
         /* Map DCC Output Config to FVID2 Driver Config */
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
         {
-        /* TODO: RGB2RGB matrix seems to be 3x3 whereas CCM is 3x4 */
-        /* Map DCC Output Config to FVID2 Driver Config */
-            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW-1; cnt2 ++)
+            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
             {
                 ccmCfg->weights[cnt1][cnt2] = rgb2rgb->matrix[cnt1][cnt2];
             }
-            ccmCfg->weights[cnt1][FCP_MAX_CCM_COEFF_IN_RAW-1] = 0;
             ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
         }
         vissObj->vissCfgRef.ccm = ccmCfg;
@@ -829,7 +826,6 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     }
     else
     {
-        /* TODO: RGB2RGB matrix seems to be 3x3 whereas CCM is 3x4 */
         /* Map DCC Output Config to FVID2 Driver Config */
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
         {
@@ -1350,10 +1346,10 @@ static void tivxVpacVissDccMapWb2Params(tivxVpacVissObj *vissObj)
     {
         wbCfg = &vissObj->vissCfg.wbCfg;
 
-        wbCfg->gain[0u] = 694u;
+        wbCfg->gain[0u] = 512u;
         wbCfg->gain[1u] = 512u;
         wbCfg->gain[2u] = 512u;
-        wbCfg->gain[3u] = 1028u;
+        wbCfg->gain[3u] = 512u;
 
         wbCfg->offset[0u] = 0u;
         wbCfg->offset[1u] = 0u;
