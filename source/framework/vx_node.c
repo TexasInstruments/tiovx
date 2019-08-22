@@ -1627,10 +1627,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             vxQueryParameter(param, VX_PARAMETER_REF, &ref, sizeof(vx_reference));
             vxQueryParameter(param, VX_PARAMETER_STATE, &state, sizeof(vx_enum));
             vxQueryParameter(param, VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
-            
+
             if((state==VX_PARAMETER_STATE_OPTIONAL) && (ownIsValidSpecificReference(ref, type) == vx_false_e))
             {
-                /* parameter reference is invalid but since parameter is optional, 
+                /* parameter reference is invalid but since parameter is optional,
                  * this is not a error condition
                  */
             }
@@ -1641,7 +1641,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                     VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Parameter %d direction is incorrect\n", p);
                     status = VX_FAILURE;
                 }
-    
+
                 if(status == VX_SUCCESS)
                 {
                     if (replicate[p] == vx_true_e)
@@ -1670,7 +1670,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                 {
                                     num_of_replicas = items;
                                 }
-    
+
                                 if ((num_of_replicas != 0) && (items != num_of_replicas))
                                 {
                                     VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is not equal to zero and not equal to items\n");
@@ -1839,6 +1839,26 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
         next_node_obj_desc =
             (tivx_obj_desc_node_t *)
                 tivxObjDescGet( node->obj_desc[0]->out_node_id[index] );
+
+        if(next_node_obj_desc)
+        {
+            next_node = (vx_node)(uintptr_t)next_node_obj_desc->base.host_ref;
+        }
+    }
+    return next_node;
+}
+
+vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 index)
+{
+    vx_node next_node = NULL;
+
+    if((node) && (node->obj_desc[0]) && (index < node->obj_desc[0]->num_in_nodes))
+    {
+        tivx_obj_desc_node_t *next_node_obj_desc;
+
+        next_node_obj_desc =
+            (tivx_obj_desc_node_t *)
+                tivxObjDescGet( node->obj_desc[0]->in_node_id[index] );
 
         if(next_node_obj_desc)
         {

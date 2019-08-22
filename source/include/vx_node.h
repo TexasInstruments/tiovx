@@ -274,6 +274,11 @@ void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
  */
 vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index);
 
+/*! \brief Get next node at given input index
+ *
+ * \ingroup group_vx_node
+ */
+vx_node ownNodeGetNextInNode(vx_node node, vx_uint32 index);
 
 /*! \brief Check if node is completed
  *

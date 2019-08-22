@@ -177,19 +177,58 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
     tivx_super_node super_node, uint32_t num_nodes, vx_bool *is_continuous)
 {
 
-#if 0
-    uint16_t cur_node_idx, out_node_idx, in_node_idx, num_out_nodes, num_in_nodes, i,j;
+    uint16_t cur_node_idx, out_node_idx, in_node_idx, num_out_nodes, num_in_nodes;
     vx_node cur_node, next_node;
-    vx_bool found;
     vx_node *nodes = super_node->nodes;
 
     if (num_nodes < TIVX_GRAPH_MAX_NODES)
     {
         tivxGraphSortStackReset(context, num_nodes);
 
-        cur_node_idx = 0;
+        for(cur_node_idx=0; cur_node_idx<num_nodes; cur_node_idx++)
+        {
+            cur_node = nodes[cur_node_idx];
 
-        // TODO: Add seach logic here
+            /* For continuity, incounter will be recycled and
+             * serve as a "touched" flag */
+            cur_node->incounter = 0;
+        }
+
+        tivxGraphSortStackPush(context, nodes[0]);
+        nodes[0]->incounter = 1;
+
+        cur_node_idx = 1;
+        while( tivxGraphSortStackPop(context, &cur_node) )
+        {
+            num_in_nodes = ownNodeGetNumInNodes(cur_node);
+            num_out_nodes = ownNodeGetNumOutNodes(cur_node);
+
+            for(in_node_idx=0; in_node_idx < num_in_nodes; in_node_idx++)
+            {
+                next_node = ownNodeGetNextInNode(cur_node, in_node_idx);
+                if(next_node &&
+                   next_node->super_node == super_node &&
+                   next_node->incounter == 0)
+                {
+                    next_node->incounter = 1;
+                    tivxGraphSortStackPush(context, next_node);
+                    cur_node_idx++;
+                }
+            }
+
+            for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
+            {
+                next_node = ownNodeGetNextNode(cur_node, out_node_idx);
+                if(next_node &&
+                   next_node->super_node == super_node &&
+                   next_node->incounter == 0)
+                {
+                    next_node->incounter = 1;
+                    tivxGraphSortStackPush(context, next_node);
+                    cur_node_idx++;
+                }
+            }
+        }
 
         if( cur_node_idx == num_nodes)
         {
@@ -200,8 +239,5 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
             *is_continuous = vx_false_e;
         }
     }
-#endif
-
-    *is_continuous = vx_true_e;
 }
 
