@@ -81,6 +81,7 @@ vx_status tivxAddKernelDofVisualize(vx_context context);
 vx_status tivxAddKernelVpacViss(vx_context context);
 vx_status tivxAddKernelDisplay(vx_context context);
 vx_status tivxAddKernelCapture(vx_context context);
+vx_status tivxAddKernelVideoDecoder(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
 vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
@@ -93,6 +94,7 @@ vx_status tivxRemoveKernelDofVisualize(vx_context context);
 vx_status tivxRemoveKernelVpacViss(vx_context context);
 vx_status tivxRemoveKernelDisplay(vx_context context);
 vx_status tivxRemoveKernelCapture(vx_context context);
+vx_status tivxRemoveKernelVideoDecoder(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelVpacNfGeneric, &tivxRemoveKernelVpacNfGeneric},
@@ -105,7 +107,8 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelDofVisualize, &tivxRemoveKernelDofVisualize},
     {&tivxAddKernelVpacViss, &tivxRemoveKernelVpacViss},
     {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
-    {&tivxAddKernelCapture, &tivxRemoveKernelCapture}
+    {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
+    {&tivxAddKernelVideoDecoder, &tivxRemoveKernelVideoDecoder}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -162,6 +165,8 @@ void tivxHwaLoadKernels(vx_context context)
 
         tivxRegisterHwaTargetVpacVissKernels();
 
+        /*tivxRegisterHwaTargetVdecKernels();*/
+
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
         #endif
 
@@ -195,6 +200,8 @@ void tivxHwaUnLoadKernels(vx_context context)
         tivxUnRegisterHwaTargetArmKernels();
 
         tivxUnRegisterHwaTargetVpacVissKernels();
+
+        /*tivxUnRegisterHwaTargetVdecKernels();*/
 
         #endif
 

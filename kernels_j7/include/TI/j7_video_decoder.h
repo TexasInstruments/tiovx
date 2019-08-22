@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,21 +60,11 @@
  *
  */
 
-#ifndef J7_H_
-#define J7_H_
+#ifndef J7_VIDEO_DECODER_H_
+#define J7_VIDEO_DECODER_H_
 
-#include <TI/tivx.h>
-#include <TI/j7_kernels.h>
-#include <TI/j7_vpac_ldc.h>
-#include <TI/j7_vpac_msc.h>
-#include <TI/j7_vpac_viss.h>
-#include <TI/j7_dmpac_dof.h>
-#include <TI/j7_dmpac_sde.h>
-#include <TI/j7_vpac_nf.h>
-#include <TI/j7_capture.h>
-#include <TI/j7_display.h>
-#include <TI/j7_video_decoder.h>
-#include <TI/j7_nodes.h>
+#include <VX/vx.h>
+#include <VX/vx_kernels.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,95 +72,92 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface to TI extension APIs
+ * \brief The Video Decoder kernels in this kernel extension.
  */
 
-/*! \brief Target name for A72_0
- * \ingroup group_tivx_ext_targets
+/*! \brief video_decoder kernel name
+ *  \ingroup group_vision_function_video_decoder
  */
-#define TIVX_TARGET_A72_0      "A72-0"
+#define TIVX_KERNEL_VIDEO_DECODER_NAME     "com.ti.hwa.video_decoder"
 
-/*! \brief Target name for DSP_C7_1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DSP_C7_1    "DSP_C7-1"
+/*********************************
+ *     VIDEO_DECODER Defines
+ *********************************/
 
-/*! \brief Target name for VPAC NF
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_NF      "VPAC_NF"
-/*! \brief Target name for VPAC LDC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_LDC1    "VPAC_LDC1"
-/*! \brief Target name for VPAC MSC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_MSC1    "VPAC_MSC1"
-/*! \brief Target name for VPAC MSC2
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_MSC2    "VPAC_MSC2"
-/*! \brief Target name for VPAC SDE
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DMPAC_SDE    "DMPAC_SDE"
-/*! \brief Target name for VPAC DOF
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DMPAC_DOF    "DMPAC_DOF"
-/*! \brief Target name for VPAC VISS1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_VISS1   "VPAC_VISS1"
-/*! \brief Target name for Capture
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_CAPTURE1     "CAPTURE1"
-/*! \brief Target name for Capture
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_CAPTURE2     "CAPTURE2"
-/*! \brief Target name for Display
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DISPLAY1     "DISPLAY1"
-/*! \brief Target name for Display
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DISPLAY2     "DISPLAY2"
-/*! \brief Target name for VDEC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VDEC1     "VDEC1"
-/*! \brief Target name for VDEC2
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VDEC2     "VDEC2"
+/*!
+ * \defgroup group_vision_function_video_decoder_bitstream_format Enumerations
+ * \brief Enumerations for bitstream format in Video Decoder structures
+ * \ingroup group_vision_function_video_decoder
+ * @{*/
 
+#define TIVX_BITSTREAM_FORMAT_H264  (0u)
 
-/*! \brief CPU ID for supported CPUs
+#define TIVX_BITSTREAM_FORMAT_HEVC  (1u)
+
+#define TIVX_BITSTREAM_FORMAT_MJPEG (2u)
+
+/*@}*/
+
+/*********************************
+ *    VIDEO_DECODER STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The configuration data structure used by the VIDEO_DECODER kernel.
  *
- *         CPU ID is defined in platform module since
- *         depending on platform the CPUs could be different
+ *  \details The configuration data structure used by the VIDEO_DECODER kernel; contains only the input format.
  *
- *         Current CPU IDs in tivx.h are defined assuming TDA2x/3x/2Ex
- *         family of SoCs.  This list below is meant to add new CPUs for
- *         J7 family on top of removed CPUs from TDA2x/3x/2Ex family.
- *
- *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_vision_function_video_decoder
  */
+typedef struct {
+    uint32_t bitstream_format;
+} tivx_video_decoder_params_t;
 
-/*! \brief CPU ID for DSP_C7_1 */
-#define TIVX_CPU_ID_DSP_C7_1      TIVX_CPU_ID_EVE1
+/*********************************
+ *      Function Prototypes
+ *********************************/
 
-/*! \brief CPU ID for A72_0 */
-#define TIVX_CPU_ID_A72_0         TIVX_CPU_ID_A15_0
+/*!
+ * \brief Function to register HWA Kernels on the video_decoder Target
+ * \ingroup group_vision_function_video_decoder
+ */
+void tivxRegisterHwaTargetVdecKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the video_decoder Target
+ * \ingroup group_vision_function_video_decoder
+ */
+void tivxUnRegisterHwaTargetVdecKernels(void);
+
+/*! \brief [Graph] Creates a VIDEO_DECODER Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration The input object of a single params structure of
+ *             type <tt>\ref tivx_video_decoder_params_t</tt>.
+ * \param [in] input_bitstream The input object of a uint8_t buffer.
+ *             Must be formatted as an H264 i-frame only stream.
+ * \param [out] output_image Decoded output. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
+ * \see <tt>TIVX_KERNEL_VIDEO_DECODER_NAME</tt>
+ * \ingroup group_vision_function_video_decoder
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxVideoDecoderNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  input_bitstream,
+                                      vx_image             output_image);
+/*!
+ * \brief Function to initialize Video Decoder Parameters
+ *
+ * \param prms  [in] Pointer to Video Decoder parameters
+ *
+ * \ingroup group_vision_function_video_decoder
+ */
+void tivx_video_decoder_params_init(tivx_video_decoder_params_t *prms);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+#endif /* J7_VIDEO_DECODER_H_ */
+

@@ -303,3 +303,20 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxVideoDecoderNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  input_bitstream,
+                                      vx_image             output_image)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input_bitstream,
+            (vx_reference)output_image
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VIDEO_DECODER_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

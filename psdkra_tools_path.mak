@@ -21,6 +21,7 @@ BIOS_PATH ?= $(PSDK_PATH)/bios_6_76_03_01
 XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_55_02_22_core
 PDK_PATH ?= $(PSDK_PATH)/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
+VIDEO_CODEC_PATH ?= $(PSDK_PATH)/video_codec
 
 BUILD_OS ?= Linux
 
