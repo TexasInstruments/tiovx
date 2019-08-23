@@ -1040,13 +1040,11 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
     TEST_EDGE_VECTOR(1, 3, 0, 0,   0),   \
     TEST_EDGE_VECTOR(5, 6, 4, 0,   0),   \
     TEST_EDGE_VECTOR(2, 3, 0, 0,   1),   \
-
-  /* As of now, following ones can not be detected by implementation
     TEST_EDGE_VECTOR(1, 3, 4, 0,   0),   \
     TEST_EDGE_VECTOR(1, 6, 3, 4,   0),   \
     TEST_EDGE_VECTOR(1, 2, 4, 0,   0),   \
     TEST_EDGE_VECTOR(1, 4, 0, 0,   0),   \
-    */
+
 
 TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg, TEST_EDGE_VECTOR_ARGS4)
 {

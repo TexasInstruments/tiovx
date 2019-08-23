@@ -2124,7 +2124,37 @@ static vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
         /* Create super node edge list and
          * Update graph node execution dependencies to point to/from supernodes */
-        ownGraphCalcEdgeList(graph, super_node);
+        status = ownGraphCalcEdgeList(graph, super_node);
+
+        if(status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] failed ownGraphCalcEdgeList\n", i);
+            break;
+        }
+    }
+
+    if((status == VX_SUCCESS) && (graph->num_supernodes > 0))
+    {
+        vx_bool has_cycle;
+
+        ownContextLock(graph->base.context);
+
+        /* Check for cycles again now that supernode execution dependences
+         * are inserted
+         */
+        ownGraphCheckSupernodeCycles(
+                &graph->base.context->graph_sort_context,
+                graph->nodes,
+                graph->num_nodes,
+                &has_cycle);
+
+        ownContextUnlock(graph->base.context);
+
+        if(has_cycle)
+        {
+              VX_PRINT(VX_ZONE_ERROR,"Supernode has cycles (output of supernode has path to input of same supernode))\n");
+              status = VX_FAILURE;
+        }
     }
 
     return status;

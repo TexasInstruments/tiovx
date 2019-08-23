@@ -241,3 +241,63 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
     }
 }
 
+void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
+    vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
+{
+    uint16_t cur_node_idx, out_node_idx, num_out_nodes, i=0;
+    vx_node cur_node, next_node;
+
+    if (num_nodes < TIVX_GRAPH_MAX_NODES)
+    {
+        tivxGraphSortStackReset(context, num_nodes);
+
+        for(cur_node_idx=0; cur_node_idx<num_nodes; cur_node_idx++)
+        {
+            cur_node = nodes[cur_node_idx];
+
+            if((cur_node->super_node != NULL) && (cur_node->is_super_node == vx_false_e))
+            {
+                /* Count nodes within the supernodes, but don't push to stack
+                 * since they are no longer connected (supernode is connected) */
+                i++;
+            }
+            else
+            {
+                cur_node->incounter = ownNodeGetNumInNodes(cur_node);
+                if((cur_node->incounter==0))
+                {
+                    tivxGraphSortStackPush(context, cur_node);
+                }
+            }
+        }
+        cur_node_idx = i;
+        while( tivxGraphSortStackPop(context, &cur_node) )
+        {
+            cur_node_idx++;
+            num_out_nodes = ownNodeGetNumOutNodes(cur_node);
+            for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
+            {
+                next_node = ownNodeGetNextNode(cur_node, out_node_idx);
+                if(next_node)
+                {
+                    next_node->incounter--;
+                    if(next_node->incounter==0)
+                    {
+                        tivxGraphSortStackPush(context, next_node);
+                    }
+                }
+            }
+        }
+        if( cur_node_idx == num_nodes)
+        {
+            *has_cycle = vx_false_e;
+        }
+        else
+        {
+            *has_cycle = vx_true_e;
+        }
+    }
+}
+
+
+

@@ -305,6 +305,19 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context, vx_node *nodes, u
  */
 void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context, tivx_super_node super_node, uint32_t num_nodes, vx_bool *is_continuous);
 
+/*! \brief Perform topological sort of graph nodes after supernodes have been inserted
+ *
+ * \param context   [in] context to use while sorting
+ * \param nodes     [in] nodes in graph
+ * \param num_nodes [in] Number of nodes
+ * \param has_cycle [out] vx_true_e: Graph has cycles
+ *                        vx_false_e: Graph is acyclic
+ *
+ * \pre \ref ownGraphCalcEdgeList should be run
+ * \ingroup group_vx_graph
+ */
+void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
+
 /*! \brief Mark graph to be reverified
  * \ingroup group_vx_graph
  */
