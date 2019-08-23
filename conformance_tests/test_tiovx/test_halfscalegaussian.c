@@ -473,11 +473,11 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testHalfScaleGaussianSupernode, Arg,
     VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
 
-    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[0] = node1);
     ASSERT_NO_FAILURE(node_list[1] = node2);
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -538,7 +538,7 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testHalfScaleGaussianSupernode, Arg,
 }
 
 #ifdef BUILD_BAM
-#define testHalfScaleGaussianSupernode testHalfScaleGaussianSupernode
+#define testHalfScaleGaussianSupernode DISABLED_testHalfScaleGaussianSupernode
 #else
 #define testHalfScaleGaussianSupernode DISABLED_testHalfScaleGaussianSupernode
 #endif

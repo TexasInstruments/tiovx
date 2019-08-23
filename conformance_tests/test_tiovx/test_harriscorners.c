@@ -840,15 +840,15 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornersSupernode, Arg,
     ASSERT_VX_OBJECT(node6 = vxHarrisCornersNode(graph, input_virt4, strength_thresh1_scalar, min_distance1_scalar,
                                                 sensitivity1_scalar, arg_->gradient_size, arg_->block_size, corners1,
                                                 num_corners1_scalar), VX_TYPE_NODE);
-    ASSERT_NO_FAILURE(node_list_1[0] = node1); 
+    ASSERT_NO_FAILURE(node_list_1[0] = node1);
     ASSERT_NO_FAILURE(node_list_1[1] = node2);
-    ASSERT_NO_FAILURE(node_list_1[2] = node3); 
+    ASSERT_NO_FAILURE(node_list_1[2] = node3);
     ASSERT_VX_OBJECT(super_node_1 = tivxCreateSuperNode(graph, node_list_1, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node_1));
 
-    ASSERT_NO_FAILURE(node_list_2[0] = node4); 
+    ASSERT_NO_FAILURE(node_list_2[0] = node4);
     ASSERT_NO_FAILURE(node_list_2[1] = node5);
-    ASSERT_NO_FAILURE(node_list_2[2] = node6); 
+    ASSERT_NO_FAILURE(node_list_2[2] = node6);
     ASSERT_VX_OBJECT(super_node_2 = tivxCreateSuperNode(graph, node_list_2, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node_1));
     VX_CALL(vxVerifyGraph(graph));
@@ -923,7 +923,7 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornersSupernode, Arg,
 }
 
 #ifdef BUILD_BAM
-#define testHarrisCornersSupernode testHarrisCornersSupernode
+#define testHarrisCornersSupernode DISABLED_testHarrisCornersSupernode
 #else
 #define testHarrisCornersSupernode DISABLED_testHarrisCornersSupernode
 #endif

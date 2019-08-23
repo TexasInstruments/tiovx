@@ -303,11 +303,11 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
     node2 = vxAddNode(graph, srcAdd, virt, VX_CONVERT_POLICY_SATURATE, dst);
     ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
 
-    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[0] = node1);
     ASSERT_NO_FAILURE(node_list[1] = node2);
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -335,11 +335,11 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
 }
 
 #ifdef BUILD_BAM
-#define testEqualizeHistogramSupernode testEqualizeHistogramSupernode
+#define testEqualizeHistogramSupernode DISABLED_testEqualizeHistogramSupernode
 #else
 #define testEqualizeHistogramSupernode DISABLED_testEqualizeHistogramSupernode
 #endif
 
-TESTCASE_TESTS(tivxEqualizeHistogram, 
+TESTCASE_TESTS(tivxEqualizeHistogram,
                testOnRandom,
                testEqualizeHistogramSupernode)
