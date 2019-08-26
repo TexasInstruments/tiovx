@@ -293,6 +293,17 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
  */
 void ownGraphTopologicalSort(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
 
+/*! \brief Abstracted check for checking if references match
+ * "vx_true_e" will be returned if references match or if references parent object matches
+ *
+ * \param graph [in] graph in which to check if refs match
+ * \param ref1  [in] first reference
+ * \param ref2  [in] second reference
+ *
+ * \ingroup group_vx_graph
+ */
+vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
+
 /*! \brief Perform topological sort of graph nodes
  *
  * \param context    [in] context to use while seaching
@@ -317,6 +328,15 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context, tivx_s
  * \ingroup group_vx_graph
  */
 void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
+
+/*! \brief Configure Supernode
+ *
+ * \param graph   [in] graph in which to configure any supernodes
+ *
+ * \pre \ref ownGraphNodeKernelValidate should be run
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphSuperNodeConfigure(vx_graph graph);
 
 /*! \brief Mark graph to be reverified
  * \ingroup group_vx_graph

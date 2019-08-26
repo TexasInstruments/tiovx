@@ -298,6 +298,3 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
         }
     }
 }
-
-
-

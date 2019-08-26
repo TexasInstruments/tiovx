@@ -123,6 +123,11 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)
 
+/*! \brief Flag to indicate if this node is a supernode
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_FLAG_IS_SUPERNODE  (0x00000010u)
+
 /*! \brief State of a node object descriptor to indicate it is IDLE
  *
  * \ingroup group_tivx_obj_desc

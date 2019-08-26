@@ -211,6 +211,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                         vx_status status;
                         super_node->node->super_node = super_node;
                         super_node->node->is_super_node = vx_true_e;
+                        tivxFlagBitSet(&super_node->node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_SUPERNODE);
                         super_node->node->obj_desc[0]->base.scope_obj_desc_id = obj_desc->base.obj_desc_id;
                         status = ownGraphAddSuperNode(graph, super_node);
 

@@ -444,8 +444,8 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         }
 
         {
-            /* Assume the only node with 0 parameters is the super node */
-            if(0 == node_obj_desc->num_params)
+            if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
+                vx_true_e)
             {
                 params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
@@ -812,8 +812,8 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             tivx_obj_desc_memcpy(&target_kernel_instance->border_mode, &node_obj_desc->border_mode, sizeof(vx_border_t));
 
             {
-                /* Assume the only node with 0 parameters is the super node */
-                if(0 == node_obj_desc->num_params)
+                if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
+                    vx_true_e)
                 {
                     params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
@@ -885,8 +885,8 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
                     params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
                 }
 
-                /* Assume the only node with 0 parameters is the super node */
-                if(0 == node_obj_desc->num_params)
+                if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
+                    vx_true_e)
                 {
                     params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
