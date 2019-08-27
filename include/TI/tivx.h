@@ -146,6 +146,10 @@ extern "C" {
 #define TIVX_TARGET_RESV07      "RESV07"
 #define TIVX_TARGET_RESV08      "RESV08"
 #define TIVX_TARGET_RESV09      "RESV09"
+#define TIVX_TARGET_RESV10      "RESV10"
+#define TIVX_TARGET_RESV11      "RESV11"
+#define TIVX_TARGET_RESV12      "RESV12"
+#define TIVX_TARGET_RESV13      "RESV13"
 
 /*!
  * \brief Max possible name of a target

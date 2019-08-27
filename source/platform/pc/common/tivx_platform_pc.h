@@ -80,7 +80,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (22u)
+#define TIVX_PLATFORM_MAX_TARGETS            (25u)
 
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
@@ -103,7 +103,7 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for CPU3 */
     TIVX_TARGET_ID_CPU3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 2),
 
-    /*! \brief target ID for CPU2 */
+    /*! \brief target ID for CPU4 */
     TIVX_TARGET_ID_CPU4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 3),
 
 } tivx_target_id_e;
@@ -136,7 +136,11 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_RESV06, TIVX_TARGET_ID_CPU1},                                 \
     {TIVX_TARGET_RESV07, TIVX_TARGET_ID_CPU1},                                 \
     {TIVX_TARGET_RESV08, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV09, TIVX_TARGET_ID_CPU1}                                 \
+    {TIVX_TARGET_RESV09, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_RESV10, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_RESV11, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_RESV12, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_RESV13, TIVX_TARGET_ID_CPU1}                                 \
 }
 
 
