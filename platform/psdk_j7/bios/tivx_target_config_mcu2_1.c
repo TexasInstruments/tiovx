@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_j7.h>
 
 
-#define TIVX_TARGET_MCU2_1_MAX          (12)
+#define TIVX_TARGET_MCU2_1_MAX          (14)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 /**
@@ -29,7 +29,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, char *name)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
-    
+
     tivxTargetSetDefaultCreateParams(&target_create_prms);
 
     target_create_prms.task_stack_ptr = gTarget_tskStack[i];
@@ -71,6 +71,8 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_CAPTURE2, 9, "TIVX_CAPT2");
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_DISPLAY1, 10, "TIVX_DISP1");
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_DISPLAY2, 11, "TIVX_DISP2");
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_VDEC1, 12, "TIVX_VDEC1");
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_VDEC2, 13, "TIVX_VDEC2");
 }
 
 void tivxPlatformDeleteTargets(void)
@@ -85,6 +87,8 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_VPAC_VISS1);
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_CAPTURE1);
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_CAPTURE2);
-    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY1);        
-    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY2);        
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY1);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY2);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_VDEC1);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_VDEC2);
 }

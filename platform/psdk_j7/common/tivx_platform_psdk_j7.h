@@ -26,7 +26,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (17u)
+#define TIVX_PLATFORM_MAX_TARGETS            (19u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -93,17 +93,23 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for VISS1 */
     TIVX_TARGET_ID_VPAC_VISS1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 7u),
 
-    /*! \brief target ID for Capture */
+    /*! \brief target ID for Capture1 */
     TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 8u),
 
-    /*! \brief target ID for Capture */
+    /*! \brief target ID for Capture2 */
     TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 9u),
 
-    /*! \brief target ID for Display */
+    /*! \brief target ID for Display1 */
     TIVX_TARGET_ID_DISPLAY1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 10u),
 
-    /*! \brief target ID for Display */
+    /*! \brief target ID for Display2 */
     TIVX_TARGET_ID_DISPLAY2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 11u),
+
+    /*! \brief target ID for VDEC1 */
+    TIVX_TARGET_ID_VDEC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 12u)
+
+    /*! \brief target ID for VDEC2 */
+    TIVX_TARGET_ID_VDEC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 13u)
 
 } tivx_target_id_e;
 
@@ -131,6 +137,8 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CAPTURE2},                           \
     {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_DISPLAY1},                           \
     {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_DISPLAY2},                           \
+    {TIVX_TARGET_VDEC1, TIVX_TARGET_ID_VDEC1},                                 \
+    {TIVX_TARGET_VDEC2, TIVX_TARGET_ID_VDEC2},                                 \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \
