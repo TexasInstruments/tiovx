@@ -135,6 +135,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         mask_params.dim_x    = mask_desc->columns;
         mask_params.dim_y    = mask_desc->rows;
         mask_params.stride_y = mask_desc->columns;
+        mask_params.data_type = VXLIB_UINT8;
 
         if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
         {

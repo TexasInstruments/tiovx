@@ -351,6 +351,11 @@ vx_status tivxTargetKernelExecute(
                 target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
             tivxPlatformDeactivate();
+
+            if(VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function returned error code: %d\n", status);
+            }
         }
         else
         {
