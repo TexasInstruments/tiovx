@@ -5,7 +5,7 @@ PSDK_PATH ?= $(abspath ..)
 CUSTOM_KERNEL_PATH = $(TIOVX_PATH)/tiovx_dev/kernels_j7
 CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/tiovx_dev/platform
 
-VXLIB_PATH ?= $(PSDK_PATH)/vxlib_c66x_1_1_3_0
+VXLIB_PATH ?= $(PSDK_PATH)/vxlib_c66x_1_1_4_0
 J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
 TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_00_09_00_00/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
