@@ -72,8 +72,12 @@ typedef struct _vx_delay
     vx_enum type;
     /*! \brief delay for objects within a pyramid */
     vx_delay pyr_delay[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
+    /*! \brief delay for objects within an object array */
+    vx_delay obj_arr_delay[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     /*! number of levels in pyramid object */
     vx_size pyr_num_levels;
+    /*! number of items in object array object */
+    vx_size obj_arr_num_items;
     /*! Maximum number of paramter objects that can be associated with a delay */
     tivx_delay_param_t prm_pool[TIVX_DELAY_MAX_PRM_OBJECT];
 } tivx_delay_t;

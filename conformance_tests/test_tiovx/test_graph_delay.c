@@ -599,11 +599,31 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
     printPerformance(perf_graph1, w*h, "G0");
 }
 
+TEST(tivxGraphDelay, testObjArr)
+{
+    vx_context context = context_->vx_context_;
+    vx_scalar scalar;
+    vx_object_array obj_arr;
+    vx_delay delay;
+    vx_uint8 scalar_val;
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(obj_arr = vxCreateObjectArray(context, (vx_reference)scalar, 4), VX_TYPE_OBJECT_ARRAY);
+
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)obj_arr, 3), VX_TYPE_DELAY);
+
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseObjectArray(&obj_arr));
+    VX_CALL(vxReleaseScalar(&scalar));
+}
+
 TESTCASE_TESTS(
     tivxGraphDelay,
     testSimple,
     testTwoNodesOneDSP,
     testTwoNodesTwoDSP,
     testPyramid,
-    testRegisterAutoAging
+    testRegisterAutoAging,
+    testObjArr
     )
