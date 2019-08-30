@@ -849,6 +849,8 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                     vertSamplingFactor[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
                                           + BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 0.5f;
+                kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
+                    typeOutputElmt[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = VXLIB_UINT8;
 
                 if( dst->format == VX_DF_IMAGE_NV12)
                 {
