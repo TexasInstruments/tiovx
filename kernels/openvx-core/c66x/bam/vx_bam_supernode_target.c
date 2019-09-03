@@ -672,7 +672,11 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                 }
             }
 
+#if defined(HOST_EMULATION)
+            /* Disable now for target, as qsort is recursive and likely has a stack overflow
+             * TIOVX-695: need to implement an non-recursive sort function */
             qsort(edge_list, bam_edge_cnt-1, sizeof(BAM_EdgeParams), edge_comparison);
+#endif
 
             if (VX_SUCCESS == status)
             {
