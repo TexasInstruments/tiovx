@@ -270,13 +270,24 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  *
  * - The data format of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>,
  *   <tt>\ref TIVX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * - The pyramid MUST use scale of VX_SCALE_PYRAMID_HALF
+ * - The pyramid MUST use scale of \ref VX_SCALE_PYRAMID_HALF
  * - The max number of pyramid levels can be 6
  * - The width and height of base level MUST be interger multiple of 2^pyramidlevels
  * - The meta properties of input_current, input_reference MUST be identical
  * - If the optional input_current_base and input_reference_base is used, then
  *   the base size of the respective pyramid paramters should be half the width
  *   and height of the base images.
+ * - Each flow vector sample (u,v, confidence score) is encoded in a 32b packed format as follows:
+ *   - Confidence (4 bit)
+ *     - [3:0] Confidence is 4 bits (16 levels of confidence value)
+ *   - Vertical flow vector (7bit signed integer, 4 bit fractional):
+ *     - [7:4]  Fractional is 4 bits (support 1/16th pixel of precision)
+ *     - [14:8] Signed Integer is 7 bits (support up to +63 to -63 pixel Vertical flow vectors)
+ *     - [15]   Copy of signed bit from integer
+ *   - Horizontal flow vector (9bit signed integer, 4 bit fractional):
+ *     - [19:16] Fractional is 4 bits (support 1/16th pixel of precision)
+ *     - [28:20] Signed Integer is 9 bits (support up to  +255 to -255 pixel Horizontal flow vectors)
+ *     - [31:29] Copies of signed bit from integer
  *
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of
