@@ -63,6 +63,7 @@
 #include <vx_internal.h>
 
 static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node);
+static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node);
 
 /* While we are here, update the graph connection for the run-time processing dependencies */
 /* called during graph verify if there are any super nodes
@@ -368,6 +369,31 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
     return status;
 }
 
+static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node)
+{
+    uint32_t i, num_nodes_in_supernode, target_id;
+    vx_status status = VX_SUCCESS;
+
+    num_nodes_in_supernode =
+        ((tivx_obj_desc_super_node_t *)super_node->base.obj_desc)->num_nodes;
+
+    if(num_nodes_in_supernode > 0)
+    {
+        target_id =
+            ((tivx_obj_desc_node_t *)super_node->nodes[0]->obj_desc[0])->target_id;
+    }
+
+    for(i=1; i < num_nodes_in_supernode; i++)
+    {
+        if(target_id != ((tivx_obj_desc_node_t *)super_node->nodes[i]->obj_desc[0])->target_id)
+        {
+            status = VX_FAILURE;
+            break;
+        }
+    }
+    return status;
+}
+
 vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 {
     uint32_t i, j, cnt, num_nodes_in_supernode;
@@ -407,8 +433,18 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
             break;
         }
 
-        /* Check for continuity for each node in super node */
+        /* Check for target mismatch error */
+        status = ownGraphSuperNodeCheckTarget(super_node);
+
+        if(status != VX_SUCCESS)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have the same target of all nodes within it\n", i);
+            status = VX_FAILURE;
+            break;
+        }
+
+        {
+            /* Check for continuity for each node in super node */
             vx_bool is_continuous;
 
             ownContextLock(graph->base.context);
@@ -423,7 +459,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
             if(is_continuous == vx_false_e)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] is does not have continuity of all nodes within it\n", i);
+                VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have continuity of all nodes within it\n", i);
                 status = VX_FAILURE;
                 break;
             }
