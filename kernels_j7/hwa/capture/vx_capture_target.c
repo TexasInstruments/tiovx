@@ -512,8 +512,12 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                         else
                         {
                             /* TIOVX-687: Note: disabling for now until investigated further */
-                            /* status = VX_FAILURE;
-                            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n"); */
+                            if (FVID2_EAGAIN != fvid2_status)
+                            {
+                                status = VX_FAILURE;
+                                VX_PRINT(VX_ZONE_ERROR,
+                                    " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n");
+                            }
                         }
                     }
                 }
