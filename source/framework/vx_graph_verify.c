@@ -1558,17 +1558,23 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
 {
     vx_bool skip_add_data_ref_q = vx_false_e;
     vx_status status = VX_SUCCESS;
+    vx_reference param_ref;
+
+    param_ref = ownNodeGetParameterRef(node, index);
 
     /* Dont make a data ref queue if below is true
      * - if node parameter is input
      * - or node parameter is output but this is a leaf node
+     *   - Note: exception here is if it is a delay b/c the delay slot in question
+     *           may not be connected to another node
      * - or no node reference specified at the node,index
      * Here no data ref queue is required since if user really wanted to access
      * the data ref, user would have a graph parameter out of this node,index
      */
     if( ownNodeGetParameterDir(node, index) != VX_OUTPUT /* input parameter */
-        || ownGraphGetNumInNodes(graph, node, index) == 0 /* leaf parameter */
-        || ownNodeGetParameterRef(node, index) == NULL /* no reference specified at node,index */
+        || param_ref == NULL /* no reference specified at node,index */
+        || (ownGraphGetNumInNodes(graph, node, index) == 0 && /* leaf parameter and not a delay */
+             !(param_ref->delay != NULL && ownIsValidSpecificReference((vx_reference)param_ref->delay, VX_TYPE_DELAY)))
         )
     {
         skip_add_data_ref_q = vx_true_e;
