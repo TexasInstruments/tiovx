@@ -229,6 +229,18 @@ void tivxAddTargetKernelDofVisualize(void)
         status = VX_SUCCESS;
     }
     else
+    if ( self_cpu == TIVX_CPU_ID_DSP1 )
+    {
+        strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
+        status = VX_SUCCESS;
+    }
+    else
+    if ( self_cpu == TIVX_CPU_ID_DSP2 )
+    {
+        strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
+        status = VX_SUCCESS;
+    }
+    else
     {
         status = VX_FAILURE;
     }
