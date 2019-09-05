@@ -76,6 +76,10 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mViss.h"
 
+/* Dependency on vision apps, as it uses UDMA utils
+ * for GLBCE Ctx Save/Restore */
+#include <utils/udma/include/app_udma.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -277,6 +281,14 @@ typedef struct
     tivx_h3a_aew_config                 aew_config;
     /*! H3A output enabled flag */
     vx_bool                             h3a_out_enabled;
+
+    /*! Physical address of the context memory. */
+    tivx_shared_mem_ptr_t               ctx_mem_ptr;
+    /*! GLBCE Statistics information, contains physical address
+     *  of the Stats memory and size */
+    uint64_t                            ctx_mem_phys_ptr;
+    /*! Physical address of the context memory */
+    Glbce_StatsInfo                     glbceStatInfo;
 } tivxVpacVissObj;
 
 typedef struct

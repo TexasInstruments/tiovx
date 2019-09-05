@@ -356,6 +356,22 @@ typedef struct {
      *
      */
     uint32_t                    chroma_mode;
+
+    /*! Enables/Disables Ctx save and restore.
+     *  If enabled, the node restores the context before submitting frame
+     *  to the driver and saves the context after frame completion.
+     *
+     *  Currently, Ctx save/restore is supported only for GLBCE
+     *  statistics memory.
+     *
+     *  Note: It allocates additional memory for CTX and uses UDMA common
+     *  channel for R5F for the memcpy.
+     *
+     *  By default, it is disabled in the init API. Application requires to
+     *  enable it based on number of instances of VISS and use of GLBCE
+     *  in VISS.
+     */
+    uint32_t                    enable_ctx;
 } tivx_vpac_viss_params_t;
 
 /*!

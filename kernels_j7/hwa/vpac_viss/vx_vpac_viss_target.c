@@ -116,6 +116,11 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     tivx_obj_desc_user_data_object_t *desc, uint32_t size);
 static void tivxVpacVissUnmapUserDesc(void **target_ptr,
     tivx_obj_desc_user_data_object_t *desc);
+static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
+    tivx_vpac_viss_params_t *vissPrms);
+static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj);
+static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj);
+static void vhwaVissSaveCtx(tivxVpacVissObj *vissObj);
 
 int32_t tivxVpacVissFrameComplCb(Fvid2_Handle handle, void *appData);
 
@@ -379,6 +384,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
+    /* Allocate memory for the GLBCE Statistics */
+    if (VX_SUCCESS == status)
+    {
+        status = vhwaVissAllocMemForCtx(vissObj, vissPrms);
+    }
+
     /* Extract the format information from the config descriptor
      * and output images and set the format in Driver using
      * SET_PARAMS ioctl  */
@@ -579,6 +590,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
+
+            vhwaVissFreeCtxMem(vissObj);
         }
     }
 
@@ -637,6 +650,8 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
+
+            vhwaVissFreeCtxMem(vissObj);
         }
     }
 
@@ -837,6 +852,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if (VX_SUCCESS == status)
     {
+        vhwaVissRestoreCtx(vissObj);
+
         cur_time = tivxPlatformGetTimeInUsecs();
 
         /* Submit the request to the driver */
@@ -862,6 +879,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 status = VX_FAILURE;
             }
         }
+
+        vhwaVissSaveCtx(vissObj);
     }
 
     if (VX_SUCCESS == status)
@@ -1469,6 +1488,113 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     }
 
     return (status);
+}
+
+static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
+    tivx_vpac_viss_params_t *vissPrms)
+{
+    vx_status           status = VX_SUCCESS;
+    int32_t             fvid2_status = FVID2_SOK;
+    Glbce_Control       glbceCtrl;
+
+    if ((NULL != vissObj) && (NULL != vissPrms))
+    {
+        if ((0U == vissPrms->bypass_glbce) && (1u == vissPrms->enable_ctx))
+        {
+            glbceCtrl.module = GLBCE_MODULE_GET_STATS_INFO;
+            glbceCtrl.statsInfo = &vissObj->glbceStatInfo;
+            fvid2_status = Fvid2_control(vissObj->handle,
+                IOCTL_GLBCE_GET_CONFIG, (void *)&glbceCtrl, NULL);
+            if (FVID2_SOK != fvid2_status)
+            {
+                vissObj->ctx_mem_phys_ptr = 0u;
+                status = VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR,
+                    "vhwaVissAllocMemForCtx: Failed to get GLBCE Stats Info!!!\n");
+            }
+            else
+            {
+                tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
+                    vissObj->glbceStatInfo.size, TIVX_MEM_EXTERNAL);
+                if (NULL == vissObj->ctx_mem_ptr.host_ptr)
+                {
+                    vissObj->ctx_mem_phys_ptr = 0u;
+                    status = VX_ERROR_NO_MEMORY;
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "vhwaVissAllocMemForCtx: Failed to allocate memory!!!\n");
+                }
+                else
+                {
+                    vissObj->ctx_mem_phys_ptr = tivxMemShared2PhysPtr(
+                        vissObj->ctx_mem_ptr.shared_ptr,
+                        vissObj->ctx_mem_ptr.mem_heap_region);
+                }
+            }
+        }
+        else
+        {
+            vissObj->ctx_mem_phys_ptr = 0u;
+        }
+    }
+    else
+    {
+        status = VX_FAILURE;
+    }
+
+    return (status);
+}
+
+static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj)
+{
+    if (NULL != vissObj)
+    {
+        if (0u != vissObj->ctx_mem_phys_ptr)
+        {
+            tivxMemBufferFree(&vissObj->ctx_mem_ptr,
+                vissObj->glbceStatInfo.size);
+            vissObj->ctx_mem_phys_ptr = 0u;
+        }
+    }
+}
+
+static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj)
+{
+    int32_t status;
+    app_udma_copy_1d_prms_t prms;
+
+    if ((NULL != vissObj) && (0u != vissObj->ctx_mem_phys_ptr))
+    {
+        prms.src_addr = vissObj->ctx_mem_phys_ptr;
+        prms.dest_addr = vissObj->glbceStatInfo.addr;
+        prms.length = vissObj->glbceStatInfo.size;
+        status = appUdmaCopy1D(NULL, &prms);
+
+        if (0u != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "vhwaVissRestoreCtx: Failed to restore Context !!!\n");
+        }
+    }
+}
+
+static void vhwaVissSaveCtx(tivxVpacVissObj *vissObj)
+{
+    int32_t status;
+    app_udma_copy_1d_prms_t prms;
+
+    if ((NULL != vissObj) && (0u != vissObj->ctx_mem_phys_ptr))
+    {
+        prms.src_addr = vissObj->glbceStatInfo.addr;
+        prms.dest_addr = vissObj->ctx_mem_phys_ptr;
+        prms.length = vissObj->glbceStatInfo.size;
+        status = appUdmaCopy1D(NULL, &prms);
+
+        if (0u != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "vhwaVissSaveCtx: Failed to restore Context !!!\n");
+        }
+    }
 }
 
 /* ========================================================================== */

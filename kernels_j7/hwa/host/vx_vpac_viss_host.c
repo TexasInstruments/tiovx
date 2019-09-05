@@ -826,6 +826,7 @@ void tivx_vpac_viss_params_init(tivx_vpac_viss_params_t *prms)
         prms->mux_output4 = 3U;
         prms->ee_mode = 0U;
         prms->chroma_mode = 0U;
+        prms->enable_ctx = 0u;
     }
 }
 
