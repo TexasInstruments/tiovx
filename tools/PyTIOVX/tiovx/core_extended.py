@@ -62,7 +62,24 @@
 from . import *
 
 
-## New Platform Cores
+## J7 Cores
 #
 class CoreExtended(Enum):
-    DEFAULT      = "not_supported"
+    ## Below are J7 cores
+    ## Target is an VPAC_NF HWA
+    VPAC_NF = "vpac_nf"
+    ## Target is an DMPAC_SDE HWA
+    DMPAC_SDE = "dmpac_sde"
+    ## Target is an VPAC_LDC HWA
+    VPAC_LDC = "vpac_ldc"
+    ## Target is an VPAC_MSC HWA
+    VPAC_MSC = "vpac_msc"
+    ## Target is an VPAC_VISS HWA
+    VPAC_VISS = "vpac_viss"
+    ## Target is an DMPAC_DOF HWA
+    DMPAC_DOF = "dmpac_dof"
+    ## Target is a C7X DSP
+    C7X = "c7x"
+    ## Target is an A72
+    A72 = "a72"
+    ## Above are J7 cores

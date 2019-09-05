@@ -70,22 +70,81 @@ from . import *
 # \ingroup ENUMS
 #
 class TargetExtended(Enum) :
-    DEFAULT      = 1
+    ## Below are J7 targets
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_NF
+    VPAC_NF      = 12
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC1
+    VPAC_LDC1    = 13
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC2
+    VPAC_LDC2    = 14
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC1
+    VPAC_MSC1    = 15
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC2
+    VPAC_MSC2    = 16
+    ## TIOVX equivalent = TIVX_TARGET_DMPAC_SDE
+    DMPAC_SDE    = 17
+    ## TIOVX equivalent = TIVX_TARGET_DMPAC_DOF
+    DMPAC_DOF    = 18
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_VISS1
+    VPAC_VISS1   = 19
+    ## TIOVX equivalent = TIVX_TARGET_VDEC
+    VDEC         = 20
+    ## Above are J7 targets
 
     def get_vx_enum_name(type) :
         return "TIVX_TARGET_" + type.name
 
     def get_target_folder_name(type) :
+        if target == TargetExtended.VPAC_NF :
+            return "vpac_nf"
+        if target == TargetExtended.VPAC_LDC1 :
+            return "vpac_ldc"
+        if target == TargetExtended.VPAC_LDC2 :
+            return "vpac_ldc"
+        if target == TargetExtended.VPAC_MSC1 :
+            return "vpac_msc"
+        if target == TargetExtended.VPAC_MSC2 :
+            return "vpac_msc"
+        if target == TargetExtended.DMPAC_SDE :
+            return "dmpac_sde"
+        if target == TargetExtended.DMPAC_DOF :
+            return "dmpac_sde"
+        if target == TargetExtended.VPAC_VISS1 :
+            return "vpac_viss"
+        if target == TargetExtended.VDEC :
+            return "vdec"
         return None
 
     def is_j6_target(target) :
         return False
 
     def get_cpu(target) :
+        if target == TargetExtended.VPAC_NF :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VPAC_LDC1 :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VPAC_LDC2 :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VPAC_MSC1 :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VPAC_MSC2 :
+            return Cpu.IPU1_0
+        if target == TargetExtended.DMPAC_SDE :
+            return Cpu.IPU1_0
+        if target == TargetExtended.DMPAC_DOF :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VPAC_VISS1 :
+            return Cpu.IPU1_0
+        if target == TargetExtended.VDEC :
+            return Cpu.IPU1_0
+
         return CpuExtended.INVALID
 
 class CpuExtended(Enum) :
+    ## Below are J7 targets
+    ## TIOVX equivalent = TIVX_TARGET_R5F
     DEFAULT      = 1
+    ## Above are J7 targets
 
     def get_vx_enum_name(type) :
         return "TIVX_CPU_ID_" + type.name
