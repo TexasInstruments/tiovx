@@ -90,7 +90,7 @@ vx_status tivxIpcSendMsg(
 
 vx_enum tivxGetSelfCpuId(void)
 {
-    vx_enum cpu_id = TIVX_INVALID_CPU_ID;
+    vx_enum cpu_id = TIVX_CPU_ID_INVALID;
     uint32_t i, vsdk_cpu_id;
 
     vsdk_cpu_id =  appIpcGetSelfCpuId();
