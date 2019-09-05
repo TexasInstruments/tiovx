@@ -274,6 +274,8 @@ TEST(tivxSourceNode, testSourceObjArray2)
 
     VX_CALL(vxVerifyGraph(graph));
 
+    export_graph_to_file(graph, "test_source_obj_array_2");
+
     VX_CALL(vxProcessGraph(graph));
 
     for (i = 0; i < 4; i++)
@@ -286,6 +288,12 @@ TEST(tivxSourceNode, testSourceObjArray2)
 
         ASSERT(scalar_out_val[i] == (i+1));
     }
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
 
     VX_CALL(vxReleaseObjectArray(&obj_array_scalar));
     for (i = 0; i < 4; i++)
@@ -410,6 +418,8 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray2, Arg, STREAMING_PARAMETERS)
             1,
             graph_parameters_queue_params_list
             );
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
 
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
@@ -542,6 +552,8 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray3, Arg, STREAMING_PARAMETERS)
 
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
+
     VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_sink_objarray_3");
@@ -592,6 +604,308 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray3, Arg, STREAMING_PARAMETERS)
     }
     tivxTestKernelsUnLoadKernels(context);
 }
+
+/* Tests the following:
+   1. Obj array produced as graph parameter (TIOVX-691)
+   2. Obj array consumed as non-graph parameter (TIOVX-692)
+*/
+TEST_WITH_ARG(tivxSourceNode, testSinkObjArray4, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar_in[4], scalar_out[4], scalar_exemplar;
+    uint32_t num_streams = 0;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, ch_id;
+    vx_node n0, n1[4], n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+    vx_object_array obj_array_source[MAX_NUM_BUF], obj_array_sink;
+
+    /* Setting to num buf of capture node */
+    num_buf = 3;
+    loop_cnt = 1; //arg_->stream_time;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar_exemplar  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+    }
+    ASSERT_VX_OBJECT(obj_array_sink   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+
+    VX_CALL(vxReleaseScalar(&scalar_exemplar));
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSourceObjArrayNode(graph, obj_array_source[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n0, "Source_node");
+
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        ASSERT_VX_OBJECT(scalar_in[ch_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_source[0], ch_id), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(scalar_out[ch_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink, ch_id), VX_TYPE_SCALAR);
+
+        ASSERT_VX_OBJECT(n1[ch_id] = tivxScalarIntermediateNode(graph, scalar_in[ch_id], scalar_out[ch_id]), VX_TYPE_NODE);
+
+        vxSetReferenceName((vx_reference)n1[ch_id], "Intermediate_node");
+
+        tivxSetNodeParameterNumBufByIndex(n1[ch_id], 1u, num_buf);
+    }
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSinkObjArrayNode(graph, obj_array_sink), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n2, "Sink_node");
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&obj_array_source[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            1,
+            graph_parameters_queue_params_list
+            );
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    }
+
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_sink_objarray_4");
+    log_graph_rt_trace(graph);
+
+#if 1
+    /* enqueue buf for pipeup but dont trigger graph execution */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&obj_array_source[buf_id], 1);
+    }
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_object_array capture_arr;
+        vx_scalar scalar;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&capture_arr, 1, &num_refs);
+
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_arr, 1);
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+#endif
+    VX_CALL(vxReleaseNode(&n0));
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        VX_CALL(vxReleaseNode(&n1[ch_id]));
+        VX_CALL(vxReleaseScalar(&scalar_in[ch_id]));
+        VX_CALL(vxReleaseScalar(&scalar_out[ch_id]));
+    }
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* since buffers could be held by source node, first release graph
+     * to delete source node, then free the buffers
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&obj_array_source[buf_id]));
+    }
+    VX_CALL(vxReleaseObjectArray(&obj_array_sink));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+/* Tests the following:
+   1. Obj array produced as graph parameter (TIOVX-691)
+   2. Obj array consumed as graph parameter (TIOVX-677)
+*/
+TEST_WITH_ARG(tivxSourceNode, testSinkObjArray5, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar_in[4], scalar_out[4][MAX_NUM_BUF], scalar_exemplar;
+    uint32_t num_streams = 0;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, ch_id;
+    vx_node n0, n1[4], n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[5];
+    vx_object_array obj_array_source[MAX_NUM_BUF], obj_array_sink[MAX_NUM_BUF];
+
+    /* Setting to num buf of capture node */
+    num_buf = 3;
+    loop_cnt = 1; //arg_->stream_time;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar_exemplar  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(obj_array_sink[buf_id]   = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, 4), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    VX_CALL(vxReleaseScalar(&scalar_exemplar));
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSourceObjArrayNode(graph, obj_array_source[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n0, "Source_node");
+
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        ASSERT_VX_OBJECT(scalar_in[ch_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_source[0], ch_id), VX_TYPE_SCALAR);
+
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(scalar_out[ch_id][buf_id] = (vx_scalar)vxGetObjectArrayItem(obj_array_sink[buf_id], ch_id), VX_TYPE_SCALAR);
+        }
+
+        ASSERT_VX_OBJECT(n1[ch_id] = tivxScalarIntermediateNode(graph, scalar_in[ch_id], scalar_out[ch_id][0]), VX_TYPE_NODE);
+
+        vxSetReferenceName((vx_reference)n1[ch_id], "Intermediate_node");
+
+        tivxSetNodeParameterNumBufByIndex(n1[ch_id], 1u, num_buf);
+    }
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSinkObjArrayNode(graph, obj_array_sink[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n2, "Sink_node");
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    add_graph_parameter_by_node_index(graph, n1[0], 1);
+    add_graph_parameter_by_node_index(graph, n1[1], 1);
+    add_graph_parameter_by_node_index(graph, n1[2], 1);
+    add_graph_parameter_by_node_index(graph, n1[3], 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&obj_array_source[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&scalar_out[0][0];
+
+    graph_parameters_queue_params_list[2].graph_parameter_index = 2;
+    graph_parameters_queue_params_list[2].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&scalar_out[1][0];
+
+    graph_parameters_queue_params_list[3].graph_parameter_index = 3;
+    graph_parameters_queue_params_list[3].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[3].refs_list = (vx_reference*)&scalar_out[2][0];
+
+    graph_parameters_queue_params_list[4].graph_parameter_index = 4;
+    graph_parameters_queue_params_list[4].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[4].refs_list = (vx_reference*)&scalar_out[3][0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            5,
+            graph_parameters_queue_params_list
+            );
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        VX_CALL(vxSetNodeTarget(n1[ch_id], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    }
+
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_sink_objarray_5");
+    log_graph_rt_trace(graph);
+
+#if 1
+    /* enqueue buf for pipeup but dont trigger graph execution */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&obj_array_source[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&scalar_out[0][buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&scalar_out[1][buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 3, (vx_reference*)&scalar_out[2][buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 4, (vx_reference*)&scalar_out[3][buf_id], 1);
+    }
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_object_array capture_arr;
+        vx_scalar scalar[4];
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&capture_arr, 1, &num_refs);
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&scalar[0], 1, &num_refs);
+        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&scalar[1], 1, &num_refs);
+        vxGraphParameterDequeueDoneRef(graph, 3, (vx_reference*)&scalar[2], 1, &num_refs);
+        vxGraphParameterDequeueDoneRef(graph, 4, (vx_reference*)&scalar[3], 1, &num_refs);
+
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_arr, 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&scalar[0], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&scalar[1], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 3, (vx_reference*)&scalar[2], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 4, (vx_reference*)&scalar[3], 1);
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+#endif
+    VX_CALL(vxReleaseNode(&n0));
+    for(ch_id=0; ch_id<4; ch_id++)
+    {
+        VX_CALL(vxReleaseNode(&n1[ch_id]));
+        VX_CALL(vxReleaseScalar(&scalar_in[ch_id]));
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseScalar(&scalar_out[ch_id][buf_id]));
+        }
+    }
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* since buffers could be held by source node, first release graph
+     * to delete source node, then free the buffers
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&obj_array_source[buf_id]));
+        VX_CALL(vxReleaseObjectArray(&obj_array_sink[buf_id]));
+    }
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 
 /*
  *       n1         scalar         n2
@@ -1619,6 +1933,8 @@ TESTCASE_TESTS(tivxSourceNode,
                testSinkObjArray,
                testSinkObjArray2,
                testSinkObjArray3,
+               DISABLED_testSinkObjArray4,
+               DISABLED_testSinkObjArray5,
                testNewSourceSink,
                testNewSourcePipeline,
                testNewSourceSinkPipeline,

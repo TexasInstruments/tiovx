@@ -117,21 +117,23 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayProcess(
 
     if(VX_SUCCESS == status)
     {
+        in_object_array_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX];
+
         if(obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
         {
-            in_object_array_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX];
             tivxGetObjDescList(in_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_in_object_array_desc, in_object_array_desc->num_items);
         }
         else
         {
-            if (TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->scope_obj_desc_id)
+            VX_PRINT(VX_ZONE_ERROR, "Error in kernel: Object array was not given to kernel !!!\n");
+            /*if (TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->scope_obj_desc_id)
             {
                 tivxGetObjDescList(
                     &obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->scope_obj_desc_id,
                     (tivx_obj_desc_t**)&in_object_array_desc, 1);
 
                 tivxGetObjDescList(in_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_in_object_array_desc, in_object_array_desc->num_items);
-            }
+            }*/
         }
 
     }
