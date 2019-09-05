@@ -369,7 +369,7 @@ void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle);
 * \param [in,out] bam_node_cnt Number of bam nodes to be updated by callback
 * \param [in] scratch Pointer to scratch memory requirement from node
 *
-* \ingroup group_tivx_ext_common_kernel
+* \ingroup group_tivx_ext_bam_supernode
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_create_in_bam_graph_f)(tivx_target_kernel_instance kernel,
                                                                tivx_obj_desc_t *obj_desc[],
@@ -389,7 +389,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_create_in_bam_graph_f)(tivx_ta
 * \param [out] bam_node BAM node number corresponding to the OpenVX node
 * \param [out] bam_port BAM kernel port number corresponding to the OpenVX node number
 *
-* \ingroup group_tivx_ext_common_kernel
+* \ingroup group_tivx_ext_bam_supernode
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_get_node_port_f)(tivx_target_kernel_instance kernel,
                                                                uint8_t ovx_port,
@@ -406,7 +406,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_get_node_port_f)(tivx_target_k
 * \param [in,out] edge_list BAM graph edge list.
 * \param [in,out] bam_edge_cnt Number of edges in the edge list
 *
-* \ingroup group_tivx_ext_common_kernel
+* \ingroup group_tivx_ext_bam_supernode
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_append_internal_edges_f)(tivx_target_kernel_instance kernel,
                                                                BAM_EdgeParams edge_list[],
@@ -420,7 +420,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_append_internal_edges_f)(tivx_
 * \param [in,out] graph handle from the supernode
 * \param [in] priv_arg private argument
 *
-* \ingroup group_tivx_ext_common_kernel
+* \ingroup group_tivx_ext_bam_supernode
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_pre_post_process_f)(tivx_target_kernel_instance kernel,
                                                                tivx_obj_desc_t *obj_desc[],
@@ -440,7 +440,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_pre_post_process_f)(tivx_targe
  * \param [in] postprocess_func           (optional) Callback for performing any processing after the BAM graph is called for each frame (if there is any)
  * \param [in] priv_arg                   (optional) Private arguments to pass to the create callback
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam_supernode
  *
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
