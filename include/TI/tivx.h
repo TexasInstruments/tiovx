@@ -256,7 +256,7 @@ typedef enum _tivx_cpu_id_e {
     TIVX_CPU_ID_MAX = 11,
 
     /*! \brief Invalid CPU ID */
-    TIVX_INVALID_CPU_ID = 0xFF
+    TIVX_CPU_ID_INVALID = 0xFF
 
 } tivx_cpu_id_e;
 

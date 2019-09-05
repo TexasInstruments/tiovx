@@ -276,7 +276,7 @@ void vx_tutorial_tidl()
       }
       for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
         targetCore2[threadIdx]= NULL;
-        targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+        targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
       }
     }/* In case the network has 2 groups, it will run on two cores */
     else if (numLayersGroup== 2) {
@@ -298,7 +298,7 @@ void vx_tutorial_tidl()
     targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
       targetCore2[threadIdx]= NULL;
-      targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+      targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
     }
   }
   else if (obj->processing_core_mode== 2) {
@@ -307,7 +307,7 @@ void vx_tutorial_tidl()
     targetCpuId1[0]= TIVX_CPU_ID_DSP1;targetCpuId1[1]= TIVX_CPU_ID_DSP2;
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
       targetCore2[threadIdx]= NULL;
-      targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+      targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
     }
   }
   else {
@@ -323,7 +323,7 @@ void vx_tutorial_tidl()
   config1 = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors1, targetCpuId1[0]);
 
   /* In case the network runs on one CPU, set num_output_tensors2 to 0 */
-  if (targetCpuId2[0]== TIVX_INVALID_CPU_ID) {
+  if (targetCpuId2[0]== TIVX_CPU_ID_INVALID) {
     num_output_tensors2= 0;
     config2= 0;
   }
@@ -346,7 +346,7 @@ void vx_tutorial_tidl()
   kernel1 = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors1);
   VX_TUTORIAL_ASSERT_VALID_REF(kernel1)
 
-  if (targetCpuId2[0]!= TIVX_INVALID_CPU_ID) {
+  if (targetCpuId2[0]!= TIVX_CPU_ID_INVALID) {
     kernel2 = tivxAddKernelTIDL(context, num_output_tensors1, num_output_tensors2);
     VX_TUTORIAL_ASSERT_VALID_REF(kernel2)
   }
@@ -512,7 +512,7 @@ void vx_tutorial_tidl()
       printf("---------------------\n");
 
       /* Display the output_tensors1 if graph runs 1 cores */
-      if (targetCpuId2[threadIdx]== TIVX_INVALID_CPU_ID) {
+      if (targetCpuId2[threadIdx]== TIVX_CPU_ID_INVALID) {
         real_output_tensors= &output_tensors1[threadIdx][0];
         realConfig= config1;
       }
