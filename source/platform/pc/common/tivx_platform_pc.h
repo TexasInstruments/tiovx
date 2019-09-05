@@ -63,8 +63,8 @@
 
 
 
-#ifndef _TIVX_PLATFORM_WINDOWS_H_
-#define _TIVX_PLATFORM_WINDOWS_H_
+#ifndef _TIVX_PLATFORM_PC_H_
+#define _TIVX_PLATFORM_PC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,7 +72,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Windows Platform APIs
+ * \brief PC Platform APIs
  */
 
 
