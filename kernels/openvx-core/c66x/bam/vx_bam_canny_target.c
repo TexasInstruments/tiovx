@@ -105,6 +105,8 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
+#if defined(BUILD_CANNY_SUPERNODE)
+
 /* Supernode Callbacks */
 static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -122,6 +124,8 @@ static vx_status VX_CALLBACK tivxKernelCannyAppendInternalEdges(
 static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg);
+
+#endif
 
 static void tivxCannyFreeMem(tivxCannyParams *prms);
 
@@ -493,6 +497,8 @@ void tivxAddTargetKernelBamCannyEd(void)
             NULL,
             NULL);
 
+/* Disabling until sort is enabled for supernode TIOVX-695 */
+#if defined(BUILD_CANNY_SUPERNODE)
         tivxEnableKernelForSuperNode(vx_canny_target_kernel,
             tivxKernelCannyCreateInBamGraph,
             tivxKernelCannyGetNodePort,
@@ -501,6 +507,8 @@ void tivxAddTargetKernelBamCannyEd(void)
             tivxKernelCannyPostprocessInBamGraph,
             sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params),
             NULL);
+#endif
+
     }
 }
 
@@ -508,6 +516,8 @@ void tivxRemoveTargetKernelBamCannyEd(void)
 {
     tivxRemoveTargetKernel(vx_canny_target_kernel);
 }
+
+#if defined(BUILD_CANNY_SUPERNODE)
 
 static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -833,3 +843,4 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
     return status;
 }
 
+#endif
