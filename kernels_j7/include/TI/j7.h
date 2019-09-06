@@ -133,11 +133,11 @@ extern "C" {
 /*! \brief Target name for VDEC1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VDEC1     "RESV13"
+#define TIVX_TARGET_VDEC1     "RESV12"
 /*! \brief Target name for VDEC2
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VDEC2     "RESV14"
+#define TIVX_TARGET_VDEC2     "RESV13"
 
 #ifdef __cplusplus
 }
