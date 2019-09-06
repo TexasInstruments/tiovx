@@ -130,6 +130,14 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DISPLAY2     "RESV11"
+/*! \brief Target name for VDEC1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VDEC1     "RESV13"
+/*! \brief Target name for VDEC2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VDEC2     "RESV14"
 
 #ifdef __cplusplus
 }
