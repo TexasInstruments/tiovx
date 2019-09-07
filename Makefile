@@ -1,5 +1,5 @@
-# Valid values are: j7presi
-BUILD_SDK?=tiovx_dev/j7presi
+# Valid values are: psdkra
+BUILD_SDK?=tiovx_dev/psdkra
 
 include $(BUILD_SDK)_tools_path.mak
 include $(TIOVX_PATH)/build_flags.mak
