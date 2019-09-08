@@ -75,6 +75,9 @@ extern "C" {
  * \brief PC Platform APIs
  */
 
+#if !defined(J6_VSDK)
+#include <TI/j7.h>
+#endif
 
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
@@ -108,6 +111,7 @@ typedef enum _tivx_target_id_e {
 
 } tivx_target_id_e;
 
+#if defined(J6_VSDK)
 
 /*! \brief Mapping of Target names with Target Ids
  *   Used to initialize internal structure
@@ -127,21 +131,41 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_A15_0, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_RESV00, TIVX_TARGET_ID_CPU2},                                 \
-    {TIVX_TARGET_RESV01, TIVX_TARGET_ID_CPU3},                                 \
-    {TIVX_TARGET_RESV02, TIVX_TARGET_ID_CPU3},                                 \
-    {TIVX_TARGET_RESV03, TIVX_TARGET_ID_CPU4},                                 \
-    {TIVX_TARGET_RESV04, TIVX_TARGET_ID_CPU4},                                 \
-    {TIVX_TARGET_RESV05, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV06, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV07, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV08, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV09, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV10, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV11, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV12, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV13, TIVX_TARGET_ID_CPU1}                                 \
 }
+
+#else
+
+/*! \brief Mapping of Target names with Target Ids
+ *   Used to initialize internal structure
+ *
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TARGET_INFO                                                       \
+{                                                                              \
+    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_CPU2},                                \
+    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_CPU3},                              \
+    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_CPU4},                              \
+    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_CPU4},                              \
+    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_CPU1},                              \
+    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_CPU1},                              \
+    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_CPU1},                             \
+    {TIVX_TARGET_CAPTURE1, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_VDEC1, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_VDEC2, TIVX_TARGET_ID_CPU1}                                   \
+}
+
+#endif
 
 
 /*! \brief Function to trick target kernels into beliving they are running

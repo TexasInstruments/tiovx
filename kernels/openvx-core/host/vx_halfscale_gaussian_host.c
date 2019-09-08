@@ -65,6 +65,10 @@
 #include <tivx_kernel_halfscale_gaussian.h>
 #include <TI/tivx_target_kernel.h>
 
+#if !defined(J6_VSDK)
+#include <TI/j7.h>
+#endif
+
 static vx_kernel vx_halfscale_gaussian_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node,
@@ -367,8 +371,10 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV03);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV04);
+#if !defined(J6_VSDK)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
+#endif
         }
         if (status == VX_SUCCESS)
         {

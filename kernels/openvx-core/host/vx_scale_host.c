@@ -65,6 +65,10 @@
 #include <tivx_kernel_scale.h>
 #include <TI/tivx_target_kernel.h>
 
+#if !defined(J6_VSDK)
+#include <TI/j7.h>
+#endif
+
 static vx_kernel vx_scale_image_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
@@ -185,8 +189,9 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'type' value should be an enum of type:\n VX_INTERPOLATION_NEAREST_NEIGHBOR or VX_INTERPOLATION_BILINEAR or VX_INTERPOLATION_AREA \n");
         }
 
-        if ((0 == strncmp(node_target, TIVX_TARGET_RESV03, TIVX_TARGET_MAX_NAME)) ||
-            (0 == strncmp(node_target, TIVX_TARGET_RESV04, TIVX_TARGET_MAX_NAME)))
+#if !defined(J6_VSDK)
+        if ((0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME)) ||
+            (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME)))
         {
             if (vx_false_e == is_virtual)
             {
@@ -215,6 +220,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
                 }
             }
         }
+#endif
     }
 
 #if 1
@@ -386,8 +392,10 @@ vx_status tivxAddKernelScale(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV03);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV04);
+#if !defined(J6_VSDK)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
+#endif
         }
         if (status == VX_SUCCESS)
         {

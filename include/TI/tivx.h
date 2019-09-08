@@ -136,20 +136,6 @@ extern "C" {
  */
 #define TIVX_TARGET_IPU2        "IPU2"
 
-#define TIVX_TARGET_RESV00      "RESV00"
-#define TIVX_TARGET_RESV01      "RESV01"
-#define TIVX_TARGET_RESV02      "RESV02"
-#define TIVX_TARGET_RESV03      "RESV03"
-#define TIVX_TARGET_RESV04      "RESV04"
-#define TIVX_TARGET_RESV05      "RESV05"
-#define TIVX_TARGET_RESV06      "RESV06"
-#define TIVX_TARGET_RESV07      "RESV07"
-#define TIVX_TARGET_RESV08      "RESV08"
-#define TIVX_TARGET_RESV09      "RESV09"
-#define TIVX_TARGET_RESV10      "RESV10"
-#define TIVX_TARGET_RESV11      "RESV11"
-#define TIVX_TARGET_RESV12      "RESV12"
-#define TIVX_TARGET_RESV13      "RESV13"
 
 /*!
  * \brief Max possible name of a target

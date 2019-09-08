@@ -7,6 +7,12 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 
+ifneq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+IDIRS += $(CUSTOM_KERNEL_PATH)/include
+else
+DEFS += J6_VSDK
+endif
+
 include $(FINALE)
 
 endif
