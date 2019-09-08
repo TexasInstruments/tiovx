@@ -57,8 +57,8 @@ void tivxPlatformCreateTargets(void)
             target_id = TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */
-        case TIVX_CPU_ID_EVE1:
-            target_id = TIVX_TARGET_ID_EVE1;
+        case TIVX_CPU_ID_DSP_C7_1:
+            target_id = TIVX_TARGET_ID_DSP_C7_1;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");
@@ -92,8 +92,8 @@ void tivxPlatformDeleteTargets(void)
             target_id = TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */
-        case TIVX_CPU_ID_EVE1:
-            target_id = TIVX_TARGET_ID_EVE1;
+        case TIVX_CPU_ID_DSP_C7_1:
+            target_id = TIVX_TARGET_ID_DSP_C7_1;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");

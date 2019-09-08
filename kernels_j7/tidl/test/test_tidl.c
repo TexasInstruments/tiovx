@@ -717,7 +717,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1))
     {
         uint32_t num_input_tensors  = 0;
         uint32_t num_output_tensors = 0;

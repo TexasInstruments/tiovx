@@ -75,7 +75,7 @@ void tivxTIDLLoadKernels(vx_context context)
         #ifdef x86_64
         /* These three lines only work on PC emulation mode ...
          * this will need to be updated when moving to target */
-        tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
+        tivxSetSelfCpuId(TIVX_CPU_ID_DSP_C7_1);
 
         tivxRegisterTIDLTargetKernels();
 

@@ -82,62 +82,89 @@ extern "C" {
  * \brief Interface to TI extension APIs
  */
 
+/*! \brief Target name for A72_0
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_0      "A72-0"
+
+/*! \brief Target name for DSP_C7_1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1    "DSP_C7-1"
+
 /*! \brief Target name for VPAC NF
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VPAC_NF      "RESV00"
+#define TIVX_TARGET_VPAC_NF      "VPAC_NF"
 /*! \brief Target name for VPAC LDC1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VPAC_LDC1    "RESV01"
-/*! \brief Target name for VPAC LDC2
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_LDC2    "RESV02"
+#define TIVX_TARGET_VPAC_LDC1    "VPAC_LDC1"
 /*! \brief Target name for VPAC MSC1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VPAC_MSC1    "RESV03"
+#define TIVX_TARGET_VPAC_MSC1    "VPAC_MSC1"
 /*! \brief Target name for VPAC MSC2
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VPAC_MSC2    "RESV04"
+#define TIVX_TARGET_VPAC_MSC2    "VPAC_MSC2"
 /*! \brief Target name for VPAC SDE
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_DMPAC_SDE    "RESV05"
+#define TIVX_TARGET_DMPAC_SDE    "DMPAC_SDE"
 /*! \brief Target name for VPAC DOF
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_DMPAC_DOF    "RESV06"
+#define TIVX_TARGET_DMPAC_DOF    "DMPAC_DOF"
 /*! \brief Target name for VPAC VISS1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VPAC_VISS1   "RESV07"
+#define TIVX_TARGET_VPAC_VISS1   "VPAC_VISS1"
 /*! \brief Target name for Capture
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_CAPTURE1     "RESV08"
+#define TIVX_TARGET_CAPTURE1     "CAPTURE1"
 /*! \brief Target name for Capture
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_CAPTURE2     "RESV09"
+#define TIVX_TARGET_CAPTURE2     "CAPTURE2"
 /*! \brief Target name for Display
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_DISPLAY1     "RESV10"
+#define TIVX_TARGET_DISPLAY1     "DISPLAY1"
 /*! \brief Target name for Display
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_DISPLAY2     "RESV11"
+#define TIVX_TARGET_DISPLAY2     "DISPLAY2"
 /*! \brief Target name for VDEC1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VDEC1     "RESV12"
+#define TIVX_TARGET_VDEC1     "VDEC1"
 /*! \brief Target name for VDEC2
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_VDEC2     "RESV13"
+#define TIVX_TARGET_VDEC2     "VDEC2"
+
+
+/*! \brief CPU ID for supported CPUs
+ *
+ *         CPU ID is defined in platform module since
+ *         depending on platform the CPUs could be different
+ *
+ *         Current CPU IDs in tivx.h are defined assuming TDA2x/3x/2Ex
+ *         family of SoCs.  This list below is meant to add new CPUs for
+ *         J7 family on top of removed CPUs from TDA2x/3x/2Ex family.
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+
+/*! \brief CPU ID for DSP_C7_1 */
+#define TIVX_CPU_ID_DSP_C7_1      TIVX_CPU_ID_EVE1
+
+/*! \brief CPU ID for A72_0 */
+#define TIVX_CPU_ID_A72_0         TIVX_CPU_ID_A15_0
+
 
 #ifdef __cplusplus
 }

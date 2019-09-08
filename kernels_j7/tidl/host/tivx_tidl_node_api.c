@@ -64,6 +64,7 @@
 #include <stdlib.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
+#include <TI/j7.h>
 #include <TI/j7_tidl.h>
 
 #define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
@@ -130,7 +131,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
         if(vxGetStatus((vx_reference)(node))==VX_SUCCESS)
         {
-            vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1);
+            vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1);
         }
     }
 

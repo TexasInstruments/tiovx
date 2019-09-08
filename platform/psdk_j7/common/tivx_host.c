@@ -25,9 +25,9 @@ void tivxHostInit(void)
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
     }
     else
-    if(tivxGetSelfCpuId()==TIVX_CPU_ID_A15_0)
+    if(tivxGetSelfCpuId()==TIVX_CPU_ID_A72_0)
     {
-        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A15_0);
+        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
     }
     
     /* Note: eventually register HWA kernels here (deferring for now) */

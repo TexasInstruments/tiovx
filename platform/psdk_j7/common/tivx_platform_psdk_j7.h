@@ -63,11 +63,11 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for DSP2 */
     TIVX_TARGET_ID_DSP2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP2, 0u),
 
-    /*! \brief target ID for EVE1 */
-    TIVX_TARGET_ID_EVE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_EVE1, 0u),
+    /*! \brief target ID for DSP_C7_1 */
+    TIVX_TARGET_ID_DSP_C7_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP_C7_1, 0u),
 
-    /*! \brief target ID for A15-0 */
-    TIVX_TARGET_ID_A15_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A15_0, 0u),
+    /*! \brief target ID for A72-0 */
+    TIVX_TARGET_ID_A72_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A72_0, 0u),
 
     /*! \brief target ID for IPU1-0 */
     TIVX_TARGET_ID_IPU1_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 0u),
@@ -123,9 +123,9 @@ typedef enum _tivx_target_id_e {
 {                                                                              \
     {TIVX_TARGET_DSP1, TIVX_TARGET_ID_DSP1},                                   \
     {TIVX_TARGET_DSP2, TIVX_TARGET_ID_DSP2},                                   \
-    {TIVX_TARGET_EVE1, TIVX_TARGET_ID_EVE1},                                   \
+    {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_DSP_C7_1},                           \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
-    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
+    {TIVX_TARGET_A72_0, TIVX_TARGET_ID_A72_0},                                 \
     {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_VPAC_NF},                             \
     {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_VPAC_LDC1},                         \
     {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_VPAC_MSC1},                         \

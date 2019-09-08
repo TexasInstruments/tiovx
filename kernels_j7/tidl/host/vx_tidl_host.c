@@ -309,7 +309,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         if ( status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_EVE1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
         }
 
         if ( status == VX_SUCCESS)

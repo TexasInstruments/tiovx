@@ -688,9 +688,9 @@ void tivxAddTargetKernelTIDL()
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_EVE1))
+    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
     {
-        strncpy(target_name, TIVX_TARGET_EVE1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
 
         vx_tidl_target_kernel = tivxAddTargetKernelByName
                                 (
