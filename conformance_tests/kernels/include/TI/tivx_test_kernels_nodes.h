@@ -115,6 +115,41 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceObjArrayNode(vx_graph graph,
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkObjArrayNode(vx_graph graph,
                                       vx_object_array      in_object_array);
 
+/*! \brief [Graph] Creates a PYRAMID_INTERMEDIATE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME</tt>
+ * \ingroup group_vision_function_pyramid_intermediate
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidIntermediateNode(vx_graph graph,
+                                      vx_pyramid           input,
+                                      vx_pyramid           output);
+
+/*! \brief [Graph] Creates a PYRAMID_SOURCE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_PYRAMID_SOURCE_NAME</tt>
+ * \ingroup group_vision_function_pyramid_source
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSourceNode(vx_graph graph,
+                                      vx_pyramid           output);
+
+/*! \brief [Graph] Creates a PYRAMID_SINK Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] output
+ * \see <tt>TIVX_KERNEL_PYRAMID_SINK_NAME</tt>
+ * \ingroup group_vision_function_pyramid_sink
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSinkNode(vx_graph graph,
+                                      vx_pyramid           output);
+
 #ifdef __cplusplus
 }
 #endif

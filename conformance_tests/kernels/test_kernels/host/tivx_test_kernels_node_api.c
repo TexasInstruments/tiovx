@@ -184,3 +184,44 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkObjArrayNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidIntermediateNode(vx_graph graph,
+                                      vx_pyramid           input,
+                                      vx_pyramid           output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSourceNode(vx_graph graph,
+                                      vx_pyramid           output)
+{
+    vx_reference prms[] = {
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_PYRAMID_SOURCE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSinkNode(vx_graph graph,
+                                      vx_pyramid           output)
+{
+    vx_reference prms[] = {
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_PYRAMID_SINK_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

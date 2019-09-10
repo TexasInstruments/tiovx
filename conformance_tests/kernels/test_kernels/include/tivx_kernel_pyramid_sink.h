@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -59,14 +59,24 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#if defined(BUILD_CT_TIOVX_TEST_KERNELS)
-TESTCASE(tivxTestKernelsNotNot)
-TESTCASE(tivxGraphStreaming)
-TESTCASE(tivxSourceNode)
-TESTCASE(tivxTestSinkNode)
-TESTCASE(GraphStreaming)
-TESTCASE(tivxPyramidNode)
+
+#ifndef _TIVX_KERNEL_PYRAMID_SINK_
+#define _TIVX_KERNEL_PYRAMID_SINK_
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+
+#define TIVX_KERNEL_PYRAMID_SINK_INPUT_IDX (0U)
+
+#define TIVX_KERNEL_PYRAMID_SINK_MAX_PARAMS (1U)
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _TIVX_KERNEL_PYRAMID_SINK_ */
 
 

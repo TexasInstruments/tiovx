@@ -115,6 +115,21 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME     "com.ti.test_kernels.scalar_sink_obj_array"
 
+/*! \brief pyramid_intermediate kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_PYRAMID_INTERMEDIATE_NAME     "com.ti.test_kernels.pyramid_intermediate"
+
+/*! \brief pyramid_source kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_PYRAMID_SOURCE_NAME     "com.ti.test_kernels.pyramid_source"
+
+/*! \brief pyramid_sink kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_PYRAMID_SINK_NAME     "com.ti.test_kernels.pyramid_sink"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!
