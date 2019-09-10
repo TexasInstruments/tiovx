@@ -235,7 +235,8 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
-/* test case for TIOVX-650 bug */
+/* test case for TIOVX-650 bug
+   Note: currently disabled */
 TEST(tivxSourceNode, testSourceObjArray2)
 {
     vx_graph graph;
@@ -1929,7 +1930,7 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
 
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
-               testSourceObjArray2,
+               DISABLED_testSourceObjArray2,
                testSinkObjArray,
                testSinkObjArray2,
                testSinkObjArray3,
