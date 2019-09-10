@@ -500,9 +500,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             /* Get Histogram */
             if(NULL != confidence_histogram_desc)
             {
-                target_ptr = tivxMemShared2TargetPtr(
-                            confidence_histogram_desc->mem_ptr.shared_ptr,
-                            confidence_histogram_desc->mem_ptr.mem_heap_region);
+                target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
 
                 tivxMemBufferMap(target_ptr, confidence_histogram_desc->mem_size,
                                 VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
@@ -535,9 +533,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         config_desc = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
 
-        target_ptr = tivxMemShared2TargetPtr(
-                            config_desc->mem_ptr.shared_ptr,
-                            config_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
                             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -673,9 +669,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     {
         dofPrms = &dofObj->dofPrms;
 
-        target_ptr = tivxMemShared2TargetPtr(
-            config_desc->mem_ptr.shared_ptr,
-            config_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1268,9 +1262,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
 
     if(VX_SUCCESS == status)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1362,9 +1354,7 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
 
     if(VX_SUCCESS == status)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

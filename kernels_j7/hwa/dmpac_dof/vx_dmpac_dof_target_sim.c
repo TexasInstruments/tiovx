@@ -300,12 +300,8 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             total_pyramid_lvl = input_current_desc->num_levels + 1;
 
             /* convert shared pointer to target/local pointer for base images */
-            img_curr_base_target_ptr = tivxMemShared2TargetPtr(
-                        input_current_base_desc->mem_ptr[0].shared_ptr,
-                        input_current_base_desc->mem_ptr[0].mem_heap_region);
-            img_ref_base_target_ptr = tivxMemShared2TargetPtr(
-                        input_reference_base_desc->mem_ptr[0].shared_ptr,
-                        input_reference_base_desc->mem_ptr[0].mem_heap_region);
+            img_curr_base_target_ptr = tivxMemShared2TargetPtr(&input_current_base_desc->mem_ptr[0]);
+            img_ref_base_target_ptr = tivxMemShared2TargetPtr(&input_reference_base_desc->mem_ptr[0]);
         }
         else
         {
@@ -313,37 +309,30 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
         /* convert shared pointer to target/local pointer for rest of parametes*/
-        configuration_target_ptr = tivxMemShared2TargetPtr(
-          configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
+        configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
 
         if(flow_vector_in_desc != NULL)
         {
-            flow_vector_in_target_ptr = tivxMemShared2TargetPtr(
-                flow_vector_in_desc->mem_ptr[0].shared_ptr, flow_vector_in_desc->mem_ptr[0].mem_heap_region);
+            flow_vector_in_target_ptr = tivxMemShared2TargetPtr(&flow_vector_in_desc->mem_ptr[0]);
         }
 
         if( sparse_of_map_desc != NULL)
         {
-            sparse_of_map_target_ptr = tivxMemShared2TargetPtr(
-              sparse_of_map_desc->mem_ptr[0].shared_ptr, sparse_of_map_desc->mem_ptr[0].mem_heap_region);
+            sparse_of_map_target_ptr = tivxMemShared2TargetPtr(&sparse_of_map_desc->mem_ptr[0]);
         }
 
-        flow_vector_out_target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_out_desc->mem_ptr[0].shared_ptr, flow_vector_out_desc->mem_ptr[0].mem_heap_region);
+        flow_vector_out_target_ptr = tivxMemShared2TargetPtr(&flow_vector_out_desc->mem_ptr[0]);
 
         if( confidence_histogram_desc != NULL)
         {
-            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
-              confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
+            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
         }
 
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
-            img_current_target_ptr[i] = tivxMemShared2TargetPtr(
-                img_current_desc[i]->mem_ptr[0].shared_ptr, img_current_desc[i]->mem_ptr[0].mem_heap_region);
+            img_current_target_ptr[i] = tivxMemShared2TargetPtr(&img_current_desc[i]->mem_ptr[0]);
 
-            img_reference_target_ptr[i] = tivxMemShared2TargetPtr(
-                img_reference_desc[i]->mem_ptr[0].shared_ptr, img_reference_desc[i]->mem_ptr[0].mem_heap_region);
+            img_reference_target_ptr[i] = tivxMemShared2TargetPtr(&img_reference_desc[i]->mem_ptr[0]);
         }
 
         /* map buffers */
@@ -643,8 +632,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
                 }
             }
 
-            params_array_target_ptr = tivxMemShared2TargetPtr(
-                params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
+            params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
             tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

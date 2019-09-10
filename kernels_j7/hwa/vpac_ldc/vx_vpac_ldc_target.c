@@ -493,9 +493,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     {
         ldc_cfg = &ldc_obj->ldc_cfg;
 
-        target_ptr = tivxMemShared2TargetPtr(
-            config_desc->mem_ptr.shared_ptr,
-            config_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -851,9 +849,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 
     if (NULL != warp_matrix_desc)
     {
-        warp_matrix_target_ptr = tivxMemShared2TargetPtr(
-            warp_matrix_desc->mem_ptr.shared_ptr,
-            warp_matrix_desc->mem_ptr.mem_heap_region);
+        warp_matrix_target_ptr = tivxMemShared2TargetPtr(&warp_matrix_desc->mem_ptr);
 
         tivxMemBufferMap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -948,9 +944,7 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
 
     if ((NULL != mesh_prms_desc) && (NULL != mesh_img_desc))
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            mesh_prms_desc->mem_ptr.shared_ptr,
-            mesh_prms_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&mesh_prms_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, mesh_prms_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1000,9 +994,7 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
 
     if (NULL != reg_prms_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            reg_prms_desc->mem_ptr.shared_ptr,
-            reg_prms_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&reg_prms_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, reg_prms_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1073,9 +1065,7 @@ static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

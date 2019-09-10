@@ -150,9 +150,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -251,9 +249,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                 tivxMemShared2PhysPtr(dispPrms->chroma_mem_ptr.shared_ptr,
                 dispPrms->chroma_mem_ptr.mem_heap_region);
 
-            chroma_target_ptr = tivxMemShared2TargetPtr(
-                dispPrms->chroma_mem_ptr.shared_ptr,
-                dispPrms->chroma_mem_ptr.mem_heap_region);
+            chroma_target_ptr = tivxMemShared2TargetPtr(&dispPrms->chroma_mem_ptr);
 
             tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
                              VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
@@ -373,8 +369,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         }
         if(VX_SUCCESS == status)
         {
-            display_config_target_ptr = tivxMemShared2TargetPtr(obj_desc_configuration->mem_ptr.shared_ptr,
-                                                                obj_desc_configuration->mem_ptr.mem_heap_region);
+            display_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc_configuration->mem_ptr);
 
             tivxMemBufferMap(display_config_target_ptr,
                              obj_desc_configuration->mem_size,
@@ -744,12 +739,10 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             }
         }
 
-        image_target_ptr1 = tivxMemShared2TargetPtr(obj_desc_image->mem_ptr[0].shared_ptr,
-                                                    obj_desc_image->mem_ptr[0].mem_heap_region);
+        image_target_ptr1 = tivxMemShared2TargetPtr(&obj_desc_image->mem_ptr[0]);
         if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
         {
-            image_target_ptr2 = tivxMemShared2TargetPtr(obj_desc_image->mem_ptr[1].shared_ptr,
-                                                        obj_desc_image->mem_ptr[1].mem_heap_region);
+            image_target_ptr2 = tivxMemShared2TargetPtr(&obj_desc_image->mem_ptr[1]);
 
         }
 

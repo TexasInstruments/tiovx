@@ -178,14 +178,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 
         if (VX_SUCCESS == status)
         {
-            configuration_target_ptr = tivxMemShared2TargetPtr(
-              configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
-            input_target_ptr = tivxMemShared2TargetPtr(
-              input_desc->mem_ptr[0].shared_ptr, input_desc->mem_ptr[0].mem_heap_region);
-            sigmas_target_ptr = tivxMemShared2TargetPtr(
-              sigmas_desc->mem_ptr.shared_ptr, sigmas_desc->mem_ptr.mem_heap_region);
-            output_target_ptr = tivxMemShared2TargetPtr(
-              output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
+            configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
+            input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
+            sigmas_target_ptr = tivxMemShared2TargetPtr(&sigmas_desc->mem_ptr);
+            output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
 
             tivxMemBufferMap(configuration_target_ptr,
                configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
@@ -296,10 +292,8 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
                 sigmas_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
 
-                params_array_target_ptr = tivxMemShared2TargetPtr(
-                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
-                sigmas_array_target_ptr = tivxMemShared2TargetPtr(
-                    sigmas_array->mem_ptr.shared_ptr, sigmas_array->mem_ptr.mem_heap_region);
+                params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
+                sigmas_array_target_ptr = tivxMemShared2TargetPtr(&sigmas_array->mem_ptr);
 
                 tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

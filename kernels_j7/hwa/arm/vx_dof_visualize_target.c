@@ -129,12 +129,9 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         confidence_image_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
         confidence_threshold_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
 
-        flow_vector_target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_desc->mem_ptr[0].shared_ptr, flow_vector_desc->mem_ptr[0].mem_heap_region);
-        flow_vector_rgb_target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_rgb_desc->mem_ptr[0].shared_ptr, flow_vector_rgb_desc->mem_ptr[0].mem_heap_region);
-        confidence_image_target_ptr = tivxMemShared2TargetPtr(
-          confidence_image_desc->mem_ptr[0].shared_ptr, confidence_image_desc->mem_ptr[0].mem_heap_region);
+        flow_vector_target_ptr = tivxMemShared2TargetPtr(&flow_vector_desc->mem_ptr[0]);
+        flow_vector_rgb_target_ptr = tivxMemShared2TargetPtr(&flow_vector_rgb_desc->mem_ptr[0]);
+        confidence_image_target_ptr = tivxMemShared2TargetPtr(&confidence_image_desc->mem_ptr[0]);
 
         tivxMemBufferMap(flow_vector_target_ptr,
            flow_vector_desc->mem_size[0], VX_MEMORY_TYPE_HOST,

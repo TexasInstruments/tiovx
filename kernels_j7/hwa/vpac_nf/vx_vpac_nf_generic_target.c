@@ -292,12 +292,9 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
-        conv_target_ptr = tivxMemShared2TargetPtr(
-            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
+        conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -537,8 +534,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     {
         nf_cfg = &nf_generic_obj->nf_cfg;
 
-        params_array_target_ptr = tivxMemShared2TargetPtr(
-            params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
+        params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -549,8 +545,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         Nf_ConfigInit(&nf_cfg->nfCfg);
 
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
-        conv_target_ptr = tivxMemShared2TargetPtr(
-            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
+        conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         pConv = conv_target_ptr;
@@ -888,9 +883,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
 
     if(VX_SUCCESS == status)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -941,9 +934,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

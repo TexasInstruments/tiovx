@@ -213,9 +213,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
             for (i = 0; i < num_planes; i ++)
             {
-                target_ptr = tivxMemShared2TargetPtr(
-                    in_img->mem_ptr[i].shared_ptr,
-                    in_img->mem_ptr[i].mem_heap_region);
+                target_ptr = tivxMemShared2TargetPtr(&in_img->mem_ptr[i]);
                 tivxMemBufferMap(target_ptr,
                     in_img->mem_size[i], VX_MEMORY_TYPE_HOST,
                     VX_READ_ONLY);
@@ -266,9 +264,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
                 for (i = 0; i < num_planes; i ++)
                 {
-                    target_ptr = tivxMemShared2TargetPtr(
-                        out_img[0]->mem_ptr[i].shared_ptr,
-                        out_img[0]->mem_ptr[i].mem_heap_region);
+                    target_ptr = tivxMemShared2TargetPtr(&out_img[0]->mem_ptr[i]);
                     tivxMemBufferMap(target_ptr,
                         out_img[0]->mem_size[i], VX_MEMORY_TYPE_HOST,
                         VX_WRITE_ONLY);
@@ -296,9 +292,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
                 for (i = 0; i < num_planes; i ++)
                 {
-                    target_ptr = tivxMemShared2TargetPtr(
-                        out_img[1]->mem_ptr[i].shared_ptr,
-                        out_img[1]->mem_ptr[i].mem_heap_region);
+                    target_ptr = tivxMemShared2TargetPtr(&out_img[1]->mem_ptr[i]);
                     tivxMemBufferMap(target_ptr,
                         out_img[1]->mem_size[i], VX_MEMORY_TYPE_HOST,
                         VX_WRITE_ONLY);
@@ -457,8 +451,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 uint32_t data_mode;
                 void *configuration_target_ptr;
 
-                configuration_target_ptr = tivxMemShared2TargetPtr(
-                    configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
+                configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
 
                 tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -771,9 +764,7 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
 
     if ((NULL != mesh_prms_desc) && (NULL != mesh_img_desc))
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            mesh_prms_desc->mem_ptr.shared_ptr,
-            mesh_prms_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&mesh_prms_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, mesh_prms_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -788,8 +779,7 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
 
             settings->ldmapen = 1;     // LD back mapping enable
 
-            mesh_table_target_ptr = tivxMemShared2TargetPtr(
-                mesh_img_desc->mem_ptr[0].shared_ptr, mesh_img_desc->mem_ptr[0].mem_heap_region);
+            mesh_table_target_ptr = tivxMemShared2TargetPtr(&mesh_img_desc->mem_ptr[0]);
 
             tivxMemBufferMap(mesh_table_target_ptr, mesh_img_desc->mem_size[0],
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -834,9 +824,7 @@ static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
 
     if (NULL != region_params_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            region_params_desc->mem_ptr.shared_ptr,
-            region_params_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&region_params_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, region_params_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -892,8 +880,7 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
 
     if (NULL != warp_matrix_desc)
     {
-        warp_matrix_target_ptr = tivxMemShared2TargetPtr(
-            warp_matrix_desc->mem_ptr.shared_ptr, warp_matrix_desc->mem_ptr.mem_heap_region);
+        warp_matrix_target_ptr = tivxMemShared2TargetPtr(&warp_matrix_desc->mem_ptr);
 
         tivxMemBufferMap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -987,9 +974,7 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
 
     if(NULL != luma_lut_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            luma_lut_desc->mem_ptr.shared_ptr,
-            luma_lut_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&luma_lut_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, luma_lut_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1009,8 +994,7 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
 
     if(NULL != chroma_lut_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            chroma_lut_desc->mem_ptr.shared_ptr, chroma_lut_desc->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&chroma_lut_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, chroma_lut_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

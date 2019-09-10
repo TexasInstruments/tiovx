@@ -222,9 +222,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         dcc_out_prms = &vissObj->dcc_out_prms;
 
         dcc_in_prms->dcc_buf_size = dcc_buf_desc->mem_size;
-        dcc_in_prms->dcc_buf = tivxMemShared2TargetPtr(
-            dcc_buf_desc->mem_ptr.shared_ptr,
-            dcc_buf_desc->mem_ptr.mem_heap_region);
+        dcc_in_prms->dcc_buf = tivxMemShared2TargetPtr(&dcc_buf_desc->mem_ptr);
 
         if(NULL != dcc_in_prms->dcc_buf)
         {

@@ -337,11 +337,13 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     return phys;
 }
 
-void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
+void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr)
 {
-    /* TODO need to fill for Linux
-     */
-    return (void*)(uintptr_t)(shared_ptr);
+#ifdef TARGET_OS_LINUX
+    return (void*)(uintptr_t)(shared_ptr->host_ptr);
+#else
+    return (void*)(uintptr_t)(shared_ptr->shared_ptr);
+#endif
 }
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)

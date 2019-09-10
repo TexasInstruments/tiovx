@@ -286,16 +286,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
-        left_target_ptr = tivxMemShared2TargetPtr(
-            left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
-        right_target_ptr = tivxMemShared2TargetPtr(
-            right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
-        output_target_ptr = tivxMemShared2TargetPtr(
-            output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
+        left_target_ptr = tivxMemShared2TargetPtr(&left_desc->mem_ptr[0]);
+        right_target_ptr = tivxMemShared2TargetPtr(&right_desc->mem_ptr[0]);
+        output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
         if( confidence_histogram_desc != NULL)
         {
-            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
-                confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
+            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
         }
 
         tivxMemBufferMap(left_target_ptr,
@@ -515,8 +511,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     {
         sdePrms = &sde_obj->sdePrms;
 
-        params_array_target_ptr = tivxMemShared2TargetPtr(
-            params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
+        params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

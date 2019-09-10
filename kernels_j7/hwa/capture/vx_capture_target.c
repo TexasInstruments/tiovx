@@ -191,9 +191,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
             raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[chId];
 
             /* Question: is the fact that we are just using mem_ptr[0] and not remaining planes correct? */
-            output_image_target_ptr = tivxMemShared2TargetPtr(
-                raw_image->mem_ptr[0].shared_ptr,
-                raw_image->mem_ptr[0].mem_heap_region);
+            output_image_target_ptr = tivxMemShared2TargetPtr(&raw_image->mem_ptr[0]);
 
             captured_frame = ((uintptr_t)output_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
@@ -204,9 +202,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
             image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
 
             /* Question: is the fact that we are just using mem_ptr[0] and not remaining exposures correct? */
-            output_image_target_ptr = tivxMemShared2TargetPtr(
-                image->mem_ptr[0].shared_ptr,
-                image->mem_ptr[0].mem_heap_region);
+            output_image_target_ptr = tivxMemShared2TargetPtr(&image->mem_ptr[0]);
 
             captured_frame = ((uintptr_t)output_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
@@ -300,8 +296,7 @@ static void tivxCaptureSetCreateParams(
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
 
-    capture_config_target_ptr = tivxMemShared2TargetPtr(
-        obj_desc->mem_ptr.shared_ptr, obj_desc->mem_ptr.mem_heap_region);
+    capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
     tivxMemBufferMap(capture_config_target_ptr, obj_desc->mem_size,
         VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

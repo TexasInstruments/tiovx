@@ -26,6 +26,8 @@ IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(VISION_APPS_PATH)
 
+DEFS += TARGET_OS_LINUX
+
 include $(FINALE)
 
 endif

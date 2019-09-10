@@ -1412,8 +1412,7 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
 
     if (desc->mem_size == size)
     {
-        *target_ptr = tivxMemShared2TargetPtr(
-            desc->mem_ptr.shared_ptr, desc->mem_ptr.mem_heap_region);
+        *target_ptr = tivxMemShared2TargetPtr(&desc->mem_ptr);
 
         tivxMemBufferMap(*target_ptr, desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

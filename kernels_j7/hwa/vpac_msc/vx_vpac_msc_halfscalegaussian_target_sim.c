@@ -132,8 +132,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
     {
         void *src_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
@@ -224,8 +223,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         stub.valid_roi.start_y = 0;
 
         /* Reformat output */
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 

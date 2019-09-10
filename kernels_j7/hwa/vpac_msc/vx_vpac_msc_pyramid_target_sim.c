@@ -469,9 +469,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 prms->config.settings.G_inWidth[0] = iw;
                 prms->config.settings.G_inHeight[0] = ih;
 
-                target_ptr = tivxMemShared2TargetPtr(
-                    in_img_desc->mem_ptr[0].shared_ptr,
-                    in_img_desc->mem_ptr[0].mem_heap_region);
+                target_ptr = tivxMemShared2TargetPtr(&in_img_desc->mem_ptr[0]);
                 tivxMemBufferMap(target_ptr, in_img_desc->mem_size[0],
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
@@ -579,9 +577,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     out_img_desc = prms->out_img_desc[out_img_idx];
 
                     /* Reformat output */
-                    target_ptr = tivxMemShared2TargetPtr(
-                        out_img_desc->mem_ptr[0].shared_ptr,
-                        out_img_desc->mem_ptr[0].mem_heap_region);
+                    target_ptr = tivxMemShared2TargetPtr(&out_img_desc->mem_ptr[0]);
                     tivxMemBufferMap(target_ptr, out_img_desc->mem_size[0],
                         VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
@@ -792,9 +788,7 @@ static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdParams *prms,
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -848,9 +842,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -917,9 +909,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
     {
         if (NULL != usr_data_obj[cnt])
         {
-            target_ptr = tivxMemShared2TargetPtr(
-                usr_data_obj[cnt]->mem_ptr.shared_ptr,
-                usr_data_obj[cnt]->mem_ptr.mem_heap_region);
+            target_ptr = tivxMemShared2TargetPtr(&usr_data_obj[cnt]->mem_ptr);
 
             tivxMemBufferMap(target_ptr, usr_data_obj[cnt]->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

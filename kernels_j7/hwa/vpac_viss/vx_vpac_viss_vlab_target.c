@@ -185,14 +185,12 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         raw_mem_target_ptr[1] = NULL;
         raw_mem_target_ptr[2] = NULL;
 
-        configuration_target_ptr = tivxMemShared2TargetPtr(
-          configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
+        configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
         tivxMemBufferMap(configuration_target_ptr,
            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        ae_awb_result_target_ptr = tivxMemShared2TargetPtr(
-          ae_awb_result_desc->mem_ptr.shared_ptr, ae_awb_result_desc->mem_ptr.mem_heap_region);
+        ae_awb_result_target_ptr = tivxMemShared2TargetPtr(&ae_awb_result_desc->mem_ptr);
         tivxMemBufferMap(ae_awb_result_target_ptr,
            ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
@@ -200,13 +198,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* Get image pointer(s) */
         for(i=0; i < num_exposures; i++)
         {
-            raw_target_ptr[i] = tivxMemShared2TargetPtr(
-                raw_desc->img_ptr[i].shared_ptr, raw_desc->img_ptr[i].mem_heap_region);
+            raw_target_ptr[i] = tivxMemShared2TargetPtr(&raw_desc->img_ptr[i]);
         }
 
         /* Map buffer(s) */
-        raw_mem_target_ptr[0] = tivxMemShared2TargetPtr(
-            raw_desc->mem_ptr[0].shared_ptr, raw_desc->mem_ptr[0].mem_heap_region);
+        raw_mem_target_ptr[0] = tivxMemShared2TargetPtr(&raw_desc->mem_ptr[0]);
         tivxMemBufferMap(raw_mem_target_ptr[0],
             raw_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
@@ -215,8 +211,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             for(i=1; i < num_exposures; i++)
             {
-                raw_mem_target_ptr[i] = tivxMemShared2TargetPtr(
-                    raw_desc->mem_ptr[i].shared_ptr, raw_desc->mem_ptr[i].mem_heap_region);
+                raw_mem_target_ptr[i] = tivxMemShared2TargetPtr(&raw_desc->mem_ptr[i]);
                 tivxMemBufferMap(raw_mem_target_ptr[i],
                     raw_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
                     VX_READ_ONLY);
@@ -225,16 +220,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( y12_desc != NULL)
         {
-            y12_target_ptr = tivxMemShared2TargetPtr(
-              y12_desc->mem_ptr[0].shared_ptr, y12_desc->mem_ptr[0].mem_heap_region);
+            y12_target_ptr = tivxMemShared2TargetPtr(&y12_desc->mem_ptr[0]);
             tivxMemBufferMap(y12_target_ptr,
                y12_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
             if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
-                uv12_c1_target_ptr = tivxMemShared2TargetPtr(
-                  y12_desc->mem_ptr[1].shared_ptr, y12_desc->mem_ptr[1].mem_heap_region);
+                uv12_c1_target_ptr = tivxMemShared2TargetPtr(&y12_desc->mem_ptr[1]);
                 tivxMemBufferMap(uv12_c1_target_ptr,
                   y12_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
                    VX_WRITE_ONLY);
@@ -243,8 +236,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( uv12_c1_desc != NULL)
         {
-            uv12_c1_target_ptr = tivxMemShared2TargetPtr(
-              uv12_c1_desc->mem_ptr[0].shared_ptr, uv12_c1_desc->mem_ptr[0].mem_heap_region);
+            uv12_c1_target_ptr = tivxMemShared2TargetPtr(&uv12_c1_desc->mem_ptr[0]);
             tivxMemBufferMap(uv12_c1_target_ptr,
                uv12_c1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
@@ -252,16 +244,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( y8_r8_c2_desc != NULL)
         {
-            y8_r8_c2_target_ptr = tivxMemShared2TargetPtr(
-              y8_r8_c2_desc->mem_ptr[0].shared_ptr, y8_r8_c2_desc->mem_ptr[0].mem_heap_region);
+            y8_r8_c2_target_ptr = tivxMemShared2TargetPtr(&y8_r8_c2_desc->mem_ptr[0]);
             tivxMemBufferMap(y8_r8_c2_target_ptr,
                y8_r8_c2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
             if (VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
             {
-                uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(
-                  y8_r8_c2_desc->mem_ptr[1].shared_ptr, y8_r8_c2_desc->mem_ptr[1].mem_heap_region);
+                uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(&y8_r8_c2_desc->mem_ptr[1]);
                 tivxMemBufferMap(uv8_g8_c3_target_ptr,
                   y8_r8_c2_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
                    VX_WRITE_ONLY);
@@ -270,8 +260,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( uv8_g8_c3_desc != NULL)
         {
-            uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(
-              uv8_g8_c3_desc->mem_ptr[0].shared_ptr, uv8_g8_c3_desc->mem_ptr[0].mem_heap_region);
+            uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(&uv8_g8_c3_desc->mem_ptr[0]);
             tivxMemBufferMap(uv8_g8_c3_target_ptr,
                uv8_g8_c3_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
@@ -279,8 +268,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( s8_b8_c4_desc != NULL)
         {
-            s8_b8_c4_target_ptr = tivxMemShared2TargetPtr(
-              s8_b8_c4_desc->mem_ptr[0].shared_ptr, s8_b8_c4_desc->mem_ptr[0].mem_heap_region);
+            s8_b8_c4_target_ptr = tivxMemShared2TargetPtr(&s8_b8_c4_desc->mem_ptr[0]);
             tivxMemBufferMap(s8_b8_c4_target_ptr,
                s8_b8_c4_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
@@ -288,8 +276,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( histogram_desc != NULL)
         {
-            histogram_target_ptr = tivxMemShared2TargetPtr(
-              histogram_desc->mem_ptr.shared_ptr, histogram_desc->mem_ptr.mem_heap_region);
+            histogram_target_ptr = tivxMemShared2TargetPtr(&histogram_desc->mem_ptr);
             tivxMemBufferMap(histogram_target_ptr,
                histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
@@ -297,8 +284,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( h3a_aew_af_desc != NULL)
         {
-            h3a_aew_af_target_ptr = tivxMemShared2TargetPtr(
-              h3a_aew_af_desc->mem_ptr.shared_ptr, h3a_aew_af_desc->mem_ptr.mem_heap_region);
+            h3a_aew_af_target_ptr = tivxMemShared2TargetPtr(&h3a_aew_af_desc->mem_ptr);
             tivxMemBufferMap(h3a_aew_af_target_ptr,
                h3a_aew_af_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
@@ -738,10 +724,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 void *configuration_target_ptr;
                 void *ae_awb_result_target_ptr;
 
-                configuration_target_ptr = tivxMemShared2TargetPtr(
-                    configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
-                ae_awb_result_target_ptr = tivxMemShared2TargetPtr(
-                    ae_awb_result_desc->mem_ptr.shared_ptr, ae_awb_result_desc->mem_ptr.mem_heap_region);
+                configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
+                ae_awb_result_target_ptr = tivxMemShared2TargetPtr(&ae_awb_result_desc->mem_ptr);
 
                 tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -762,7 +746,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     prms->dcc_input_params->exposure_time = 33333;
 
                     prms->dcc_input_params->dcc_buf_size = dcc_desc->mem_size;
-                    prms->dcc_input_params->dcc_buf = tivxMemShared2TargetPtr(dcc_desc->mem_ptr.shared_ptr, dcc_desc->mem_ptr.mem_heap_region);
+                    prms->dcc_input_params->dcc_buf = tivxMemShared2TargetPtr(&dcc_desc->mem_ptr);
                     if(NULL != prms->dcc_input_params->dcc_buf)
                     {
                         tivxMemBufferMap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

@@ -299,14 +299,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         sigmas_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        configuration_target_ptr = tivxMemShared2TargetPtr(
-            configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
-        sigmas_target_ptr = tivxMemShared2TargetPtr(
-            sigmas_desc->mem_ptr.shared_ptr, sigmas_desc->mem_ptr.mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
+        sigmas_target_ptr = tivxMemShared2TargetPtr(&sigmas_desc->mem_ptr);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -486,10 +482,8 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
     {
         nf_cfg = &nf_bilateral_obj->nf_cfg;
 
-        params_array_target_ptr = tivxMemShared2TargetPtr(
-            params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
-        sigmas_array_target_ptr = tivxMemShared2TargetPtr(
-            sigmas_array->mem_ptr.shared_ptr, sigmas_array->mem_ptr.mem_heap_region);
+        params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
+        sigmas_array_target_ptr = tivxMemShared2TargetPtr(&sigmas_array->mem_ptr);
 
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1012,9 +1006,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
 
     if(VX_SUCCESS == status)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1070,9 +1062,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
 
     if (NULL != usr_data_obj)
     {
-        target_ptr = tivxMemShared2TargetPtr(
-            usr_data_obj->mem_ptr.shared_ptr,
-            usr_data_obj->mem_ptr.mem_heap_region);
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

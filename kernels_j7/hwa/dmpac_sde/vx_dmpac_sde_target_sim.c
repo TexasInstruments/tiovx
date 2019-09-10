@@ -149,18 +149,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
         if (VX_SUCCESS == status)
         {
-            left_target_ptr = tivxMemShared2TargetPtr(
-              left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
-            right_target_ptr = tivxMemShared2TargetPtr(
-              right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
-            configuration_target_ptr = tivxMemShared2TargetPtr(
-              configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
-            output_target_ptr = tivxMemShared2TargetPtr(
-              output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
+            left_target_ptr = tivxMemShared2TargetPtr(&left_desc->mem_ptr[0]);
+            right_target_ptr = tivxMemShared2TargetPtr(&right_desc->mem_ptr[0]);
+            configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
+            output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
             if( confidence_histogram_desc != NULL)
             {
-                confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
-                  confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
+                confidence_histogram_target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
             }
 
             tivxMemBufferMap(left_target_ptr,
@@ -331,8 +326,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
                 params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
 
-                params_array_target_ptr = tivxMemShared2TargetPtr(
-                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
+                params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
                 tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
