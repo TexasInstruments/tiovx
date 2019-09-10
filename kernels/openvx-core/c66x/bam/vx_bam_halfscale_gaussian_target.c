@@ -142,10 +142,8 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0U]);
 
         /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */

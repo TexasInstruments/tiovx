@@ -128,8 +128,7 @@ static vx_status VX_CALLBACK tivxPyramidSourceProcess(
         tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t**)img_output_desc, output_desc->num_levels);
         for(i=0; i<output_desc->num_levels; i++)
         {
-            output_target_ptr[i] = tivxMemShared2TargetPtr(
-              img_output_desc[i]->mem_ptr[0].shared_ptr, img_output_desc[i]->mem_ptr[0].mem_heap_region);
+            output_target_ptr[i] = tivxMemShared2TargetPtr(&img_output_desc[i]->mem_ptr[0]);
             tivxMemBufferMap(output_target_ptr[i],
                img_output_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
                VX_WRITE_ONLY);

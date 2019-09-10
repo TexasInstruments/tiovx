@@ -113,8 +113,7 @@ static vx_status tivxKernelColorConvert(
 
         for (i = 0; i < src_desc->planes; i++)
         {
-            src_desc_target_ptr[i] = tivxMemShared2TargetPtr(
-                src_desc->mem_ptr[i].shared_ptr, src_desc->mem_ptr[i].mem_heap_region);
+            src_desc_target_ptr[i] = tivxMemShared2TargetPtr(&src_desc->mem_ptr[i]);
             tivxMemBufferMap(src_desc_target_ptr[i], src_desc->mem_size[i],
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
@@ -122,8 +121,7 @@ static vx_status tivxKernelColorConvert(
 
         for (i = 0; i < dst_desc->planes; i++)
         {
-            dst_desc_target_ptr[i] = tivxMemShared2TargetPtr(
-                dst_desc->mem_ptr[i].shared_ptr, dst_desc->mem_ptr[i].mem_heap_region);
+            dst_desc_target_ptr[i] = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[i]);
             tivxMemBufferMap(dst_desc_target_ptr[i], dst_desc->mem_size[i],
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }

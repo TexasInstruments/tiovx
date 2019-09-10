@@ -116,11 +116,9 @@ static vx_status tivxKernelConvertDepth(
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_heap_region);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(&src_desc->mem_ptr[0U]);
 
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_heap_region);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0U]);
 
         tivxMemBufferMap(src_desc_target_ptr, src_desc->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

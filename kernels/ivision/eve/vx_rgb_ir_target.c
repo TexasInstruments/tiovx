@@ -153,12 +153,9 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
     void *src_desc_target_ptr;
     void *dstBayer_desc_target_ptr, *dstIR_desc_target_ptr;
 
-    src_desc_target_ptr = tivxMemShared2TargetPtr(
-        src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-    dstBayer_desc_target_ptr = tivxMemShared2TargetPtr(
-        dstBayer->mem_ptr[0].shared_ptr, dstBayer->mem_ptr[0].mem_heap_region);
-    dstIR_desc_target_ptr = tivxMemShared2TargetPtr(
-        dstIR->mem_ptr[0].shared_ptr, dstIR->mem_ptr[0].mem_heap_region);
+    src_desc_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+    dstBayer_desc_target_ptr = tivxMemShared2TargetPtr(&dstBayer->mem_ptr[0]);
+    dstIR_desc_target_ptr = tivxMemShared2TargetPtr(&dstIR->mem_ptr[0]);
 
     tivxMemBufferMap(src_desc_target_ptr, src->mem_size[0],
         VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

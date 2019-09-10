@@ -117,12 +117,9 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
 
         sc = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_WARP_PERSPECTIVE_TYPE_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        mat_target_ptr = tivxMemShared2TargetPtr(
-            mat->mem_ptr.shared_ptr, mat->mem_ptr.mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        mat_target_ptr = tivxMemShared2TargetPtr(&mat->mem_ptr);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

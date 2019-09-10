@@ -153,8 +153,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX];
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 

@@ -108,24 +108,19 @@ vx_status VX_CALLBACK tivxChannelCombine(
         src3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
 
-        src0_desc_target_ptr = tivxMemShared2TargetPtr(
-          src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_heap_region);
-        src1_desc_target_ptr = tivxMemShared2TargetPtr(
-          src1_desc->mem_ptr[0].shared_ptr, src1_desc->mem_ptr[0].mem_heap_region);
+        src0_desc_target_ptr = tivxMemShared2TargetPtr(&src0_desc->mem_ptr[0]);
+        src1_desc_target_ptr = tivxMemShared2TargetPtr(&src1_desc->mem_ptr[0]);
         if( src2_desc != NULL)
         {
-            src2_desc_target_ptr = tivxMemShared2TargetPtr(
-              src2_desc->mem_ptr[0].shared_ptr, src2_desc->mem_ptr[0].mem_heap_region);
+            src2_desc_target_ptr = tivxMemShared2TargetPtr(&src2_desc->mem_ptr[0]);
         }
         if( src3_desc != NULL)
         {
-            src3_desc_target_ptr = tivxMemShared2TargetPtr(
-              src3_desc->mem_ptr[0].shared_ptr, src3_desc->mem_ptr[0].mem_heap_region);
+            src3_desc_target_ptr = tivxMemShared2TargetPtr(&src3_desc->mem_ptr[0]);
         }
         for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
         {
-            dst_desc_target_ptr[plane_idx] = tivxMemShared2TargetPtr(
-              dst_desc->mem_ptr[plane_idx].shared_ptr, dst_desc->mem_ptr[plane_idx].mem_heap_region);
+            dst_desc_target_ptr[plane_idx] = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[plane_idx]);
         }
 
         tivxMemBufferMap(src0_desc_target_ptr,

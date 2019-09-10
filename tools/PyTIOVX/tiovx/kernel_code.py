@@ -1760,16 +1760,14 @@ class KernelExportCode :
                             if self.multiplane :
                                 self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                                 self.target_c_code.write_open_brace()
-                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                                self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_heap_region);" % (desc, desc))
+                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
                                     self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                             else :
-                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                                self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_heap_region);" % (desc, desc))
+                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr[0]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
@@ -1787,8 +1785,7 @@ class KernelExportCode :
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                                 self.target_c_code.write_open_brace()
-                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                                self.target_c_code.write_line("  img_%s[i]->mem_ptr[plane_idx].shared_ptr, img_%s[i]->mem_ptr[plane_idx].mem_heap_region);" % (desc, desc))
+                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&img_%s[i]->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
@@ -1801,16 +1798,14 @@ class KernelExportCode :
                                 else :
                                     self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
                                 self.target_c_code.write_open_brace()
-                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                                self.target_c_code.write_line("  img_%s[i]->mem_ptr[0].shared_ptr, img_%s[i]->mem_ptr[0].mem_heap_region);" % (desc, desc))
+                                self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&img_%s[i]->mem_ptr[0]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   img_%s[i]->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
                                     self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                     elif prm.type != Type.THRESHOLD:
-                        self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                        self.target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_heap_region);" % (desc, desc))
+                        self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s[i]->mem_ptr);" % (prm.name_lower, desc))
                         if prm.do_map :
                             self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                             self.target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)

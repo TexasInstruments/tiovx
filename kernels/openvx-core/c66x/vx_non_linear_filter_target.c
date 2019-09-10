@@ -107,12 +107,9 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
 
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-          src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
-        mask_desc_target_ptr = tivxMemShared2TargetPtr(
-          mask_desc->mem_ptr.shared_ptr, mask_desc->mem_ptr.mem_heap_region);
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-          dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(&src_desc->mem_ptr[0]);
+        mask_desc_target_ptr = tivxMemShared2TargetPtr(&mask_desc->mem_ptr);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         tivxMemBufferMap(src_desc_target_ptr,
            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,

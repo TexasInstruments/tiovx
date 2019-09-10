@@ -140,15 +140,13 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
 
         for (i = 0; i < src->planes; i++)
         {
-            src_target_ptr[i] = tivxMemShared2TargetPtr(
-                src->mem_ptr[i].shared_ptr, src->mem_ptr[i].mem_heap_region);
+            src_target_ptr[i] = tivxMemShared2TargetPtr(&src->mem_ptr[i]);
         }
         tivxSetPointerLocation(src, src_target_ptr, (uint8_t**)&src_addr);
 
         for (i = 0; i < dst->planes; i++)
         {
-            dst_target_ptr[i] = tivxMemShared2TargetPtr(
-                dst->mem_ptr[i].shared_ptr, dst->mem_ptr[i].mem_heap_region);
+            dst_target_ptr[i] = tivxMemShared2TargetPtr(&dst->mem_ptr[i]);
         }
         tivxSetPointerLocation(dst, dst_target_ptr, (uint8_t**)&dst_addr);
 

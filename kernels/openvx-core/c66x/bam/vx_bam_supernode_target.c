@@ -147,8 +147,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
 
             for (j = 0; j < prms->obj_desc_image[i]->planes; j++)
             {
-                target_ptr[j] = tivxMemShared2TargetPtr(
-                    prms->obj_desc_image[i]->mem_ptr[j].shared_ptr, prms->obj_desc_image[i]->mem_ptr[j].mem_heap_region);
+                target_ptr[j] = tivxMemShared2TargetPtr(&prms->obj_desc_image[i]->mem_ptr[j]);
             }
 
             tivxSetPointerLocation(prms->obj_desc_image[i], target_ptr, (uint8_t**)&ptr);

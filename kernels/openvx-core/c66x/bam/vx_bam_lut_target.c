@@ -137,10 +137,8 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0U]);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -178,8 +176,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
         lut = (tivx_obj_desc_lut_t *)obj_desc[
             TIVX_KERNEL_LUT_LUT_IDX];
 
-        lut_target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_heap_region);
+        lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(lut_target_ptr, lut->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -358,8 +355,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
         lut = (tivx_obj_desc_lut_t *)obj_desc[
             TIVX_KERNEL_LUT_LUT_IDX];
 
-        lut_target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_heap_region);
+        lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(lut_target_ptr, lut->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

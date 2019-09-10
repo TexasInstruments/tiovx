@@ -95,12 +95,9 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_LUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUTPUT_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
-        lut_target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0U]);
+        lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

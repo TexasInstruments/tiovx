@@ -110,8 +110,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         dst1 = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -125,8 +124,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
         if (NULL != dst0)
         {
-            dst0_target_ptr = tivxMemShared2TargetPtr(
-                dst0->mem_ptr[0].shared_ptr, dst0->mem_ptr[0].mem_heap_region);
+            dst0_target_ptr = tivxMemShared2TargetPtr(&dst0->mem_ptr[0]);
 
             tivxMemBufferMap(dst0_target_ptr, dst0->mem_size[0],
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -149,8 +147,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
         if ((VX_SUCCESS == status) && (NULL != dst1))
         {
-            dst1_target_ptr = tivxMemShared2TargetPtr(
-                dst1->mem_ptr[0].shared_ptr, dst1->mem_ptr[0].mem_heap_region);
+            dst1_target_ptr = tivxMemShared2TargetPtr(&dst1->mem_ptr[0]);
 
             tivxMemBufferMap(dst1_target_ptr, dst1->mem_size[0],
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);

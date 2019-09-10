@@ -146,10 +146,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferMap(dst_target_ptr, dst->mem_size,
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -443,8 +441,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramPreprocessInBamGraph(
     {
         void *dst_target_ptr;
 
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferMap(dst_target_ptr, dst->mem_size,
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -475,8 +472,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramPostprocessInBamGraph(
     {
         void *dst_target_ptr;
 
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);

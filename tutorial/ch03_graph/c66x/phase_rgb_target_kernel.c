@@ -139,10 +139,8 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
 
         /* Get the target pointer from the shared pointer for all
            buffers */
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(&src_desc->mem_ptr[0]);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc_target_ptr,

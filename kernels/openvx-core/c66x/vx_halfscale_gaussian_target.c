@@ -101,10 +101,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
         gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-          src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-          dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(&src_desc->mem_ptr[0]);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         tivxMemBufferMap(src_desc_target_ptr,
            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,

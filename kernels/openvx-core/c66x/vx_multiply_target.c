@@ -101,12 +101,9 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_OVERFLOW_POLICY_IDX];
         sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_ROUNDING_POLICY_IDX];
 
-        src0_target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
-        src1_target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        src0_target_ptr = tivxMemShared2TargetPtr(&src0->mem_ptr[0]);
+        src1_target_ptr = tivxMemShared2TargetPtr(&src1->mem_ptr[0]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src0_target_ptr, src0->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

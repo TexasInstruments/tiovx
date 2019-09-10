@@ -156,23 +156,20 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         void *dstx_target_ptr = NULL;
         void *dsty_target_ptr = NULL;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         if(dstx != NULL)
         {
-            dstx_target_ptr = tivxMemShared2TargetPtr(
-                dstx->mem_ptr[0].shared_ptr, dstx->mem_ptr[0].mem_heap_region);
+            dstx_target_ptr = tivxMemShared2TargetPtr(&dstx->mem_ptr[0]);
 
             tivxSetPointerLocation(dstx, &dstx_target_ptr, (uint8_t **)&dstx_addr);
         }
 
         if(dsty != NULL)
         {
-            dsty_target_ptr = tivxMemShared2TargetPtr(
-                dsty->mem_ptr[0].shared_ptr, dsty->mem_ptr[0].mem_heap_region);
+            dsty_target_ptr = tivxMemShared2TargetPtr(&dsty->mem_ptr[0]);
 
             tivxSetPointerLocation(dsty, &dsty_target_ptr, (uint8_t **)&dsty_addr);
         }

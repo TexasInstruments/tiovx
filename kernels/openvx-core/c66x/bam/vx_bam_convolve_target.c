@@ -137,10 +137,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0U]);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -178,8 +176,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
         conv = (tivx_obj_desc_convolution_t *)obj_desc[
             TIVX_KERNEL_CONVOLVE_CONV_IDX];
 
-        conv_target_ptr = tivxMemShared2TargetPtr(
-            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
+        conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -365,8 +362,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
         conv = (tivx_obj_desc_convolution_t *)obj_desc[
             TIVX_KERNEL_CONVOLVE_CONV_IDX];
 
-        conv_target_ptr = tivxMemShared2TargetPtr(
-            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
+        conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

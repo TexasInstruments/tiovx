@@ -131,12 +131,9 @@ vx_status VX_CALLBACK tivxKernelAndProcess(
 
         /* Get the target pointer from the shared pointer for all
            buffers */
-        src0_desc_target_ptr = tivxMemShared2TargetPtr(
-            src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_heap_region);
-        src1_desc_target_ptr = tivxMemShared2TargetPtr(
-            src1_desc->mem_ptr[0].shared_ptr, src1_desc->mem_ptr[0].mem_heap_region);
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
+        src0_desc_target_ptr = tivxMemShared2TargetPtr(&src0_desc->mem_ptr[0]);
+        src1_desc_target_ptr = tivxMemShared2TargetPtr(&src1_desc->mem_ptr[0]);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         /* Map all three buffers, which invalidates the cache */
         tivxMemBufferMap(src0_desc_target_ptr,

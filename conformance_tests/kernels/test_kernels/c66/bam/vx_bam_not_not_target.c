@@ -145,14 +145,12 @@ static vx_status VX_CALLBACK tivxNotNotProcess(
         void *input_target_ptr;
         void *output_target_ptr;
 
-        input_target_ptr = tivxMemShared2TargetPtr(
-          input_desc->mem_ptr[0].shared_ptr, input_desc->mem_ptr[0].mem_heap_region);
+        input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
         tivxMemBufferMap(input_target_ptr,
            input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
            VX_READ_ONLY);
 
-        output_target_ptr = tivxMemShared2TargetPtr(
-          output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
+        output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
         tivxMemBufferMap(output_target_ptr,
            output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
            VX_WRITE_ONLY);

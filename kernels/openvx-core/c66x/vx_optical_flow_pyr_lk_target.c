@@ -202,12 +202,9 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         void *estimatedpts_target_ptr;
         void *nextpts_target_ptr;
 
-        prevpts_target_ptr = tivxMemShared2TargetPtr(
-          prevpts_desc->mem_ptr.shared_ptr, prevpts_desc->mem_ptr.mem_heap_region);
-        estimatedpts_target_ptr = tivxMemShared2TargetPtr(
-          estimatedpts_desc->mem_ptr.shared_ptr, estimatedpts_desc->mem_ptr.mem_heap_region);
-        nextpts_target_ptr = tivxMemShared2TargetPtr(
-          nextpts_desc->mem_ptr.shared_ptr, nextpts_desc->mem_ptr.mem_heap_region);
+        prevpts_target_ptr = tivxMemShared2TargetPtr(&prevpts_desc->mem_ptr);
+        estimatedpts_target_ptr = tivxMemShared2TargetPtr(&estimatedpts_desc->mem_ptr);
+        nextpts_target_ptr = tivxMemShared2TargetPtr(&nextpts_desc->mem_ptr);
 
         tivxMemBufferMap(prevpts_target_ptr,
            prevpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
@@ -273,9 +270,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             new_image = prms->img_obj_desc_new[level];
 
             /* Map Old image */
-            old_image_target_ptr = tivxMemShared2TargetPtr(
-                old_image->mem_ptr[0].shared_ptr,
-                old_image->mem_ptr[0].mem_heap_region);
+            old_image_target_ptr = tivxMemShared2TargetPtr(&old_image->mem_ptr[0]);
             tivxMemBufferMap(old_image_target_ptr,
                 old_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
@@ -284,9 +279,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 tivxComputePatchOffset(0, 0, &old_image->imagepatch_addr[0U]));
 
             /* Map New image */
-            new_image_target_ptr = tivxMemShared2TargetPtr(
-                new_image->mem_ptr[0].shared_ptr,
-                new_image->mem_ptr[0].mem_heap_region);
+            new_image_target_ptr = tivxMemShared2TargetPtr(&new_image->mem_ptr[0]);
             tivxMemBufferMap(new_image_target_ptr,
                 new_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY); /* Not sure if this is READ_ONLY */

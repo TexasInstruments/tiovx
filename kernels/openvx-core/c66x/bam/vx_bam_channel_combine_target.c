@@ -159,29 +159,24 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
         void *dst_target_ptr[4];
 
         /* Get the correct offset of the images from the valid roi parameter */
-        src0_target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
+        src0_target_ptr = tivxMemShared2TargetPtr(&src0->mem_ptr[0]);
         tivxSetPointerLocation(src0, &src0_target_ptr, &src0_addr);
 
-        src1_target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
+        src1_target_ptr = tivxMemShared2TargetPtr(&src1->mem_ptr[0]);
         tivxSetPointerLocation(src1, &src1_target_ptr, &src1_addr);
         if( src2 != NULL)
         {
-            src2_target_ptr = tivxMemShared2TargetPtr(
-              src2->mem_ptr[0].shared_ptr, src2->mem_ptr[0].mem_heap_region);
+            src2_target_ptr = tivxMemShared2TargetPtr(&src2->mem_ptr[0]);
             tivxSetPointerLocation(src2, &src2_target_ptr, &src2_addr);
         }
         if( src3 != NULL)
         {
-            src3_target_ptr = tivxMemShared2TargetPtr(
-              src3->mem_ptr[0].shared_ptr, src3->mem_ptr[0].mem_heap_region);
+            src3_target_ptr = tivxMemShared2TargetPtr(&src3->mem_ptr[0]);
             tivxSetPointerLocation(src3, &src3_target_ptr, &src3_addr);
         }
         for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
         {
-            dst_target_ptr[plane_idx] = tivxMemShared2TargetPtr(
-              dst->mem_ptr[plane_idx].shared_ptr, dst->mem_ptr[plane_idx].mem_heap_region);
+            dst_target_ptr[plane_idx] = tivxMemShared2TargetPtr(&dst->mem_ptr[plane_idx]);
         }
         tivxSetPointerLocation(dst, dst_target_ptr, (uint8_t**)&dst_addr);
 

@@ -168,10 +168,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
@@ -787,8 +785,7 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
     {
         void *dst_target_ptr;
 
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         rect = dst->valid_roi;
 

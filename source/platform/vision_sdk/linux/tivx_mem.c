@@ -151,9 +151,9 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     return (uint64_t)(uintptr_t)(addr);
 }
 
-void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
+void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr)
 {
-    return (void*)(uintptr_t)(shared_ptr);
+    return (void*)(uintptr_t)(shared_ptr->host_ptr);
 }
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)

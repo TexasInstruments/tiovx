@@ -116,12 +116,9 @@ static vx_status tivxKernelAddSub(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
-        src0_target_ptr = tivxMemShared2TargetPtr(
-            src0_desc->mem_ptr[0U].shared_ptr, src0_desc->mem_ptr[0U].mem_heap_region);
-        src1_target_ptr = tivxMemShared2TargetPtr(
-            src1_desc->mem_ptr[0U].shared_ptr, src1_desc->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_heap_region);
+        src0_target_ptr = tivxMemShared2TargetPtr(&src0_desc->mem_ptr[0U]);
+        src1_target_ptr = tivxMemShared2TargetPtr(&src1_desc->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0U]);
 
         #if 0
         VX_PRINT(VX_ZONE_WARNING, "src0 roi is %d,%d %d,%d\n",

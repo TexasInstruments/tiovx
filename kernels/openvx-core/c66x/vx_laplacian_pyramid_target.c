@@ -154,16 +154,14 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         void *low_img_target_ptr;
         void *dst_target_ptr;
 
-        low_img_target_ptr = tivxMemShared2TargetPtr(
-            low_img->mem_ptr[0].shared_ptr, low_img->mem_ptr[0].mem_heap_region);
+        low_img_target_ptr = tivxMemShared2TargetPtr(&low_img->mem_ptr[0]);
         tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -185,8 +183,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
             dst = prms->img_obj_desc[levels];
 
-            dst_target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+            dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
             tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);

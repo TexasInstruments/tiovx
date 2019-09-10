@@ -88,8 +88,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
     vx_status status = VX_SUCCESS;
     void *in_desc_target_ptr;
 
-    in_desc_target_ptr = tivxMemShared2TargetPtr(
-      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_heap_region);
+    in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[0]);
 
     /* Get the correct offset of the images from the valid roi parameter,
      */
@@ -173,8 +172,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     vx_status status = VX_SUCCESS;
     void *in_desc_target_ptr;
 
-    in_desc_target_ptr = tivxMemShared2TargetPtr(
-      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_heap_region);
+    in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[0]);
 
     tivxSetPointerLocation(in_desc, &in_desc_target_ptr, &src_addr);
 
@@ -280,8 +278,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
     if(status == VX_SUCCESS)
     {
-        in_desc_target_ptr = tivxMemShared2TargetPtr(
-          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_heap_region);
+        in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[plane_idx]);
 
         /* Get the correct offset of the images from the valid roi parameter,
          */
@@ -387,8 +384,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
 
     if(status == VX_SUCCESS)
     {
-        in_desc_target_ptr = tivxMemShared2TargetPtr(
-          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_heap_region);
+        in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[plane_idx]);
 
         /* Get the correct offset of the images from the valid roi parameter,
          */
@@ -444,8 +440,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
         channel_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
         out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
 
-        out_desc_target_ptr = tivxMemShared2TargetPtr(
-          out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_heap_region);
+        out_desc_target_ptr = tivxMemShared2TargetPtr(&out_desc->mem_ptr[0]);
 
         tivxMemBufferMap(out_desc_target_ptr,
            out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,

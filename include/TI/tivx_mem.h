@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -216,9 +216,9 @@ typedef struct _tivx_mem_stats_t {
 /*!
  * \brief Alloc buffer from shared memory
  *
- * \param [in] mem_heap_region Memory region to which this allocation belongs, see \ref tivx_mem_heap_region_e
  * \param [out] mem_ptr Allocated memory pointer
  * \param [in] size Size of memory to allocate in bytes
+ * \param [in] mem_heap_region Memory region to which this allocation belongs, see \ref tivx_mem_heap_region_e
  *
  * \ingroup group_tivx_mem
  */
@@ -227,7 +227,7 @@ vx_status tivxMemBufferAlloc(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_e
 /*!
  * \brief Free buffer from shared memory
  *
- * \param [out] mem_ptr Allocated memory pointer
+ * \param [in,out] mem_ptr Allocated memory pointer
  * \param [in] size Size of memory allocated in bytes
  *
  * \ingroup group_tivx_mem
@@ -279,14 +279,13 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region);
 /*!
  * \brief Convert shared pointer to target pointer
  *
- * \param [in] shared_ptr Host memory pointer
- * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
+ * \param [in] shared_ptr Shared memory pointer
  *
  * \return Converted shared memory pointer
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
+void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr);
 
 /*!
  * \brief Convert shared pointer to system physical memory location

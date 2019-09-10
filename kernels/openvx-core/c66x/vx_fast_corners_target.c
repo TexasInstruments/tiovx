@@ -139,10 +139,8 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
         void *src_target_ptr;
         void *arr_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        arr_target_ptr = tivxMemShared2TargetPtr(
-            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        arr_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

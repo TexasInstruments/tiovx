@@ -138,16 +138,13 @@ static vx_status VX_CALLBACK tivxKernelAndProcess(
         void *src1_target_ptr;
         void *dst_target_ptr;
 
-        src0_target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
+        src0_target_ptr = tivxMemShared2TargetPtr(&src0->mem_ptr[0]);
 
-        src1_target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
+        src1_target_ptr = tivxMemShared2TargetPtr(&src1->mem_ptr[0]);
 
         tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
 
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src0_addr;

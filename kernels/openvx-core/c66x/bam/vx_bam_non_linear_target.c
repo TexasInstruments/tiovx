@@ -136,10 +136,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0U]);
+        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0U]);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -180,8 +178,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
-        mask_target_ptr = tivxMemShared2TargetPtr(
-            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_heap_region);
+        mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
         tivxMemBufferMap(mask_target_ptr, mask->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -392,8 +389,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
-        mask_target_ptr = tivxMemShared2TargetPtr(
-            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_heap_region);
+        mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
         tivxMemBufferMap(mask_target_ptr, mask->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

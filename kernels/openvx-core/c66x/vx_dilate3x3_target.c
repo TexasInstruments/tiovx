@@ -132,10 +132,8 @@ vx_status VX_CALLBACK tivxProcessDilate3X3(
 
         /* Get the target pointer from the shared pointer for all
            three buffers */
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
-        dst_desc_target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(&src_desc->mem_ptr[0]);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         if ((NULL == src_desc_target_ptr) ||
             (NULL == dst_desc_target_ptr))

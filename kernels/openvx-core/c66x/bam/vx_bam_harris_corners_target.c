@@ -188,10 +188,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         void *arr_target_ptr;
         VXLIB_STATUS status_vxlib = VXLIB_SUCCESS;
 
-        src_target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
-        arr_target_ptr = tivxMemShared2TargetPtr(
-            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
+        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
+        arr_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);
 
         tivxMemBufferMap(arr_target_ptr, arr->mem_size,
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
