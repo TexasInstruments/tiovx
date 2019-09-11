@@ -359,24 +359,21 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     dcc_in_prms = &vissObj->dcc_in_prms;
     dcc_out_prms = &vissObj->dcc_out_prms;
 
-    if (1u == aewb_result->awb_valid)
+    wbCfg = &vsCfg->wbCfg;
+
+    /* apply AWB gains in RAWFE when NSF4 is bypassed */
+    if (1u == vissObj->bypass_nsf4)
     {
-        wbCfg = &vsCfg->wbCfg;
+        wbCfg->gain[0U] = aewb_result->wb_gains[0U];
+        wbCfg->gain[1U] = aewb_result->wb_gains[1U];
+        wbCfg->gain[2U] = aewb_result->wb_gains[2U];
+        wbCfg->gain[3U] = aewb_result->wb_gains[3U];
 
-        /* apply AWB gains in RAWFE when NSF4 is bypassed */
-        if (1u == vissObj->bypass_nsf4)
-        {
-            wbCfg->gain[0U] = aewb_result->wb_gains[0U];
-            wbCfg->gain[1U] = aewb_result->wb_gains[1U];
-            wbCfg->gain[2U] = aewb_result->wb_gains[2U];
-            wbCfg->gain[3U] = aewb_result->wb_gains[3U];
+        vissObj->vissCfgRef.wbCfg = wbCfg;
 
-            vissObj->vissCfgRef.wbCfg = wbCfg;
-
-            /* Setting config flag to 1,
-             * assumes caller protects this flag */
-            vissObj->isConfigUpdated = 1U;
-        }
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
     }
 
     if(1u == vissObj->use_dcc)
@@ -530,7 +527,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         }
 
         /* Override gains from AWB results */
-        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        if (NULL != ae_awb_res)
         {
             for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
             {
@@ -615,7 +612,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         }
 
         /* Override gains from AWB results */
-        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        if (NULL != ae_awb_res)
         {
             for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
             {
@@ -639,7 +636,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         lsccCfg->setSel         = 0;
 
         /* Override gains from AWB results */
-        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        if (NULL != ae_awb_res)
         {
             for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
             {
