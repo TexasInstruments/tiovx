@@ -519,6 +519,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 {
     vx_node node;
     vx_status status = VX_SUCCESS;
+    vx_status status_name = VX_SUCCESS;
     uint32_t i;
 
     for(i=0; i<graph->num_nodes; i++)
@@ -529,44 +530,56 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 
         if(status != VX_SUCCESS )
         {
+            status_name = status;
             VX_PRINT(VX_ZONE_ERROR,"Node kernel name init for node at index %d failed\n", i);
             break;
         }
     }
 
-    for(i=0; i<graph->num_nodes; i++)
+    if(VX_SUCCESS == status)
     {
-        node = graph->nodes[i];
-
-        if(node && node->kernel)
+        for(i=0; i<graph->num_nodes; i++)
         {
-            VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
-        }
+            node = graph->nodes[i];
 
-        status = ownNodeKernelInit(node);
-        if(status != VX_SUCCESS )
-        {
-            VX_PRINT(VX_ZONE_ERROR,"kernel init for node %d, kernel %s ... failed !!!\n", i, node->kernel->name);
-            break;
-        }
+            if(node && node->kernel)
+            {
+                VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
+            }
 
-        if(node && node->kernel)
-        {
-            VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ... done !!!\n", i, node->kernel->name);
+            status = ownNodeKernelInit(node);
+            if(status != VX_SUCCESS )
+            {
+                VX_PRINT(VX_ZONE_ERROR,"kernel init for node %d, kernel %s ... failed !!!\n", i, node->kernel->name);
+                break;
+            }
+
+            if(node && node->kernel)
+            {
+                VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ... done !!!\n", i, node->kernel->name);
+            }
         }
     }
 
-    for(i=0; i<graph->num_nodes; i++)
+    if(VX_SUCCESS == status_name)
     {
-        node = graph->nodes[i];
-
-        status = ownNodeKernelDeinitKernelName(node);
-
-        if(status != VX_SUCCESS )
+        for(i=0; i<graph->num_nodes; i++)
         {
-            VX_PRINT(VX_ZONE_ERROR,"Node kernel name deinit for node at index %d failed\n", i);
-            break;
+            node = graph->nodes[i];
+
+            status_name = ownNodeKernelDeinitKernelName(node);
+
+            if(status_name != VX_SUCCESS )
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Node kernel name deinit for node at index %d failed\n", i);
+                break;
+            }
         }
+    }
+
+    if(status_name != VX_SUCCESS )
+    {
+        status = status_name;
     }
 
     return status;
