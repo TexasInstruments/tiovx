@@ -300,7 +300,15 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
                     h3a_out_desc->mem_size, sizeof(tivx_h3a_data_t));
             }
-            vissObj->h3a_out_enabled = vx_true_e;
+            if (NULL != dcc_buf_desc)
+            {
+                vissObj->h3a_out_enabled = vx_true_e;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_WARNING,
+                    "VISS H3A output is not generated due to DCC not being enabled\n");
+            }
         }
 
         if (VX_SUCCESS == status)

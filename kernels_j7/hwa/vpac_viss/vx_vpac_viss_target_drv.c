@@ -510,7 +510,7 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    int32_t             status;
+    int32_t             status = VX_SUCCESS;
     Fcp_Control         fcpCtrl;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
 
