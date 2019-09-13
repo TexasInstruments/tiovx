@@ -710,7 +710,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
             ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
 
-            if( (prm_cur_dir == VX_OUTPUT) || (prm_cur_dir == VX_BIDIRECTIONAL) )
+            if( (ref1) && ((prm_cur_dir == VX_OUTPUT) || (prm_cur_dir == VX_BIDIRECTIONAL)) )
             {
                 /* for each output, see if it matches any node input data */
                 for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
