@@ -94,54 +94,134 @@ static void getNodeColor(vx_node node, char *node_color_name)
         VX_PRINT(VX_ZONE_ERROR,"node obj desc is NULL\n");
     }
 
-    if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "palegreen");
     }
     else
-    if(strncmp(target_name, "DSP-2", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "DSP-2", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
     }
     else
-    if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
     }
     else
-    if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
     }
     else
-    if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
     }
     else
-    if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
     }
     else
-    if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
     }
     else
-    if(strncmp(target_name, "IPU1-0", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "IPU1-0", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
     }
     else
-    if(strncmp(target_name, "IPU1-1", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "IPU1-1", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
     }
     else
-    if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME))
+    if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
     {
         snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+    }
+    else
+    if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+    }
+    else
+    if(strncmp(target_name, "A72-0", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
+    }
+    else
+    if(strncmp(target_name, "DSP_C7-1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
+    }
+    else
+    if(strncmp(target_name, "VPAC_NF", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "chocolate");
+    }
+    else
+    if(strncmp(target_name, "VPAC_LDC1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "aquamarine");
+    }
+    else
+    if(strncmp(target_name, "VPAC_MSC1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "antiquewhite");
+    }
+    else
+    if(strncmp(target_name, "VPAC_MSC2", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "azure");
+    }
+    else
+    if(strncmp(target_name, "DMPAC_SDE", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "beige");
+    }
+    else
+    if(strncmp(target_name, "DMPAC_DOF", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "bisque");
+    }
+    else
+    if(strncmp(target_name, "VPAC_VISS1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
+    }
+    else
+    if(strncmp(target_name, "CAPTURE1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");
+    }
+    else
+    if(strncmp(target_name, "CAPTURE2", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "brown");
+    }
+    else
+    if(strncmp(target_name, "DISPLAY1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "burlywood");
+    }
+    else
+    if(strncmp(target_name, "DISPLAY2", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
+    }
+    else
+    if(strncmp(target_name, "VDEC1", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "coral");
+    }
+    else
+    if(strncmp(target_name, "VDEC2", TIVX_TARGET_MAX_NAME) == 0)
+    {
+        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
     }
 }
 
@@ -158,6 +238,53 @@ static int exportAsJpg(char *output_file_path, char *output_file_prefix, char *o
 
     #endif
     return status;
+}
+
+static void exportTargetLegend(FILE *fp, vx_graph graph)
+{
+    char line[TIVX_EXPORT_MAX_LINE_SIZE];
+    char target_name[TIVX_TARGET_MAX_NAME];
+    char target_name_list[TIVX_TARGET_MAX_TARGETS_IN_CPU][TIVX_TARGET_MAX_NAME];
+    char node_color_name_list[TIVX_TARGET_MAX_TARGETS_IN_CPU][TIVX_EXPORT_MAX_NODE_COLOR_NAME];
+    uint32_t node_id, target_id, num_targets = 0;
+    vx_bool new_target = vx_true_e;
+
+    TIVX_EXPORT_WRITELN(fp, "  ColorScheme [shape=none, margin=0, label=<\n");
+    TIVX_EXPORT_WRITELN(fp, "        <TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\n");
+
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
+        new_target = vx_true_e;
+
+        if(graph->nodes[node_id]->obj_desc[0])
+        {
+            tivxPlatformGetTargetName(graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
+            for (target_id = 0; target_id < num_targets; target_id++)
+            {
+                if(strcmp(target_name, target_name_list[target_id]) == 0)
+                {
+                    new_target = vx_false_e;
+                    break;
+                }
+            }
+
+            if (vx_true_e == new_target)
+            {
+                num_targets++;
+                getNodeColor(graph->nodes[node_id], node_color_name_list[target_id]);
+                snprintf(target_name_list[target_id], TIVX_EXPORT_MAX_NODE_COLOR_NAME, target_name);
+            }
+        }
+    }
+
+    for (target_id = 0; target_id < num_targets; target_id++)
+    {
+        TIVX_EXPORT_WRITELN(fp, "        <TR><TD bgcolor=\"%s\">%s</TD></TR>", node_color_name_list[target_id], target_name_list[target_id]);
+    }
+
+    TIVX_EXPORT_WRITELN(fp, "        </TABLE>>];\n");
+    TIVX_EXPORT_WRITELN(fp, "");
+    TIVX_EXPORT_WRITELN(fp, "");
 }
 
 static void exportDataRef(FILE *fp, vx_reference ref)
@@ -267,7 +394,7 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 }
 
 static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
-            uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links)
+            uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links, uint32_t pipeline_depth)
 {
     if(ref)
     {
@@ -284,7 +411,7 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
             snprintf(graph_parameter_label, 64, ", fillcolor=lightgrey");
         }
 
-        for(pipe_id=0; pipe_id<ref->pipeline_depth; pipe_id++)
+        for(pipe_id=0; pipe_id<pipeline_depth; pipe_id++)
         {
             if(ref->obj_desc[pipe_id])
             {
@@ -384,6 +511,8 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
 
         TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
         TIVX_EXPORT_WRITELN(fp, "");
+
+        exportTargetLegend(fp, graph);
 
         /* List nodes within a graph */
         TIVX_EXPORT_WRITELN(fp, "/* List of Nodes */");
@@ -640,21 +769,33 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
         {
             if(graph->parameters[i].queue_enable)
             {
-                exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, vx_true_e, vx_false_e);
-                tivxExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
+                if (graph->parameters[i].data_ref_queue)
+                {
+                    exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, 
+                        vx_true_e, vx_false_e, graph->parameters[i].data_ref_queue->pipeline_depth);
+                    tivxExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
+                }
             }
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
-            exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf, vx_false_e, vx_false_e);
-            tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
-                graph->num_params+i);
+            if (graph->data_ref_q_list[i].data_ref_queue)
+            {
+                exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf,
+                    vx_false_e, vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
+                    graph->num_params+i);
+            }
         }
         for(i=0; i<graph->num_delay_data_ref_q; i++)
         {
-            exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1, vx_false_e, vx_false_e);
-            tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
-                graph->num_params+graph->num_data_ref_q+i);
+            if (graph->delay_data_ref_q_list[i].data_ref_queue)
+            {
+                exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1,
+                    vx_false_e, vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
+                    graph->num_params+graph->num_data_ref_q+i);
+            }
         }
 
         TIVX_EXPORT_WRITELN(fp, "");
@@ -672,6 +813,176 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
     return status;
 }
 
+static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+{
+    vx_status status = VX_SUCCESS;
+    char filename[TIVX_EXPORT_MAX_FILENAME];
+
+    snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
+                "%s/%s_4_pipe0_img.txt",
+                output_file_path,
+                output_file_prefix);
+
+    FILE *fp = fopen(filename, "wb");
+
+    if(fp!=NULL)
+    {
+        char line[TIVX_EXPORT_MAX_LINE_SIZE];
+        uint32_t node_id, data_id, pipe_id = 0, linked_node_idx;
+        tivx_obj_desc_node_t *node_desc;
+        vx_node node;
+
+        TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
+        TIVX_EXPORT_WRITELN(fp, "");
+
+        exportTargetLegend(fp, graph);
+
+        /* List node descriptor for each node and each pipeline in a graph */
+        TIVX_EXPORT_WRITELN(fp, "/* List of nodes ( Pipeline = %d )*/", pipe_id);
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            node = graph->nodes[node_id];
+            exportNodeObjDesc(fp, node, pipe_id, "n_");
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+
+        /* link the node descriptors within a pipeline to each other based on graph structure */
+        TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+            pipe_id);
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            node = graph->nodes[node_id];
+            if(node)
+            {
+                node_desc = node->obj_desc[pipe_id];
+                if(node_desc)
+                {
+                    #if 1
+                    for(linked_node_idx=0; linked_node_idx<node_desc->num_in_nodes; linked_node_idx++)
+                    {
+                        TIVX_EXPORT_WRITELN(fp, "n_%d -> n_%d [style=dashed, color=gray]",
+                            node_desc->in_node_id[linked_node_idx],
+                            node_desc->base.obj_desc_id);
+                    }
+                    #endif
+                    for(linked_node_idx=0; linked_node_idx<node_desc->num_out_nodes; linked_node_idx++)
+                    {
+                        TIVX_EXPORT_WRITELN(fp, "n_%d -> n_%d [style=dashed]",
+                            node_desc->base.obj_desc_id,
+                            node_desc->out_node_id[linked_node_idx]);
+                    }
+                }
+            }
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+
+        #if 1
+        TIVX_EXPORT_WRITELN(fp, "/* List of data reference queues */");
+        for(data_id=0; data_id<graph->num_params; data_id++)
+        {
+            if(graph->parameters[data_id].queue_enable)
+            {
+                uint32_t num_buf = graph->parameters[data_id].num_buf;
+                tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
+
+                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e, 1);
+            }
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        for(data_id=0; data_id<graph->num_data_ref_q; data_id++)
+        {
+            uint32_t num_buf = graph->data_ref_q_list[data_id].num_buf;
+            tivx_data_ref_queue ref = graph->data_ref_q_list[data_id].data_ref_queue;
+
+            exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e, 1);
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        for(data_id=0; data_id<graph->num_delay_data_ref_q; data_id++)
+        {
+            tivx_data_ref_queue ref = graph->delay_data_ref_q_list[data_id].data_ref_queue;
+
+            exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e, 1);
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        #endif
+        #if 1
+        /* link data descriptor to node descriptors depending on the graph structure */
+        TIVX_EXPORT_WRITELN(fp, "/* Dependancy of nodes within pipeline (Pipeline = %d) */",
+            pipe_id);
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            node = graph->nodes[node_id];
+            if(node)
+            {
+                node_desc = node->obj_desc[pipe_id];
+                if(node_desc)
+                {
+                    for(data_id=0; data_id<node_desc->num_params; data_id++)
+                    {
+                        char replicated_label[32]="";
+                        vx_bool is_replicated;
+
+                        is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, (1<<data_id));
+                        if(is_replicated)
+                        {
+                            snprintf(replicated_label, 32, "[label=\" replicated\"]");
+                        }
+
+                        if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)))
+                        {
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                            {
+                                if(node_desc->data_ref_q_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                {
+                                    TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_ref_q_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                }
+                            }
+                            else
+                            {
+                                if(node_desc->data_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                {
+                                    TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                            {
+                                if(node_desc->data_ref_q_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                {
+                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
+                                }
+                            }
+                            else
+                            {
+                                if(node_desc->data_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                {
+                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        #endif
+
+        TIVX_EXPORT_WRITELN(fp, "");
+        TIVX_EXPORT_WRITELN(fp, "}");
+
+        fclose(fp);
+
+        exportAsJpg(output_file_path, output_file_prefix, "_4_pipe0", filename);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to open file [%s]", filename);
+        status = VX_ERROR_NO_RESOURCES;
+    }
+    return status;
+}
 
 static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
@@ -695,6 +1006,9 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
         TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
         TIVX_EXPORT_WRITELN(fp, "");
+
+        exportTargetLegend(fp, graph);
+
         /* List node descriptor for each node and each pipeline in a graph */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
@@ -909,7 +1223,10 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
 
-                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e);
+                if (ref)
+                {
+                    exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e, ref->pipeline_depth);
+                }
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -918,14 +1235,20 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             uint32_t num_buf = graph->data_ref_q_list[data_id].num_buf;
             tivx_data_ref_queue ref = graph->data_ref_q_list[data_id].data_ref_queue;
 
-            exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e);
+            if (ref)
+            {
+                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e, ref->pipeline_depth);
+            }
         }
         TIVX_EXPORT_WRITELN(fp, "");
         for(data_id=0; data_id<graph->num_delay_data_ref_q; data_id++)
         {
             tivx_data_ref_queue ref = graph->delay_data_ref_q_list[data_id].data_ref_queue;
 
-            exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e);
+            if (ref)
+            {
+                exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e, ref->pipeline_depth);
+            }
         }
         TIVX_EXPORT_WRITELN(fp, "");
 
@@ -1028,6 +1351,10 @@ vx_status tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *out
         if(status==VX_SUCCESS)
         {
             status = tivxExportGraphDataRefQueuesToDot(graph, output_file_path, output_file_prefix);
+        }
+        if(status==VX_SUCCESS)
+        {
+            status = tivxExportGraphFirstPipelineToDot(graph, output_file_path, output_file_prefix);
         }
         if(status!=VX_SUCCESS)
         {
