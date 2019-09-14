@@ -125,8 +125,11 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
  * \param [in] image         The input image in one of the below formats:
  *                           <tt>\ref VX_DF_IMAGE_RGB</tt>,
  *                           <tt>\ref VX_DF_IMAGE_RGBX</tt>,
- *                           <tt>\ref VX_DF_IMAGE_UYVY</tt> or
- *                           <tt>\ref VX_DF_IMAGE_NV12</tt>.
+ *                           <tt>\ref VX_DF_IMAGE_UYVY</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_NV12</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_U16</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_U8</tt> or
+ *                           <tt>\ref TIVX_DF_IMAGE_RGB565</tt>.
  *
  * \see <tt>TIVX_KERNEL_DISPLAY_NAME</tt>
  * \ingroup group_vision_function_display

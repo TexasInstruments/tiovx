@@ -139,10 +139,11 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
                 (VX_DF_IMAGE_UYVY != in_image_fmt) &&
                 (VX_DF_IMAGE_NV12 != in_image_fmt) &&
                 (VX_DF_IMAGE_U16 != in_image_fmt) &&
+                (VX_DF_IMAGE_U8 != in_image_fmt) &&
                 (TIVX_DF_IMAGE_RGB565 != in_image_fmt) )
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'in_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_RGB565\n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_RGB565 or TIVX_DF_IMAGE_U16 or TIVX_DF_IMAGE_U8\n");
             }
         }
     }

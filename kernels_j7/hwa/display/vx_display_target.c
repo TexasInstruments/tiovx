@@ -220,6 +220,12 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
+        case VX_DF_IMAGE_U8:    
+            format->ccsFormat = FVID2_CCSF_BITS8_PACKED;
+            format->dataFormat = FVID2_DF_YUV420SP_UV;
+            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            break;
         default:
             status = VX_FAILURE;
             break;
@@ -235,9 +241,10 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
     int32_t status = VX_SUCCESS;
     uint32_t cnt;
     void *chroma_target_ptr;
-    uint16_t *chroma_ptr;
+    uint16_t *chroma_ptr16;
+    uint8_t *chroma_ptr8;
 
-    if (VX_DF_IMAGE_U16 == obj_desc_img->format)
+    if ((VX_DF_IMAGE_U16 == obj_desc_img->format)||(VX_DF_IMAGE_U8 == obj_desc_img->format))
     {
         dispPrms->chromaBufSize =
             (fmt->pitch[1] * fmt->height) / 2u;
@@ -254,12 +261,27 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
                              VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
 
-            chroma_ptr = (uint16_t *)chroma_target_ptr;
-            for (cnt = 0; cnt < dispPrms->chromaBufSize / 2; cnt ++)
+            if (VX_DF_IMAGE_U16 == obj_desc_img->format)
             {
-                *chroma_ptr = 0x800u;
-                chroma_ptr ++;
+                chroma_ptr16 = (uint16_t *)chroma_target_ptr;
+                for (cnt = 0; cnt < dispPrms->chromaBufSize / 2; cnt ++)
+                {
+                       *chroma_ptr16 = 0x800u; 
+                       chroma_ptr16 ++;
+                }   
             }
+            else if (VX_DF_IMAGE_U8 == obj_desc_img->format)
+            {
+                chroma_ptr8 = (uint8_t *)chroma_target_ptr;
+                for (cnt = 0; cnt < dispPrms->chromaBufSize  ; cnt ++)
+                {
+                       *chroma_ptr8 = 0x80u; 
+                       chroma_ptr8 ++;
+                }
+            }
+
+            tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
+                             VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);            
         }
     }
     else
@@ -759,7 +781,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                     frm->addr[1U] = (uint64_t)image_target_ptr2;
                 }
 
-                if (VX_DF_IMAGE_U16 == obj_desc_image->format)
+                if ((VX_DF_IMAGE_U16 == obj_desc_image->format)||(VX_DF_IMAGE_U8 == obj_desc_image->format))
                 {
                     frm->addr[1U] = displayParams->chromaBufAddr;
                 }
