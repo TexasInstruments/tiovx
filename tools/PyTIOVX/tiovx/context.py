@@ -93,8 +93,6 @@ class Context (Reference) :
         self.is_target_present = {}
         for target in Target :
             self.is_target_present[target.name] = False
-        for target in TargetExtended :
-            self.is_target_present[target.name] = False
 
     def isDuplicate(self, ref, list) :
         for l in list :

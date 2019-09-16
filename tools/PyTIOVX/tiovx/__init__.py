@@ -61,7 +61,6 @@
 
 from .utils import *
 from .enums import *
-from .target_extended import *
 from .reference import *
 from .scalar import *
 from .image import *
@@ -103,7 +102,6 @@ from .export_code import *
 from .null import *
 from .attribute import *
 from .core import *
-from .core_extended import *
 from .module import *
 from .kernel_code import *
 from .kernel import *

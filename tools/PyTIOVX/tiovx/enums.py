@@ -375,17 +375,19 @@ class Channel(Enum) :
         return "vx_channel_e"
 
 class Cpu(Enum) :
-    INVALID = 1
-    DSP1    = 2
-    DSP2    = 3
-    EVE1    = 4
-    EVE2    = 5
-    EVE3    = 6
-    EVE4    = 7
-    A15_0   = 8
-    IPU1_0  = 9
-    IPU1_1  = 10
-    IPU2    = 11
+    INVALID  = 1
+    DSP1     = 2
+    DSP2     = 3
+    EVE1     = 4
+    EVE2     = 5
+    EVE3     = 6
+    EVE4     = 7
+    A15_0    = 8
+    IPU1_0   = 9
+    IPU1_1   = 10
+    IPU2     = 11
+    DSP_C7_1 = 12
+    A72_0    = 13
 
     def get_vx_enum_name(type) :
         if type.name == "IPU2" :
@@ -428,6 +430,30 @@ class Target(Enum) :
     IPU1_1  = 10
     ## TIOVX equivalent = \ref TIVX_TARGET_IPU2
     IPU2    = 11
+    ## Below are J7 targets
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_NF
+    VPAC_NF      = 12
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC1
+    VPAC_LDC1    = 13
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_LDC2
+    VPAC_LDC2    = 14
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC1
+    VPAC_MSC1    = 15
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_MSC2
+    VPAC_MSC2    = 16
+    ## TIOVX equivalent = TIVX_TARGET_DMPAC_SDE
+    DMPAC_SDE    = 17
+    ## TIOVX equivalent = TIVX_TARGET_DMPAC_DOF
+    DMPAC_DOF    = 18
+    ## TIOVX equivalent = TIVX_TARGET_VPAC_VISS1
+    VPAC_VISS1   = 19
+    ## TIOVX equivalent = TIVX_TARGET_VDEC
+    VDEC         = 20
+    ## TIOVX equivalent = TIVX_TARGET_DSP_C7_1
+    DSP_C7_1     = 21
+    ## TIOVX equivalent = TIVX_TARGET_A72_0
+    A72_0        = 22
+    ## Above are J7 targets
     ## Used internally by the tool
     DEFAULT = DSP1
 
@@ -455,7 +481,28 @@ class Target(Enum) :
             return ipu
         if target == Target.IPU2 :
             return ipu
-
+        if target == Target.VPAC_NF :
+            return "vpac_nf"
+        if target == Target.VPAC_LDC1 :
+            return "vpac_ldc"
+        if target == Target.VPAC_LDC2 :
+            return "vpac_ldc"
+        if target == Target.VPAC_MSC1 :
+            return "vpac_msc"
+        if target == Target.VPAC_MSC2 :
+            return "vpac_msc"
+        if target == Target.DMPAC_SDE :
+            return "dmpac_sde"
+        if target == Target.DMPAC_DOF :
+            return "dmpac_sde"
+        if target == Target.VPAC_VISS1 :
+            return "vpac_viss"
+        if target == Target.VDEC :
+            return "vdec"
+        if target == Target.DSP_C7_1 :
+            return "c7x"
+        if target == Target.A72_0 :
+            return "a72"
         return None
 
     def is_j6_target(target) :
@@ -503,7 +550,28 @@ class Target(Enum) :
             return Cpu.IPU1_1
         if target == Target.IPU2 :
             return Cpu.IPU2
-
+        if target == Target.VPAC_NF :
+            return Cpu.IPU1_0
+        if target == Target.VPAC_LDC1 :
+            return Cpu.IPU1_0
+        if target == Target.VPAC_LDC2 :
+            return Cpu.IPU1_0
+        if target == Target.VPAC_MSC1 :
+            return Cpu.IPU1_0
+        if target == Target.VPAC_MSC2 :
+            return Cpu.IPU1_0
+        if target == Target.DMPAC_SDE :
+            return Cpu.IPU1_0
+        if target == Target.DMPAC_DOF :
+            return Cpu.IPU1_0
+        if target == Target.VPAC_VISS1 :
+            return Cpu.IPU1_0
+        if target == Target.VDEC :
+            return Cpu.IPU1_0
+        if target == Target.DSP_C7_1 :
+            return Cpu.DSP_C7_1
+        if target == Target.A72_0 :
+            return Cpu.A72_0
         return Cpu.INVALID
 
 ## Conversion Policy (OpenVX equivalent = \ref vx_convert_policy_e)

@@ -167,7 +167,7 @@ class Kernel  :
             if type(target) is Target :
                 kernel_str += Target.get_vx_enum_name(target) + "(CPU: " + Cpu.get_vx_enum_name(Target.get_cpu(target)) + ") "
             else :
-                kernel_str += TargetExtended.get_vx_enum_name(target) + "(CPU: " + CpuExtended.get_vx_enum_name(TargetExtended.get_cpu(target)) + ") "
+                sys.exit("target arguments have invalid type.")
         kernel_str += "\n"
         for prm in self.params :
             kernel_str += str(prm) + "\n"

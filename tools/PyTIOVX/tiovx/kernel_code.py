@@ -211,7 +211,7 @@ class KernelExportCode :
             self.top_header_name = include_filename
         else :
             self.top_header_name = include_subpath.lower()+"vx_"+self.module.lower()
-        if type(core) is Core or type(core) is CoreExtended :
+        if type(core) is Core :
             self.core = core.value
         elif type(core) is str :
             print("WARNING: core argument should use the Core class to avoid potential name clashes")
@@ -898,9 +898,6 @@ class KernelExportCode :
             if type(target) is Target :
                 cpu = Target.get_cpu(target)
                 self.target_c_code.write_line("if ( self_cpu == %s )" % Cpu.get_vx_enum_name(cpu) )
-            else :
-                cpu = TargetExtended.get_cpu(target)
-                self.target_c_code.write_line("if ( self_cpu == %s )" % CpuExtended.get_vx_enum_name(cpu) )
             self.target_c_code.write_open_brace()
             self.target_c_code.write_line("strncpy(target_name, %s, TIVX_TARGET_MAX_NAME);" % Target.get_vx_enum_name(target))
             self.target_c_code.write_line("status = VX_SUCCESS;")
