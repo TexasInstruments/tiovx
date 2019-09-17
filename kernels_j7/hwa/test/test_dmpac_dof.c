@@ -247,8 +247,8 @@ static uint32_t get_checksum(uint16_t median, uint16_t motion, uint16_t vert,
     CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=255", __VA_ARGS__, 255))
 
 #define ADD_ENABLE_LK(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=OFF", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=ON", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/enable_lk=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/enable_lk=ON", __VA_ARGS__, 1))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("dof_real_input", ADD_MEDIAN_FILTER, ADD_MOTION_SMOOTHNESS_FACTOR, ADD_VERTICAL_SEARCH_RANGE, ADD_HORIZONTAL_SEARCH_RANGE, ADD_IIR_FILTER_ALPHA, ADD_ENABLE_LK, ARG)
@@ -265,6 +265,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     vx_distribution confidence_histogram = NULL;
     tivx_dmpac_dof_params_t params;
     vx_user_data_object param_obj;
+    vx_user_data_object cs_obj;
     vx_graph graph = 0;
     vx_node node_dof = 0;
     vx_node node_dof_vis = 0;
@@ -273,6 +274,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     uint32_t checksum_expected;
     uint32_t checksum_actual;
     char output_file[256];
+    vx_reference ref[1];
+    vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
@@ -298,16 +301,24 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         params.iir_filter_alpha = arg_->iir_filter;
         params.enable_lk = arg_->enable_lk;
 
+        if(arg_->enable_lk == 0)
+        {
+            flowVectorType = VX_DF_IMAGE_U16;
+        }
+
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
-        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
-        ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        if(arg_->enable_lk == 1)
+        {
+            ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -323,14 +334,32 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
                         confidence_histogram), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
 
-        ASSERT_VX_OBJECT(node_dof_vis = tivxDofVisualizeNode(graph,
-                        flow_vector_out,
-                        NULL,
-                        flow_vector_out_img,
-                        confidence_img), VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+        if(arg_->enable_lk == 1)
+        {
+            ASSERT_VX_OBJECT(node_dof_vis = tivxDofVisualizeNode(graph,
+                            flow_vector_out,
+                            NULL,
+                            flow_vector_out_img,
+                            confidence_img), VX_TYPE_NODE);
+            VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+        }
 
         VX_CALL(vxVerifyGraph(graph));
+
+        /* Configure confidence score tree params */
+        {
+            tivx_dmpac_dof_cs_tree_params_t cs_tree_params;
+            tivx_dmpac_dof_cs_tree_params_init(&cs_tree_params);
+
+            ASSERT_VX_OBJECT(cs_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_cs_tree_params_t",
+                                                sizeof(tivx_dmpac_dof_cs_tree_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            VX_CALL(vxCopyUserDataObject(cs_obj, 0, sizeof(tivx_dmpac_dof_cs_tree_params_t), &cs_tree_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+            ref[0] = (vx_reference) cs_obj;
+            VX_CALL(tivxNodeSendCommand(node_dof, 0, TIVX_DMPAC_DOF_CMD_CS_PARAMS, ref, 1));
+            VX_CALL(vxReleaseUserDataObject(&cs_obj));
+        }
 
         for(i=0; i<levels; i++)
         {
@@ -341,18 +370,27 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         }
         VX_CALL(vxProcessGraph(graph));
 
-        sprintf(output_file, "output/tivx_test_ofTestCase1_%d_%d", arg_->median_filter, arg_->motion_smoothness);
-        status = save_image_from_dof(flow_vector_out_img, confidence_img, output_file);
-        ASSERT(status==VX_SUCCESS);
+        if(arg_->enable_lk == 1)
+        {
+            sprintf(output_file, "output/tivx_test_ofTestCase1_%d_%d", arg_->median_filter, arg_->motion_smoothness);
+            status = save_image_from_dof(flow_vector_out_img, confidence_img, output_file);
+            ASSERT(status==VX_SUCCESS);
+        }
 
         checksum_expected = get_checksum(arg_->median_filter, arg_->motion_smoothness, arg_->vertical_range,
             arg_->horizontal_range, arg_->iir_filter, arg_->enable_lk);
         printf(" Expected checksum: %x\n", checksum_expected);
-        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out_img, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
         printf(" Actual checksum: %x\n", checksum_actual);
 
         VX_CALL(vxReleaseNode(&node_dof));
-        VX_CALL(vxReleaseNode(&node_dof_vis));
+
+        if(arg_->enable_lk == 1)
+        {
+            VX_CALL(vxReleaseNode(&node_dof_vis));
+            VX_CALL(vxReleaseImage(&flow_vector_out_img));
+            VX_CALL(vxReleaseImage(&confidence_img));
+        }
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));
         VX_CALL(vxReleasePyramid(&input_reference));
@@ -360,9 +398,6 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         VX_CALL(vxReleaseImage(&flow_vector_out));
         VX_CALL(vxReleaseDistribution(&confidence_histogram));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
-
-        VX_CALL(vxReleaseImage(&flow_vector_out_img));
-        VX_CALL(vxReleaseImage(&confidence_img));
 
         ASSERT(node_dof == 0);
         ASSERT(node_dof_vis == 0);

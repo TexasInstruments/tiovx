@@ -82,6 +82,7 @@ typedef struct
 
     uint64_t                            inter_buff1;
     uint64_t                            inter_buff2;
+    uint32_t                            inter_buff_size;
 
     tivx_dmpac_dof_params_t             dofAppPrms;
 
@@ -523,7 +524,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         if(1 == dofObj->isFirstFrame)
         {
-            /* This was the first iteration, so the Temopral predictor was
+            /* This was the first iteration, so the Temporal predictor was
                 turned off, Enable the Temporal predictor if configured */
             update_prms = 1;
 
@@ -713,16 +714,18 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     /* Allocate intemediate buffers for Pyramid processing */
     if (VX_SUCCESS == status)
     {
-        status = tivxMemBufferAlloc(&tBuffPtr, (dofObj->dofPrms.coreCfg.width *
-                        dofObj->dofPrms.coreCfg.height / 2), TIVX_MEM_EXTERNAL);
+        /* Size = base image width * height * 2 bytes/pixel / 4 (half scale is largest size needed) */
+        dofObj->inter_buff_size = (dofObj->dofPrms.coreCfg.width *
+                                   dofObj->dofPrms.coreCfg.height) / 2;
+
+        status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
         if (VX_SUCCESS == status)
         {
             dofObj->inter_buff1 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
                                                 tBuffPtr.mem_heap_region);
 
-            status = tivxMemBufferAlloc(&tBuffPtr, (dofObj->dofPrms.coreCfg.width *
-                        dofObj->dofPrms.coreCfg.height / 2), TIVX_MEM_EXTERNAL);
+            status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
         }
         else
         {
@@ -804,6 +807,18 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
             if (NULL != dofObj->waitForProcessCmpl)
             {
                 tivxEventDelete(&dofObj->waitForProcessCmpl);
+            }
+
+            if (NULL != dofObj->inter_buff1)
+            {
+                tivxMemFree( dofObj->inter_buff1, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                dofObj->inter_buff1 = NULL;
+            }
+
+            if (NULL != dofObj->inter_buff2)
+            {
+                tivxMemFree( dofObj->inter_buff2, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                dofObj->inter_buff2 = NULL;
             }
 
             tivxDmpacDofFreeObject(&gTivxDmpacDofInstObj, dofObj);
@@ -1117,7 +1132,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
             if(pyr_cnt > 0)
             {
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
-                    img_current_desc[pyr_cnt]->imagepatch_addr[0].stride_y * 2u;
+                    img_current_desc[pyr_cnt]->imagepatch_addr[0].dim_x * 2u;
             }
         }
         else
@@ -1133,7 +1148,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                         img_current_desc[pyr_cnt-1]->imagepatch_addr[0].stride_y;
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
-                    img_current_desc[pyr_cnt-1]->imagepatch_addr[0].stride_y * 2u;
+                    img_current_desc[pyr_cnt-1]->imagepatch_addr[0].dim_x * 2u;
             }
             else
             {

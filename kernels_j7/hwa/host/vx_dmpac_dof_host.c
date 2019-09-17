@@ -265,10 +265,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != flow_vector_in)
         {
-            if (VX_DF_IMAGE_U32 != flow_vector_in_fmt)
+            if ((VX_DF_IMAGE_U16 != flow_vector_in_fmt) &&
+                (VX_DF_IMAGE_U32 != flow_vector_in_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U16 or VX_DF_IMAGE_U32 \n");
             }
         }
 
@@ -281,10 +282,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             }
         }
 
-        if (VX_DF_IMAGE_U32 != flow_vector_out_fmt)
+        if ((VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
+            (VX_DF_IMAGE_U32 != flow_vector_out_fmt))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'flow_vector_out' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'flow_vector_out' should be an image of type:\n VX_DF_IMAGE_U16 or VX_DF_IMAGE_U32 \n");
         }
 
     }
@@ -714,26 +716,54 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
     }
 }
 
+static tivx_dmpac_dof_cs_tree_params_t cs_tree_init_values =
+{
+    /*cs_gain*/
+    224,
+
+    /* decision_tree_index[16][3] */
+    {
+        {7, 6, 0},   {7, 5, 7},  {7, 5, 0},  {0, 5, 5},
+        {6, 5, 7},   {6, 5, 5},  {6, 7, 6},  {7, 5, 7},
+        {7, 0, 0},   {6, 7, 0},  {6, 4, 5},  {0, 5, 5},
+        {6, 4, 5},   {5, 5, 6},  {4, 1, 7},  {5, 5, 5}
+    },
+
+    /* decision_tree_threshold[16][3] */
+    {
+        { 11,   16,    0}, {  27,  82,   1}, {    27,   82,   0}, { 596, 175, 495},
+        {  3,  532,   11}, {  10, 556,  82}, {    16,   11,  35}, {   6, 572,  27},
+        { 17,  692, 1343}, {  16,  11, 741}, {     3, 4417, 399}, { 500, 483, 443},
+        {  3, 4764,  291}, { 175,  18, 106}, { 11866,    1, 198}, { 163, 163, 734}
+    },
+
+    /* decision_tree_weight[16][4] */
+    {
+        {             917,  (uint32_t)-917, (uint32_t)-917,   (uint32_t)-917},
+        { (uint32_t)-5120,            5120,           5120,  (uint32_t)-5120},
+        {            4734, (uint32_t)-4734,           4734,             4734},
+        {  (uint32_t)-221,             221, (uint32_t)-221,              221},
+        {             171,  (uint32_t)-171, (uint32_t)-171,              171},
+        {             166,  (uint32_t)-166,            166,   (uint32_t)-166},
+        {  (uint32_t)-195,             195,            195,   (uint32_t)-195},
+        {             137,  (uint32_t)-137, (uint32_t)-137,              137},
+        {             114,  (uint32_t)-114, (uint32_t)-114,              114},
+        {  (uint32_t)-129,             129,            129,   (uint32_t)-129},
+        {  (uint32_t)-123,             123, (uint32_t)-123,              123},
+        {             130,  (uint32_t)-130, (uint32_t)-130,              130},
+        {   (uint32_t)-72,              72,  (uint32_t)-72,               72},
+        {   (uint32_t)-75,              75,  (uint32_t)-75,               75},
+        {   (uint32_t)-77,              77,  (uint32_t)-77,               77},
+        {(uint32_t)-16384,               0,              0, (uint32_t)-16384}
+    }
+};
+
+
 void tivx_dmpac_dof_cs_tree_params_init(tivx_dmpac_dof_cs_tree_params_t *prms)
 {
-    uint32_t i;
-    uint32_t j;
-    
     if (NULL != prms)
     {
-        memset(prms, 0x0, sizeof(tivx_dmpac_dof_cs_tree_params_t));
-
-        prms->cs_gain = 0u;
-
-        for(i = 0u; i < 16u; i++)
-        {
-            for(j = 0u; j < 3u; j++)
-            {
-                prms->decision_tree_index[i][j] = 0u;
-                prms->decision_tree_threshold[i][j] = 0u;
-            }
-            prms->decision_tree_weight[i][3u] = 0u;
-        }
+        memcpy(prms, &cs_tree_init_values, sizeof(tivx_dmpac_dof_cs_tree_params_t));
     }
 }
 
@@ -745,4 +775,3 @@ void tivx_dmpac_dof_hts_bw_limit_params_init(
         memset(prms, 0x0, sizeof(tivx_dmpac_dof_hts_bw_limit_params_t));
     }
 }
-

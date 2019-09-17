@@ -118,21 +118,18 @@ extern "C" {
 /** \brief No predictor used */
 #define TIVX_DMPAC_DOF_PREDICTOR_NONE                  (0U)
 
- /** \brief Delayed left predictor */
+/** \brief Delayed left predictor */
 #define TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT            (1U)
 
 /** \brief Temporal predictor, Need flow vector output from previous image pair
-           as Temporal input, can only be set for base layer
- */
+           as Temporal input, can only be set for base layer */
 #define TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL              (2U)
 
-/** \brief Pyramidal left predictor, can be set for base and intermediate layers
- */
+/** \brief Pyramidal left predictor, can be set for base and intermediate layers */
 #define TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT              (3U)
 
 /** \brief Pyramidal colocated predictor, can be set for base and intermediate
-           layers
- */
+           layers */
 #define TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED         (4U)
 
 
