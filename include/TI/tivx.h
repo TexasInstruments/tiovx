@@ -589,9 +589,8 @@ vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
  *
  * - Graph to which the node belongs MUST be scheduled in VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO or
  *   VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL mode.
- * - The node parameter MUST be of type virtual or all references to the parameter reference
- *   MUST be released before graph verify.
  * - The node parameter specified MUST be a output parameter.
+ * - The node parameter specified MUST NOT be an enqueueable graph parameter.
  *
  * This API acts as a hint and framework may overide user specified settings
  * in case any of above conditions are not met.
