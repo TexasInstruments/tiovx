@@ -70,9 +70,13 @@
 #include "tivx_platform.h"
 #include "itidl_ti.h"
 
+
+
 #ifndef x86_64
 #include "c7x.h"
+#include <ti/osal/HwiP.h>
 //#define TIDL_C7X_CLEAR_L1D_SRAM
+#define DISABLE_INTERRUPTS_DURING_PROCESS
 #endif
 
 #define TIDL_COPY_NETWORK_BUF
@@ -94,7 +98,7 @@ typedef struct
     TIDL_CreateParams   createParams;
 
     tivxTIDLJ7Params    tidlParams;
-    
+
     void                *tidlNet;
     vx_uint32            netSize;
 
@@ -262,6 +266,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     tivxTIDLObj *tidlObj;
     uint32_t i, size;
 
+    #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
+    uint32_t oldIntState;
+    #endif
+
     for (i = 0U; i < num_params; i ++)
     {
         if (NULL == obj_desc[i])
@@ -359,6 +367,15 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         memsetFast((void *)TIDL_C7X_L1D_SRAM_ADDR, 0, TIDL_C7X_L1D_SRAM_SIZE, MEMORY_ELEM_8BIT);
 #endif
 
+        #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
+        /* disabling interrupts when doing TIDL processing
+         *
+         * suspect some stability issue due to interrupt handling,
+         * until stability issue is root caused disabling interrupts
+         * */
+        oldIntState = HwiP_disable();
+        #endif
+
         status = tivxAlgiVisionProcess
                  (
                     tidlObj->algHandle,
@@ -367,6 +384,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
                     (IVISION_InArgs  *)tidlObj->inArgs,
                     (IVISION_OutArgs *)tidlObj->outArgs
                  );
+
+        #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
+        HwiP_restore(oldIntState);
+        #endif
 
         tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -383,6 +404,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
             tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
     }
+
 
     return (status);
 }
@@ -624,6 +646,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             }
         }
     }
+
+    #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
+    VX_PRINT(VX_ZONE_WARNING, "Interrupts DISABLED during TIDL process\n");
+    #else
+    VX_PRINT(VX_ZONE_WARNING, "Interrupts ENABLED during TIDL process\n");
+    #endif
 
     return (status);
 }

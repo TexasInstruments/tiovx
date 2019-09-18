@@ -11,6 +11,9 @@ IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
+IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(BIOS_PATH)/packages
+IDIRS       += $(XDCTOOLS_PATH)/packages
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION

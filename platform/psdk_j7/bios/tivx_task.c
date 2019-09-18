@@ -34,7 +34,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 
         params->core_affinity = TIVX_TASK_AFFINITY_ANY;
         params->priority = TIVX_TASK_PRI_LOWEST;
-        strncpy(params->task_name, "TIVX", TIVX_MAX_TASK_NAME);        
+        strncpy(params->task_name, "TIVX", TIVX_MAX_TASK_NAME);
         params->task_name[TIVX_MAX_TASK_NAME-1] = 0;
     }
 }
@@ -64,7 +64,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
         bios_task_prms.arg0      = (void*)(task);
         bios_task_prms.arg1      = (void*)(task);
         bios_task_prms.name      = (uint8_t*)&task->task_name[0];
-                
+
         strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
         task->task_name[TIVX_MAX_TASK_NAME-1] = 0;
 
@@ -111,10 +111,6 @@ vx_status tivxTaskDelete(tivx_task *task)
 
 void tivxTaskWaitMsecs(uint32_t msec)
 {
-    #if defined(C66) || defined(C71)
-    TaskP_yield(); /* using this until task sleep works fine in VLAB */
-    #else
     TaskP_sleepInMsecs(msec);
-    #endif
 }
 
