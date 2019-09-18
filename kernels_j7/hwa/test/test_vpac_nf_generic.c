@@ -20,7 +20,7 @@
 #include <TI/j7.h>
 #include "test_engine/test.h"
 #include <string.h>
-
+#include "tivx_utils_checksum.h"
 
 #define MAX_CONV_SIZE 5
 
@@ -261,6 +261,87 @@ typedef struct {
     int condition;
 } ArgNegative;
 
+static uint32_t nf_generic_checksums_ref[4*7*2] = {
+    (uint32_t) 0x41dd742d, (uint32_t) 0x710babf1, (uint32_t) 0x681bb594, (uint32_t) 0x7411b1b8,
+    (uint32_t) 0xf1876e3a, (uint32_t) 0xe27dc06c, (uint32_t) 0xe8d09420, (uint32_t) 0x73735ed8,
+    (uint32_t) 0x6cb023a,  (uint32_t) 0xbe5e681d, (uint32_t) 0xc26f1bb8, (uint32_t) 0x93343528,
+    (uint32_t) 0x4fedc2e,  (uint32_t) 0xfffed400, (uint32_t) 0x41dd742d, (uint32_t) 0xb33d7506,
+    (uint32_t) 0x681bb594, (uint32_t) 0xf3c46a44, (uint32_t) 0xf1876e3a, (uint32_t) 0xcc99df7e,
+    (uint32_t) 0xe8d09420, (uint32_t) 0x477b3f8c, (uint32_t) 0x6cb023a,  (uint32_t) 0x27a0a3b2,
+    (uint32_t) 0xc26f1bb8, (uint32_t) 0xa42111cf, (uint32_t) 0x4fedc2e,  (uint32_t) 0xfffed400,
+    (uint32_t) 0x41dd742d, (uint32_t) 0x7f9344c2, (uint32_t) 0x681bb594, (uint32_t) 0xceeccc5f,
+    (uint32_t) 0xf1876e3a, (uint32_t) 0x8f57d6fd, (uint32_t) 0xe8d09420, (uint32_t) 0x637011a3,
+    (uint32_t) 0x6cb023a,  (uint32_t) 0x8f4ec3cc, (uint32_t) 0xc26f1bb8, (uint32_t) 0x6234152d,
+    (uint32_t) 0x4fedc2e,  (uint32_t) 0xfffed400, (uint32_t) 0x41dd742d, (uint32_t) 0x3482f1e5,
+    (uint32_t) 0x681bb594, (uint32_t) 0xd3664389, (uint32_t) 0xf1876e3a, (uint32_t) 0xa8dcc146,
+    (uint32_t) 0xe8d09420, (uint32_t) 0x41552d94, (uint32_t) 0x6cb023a,  (uint32_t) 0x798ec272,
+    (uint32_t) 0xc26f1bb8, (uint32_t) 0x639d96ed, (uint32_t) 0x4fedc2e,  (uint32_t) 0xfffed400
+};
+
+static uint32_t get_checksum(vx_int32 cols, vx_int32 rows, vx_int32 shift, void (*convolution_data_generator)(int cols, int rows, vx_int16* data))
+{
+    uint16_t a;
+    uint16_t b;
+    uint16_t c;
+
+    if ((3 == cols) && (3 == rows))
+    {
+        a = 0U;
+    }
+    else if ((5 == cols) && (3 == rows))
+    {
+        a = 1U;
+    }
+    else if ((3 == cols) && (5 == rows))
+    {
+        a = 2U;
+    }
+    else
+    {
+        a = 3U;
+    }
+
+    if (0 == shift)
+    {
+        b = 0U;
+    }
+    else if (1 == shift)
+    {
+        b = 1U;
+    }
+    else if (2 == shift)
+    {
+        b = 2U;
+    }
+    else if (7 == shift)
+    {
+        b = 3U;
+    }
+    else if (-1 == shift)
+    {
+        b = 4U;
+    }
+    else if (-2 == shift)
+    {
+        b = 5U;
+    }
+    else
+    {
+        b = 6U;
+    }
+
+    if (convolution_data_fill_identity == convolution_data_generator)
+    {
+        c = 0u;
+    }
+    else
+    {
+        c = 1u;
+    }
+
+    return nf_generic_checksums_ref[7*2*a+2*b+c];
+}
+
 #define ADD_CONV_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/conv=3x3", __VA_ARGS__, 3, 3)), \
     CT_EXPAND(nextmacro(testArgName "/conv=5x3", __VA_ARGS__, 5, 3)), \
@@ -288,7 +369,6 @@ typedef struct {
 #endif
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
 
 #define ADD_CONV_SIZE_NEGATIVE(testArgName, nextmacro, ...) \
@@ -330,12 +410,19 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     vx_size conv_max_dim = 0;
     vx_graph graph = 0;
     vx_node node = 0;
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    vx_rectangle_t rect;
 
     CT_Image src = NULL, dst = NULL;
     vx_border_t border = arg_->border;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
     {
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 640;
+        rect.end_y = 480;
         tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
@@ -377,6 +464,10 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
 
         ASSERT_NO_FAILURE(convolve_check(src, dst, border, arg_->cols, arg_->rows, data, arg_->shift, arg_->dst_format));
 
+        checksum_expected = get_checksum(arg_->cols, arg_->rows, arg_->shift, arg_->convolution_data_generator);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        ASSERT(checksum_expected == checksum_actual);
+
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
 
@@ -397,54 +488,6 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
         tivxHwaUnLoadKernels(context);
     }
 }
-#if 0
-TEST_WITH_ARG(tivxHWA_VPAC_NF_Generic, testImmediateProcessing, Arg,
-    PARAMETERS
-)
-{
-    vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
-    vx_convolution convolution = 0;
-    vx_int16 data[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 };
-    vx_size conv_max_dim = 0;
-
-    CT_Image src = NULL, dst = NULL;
-    vx_border_t border = arg_->border;
-
-    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
-    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
-
-    VX_CALL(vxQueryContext(context, VX_CONTEXT_CONVOLUTION_MAX_DIMENSION, &conv_max_dim, sizeof(conv_max_dim)));
-
-    if ((vx_size)arg_->cols > conv_max_dim || (vx_size)arg_->rows > conv_max_dim)
-    {
-        printf("%dx%d convolution is not supported. Skip test\n", (int)arg_->cols, (int)arg_->rows);
-        return;
-    }
-
-    ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
-    ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, arg_->scale));
-
-    VX_CALL(vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
-
-    VX_CALL(vxuConvolve(context, src_image, convolution, dst_image));
-
-    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
-
-    ASSERT_NO_FAILURE(convolve_check(src, dst, border, arg_->cols, arg_->rows, data, arg_->scale, arg_->dst_format));
-
-    VX_CALL(vxReleaseImage(&dst_image));
-    VX_CALL(vxReleaseImage(&src_image));
-
-    ASSERT(dst_image == 0);
-    ASSERT(src_image == 0);
-
-    VX_CALL(vxReleaseConvolution(&convolution));
-    ASSERT(convolution == NULL);
-}
-#endif
 
 TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
     PARAMETERS_NEGATIVE
@@ -482,7 +525,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
 
         ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
         ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, 1));
-        
+
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_common_params_t",
                                                             sizeof(tivx_vpac_nf_common_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         tivx_vpac_nf_common_params_init(&params);
@@ -508,7 +551,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
                 else if (3U == arg_->condition)
                 {
                     params.input_interleaved = 2;
-                }            
+                }
                 else
                 {
                     params.input_interleaved = 2;
@@ -532,7 +575,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
                 else if (3U == arg_->condition)
                 {
                     params.output_downshift = 8;
-                }            
+                }
                 else
                 {
                     params.output_downshift = 8;
