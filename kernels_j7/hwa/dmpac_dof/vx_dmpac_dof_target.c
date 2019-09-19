@@ -811,13 +811,13 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
 
             if (NULL != dofObj->inter_buff1)
             {
-                tivxMemFree( dofObj->inter_buff1, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff1), dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff1 = NULL;
             }
 
             if (NULL != dofObj->inter_buff2)
             {
-                tivxMemFree( dofObj->inter_buff2, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff2), dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff2 = NULL;
             }
 
