@@ -265,15 +265,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
             tivxSendUserGraphEvent(graph, STOP, NULL);
             tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-            if (VX_SUCCESS == status)
-            {
-                graph->is_streaming  = vx_false_e;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR, "vxStopGraphStreaming: tivxEventWait for streaming task failed\n");
-            }
-
+            graph->is_streaming  = vx_false_e;
         }
         else
         {

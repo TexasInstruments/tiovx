@@ -169,7 +169,7 @@ static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32
 VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
     vx_node nodes[], uint32_t num_nodes)
 {
-    tivx_super_node super_node;
+    tivx_super_node super_node = NULL;
     tivx_obj_desc_super_node_t *obj_desc = NULL;
     vx_kernel kernel;
 
@@ -203,29 +203,37 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                     ownInitSuperNode(super_node, nodes, num_nodes);
 
                     kernel = vxGetKernelByEnum(context, TIVX_KERNEL_SUPERNODE);
-                    super_node->node = vxCreateGenericNode(graph, kernel);
-                    vxReleaseKernel(&kernel);
-
-                    if (vxGetStatus((vx_reference)super_node->node) == VX_SUCCESS)
+                    if (NULL != kernel)
                     {
-                        vx_status status;
-                        super_node->node->super_node = super_node;
-                        super_node->node->is_super_node = vx_true_e;
-                        tivxFlagBitSet(&super_node->node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_SUPERNODE);
-                        super_node->node->obj_desc[0]->base.scope_obj_desc_id = obj_desc->base.obj_desc_id;
-                        status = ownGraphAddSuperNode(graph, super_node);
+                        super_node->node = vxCreateGenericNode(graph, kernel);
+                        vxReleaseKernel(&kernel);
 
-                        if (VX_SUCCESS != status)
+                        if (vxGetStatus((vx_reference)super_node->node) == VX_SUCCESS)
                         {
-                            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to add supernode to graph\n");
-                            vxReleaseNode(&super_node->node);
-                            tivxReleaseSuperNode(&super_node);
+                            vx_status status;
+                            super_node->node->super_node = super_node;
+                            super_node->node->is_super_node = vx_true_e;
+                            tivxFlagBitSet(&super_node->node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_SUPERNODE);
+                            super_node->node->obj_desc[0]->base.scope_obj_desc_id = obj_desc->base.obj_desc_id;
+                            status = ownGraphAddSuperNode(graph, super_node);
+
+                            if (VX_SUCCESS != status)
+                            {
+                                vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to add supernode to graph\n");
+                                vxReleaseNode(&super_node->node);
+                                tivxReleaseSuperNode(&super_node);
+                            }
+                        }
+                        else
+                        {
+                            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
+                            VX_PRINT(VX_ZONE_ERROR,"tivxCreateSuperNode: Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
                         }
                     }
                     else
                     {
-                        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
-                        VX_PRINT(VX_ZONE_ERROR,"tivxCreateSuperNode: Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
+                        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to retrieve kernel enum TIVX_KERNEL_SUPERNODE\n");
+                        super_node = (tivx_super_node)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
                     }
                 }
             }

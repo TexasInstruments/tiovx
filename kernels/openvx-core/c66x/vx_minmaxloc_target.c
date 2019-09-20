@@ -103,8 +103,8 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
     if (VX_SUCCESS == status)
     {
         void *src_target_ptr;
-        void *arr0_target_ptr;
-        void *arr1_target_ptr;
+        void *arr0_target_ptr = NULL;
+        void *arr1_target_ptr = NULL;
 
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];

@@ -717,18 +717,15 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     vx_imagepatch_addressing_t *image_addr = NULL;
 
-    if(status == VX_SUCCESS)
+    if (user_ptr == NULL)
     {
-        if (user_ptr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: User pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: invalid usage parameter\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: User pointer is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: invalid usage parameter\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
 
     if(status == VX_SUCCESS)
@@ -1059,18 +1056,15 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
-    if(status == VX_SUCCESS)
+    if (map_id == NULL)
     {
-        if (map_id == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: Map ID is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if (user_ptr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: ptr is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: Map ID is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    if (user_ptr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: ptr is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
 
     if(status == VX_SUCCESS)

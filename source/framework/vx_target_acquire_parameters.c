@@ -336,6 +336,7 @@ static void tivxTargetNodeDescReleaseParameter(
 
     *is_prm_released = vx_false_e;
     blocked_nodes.num_nodes = 0;
+    blocked_nodes.node_id[0] = 0;
     do_release_ref = vx_false_e;
     do_release_ref_to_queue = vx_false_e;
     obj_desc = tivxObjDescGet(ref_obj_desc_id);

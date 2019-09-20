@@ -81,7 +81,7 @@
 
 static void getNodeColor(vx_node node, char *node_color_name)
 {
-    char target_name[TIVX_TARGET_MAX_NAME];
+    char target_name[TIVX_TARGET_MAX_NAME] = {0};
 
     snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "white");
 
@@ -94,134 +94,137 @@ static void getNodeColor(vx_node node, char *node_color_name)
         VX_PRINT(VX_ZONE_ERROR,"node obj desc is NULL\n");
     }
 
-    if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME) == 0)
+    if(node->obj_desc[0])
     {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "palegreen");
-    }
-    else
-    if(strncmp(target_name, "DSP-2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
-    }
-    else
-    if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
-    }
-    else
-    if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
-    }
-    else
-    if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
-    }
-    else
-    if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
-    }
-    else
-    if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
-    }
-    else
-    if(strncmp(target_name, "IPU1-0", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
-    }
-    else
-    if(strncmp(target_name, "IPU1-1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
-    }
-    else
-    if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
-    }
-    else
-    if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
-    }
-    else
-    if(strncmp(target_name, "A72-0", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
-    }
-    else
-    if(strncmp(target_name, "DSP_C7-1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
-    }
-    else
-    if(strncmp(target_name, "VPAC_NF", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "chocolate");
-    }
-    else
-    if(strncmp(target_name, "VPAC_LDC1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "aquamarine");
-    }
-    else
-    if(strncmp(target_name, "VPAC_MSC1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "antiquewhite");
-    }
-    else
-    if(strncmp(target_name, "VPAC_MSC2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "azure");
-    }
-    else
-    if(strncmp(target_name, "DMPAC_SDE", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "beige");
-    }
-    else
-    if(strncmp(target_name, "DMPAC_DOF", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "bisque");
-    }
-    else
-    if(strncmp(target_name, "VPAC_VISS1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
-    }
-    else
-    if(strncmp(target_name, "CAPTURE1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");
-    }
-    else
-    if(strncmp(target_name, "CAPTURE2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "brown");
-    }
-    else
-    if(strncmp(target_name, "DISPLAY1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "burlywood");
-    }
-    else
-    if(strncmp(target_name, "DISPLAY2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
-    }
-    else
-    if(strncmp(target_name, "VDEC1", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "coral");
-    }
-    else
-    if(strncmp(target_name, "VDEC2", TIVX_TARGET_MAX_NAME) == 0)
-    {
-        snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
+        if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "palegreen");
+        }
+        else
+        if(strncmp(target_name, "DSP-2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "darkturquoise");
+        }
+        else
+        if(strncmp(target_name, "EVE-1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
+        }
+        else
+        if(strncmp(target_name, "EVE-2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "gold");
+        }
+        else
+        if(strncmp(target_name, "EVE-3", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "orange");
+        }
+        else
+        if(strncmp(target_name, "EVE-4", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "goldenrod4");
+        }
+        else
+        if(strncmp(target_name, "A15-0", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
+        }
+        else
+        if(strncmp(target_name, "IPU1-0", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
+        }
+        else
+        if(strncmp(target_name, "IPU1-1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
+        }
+        else
+        if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+        }
+        else
+        if(strncmp(target_name, "IPU2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
+        }
+        else
+        if(strncmp(target_name, "A72-0", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
+        }
+        else
+        if(strncmp(target_name, "DSP_C7-1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "yellow");
+        }
+        else
+        if(strncmp(target_name, "VPAC_NF", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "chocolate");
+        }
+        else
+        if(strncmp(target_name, "VPAC_LDC1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "aquamarine");
+        }
+        else
+        if(strncmp(target_name, "VPAC_MSC1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "antiquewhite");
+        }
+        else
+        if(strncmp(target_name, "VPAC_MSC2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "azure");
+        }
+        else
+        if(strncmp(target_name, "DMPAC_SDE", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "beige");
+        }
+        else
+        if(strncmp(target_name, "DMPAC_DOF", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "bisque");
+        }
+        else
+        if(strncmp(target_name, "VPAC_VISS1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blanchedalmond");
+        }
+        else
+        if(strncmp(target_name, "CAPTURE1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "blue");
+        }
+        else
+        if(strncmp(target_name, "CAPTURE2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "brown");
+        }
+        else
+        if(strncmp(target_name, "DISPLAY1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "burlywood");
+        }
+        else
+        if(strncmp(target_name, "DISPLAY2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
+        }
+        else
+        if(strncmp(target_name, "VDEC1", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "coral");
+        }
+        else
+        if(strncmp(target_name, "VDEC2", TIVX_TARGET_MAX_NAME) == 0)
+        {
+            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
+        }
     }
 }
 
@@ -1202,7 +1205,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                         if(ref)
                         {
                             exportDataRefObjDesc(fp, ref);
-                            if(ref && ref->obj_desc)
+                            if(ref->obj_desc)
                             {
                                 TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
                                     ref->obj_desc->obj_desc_id,

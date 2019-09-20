@@ -103,8 +103,8 @@ static vx_status tivxKernelColorConvert(
     }
     if (VX_SUCCESS == status)
     {
-        void *src_desc_target_ptr[TIVX_IMAGE_MAX_PLANES];
-        void *dst_desc_target_ptr[TIVX_IMAGE_MAX_PLANES];
+        void *src_desc_target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL, NULL, NULL};
+        void *dst_desc_target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL, NULL, NULL};
 
         src_desc = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];

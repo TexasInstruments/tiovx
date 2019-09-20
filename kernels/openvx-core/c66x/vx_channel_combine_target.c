@@ -100,7 +100,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
         void *src1_desc_target_ptr;
         void *src2_desc_target_ptr = NULL;
         void *src3_desc_target_ptr = NULL;
-        void *dst_desc_target_ptr[4U];
+        void *dst_desc_target_ptr[4U] = {NULL, NULL, NULL, NULL};
 
         src0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
         src1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];

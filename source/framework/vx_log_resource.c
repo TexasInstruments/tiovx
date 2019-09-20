@@ -447,7 +447,16 @@ vx_status tivxExportAllResourceMaxUsedValueToFile()
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
 
-    snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", test_file_path(), "output/tivx_config_generated.h");
+    if (NULL != test_file_path())
+    {
+        snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", test_file_path(), "output/tivx_config_generated.h");
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxExportAllResourceMaxUsedValueToFile: VX_TEST_DATA_PATH has not been set!\n");
+        tivxMutexUnlock(g_tivx_log_resource_lock);
+        return status;
+    }
 
     ofp = fopen(outputFilename, "w");
 

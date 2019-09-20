@@ -149,19 +149,25 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph)
     {
         cur_node = graph->nodes[cur_node_idx];
 
-        if (cur_node->kernel->num_pipeup_bufs > 1)
+        if (NULL != cur_node)
         {
-            num_out_nodes = ownNodeGetNumOutNodes(cur_node);
-
-            for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
+            if (cur_node->kernel->num_pipeup_bufs > 1)
             {
-                next_node = ownNodeGetNextNode(cur_node, out_node_idx);
+                num_out_nodes = ownNodeGetNumOutNodes(cur_node);
 
-                if (next_node->kernel->num_sink_bufs > 1)
+                for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
                 {
-                    if (next_node->kernel->num_sink_bufs > graph->nodes[cur_node_idx]->kernel->connected_sink_bufs)
+                    next_node = ownNodeGetNextNode(cur_node, out_node_idx);
+
+                    if (NULL != next_node)
                     {
-                        graph->nodes[cur_node_idx]->kernel->connected_sink_bufs = next_node->kernel->num_sink_bufs;
+                        if (next_node->kernel->num_sink_bufs > 1)
+                        {
+                            if (next_node->kernel->num_sink_bufs > graph->nodes[cur_node_idx]->kernel->connected_sink_bufs)
+                            {
+                                graph->nodes[cur_node_idx]->kernel->connected_sink_bufs = next_node->kernel->num_sink_bufs;
+                            }
+                        }
                     }
                 }
             }
@@ -544,10 +550,10 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 
             if(node && node->kernel)
             {
+                status = ownNodeKernelInit(node);
                 VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
             }
 
-            status = ownNodeKernelInit(node);
             if(status != VX_SUCCESS )
             {
                 VX_PRINT(VX_ZONE_ERROR,"kernel init for node %d, kernel %s ... failed !!!\n", i, node->kernel->name);
@@ -1812,16 +1818,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             ownGraphNodeKernelDeinit(graph);
         }
         {
-            if(status == VX_SUCCESS)
+            /* Find out nodes and in nodes for each node in the graph
+             * No resources are allocated in this step
+             */
+            status = ownGraphCalcInAndOutNodes(graph);
+            if(status != VX_SUCCESS)
             {
-                /* Find out nodes and in nodes for each node in the graph
-                 * No resources are allocated in this step
-                 */
-                status = ownGraphCalcInAndOutNodes(graph);
-                if(status != VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
-                }
+                VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
             }
 
             if(status == VX_SUCCESS)
@@ -2015,10 +2018,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status != VX_SUCCESS)
             {
-                if(status != VX_SUCCESS)
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
-                }
+                VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
                 /* deinit kernel to recover resources */
                 ownGraphNodeKernelDeinit(graph);
             }

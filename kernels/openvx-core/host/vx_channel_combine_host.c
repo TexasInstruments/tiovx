@@ -557,7 +557,10 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
         }
     }
 
-    status |= vxQueryImage(prms->out_img[0], VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryImage(prms->out_img[0], VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
+    }
 
     if (VX_SUCCESS == status)
     {

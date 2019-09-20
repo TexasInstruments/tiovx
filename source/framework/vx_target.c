@@ -268,12 +268,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
     tivx_target_kernel_instance target_kernel_instance;
-    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
+    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     uint32_t i, cnt, loop_max = 1;
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
     uint32_t is_prm_array_element = node_obj_desc->is_prm_array_element;
     uint32_t is_prm_data_ref_q_flag = node_obj_desc->is_prm_data_ref_q;
-    tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
+    tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     tivx_obj_desc_t *prm_obj_desc;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
@@ -358,9 +358,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
                             tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
 
-                            params[i] = tivxObjDescGet(
-                                ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
-                                    obj_desc_id[tmp_node_param->element_idx]);
+                            if (NULL != tmp_node_param)
+                            {
+                                params[i] = tivxObjDescGet(
+                                    ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
+                                        obj_desc_id[tmp_node_param->element_idx]);
+                            }
                         }
                         else
                         if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_PYRAMID)
@@ -369,9 +372,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
                             tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
 
-                            params[i] = tivxObjDescGet(
-                                ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
-                                    obj_desc_id[tmp_node_param->element_idx]);
+                            if (NULL != tmp_node_param)
+                            {
+                                params[i] = tivxObjDescGet(
+                                    ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
+                                        obj_desc_id[tmp_node_param->element_idx]);
+                            }
                         }
                         else
                         {
@@ -413,9 +419,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
                         tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
 
-                        if (parent_obj_desc[i]->type == tmp_node_param->type)
+                        if (NULL != tmp_node_param)
                         {
-                            params[i] = parent_obj_desc[i];
+                            if (parent_obj_desc[i]->type == tmp_node_param->type)
+                            {
+                                params[i] = parent_obj_desc[i];
+                            }
                         }
                     }
                 }
@@ -625,7 +634,8 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
                 node_obj_desc->source_state = VX_NODE_STATE_STEADY;
 
-                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                if( (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL)) &&
+                    (NULL != target_kernel_instance))
                 {
                     target_kernel_instance->state = VX_NODE_STATE_STEADY;
                 }
@@ -715,9 +725,9 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     tivx_target_kernel_instance target_kernel_instance;
     vx_status status = VX_SUCCESS;
     uint16_t i, cnt, loop_max = 1;
-    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
+    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
-    tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
+    tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     tivx_obj_desc_t *prm_obj_desc;
     tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
     volatile char *kernel_name = NULL;
@@ -747,7 +757,12 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         else
         {
             /* Set the target kernel instance number of pipeup bufs */
-            target_kernel_instance->kernel->num_pipeup_bufs = kernel_name_obj_desc->num_pipeup_bufs;
+            target_kernel_instance->kernel->num_pipeup_bufs = 1;
+
+            if(kernel_name_obj_desc!=NULL)
+            {
+                target_kernel_instance->kernel->num_pipeup_bufs = kernel_name_obj_desc->num_pipeup_bufs;
+            }
 
             if (target_kernel_instance->kernel->num_pipeup_bufs > 1)
             {

@@ -89,6 +89,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
         if(status!=0)
         {
+            pthread_mutex_destroy(&tmp_mutex->lock);
             free(tmp_mutex);
             *mutex = NULL;
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex initialization failed\n");

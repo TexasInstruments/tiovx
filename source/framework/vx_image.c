@@ -222,7 +222,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
         }
     }
 
-    if (parent->subimages[p] == NULL)
+    if (p == TIVX_IMAGE_MAX_SUBIMAGES)
     {
         VX_PRINT(VX_ZONE_WARNING, "ownLinkParentSubimage: May need to increase the value of TIVX_IMAGE_MAX_SUBIMAGES in tiovx/include/TI/tivx_config.h\n");
     }
@@ -803,7 +803,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
     vx_image subimage = NULL;
     vx_status status = VX_SUCCESS;
     uint32_t width, height;
-    vx_enum format;
+    vx_enum format, subimage_format;
     uint16_t channel_plane;
     vx_context context;
     tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
@@ -878,7 +878,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                 imagepatch_addr = &obj_desc->imagepatch_addr[channel_plane];
                 mem_ptr = &obj_desc->mem_ptr[channel_plane];
 
-                format = VX_DF_IMAGE_U8;
+                subimage_format = VX_DF_IMAGE_U8;
 
                 width = 0;
                 height = 0;
@@ -925,7 +925,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         break;
                 }
 
-                subimage = (vx_image)ownCreateImageInt(context, width, height, format, TIVX_IMAGE_FROM_CHANNEL);
+                subimage = (vx_image)ownCreateImageInt(context, width, height, subimage_format, TIVX_IMAGE_FROM_CHANNEL);
 
                 if ((vxGetStatus((vx_reference)subimage) == VX_SUCCESS) && (subimage->base.type == VX_TYPE_IMAGE))
                 {
@@ -935,6 +935,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
                     si_obj_desc->imagepatch_addr[0].stride_x = imagepatch_addr->stride_x;
                     si_obj_desc->imagepatch_addr[0].stride_y = imagepatch_addr->stride_y;
+                    /* TIOVX-742 */
                     if((format==VX_DF_IMAGE_NV12)
                         ||
                        (format==VX_DF_IMAGE_NV21)
@@ -995,14 +996,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                 width  = rect->end_x - rect->start_x;
                 height = rect->end_y - rect->start_y;
 
-                if(status==VX_SUCCESS)
+                status = ownIsFreeSubimageAvailable(image);
+                if(status!=VX_SUCCESS)
                 {
-                    status = ownIsFreeSubimageAvailable(image);
-                    if(status!=VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "vxCreateImageFromROI: no subimage is available\n");
-                        subimage = (vx_image)ownGetErrorObject(context, status);
-                    }
+                    VX_PRINT(VX_ZONE_ERROR, "vxCreateImageFromROI: no subimage is available\n");
+                    subimage = (vx_image)ownGetErrorObject(context, status);
                 }
 
                 if(status==VX_SUCCESS)
@@ -1665,23 +1663,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
     vx_uint32 end_y = rect ? rect->end_y : 0u;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if(status == VX_SUCCESS)
+    if (user_ptr == NULL)
     {
-        if (user_ptr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if (user_addr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User addr is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: invalid usage parameter\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User pointer is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    if (user_addr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User addr is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: invalid usage parameter\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
 
     if(status == VX_SUCCESS)
@@ -1908,24 +1903,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if(status == VX_SUCCESS)
+    if (user_ptr == NULL)
     {
-        if (user_ptr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if (user_addr == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User addr is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if (map_id == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: Map ID is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User pointer is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
+    if (user_addr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User addr is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    if (map_id == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: Map ID is null\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
     if(status == VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(image, rect, plane_index, usage);

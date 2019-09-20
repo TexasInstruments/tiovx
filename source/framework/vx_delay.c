@@ -418,8 +418,12 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                         {
                                             ref = (vx_reference)vxGetObjectArrayItem((vx_object_array)delay->refs[i], (vx_uint32)item_idx);
 
-                                            status = ownAddRefToDelay(context, objarrdelay, ref, i);
-                                            if(status!=VX_SUCCESS)
+                                            if (NULL != ref)
+                                            {
+                                                status = ownAddRefToDelay(context, objarrdelay, ref, i);
+                                            }
+
+                                            if( (NULL == ref) || (status!=VX_SUCCESS))
                                             {
                                                 VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
                                                 break;

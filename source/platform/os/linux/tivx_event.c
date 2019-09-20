@@ -97,6 +97,8 @@ vx_status tivxEventCreate(tivx_event *event)
 
         if(status!=0)
         {
+            pthread_cond_destroy(&tmp_event->cond);
+            pthread_mutex_destroy(&tmp_event->lock);
             free(tmp_event);
             *event = NULL;
             VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Mutex initialization failed\n");
