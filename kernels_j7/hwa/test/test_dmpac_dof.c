@@ -282,10 +282,10 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         uint32_t width = 256, height = 128;
         uint32_t levels = 2, i;
         vx_enum format = VX_DF_IMAGE_U8;
-        rect.start_x = 4;
-        rect.start_y = 4;
-        rect.end_x = width - 4;
-        rect.end_y = height - 4;
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = width;
+        rect.end_y = height;
 
         tivxHwaLoadKernels(context);
 

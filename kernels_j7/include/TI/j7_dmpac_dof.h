@@ -274,17 +274,28 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  * - If the optional input_current_base and input_reference_base is used, then
  *   the base size of the respective pyramid paramters should be half the width
  *   and height of the base images.
- * - Each flow vector sample (u,v, confidence score) is encoded in a 32b packed format as follows:
- *   - Confidence (4 bit)
- *     - [3:0] Confidence is 4 bits (16 levels of confidence value)
- *   - Vertical flow vector (7bit signed integer, 4 bit fractional):
- *     - [7:4]  Fractional is 4 bits (support 1/16th pixel of precision)
- *     - [14:8] Signed Integer is 7 bits (support up to +63 to -63 pixel Vertical flow vectors)
- *     - [15]   Copy of signed bit from integer
- *   - Horizontal flow vector (9bit signed integer, 4 bit fractional):
- *     - [19:16] Fractional is 4 bits (support 1/16th pixel of precision)
- *     - [28:20] Signed Integer is 9 bits (support up to  +255 to -255 pixel Horizontal flow vectors)
- *     - [31:29] Copies of signed bit from integer
+ * - Each flow vector sample can be encoded in <tt>\ref VX_DF_IMAGE_U32 </tt> format
+ *   or <tt>\ref VX_DF_IMAGE_U16 </tt> format. Note that the <tt>\ref VX_DF_IMAGE_U32 </tt>
+ *   format is recommended since it contains additional fractional bits of the flow vectors as
+ *   well as confidence score information, while the <tt>\ref VX_DF_IMAGE_U16 </tt> format
+ *   only contains integer flow vector information.  Also, because of this, the temporal
+ *   predictor can only be used with the <tt>\ref VX_DF_IMAGE_U32 </tt> format.
+ *   - 32bit encoding format (u,v, confidence score) is as follows:
+ *     - Confidence (4 bit)
+ *       - [3:0] Confidence is 4 bits (16 levels of confidence value)
+ *     - Vertical flow vector (7bit signed integer, 4 bit fractional):
+ *       - [7:4]  Fractional is 4 bits (support 1/16th pixel of precision)
+ *       - [14:8] Signed Integer is 7 bits (support up to +63 to -63 pixel Vertical flow vectors)
+ *       - [15]   Copy of signed bit from integer
+ *     - Horizontal flow vector (9bit signed integer, 4 bit fractional):
+ *       - [19:16] Fractional is 4 bits (support 1/16th pixel of precision)
+ *       - [28:20] Signed Integer is 9 bits (support up to  +255 to -255 pixel Horizontal flow vectors)
+ *       - [31:29] Copies of signed bit from integer
+ *   - 16bit encoding format (u,v) is as follows:
+ *     - Vertical flow vector (7bit signed integer):
+ *       - [6:0] Signed Integer is 7 bits (support up to +63 to -63 pixel Vertical flow vectors)
+ *     - Horizontal flow vector (9bit signed integer):
+ *       - [15:7] Signed Integer is 9 bits (support up to +255 to -255 pixel Horizontal flow vectors)
  *
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of
@@ -296,14 +307,18 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  * \param [in] input_current Current input pyramid.
  * \param [in] input_reference Reference input pyramid.
  * \param [in] flow_vector_in (optional) Flow vector from previous execution of DOF.
- *             Size of image is base_width x base_height x 32bpp.
- *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
+ *             Size of image is base_width x base_height x size of data format.
+ *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> or <tt>\ref VX_DF_IMAGE_U16 </tt> dataformat.
+ *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
+ *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
  * \param [in] sparse_of_map (optional) Sparse OF bit-mask of size
  *             base_width/8 x base_height x 1bpp.
  *             Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
  * \param [out] flow_vector_out Flow vector output.
- *              Size of image is base_width x base_height x 32bpp.
- *              Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
+ *             Size of image is base_width x base_height x size of data format.
+ *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> or <tt>\ref VX_DF_IMAGE_U16 </tt> dataformat.
+ *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
+ *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
  * \param [out] confidence_histogram (optional) Confidence histogram.
  *              Distribution meta properties, num_bins = 16, offset = 0, range = 16.
  * \see <tt>TIVX_KERNEL_DMPAC_DOF_NAME</tt>

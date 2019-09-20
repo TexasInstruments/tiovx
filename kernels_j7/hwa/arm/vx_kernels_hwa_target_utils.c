@@ -357,6 +357,26 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
             }
         }
     }
+    else if((VX_DF_IMAGE_U16 == dst->format) || (VX_DF_IMAGE_S16 == dst->format))
+    {
+        uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
+            &dst->imagepatch_addr[0U]));
+        stride /= 2;
+
+        for(j = 0; j < h; j++)
+        {
+            for(i=0; i < w; i++)
+            {
+                /* Take lower 16 bits */
+                dst_addr16[j*stride+i] = dst32[j*w+i] & 0x0000FFFF;
+            }
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "DOF output format not supported\n");
+    }
 }
 
 void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exp)

@@ -70,6 +70,11 @@
 #include "vx_kernels_hwa_target.h"
 #include "LibDenseOpticalFlow.h"
 
+#define PYRAMIDAL_CURRENT 0
+#define DELAYED_LEFT      1
+#define PYRAMIDAL_LEFT    2
+#define TEMPORAL          3
+
 #ifdef VLAB_HWA
 
 typedef struct {
@@ -129,6 +134,12 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms);
 
 static vx_status tivxDmpacDofGetErrStatusCmd(
                         tivx_obj_desc_scalar_t *scalar_obj_desc);
+
+static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
+                        tivx_obj_desc_user_data_object_t *usr_data_obj);
+
+static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
+                        tivx_dmpac_dof_params_t *params);
 
 
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
@@ -221,6 +232,12 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms)
         tivxMemFree( prms->past_prediction, size, TIVX_MEM_EXTERNAL);
         prms->past_prediction = NULL;
     }
+
+    if(prms->dofParams.model[0] != '\0')
+    {
+        remove(prms->dofParams.model);
+    }
+
     tivxMemFree(prms, sizeof(tivxDmpacDofParams), TIVX_MEM_EXTERNAL);
 }
 
@@ -642,10 +659,16 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->magic = 0xC0DEFACE;
             prms->dofParams.direction = params->motion_direction ;
             prms->dofParams.flowPostFiltering = params->median_filter_enable ;
+            prms->dofParams.nonBaseLevelFlowPostFiltering = params->median_filter_enable ;
             prms->dofParams.msf = params->motion_smoothness_factor ;
             prms->dofParams.verticalSearchRange[0] = params->vertical_search_range[0] ;
             prms->dofParams.verticalSearchRange[1] = params->vertical_search_range[1] ;
             prms->dofParams.horizontalSearchRange = params->horizontal_search_range ;
+            prms->dofParams.confidenceFeatureIIRFilterCoeffQ8 = params->iir_filter_alpha ;
+            prms->dofParams.baseLevelConfidenceScorePacked = params->enable_lk ;
+            prms->dofParams.model[0] = '\0';
+
+            tivxDmpacDofSetPredictors(prms, params);
 
             tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -707,13 +730,20 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
 {
     vx_status                         status = VX_SUCCESS;
 
+    uint32_t size;
+    tivxDmpacDofParams *prms = NULL;
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
     if (VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
             case TIVX_DMPAC_DOF_CMD_CS_PARAMS:
             {
-                /* Does not apply for cmodel version ... yet */
+                status = tivxDmpacDofSetCsPrms(prms,
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
             case TIVX_DMPAC_DOF_CMD_SET_HTS_BW_LIMIT_PARAMS:
@@ -806,4 +836,128 @@ static vx_status tivxDmpacDofGetErrStatusCmd(
     return (status);
 }
 
+static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
+                        tivx_obj_desc_user_data_object_t *usr_data_obj)
+{
+    uint32_t                            idx;
+    vx_status                           status = VX_SUCCESS;
+    tivx_dmpac_dof_cs_tree_params_t    *cs_prms;
+    void                               *target_ptr;
+    FILE                               *fout;
 
+    if(NULL == usr_data_obj)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacDofSetCsPrms: Invalid Input\n");
+        status = VX_FAILURE;
+    }
+
+    if(VX_SUCCESS == status)
+    {
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
+
+        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        if (sizeof(tivx_dmpac_dof_cs_tree_params_t) ==
+                usr_data_obj->mem_size)
+        {
+            cs_prms = (tivx_dmpac_dof_cs_tree_params_t *)target_ptr;
+
+            prms->dofParams.confidenceGainFactor = cs_prms->cs_gain;
+
+            sprintf(prms->dofParams.model, "/tmp/.ti_ovx_dmpac_dof_cs_tree_%p.cfg", (void *)cs_prms);
+
+            fout = fopen(prms->dofParams.model, "w");
+
+            fprintf(fout, "#AdaboostCompactDescriptor: 16 2 10 7\n");
+            fprintf(fout, "###################### Depth = 0 Node = 0 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][0]); fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][0]); fprintf(fout, "  #TH(Thresholds)\n");
+            fprintf(fout, "###################### Depth = 1 Node = 1 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][1]); fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][1]); fprintf(fout, "  #TH(Thresholds)\n");
+            fprintf(fout, "###################### Depth = 1 Node = 2 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][2]); fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][2]); fprintf(fout, "  #TH(Thresholds)\n");
+            fprintf(fout, "###################### Depth = 2 Node = 3 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][0]); fprintf(fout, "  #WT(Weights)\n");
+            fprintf(fout, "###################### Depth = 2 Node = 4 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][1]); fprintf(fout, "  #WT(Weights)\n");
+            fprintf(fout, "###################### Depth = 2 Node = 5 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][2]); fprintf(fout, "  #WT(Weights)\n");
+            fprintf(fout, "###################### Depth = 2 Node = 6 ######################\n");
+            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][3]); fprintf(fout, "  #WT(Weights)\n");
+
+            fclose(fout);
+
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacDofSetCsPrms: Invalid Argument\n");
+            status = VX_FAILURE;
+        }
+        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacDofSetCsPrms: Null Argument\n");
+    }
+
+    return (status);
+}
+
+/* This section is meant to match the driver in vhwa_m2mDofApi.c */
+static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
+                        tivx_dmpac_dof_params_t *params)
+{
+    /* Check Base layer (all 4 are valid) */
+    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    {
+        prms->dofParams.baseLayerPredictorConfiguration[DELAYED_LEFT] = 1;
+    }
+
+    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
+       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+    {
+        prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 1;
+    }
+
+    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT))
+    {
+        prms->dofParams.baseLayerPredictorConfiguration[PYRAMIDAL_LEFT] = 1;
+    }
+
+    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+    {
+        prms->dofParams.baseLayerPredictorConfiguration[PYRAMIDAL_CURRENT] = 1;
+    }
+
+    /* Check Inter layer (3 are valid) */
+    if((params->inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+       (params->inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    {
+        prms->dofParams.nonBaseNonTopLayerPredictorConfiguration[DELAYED_LEFT] = 1;
+    }
+
+    if((params->inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+       (params->inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT))
+    {
+        prms->dofParams.nonBaseNonTopLayerPredictorConfiguration[PYRAMIDAL_LEFT] = 1;
+    }
+
+    if((params->inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+       (params->inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+    {
+        prms->dofParams.nonBaseNonTopLayerPredictorConfiguration[PYRAMIDAL_CURRENT] = 1;
+    }
+
+    /* Set top layer (1 is fixed in driver, so we will match it here) */
+    prms->dofParams.topLayerPredictorConfiguration[DELAYED_LEFT] = 1;
+}
