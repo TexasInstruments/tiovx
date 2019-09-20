@@ -1167,11 +1167,6 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
         dofPrms->focoPrms.shiftM1 = 0u;
         dofPrms->focoPrms.dir = 0u;
         dofPrms->focoPrms.round = 0u;
-
-        if(fmt->ccsFormat == FVID2_CCSF_BITS8_PACKED)
-        {
-            dofPrms->focoPrms.shiftM1 = 4u;
-        }
     }
 
     return;
