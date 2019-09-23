@@ -1097,10 +1097,10 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     {
         dofPrms->inOutImgFmt[0][DOF_INPUT_TEMPORAL_PRED].pitch[0U] =
                                     fv_out_desc->imagepatch_addr[0].stride_y;
+        dofPrms->coreCfg.enableSof = 0u;
     }
     else
     {
-        dofPrms->coreCfg.enableSof = 0u;
         dofPrms->inOutImgFmt[0][DOF_INPUT_TEMPORAL_PRED].pitch[0U] = 0u;
     }
 
