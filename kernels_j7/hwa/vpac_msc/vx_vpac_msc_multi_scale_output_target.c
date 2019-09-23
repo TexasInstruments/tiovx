@@ -628,11 +628,13 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
                     VX_PRINT(VX_ZONE_ERROR,
                        "tivxVpacMscScaleProcess: Null Descriptor for Enabled Optional Output\n");
                     status = VX_ERROR_INVALID_VALUE;
+                    break;
                 }
             }
         }
         else
         {
+            status = VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Invalid Target Instance Context\n");
         }
@@ -734,23 +736,20 @@ static vx_status VX_CALLBACK tivxVpacMscScaleControl(
     uint32_t             size;
     tivxVpacMscScaleObj *msc_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&msc_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&msc_obj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == msc_obj) ||
-            (sizeof(tivxVpacMscScaleObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleControl: Invalid Object Size\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacMscScaleControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == msc_obj) ||
+        (sizeof(tivxVpacMscScaleObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacMscScaleControl: Invalid Object Size\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)

@@ -273,7 +273,10 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         VX_CALL(vxReleaseImage(&sample_nv12_img));
 
         /* Get one NV12 image for VISS and Display initialization */
-        viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0);
+        if (NULL != viss_out_frames)
+        {
+           ASSERT_VX_OBJECT(viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0), VX_TYPE_IMAGE);          
+        }
 
         memset(&viss_params, 0, sizeof(tivx_vpac_viss_params_t));
         ASSERT_VX_OBJECT(configuration =
@@ -348,8 +351,11 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         VX_CALL(vxReleaseImage(&sample_nv12_img));
 
         /* Get one NV12 image for Scaler and Display initialization */
-        scaler_nv12_out_img =
-            (vx_image)vxGetObjectArrayItem(scaler_out_frames, 0);
+        if (NULL != scaler_out_frames)
+        {
+            ASSERT_VX_OBJECT(scaler_nv12_out_img =
+                (vx_image)vxGetObjectArrayItem(scaler_out_frames, 0), VX_TYPE_IMAGE);
+        }
 
         ASSERT_VX_OBJECT(scalerNode = tivxVpacMscScaleNode(graph,
             viss_nv12_out_img, scaler_nv12_out_img, NULL, NULL, NULL, NULL),

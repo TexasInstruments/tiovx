@@ -337,7 +337,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
     vx_uint32 ref_width = input->width;
     vx_uint32 ref_height = input->height;
 
-    ASSERT(input && pyr && (1 < levels) && (level < sizeof(c_orbscale) / sizeof(float) ));
+    ASSERT(input && pyr && (1 < levels) && (level < sizeof(c_orbscale) / sizeof(vx_float64) ));
     ASSERT_VX_OBJECT(output_image = vxGetPyramidLevel(pyr, 0), VX_TYPE_IMAGE);
     ASSERT_NO_FAILURE(output_prev = ct_image_from_vx_image(output_image));
     VX_CALL(vxReleaseImage(&output_image));
@@ -425,7 +425,7 @@ static CT_Image gaussian_pyramid_create_reference_image(CT_Image input, CT_Image
     vx_uint32 dst_height = input->height;
 
     ASSERT_(return NULL, scale < 1.0);
-    ASSERT_(return NULL, input && (level < (sizeof(c_orbscale) / sizeof(float))));
+    ASSERT_(return NULL, input && (level < (sizeof(c_orbscale) / sizeof(vx_float64))));
 
     ASSERT_(return NULL, input->format == VX_DF_IMAGE_U8);
 
@@ -477,7 +477,7 @@ static void gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_s
     vx_uint32 ref_width    = input->width;
     vx_uint32 ref_height   = input->height;
 
-    ASSERT(input && pyr && (levels < sizeof(c_orbscale) / sizeof(float) ));
+    ASSERT(input && pyr && (levels < sizeof(c_orbscale) / sizeof(vx_float64) ));
     ASSERT_VX_OBJECT(output_image = vxGetPyramidLevel(pyr, 0), VX_TYPE_IMAGE);
     ASSERT_NO_FAILURE(output_prev = ct_image_from_vx_image(output_image));
 

@@ -294,8 +294,9 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     {
         rfeCtrl.module       = RFE_MODULE_DPC_LUT;
         rfeCtrl.dpcLutCfg    = vissCfgRef->dpcLut;
-        status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_RFE_SET_CONFIG,
             (void *)&rfeCtrl, NULL);
+
         if (FVID2_SOK != fvid2_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -335,7 +336,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->wbCfg = NULL;
     }
 
-    if (NULL != vissCfgRef->rfeH3aInCfg)
+    if ((NULL != vissCfgRef->rfeH3aInCfg) && (FVID2_SOK == fvid2_status))
     {
         /* H3A Input Selection and Lut configuration */
         rfeCtrl.module   = RFE_MODULE_H3A;
@@ -352,7 +353,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->rfeH3aInCfg = NULL;
     }
 
-    if (NULL != vissCfgRef->h3aLutCfg)
+    if ((NULL != vissCfgRef->h3aLutCfg) && (FVID2_SOK == fvid2_status))
     {
         /* H3A Input Selection and Lut configuration */
         rfeCtrl.module   = RFE_MODULE_H3A_LUT;
@@ -369,7 +370,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
         vissCfgRef->h3aLutCfg = NULL;
     }
 
-    if (NULL != vissCfgRef->h3aCfg)
+    if ((NULL != vissCfgRef->h3aCfg) && (FVID2_SOK == fvid2_status))
     {
         fvid2_status = Fvid2_control(vissObj->handle, IOCTL_H3A_SET_CONFIG,
             (void *)vissCfgRef->h3aCfg, NULL);

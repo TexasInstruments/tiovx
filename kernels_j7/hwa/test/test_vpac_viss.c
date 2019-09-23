@@ -1487,7 +1487,12 @@ static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16
             }
             else
             {
-                ASSERT(file_byte_pack == num_bytes);
+                if(file_byte_pack != num_bytes)
+                {
+                    printf("ct_read_raw_image: size mismatch!!\n");
+                    fclose(f);
+                    return;
+                }
             }
             tivxUnmapRawImagePatch(image, map_id);
         }

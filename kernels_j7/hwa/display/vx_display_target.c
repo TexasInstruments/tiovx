@@ -566,6 +566,12 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not obtain display kernel instance context!\r\n");
         }
 
+        if (NULL == displayParams)
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display params is NULL!\r\n");
+        }
+
         /* Stop Display */
         if(VX_SUCCESS == status)
         {
@@ -606,14 +612,14 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         }
 
         /* Delete the wait semaphore */
-        if(NULL != displayParams->waitSem)
+        if((VX_SUCCESS == status) && (NULL != displayParams->waitSem))
         {
             SemaphoreP_delete(displayParams->waitSem);
             displayParams->waitSem = NULL;
         }
 
         /* Delete kernel instance params object */
-        if(VX_SUCCESS == status)
+        if((VX_SUCCESS == status) && (NULL != displayParams))
         {
             displayParams->drvHandle = NULL;
 
@@ -633,7 +639,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
                 }
             }
 
-            if((NULL != displayParams) && (sizeof(tivxDisplayParams) == size))
+            if(sizeof(tivxDisplayParams) == size)
             {
                 tivxMemFree(displayParams, sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
             }
@@ -652,23 +658,20 @@ static vx_status VX_CALLBACK tivxDisplayControl(
     uint32_t             size;
     tivxDisplayParams   *dispPrms = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&dispPrms, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&dispPrms, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDisplayControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == dispPrms) ||
-            (sizeof(tivxDisplayParams) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDisplayControl: Invalid Object Size\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDisplayControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == dispPrms) ||
+        (sizeof(tivxDisplayParams) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDisplayControl: Invalid Object Size\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -704,7 +707,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     int32_t fvid2_status = FVID2_SOK;
     tivxDisplayParams *displayParams = NULL;
     tivx_obj_desc_image_t *obj_desc_image;
-    void *image_target_ptr1, *image_target_ptr2;
+    void *image_target_ptr1, *image_target_ptr2 = NULL;
     uint32_t size;
     Fvid2_FrameList frmList;
     Fvid2_Frame *frm;
@@ -885,7 +888,10 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                     VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
 
-                memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
+                if (NULL != image_target_ptr2)
+                {
+                    memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
+                }
 
                 tivxMemBufferUnmap(
                     displayParams->copyImagePtr[displayParams->currIdx][1],

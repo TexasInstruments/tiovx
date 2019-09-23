@@ -628,23 +628,20 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
     uint32_t                          size;
     tivxVpacNfBilateralObj             *nf_bilateral_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&nf_bilateral_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&nf_bilateral_obj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralControl: Failed to get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == nf_bilateral_obj) ||
-            (sizeof(tivxVpacNfBilateralObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralControl: Wrong Size for Nf Bilateral Obj\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfBilateralControl: Failed to get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == nf_bilateral_obj) ||
+        (sizeof(tivxVpacNfBilateralObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfBilateralControl: Wrong Size for Nf Bilateral Obj\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -941,13 +938,16 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
         }
         else {
             for (i = 0; i < LUT_ROWS * lutSize; i++) {
-                i_wt_lut_full[i] = (uint32_t)((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1) + 0.5);
+                if (0 != max)
+                {
+                    i_wt_lut_full[i] = (uint32_t)((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1) + 0.5);
+                }
             }
         }
     }
 
     /* In case spatial lut needs to be generated separatly */
-    if (i_wt_lut_spatial){
+    if (i_wt_lut_spatial && i_wt_lut_full){
         memset(i_wt_lut_spatial, 0, LUT_ROWS * sizeof(i_wt_lut_spatial[0]));
         for (row = 0; row < lut_h; row++)
         {
@@ -961,7 +961,7 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTab
     uint32_t rangeLutEntries)
 {
     uint32_t *oldLut = *i_lut;
-    uint32_t newLut[LUT_ROWS*256];
+    uint32_t newLut[LUT_ROWS*256] = {0};
     uint32_t i, j;
 
     for (j = 0; j < numTables; j++)

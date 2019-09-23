@@ -107,15 +107,14 @@ static vx_status dump_binary_to_file(vx_image image, uint32_t width, uint32_t he
             pFile = fopen(full_filename,"wb");
 
             if (pFile){
-                fwrite(data_ptr, image_addr.stride_y * image_addr.dim_y, 1, pFile);
+                fwrite(data_ptr, image_addr.stride_y * image_addr.dim_y, 1, pFile);    
+                fclose(pFile);
             }
             else
             {
                 status = VX_FAILURE;
                 printf(" ERROR: Failed to open file %s!\n", filename);
             }
-    
-            fclose(pFile);
         }
         else
         {

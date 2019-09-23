@@ -251,11 +251,14 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
             (vx_reference)sample_nv12_img, NUM_CAPT_CHANNELS),
             VX_TYPE_OBJECT_ARRAY);
 
+        if (NULL != viss_out_frames)
+        {
+            /* Get one NV12 image for VISS and Display initialization */
+            ASSERT_VX_OBJECT(viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0), VX_TYPE_IMAGE);
+        }
+
         /* Sample image is no longer required */
         VX_CALL(vxReleaseImage(&sample_nv12_img));
-
-        /* Get one NV12 image for VISS and Display initialization */
-        viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0);
 
         memset(&viss_params, 0, sizeof(tivx_vpac_viss_params_t));
         ASSERT_VX_OBJECT(configuration =

@@ -54,12 +54,14 @@ vx_status tivxMemBufferAlloc(
             case TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
+            /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
                 break;
         }
 
+        /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
         if (VX_SUCCESS == status)
         {
             mem_ptr->host_ptr = (uintptr_t)appMemAlloc(

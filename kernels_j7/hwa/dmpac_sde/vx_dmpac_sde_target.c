@@ -693,23 +693,20 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
     uint32_t                          size;
     tivxDmpacSdeObj                  *sde_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&sde_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&sde_obj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-		    VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacSdeControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == sde_obj) ||
-            (sizeof(tivxDmpacSdeObj) != size))
-        {
-		    VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+	    VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == sde_obj) ||
+        (sizeof(tivxDmpacSdeObj) != size))
+    {
+	    VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)

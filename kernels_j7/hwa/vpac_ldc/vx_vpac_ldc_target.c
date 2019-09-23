@@ -647,22 +647,19 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
     uint32_t                          size;
     tivxVpacLdcObj                   *ldc_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&ldc_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&ldc_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != ldc_obj) &&
-            (sizeof(tivxVpacLdcObj) == size))
-        {
-            status = VX_SUCCESS;
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacLdcControl: Failed to get Target Kernel\n");
-            status = VX_FAILURE;
-        }
+    if ((VX_SUCCESS == status) && (NULL != ldc_obj) &&
+        (sizeof(tivxVpacLdcObj) == size))
+    {
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacLdcControl: Failed to get Target Kernel\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)

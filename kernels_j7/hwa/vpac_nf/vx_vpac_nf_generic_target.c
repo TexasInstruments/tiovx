@@ -710,23 +710,20 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
     uint32_t                          size;
     tivxVpacNfGenericObj             *nf_generic_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&nf_generic_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&nf_generic_obj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfGenericControl: Failed to get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == nf_generic_obj) ||
-            (sizeof(tivxVpacNfGenericObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfGenericControl: Failed to get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == nf_generic_obj) ||
+        (sizeof(tivxVpacNfGenericObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)

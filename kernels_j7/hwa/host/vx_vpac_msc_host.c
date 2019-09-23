@@ -414,9 +414,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
     vx_uint32 in_img_w, in_img_h;
 
     vx_image out_img[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT] = {NULL};
-    vx_df_image out_img_fmt[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
-    vx_uint32 out_img_w[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
-    vx_uint32 out_img_h[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    vx_df_image out_img_fmt[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT] = {VX_DF_IMAGE('0','0','0','0')};
+    vx_uint32 out_img_w[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT] = {0};
+    vx_uint32 out_img_h[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT] = {0};
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
         (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||

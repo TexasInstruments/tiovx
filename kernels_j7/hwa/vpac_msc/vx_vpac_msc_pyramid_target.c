@@ -626,6 +626,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         }
         else
         {
+            status = VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscPmdCreate: Failed to allocate Event\n");
         }
@@ -988,23 +989,20 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
     uint32_t             size;
     tivxVpacMscPmdObj *msc_obj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&msc_obj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&msc_obj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == msc_obj) ||
-            (sizeof(tivxVpacMscPmdObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdControl: Invalid Object Size\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacMscPmdControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == msc_obj) ||
+        (sizeof(tivxVpacMscPmdObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacMscPmdControl: Invalid Object Size\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -1298,7 +1296,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
         msc_obj->num_pmd_subsets = num_subsets;
     }
 
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != msc_obj))
     {
         /* Now, set the scaler information for each pyramid subset */
         for (cnt = 0u; cnt < msc_obj->num_pmd_subsets; cnt ++)

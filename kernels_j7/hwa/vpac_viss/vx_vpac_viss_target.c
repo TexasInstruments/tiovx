@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
 static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj);
 static void tivxVpacVissFreeObject(tivxVpacVissInstObj *instObj,
     tivxVpacVissObj *vissObj);
-static vx_status tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
+static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
     tivx_obj_desc_raw_image_t *raw_img_desc);
 static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
     tivx_vpac_viss_params_t *vissPrms,
@@ -428,14 +428,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
         /* Set the input image format and number of inputs from
          * raw image descriptor */
-        status = tivxVpacVissSetInputParams(vissObj, raw_img_desc);
+        tivxVpacVissSetInputParams(vissObj, raw_img_desc);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissCreate: Failed to set Input Params\n");
-        }
-        else
         {
             /* Set the output image format from the output images
              * this function also maps the vx_image format to
@@ -531,12 +525,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Unmap descriptor memories */
-    if ( (VX_SUCCESS == status) && (NULL != vissObj))
+    if (VX_SUCCESS == status)
     {
         /* If the target pointer is non null, descriptor is also non null,
          * Even if there is any error, if this pointer is non-null,
          * unmap must be called */
-        if (NULL != vissObj->aewb_res_target_ptr)
+        if ((NULL != aewb_res_desc) && (NULL != vissObj->aewb_res_target_ptr))
         {
             tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr,
                 aewb_res_desc);
@@ -895,7 +889,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     {
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        /* TODO: Figure out how to calculate pixels here */
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
             cur_time,
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
@@ -935,23 +928,20 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
     uint32_t                          size;
     tivxVpacVissObj                  *vissObj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&vissObj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&vissObj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == vissObj) ||
-            (sizeof(tivxVpacVissObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissControl: Incorrect Object Size\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacVissControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == vissObj) ||
+        (sizeof(tivxVpacVissObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacVissControl: Incorrect Object Size\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -1004,8 +994,11 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
         }
     }
 
-    /* Initialize few members to values, other than 0 */
-    vissObj->lastH3aInSrc = RFE_H3A_IN_SEL_MAX;
+    if (NULL != vissObj)
+    {
+        /* Initialize few members to values, other than 0 */
+        vissObj->lastH3aInSrc = RFE_H3A_IN_SEL_MAX;
+    }
 
     /* Release instance mutex */
     tivxMutexUnlock(instObj->lock);
@@ -1121,10 +1114,9 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
     return (status);
 }
 
-static vx_status tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
+static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
     tivx_obj_desc_raw_image_t *raw_img_desc)
 {
-    vx_status            status = VX_SUCCESS;
     Fvid2_Format        *fmt;
     Vhwa_M2mVissParams  *vissDrvPrms;
 
@@ -1162,34 +1154,26 @@ static vx_status tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
         case TIVX_RAW_IMAGE_P12_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
+    }
+
+    vissObj->num_in_buf = 1u;
+    switch (vissDrvPrms->inputMode)
+    {
+        case VHWA_M2M_VISS_MODE_SINGLE_FRAME_INPUT:
+            vissObj->num_in_buf = 1u;
+            break;
+        case VHWA_M2M_VISS_MODE_TWO_FRAME_MERGE:
+            vissObj->num_in_buf = 2u;
+            break;
+        case VHWA_M2M_VISS_MODE_THREE_FRAME_MERGE:
+            vissObj->num_in_buf = 3u;
+            break;
         default:
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetInputParams: Invalid Input Format\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            vissObj->num_in_buf = 1u;
             break;
     }
 
-    if (VX_SUCCESS == status)
-    {
-        vissObj->num_in_buf = 1u;
-        switch (vissDrvPrms->inputMode)
-        {
-            case VHWA_M2M_VISS_MODE_SINGLE_FRAME_INPUT:
-                vissObj->num_in_buf = 1u;
-                break;
-            case VHWA_M2M_VISS_MODE_TWO_FRAME_MERGE:
-                vissObj->num_in_buf = 2u;
-                break;
-            case VHWA_M2M_VISS_MODE_THREE_FRAME_MERGE:
-                vissObj->num_in_buf = 3u;
-                break;
-            default:
-                vissObj->num_in_buf = 1u;
-                break;
-        }
-    }
-
-    return (status);
+    return;
 }
 
 static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt)

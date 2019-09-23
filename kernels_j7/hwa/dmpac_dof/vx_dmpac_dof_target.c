@@ -837,23 +837,20 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     uint32_t                          size;
     tivxDmpacDofObj                   *dofObj = NULL;
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&dofObj, &size);
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&dofObj, &size);
 
-        if (VX_SUCCESS != status)
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacDofControl: Failed to Get Target Kernel Instance Context\n");
-        }
-        else if ((NULL == dofObj) ||
-            (sizeof(tivxDmpacDofObj) != size))
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacDofControl: Invalid Input\n");
-            status = VX_FAILURE;
-        }
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacDofControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == dofObj) ||
+        (sizeof(tivxDmpacDofObj) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacDofControl: Invalid Input\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -995,16 +992,16 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     input_curr_desc = (tivx_obj_desc_pyramid_t *)
                         obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
 
+    input_curr_base_desc = (tivx_obj_desc_image_t *)
+                    obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
+
     tivxGetObjDescList(input_curr_desc->obj_desc_id,
                        (tivx_obj_desc_t**)img_current_desc,
                        input_curr_desc->num_levels);
 
-    if(NULL != obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX])
+    if(NULL != input_curr_base_desc)
     {
         /* Information is in base input */
-        input_curr_base_desc = (tivx_obj_desc_image_t *)
-                        obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
-
         dofPrms->tPrmdLvl = input_curr_desc->num_levels + 1;
 
         dofPrms->coreCfg.width = input_curr_base_desc->imagepatch_addr[0U].dim_x;
@@ -1082,8 +1079,8 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
         dofPrms->inOutImgFmt[0][DOF_INPUT_SOF].pitch[0U] = 0u;
     }
 
-    if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1 ||
-       DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2)
+    if((DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1) ||
+       (DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2))
     {
         dofPrms->inOutImgFmt[0][DOF_INPUT_TEMPORAL_PRED].pitch[0U] =
                                     fv_out_desc->imagepatch_addr[0].stride_y;
@@ -1109,7 +1106,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
         /* Set for reference and current image */
         fmt = &dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_CURRENT_IMG];
 
-        if(NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX])
+        if(NULL == input_curr_base_desc)
         {
             tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt]);
 

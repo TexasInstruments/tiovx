@@ -109,6 +109,7 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
     if( capacity != sizeof(sTIDL_IOBufDesc_t) )
     {
         printf("ERROR: Config file size (%d bytes) does not match size of sTIDL_IOBufDesc_t (%d bytes)\n", capacity, (vx_uint32)sizeof(sTIDL_IOBufDesc_t));
+        fclose(fp_config);
         return NULL;
     }
 
@@ -126,8 +127,9 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
         {
             if(tidlParams == NULL)
             {
-              printf("ERROR: Map of config object failed\n");
-              return NULL;
+                printf("ERROR: Map of config object failed\n");
+                fclose(fp_config);
+                return NULL;
             }
 
             tivx_tidl_j7_params_init(tidlParams);
@@ -150,6 +152,14 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
             printf("Finished reading IO config file of %d bytes, num_input_tensors = %d, num_output_tensors = %d\n", capacity, *num_input_tensors, *num_output_tensors);
             #endif
         }
+        else
+        {
+            fclose(fp_config);
+        }
+    }
+    else
+    {
+        fclose(fp_config);
     }
 
     return config;
@@ -575,7 +585,7 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 {
     vx_status status = VX_SUCCESS;
     float score[5];
-    vx_uint32 classid[5];
+    vx_uint32 classid[5] = {0};
 
     vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
 
