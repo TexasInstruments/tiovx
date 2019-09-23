@@ -322,37 +322,53 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_FORMAT\n");
         }
 
-        if (input_current_w != flow_vector_out_w)
+        if (NULL == sparse_of_map)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
+            if (input_current_w != flow_vector_out_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (input_current_h != flow_vector_out_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
         }
-        if (input_current_h != flow_vector_out_h)
+        else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
+            if (input_current_w < flow_vector_out_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'input_current' width should be greater that or equal to 'flow_vector_out' width\n");
+            }
+            if (input_current_h < flow_vector_out_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'input_current' height should be greater that or equal to 'flow_vector_out' height\n");
+            }
         }
 
         if (NULL != flow_vector_in)
         {
-            if (flow_vector_in_w != input_current_w)
+            if (flow_vector_in_w != flow_vector_out_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'input_current' should have the same value for VX_IMAGE_WIDTH\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
             }
-            if (flow_vector_in_h != input_current_h)
+            if (flow_vector_in_h != flow_vector_out_h)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'input_current' should have the same value for VX_IMAGE_HEIGHT\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
 
         if (NULL != sparse_of_map)
         {
-            if (sparse_of_map_w != input_current_w)
+            if (sparse_of_map_w*8 != input_current_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'sparse_of_map' and 'input_current' should have the same value for VX_IMAGE_WIDTH\n");
+                VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' width should be == 'input_current' width / 8\n");
             }
             if (sparse_of_map_h != input_current_h)
             {

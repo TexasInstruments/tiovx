@@ -312,7 +312,7 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
  *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
  * \param [in] sparse_of_map (optional) Sparse OF bit-mask of size
- *             base_width/8 x base_height x 1bpp.
+ *             Size of image is base_width/8 x base_height.
  *             Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
  * \param [out] flow_vector_out Flow vector output.
  *             Size of image is base_width x base_height x size of data format.

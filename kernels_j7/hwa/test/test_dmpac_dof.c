@@ -111,6 +111,102 @@ static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confiden
     return status;
 }
 
+/*
+    test_num=
+    0: Every line has 1/4 of original pixels (alternating lines have different mask pixel positions)
+    1: Even lines have 1/4 of original pixels, odd lines have 0 pixels (odd lines are trash data in HW, SW should ignore, or don't do this)
+    2: 2 lines have 1/4 of original pixels, alternating 2 lines have 0 pixels
+*/
+static void initialize_sof_mask(vx_image sof_mask, uint32_t width, uint32_t height, uint32_t *flow_width, uint32_t *flow_height, uint32_t test_num)
+{
+    vx_rectangle_t              rect;
+    vx_imagepatch_addressing_t  image_addr;
+    vx_map_id                   map_id;
+    uint8_t                    *data_ptr;
+    int                         i, j;
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+    rect.end_x = width;
+    rect.end_y = height;
+
+    if(NULL != sof_mask)
+    {
+        VX_CALL(vxMapImagePatch(sof_mask,
+            &rect,
+            0,
+            &map_id,
+            &image_addr,
+            (void**) &data_ptr,
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            ));
+
+        for(j = 0; j < height; j+=4)
+        {
+            /* Line 0 */
+            for(i = 0; i < width; i++)
+            {
+                data_ptr[j*image_addr.stride_y + i] = (uint8_t)0x11; /* 2/8 : Every 4th pixel even lines */
+            }
+
+            /* Line 1 */
+            for(i = 0; i < width; i++)
+            {
+                if(test_num == 0 || test_num == 2)
+                {
+                    data_ptr[(j+1)*image_addr.stride_y + i] = (uint8_t)0x18; /* 2/8 : 2 pixels next to each other odd lines*/
+                }
+                else if (test_num == 1)
+                {
+                    data_ptr[(j+1)*image_addr.stride_y + i] = (uint8_t)0x0; /* 0/8 : empty odd lines*/
+                }
+            }
+
+            /* Line 2 */
+            for(i = 0; i < width; i++)
+            {
+                if(test_num == 0 || test_num == 1)
+                {
+                    data_ptr[(j+2)*image_addr.stride_y + i] = (uint8_t)0x11; /* 2/8 : Every 4th pixel even lines */
+                }
+                else if(test_num == 2)
+                {
+                    data_ptr[(j+2)*image_addr.stride_y + i] = (uint8_t)0x0; /* 0/8 : empty odd lines*/
+                }
+            }
+
+            /* Line 3 */
+            for(i = 0; i < width; i++)
+            {
+                if(test_num == 0)
+                {
+                    data_ptr[(j+3)*image_addr.stride_y + i] = (uint8_t)0x18; /* 2/8 : 2 pixels next to each other odd lines*/
+                }
+                else if(test_num == 1 || test_num == 2)
+                {
+                    data_ptr[(j+3)*image_addr.stride_y + i] = (uint8_t)0x0; /* 0/8 : empty odd lines*/
+                }
+            }
+        }
+
+        VX_CALL(vxUnmapImagePatch(sof_mask, map_id));
+
+        *flow_width = width * 8 / 4;
+        if(test_num == 2)
+        {
+            *flow_height = height/2;
+        }
+        else
+        {
+            *flow_height = height;
+        }
+    }
+
+    return;
+}
+
 typedef struct {
     const char* testName;
     int median_filter;
@@ -119,6 +215,7 @@ typedef struct {
     int horizontal_range;
     int iir_filter;
     int enable_lk;
+    int enable_sof;
 } Arg;
 
 static uint32_t dof_checksums_ref[3*3*3*3*2*2] = {
@@ -250,8 +347,12 @@ static uint32_t get_checksum(uint16_t median, uint16_t motion, uint16_t vert,
     CT_EXPAND(nextmacro(testArgName "/enable_lk=OFF", __VA_ARGS__, 0)), \
     CT_EXPAND(nextmacro(testArgName "/enable_lk=ON", __VA_ARGS__, 1))
 
+#define ADD_ENABLE_SOF(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/enable_sof=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/enable_sof=ON", __VA_ARGS__, 1))
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("dof_real_input", ADD_MEDIAN_FILTER, ADD_MOTION_SMOOTHNESS_FACTOR, ADD_VERTICAL_SEARCH_RANGE, ADD_HORIZONTAL_SEARCH_RANGE, ADD_IIR_FILTER_ALPHA, ADD_ENABLE_LK, ARG)
+    CT_GENERATE_PARAMETERS("dof_real_input", ADD_MEDIAN_FILTER, ADD_MOTION_SMOOTHNESS_FACTOR, ADD_VERTICAL_SEARCH_RANGE, ADD_HORIZONTAL_SEARCH_RANGE, ADD_IIR_FILTER_ALPHA, ADD_ENABLE_LK, ADD_ENABLE_SOF, ARG)
 
 
 TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
@@ -262,6 +363,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     vx_pyramid input_current = NULL, input_reference = NULL;
     vx_image flow_vector_in = NULL, flow_vector_out = NULL;
     vx_image flow_vector_out_img = NULL, confidence_img = NULL;
+    vx_image sof_mask = NULL;
     vx_distribution confidence_histogram = NULL;
     tivx_dmpac_dof_params_t params;
     vx_user_data_object param_obj;
@@ -280,12 +382,10 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
         uint32_t width = 256, height = 128;
+        uint32_t flow_width = width;
+        uint32_t flow_height = height;
         uint32_t levels = 2, i;
         vx_enum format = VX_DF_IMAGE_U8;
-        rect.start_x = 0;
-        rect.start_y = 0;
-        rect.end_x = width;
-        rect.end_y = height;
 
         tivxHwaLoadKernels(context);
 
@@ -305,19 +405,26 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         {
             flowVectorType = VX_DF_IMAGE_U16;
         }
+        if(arg_->enable_sof == 1)
+        {
+            ASSERT_VX_OBJECT(sof_mask = vxCreateImage(context, width/8, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+            initialize_sof_mask(sof_mask, width/8, height, &flow_width, &flow_height, 2);
+            params.sof_max_pix_in_row = flow_width;
+            params.sof_fv_height = flow_height;
+        }
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
-        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
         if(arg_->enable_lk == 1)
         {
-            ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-            ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, flow_width, flow_height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, flow_width, flow_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         }
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -329,7 +436,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
                         input_current,
                         input_reference,
                         flow_vector_in,
-                        NULL,
+                        sof_mask,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
@@ -377,6 +484,11 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
             ASSERT(status==VX_SUCCESS);
         }
 
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = flow_width;
+        rect.end_y = height;
+
         checksum_expected = get_checksum(arg_->median_filter, arg_->motion_smoothness, arg_->vertical_range,
             arg_->horizontal_range, arg_->iir_filter, arg_->enable_lk);
         printf(" Expected checksum: %x\n", checksum_expected);
@@ -390,6 +502,10 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
             VX_CALL(vxReleaseNode(&node_dof_vis));
             VX_CALL(vxReleaseImage(&flow_vector_out_img));
             VX_CALL(vxReleaseImage(&confidence_img));
+        }
+        if(arg_->enable_sof == 1)
+        {
+            VX_CALL(vxReleaseImage(&sof_mask));
         }
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));
@@ -406,6 +522,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         ASSERT(input_reference == 0);
         ASSERT(flow_vector_in == 0);
         ASSERT(flow_vector_out == 0);
+        ASSERT(sof_mask == 0);
         ASSERT(confidence_histogram == 0);
         ASSERT(param_obj == 0);
 

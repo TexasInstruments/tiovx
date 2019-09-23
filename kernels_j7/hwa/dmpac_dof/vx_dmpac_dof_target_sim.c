@@ -107,6 +107,8 @@ typedef struct {
     int pyramid_size[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS][2];
     int confidence_histogram[TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS];
     DOFParams dofParams;
+    int sof_max_pix_in_row;
+    int sof_fv_height;
 } tivxDmpacDofParams;
 
 #endif
@@ -141,6 +143,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
 static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
                         tivx_dmpac_dof_params_t *params);
 
+static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t sof_mask_stride);
 
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
 {
@@ -518,6 +521,11 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
 #endif
 
+        if( sparse_of_map_desc != NULL)
+        {
+            dof_sof(prms, (uint8_t *)sparse_of_map_target_ptr, sparse_of_map_desc->imagepatch_addr[0].stride_y);
+        }
+
         /* kernel processing function complete */
 
         /* copy output */
@@ -667,6 +675,8 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.confidenceFeatureIIRFilterCoeffQ8 = params->iir_filter_alpha ;
             prms->dofParams.baseLevelConfidenceScorePacked = params->enable_lk ;
             prms->dofParams.model[0] = '\0';
+            prms->sof_max_pix_in_row = params->sof_max_pix_in_row;
+            prms->sof_fv_height = params->sof_fv_height;
 
             tivxDmpacDofSetPredictors(prms, params);
 
@@ -961,3 +971,87 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
     /* Set top layer (1 is fixed in driver, so we will match it here) */
     prms->dofParams.topLayerPredictorConfiguration[DELAYED_LEFT] = 1;
 }
+
+static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t sof_mask_stride)
+{
+    vx_status status = VX_SUCCESS;
+    int i, j, k, bitCnt;
+
+    int *input_ptr = prms->current_prediction;
+    int *output_ptr = prms->current_prediction;
+    int width = prms->pyramid_size[0][1];
+    int height = prms->pyramid_size[0][0];
+    int flow_width = prms->sof_max_pix_in_row;
+    int flow_height = prms->sof_fv_height;
+    uint32_t out_line_cnt = 0;
+
+    if(prms->current_prediction != NULL)
+    {
+        for(j = 0; j<height; j+=2)
+        {
+            uint32_t flag_valid_line = 0;
+
+            for(i=0; i<width/8; i++)
+            {
+                /* Check if there are any outputs on this line */
+                if(sof_mask[j*sof_mask_stride + i])
+                {
+                    flag_valid_line = 1;
+                    break;
+                }
+                if(sof_mask[(j+1)*sof_mask_stride + i])
+                {
+                    flag_valid_line = 1;
+                    break;
+                }
+            }
+
+            if(flag_valid_line)
+            {
+                for(k=0; k<2; k++)
+                {
+                    uint32_t col_cnt = 0;
+
+                    for(i=0; i<width/8; i++)
+                    {
+                        uint8_t maskVal = sof_mask[(j+k)*sof_mask_stride + i];
+
+                        for(bitCnt=0; bitCnt<8; bitCnt++)
+                        {
+                            if(col_cnt < flow_width)
+                            {
+                                if(maskVal & 1)
+                                {
+                                    output_ptr[flow_width*out_line_cnt + col_cnt] = input_ptr[(j+k)*width + (i*8) + bitCnt];
+                                    col_cnt++;
+                                }
+                                maskVal >>= 1;
+                            }
+                        }
+                    }
+                    for(;col_cnt < flow_width; col_cnt++)
+                    {
+                        output_ptr[flow_width*out_line_cnt + col_cnt] = 0;
+                    }
+                    out_line_cnt++;
+
+                    if(out_line_cnt >= flow_height)
+                    {
+                        break;
+                    }
+                }
+            }
+            if(out_line_cnt >= flow_height)
+            {
+                break;
+            }
+        }
+    }
+    else
+    {
+        status = VX_FAILURE;
+    }
+
+    return status;
+}
+
