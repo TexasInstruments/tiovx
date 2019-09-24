@@ -408,13 +408,27 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should both be NULL or not NULL !!!\n");
         }
 
-        if(input_current_levels > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
+        if( input_current_base == NULL )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of pyramid levels %d exceeds max supported values of %d !!!\n",
-                input_current_levels,
-                TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
-                );
+            if (input_current_levels > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of total pyramid levels %d exceeds max supported values of %d !!!\n",
+                    input_current_levels,
+                    TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
+                    );
+            }
+        }
+        else
+        {
+            if ( (input_current_levels+1) > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of total pyramid levels %d exceeds max supported values of %d !!!\n",
+                    input_current_levels+1,
+                    TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
+                    );
+            }
         }
 
         if(input_current_scale != VX_SCALE_PYRAMID_HALF )
@@ -454,11 +468,19 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
           )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH of %d %d MUST be aligned to %d pixels !!!\n",
+            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH of %d %d MUST be integer divisible by %d pixels !!!\n",
                 input_current_w,
                 input_current_h,
                 1U<<(uint32_t)input_current_levels
                 );
+        }
+
+        if( (input_current_w / (1U<<((uint32_t)input_current_levels-1U)) < 32U) ||
+            (input_current_h / (1U<<((uint32_t)input_current_levels-1U)) < 16U)
+          )
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: The highest level must have minimum dimensions WxH of 32x16 !!!\n");
         }
 
         if(confidence_histogram != NULL)
@@ -479,6 +501,48 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
+
+        if((params.inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
+           (params.inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL is not a supported option for configuration.inter_predictor[n]\n");
+        }
+
+        if((params.base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
+           (params.base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+        {
+            if (NULL == flow_vector_in)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_in' is NULL\n");
+                VX_PRINT(VX_ZONE_ERROR, "   'flow_vector_in' should be non-NULL when temporal prediction is enabled\n");
+            }
+
+            if (NULL != sparse_of_map)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'sparse_of_map' is not NULL\n");
+                VX_PRINT(VX_ZONE_ERROR, "   Sparse optical flow is not supported when temporal prediction is enabled\n");
+            }
+
+            if (VX_DF_IMAGE_U16 == flow_vector_out_fmt)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_out_fmt' is VX_DF_IMAGE_U16\n");
+                VX_PRINT(VX_ZONE_ERROR, "   'flow_vector_out' format of VX_DF_IMAGE_U16 is not supported when temporal prediction is enabled\n");
+            }
+        }
+        else
+        {
+            if (NULL != flow_vector_in)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter 'flow_vector_in' is non-NULL, but configuration.base_predictor[n] set not set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL\n");
+                VX_PRINT(VX_ZONE_ERROR, "   If temporal prediction is disabled, then 'flow_vector_in' should be NULL\n");
+            }
+        }
+
         if ((62U < params.vertical_search_range[0U]) ||
             (62U < params.vertical_search_range[1U]))
         {

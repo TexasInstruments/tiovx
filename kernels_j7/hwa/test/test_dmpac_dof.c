@@ -207,6 +207,66 @@ static void initialize_sof_mask(vx_image sof_mask, uint32_t width, uint32_t heig
     return;
 }
 
+static vx_status copy_flow_image(vx_image in_image, uint32_t width, uint32_t height, vx_image out_image)
+{
+    vx_status                   status = VX_FAILURE;
+    vx_rectangle_t              rect;
+    vx_imagepatch_addressing_t  in_image_addr;
+    vx_imagepatch_addressing_t  out_image_addr;
+    vx_map_id                   in_map_id;
+    vx_map_id                   out_map_id;
+    uint32_t                   *in_data_ptr;
+    uint32_t                   *out_data_ptr;
+
+    int                         i, j;
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+    rect.end_x = width;
+    rect.end_y = height;
+
+    if(NULL != out_image)
+    {
+        status = vxMapImagePatch(in_image,
+            &rect,
+            0,
+            &in_map_id,
+            &in_image_addr,
+            (void**) &in_data_ptr,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        status |= vxMapImagePatch(out_image,
+            &rect,
+            0,
+            &out_map_id,
+            &out_image_addr,
+            (void**) &out_data_ptr,
+            VX_READ_AND_WRITE,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        if (VX_SUCCESS == status)
+        {
+            for(j = 0; j < height; j++)
+            {
+                for(i = 0; i < width; i++)
+                {
+                    out_data_ptr[j*out_image_addr.stride_y/4 + i] = in_data_ptr[j*in_image_addr.stride_y/4 + i];
+                }
+            }
+        }
+
+        status |= vxUnmapImagePatch(in_image, in_map_id);
+        status |= vxUnmapImagePatch(out_image, out_map_id);
+    }
+
+    return status;
+}
+
 typedef struct {
     const char* testName;
     int median_filter;
@@ -344,8 +404,8 @@ static uint32_t get_checksum(uint16_t median, uint16_t motion, uint16_t vert,
     CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=255", __VA_ARGS__, 255))
 
 #define ADD_ENABLE_LK(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/enable_lk=OFF", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/enable_lk=ON", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/flow_type=U16", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/flow_type=U32", __VA_ARGS__, 1))
 
 #define ADD_ENABLE_SOF(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/enable_sof=OFF", __VA_ARGS__, 0)), \
@@ -420,7 +480,6 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
-        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
@@ -438,7 +497,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
                         NULL,
                         input_current,
                         input_reference,
-                        flow_vector_in,
+                        NULL,
                         sof_mask,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);
@@ -480,17 +539,19 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         }
         VX_CALL(vxProcessGraph(graph));
 
+#if 0 /* Disabling file output writes */
         if(arg_->enable_lk == 1)
         {
             sprintf(output_file, "output/tivx_test_ofTestCase1_%d_%d", arg_->median_filter, arg_->motion_smoothness);
             status = save_image_from_dof(flow_vector_out_img, confidence_img, output_file);
             ASSERT(status==VX_SUCCESS);
         }
+#endif
 
         rect.start_x = 0;
         rect.start_y = 0;
         rect.end_x = flow_width;
-        rect.end_y = height;
+        rect.end_y = flow_height;
 
         checksum_expected = get_checksum(arg_->median_filter, arg_->motion_smoothness, arg_->vertical_range,
             arg_->horizontal_range, arg_->iir_filter, arg_->enable_lk);
@@ -513,7 +574,6 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));
         VX_CALL(vxReleasePyramid(&input_reference));
-        VX_CALL(vxReleaseImage(&flow_vector_in));
         VX_CALL(vxReleaseImage(&flow_vector_out));
         VX_CALL(vxReleaseDistribution(&confidence_histogram));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
@@ -532,6 +592,182 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         tivxHwaUnLoadKernels(context);
     }
 }
+
+typedef struct {
+    const char* testName;
+    int inter_predictor2;
+    int inter_predictor1;
+    int base_predictor2;
+    int base_predictor1;
+} ArgPredictors;
+
+#define ADD_BASE_PRED1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL)),   \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+
+#define ADD_BASE_PRED2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL)),   \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+
+#define ADD_INTER_PRED1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred1=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred1=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred1=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+
+#define ADD_INTER_PRED2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred2=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred2=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred2=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+
+#define PREDICTOR_PARAMETERS \
+    CT_GENERATE_PARAMETERS("dof_real_input", ADD_INTER_PRED2, ADD_INTER_PRED1, ADD_BASE_PRED2, ADD_BASE_PRED1, ARG)
+
+TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
+    PREDICTOR_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_pyramid input_current = NULL, input_reference = NULL;
+    vx_image flow_vector_in = NULL, flow_vector_out = NULL;
+    vx_image flow_vector_out_img = NULL, confidence_img = NULL;
+    vx_image sof_mask = NULL;
+    vx_distribution confidence_histogram = NULL;
+    tivx_dmpac_dof_params_t params;
+    vx_user_data_object param_obj;
+    vx_user_data_object cs_obj;
+    vx_graph graph = 0;
+    vx_node node_dof = 0;
+    vx_node node_dof_vis = 0;
+    vx_status status;
+    vx_rectangle_t rect;
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    char output_file[256];
+    vx_reference ref[1];
+    vx_enum flowVectorType = VX_DF_IMAGE_U32;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    {
+        uint32_t width = 256, height = 128;
+        uint32_t flow_width = width;
+        uint32_t flow_height = height;
+        uint32_t levels = 3, i;
+        uint32_t temporal_pred_flag = 0;
+        vx_enum format = VX_DF_IMAGE_U8;
+
+        tivxHwaLoadKernels(context);
+
+        tivx_dmpac_dof_params_init(&params);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        params.base_predictor[0] = arg_->base_predictor1;
+        params.base_predictor[1] = arg_->base_predictor2;
+        params.inter_predictor[0] = arg_->inter_predictor1;
+        params.inter_predictor[1] = arg_->inter_predictor2;
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+
+        if((params.base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
+           (params.base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+        {
+            temporal_pred_flag = 1;
+            ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
+        }
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
+                        param_obj,
+                        NULL,
+                        NULL,
+                        input_current,
+                        input_reference,
+                        flow_vector_in,
+                        NULL,
+                        flow_vector_out,
+                        confidence_histogram), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        /* Configure confidence score tree params */
+        {
+            tivx_dmpac_dof_cs_tree_params_t cs_tree_params;
+            tivx_dmpac_dof_cs_tree_params_init(&cs_tree_params);
+
+            ASSERT_VX_OBJECT(cs_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_cs_tree_params_t",
+                                                sizeof(tivx_dmpac_dof_cs_tree_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            VX_CALL(vxCopyUserDataObject(cs_obj, 0, sizeof(tivx_dmpac_dof_cs_tree_params_t), &cs_tree_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+            ref[0] = (vx_reference) cs_obj;
+            VX_CALL(tivxNodeSendCommand(node_dof, 0, TIVX_DMPAC_DOF_CMD_CS_PARAMS, ref, 1));
+            VX_CALL(vxReleaseUserDataObject(&cs_obj));
+        }
+
+        for(i=0; i<levels; i++)
+        {
+            status = load_image_into_pyramid_level(input_current, i, "tivx/dof/tivx_test_ofTestCase1_10_pl");
+            ASSERT(status==VX_SUCCESS);
+            status = load_image_into_pyramid_level(input_reference, i, "tivx/dof/tivx_test_ofTestCase1_11_pl");
+            ASSERT(status==VX_SUCCESS);
+        }
+        VX_CALL(vxProcessGraph(graph));
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = flow_width;
+        rect.end_y = flow_height;
+
+        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
+        printf(" Actual checksum: %x\n", checksum_actual);
+
+        if(temporal_pred_flag == 1)
+        {
+            copy_flow_image(flow_vector_out, flow_width, flow_height, flow_vector_in);
+            VX_CALL(vxProcessGraph(graph));
+            checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
+            printf(" Actual checksum: %x\n", checksum_actual);
+            VX_CALL(vxReleaseImage(&flow_vector_in));
+        }
+
+        VX_CALL(vxReleaseNode(&node_dof));
+
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleasePyramid(&input_current));
+        VX_CALL(vxReleasePyramid(&input_reference));
+        VX_CALL(vxReleaseImage(&flow_vector_out));
+        VX_CALL(vxReleaseDistribution(&confidence_histogram));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(node_dof == 0);
+        ASSERT(node_dof_vis == 0);
+        ASSERT(graph == 0);
+        ASSERT(input_current == 0);
+        ASSERT(input_reference == 0);
+        ASSERT(flow_vector_in == 0);
+        ASSERT(flow_vector_out == 0);
+        ASSERT(sof_mask == 0);
+        ASSERT(confidence_histogram == 0);
+        ASSERT(param_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
 
 typedef struct {
     const char* testName;
@@ -924,5 +1160,5 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
 }
 
 
-TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testNegativeGraph)
+TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testPredictors, testNegativeGraph)
 

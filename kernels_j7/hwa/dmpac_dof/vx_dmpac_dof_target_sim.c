@@ -109,6 +109,8 @@ typedef struct {
     DOFParams dofParams;
     int sof_max_pix_in_row;
     int sof_fv_height;
+    int firstFrame;
+    int temporalConfig;
 } tivxDmpacDofParams;
 
 #endif
@@ -521,6 +523,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
 #endif
 
+        if(prms->firstFrame == 1)
+        {
+            prms->firstFrame = 0;
+            prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = prms->temporalConfig;
+        }
+
         if( sparse_of_map_desc != NULL)
         {
             dof_sof(prms, (uint8_t *)sparse_of_map_target_ptr, sparse_of_map_desc->imagepatch_addr[0].stride_y);
@@ -677,8 +685,12 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.model[0] = '\0';
             prms->sof_max_pix_in_row = params->sof_max_pix_in_row;
             prms->sof_fv_height = params->sof_fv_height;
+            prms->firstFrame = 1;
 
             tivxDmpacDofSetPredictors(prms, params);
+
+            /* For first frame, turn off temporal predictor */
+            prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 0;
 
             tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -935,6 +947,7 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
        (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
     {
         prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 1;
+        prms->temporalConfig = 1;
     }
 
     if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
