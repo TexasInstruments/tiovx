@@ -401,6 +401,9 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         params.iir_filter_alpha = arg_->iir_filter;
         params.enable_lk = arg_->enable_lk;
 
+        /* Turn off temporal predictor in this test ... will test in separate test */
+        params.base_predictor[0] = TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED;
+
         if(arg_->enable_lk == 0)
         {
             flowVectorType = VX_DF_IMAGE_U16;
