@@ -179,7 +179,7 @@ typedef struct {
 } Arg;
 
 #define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 100), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 2), \
 
 TEST(tivxPyramidNode, testIntermediateNodeCreation)
 {
@@ -351,7 +351,6 @@ TEST_WITH_ARG(tivxPyramidNode, testObjectArrayPyramidPipeline, Arg, STREAMING_PA
         VX_CALL(vxQueryObjectArray(out_objarr, VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items)));
 
         VX_CALL(vxQueryPyramid(out_pyr_2, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
-
         for (j = 0; j < num_items; j++)
         {
             vx_pyramid tmp_out_pyr;
