@@ -1032,16 +1032,6 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     dofPrms->bPredictor1 = dofAppPrms->base_predictor[0];
     dofPrms->bPredictor2 = dofAppPrms->base_predictor[1];
 
-    /* For first frame temporal input is not available */
-    if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2)
-    {
-        dofPrms->bPredictor2 = DOF_PREDICTOR_NONE;
-    }
-    if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1)
-    {
-        dofPrms->bPredictor1 = DOF_PREDICTOR_NONE;
-    }
-
     dofPrms->coreCfg.horizontalSearchRange = dofAppPrms->horizontal_search_range;
     dofPrms->coreCfg.topSearchRange = dofAppPrms->vertical_search_range[0];
     dofPrms->coreCfg.bottomSearchRange = dofAppPrms->vertical_search_range[1];
@@ -1167,10 +1157,19 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
         dofPrms->focoPrms.shiftM1 = 0u;
         dofPrms->focoPrms.dir = 0u;
         dofPrms->focoPrms.round = 0u;
+
+		/* For first frame temporal input is not available */
+		if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2)
+		{
+			dofPrms->bPredictor2 = DOF_PREDICTOR_NONE;
+		}
+		if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1)
+		{
+			dofPrms->bPredictor1 = DOF_PREDICTOR_NONE;
+		}
     }
 
     return;
-
 }
 
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
