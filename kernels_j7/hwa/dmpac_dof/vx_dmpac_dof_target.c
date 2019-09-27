@@ -1037,7 +1037,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     {
         dofPrms->bPredictor2 = DOF_PREDICTOR_NONE;
     }
-    else if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1)
+    if(DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1)
     {
         dofPrms->bPredictor1 = DOF_PREDICTOR_NONE;
     }
