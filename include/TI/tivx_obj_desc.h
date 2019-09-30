@@ -696,6 +696,8 @@ typedef struct _tivx_obj_desc_user_data_object
     tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief size of buffer pointed to by mem_ptr */
     volatile uint32_t mem_size;
+    /*! \brief size of valid data within the buffer */
+    volatile uint32_t valid_mem_size;
     /*! \brief The type name of the user data object. */
     volatile vx_char type_name[VX_MAX_REFERENCE_NAME];
 

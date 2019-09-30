@@ -281,6 +281,9 @@ typedef enum _tivx_attribute_extensions_e {
     /*! \brief Returns the target string corresponding to the node */
     TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x0,
 
+    /*! \brief Sets the valid data size within the user data object */
+    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1
+
 } tivx_attribute_extensions_e;
 
 
@@ -707,6 +710,23 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  */
 vx_node tivxGraphGetNode(vx_graph graph, uint32_t index);
 
+/*!
+ * \brief Sets attributes on the user data object
+ *
+ * \param [in] user_data_object  The reference to the user data object.
+ * \param [in] attribute         The attribute to modify. Use a <tt>\ref vx_user_data_object_attribute_e</tt>.
+ * \param [in] ptr               The pointer to the value to which to set the attribute.
+ * \param [in] size              The size in bytes of the container to which \a ptr points.
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS                   No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE   If the \a user_data_object is not a <tt>\ref vx_user_data_object</tt>.
+ * \retval VX_ERROR_NOT_SUPPORTED       If the \a attribute is not a value supported on this implementation.
+ * \retval VX_ERROR_INVALID_PARAMETERS  If any of the other parameters are incorrect.
+ *
+ * \ingroup group_tivx_ext_host
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size);
 
 #ifdef __cplusplus
 }

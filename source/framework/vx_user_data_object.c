@@ -150,6 +150,7 @@ static vx_status ownInitUserDataObjectObject(
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
     obj_desc->mem_size = size;
+    obj_desc->valid_mem_size = size;
 
     /* Initialize string with zeros, which safely fills with null terminators */
     obj_desc->type_name[0] = 0;
@@ -310,8 +311,58 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case TIVX_USER_DATA_OBJECT_VALID_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    *(vx_size *)ptr = obj_desc->valid_mem_size;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject: VX_USER_DATA_OBJECT_VALID_SIZE failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"query user data object option not supported\n");
+                status = VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
+    vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+
+    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == vx_false_e)
+            || (user_data_object->base.obj_desc == NULL))
+    {
+        VX_PRINT(VX_ZONE_ERROR,"vxSetUserDataObjectAttribute failed\n");
+        VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
+        switch (attribute)
+        {
+            case TIVX_USER_DATA_OBJECT_VALID_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    obj_desc->valid_mem_size = *(vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetUserDataObjectAttribute: VX_USER_DATA_OBJECT_VALID_SIZE failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "vxSetUserDataObjectAttribute: Invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
