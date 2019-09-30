@@ -2481,9 +2481,9 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
-               testGraphProcessingFileDcc,
-               testNegativeGraph,
-               testMuxNegative /*,
+               /*testGraphProcessingFileDcc,*/
+               testNegativeGraph/*,
+               testMuxNegative ,
                testMux,
                testGraphProcessing,
                testGraphProcessingRaw*/)
