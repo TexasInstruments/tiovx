@@ -66,6 +66,7 @@
 #include "test_engine/test.h"
 #include <string.h>
 #include <math.h>
+#include "tivx_utils_checksum.h"
 
 #ifndef M_PI
 #define M_PIF   3.14159265358979323846f
@@ -446,7 +447,15 @@ static vx_image mesh_create(vx_context context, int width, int height, int m)
     vx_image mesh = 0;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(table_width, table_height, VX_DF_IMAGE_U32, &CT()->seed_, 0, 256));
+            image = ct_allocate_image(table_width, table_height, VX_DF_IMAGE_U32));
+    /* Simple mesh where every output pixel maps to the input which is:
+     *   X:  8 pixels to the right (8 << 3 = 64)
+     *   Y:  16 pixels down (16 << 3 = 128)
+     */
+    CT_FILL_IMAGE_32U(return 0, image,
+        {
+            *dst_data = ((64 << 16) | 128);
+        });
 
     ASSERT_VX_OBJECT_(return 0,
             mesh = ct_image_to_vx_image(image, context), VX_TYPE_IMAGE);
@@ -486,7 +495,7 @@ typedef struct {
     CT_Image(*generator)(const char* fileName, int width, int height);
     const char* fileName;
     int src_width, src_height;
-    int width, height;
+    int out_width, out_height;
     vx_border_t border;
     vx_enum interp_type;
     int matrix_type;
@@ -530,7 +539,6 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/MESH_M1", __VA_ARGS__, 2))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_generate_random, NULL, 128, 128), \
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES_LENA, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_read_image_8u, "lena.bmp", 0, 0)
 
 #define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
@@ -555,6 +563,85 @@ typedef struct {
 #define PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
 
+static uint32_t ldc_checksums_ref[3*2*3*2*3] = {
+    0x362f22f2, 0xd6dcdec7, 0xd6dcdec7, 0x362f22f2,
+    0xd6dcdec7, 0xd6dcdec7, 0x463605cc, 0xdbcbcbf0,
+    0xdbcbcbf0, 0x463605cc, 0xdbcbcbf0, 0xdbcbcbf0,
+    0x72ae30cb, 0xcfcfdcd7, 0xcfcfdcd7, 0x72ae30cb,
+    0xcfcfdcd7, 0xcfcfdcd7, 0x2b2516c4, 0xd6dcdec7,
+    0xd6dcdec7, 0x2b2516c4, 0xd6dcdec7, 0xd6dcdec7,
+    0x4639062e, 0xdbcbcbf0, 0xdbcbcbf0, 0x4639062e,
+    0xdbcbcbf0, 0xdbcbcbf0, 0x74ab2ebd, 0xcfcfdcd7,
+    0xcfcfdcd7, 0x74ab2ebd, 0xcfcfdcd7, 0xcfcfdcd7,
+    0xc2876133, 0xb9237446, 0xb9237446, 0xc2876133,
+    0xb9237446, 0xb9237446, 0xc85d43e7, 0xf6012400,
+    0xf6012400, 0xc85d43e7, 0xf6012400, 0xf6012400,
+    0x26210e60, 0x5459597a, 0x5459597a, 0x26210e60,
+    0x5459597a, 0x5459597a, 0xaa634fd0, 0xb9237446,
+    0xb9237446, 0xaa634fd0, 0xb9237446, 0xb9237446,
+    0xc85d46d0, 0xfafb2600, 0xfafb2600, 0xc85d46d0,
+    0xfafb2600, 0xfafb2600, 0x24f65b78, 0x349b9bb2,
+    0x349b9bb2, 0x24f65b78, 0x349b9bb2, 0x349b9bb2,
+    0xde2e8367, 0x45626142, 0x45626142, 0xde2e8367,
+    0x45626142, 0x45626142, 0x4b8f8729, 0xe68094ac,
+    0xe68094ac, 0x4b8f8729, 0xe68094ac, 0xe68094ac,
+    0xde2e8367, 0x45626142, 0x45626142, 0xde2e8367,
+    0x45626142, 0x45626142, 0xfd389db2, 0x7e2f3ed8,
+    0x7e2f3ed8, 0xfd389db2, 0x7e2f3ed8, 0x7e2f3ed8,
+    0x579899f6, 0xe26696a4, 0xe26696a4, 0x579899f6,
+    0xe26696a4, 0xe26696a4, 0xfd389db2, 0x7e2f3ed8,
+    0x7e2f3ed8, 0xfd389db2, 0x7e2f3ed8, 0x7e2f3ed8
+};
+
+static uint32_t get_checksum(int out_width, vx_enum interp, int matrix, int output, int mesh)
+{
+    uint16_t a;
+    uint16_t b;
+    uint16_t c;
+    uint16_t d;
+    uint16_t e;
+
+    if (16 == out_width)
+    {
+        a = 0U;
+    }
+    else if (256 == out_width)
+    {
+        a = 1U;
+    }
+    else
+    {
+        a = 2U;
+    }
+
+    if (1 == interp)
+    {
+        b = 0U;
+    }
+    else
+    {
+        b = 1U;
+    }
+
+    if (VX_MATRIX_IDENT == matrix)
+    {
+        c = 0U;
+    }
+    else if (VX_MATRIX_ROTATE_90 == matrix)
+    {
+        c = 1U;
+    }
+    else
+    {
+        c = 2U;
+    }
+
+    d = (uint16_t) output;
+    e = (uint16_t) mesh;
+
+    return ldc_checksums_ref[(2*3*2*3*a)+(3*2*3*b)+(2*3*c)+(3*d)+e];
+}
+
 TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     PARAMETERS
 )
@@ -577,6 +664,9 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     vx_float32 m[6];
     vx_uint32 error_status;
     vx_uint16 lut_data[513];
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    vx_rectangle_t rect;
 
     CT_Image input = NULL, output = NULL, dual_out = NULL;
 
@@ -584,11 +674,15 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = arg_->out_width;
+        rect.end_y = arg_->out_height;
         tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->src_width, arg_->src_height));
-        ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
-        ASSERT_NO_FAILURE(warp_affine_generate_matrix(m, input->width, input->height, arg_->width, arg_->height, arg_->matrix_type));
+        ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->out_width, arg_->out_height, VX_DF_IMAGE_U8));
+        ASSERT_NO_FAILURE(warp_affine_generate_matrix(m, input->width, input->height, arg_->out_width, arg_->out_height, arg_->matrix_type));
         ASSERT_VX_OBJECT(matrix = warp_affine_create_matrix(context, m, 0), VX_TYPE_MATRIX);
         ASSERT_NO_FAILURE(lut_data_fill_identity(lut_data, 513));
 
@@ -600,7 +694,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
         if(arg_->output_mode == 1)
         {
-            ASSERT_NO_FAILURE(dual_out = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+            ASSERT_NO_FAILURE(dual_out = ct_allocate_image(arg_->out_width, arg_->out_height, VX_DF_IMAGE_U8));
             ASSERT_VX_OBJECT(dual_out_image = ct_image_to_vx_image(dual_out, context), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(luma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
 
@@ -610,14 +704,14 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
             }
         }
 
-        memset(&params, 0, sizeof(tivx_vpac_ldc_params_t));
+        tivx_vpac_ldc_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
                                                             sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         params.luma_interpolation_type = arg_->interp_type;
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-        memset(&region, 0, sizeof(tivx_vpac_ldc_region_params_t));
+        tivx_vpac_ldc_region_params_init(&region);
         ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t",
                                                              sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -627,13 +721,13 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(mesh_params_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_mesh_params_t",
                                                             sizeof(tivx_vpac_ldc_mesh_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        memset(&mesh_params, 0, sizeof(tivx_vpac_ldc_mesh_params_t));
+        tivx_vpac_ldc_mesh_params_init(&mesh_params);
 
         if(arg_->mesh_mode > 0)
         {
-            mesh_image = mesh_create(context, arg_->width, arg_->height, arg_->mesh_mode-1);
-            mesh_params.mesh_frame_width = arg_->width;
-            mesh_params.mesh_frame_height = arg_->height;
+            mesh_image = mesh_create(context, arg_->out_width, arg_->out_height, arg_->mesh_mode-1);
+            mesh_params.mesh_frame_width = arg_->out_width;
+            mesh_params.mesh_frame_height = arg_->out_height;
             mesh_params.subsample_factor = arg_->mesh_mode-1;
         }
 
@@ -672,6 +766,10 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         if(arg_->input_mode == 0 || arg_->input_mode == 1)
         {
             ASSERT_NO_FAILURE(output = ct_image_from_vx_image(output_image));
+            checksum_expected = get_checksum(arg_->out_width, arg_->interp_type,
+                arg_->matrix_type, arg_->output_mode, arg_->mesh_mode);
+            checksum_actual = tivx_utils_simple_image_checksum(output_image, rect);
+            ASSERT(checksum_expected == checksum_actual);
         }
 
         VX_CALL(vxReleaseNode(&node));
@@ -732,7 +830,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
     vx_matrix matrix = 0;
     tivx_vpac_ldc_params_t params;
     tivx_vpac_ldc_region_params_t region_params;
-    tivx_vpac_ldc_mesh_params_t mesh_params; 
+    tivx_vpac_ldc_mesh_params_t mesh_params;
     vx_user_data_object param_obj;
     vx_user_data_object region_obj;
     vx_user_data_object mesh_obj;
