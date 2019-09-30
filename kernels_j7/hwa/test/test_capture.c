@@ -235,6 +235,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     }
 
     /* Config initialization */
+    tivx_capture_params_init(&local_capture_config);
     local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
     local_capture_config.numDataLanes = 4U;
     for (loopCnt = 0U ;

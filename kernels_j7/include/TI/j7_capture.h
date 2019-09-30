@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,39 +60,110 @@
  *
  */
 
-#ifndef J7_NODES_H_
-#define J7_NODES_H_
+#ifndef J7_CAPTURE_H_
+#define J7_CAPTURE_H_
 
 #include <VX/vx.h>
+#include <VX/vx_kernels.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/*!
+ * \file
+ * \brief The Capture kernels in this kernel extension.
+ */
+
+/*! \brief capture kernel name
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_KERNEL_CAPTURE_NAME          "com.ti.capture"
 
 
-/*! \brief [Graph] Creates a DOF visualization node Node.
+/*********************************
+ *      Capture Control Commands
+ *********************************/
+
+
+/* None */
+
+/*********************************
+ *      Capture Defines
+ *********************************/
+
+/*! \brief Maximum number of channels supported in the capture node.
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_MAX_CH                                 (16U)
+
+
+/*********************************
+ *      Capture STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
+ *
+ * \ingroup group_vision_function_capture
+ */
+typedef struct
+{
+    uint32_t instId;                /*!< CSI2Rx Instance Id, 0:CSIRx0 1:CSIRx0 */
+    uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
+    uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
+    uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+    uint32_t vcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
+} tivx_capture_params_t;
+
+
+/*********************************
+ *      Function Prototypes
+ *********************************/
+
+/*!
+ * \brief Function to register HWA Kernels on the capture Target
+ * \ingroup group_vision_function_capture
+ */
+void tivxRegisterHwaTargetCaptureKernels(void);
+
+
+/*!
+ * \brief Function to un-register HWA Kernels on the capture Target
+ * \ingroup group_vision_function_capture
+ */
+void tivxUnRegisterHwaTargetCaptureKernels(void);
+
+
+/*! \brief [Graph] Creates a capture Node. The capture node takes in a user data object of type <tt>\ref tivx_capture_params_t</tt> to
+                   configure the sensors. The outputs are of type object array which contain vx_image.
  * \param [in] graph The reference to the graph.
- * \param [in] flow_vector Flow vector output from dmpac_dof node
- * \param [in] confidence_threshold (optional) Threshold to use when generating flow_vector_rgb. vx_scalar of type vx_uint32.
- *                                   Valid values are 0 (low threshold/confidence) .. 15 (high threshold/confidence).
- *                                   When NULL, default value of 8 is used.
- * \param [out] flow_vector_rgb flow vector representated as 24 RGB image
- * \param [out] confidence_image confidence values represented as U8 grayscale image, 255 is high confidence
- * \see <tt>TIVX_KERNEL_DOF_VISUALIZE_NAME</tt>
- * \ingroup group_vision_function_dmpac_dof
+ * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.
+ * \param [out] output Object array output which has been created from an exemplar of vx_image's. The input MUST be made from format
+                <tt>\ref VX_DF_IMAGE_RGBX</tt>.
+ * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
+ * \ingroup group_vision_function_capture
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
-VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
-                                      vx_image             flow_vector,
-                                      vx_scalar            confidence_threshold,
-                                      vx_image             flow_vector_rgb,
-                                      vx_image             confidence_image);
+VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
+                                      vx_user_data_object  input,
+                                      vx_object_array      output);
+
+/*!
+ * \brief Function to initialize Capture Parameters
+ *
+ * \param prms  [in] Pointer to H3A aew config
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+void tivx_capture_params_init(tivx_capture_params_t *prms);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* J7_NODES_H_ */
+#endif /* J7_CAPTURE_H_ */
+

@@ -71,6 +71,8 @@
 #include <TI/j7_dmpac_dof.h>
 #include <TI/j7_dmpac_sde.h>
 #include <TI/j7_vpac_nf.h>
+#include <TI/j7_capture.h>
+#include <TI/j7_display.h>
 #include <TI/j7_nodes.h>
 
 #ifdef __cplusplus

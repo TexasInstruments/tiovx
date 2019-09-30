@@ -90,82 +90,13 @@ extern "C" {
  */
 #define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
 
-/*! \brief Display Kernel Name
- *  \ingroup group_vision_function_display
- */
-#define TIVX_KERNEL_DISPLAY_NAME       "com.ti.hwa.display"
-
-/*! \brief capture kernel name
- *  \ingroup group_vision_function_capture
- */
-#define TIVX_KERNEL_CAPTURE_NAME          "com.ti.capture"
-
 /*! \brief tidl kernel name
  *  \ingroup group_vision_function_tidl
  */
 #define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
 
-/**
- *  \anchor Display_opMode
- *  \name   Display Kernel 's Operation Mode
- *  \brief  Display kernel can be run in two modes: it can be used to display
- *          only one buffer repeatedly or application provides a new buffer
- *          every VSYNC. In case of one buffer, kernel needs to maintain a local
- *          copy of the buffer.
- *
- *  \ingroup group_vision_function_display
- *  @{
- */
-/** \brief Display Kernel does not need to maintain buffer copy i.e. application
- *   gives new frame at every VSYNC */
-#define TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE            ((uint32_t) 0U)
-/** \brief Display Kernel needs to maintain buffer copy */
-#define TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE                 ((uint32_t) 1U)
-/* @} */
-
-/*! \brief Maximum number of channels supported in the capture node.
- *
- *  \ingroup group_vision_function_capture
- */
-#define TIVX_CAPTURE_MAX_CH                                 (16U)
-
 /*! End of group_vision_function_hwa */
 
-
-
-/*********************************
- *      CAPTURE STRUCTURES
- *********************************/
-/*!
- * \brief The configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
- *
- * \ingroup group_vision_function_capture
- */
-typedef struct
-{
-    uint32_t instId;                /*!< CSI2Rx Instance Id, 0:CSIRx0 1:CSIRx0 */
-    uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
-    uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
-    uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
-    uint32_t vcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
-} tivx_capture_params_t;
-
-/*********************************
- *      DISPLAY STRUCTURES
- *********************************/
-/*!
- * \brief The configuration data structure used by the TIVX_KERNEL_DISPLAY kernel.
- *
- * \ingroup group_vision_function_display
- */
-typedef struct {
-    uint32_t  opMode;      /*!< Operation Mode of display kernel. Refer \ref Display_opMode for values */
-    uint32_t  pipeId;      /*!< 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
-    uint32_t  outWidth;    /*!< Horizontal Size of picture at display output */
-    uint32_t  outHeight;   /*!< Vertical Size of picture at display output */
-    uint32_t  posX;        /*!< X position of the video buffer */
-    uint32_t  posY;        /*!< Y position of the video buffer */
-} tivx_display_params_t;
 
 /*********************************
  *      Function Prototypes
@@ -201,29 +132,7 @@ void tivxTIDLLoadKernels(vx_context context);
  */
 void tivxTIDLUnLoadKernels(vx_context context);
 
-/*!
- * \brief Function to register HWA Kernels on the display Target
- * \ingroup group_vision_function_display
- */
-void tivxRegisterHwaTargetDisplayKernels(void);
 
-/*!
- * \brief Function to un-register HWA Kernels on the display Target
- * \ingroup group_vision_function_display
- */
-void tivxUnRegisterHwaTargetDisplayKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the capture Target
- * \ingroup group_vision_function_capture
- */
-void tivxRegisterHwaTargetCaptureKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the capture Target
- * \ingroup group_vision_function_capture
- */
-void tivxUnRegisterHwaTargetCaptureKernels(void);
 
 
 /*!
@@ -238,15 +147,6 @@ void tivxRegisterTIDLTargetKernels(void);
  */
 void tivxUnRegisterTIDLTargetKernels(void);
 
-
-/*!
- * \brief Function to initialize Capture Parameters
- *
- * \param prms  [in] Pointer to H3A aew config
- *
- * \ingroup group_vision_function_vpac_viss
- */
-void tivx_capture_params_init(tivx_capture_params_t *prms);
 
 #ifdef __cplusplus
 }

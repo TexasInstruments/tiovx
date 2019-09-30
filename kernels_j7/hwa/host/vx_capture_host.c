@@ -292,6 +292,8 @@ vx_status tivxRemoveKernelCapture(vx_context context)
 
 void tivx_capture_params_init(tivx_capture_params_t *prms)
 {
+    uint32_t cnt;
+
     if (NULL != prms)
     {
         prms->instId = 0u;
@@ -302,9 +304,9 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
         prms->dataLanesMap[2u] = 3u;
         prms->dataLanesMap[3u] = 4u;
 
-        prms->vcNum[0u] = 0u;
-        prms->vcNum[1u] = 1u;
-        prms->vcNum[2u] = 2u;
-        prms->vcNum[3u] = 3u;
+        for (cnt = 0u; cnt < TIVX_CAPTURE_MAX_CH; cnt ++)
+        {
+            prms->vcNum[cnt] = cnt;
+        }
     }
 }

@@ -280,6 +280,22 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
     return ccsFormat;
 }
 
+static uint32_t tivxCaptureMapInstId(uint32_t instId)
+{
+    uint32_t drvInstId = 0xFFFF;
+    switch (instId)
+    {
+        case 0:
+            drvInstId = CSIRX_INSTANCE_ID_0;
+            break;
+        case 1:
+            drvInstId = CSIRX_INSTANCE_ID_1;
+            break;
+    }
+
+    return (drvInstId);
+}
+
 /* TODO: Complete this case statement */
 static uint32_t tivxCaptureExtractDataFormat(uint32_t format)
 {
@@ -382,6 +398,9 @@ static void tivxCaptureSetCreateParams(
     prms->createPrms.frameDropBufLen =
         CAPTURE_FRAME_DROP_LEN;
     prms->createPrms.frameDropBuf = (uint64_t)tivxMemAlloc(prms->createPrms.frameDropBufLen, TIVX_MEM_EXTERNAL);
+
+    /* set instance to be used for capture */
+    prms->instId = tivxCaptureMapInstId(params->instId);
 
     tivxMemBufferUnmap(capture_config_target_ptr,
        obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
@@ -577,8 +596,6 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             prms->steady_state_started = 0;
             /* Initialize raw capture to 0 */
             prms->raw_capture = 0;
-            /* set instance to be used for capture */
-            prms->instId = CSIRX_INSTANCE_ID_0;
             /* Set number of channels to number of items in object array */
             prms->numCh = output_desc->num_items;
 
