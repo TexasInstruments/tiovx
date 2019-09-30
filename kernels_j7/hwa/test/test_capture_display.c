@@ -183,11 +183,16 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         VX_CALL(vxReleaseImage(&sample_image));
 
         /* Capture initialization */
+        tivx_capture_params_init(&capture_params);
         capture_params.enableCsiv2p0Support = (uint32_t)vx_true_e;
         capture_params.numDataLanes = 4U;
         for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
         {
             capture_params.dataLanesMap[loop_id] = (loop_id + 1u);
+        }
+        for (loop_id = 0U; loop_id < NUM_CAPT_CHANNELS; loop_id++)
+        {
+            capture_params.vcNum[loop_id] = loop_id;
         }
 
         ASSERT_VX_OBJECT(capture_param_obj = vxCreateUserDataObject(context, "tivx_capture_params_t" , sizeof(tivx_capture_params_t), &capture_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);

@@ -123,6 +123,12 @@ extern "C" {
 #define TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE                 ((uint32_t) 1U)
 /* @} */
 
+/*! \brief Maximum number of channels supported in the capture node.
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_MAX_CH                                 (16U)
+
 /*! End of group_vision_function_hwa */
 
 
@@ -137,9 +143,11 @@ extern "C" {
  */
 typedef struct
 {
+    uint32_t instId;                /*!< CSI2Rx Instance Id, 0:CSIRx0 1:CSIRx0 */
     uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
     uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
     uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+    uint32_t vcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
 } tivx_capture_params_t;
 
 /*********************************
@@ -165,18 +173,18 @@ typedef struct {
 
 /*!
  * \brief Used for the Application to load the hwa kernels into the context.
- * 
+ *
  * This includes Capture, Display, VPAC, and DMPAC kernels
- * 
+ *
  * \ingroup group_vision_function_hwa
  */
 void tivxHwaLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the hwa kernels from the context.
- * 
+ *
  * This includes Capture, Display, VPAC, and DMPAC kernels
- * 
+ *
  * \ingroup group_vision_function_hwa
  */
 void tivxHwaUnLoadKernels(vx_context context);
@@ -229,6 +237,16 @@ void tivxRegisterTIDLTargetKernels(void);
  * \ingroup group_vision_function_tidl
  */
 void tivxUnRegisterTIDLTargetKernels(void);
+
+
+/*!
+ * \brief Function to initialize Capture Parameters
+ *
+ * \param prms  [in] Pointer to H3A aew config
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+void tivx_capture_params_init(tivx_capture_params_t *prms);
 
 #ifdef __cplusplus
 }

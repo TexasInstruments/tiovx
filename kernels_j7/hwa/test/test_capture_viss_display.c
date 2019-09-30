@@ -214,11 +214,16 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
         VX_CALL(tivxReleaseRawImage(&sample_raw_img));
 
         /* Capture initialization */
+        tivx_capture_params_init(&capture_params);
         capture_params.enableCsiv2p0Support = (uint32_t)vx_true_e;
         capture_params.numDataLanes = 4U;
         for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
         {
             capture_params.dataLanesMap[loop_id] = loop_id+1;
+        }
+        for (loop_id = 0U; loop_id < NUM_CAPT_CHANNELS; loop_id++)
+        {
+            capture_params.vcNum[loop_id] = loop_id;
         }
 
         ASSERT_VX_OBJECT(capture_param_obj =

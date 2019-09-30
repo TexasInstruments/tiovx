@@ -77,8 +77,6 @@ extern "C" {
 
 #define TIVX_CAPTURE_MAX_NUM_BUFS (16U)
 
-#define TIVX_CAPTURE_MAX_CH (16U)
-
 #ifdef __cplusplus
 }
 #endif

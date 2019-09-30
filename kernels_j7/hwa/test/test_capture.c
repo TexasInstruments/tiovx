@@ -243,6 +243,10 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     {
         local_capture_config.dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
+    for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
+    {
+        local_capture_config.vcNum[loopCnt] = loopCnt;
+    }
 
     ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -384,6 +388,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     }
 
     /* Config initialization */
+    tivx_capture_params_init(&local_capture_config);
     local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
     local_capture_config.numDataLanes = 4U;
     for (loopCnt = 0U ;
@@ -391,6 +396,10 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
          loopCnt++)
     {
         local_capture_config.dataLanesMap[loopCnt] = (loopCnt + 1u);
+    }
+    for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
+    {
+        local_capture_config.vcNum[loopCnt] = loopCnt;
     }
 
     ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);

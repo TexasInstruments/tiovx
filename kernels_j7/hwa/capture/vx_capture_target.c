@@ -341,7 +341,7 @@ static void tivxCaptureSetCreateParams(
     {
         prms->createPrms.chCfg[loopCnt].chId = loopCnt;
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
-        prms->createPrms.chCfg[loopCnt].vcNum = loopCnt;
+        prms->createPrms.chCfg[loopCnt].vcNum = params->vcNum[loopCnt];
 
         if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
         {

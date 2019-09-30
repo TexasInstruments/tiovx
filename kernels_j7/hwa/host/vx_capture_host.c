@@ -290,4 +290,21 @@ vx_status tivxRemoveKernelCapture(vx_context context)
     return status;
 }
 
+void tivx_capture_params_init(tivx_capture_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        prms->instId = 0u;
+        prms->enableCsiv2p0Support = (uint32_t)vx_true_e;
+        prms->numDataLanes = 4u;
+        prms->dataLanesMap[0u] = 1u;
+        prms->dataLanesMap[1u] = 2u;
+        prms->dataLanesMap[2u] = 3u;
+        prms->dataLanesMap[3u] = 4u;
 
+        prms->vcNum[0u] = 0u;
+        prms->vcNum[1u] = 1u;
+        prms->vcNum[2u] = 2u;
+        prms->vcNum[3u] = 3u;
+    }
+}
