@@ -136,14 +136,25 @@ void tivxRegisterHwaTargetCaptureKernels(void);
 void tivxUnRegisterHwaTargetCaptureKernels(void);
 
 
-/*! \brief [Graph] Creates a capture Node. The capture node takes in a user data object of type <tt>\ref tivx_capture_params_t</tt> to
-                   configure the sensors. The outputs are of type object array which contain vx_image.
+/*! \brief [Graph] Creates a camera capture node.
+ * \details The capture node takes in a user data object of type <tt>\ref tivx_capture_params_t</tt> to
+            configure one or more capture channels. The output is of type \ref vx_object_array, which contain an array of
+            either \ref vx_image or \ref tivx_raw_image data types.  \ref vx_image is used if the sensor outputs processed
+            image formats, while \ref tivx_raw_image is used for raw sensor outputs.
+
+            The number of items in the output object array corresponds to the number of syncronized, homogeneous
+            camera sensors assigned to the capture node.  Each item in an object array must have the same
+            dimensions and formats.  If multiple sensors are needed tot be configured at different rates, formats, or
+            resolutions,  then separate capture nodes should be used and syncronized by the application code.
+
+            \note The capture node does not program or control the sensors, but relies on the application (or custom nodes)
+            to call into the sensor drivers.
  * \param [in] graph The reference to the graph.
  * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.
- * \param [out] output Object array output which has been created from an exemplar of vx_image's.
- *              The input MUST be made from one of format
-                <tt>\ref VX_DF_IMAGE_RGBX</tt>, <tt>\VX_DF_IMAGE_U16</tt>,
-                <tt>\VX_DF_IMAGE_UYVY</tt>, <tt>\VX_DF_IMAGE_YUYV</tt>.
+ * \param [out] output Object array output which has been created from an exemplar of either \ref vx_image or \ref tivx_raw_image.
+ *              If using \ref vx_image, the image type MUST be one of the following formats:
+                <tt>\ref VX_DF_IMAGE_RGBX</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
+                <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_YUYV</tt>.
  * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
  * \ingroup group_vision_function_capture
  * \return <tt>\ref vx_node</tt>.
@@ -156,9 +167,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
 /*!
  * \brief Function to initialize Capture Parameters
  *
- * \param prms  [in] Pointer to H3A aew config
+ * \param prms  [in] Pointer to capture params configuration structure
  *
- * \ingroup group_vision_function_vpac_viss
+ * \ingroup group_vision_function_capture
  */
 void tivx_capture_params_init(tivx_capture_params_t *prms);
 
