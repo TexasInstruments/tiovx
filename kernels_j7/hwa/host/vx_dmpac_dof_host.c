@@ -101,28 +101,37 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     vx_df_image input_reference_base_fmt;
 
     vx_pyramid input_current = NULL;
-    vx_df_image input_current_fmt;
     vx_size input_current_levels;
     vx_float32 input_current_scale;
-    vx_uint32 input_current_w, input_current_h;
+    vx_uint32 input_current_w;
+    vx_uint32 input_current_h;
+    vx_df_image input_current_fmt;
 
     vx_pyramid input_reference = NULL;
-    vx_df_image input_reference_fmt;
     vx_size input_reference_levels;
     vx_float32 input_reference_scale;
-    vx_uint32 input_reference_w, input_reference_h;
+    vx_uint32 input_reference_w;
+    vx_uint32 input_reference_h;
+    vx_df_image input_reference_fmt;
 
     vx_image flow_vector_in = NULL;
+    vx_uint32 flow_vector_in_w;
+    vx_uint32 flow_vector_in_h;
     vx_df_image flow_vector_in_fmt;
-    vx_uint32 flow_vector_in_w, flow_vector_in_h;
+
+    vx_user_data_object sparse_of_config = NULL;
+    vx_char sparse_of_config_name[VX_MAX_REFERENCE_NAME];
+    vx_size sparse_of_config_size;
 
     vx_image sparse_of_map = NULL;
+    vx_uint32 sparse_of_map_w;
+    vx_uint32 sparse_of_map_h;
     vx_df_image sparse_of_map_fmt;
-    vx_uint32 sparse_of_map_w, sparse_of_map_h;
 
     vx_image flow_vector_out = NULL;
+    vx_uint32 flow_vector_out_w;
+    vx_uint32 flow_vector_out_h;
     vx_df_image flow_vector_out_fmt;
-    vx_uint32 flow_vector_out_w, flow_vector_out_h;
 
     vx_distribution confidence_histogram = NULL;
     vx_int32 confidence_histogram_offset = 0;
@@ -148,6 +157,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         input_current = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
         input_reference = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
         flow_vector_in = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
+        sparse_of_config = (vx_user_data_object)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_CONFIG_IDX];
         sparse_of_map = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
         flow_vector_out = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
         confidence_histogram = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
@@ -176,35 +186,41 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             tivxCheckStatus(&status, vxQueryImage(input_reference_base, VX_IMAGE_FORMAT, &input_reference_base_fmt, sizeof(input_reference_base_fmt)));
         }
 
-        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_FORMAT, &input_current_fmt, sizeof(input_current_fmt)));
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_LEVELS, &input_current_levels, sizeof(input_current_levels)));
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_SCALE, &input_current_scale, sizeof(input_current_scale)));
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_WIDTH, &input_current_w, sizeof(input_current_w)));
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_HEIGHT, &input_current_h, sizeof(input_current_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_FORMAT, &input_current_fmt, sizeof(input_current_fmt)));
 
-        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_FORMAT, &input_reference_fmt, sizeof(input_reference_fmt)));
         tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_LEVELS, &input_reference_levels, sizeof(input_reference_levels)));
         tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_SCALE, &input_reference_scale, sizeof(input_reference_scale)));
         tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_WIDTH, &input_reference_w, sizeof(input_reference_w)));
         tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_HEIGHT, &input_reference_h, sizeof(input_reference_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_FORMAT, &input_reference_fmt, sizeof(input_reference_fmt)));
 
         if (NULL != flow_vector_in)
         {
-            tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_FORMAT, &flow_vector_in_fmt, sizeof(flow_vector_in_fmt)));
             tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_WIDTH, &flow_vector_in_w, sizeof(flow_vector_in_w)));
             tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_HEIGHT, &flow_vector_in_h, sizeof(flow_vector_in_h)));
+            tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_FORMAT, &flow_vector_in_fmt, sizeof(flow_vector_in_fmt)));
+        }
+
+        if (NULL != sparse_of_config)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(sparse_of_config, VX_USER_DATA_OBJECT_NAME, &sparse_of_config_name, sizeof(sparse_of_config_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(sparse_of_config, VX_USER_DATA_OBJECT_SIZE, &sparse_of_config_size, sizeof(sparse_of_config_size)));
         }
 
         if (NULL != sparse_of_map)
         {
-            tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_FORMAT, &sparse_of_map_fmt, sizeof(sparse_of_map_fmt)));
             tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_WIDTH, &sparse_of_map_w, sizeof(sparse_of_map_w)));
             tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_HEIGHT, &sparse_of_map_h, sizeof(sparse_of_map_h)));
+            tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_FORMAT, &sparse_of_map_fmt, sizeof(sparse_of_map_fmt)));
         }
 
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_FORMAT, &flow_vector_out_fmt, sizeof(flow_vector_out_fmt)));
         tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_WIDTH, &flow_vector_out_w, sizeof(flow_vector_out_w)));
         tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_HEIGHT, &flow_vector_out_h, sizeof(flow_vector_out_h)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_FORMAT, &flow_vector_out_fmt, sizeof(flow_vector_out_fmt)));
 
         if (NULL != confidence_histogram)
         {
@@ -265,11 +281,20 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != flow_vector_in)
         {
-            if ((VX_DF_IMAGE_U16 != flow_vector_in_fmt) &&
-                (VX_DF_IMAGE_U32 != flow_vector_in_fmt))
+            if( VX_DF_IMAGE_U32 != flow_vector_in_fmt)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U16 or VX_DF_IMAGE_U32 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+            }
+        }
+
+        if (NULL != sparse_of_config)
+        {
+            if ((sparse_of_config_size != sizeof(tivx_dmpac_dof_sof_params_t)) ||
+                (strncmp(sparse_of_config_name, "tivx_dmpac_dof_sof_params_t", sizeof(sparse_of_config_name)) != 0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'sparse_of_config' should be a user_data_object of type:\n tivx_dmpac_dof_sof_params_t \n");
             }
         }
 
@@ -282,7 +307,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             }
         }
 
-        if ((VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
+        if( (VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
             (VX_DF_IMAGE_U32 != flow_vector_out_fmt))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -355,6 +380,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (flow_vector_in_h != flow_vector_out_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
             }
             if (flow_vector_in_h != flow_vector_out_h)
             {
@@ -501,6 +531,19 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
+        if((confidence_histogram != NULL) &&
+           (VX_DF_IMAGE_U16 == flow_vector_out_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'confidence_histogram' should be NULL when the flow vector output is set to VX_DF_IMAGE_U16 type\n");
+        }
+
+        if(((sparse_of_config != NULL) && (sparse_of_map == NULL)) ||
+           ((sparse_of_config == NULL) && (sparse_of_map != NULL)))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'sparse_of_config' and 'sparse_of_map' should both be NULL, or both be non-NULL\n");
+        }
 
         if((params.inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
            (params.inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
@@ -701,6 +744,16 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
                         VX_TYPE_IMAGE,
                         VX_PARAMETER_STATE_OPTIONAL
             );
@@ -783,10 +836,14 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
         prms->inter_predictor[1] = TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT;
 
         prms->iir_filter_alpha = 0x66;
+    }
+}
 
-        /* Not used if SOF is disabled */
-        prms->sof_max_pix_in_row = 0;
-        prms->sof_fv_height = 0;
+void tivx_dmpac_dof_sof_params_init(tivx_dmpac_dof_sof_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_dmpac_dof_sof_params_t));
     }
 }
 

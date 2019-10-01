@@ -258,6 +258,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     tivx_obj_desc_pyramid_t *input_current_desc;
     tivx_obj_desc_pyramid_t *input_reference_desc;
     tivx_obj_desc_image_t *flow_vector_in_desc;
+    tivx_obj_desc_user_data_object_t *sparse_of_config_desc;
     tivx_obj_desc_image_t *sparse_of_map_desc;
     tivx_obj_desc_image_t *flow_vector_out_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
@@ -294,6 +295,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     {
         void *configuration_target_ptr;
         void *flow_vector_in_target_ptr = NULL;
+        void *sparse_of_config_target_ptr = NULL;
         void *sparse_of_map_target_ptr = NULL;
         void *flow_vector_out_target_ptr;
         void *confidence_histogram_target_ptr = NULL;
@@ -309,6 +311,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         input_current_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
         input_reference_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
         flow_vector_in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
+        sparse_of_config_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_CONFIG_IDX];
         sparse_of_map_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
         flow_vector_out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
@@ -336,6 +339,11 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         if(flow_vector_in_desc != NULL)
         {
             flow_vector_in_target_ptr = tivxMemShared2TargetPtr(&flow_vector_in_desc->mem_ptr[0]);
+        }
+
+        if( sparse_of_config_desc != NULL)
+        {
+            sparse_of_config_target_ptr = tivxMemShared2TargetPtr(&sparse_of_config_desc->mem_ptr);
         }
 
         if( sparse_of_map_desc != NULL)
@@ -367,6 +375,18 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             tivxMemBufferMap(flow_vector_in_target_ptr,
                 flow_vector_in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
+        }
+        if( sparse_of_config_desc != NULL)
+        {
+            tivx_dmpac_dof_sof_params_t *sof_params;
+
+            tivxMemBufferMap(sparse_of_config_target_ptr,
+               sparse_of_config_desc->mem_size, VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+
+            sof_params = (tivx_dmpac_dof_sof_params_t*)sparse_of_config_target_ptr;
+            prms->sof_max_pix_in_row = sof_params->sof_max_pix_in_row;
+            prms->sof_fv_height = sof_params->sof_fv_height;
         }
         if( sparse_of_map_desc != NULL)
         {
@@ -685,8 +705,6 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.baseLevelConfidenceScorePacked =
                                 (flow_vector_out_desc->format == VX_DF_IMAGE_U16) ? 0 : 1;
             prms->dofParams.model[0] = '\0';
-            prms->sof_max_pix_in_row = params->sof_max_pix_in_row;
-            prms->sof_fv_height = params->sof_fv_height;
             prms->firstFrame = 1;
 
 

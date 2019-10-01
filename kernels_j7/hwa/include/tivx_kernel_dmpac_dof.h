@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,11 +74,12 @@ extern "C" {
 #define TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX (3U)
 #define TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX (4U)
 #define TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX (5U)
-#define TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX (6U)
-#define TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX (7U)
-#define TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX (8U)
+#define TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_CONFIG_IDX (6U)
+#define TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX (7U)
+#define TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX (8U)
+#define TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX (9U)
 
-#define TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS (9U)
+#define TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS (10U)
 
 /* assuming base image of size 2048x1024, max levels can be 5 */
 #define TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS    (6U)

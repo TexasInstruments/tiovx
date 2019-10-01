@@ -428,6 +428,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     tivx_dmpac_dof_params_t params;
     vx_user_data_object param_obj;
     vx_user_data_object cs_obj;
+    vx_user_data_object sof_config_obj = NULL;
     vx_graph graph = 0;
     vx_node node_dof = 0;
     vx_node node_dof_vis = 0;
@@ -469,10 +470,12 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         }
         if(arg_->enable_sof == 1)
         {
+            tivx_dmpac_dof_sof_params_t sof_params;
             ASSERT_VX_OBJECT(sof_mask = vxCreateImage(context, width/8, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
             initialize_sof_mask(sof_mask, width/8, height, &flow_width, &flow_height, 2);
-            params.sof_max_pix_in_row = flow_width;
-            params.sof_fv_height = flow_height;
+            sof_params.sof_max_pix_in_row = flow_width;
+            sof_params.sof_fv_height = flow_height;
+            ASSERT_VX_OBJECT(sof_config_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_sof_params_t", sizeof(tivx_dmpac_dof_sof_params_t), &sof_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         }
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
@@ -480,10 +483,10 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
         if(arg_->enable_lk == 1)
         {
+            ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
             ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, flow_width, flow_height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, flow_width, flow_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         }
@@ -497,6 +500,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
                         input_current,
                         input_reference,
                         NULL,
+                        sof_config_obj,
                         sof_mask,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);
@@ -562,19 +566,20 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
 
         if(arg_->enable_lk == 1)
         {
+            VX_CALL(vxReleaseDistribution(&confidence_histogram));
             VX_CALL(vxReleaseNode(&node_dof_vis));
             VX_CALL(vxReleaseImage(&flow_vector_out_img));
             VX_CALL(vxReleaseImage(&confidence_img));
         }
         if(arg_->enable_sof == 1)
         {
+            VX_CALL(vxReleaseUserDataObject(&sof_config_obj));
             VX_CALL(vxReleaseImage(&sof_mask));
         }
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));
         VX_CALL(vxReleasePyramid(&input_reference));
         VX_CALL(vxReleaseImage(&flow_vector_out));
-        VX_CALL(vxReleaseDistribution(&confidence_histogram));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         ASSERT(node_dof == 0);
@@ -585,6 +590,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         ASSERT(flow_vector_in == 0);
         ASSERT(flow_vector_out == 0);
         ASSERT(sof_mask == 0);
+        ASSERT(sof_config_obj == 0);
         ASSERT(confidence_histogram == 0);
         ASSERT(param_obj == 0);
 
@@ -695,6 +701,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
                         input_current,
                         input_reference,
                         flow_vector_in,
+                        NULL,
                         NULL,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);
@@ -1124,6 +1131,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
                         input_current,
                         input_reference,
                         flow_vector_in,
+                        NULL,
                         NULL,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);

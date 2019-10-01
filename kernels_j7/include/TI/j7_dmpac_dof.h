@@ -185,17 +185,29 @@ typedef struct {
     uint16_t  inter_predictor[2];
     /*! IIR filter alpha value recommended = 0x66 */
     uint16_t  iir_filter_alpha;
-    /*! Maximum possible number of enabled pixel in row if sparse optical flow
-        is enabled. Flow vector is generated for only sof_max_pix_in_row pixel
-        per row
+} tivx_dmpac_dof_params_t;
+
+/*!
+ * \brief The sof configuration data structure used by the
+          TIVX_KERNEL_DMPAC_DOF kernel.
+ *
+ * \ingroup group_vision_function_dmpac_dof
+ */
+typedef struct {
+    /*! \brief Maximum possible number of enabled pixel in row if sparse optical flow
+        is enabled.
+        \details Flow vector outputs are generated for only sof_max_pix_in_row pixel
+        per row. Output lines for which the sparse_of_map mask is configured to have
+        less outputs than this value will have "trash" data output in the buffer
+        from the last valid flow vector for that row until the location corresponding
+        to sof_max_pix_in_row.
     */
     uint16_t  sof_max_pix_in_row;
-    /*! Valid only if sparse optical flow is enabled.
-        Number of paxel row with at least one enabled pixel. Paxel row is pair
+    /*! \brief Number of paxel row with at least one enabled pixel. Paxel row is pair
         of image row (eg. row 1 & 2, row 3 & 4 etc).
     */
     uint16_t  sof_fv_height;
-} tivx_dmpac_dof_params_t;
+} tivx_dmpac_dof_sof_params_t;
 
 /*!
  * \brief Configuration parameters used to calculate Confidence Score used by
@@ -306,6 +318,9 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> or <tt>\ref VX_DF_IMAGE_U16 </tt> dataformat.
  *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
  *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
+ * \param [in] sparse_of_config (optional) The input object of a single params structure of
+ *             type <tt>\ref tivx_dmpac_dof_sof_params_t</tt>. This can change from frame to frame
+ *             and should be syncronized with changes to the sparse_of_map input.
  * \param [in] sparse_of_map (optional) Sparse OF bit-mask of size
  *             Size of image is base_width/8 x base_height.
  *             Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
@@ -330,6 +345,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
                                       vx_pyramid           input_current,
                                       vx_pyramid           input_reference,
                                       vx_image             flow_vector_in,
+                                      vx_user_data_object  sparse_of_config,
                                       vx_image             sparse_of_map,
                                       vx_image             flow_vector_out,
                                       vx_distribution      confidence_histogram);
@@ -339,6 +355,12 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
  * \ingroup group_vision_function_dmpac_dof
  */
 void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms);
+
+/*!
+ * \brief Function to initialize DOF SOF parameters with default value
+ * \ingroup group_vision_function_dmpac_dof
+ */
+void tivx_dmpac_dof_sof_params_init(tivx_dmpac_dof_sof_params_t *prms);
 
 /*!
  * \brief Function to initialize DOF CS tree parameters with default value
