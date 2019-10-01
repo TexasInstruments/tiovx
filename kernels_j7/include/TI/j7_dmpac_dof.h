@@ -185,11 +185,6 @@ typedef struct {
     uint16_t  inter_predictor[2];
     /*! IIR filter alpha value recommended = 0x66 */
     uint16_t  iir_filter_alpha;
-    /*! 0 = Disable LK for Base pyramid level, 1 = Enable LK for base
-        disabling LK for base will generate 2 byte per pixel flow vector
-        recommended = 1 (enable)
-    */
-    uint16_t  enable_lk;
     /*! Maximum possible number of enabled pixel in row if sparse optical flow
         is enabled. Flow vector is generated for only sof_max_pix_in_row pixel
         per row

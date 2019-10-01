@@ -629,6 +629,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             uint32_t i;
             void *params_array_target_ptr;
             tivx_obj_desc_image_t *input_current_base_desc = (tivx_obj_desc_image_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
+            tivx_obj_desc_image_t *flow_vector_out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
 
             memset(prms, 0, sizeof(tivxDmpacDofParams));
 
@@ -681,11 +682,14 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.verticalSearchRange[1] = params->vertical_search_range[1] ;
             prms->dofParams.horizontalSearchRange = params->horizontal_search_range ;
             prms->dofParams.confidenceFeatureIIRFilterCoeffQ8 = params->iir_filter_alpha ;
-            prms->dofParams.baseLevelConfidenceScorePacked = params->enable_lk ;
+            prms->dofParams.baseLevelConfidenceScorePacked =
+                                (flow_vector_out_desc->format == VX_DF_IMAGE_U16) ? 0 : 1;
             prms->dofParams.model[0] = '\0';
             prms->sof_max_pix_in_row = params->sof_max_pix_in_row;
             prms->sof_fv_height = params->sof_fv_height;
             prms->firstFrame = 1;
+
+
 
             tivxDmpacDofSetPredictors(prms, params);
 

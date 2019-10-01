@@ -380,36 +380,36 @@ static uint32_t get_checksum(uint16_t median, uint16_t motion, uint16_t vert,
 }
 
 #define ADD_MEDIAN_FILTER(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/median_filter=OFF", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/median_filter=ON", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/median=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/median=ON", __VA_ARGS__, 1))
 
 #define ADD_MOTION_SMOOTHNESS_FACTOR(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=0", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=16", __VA_ARGS__, 16)), \
-    CT_EXPAND(nextmacro(testArgName "/motion_smoothness_factor=31", __VA_ARGS__, 31))
+    CT_EXPAND(nextmacro(testArgName "/motion_smooth=0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/motion_smooth=16", __VA_ARGS__, 16)), \
+    CT_EXPAND(nextmacro(testArgName "/motion_smooth=31", __VA_ARGS__, 31))
 
 #define ADD_VERTICAL_SEARCH_RANGE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=28", __VA_ARGS__, 28)), \
-    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=42", __VA_ARGS__, 42)), \
-    CT_EXPAND(nextmacro(testArgName "/vertical_search_range=56", __VA_ARGS__, 56))
+    CT_EXPAND(nextmacro(testArgName "/vert_search_range=28", __VA_ARGS__, 28)), \
+    CT_EXPAND(nextmacro(testArgName "/vert_search_range=42", __VA_ARGS__, 42)), \
+    CT_EXPAND(nextmacro(testArgName "/vert_search_range=56", __VA_ARGS__, 56))
 
 #define ADD_HORIZONTAL_SEARCH_RANGE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=85", __VA_ARGS__, 85)), \
-    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=130", __VA_ARGS__, 130)), \
-    CT_EXPAND(nextmacro(testArgName "/horizontal_search_range=170", __VA_ARGS__, 170))
+    CT_EXPAND(nextmacro(testArgName "/horz_search_range=85", __VA_ARGS__, 85)), \
+    CT_EXPAND(nextmacro(testArgName "/horz_search_range=130", __VA_ARGS__, 130)), \
+    CT_EXPAND(nextmacro(testArgName "/horz_search_range=170", __VA_ARGS__, 170))
 
 #define ADD_IIR_FILTER_ALPHA(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=1", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=128", __VA_ARGS__, 128)), \
-    CT_EXPAND(nextmacro(testArgName "/iir_filter_alpha=255", __VA_ARGS__, 255))
+    CT_EXPAND(nextmacro(testArgName "/iir=1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/iir=128", __VA_ARGS__, 128)), \
+    CT_EXPAND(nextmacro(testArgName "/iir=255", __VA_ARGS__, 255))
 
 #define ADD_ENABLE_LK(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/flow_type=U16", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/flow_type=U32", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/output=U16", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/output=U32", __VA_ARGS__, 1))
 
 #define ADD_ENABLE_SOF(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/enable_sof=OFF", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/enable_sof=ON", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/sof=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/sof=ON", __VA_ARGS__, 1))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("dof_real_input", ADD_MEDIAN_FILTER, ADD_MOTION_SMOOTHNESS_FACTOR, ADD_VERTICAL_SEARCH_RANGE, ADD_HORIZONTAL_SEARCH_RANGE, ADD_IIR_FILTER_ALPHA, ADD_ENABLE_LK, ADD_ENABLE_SOF, ARG)
@@ -459,7 +459,6 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         params.motion_smoothness_factor = arg_->motion_smoothness;
         params.motion_direction = 1; /* 1: forward direction */
         params.iir_filter_alpha = arg_->iir_filter;
-        params.enable_lk = arg_->enable_lk;
 
         /* Turn off temporal predictor in this test ... will test in separate test */
         params.base_predictor[0] = TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED;
@@ -785,7 +784,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/negative_test=motion_smoothness_factor", __VA_ARGS__, 6)), \
     CT_EXPAND(nextmacro(testArgName "/negative_test=motion_direction", __VA_ARGS__, 7)), \
     CT_EXPAND(nextmacro(testArgName "/negative_test=iir_filter_alpha", __VA_ARGS__, 8)), \
-    CT_EXPAND(nextmacro(testArgName "/negative_test=enable_lk", __VA_ARGS__, 9)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=output_format", __VA_ARGS__, 9)), \
     CT_EXPAND(nextmacro(testArgName "/negative_test=pyramid_divisibility", __VA_ARGS__, 10))
 
 
@@ -812,6 +811,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
     vx_graph graph = 0;
     vx_node node_dof = 0;
     vx_status status;
+    vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
@@ -1061,23 +1061,23 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.enable_lk = 0;
+                    flowVectorType = VX_DF_IMAGE_U16;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.enable_lk = 1;
+                    flowVectorType = VX_DF_IMAGE_U32;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.enable_lk = 2;
+                    flowVectorType = VX_DF_IMAGE_NV12;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.enable_lk = 2;
+                    flowVectorType = VX_DF_IMAGE_YUYV;
                 }
                 else
                 {
-                    params.enable_lk = 2;
+                    flowVectorType = VX_DF_IMAGE_RGB;
                 }
                 break;
             }
@@ -1111,8 +1111,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
 
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
-        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);

@@ -587,11 +587,6 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter iir_filter_alpha should be a value between 1 and 255 inclusive\n");
         }
-        if (1U < params.enable_lk)
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameter enable_lk should be either 0 or 1\n");
-        }
     }
 
     return status;
@@ -788,7 +783,6 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
         prms->inter_predictor[1] = TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT;
 
         prms->iir_filter_alpha = 0x66;
-        prms->enable_lk = 1;
 
         /* Not used if SOF is disabled */
         prms->sof_max_pix_in_row = 0;

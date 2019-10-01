@@ -138,7 +138,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
 static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
-                                    tivx_dmpac_dof_params_t *dofAppPrms);
+                                    tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format);
 static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
@@ -550,7 +550,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         if(1 == update_prms)
         {
-            status = tivxDmpacDofUpdateCfgPrms(dofObj, dofAppPrms);
+            status = tivxDmpacDofUpdateCfgPrms(dofObj, dofAppPrms, flow_vector_out_desc->format);
         }
 
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
@@ -711,7 +711,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         }
     }
 
-    /* Allocate intemediate buffers for Pyramid processing */
+    /* Allocate intermediate buffers for Pyramid processing */
     if (VX_SUCCESS == status)
     {
         /* Size = base image width * height * 2 bytes/pixel / 4 (half scale is largest size needed) */
@@ -1058,7 +1058,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     dofPrms->coreCfg.motionSmoothnessFactor = dofAppPrms->motion_smoothness_factor;
     dofPrms->coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
 
-    dofPrms->coreCfg.lkConfidanceScore = dofAppPrms->enable_lk;
+    dofPrms->coreCfg.lkConfidanceScore = (fv_out_desc->format == VX_DF_IMAGE_U16) ? 0 : 1;
 
     if(NULL != obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX])
     {
@@ -1170,7 +1170,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
 }
 
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_dmpac_dof_params_t *dofAppPrms)
+                        tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format)
 {
     vx_status                    status = VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
@@ -1221,7 +1221,8 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
         dof_obj->dofPrms.coreCfg.motionSmoothnessFactor =
                                     dofAppPrms->motion_smoothness_factor;
         dof_obj->dofPrms.coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
-        dof_obj->dofPrms.coreCfg.lkConfidanceScore = dofAppPrms->enable_lk;
+        dof_obj->dofPrms.coreCfg.lkConfidanceScore =
+                    (output_format == VX_DF_IMAGE_U16) ? 0 : 1;
 
         fvid2_status = Fvid2_control(dof_obj->handle,
                     VHWA_M2M_IOCTL_DOF_SET_PARAMS, &dof_obj->dofPrms, NULL);
