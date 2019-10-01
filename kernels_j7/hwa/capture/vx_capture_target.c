@@ -239,7 +239,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
 static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
 {
-    uint32_t inCsiDataType = FVID2_CSI2_DF_RGB888;
+    uint32_t inCsiDataType;
 
     switch (format)
     {
@@ -253,7 +253,12 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
         case TIVX_RAW_IMAGE_P12_BIT:
             inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
+        case VX_DF_IMAGE_UYVY:
+        case VX_DF_IMAGE_YUYV:
+            inCsiDataType = FVID2_CSI2_DF_YUV422_8B;
+            break;
         default:
+            inCsiDataType = 0xFFFFFFFFu;
             break;
     }
 
@@ -271,9 +276,12 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
             break;
         case TIVX_RAW_IMAGE_16_BIT:
         case VX_DF_IMAGE_U16:
+        case VX_DF_IMAGE_UYVY:
+        case VX_DF_IMAGE_YUYV:
             ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
         default:
+            ccsFormat = FVID2_CCSF_MAX;
             break;
     }
 

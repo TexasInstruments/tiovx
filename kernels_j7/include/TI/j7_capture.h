@@ -140,8 +140,10 @@ void tivxUnRegisterHwaTargetCaptureKernels(void);
                    configure the sensors. The outputs are of type object array which contain vx_image.
  * \param [in] graph The reference to the graph.
  * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.
- * \param [out] output Object array output which has been created from an exemplar of vx_image's. The input MUST be made from format
-                <tt>\ref VX_DF_IMAGE_RGBX</tt>.
+ * \param [out] output Object array output which has been created from an exemplar of vx_image's.
+ *              The input MUST be made from one of format
+                <tt>\ref VX_DF_IMAGE_RGBX</tt>, <tt>\VX_DF_IMAGE_U16</tt>,
+                <tt>\VX_DF_IMAGE_UYVY</tt>, <tt>\VX_DF_IMAGE_YUYV</tt>.
  * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
  * \ingroup group_vision_function_capture
  * \return <tt>\ref vx_node</tt>.
