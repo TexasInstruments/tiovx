@@ -159,6 +159,16 @@ uint32_t gGlbceAsymTbl[] =
     0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
 };
 
+uint32_t gGlbceFwdPrcptTbl[] =
+{
+    #include "glbce_fwd_percept_lut.txt"
+};
+
+uint32_t gGlbceRevPrcptTbl[] =
+{
+    #include "glbce_rev_percept_lut.txt"
+};
+
 int32_t yee_lut[] =
 {
     #include "yee_lut.txt"
@@ -925,7 +935,9 @@ void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj)
 
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
 {
-    Glbce_Config *glbceCfg = NULL;
+    uint32_t                 cnt;
+    Glbce_Config            *glbceCfg = NULL;
+    Glbce_PerceptConfig     *prcptCfg = NULL;
 
     glbceCfg = &vissObj->vissCfg.glbceCfg;
     if (NULL != vissObj)
@@ -943,6 +955,22 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
         memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4);
 
         vissObj->vissCfgRef.glbceCfg = glbceCfg;
+
+        prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
+        prcptCfg->enable = (uint32_t)FALSE;
+
+        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt ++)
+        {
+            prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
+        }
+
+        prcptCfg = &vissObj->vissCfg.revPrcpCfg;
+        prcptCfg->enable = (uint32_t)FALSE;
+
+        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt ++)
+        {
+            prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
+        }
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */

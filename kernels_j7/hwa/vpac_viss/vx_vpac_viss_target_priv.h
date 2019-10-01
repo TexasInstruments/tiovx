@@ -137,6 +137,8 @@ typedef struct
     Fcp_HistConfig                      histCfg;
 
     Glbce_Config                        glbceCfg;
+    Glbce_PerceptConfig                 fwdPrcpCfg;
+    Glbce_PerceptConfig                 revPrcpCfg;
 
     Fcp_EeConfig                        eeCfg;
 } tivxVpacVissConfig;
