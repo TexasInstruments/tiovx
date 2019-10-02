@@ -80,9 +80,12 @@ TESTCASE(tivxHwaVpacMscPyramid)
 #if defined(J7)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
+/* Note: the following are implemented as applications in vision apps */
+#if 0
 TESTCASE(tivxHwaCaptureDisplay)
 TESTCASE(tivxHwaCaptureVissDisplay)
 TESTCASE(tivxHwaCaptureVpacDisplay)
+#endif
 #endif
 
 #endif
