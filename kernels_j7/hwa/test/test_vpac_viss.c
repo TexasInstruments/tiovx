@@ -67,6 +67,7 @@
 #include "test_engine/test.h"
 #include "tivx_utils_file_rd_wr.h"
 #include <string.h>
+#include <utils/iss/include/app_iss.h>
 
 #define APP_MAX_FILE_PATH           (512u)
 
@@ -482,7 +483,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 2;
+        params.ee_mode = 0;
         params.mux_output0 = 4;
         params.mux_output1 = 0;
         params.mux_output2 = 4;
@@ -511,7 +512,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         VX_CALL(vxProcessGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
-        snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "tivx/viss_out.yuv");
+        snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_out.yuv");
         write_output_image_nv12_8bit(file, y8_r8_c2);
 
         VX_CALL(vxReleaseNode(&node));
@@ -576,6 +577,8 @@ static vx_int32 read_dcc_file(char * file_name, uint8_t * buf, uint32_t num_byte
     return num_bytes_read_from_file;
 }
 
+#ifdef J7
+
 TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 {
     vx_context context = context_->vx_context_;
@@ -592,7 +595,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
     vx_size dcc_buff_size = 1;
     vx_map_id dcc_viss_buf_map_id;
     uint8_t * dcc_viss_buf;
-    char dcc_viss_file_path[APP_MAX_FILE_PATH];
+    int32_t dcc_status;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
@@ -602,18 +605,14 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
     tivx_raw_image_create_params_t raw_params;
 
-    raw_params.width = 1920;
-    raw_params.height = 1080;
+    raw_params.width = 1936;
+    raw_params.height = 1096;
     raw_params.num_exposures = 1;
     raw_params.line_interleaved = vx_false_e;
     raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
     raw_params.format[0].msb = 11;
-    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
-    raw_params.format[1].msb = 7;
-    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
-    raw_params.format[2].msb = 11;
     raw_params.meta_height_before = 0;
-    raw_params.meta_height_after = 0;
+    raw_params.meta_height_after = 4;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -627,14 +626,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
 
         // Note: image is non-zero but not validated
-        /*ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, TIVX_DF_IMAGE_NV12_P12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);*/
         ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        /*ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);*/
 
         /* Create/Configure configuration input structure */
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
@@ -646,8 +638,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         /* Creating DCC */
-        snprintf(dcc_viss_file_path, APP_MAX_FILE_PATH, "%s/%s", ct_get_test_file_path(), "psdkra/app_single_cam/IMX390_001/dcc_viss.bin");
-        dcc_buff_size = get_dcc_file_size(dcc_viss_file_path);
+        dcc_buff_size = appIssGetDCCSizeVISS(SENSOR_SONY_IMX390_UB953_D3, 0U);
 
         dcc_param_viss = vxCreateUserDataObject(
             context,
@@ -668,37 +659,25 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         );
         memset(dcc_viss_buf, 0xAB, dcc_buff_size);
 
-        read_dcc_file(
-            dcc_viss_file_path,
-            dcc_viss_buf,
-            dcc_buff_size
-            );
-
-        /*if(dcc_num_bytes_read != dcc_buff_size)
-        {
-             APP_PRINTF("ERROR : %d bytes read from VISS DCC, %d Expected\n", dcc_num_bytes_read, (int)dcc_buff_size);
-             return VX_FAILURE;
-        }
-        else
-        {
-             APP_PRINTF("%d bytes read from VISS DCC\n", dcc_num_bytes_read);
-        }*/
+	    dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
+	    ASSERT(dcc_status == 0);
 
         vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id);
         /* Done w/ DCC */
 
+        tivx_vpac_viss_params_init(&params);
         params.sensor_dcc_id = 390;
-        params.ee_mode = 2;
-        params.mux_output0 = 4;
+        params.ee_mode = 0;
+        params.mux_output0 = 0;
         params.mux_output1 = 0;
         params.mux_output2 = 4;
         params.mux_output3 = 0;
         params.mux_output4 = 3;
-        //params.h3a_in = 3;
+        params.h3a_in = 3;
         params.h3a_aewb_af_mode = 0;
         params.chroma_mode = 0;
-        params.bypass_glbce = 1; // TODO: set to 0
-        params.bypass_nsf4 = 0;
+        params.bypass_glbce = 1;
+        params.bypass_nsf4 = 1;
 
         VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
@@ -711,13 +690,10 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
+        ct_read_raw_image(raw, "psdkra/app_single_cam/IMX390_001/input2.raw", 2);
+
         VX_CALL(vxVerifyGraph(graph));
 
-        ct_read_raw_image(raw, "psdkra/app_single_cam/IMX390_001/input1.raw", 2);
-
-        VX_CALL(vxProcessGraph(graph));
-        VX_CALL(vxProcessGraph(graph));
-        VX_CALL(vxProcessGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
         snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_dcc_out.yuv");
@@ -725,12 +701,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
-        /*VX_CALL(vxReleaseDistribution(&histogram));
-        VX_CALL(vxReleaseImage(&s8_b8_c4));
-        VX_CALL(vxReleaseImage(&uv8_g8_c3));*/
         VX_CALL(vxReleaseImage(&y8_r8_c2));
-        /*VX_CALL(vxReleaseImage(&uv12_c1));
-        VX_CALL(vxReleaseImage(&y12));*/
         VX_CALL(tivxReleaseRawImage(&raw));
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
@@ -752,6 +723,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         tivxHwaUnLoadKernels(context);
     }
 }
+
+#endif
 
 typedef struct {
     const char* testName;
@@ -2486,7 +2459,9 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
-               /*testGraphProcessingFileDcc,*/
+#ifdef J7
+               testGraphProcessingFileDcc,
+#endif
                testNegativeGraph/*,
                testMuxNegative ,
                testMux,

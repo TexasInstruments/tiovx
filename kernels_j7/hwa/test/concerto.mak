@@ -9,6 +9,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(HOST_ROOT)/utils/include
 IDIRS       += $(VISION_APPS_PATH)/
+IDIRS       += $(IMAGING_PATH)/
 
 ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM))
 CFLAGS += -Wno-unused-function
