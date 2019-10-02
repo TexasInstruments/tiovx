@@ -263,14 +263,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
 
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
-                tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                if ( (dst_x==0) && (dst_y==0))
+                {
+                    tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
+                        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                }
 
                 remap_point->src_x = src_x;
                 remap_point->src_y = src_y;
 
-                tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                if ( (dst_x == (obj_desc->dst_width-1)) &&
+                     (dst_y == (obj_desc->dst_height-1)))
+                {
+                    tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
+                        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                }
 
                 status = VX_SUCCESS;
             }
@@ -323,14 +330,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
 
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
-                tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                if ( (dst_x==0) && (dst_y==0))
+                {
+                    tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
+                        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                }
 
                 *src_x = remap_point->src_x;
                 *src_y = remap_point->src_y;
 
-                tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                if ( (dst_x == (obj_desc->dst_width-1)) &&
+                     (dst_y == (obj_desc->dst_height-1)))
+                {
+                    tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
+                        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                }
 
                 status = VX_SUCCESS;
             }
