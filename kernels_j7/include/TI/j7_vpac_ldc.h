@@ -238,6 +238,9 @@ typedef struct {
      *  height is half of luma height.
      *  Node internally takes care of multiplying height by 2. */
     uint32_t                                yc_mode;
+
+    /*! Optional: dcc camera id when dcc is used for LDC settings */
+    uint32_t                                dcc_camera_id;
 } tivx_vpac_ldc_params_t;
 
 

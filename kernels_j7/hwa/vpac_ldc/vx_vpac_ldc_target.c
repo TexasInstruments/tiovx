@@ -77,6 +77,8 @@
 #include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
 #include "utils/perf_stats/include/app_perf_stats.h"
 
+#include "idcc.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -399,6 +401,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     tivx_obj_desc_image_t            *out0_img_desc = NULL;
     tivx_obj_desc_image_t            *out1_img_desc = NULL;
     void                             *target_ptr;
+    tivx_obj_desc_user_data_object_t *dcc_buf_desc = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
@@ -431,6 +434,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
             out1_img_desc = (tivx_obj_desc_image_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
+            dcc_buf_desc = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_VPAC_LDC_DCC_DB_IDX];
         }
         else
         {
@@ -546,12 +551,112 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_cfg->outputFrameWidth = out0_img_desc->imagepatch_addr[0U].dim_x;
         ldc_cfg->outputFrameHeight = out0_img_desc->imagepatch_addr[0U].dim_y;
 
-        tivxVpacLdcSetMeshParams(ldc_cfg, mesh_prms_desc, mesh_img_desc);
+        if (NULL != dcc_buf_desc)
+        {
+            dcc_parser_output_params_t *pout = tivxMemAlloc(sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+            if (NULL == pout)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacLdcCreate: Failed to allocate DCC parser output buffer \n");
+                status = VX_FAILURE;
+            }
+            else
+            {
+                vpac_ldc_dcc_cfg_t    *pcfg   = &pout->vpacLdcCfg;
+                vpac_ldc_dcc_params_t *params = &pcfg->ldc_dcc_params;
 
-        tivxVpacLdcSetRegionParams(ldc_cfg, reg_prms_desc);
+                void *target_ptr_dcc;
+                target_ptr_dcc = tivxMemShared2TargetPtr(&dcc_buf_desc->mem_ptr);
+                tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        tivxVpacLdcSetAffineConfig(&ldc_cfg->perspTrnsformCfg,
-            warp_matrix_desc);
+                uint8_t * dcc_ldc_buf = (uint8_t *)target_ptr_dcc;
+                int dcc_buf_size = dcc_buf_desc->mem_size;
+
+                dcc_parser_input_params_t parser_input = {
+                    dcc_ldc_buf,
+                    dcc_buf_size,
+                    0,
+                    0,
+                    0,
+                    ldc_prms->dcc_camera_id
+                };
+
+                pout->useVpacLdcCfg = 0;
+                dcc_update(&parser_input, pout);
+
+                if (1 == pout->useVpacLdcCfg)
+                {
+                    ldc_cfg->perspTrnsformCfg.enableWarp = params->pwarpen;
+                    ldc_cfg->perspTrnsformCfg.coeffA     = params->affine_a;
+                    ldc_cfg->perspTrnsformCfg.coeffB     = params->affine_b;
+                    ldc_cfg->perspTrnsformCfg.coeffC     = params->affine_c;
+                    ldc_cfg->perspTrnsformCfg.coeffD     = params->affine_d;
+                    ldc_cfg->perspTrnsformCfg.coeffE     = params->affine_e;
+                    ldc_cfg->perspTrnsformCfg.coeffF     = params->affine_f;
+                    ldc_cfg->perspTrnsformCfg.coeffG     = params->affine_g;
+                    ldc_cfg->perspTrnsformCfg.coeffH     = params->affine_h;
+
+                    ldc_cfg->enableMultiRegions          = params->regmode_en;
+                    ldc_cfg->outputBlockWidth            = params->ld_obw;
+                    ldc_cfg->outputBlockHeight           = params->ld_obh;
+                    ldc_cfg->pixelPad                    = params->ld_pad;
+                    ldc_cfg->outputStartX                = params->ld_initx;
+                    ldc_cfg->outputStartY                = params->ld_inity;
+
+                    if (1 == ldc_cfg->enableMultiRegions)
+                    {
+                        int cnt1, cnt2;
+                        for (cnt1 = 0u; cnt1 < LDC_MAX_HORZ_REGIONS; cnt1 ++)
+                        {
+                            ldc_cfg->regCfg.width[cnt1] = params->ld_sf_width[cnt1];
+                        }
+
+                        for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+                        {
+                            ldc_cfg->regCfg.height[cnt1] = params->ld_sf_height[cnt1];
+                        }
+
+                        for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+                        {
+                            for (cnt2 = 0u; cnt2 < LDC_MAX_HORZ_REGIONS; cnt2 ++)
+                            {
+                                ldc_cfg->regCfg.enable[cnt1][cnt2]      = params->ld_sf_en[cnt1][cnt2];
+                                ldc_cfg->regCfg.blockWidth[cnt1][cnt2]  = params->ld_sf_obw[cnt1][cnt2];
+                                ldc_cfg->regCfg.blockHeight[cnt1][cnt2] = params->ld_sf_obh[cnt1][cnt2];
+                                ldc_cfg->regCfg.pixelPad[cnt1][cnt2]    = params->ld_sf_pad[cnt1][cnt2];
+                            }
+                        }
+                    }
+
+                    if (0 != params->ldmapen)
+                    {
+                        Ldc_LutCfg *lut_cfg        = &ldc_cfg->lutCfg;
+
+                        ldc_cfg->enableBackMapping = (uint32_t)TRUE;
+                        lut_cfg->width             = params->mesh_frame_w;
+                        lut_cfg->height            = params->mesh_frame_h;
+                        lut_cfg->dsFactor          = params->table_m;
+                        lut_cfg->lineOffset        = params->mesh_table_pitch;
+
+                        //TODO: need to translate to physical address in the future when MMU is on
+                        lut_cfg->address = (uint64_t)pcfg->mesh_table;
+                    }
+                }
+
+                tivxMemBufferUnmap(target_ptr_dcc, dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+                tivxMemFree(pout, sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+            }
+        }
+        else
+        {
+            tivxVpacLdcSetMeshParams(ldc_cfg, mesh_prms_desc, mesh_img_desc);
+
+            tivxVpacLdcSetRegionParams(ldc_cfg, reg_prms_desc);
+
+            tivxVpacLdcSetAffineConfig(&ldc_cfg->perspTrnsformCfg,
+                    warp_matrix_desc);
+        }
 
         fvid2_status = Fvid2_control(ldc_obj->handle,
             IOCTL_VHWA_M2M_LDC_SET_PARAMS, &ldc_obj->ldc_cfg, NULL);
