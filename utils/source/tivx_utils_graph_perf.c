@@ -61,6 +61,7 @@
  */
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <TI/tivx.h>
 
 
@@ -82,26 +83,13 @@ vx_status tivx_utils_node_perf_print(vx_node node)
                 status = vxQueryNode(node, VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
                 if(status==VX_SUCCESS)
                 {
-                    uint32_t fps;
-
-                    if(node_perf.avg>0)
-                    {
-                        fps = (uint32_t)((1000*1000*1000*100ull)/node_perf.avg);
-                    }
-                    else
-                    {
-                        fps = 0;
-                    }
-
-                    printf(" NODE: %10s: %16s: %4d.%2d FPS (avg = %6d usecs, min/max = %6d / %6d usecs, #executions = %6d)\n",
+                    printf(" NODE: %10s: %24s: avg = %6"PRIu64" usecs, min/max = %6"PRIu64" / %6"PRIu64" usecs, #executions = %10"PRIu64"\n",
                         target_name,
                         node_name,
-                        fps/100,
-                        fps%100,
-                        (uint32_t)(node_perf.avg/1000),
-                        (uint32_t)(node_perf.min/1000),
-                        (uint32_t)(node_perf.max/1000),
-                        (uint32_t)(node_perf.num)
+                        (node_perf.avg/1000u),
+                        (node_perf.min/1000u),
+                        (node_perf.max/1000u),
+                        (node_perf.num)
                         );
                 }
 
