@@ -98,11 +98,14 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 
     kernel = tivxTargetKernelGet(kernel_id, kernel_name, target_id);
 
+    VX_PRINT(VX_ZONE_INFO, "tivxTargetKernelInstanceAlloc: attempting to call kernel %s on this CPU\n", kernel_name);
+
     if(kernel==NULL)
     {
         /* there is no kernel registered with this kernel ID on this CPU, hence return
         NULL */
-        VX_PRINT(VX_ZONE_WARNING, "tivxTargetKernelInstanceAlloc: there is no kernel with this kernel ID on this CPU\n");
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceAlloc: kernel %s has not been registered on this CPU\n", kernel_name);
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceAlloc: Please register this kernel on the appropriate target core\n");
     }
     else
     {

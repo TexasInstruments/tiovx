@@ -122,6 +122,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                     if(kernel_name!=NULL)
                     {
                         strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME);
+                        VX_PRINT(VX_ZONE_INFO, "tivxAddTargetKernelInternal: registered kernel %s on target %s\n", kernel_name, target_name);
                     }
                     g_target_kernel_table[i].target_id =
                         tivxPlatformGetTargetId(target_name);
@@ -354,7 +355,7 @@ vx_status tivxTargetKernelExecute(
 
             if(VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function returned error code: %d\n", status);
+                VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
             }
         }
         else
