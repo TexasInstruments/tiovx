@@ -85,6 +85,12 @@ extern "C" {
  *      Capture Control Commands
  *********************************/
 
+/*! \brief Control Command to print capture statistics
+ *         No argument is needed to query statistics.
+ *
+ *  \ingroup group_vision_function_vpac_msc
+ */
+#define TIVX_CAPTURE_PRINT_STATISTICS                    (0x40000000u)
 
 /* None */
 

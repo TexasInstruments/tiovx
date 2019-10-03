@@ -138,6 +138,10 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxCaptureControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
 
 /**
  *******************************************************************************
@@ -739,6 +743,7 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
                                 IOCTL_CSIRX_GET_INST_STATUS,
                                 &prms->captStatus,
                                 NULL);
+        tivx_set_debug_zone(VX_ZONE_INFO);
         if (FVID2_SOK == fvid2_status)
         {
             VX_PRINT(VX_ZONE_INFO,
@@ -771,6 +776,7 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
         {
             VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Control failed !!!\n");
         }
+        tivx_clr_debug_zone(VX_ZONE_INFO);
     }
 }
 
@@ -890,6 +896,50 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
     return status;
 }
 
+static vx_status VX_CALLBACK tivxCaptureControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t             size;
+    tivxCaptureParams *prms = NULL;
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxCaptureControl: Failed to Get Target Kernel Instance Context\n");
+    }
+    else if ((NULL == prms) ||
+        (sizeof(tivxCaptureParams) != size))
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxCaptureControl: Invalid Object Size\n");
+        status = VX_FAILURE;
+    }
+
+    switch (node_cmd_id)
+    {
+        case TIVX_CAPTURE_PRINT_STATISTICS:
+        {
+            tivxCapturePrintStatus(prms);
+            break;
+        }
+        default:
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxCaptureControl: Invalid Command Id\n");
+            status = VX_FAILURE;
+            break;
+        }
+    }
+
+    return status;
+}
+
 void tivxAddTargetKernelCapture(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -907,7 +957,7 @@ void tivxAddTargetKernelCapture(void)
                             tivxCaptureProcess,
                             tivxCaptureCreate,
                             tivxCaptureDelete,
-                            NULL,
+                            tivxCaptureControl,
                             NULL);
 
         strncpy(target_name, TIVX_TARGET_CAPTURE2,
@@ -919,7 +969,7 @@ void tivxAddTargetKernelCapture(void)
                             tivxCaptureProcess,
                             tivxCaptureCreate,
                             tivxCaptureDelete,
-                            NULL,
+                            tivxCaptureControl,
                             NULL);
     }
 }
