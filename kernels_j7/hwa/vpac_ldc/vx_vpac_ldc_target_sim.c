@@ -190,6 +190,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         uint32_t size;
         tivxVpacLdcParams *prms = NULL;
         uint32_t num_planes;
+        uint8_t output_bits = 12;
 
         void *target_ptr = NULL;
 
@@ -203,6 +204,11 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxVpacLdcParams) == size))
         {
+            if(IP_DFMT_8b == prms->config.settings.ip_dfmt)
+            {
+                output_bits = 8;
+            }
+
             num_planes = 1U;
 
             if ((VX_DF_IMAGE_NV12 == in_img->format) ||
@@ -219,9 +225,13 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     VX_READ_ONLY);
 
                 if (i == 0)
-                    lse_reformat_in(in_img, target_ptr, prms->inY_16, 0);
+                {
+                    lse_reformat_in(in_img, target_ptr, prms->inY_16, 0, 1);
+                }
                 else
-                    lse_reformat_in(in_img, target_ptr, prms->inC_16, 0); //Should this be 1?
+                {
+                    lse_reformat_in(in_img, target_ptr, prms->inC_16, 0, 1); //Should this be 1?
+                }
 
                 tivxMemBufferUnmap(target_ptr,
                     in_img->mem_size[i], VX_MEMORY_TYPE_HOST,
@@ -270,9 +280,13 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         VX_WRITE_ONLY);
 
                     if (i == 0)
-                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outY0_16, 12, 0);
+                    {
+                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outY0_16, output_bits, 0);
+                    }
                     else
-                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outC1_16, 12, 0);
+                    {
+                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outC1_16, output_bits, 0);
+                    }
 
                     tivxMemBufferUnmap(target_ptr,
                         out_img[0]->mem_size[i], VX_MEMORY_TYPE_HOST,
@@ -298,9 +312,13 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         VX_WRITE_ONLY);
 
                     if (i == 0)
-                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outY2_16, 12, 0);
+                    {
+                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outY2_16, output_bits, 0);
+                    }
                     else
-                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outC3_16, 12, 0);
+                    {
+                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outC3_16, output_bits, 0);
+                    }
 
                     tivxMemBufferUnmap(target_ptr,
                         out_img[1]->mem_size[i], VX_MEMORY_TYPE_HOST,
@@ -448,7 +466,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             if (VX_SUCCESS == status)
             {
                 tivx_vpac_ldc_params_t *params;
-                uint32_t data_mode;
+                uint32_t ip_dfmt, data_mode;
                 void *configuration_target_ptr;
 
                 configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
@@ -463,10 +481,27 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 prms->config.settings.meshmem_size = 10;    // must be 10 before running LDC
 
                 prms->config.settings.en = 1u;  // LD enable
-                prms->config.settings.ip_dfmt = IP_DFMT_12b_UNPACK;                  // LD input pixel format
                 prms->config.settings.ld_yint_typ = params->luma_interpolation_type; // Interpolation method for Y data.  0: Bicubic, 1: Bilinear
                 prms->config.settings.ld_initx =  params->init_x;                    // compute window starting y, in pixels
                 prms->config.settings.ld_inity =  params->init_y;                    // compute window starting x, in pixels
+
+
+                /* Configure input format */
+                if (VX_DF_IMAGE_U16 == in_img_desc->format)
+                {
+                    ip_dfmt = IP_DFMT_12b_UNPACK;
+                }
+                else if ((TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format) ||
+                         (TIVX_DF_IMAGE_P12 == in_img_desc->format))
+                {
+                    ip_dfmt = IP_DFMT_12b_PACK;
+                }
+                else
+                {
+                    ip_dfmt = IP_DFMT_8b;
+                }
+
+                prms->config.settings.ip_dfmt = ip_dfmt;                  // LD input pixel format
 
                 /* Configure data mode and input resolution */
                 if (VX_DF_IMAGE_UYVY == in_img_desc->format)
@@ -478,32 +513,16 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 {
                     data_mode = DATA_MODE_420;
                 }
-                else if (VX_DF_IMAGE_U16 == in_img_desc->format)
-                {
-                    if (0U == params->yc_mode)
-                    {
-                        data_mode = DATA_MODE_Y;
-                    }
-                    else
-                    {
-                        data_mode = DATA_MODE_UV;
-                    }
-                }
-                else if (VX_DF_IMAGE_U8 == in_img_desc->format)
-                {
-                    if (0U == params->yc_mode)
-                    {
-                        data_mode = DATA_MODE_Y;
-                    }
-                    else
-                    {
-                        data_mode = DATA_MODE_UV;
-                    }
-                }
                 else
                 {
-                    data_mode = DATA_MODE_420;
-                    /* None */
+                    if (0U == params->yc_mode)
+                    {
+                        data_mode = DATA_MODE_Y;
+                    }
+                    else
+                    {
+                        data_mode = DATA_MODE_UV;
+                    }
                 }
 
                 prms->config.settings.iw = in_img_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
@@ -524,26 +543,6 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     {
                         prms->config.settings.out_in_420 = 1;      // LD 422 to 420 conversion
                     }
-
-                    if (((VX_DF_IMAGE_NV12 == in_img_desc->format) ||
-                         (TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format)) &&
-                        ((VX_DF_IMAGE_U8 == out0_img_desc->format) ||
-                         (VX_DF_IMAGE_U16 == out0_img_desc->format) ||
-                         (TIVX_DF_IMAGE_P12 == out0_img_desc->format)))
-                    {
-                        if (0U == params->yc_mode)
-                        {
-                            data_mode = DATA_MODE_Y;
-                        }
-                        else
-                        {
-                            data_mode = DATA_MODE_UV;
-                        }
-                    }
-                }
-                else
-                {
-                    // Nothing
                 }
 
                 if (NULL != out1_img_desc)
@@ -561,10 +560,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                         prms->config.settings.out_in_420 = 1;      // LD 422 to 420 conversion
                     }
                 }
-                else
-                {
-                    // Nothing
-                }
+
                 tivxMemBufferUnmap(configuration_target_ptr, configuration_desc->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
             }

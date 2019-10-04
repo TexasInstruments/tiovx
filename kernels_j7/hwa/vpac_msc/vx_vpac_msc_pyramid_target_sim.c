@@ -476,7 +476,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 /* C-model supports only 12-bit in uint16_t container
                  * So we may need to translate.  In HW, VPAC_LSE does this
                  */
-                lse_reformat_in(in_img_desc, target_ptr, prms->src16, 0);
+                lse_reformat_in(in_img_desc, target_ptr, prms->src16, 0, 0);
 
                 tivxMemBufferUnmap(target_ptr, in_img_desc->mem_size[0],
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

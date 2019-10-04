@@ -199,7 +199,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
              */
-            lse_reformat_in(input_desc, input_target_ptr, prms->src16, 0);
+            lse_reformat_in(input_desc, input_target_ptr, prms->src16, 0, 0);
 
 #ifdef VLAB_HWA
 

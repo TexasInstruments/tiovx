@@ -66,7 +66,7 @@
 #include "tivx_kernels_target_utils.h"
 #include "vx_kernels_hwa_target.h"
 
-void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch)
+void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch, uint8_t out_bit_alignment)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -86,8 +86,17 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
         {
             for(i=0; i < w; i++)
             {
-                /* Put 8 bits to 12 */
-                src16[j*w+i] = src_addr8[j*stride+i] << 4;
+                if(out_bit_alignment == 0)
+                {
+                    /* Put 8 bits to 12 */
+                    src16[j*w+i] = src_addr8[j*stride+i] << 4;
+                }
+                else
+                {
+                    /* Put 8 bits as is */
+                    src16[j*w+i] = src_addr8[j*stride+i];
+                }
+
             }
         }
     }

@@ -154,7 +154,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
          */
-        lse_reformat_in(src, src_target_ptr, prms->src16, 0);
+        lse_reformat_in(src, src_target_ptr, prms->src16, 0, 0);
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
