@@ -142,6 +142,10 @@ static vx_status VX_CALLBACK tivxCaptureControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
+    tivx_obj_desc_user_data_object_t *usr_data_obj);
+static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
+    tivx_capture_status_t *capt_status_prms);
 
 /**
  *******************************************************************************
@@ -896,12 +900,70 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
     return status;
 }
 
+static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
+    tivx_capture_status_t *capt_status_prms)
+{
+    uint32_t i;
+
+    for (i = 0; i < TIVX_CAPTURE_MAX_CH; i++)
+    {
+        capt_status_prms->queueCount[i] = prms->captStatus.queueCount[i];
+        capt_status_prms->dequeueCount[i] = prms->captStatus.dequeueCount[i];
+        capt_status_prms->dropCount[i] = prms->captStatus.dropCount[i];
+    }
+
+    capt_status_prms->overflowCount = prms->captStatus.overflowCount;
+    capt_status_prms->spuriousUdmaIntrCount = prms->captStatus.spuriousUdmaIntrCount;
+}
+
+static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
+    tivx_obj_desc_user_data_object_t *usr_data_obj)
+{
+    vx_status                             status = VX_SUCCESS;
+    tivx_capture_status_t                 *capt_status_prms = NULL;
+    void                                  *target_ptr;
+
+    if (NULL != usr_data_obj)
+    {
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
+
+        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+        if (sizeof(tivx_capture_status_t) ==
+                usr_data_obj->mem_size)
+        {
+            capt_status_prms = (tivx_capture_status_t *)target_ptr;
+
+            tivxCaptureCopyStatistics(prms, capt_status_prms);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxCaptureGetStatistics: Invalid Size \n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxCaptureGetStatistics: User Data Object is NULL \n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return (status);
+}
+
 static vx_status VX_CALLBACK tivxCaptureControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    int32_t fvid2_status = FVID2_SOK;
     uint32_t             size;
     tivxCaptureParams *prms = NULL;
 
@@ -926,6 +988,34 @@ static vx_status VX_CALLBACK tivxCaptureControl(
         case TIVX_CAPTURE_PRINT_STATISTICS:
         {
             tivxCapturePrintStatus(prms);
+            break;
+        }
+        case TIVX_CAPTURE_GET_STATISTICS:
+        {
+            if (NULL != obj_desc[0])
+            {
+                fvid2_status = Fvid2_control(prms->drvHandle,
+                                        IOCTL_CSIRX_GET_INST_STATUS,
+                                        &prms->captStatus,
+                                        NULL);
+                if (FVID2_SOK != fvid2_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxCaptureControl: Get status returned failure\n");
+                    status = VX_FAILURE;
+                }
+                else
+                {
+                    status = tivxCaptureGetStatistics(prms,
+                        (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxCaptureControl: User data object was NULL\n");
+                status = VX_FAILURE;
+            }
             break;
         }
         default:

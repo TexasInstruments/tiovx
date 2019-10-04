@@ -92,6 +92,12 @@ extern "C" {
  */
 #define TIVX_CAPTURE_PRINT_STATISTICS                    (0x40000000u)
 
+/*! \brief Control Command to return capture statistics to application
+ *
+ *  \ingroup group_vision_function_vpac_msc
+ */
+#define TIVX_CAPTURE_GET_STATISTICS                      (0x40000001u)
+
 /* None */
 
 /*********************************
@@ -122,6 +128,33 @@ typedef struct
     uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
     uint32_t vcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
 } tivx_capture_params_t;
+
+/**
+ *  \brief Capture status structure used to get the current status.
+ */
+typedef struct
+{
+    /**< Counter to keep track of how many requests are queued to the
+     *   driver.
+     *   Note: This counter will be reset at the time of driver init. */
+    uint32_t queueCount[TIVX_CAPTURE_MAX_CH];
+    /**< Counter to keep track of how many requests are dequeued from the
+     *   driver.
+     *   Note: This counter will be reset at the time of driver init. */
+    uint32_t dequeueCount[TIVX_CAPTURE_MAX_CH];
+    /**< Counter to keep track of how many frames are dropped from the
+     *   driver when no buffers are queued by the application.
+     *   Note: This counter will be reset at the time of driver init. */
+    uint32_t dropCount[TIVX_CAPTURE_MAX_CH];
+    /**< Counter to keep track of the occurrence of overflow error.
+     *   Note: This counter will be reset at the time of driver create and
+     *   during driver start. */
+    uint32_t overflowCount;
+    /**< Counter to keep track of the occurrences of spurious UDMA interrupts.
+     *   Note: This counter will be reset at the time of driver create and
+     *   during driver start. */
+    uint32_t spuriousUdmaIntrCount;
+} tivx_capture_status_t;
 
 
 /*********************************

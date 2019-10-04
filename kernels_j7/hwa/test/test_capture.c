@@ -207,13 +207,19 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     tivx_capture_params_t local_capture_config;
     vx_image img_exemplar;
     uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT;
-    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS; /* TODO: eventually move to 4, but use 1 for now */
+    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS;
     uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
     CT_Image tst_img;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
     uint64_t exe_time;
     char filename[MAX_ABS_FILENAME];
     AppSensorCmdParams cmdPrms;
+    vx_reference refs[1];
+    vx_user_data_object capture_stats_obj;
+    tivx_capture_status_t *capture_stats_struct;
+    vx_map_id capture_stats_map_id;
+    uint32_t *data_ptr;
+    uint8_t i;
 
     /* Setting to num buf of capture node */
     num_buf = 3;
@@ -274,10 +280,12 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    /*export_graph_to_file(graph, "test_capture_node");
-    log_graph_rt_trace(graph);*/
-
     exe_time = tivxPlatformGetTimeInUsecs();
+
+    cmdPrms.numSensors = num_capture_frames;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
+        APP_REMOTE_SERVICE_SENSOR_NAME,
+        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* enqueue buf for pipeup but dont trigger graph execution */
     for(buf_id=0; buf_id<num_buf-1; buf_id++)
@@ -287,12 +295,6 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
 
     /* after pipeup, now enqueue a buffer to trigger graph scheduling */
     vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1);
-
-    /* After first trigger, configure and start the sensor */
-    cmdPrms.numSensors = num_capture_frames;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
-        APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
@@ -312,12 +314,45 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
-    /*if(arg_->measure_perf==1)
-    {
-        vx_node nodes[] = { n0 };
+    capture_stats_obj =
+        vxCreateUserDataObject(context, "tivx_capture_status_t" ,
+        sizeof(tivx_capture_status_t), NULL);
 
-        printGraphPipelinePerformance(graph, nodes, 1, exe_time, loop_cnt+num_buf, width*height);
-    }*/
+    refs[0] = (vx_reference)capture_stats_obj;
+    tivxNodeSendCommand(n0, 0,
+        TIVX_CAPTURE_GET_STATISTICS, refs, 1u);
+
+    vxMapUserDataObject(
+            (vx_user_data_object)refs[0],
+            0,
+            sizeof(tivx_capture_status_t),
+            &capture_stats_map_id,
+            (void **)&data_ptr,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            0
+        );
+
+    capture_stats_struct = (tivx_capture_status_t*)data_ptr;
+
+    printf("\n\r==========================================================\r\n");
+    printf(": Capture Status:\r\n");
+    printf("==========================================================\r\n");
+    printf(": FIFO Overflow Count: %d\r\n",
+              capture_stats_struct->overflowCount);
+    printf(": Spurious UDMA interrupt count: %d\r\n",
+              capture_stats_struct->spuriousUdmaIntrCount);
+    printf("  [Channel No] | Frame Queue Count |"
+        " Frame De-queue Count | Frame Drop Count |\n");
+    for(i = 0U ; i < num_capture_frames ; i ++)
+    {
+        printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
+              i,
+              capture_stats_struct->queueCount[i],
+              capture_stats_struct->dequeueCount[i],
+              capture_stats_struct->dropCount[i]);
+    }
+    vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
 
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseGraph(&graph));
@@ -328,6 +363,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
         VX_CALL(vxReleaseObjectArray(&capture_frames[buf_id]));
     }
     VX_CALL(vxReleaseUserDataObject(&capture_config));
+    VX_CALL(vxReleaseUserDataObject(&capture_stats_obj));
 
     tivxHwaUnLoadKernels(context);
 
@@ -344,13 +380,18 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     tivx_capture_params_t local_capture_config;
     tivx_raw_image raw_image = 0;
     uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT, i;
-    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS; /* TODO: eventually move to 4, but use 1 for now */
+    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS;
     uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
     CT_Image tst_img;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
     uint64_t exe_time;
     char filename[MAX_ABS_FILENAME];
     tivx_raw_image_create_params_t params;
+    vx_reference refs[1];
+    vx_user_data_object capture_stats_obj;
+    tivx_capture_status_t *capture_stats_struct;
+    vx_map_id capture_stats_map_id;
+    uint32_t *data_ptr;
 
     tivx_raw_image out_img;
 
@@ -428,10 +469,12 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    /*export_graph_to_file(graph, "test_capture_node");
-    log_graph_rt_trace(graph);*/
-
     exe_time = tivxPlatformGetTimeInUsecs();
+
+    cmdPrms.numSensors = num_capture_frames;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
+        APP_REMOTE_SERVICE_SENSOR_NAME,
+        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* enqueue buf for pipeup but dont trigger graph execution */
     for(buf_id=0; buf_id<num_buf-1; buf_id++)
@@ -441,11 +484,6 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
     /* after pipeup, now enqueue a buffer to trigger graph scheduling */
     vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1);
-
-    cmdPrms.numSensors = num_capture_frames;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
-        APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
@@ -465,12 +503,45 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
-    /*if(arg_->measure_perf==1)
-    {
-        vx_node nodes[] = { n0 };
+    capture_stats_obj =
+        vxCreateUserDataObject(context, "tivx_capture_status_t" ,
+        sizeof(tivx_capture_status_t), NULL);
 
-        printGraphPipelinePerformance(graph, nodes, 1, exe_time, loop_cnt+num_buf, width*height);
-    }*/
+    refs[0] = (vx_reference)capture_stats_obj;
+    tivxNodeSendCommand(n0, 0,
+        TIVX_CAPTURE_GET_STATISTICS, refs, 1u);
+
+    vxMapUserDataObject(
+            (vx_user_data_object)refs[0],
+            0,
+            sizeof(tivx_capture_status_t),
+            &capture_stats_map_id,
+            (void **)&data_ptr,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            0
+        );
+
+    capture_stats_struct = (tivx_capture_status_t*)data_ptr;
+
+    printf("\n\r==========================================================\r\n");
+    printf(": Capture Status:\r\n");
+    printf("==========================================================\r\n");
+    printf(": FIFO Overflow Count: %d\r\n",
+              capture_stats_struct->overflowCount);
+    printf(": Spurious UDMA interrupt count: %d\r\n",
+              capture_stats_struct->spuriousUdmaIntrCount);
+    printf("  [Channel No] | Frame Queue Count |"
+        " Frame De-queue Count | Frame Drop Count |\n");
+    for(i = 0U ; i < num_capture_frames ; i ++)
+    {
+        printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
+              i,
+              capture_stats_struct->queueCount[i],
+              capture_stats_struct->dequeueCount[i],
+              capture_stats_struct->dropCount[i]);
+    }
+    vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
 
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseGraph(&graph));
@@ -481,6 +552,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
         VX_CALL(vxReleaseObjectArray(&capture_frames[buf_id]));
     }
     VX_CALL(vxReleaseUserDataObject(&capture_config));
+    VX_CALL(vxReleaseUserDataObject(&capture_stats_obj));
 
     tivxHwaUnLoadKernels(context);
 
