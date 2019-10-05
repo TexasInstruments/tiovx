@@ -322,13 +322,20 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *             <tt>\ref tivx_vpac_ldc_mesh_params_t</tt>. It is used to
  *             provide frame size and downsampling factor of mesh_img.
  *             If set to null, back mapping is disabled.
- * \param [in] mesh_img (optional) Mesh image containing mesh 2D lookup table.
- *             This can be a full remap table, but is typically sub-sampled by a power
+ * \param [in] mesh_img (optional) Mesh image containing mesh 2D coordinate offset lookup table.
+ *             This can be a full remap table per output pixel, but is typically sub-sampled by a power
  *             of 2 as per tivx_vpac_ldc_mesh_params_t.subsample_factor to save memory
  *             footprint and bandwidth. The pitch/line offset for the mesh can be calculated using
  *             TIVX_VPAC_LDC_CALC_MESH_LINE_OFFSET.
- *             The coordinates are of type S16Q3, and are stored as X,Y pairs
+ *             The coordinate offsets are of type S16Q3, and are stored as X,Y pairs
  *             of type <tt>\ref VX_DF_IMAGE_U32</tt>.
+ *             - 32bit encoding format (X,Y) is as follows:
+ *               - Y offset (16 bit, 13bit signed integer, 3 bit fractional)
+ *                  - [2:0]   Fractional is 3 bits (support 1/8th pixel of precision)
+ *                  - [15:3]  Signed integer offset in verical direction
+ *               - X offset (16 bit, 13bit signed integer, 3 bit fractional)
+ *                  - [18:16] Fractional is 3 bits (support 1/8th pixel of precision)
+ *                  - [31:19] Signed integer offset in horizontal direction
  *             If set to null, back mapping is disabled.
  * \param [in] dcc_db (optional) DCC tuning database for the given sensor
  *             <tt>\ref vx_user_data_object </tt> Note: Not supported yet.

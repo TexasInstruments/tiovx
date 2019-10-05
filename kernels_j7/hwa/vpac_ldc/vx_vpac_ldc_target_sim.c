@@ -128,6 +128,7 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
     tivx_obj_desc_lut_t *luma_lut_desc,tivx_obj_desc_lut_t *chroma_lut_desc);
+static void xyMeshSwapCpy(uint32_t *output, uint32_t *input, uint32_t num_points);
 
 #ifdef ENABLE_DEBUG_PRINT
 void print_csettings(ldc_settings *settings)
@@ -785,7 +786,7 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
             for(j = 0; j < mesh_img_desc->imagepatch_addr[0].dim_y; j++) {
                 uint32_t input_index = (mesh_img_desc->imagepatch_addr[0].stride_y>>2)*j;
                 uint32_t output_index = mesh_img_desc->imagepatch_addr[0].dim_x*j;
-                memcpy(&mesh[output_index], &meshPtr[input_index],  mesh_img_desc->imagepatch_addr[0].dim_x*4);
+                xyMeshSwapCpy((uint32_t*)&mesh[output_index], (uint32_t*)&meshPtr[input_index],  mesh_img_desc->imagepatch_addr[0].dim_x);
             }
 
             // derived (not in cfg file directly)
@@ -811,6 +812,20 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
     {
         settings->ldmapen = 0;     // LD back mapping enable
     }
+}
+
+static void xyMeshSwapCpy(uint32_t *output, uint32_t *input, uint32_t num_points)
+{
+    uint32_t i, in_val, out_val;
+
+    for(i=0; i<num_points; i++)
+    {
+        in_val = input[i];
+        out_val = ((in_val & 0xFFFF) << 16) | ((in_val >> 16) & 0xFFFF);
+        output[i] = out_val;
+    }
+
+    return;
 }
 
 static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
