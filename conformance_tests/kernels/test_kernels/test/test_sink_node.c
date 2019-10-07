@@ -172,7 +172,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_node n1, n2;
-    vx_scalar scalar[MAX_NUM_BUF];
+    vx_scalar scalar[MAX_NUM_BUF] = {NULL};
     uint8_t scalar_val = 0;
     uint32_t loop_cnt, pipeline_depth, num_buf, i, buf_id, loop_id;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
@@ -322,7 +322,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_node n1, n2, n0;
-    vx_scalar scalar[MAX_NUM_BUF];
+    vx_scalar scalar[MAX_NUM_BUF] = {NULL};
     uint8_t scalar_val = 0;
     uint32_t pipeline_depth, num_buf, i, buf_id, loop_id, num_streams;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
@@ -419,7 +419,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_node n1, n2, n0;
-    vx_scalar scalar[MAX_NUM_BUF];
+    vx_scalar scalar[MAX_NUM_BUF] = {NULL};
     uint8_t scalar_val = 0;
     uint32_t pipeline_depth, num_buf, i, buf_id, loop_id, num_streams;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];

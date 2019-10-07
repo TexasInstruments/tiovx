@@ -97,9 +97,17 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
     {
         buf = (char*)ct_alloc_mem(sz);
         fseek(f, 0, SEEK_SET);
-        if( fread(buf, 1, sz, f) == sz )
+        if (NULL != buf)
         {
-            image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+            if( fread(buf, 1, sz, f) == sz )
+            {
+                image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+            }
+        }
+        else
+        {
+            fclose(f);
+            return NULL;
         }
     }
 

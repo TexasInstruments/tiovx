@@ -75,7 +75,7 @@ static vx_size harris_corner_read_line(const char *data, char *line)
 static void harris_corner_read_truth_data(const char *file_path, TIVX_TruthData *truth_data, float strengthScale)
 {
     FILE* f;
-    long sz;
+    long sz, read_sz;
     void* buf; char* ptr;
     char temp[1024];
     vx_size ln_size = 0;
@@ -85,14 +85,32 @@ static void harris_corner_read_truth_data(const char *file_path, TIVX_TruthData 
     ASSERT(truth_data && file_path);
 
     f = fopen(file_path, "rb");
-    ASSERT(f);
+    if (NULL == f)
+    {
+        return;
+    }
     fseek(f, 0, SEEK_END);
     sz = ftell(f);
-    ASSERT(sz);
+    if (0 == sz)
+    {
+        fclose(f);
+        return;
+    }
     fseek(f, 0, SEEK_SET);
 
-    ASSERT(buf = ct_alloc_mem(sz + 1));
-    ASSERT(sz == fread(buf, 1, sz, f));
+    buf = ct_alloc_mem(sz + 1);
+    if (NULL == buf)
+    {
+        fclose(f);
+        return;
+    }
+    read_sz = fread(buf, 1, sz, f);
+    if (read_sz != sz)
+    {
+        fclose(f);
+        ct_free_mem(buf);
+        return;
+    }
 
     fclose(f);
 
@@ -464,7 +482,10 @@ TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
 
     ASSERT_NO_FAILURE(src_ct_image = optflow_pyrlk_read_image( "optflow_01.bmp", 0, 0));
 
-    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image->width, src_ct_image->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    if (NULL != src_ct_image)
+    {
+        ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image->width, src_ct_image->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    }
 
     ASSERT_VX_OBJECT(new_points_arr0 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners), VX_TYPE_ARRAY);
     ASSERT_VX_OBJECT(new_points_arr1 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners), VX_TYPE_ARRAY);
@@ -473,9 +494,11 @@ TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
     ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
 
-    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image->width, src_ct_image->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-
-    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, 4, VX_SCALE_PYRAMID_HALF, border));
+    if (NULL != src_ct_image)
+    {
+        ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image->width, src_ct_image->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, 4, VX_SCALE_PYRAMID_HALF, border));
+    }
 
     ASSERT_VX_OBJECT(strength_thresh_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &strength_thresh), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(min_distance_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &min_distance), VX_TYPE_SCALAR);

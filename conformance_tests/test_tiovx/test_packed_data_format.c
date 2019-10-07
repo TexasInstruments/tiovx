@@ -638,27 +638,11 @@ static CT_Image own_generate_rand_image(int width, int height, vx_df_image forma
 
     image = ct_allocate_image_hdr_impl(width, height, width, format, 1);
 
-    uint8_t* ptr = image->data.y;
-    for( y = 0; y < height; y++)
+    if (NULL != image)
     {
-        for( x = 0; x < width; x+=2 )
-        {
-            int val = CT_RNG_NEXT_INT(rng, 0, 4096);
-            uint8_t value_b0 = (uint8_t)(val & 0xFF);
-            uint8_t value_b1 = (uint8_t)(val>>8u) | (uint8_t)((val & 0x0F)<<4u);
-            uint8_t value_b2 = (uint8_t)(val>>4u);
-            *ptr = value_b0;
-            ptr++;
-            *ptr = value_b1;
-            ptr++;
-            *ptr = value_b2;
-            ptr++;
-        }
-    }
+        uint8_t* ptr = image->data.y;
 
-    if (format == TIVX_DF_IMAGE_NV12_P12)
-    {
-        for( y = 0; y < height/2; y++)
+        for( y = 0; y < height; y++)
         {
             for( x = 0; x < width; x+=2 )
             {
@@ -672,6 +656,26 @@ static CT_Image own_generate_rand_image(int width, int height, vx_df_image forma
                 ptr++;
                 *ptr = value_b2;
                 ptr++;
+            }
+        }
+
+        if (format == TIVX_DF_IMAGE_NV12_P12)
+        {
+            for( y = 0; y < height/2; y++)
+            {
+                for( x = 0; x < width; x+=2 )
+                {
+                    int val = CT_RNG_NEXT_INT(rng, 0, 4096);
+                    uint8_t value_b0 = (uint8_t)(val & 0xFF);
+                    uint8_t value_b1 = (uint8_t)(val>>8u) | (uint8_t)((val & 0x0F)<<4u);
+                    uint8_t value_b2 = (uint8_t)(val>>4u);
+                    *ptr = value_b0;
+                    ptr++;
+                    *ptr = value_b1;
+                    ptr++;
+                    *ptr = value_b2;
+                    ptr++;
+                }
             }
         }
     }
@@ -1186,7 +1190,10 @@ TEST_WITH_ARG(tivxPackedDataFormat, testStrideX, format_arg, FORMAT_ARGS)
         VX_CALL(vxMapImagePatch(image, &rect, plane, &map_id, &tst_addr, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, flags));
 
         /* check if image patch plane equal to reference data */
-        own_check_image_patch_plane_vx_layout(ref, &tst_addr, ptr, plane, arg_->format);
+        if (NULL != ref)
+        {
+            own_check_image_patch_plane_vx_layout(ref, &tst_addr, ptr, plane, arg_->format);
+        }
 
         VX_CALL(vxUnmapImagePatch(image, map_id));
     } /* for num_planes */

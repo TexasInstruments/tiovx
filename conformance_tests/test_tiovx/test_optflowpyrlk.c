@@ -50,7 +50,7 @@ static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int he
 
 static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
 {
-    size_t sz = 0;
+    size_t sz = 0, read_sz;
     void* buf = 0;
     char file[MAXPATHLENGTH];
 
@@ -64,8 +64,19 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    ASSERT_(return 0, buf = ct_alloc_mem(sz + 1));
-    ASSERT_(return 0, sz == fread(buf, 1, sz, f));
+    buf = ct_alloc_mem(sz + 1);
+    if (NULL == buf)
+    {
+        fclose(f);
+        return 0;
+    }
+    read_sz = fread(buf, 1, sz, f);
+    if (read_sz != sz)
+    {
+        fclose(f);
+        ct_free_mem(buf);
+        return 0;
+    }
     fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
 #else

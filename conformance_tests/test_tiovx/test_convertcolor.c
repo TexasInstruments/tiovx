@@ -944,11 +944,17 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_forma
     ASSERT_NO_FAILURE(ref_dst = channel_extract_create_reference_image(ref_virt, arg_->channel));
 
     ASSERT_NO_FAILURE(src = ct_image_to_vx_image(ref_src, context));
-    ASSERT_VX_OBJECT(dst = vxCreateImage(context, ref_dst->width, ref_dst->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    if (NULL != ref_dst)
+    {
+        ASSERT_VX_OBJECT(dst = vxCreateImage(context, ref_dst->width, ref_dst->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
     ASSERT_VX_OBJECT(virt   = vxCreateImage(context, width, height, virtformat), VX_TYPE_IMAGE);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+    if (NULL != dst)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+    }
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(virt, VX_IMAGE_SPACE, &space, sizeof(space)));
     
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -967,13 +973,16 @@ TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_forma
     ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxGetValidRegionImage(src, &src_rect);
-    vxGetValidRegionImage(dst, &dst_rect);
 
     ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
     ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
 
-    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), ref_dst->width);
-    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), ref_dst->height);
+    if ( (NULL != ref_dst) && (NULL != dst))
+    {
+        vxGetValidRegionImage(dst, &dst_rect);
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), ref_dst->width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), ref_dst->height);
+    }
 
     VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));

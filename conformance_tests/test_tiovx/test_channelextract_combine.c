@@ -135,12 +135,12 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombine, Arg,
 )
 {
     vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0, virt1, virt2, virt3;
+    vx_image src_image = 0, dst_image = 0, virt1 = 0, virt2 = 0, virt3 = 0;
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_graph;
     vx_rectangle_t src_rect, dst_rect;
-    vx_bool valid_rect;
+    vx_bool valid_rect = vx_false_e;
 
     CT_Image src = NULL, dst = NULL;
     CT_Image dst_ref = NULL;
@@ -154,20 +154,35 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombine, Arg,
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
-    ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+    if (NULL != src)
+    {
+        ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+    }
 
-    ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    if (NULL != dst_ref)
+    {
+        ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
 
-    node1 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, virt1);
-    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    if (NULL != virt1)
+    {
+        node1 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, virt1);
+        ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    }
 
-    node2 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_G, virt2);
-    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+    if (NULL != virt2)
+    {
+        node2 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_G, virt2);
+        ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+    }
 
-    node3 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_B, virt3);
-    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+    if (NULL != virt3)
+    {
+        node3 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_B, virt3);
+        ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+    }
 
     node4 = vxChannelCombineNode(graph, virt1, virt2, virt3, NULL, dst_image);
     ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
@@ -175,7 +190,10 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombine, Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    if (NULL != node1)
+    {
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    }
     ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxGetValidRegionImage(src_image, &src_rect);
@@ -324,12 +342,12 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
 {
     int node_count = 4;
     vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0, virt1, virt2, virt3;
+    vx_image src_image = 0, dst_image = 0, virt1 = 0, virt2 = 0, virt3 = 0;
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_perf_t perf_super_node, perf_graph;
     vx_rectangle_t src_rect, dst_rect;
-    vx_bool valid_rect;
+    vx_bool valid_rect = vx_false_e;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
 
@@ -345,20 +363,35 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
-    ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+    if (NULL != src)
+    {
+        ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+    }
 
-    ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    if (NULL != dst_ref)
+    {
+        ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
 
-    node1 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, virt1);
-    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    if (NULL != virt1)
+    {
+        node1 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, virt1);
+        ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    }
 
-    node2 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_G, virt2);
-    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+    if (NULL != virt2)
+    {
+        node2 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_G, virt2);
+        ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+    }
 
-    node3 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_B, virt3);
-    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+    if (NULL != virt2)
+    {
+        node3 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_B, virt3);
+        ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+    }
 
     node4 = vxChannelCombineNode(graph, virt1, virt2, virt3, NULL, dst_image);
     ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
@@ -373,7 +406,10 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    if (NULL != node1)
+    {
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    }
     ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxGetValidRegionImage(src_image, &src_rect);
@@ -528,7 +564,7 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
     vx_graph graph = 0;
     vx_node node = 0;
     vx_perf_t perf_super_node, perf_graph;
-    vx_rectangle_t src_rect, dst_rect;
+    vx_rectangle_t src_rect = {0}, dst_rect = {0};
     vx_bool valid_rect;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
@@ -537,10 +573,18 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
     CT_Image dst_ref = NULL;
 
     ASSERT_NO_FAILURE(src = channel_extract_image_generate_random(arg_->width, arg_->height, arg_->format));
-    ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+
+    if (NULL != src)
+    {
+        ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+    }
 
     ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    if (NULL != dst_ref)
+    {
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);    
+    }
 
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
@@ -559,13 +603,16 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
     ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxGetValidRegionImage(src_image, &src_rect);
-    vxGetValidRegionImage(dst_image, &dst_rect);
 
     ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
     ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
 
-    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), dst_ref->width);
-    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), dst_ref->height);
+    if (NULL != dst_ref)
+    {
+        vxGetValidRegionImage(dst_image, &dst_rect);
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), dst_ref->width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), dst_ref->height);
+    }
 
     VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));

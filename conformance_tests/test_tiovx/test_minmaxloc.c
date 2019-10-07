@@ -629,7 +629,7 @@ TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
     Point* ptbuf = 0;
     vx_size bufbytes = 0, npoints = 0, bufcap = 0;
     vx_rectangle_t src_rect;
-    vx_bool valid_rect;
+    vx_bool valid_rect = vx_false_e;
     vx_scalar shift_convertdepth = 0;
     vx_int32 sh = 0;
     int iter, k, niters = 3;
@@ -720,7 +720,11 @@ TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
-        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        if (NULL != node1)
+        {
+            vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        }
+
         ASSERT_EQ_INT(valid_rect, vx_false_e);
 
         vxGetValidRegionImage(src0_image, &src_rect);

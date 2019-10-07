@@ -63,7 +63,7 @@ static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int he
 
 static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
 {
-    size_t sz = 0;
+    size_t sz = 0, read_sz;
     void* buf = 0;
     char file[MAXPATHLENGTH];
 
@@ -77,8 +77,19 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    ASSERT_(return 0, buf = ct_alloc_mem(sz + 1));
-    ASSERT_(return 0, sz == fread(buf, 1, sz, f));
+    buf = ct_alloc_mem(sz + 1);
+    if (NULL == buf)
+    {
+        fclose(f);
+        return 0;
+    }
+    read_sz = fread(buf, 1, sz, f);
+    if (sz != read_sz)
+    {
+        ct_free_mem(buf);
+        fclose(f);
+        return 0;
+    }
     fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
 #else
@@ -375,7 +386,10 @@ TEST_WITH_ARG(tivxFastCorners, testVirtualImages, format_arg,
 
     ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
+    if (NULL != src_ct_image)
+    {
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
+    }
 
     ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
     ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));

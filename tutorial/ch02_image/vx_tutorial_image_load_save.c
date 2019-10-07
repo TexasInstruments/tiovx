@@ -574,6 +574,12 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
     int nbytes = sizeof(float);
     char* buff = malloc(nbytes);
 
+    if (NULL == buff)
+    {
+        printf("FAILED ALLOCATING MEMORY\n");
+        return;
+    }
+
     // Initialize variables for tokenizing each line based on delimiter values
     char* token;
     char* delim = " \n\t,";
@@ -589,7 +595,9 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
     // Try reading in file
     ptr_file = fopen(filename, "r");
     if(!ptr_file){
-        printf("FAILED READING FILE");
+        printf("FAILED READING FILE\n");
+        free(buff);
+        return;
     }
 
     // If file read is successful, try to populate matrix
@@ -632,6 +640,7 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
         }
     }
     fclose(ptr_file);
+    free(buff);
     //printf("val of first element: %d\n", u8[0]);
 }
 
@@ -664,7 +673,7 @@ vx_status save_pyramid_to_file(char *filename, vx_pyramid pyr, vx_size levels){
         strcat(img_filename, filename);
 
         // Create new filename for each level
-        char img_index[10] = "";
+        char img_index[16] = "";
         sprintf(img_index, "%d.bmp", index);
         strcat(img_filename, img_index);
         printf("New filename: %s", img_filename);

@@ -345,38 +345,40 @@ TEST_WITH_ARG(tivxPyramidNode, testObjectArrayPyramidPipeline, Arg, STREAMING_PA
         vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_pyr, 1, &num_refs);
         vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_pyr_2, 1, &num_refs);
 
-        /* TODO: Add reference checking */
         ASSERT_VX_OBJECT(out_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_pyr_2), VX_TYPE_OBJECT_ARRAY);
 
         VX_CALL(vxQueryObjectArray(out_objarr, VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items)));
 
         VX_CALL(vxQueryPyramid(out_pyr_2, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
-        for (j = 0; j < num_items; j++)
+        if (NULL != out_objarr)
         {
-            vx_pyramid tmp_out_pyr;
-
-            ASSERT_VX_OBJECT(tmp_out_pyr = (vx_pyramid)vxGetObjectArrayItem(out_objarr, j), VX_TYPE_PYRAMID);
-
-            for (k = 0; k < levels; k++)
+            for (j = 0; j < num_items; j++)
             {
-                CT_Image test_image;
-                vx_image vx_test_image = vxGetPyramidLevel(tmp_out_pyr, k);
+                vx_pyramid tmp_out_pyr;
 
-                test_image = ct_image_from_vx_image(vx_test_image);
+                ASSERT_VX_OBJECT(tmp_out_pyr = (vx_pyramid)vxGetObjectArrayItem(out_objarr, j), VX_TYPE_PYRAMID);
 
-                val = test_image->data.y[0];
-
-                if (val != reference_val)
+                for (k = 0; k < levels; k++)
                 {
-                    printf("val = %d\n", val);
-                    printf("reference_val = %d\n", reference_val);
-                    ASSERT(val == reference_val);
+                    CT_Image test_image;
+                    vx_image vx_test_image = vxGetPyramidLevel(tmp_out_pyr, k);
+
+                    test_image = ct_image_from_vx_image(vx_test_image);
+
+                    val = test_image->data.y[0];
+
+                    if (val != reference_val)
+                    {
+                        printf("val = %d\n", val);
+                        printf("reference_val = %d\n", reference_val);
+                        ASSERT(val == reference_val);
+                    }
+
+                    vxReleaseImage(&vx_test_image);
                 }
 
-                vxReleaseImage(&vx_test_image);
+                vxReleasePyramid(&tmp_out_pyr);
             }
-
-            vxReleasePyramid(&tmp_out_pyr);
         }
 
         if (255 == reference_val)
@@ -680,31 +682,34 @@ TEST_WITH_ARG(tivxPyramidNode, testDelayObjectArrayPyramidPipeline, Arg, STREAMI
 
         VX_CALL(vxQueryPyramid(out_pyr_2, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
 
-        for (j = 0; j < num_items; j++)
+        if (out_objarr != NULL)
         {
-            vx_pyramid tmp_out_pyr;
-
-            ASSERT_VX_OBJECT(tmp_out_pyr = (vx_pyramid)vxGetObjectArrayItem(out_objarr, j), VX_TYPE_PYRAMID);
-
-            for (k = 0; k < levels; k++)
+            for (j = 0; j < num_items; j++)
             {
-                CT_Image test_image;
-                vx_image vx_test_image = vxGetPyramidLevel(tmp_out_pyr, k);
+                vx_pyramid tmp_out_pyr;
 
-                test_image = ct_image_from_vx_image(vx_test_image);
+                ASSERT_VX_OBJECT(tmp_out_pyr = (vx_pyramid)vxGetObjectArrayItem(out_objarr, j), VX_TYPE_PYRAMID);
 
-                val = test_image->data.y[0];
-
-                /* Ignore the first val since it is a delay and the first value is garbage */
-                if (i > 0)
+                for (k = 0; k < levels; k++)
                 {
-                    ASSERT(val == reference_val);
+                    CT_Image test_image;
+                    vx_image vx_test_image = vxGetPyramidLevel(tmp_out_pyr, k);
+
+                    test_image = ct_image_from_vx_image(vx_test_image);
+
+                    val = test_image->data.y[0];
+
+                    /* Ignore the first val since it is a delay and the first value is garbage */
+                    if (i > 0)
+                    {
+                        ASSERT(val == reference_val);
+                    }
+
+                    vxReleaseImage(&vx_test_image);
                 }
 
-                vxReleaseImage(&vx_test_image);
+                vxReleasePyramid(&tmp_out_pyr);
             }
-
-            vxReleasePyramid(&tmp_out_pyr);
         }
 
         if (255 == reference_val)

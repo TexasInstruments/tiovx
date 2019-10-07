@@ -163,17 +163,20 @@ static void convolve_sequential_check(CT_Image src, CT_Image dst, vx_border_t bo
     ASSERT(src && dst);
 
     ASSERT_NO_FAILURE(virt_ref = convolve_create_reference_image(src, border, cols, rows, data1, scale, dst_format));
-    ASSERT_NO_FAILURE(dst_ref = convolve_create_reference_image(virt_ref, border, cols, rows, data2, scale, dst_format));
+    if (NULL != virt_ref)
+    {
+        ASSERT_NO_FAILURE(dst_ref = convolve_create_reference_image(virt_ref, border, cols, rows, data2, scale, dst_format));
 
-    ASSERT_NO_FAILURE(
-        if (border.mode == VX_BORDER_UNDEFINED)
-        {
-            ct_adjust_roi(dst, cols - 1, rows - 1, cols - 1, rows - 1);
-            ct_adjust_roi(dst_ref, cols - 1, rows - 1, cols - 1, rows - 1);
-        }
-    );
+        ASSERT_NO_FAILURE(
+            if (border.mode == VX_BORDER_UNDEFINED)
+            {
+                ct_adjust_roi(dst, cols - 1, rows - 1, cols - 1, rows - 1);
+                ct_adjust_roi(dst_ref, cols - 1, rows - 1, cols - 1, rows - 1);
+            }
+        );
 
-    EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
+        EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
+    }
 }
 
 

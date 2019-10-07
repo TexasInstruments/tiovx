@@ -445,15 +445,22 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
         {
             /* Check for continuity for each node in super node */
-            vx_bool is_continuous;
+            vx_bool is_continuous = vx_false_e;
 
             ownContextLock(graph->base.context);
 
-            ownGraphCheckContinuityOfSupernode(
-                        &graph->base.context->graph_sort_context,
-                        super_node,
-                        num_nodes_in_supernode,
-                        &is_continuous);
+            if (num_nodes_in_supernode < TIVX_SUPER_NODE_MAX_NODES)
+            {
+                ownGraphCheckContinuityOfSupernode(
+                            &graph->base.context->graph_sort_context,
+                            super_node,
+                            num_nodes_in_supernode,
+                            &is_continuous);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
 
             ownContextUnlock(graph->base.context);
 

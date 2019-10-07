@@ -1716,7 +1716,7 @@ static
 void* own_alloc_init_data_items(vx_enum item_type, vx_size num_items)
 {
     vx_size i;
-    vx_size item_size;
+    vx_size item_size = 0;
     void* p = 0;
 
     switch (item_type)

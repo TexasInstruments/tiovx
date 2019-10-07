@@ -299,7 +299,7 @@ TEST_WITH_ARG(tivxGraph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZ
     ASSERT(nonlinear_max_dim == 9);
 
     vx_char *extensions = malloc(extensions_size*sizeof(vx_char));
-    VX_CALL(vxQueryContext(context, VX_CONTEXT_EXTENSIONS, extensions, extensions_size*sizeof(vx_char)));
+    vxQueryContext(context, VX_CONTEXT_EXTENSIONS, extensions, extensions_size*sizeof(vx_char));
     ASSERT(strcmp(extensions, " ") == 0);
     free(extensions);
 

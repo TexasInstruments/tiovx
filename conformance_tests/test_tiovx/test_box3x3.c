@@ -183,7 +183,10 @@ static void sequential_box3x3_check(CT_Image src, CT_Image dst, vx_border_t bord
 
     ASSERT_NO_FAILURE(virt_ref = tivx_box3x3_create_reference_image(src, border));
 
-    ASSERT_NO_FAILURE(dst_ref = tivx_box3x3_create_reference_image(virt_ref, border));
+    if (NULL != virt_ref)
+    {
+        ASSERT_NO_FAILURE(dst_ref = tivx_box3x3_create_reference_image(virt_ref, border));
+    }
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)

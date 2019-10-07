@@ -103,8 +103,8 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayProcess(
     vx_status status = VX_SUCCESS;
 
     tivx_obj_desc_object_array_t *in_object_array_desc;
-    tivx_obj_desc_scalar_t *in_scalar_desc[NUM_ITEMS];
-    tivx_obj_desc_scalar_t *scalar_in_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    tivx_obj_desc_scalar_t *in_scalar_desc[NUM_ITEMS] = {NULL};
+    tivx_obj_desc_scalar_t *scalar_in_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS] = {NULL};
     tivxScalarSinkObjArrParams *prms = NULL;
     uint32_t size;
 

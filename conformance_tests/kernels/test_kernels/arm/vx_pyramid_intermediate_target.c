@@ -118,8 +118,8 @@ static vx_status VX_CALLBACK tivxPyramidIntermediateProcess(
     if(VX_SUCCESS == status)
     {
 
-        void *input_target_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
-        void *output_target_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
+        void *input_target_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS] = {NULL};
+        void *output_target_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS] = {NULL};
 
         tivxGetObjDescList(input_desc->obj_desc_id, (tivx_obj_desc_t**)img_input_desc, input_desc->num_levels);
         for(i=0; i<input_desc->num_levels; i++)

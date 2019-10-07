@@ -543,7 +543,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0;
 
     CT_Image ref_src[MAX_NUM_BUF], vxdst;
@@ -744,7 +744,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
@@ -924,11 +924,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1[MAX_NUM_BUF], d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
@@ -1118,11 +1118,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2, d3, d4[MAX_NUM_BUF], d5[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2, d3, d4[MAX_NUM_BUF] = {NULL}, d5[MAX_NUM_BUF] = {NULL};
     vx_node  n0, n1, n2, n3;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
@@ -1347,11 +1347,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d_virt[PIPELINE_TEST_MAX_DATA_REF_QUEUE], d1[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d_virt[PIPELINE_TEST_MAX_DATA_REF_QUEUE] = {NULL}, d1[MAX_NUM_BUF] = {NULL};
     vx_node  n[PIPELINE_TEST_MAX_DATA_REF_QUEUE+1];
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF];
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL};
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt, i;
     uint64_t exe_time;
@@ -1510,11 +1510,11 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestGraphMaxDataRef, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d_virt[PIPELINE_TEST_MAX_DATA_REF_QUEUE+1], d1[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d_virt[PIPELINE_TEST_MAX_DATA_REF_QUEUE+1] = {NULL}, d1[MAX_NUM_BUF] = {NULL};
     vx_node  n[PIPELINE_TEST_MAX_DATA_REF_QUEUE+2];
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
     uint32_t buf_id, loop_id, loop_cnt, i;
     uint64_t exe_time;
@@ -1619,11 +1619,11 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestMaxDataRefQ, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d_virt[TIVX_DATA_REF_Q_MAX_OBJECTS], d1[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d_virt[TIVX_DATA_REF_Q_MAX_OBJECTS] = {NULL}, d1[MAX_NUM_BUF] = {NULL};
     vx_node  n[TIVX_DATA_REF_Q_MAX_OBJECTS+1];
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
     uint32_t buf_id, loop_id, loop_cnt, i;
     uint64_t exe_time;
@@ -1743,11 +1743,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0;
     vx_pixel_value_t pixel_value;
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, num_buf, pipeline_depth;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
@@ -1975,14 +1975,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_object_array d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
-    vx_image img0[MAX_NUM_BUF], img1, img2[MAX_NUM_BUF];
+    vx_object_array d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_image img0[MAX_NUM_BUF] = {NULL}, img1, img2[MAX_NUM_BUF] = {NULL};
     vx_image img_exemplar;
     vx_node n0, n1;
     vx_bool replicate[2] = { vx_true_e, vx_true_e };
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF*MAX_NUM_OBJ_ARR_ELEMENTS], vxdst[MAX_NUM_OBJ_ARR_ELEMENTS];
+    CT_Image ref_src[MAX_NUM_BUF*MAX_NUM_OBJ_ARR_ELEMENTS] = {NULL}, vxdst[MAX_NUM_OBJ_ARR_ELEMENTS] = {NULL};
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint32_t idx, objarr_idx, objarr_elements;
@@ -2142,26 +2142,29 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 
             out_objarr = (vx_object_array)tivxGetReferenceParent((vx_reference)out_img);
 
-            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+            if (NULL != out_objarr)
             {
-                vx_image image;
+                for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+                {
+                    vx_image image;
 
-                image = (vx_image)vxGetObjectArrayItem(out_objarr, objarr_idx);
+                    image = (vx_image)vxGetObjectArrayItem(out_objarr, objarr_idx);
 
-                ASSERT_NO_FAILURE({
-                    vxdst[objarr_idx] = ct_image_from_vx_image(image);
-                });
+                    ASSERT_NO_FAILURE({
+                        vxdst[objarr_idx] = ct_image_from_vx_image(image);
+                    });
 
-                VX_CALL(vxReleaseImage(&image));
-            }
+                    VX_CALL(vxReleaseImage(&image));
+                }
 
-            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
-            {
-                idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
+                for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+                {
+                    idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
 
-                /* compare output */
-                /* NOT of NOT should give back original image */
-                ASSERT_EQ_CTIMAGE(ref_src[idx], vxdst[objarr_idx]);
+                    /* compare output */
+                    /* NOT of NOT should give back original image */
+                    ASSERT_EQ_CTIMAGE(ref_src[idx], vxdst[objarr_idx]);
+                }
             }
         }
 
@@ -2222,15 +2225,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_object_array d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
-    vx_image img0[MAX_NUM_BUF], img1, img2[MAX_NUM_BUF];
-    vx_image img0_1[MAX_NUM_BUF], img1_1, img2_1[MAX_NUM_BUF];
+    vx_object_array d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_image img0[MAX_NUM_BUF] = {NULL}, img1, img2[MAX_NUM_BUF] = {NULL};
+    vx_image img0_1[MAX_NUM_BUF] = {NULL}, img1_1, img2_1[MAX_NUM_BUF] = {NULL};
     vx_image img_exemplar;
     vx_node n0, n1;
     vx_node n0_1, n1_1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF*MAX_NUM_OBJ_ARR_ELEMENTS], vxdst[MAX_NUM_OBJ_ARR_ELEMENTS];
+    CT_Image ref_src[MAX_NUM_BUF*MAX_NUM_OBJ_ARR_ELEMENTS] = {NULL}, vxdst[MAX_NUM_OBJ_ARR_ELEMENTS] = {NULL};
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint32_t idx, objarr_idx, objarr_elements;
@@ -2395,26 +2398,29 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
 
             out_objarr = get_object_array_parent_of_image(out_img, d2, img2, num_buf);
 
-            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+            if (NULL != out_objarr)
             {
-                vx_image image;
+                for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+                {
+                    vx_image image;
 
-                image = (vx_image)vxGetObjectArrayItem(out_objarr, objarr_idx);
+                    image = (vx_image)vxGetObjectArrayItem(out_objarr, objarr_idx);
 
-                ASSERT_NO_FAILURE({
-                    vxdst[objarr_idx] = ct_image_from_vx_image(image);
-                });
+                    ASSERT_NO_FAILURE({
+                        vxdst[objarr_idx] = ct_image_from_vx_image(image);
+                    });
 
-                VX_CALL(vxReleaseImage(&image));
-            }
+                    VX_CALL(vxReleaseImage(&image));
+                }
 
-            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
-            {
-                idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
+                for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+                {
+                    idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
 
-                /* compare output */
-                /* NOT of NOT should give back original image */
-                ASSERT_EQ_CTIMAGE(ref_src[idx], vxdst[objarr_idx]);
+                    /* compare output */
+                    /* NOT of NOT should give back original image */
+                    ASSERT_EQ_CTIMAGE(ref_src[idx], vxdst[objarr_idx]);
+                }
             }
         }
 
@@ -2640,9 +2646,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
     vx_pyramid src1_0 = 0, src1_0_ref = 0;
     vx_pyramid src2_0 = 0, src2_0_ref = 0;
     vx_pyramid ref;
-    vx_pyramid tst[MAX_NUM_BUF];
-    vx_image input1_0[MAX_NUM_BUF];
-    vx_image input2_0[MAX_NUM_BUF];
+    vx_pyramid tst[MAX_NUM_BUF] = {NULL};
+    vx_image input1_0[MAX_NUM_BUF] = {NULL};
+    vx_image input2_0[MAX_NUM_BUF] = {NULL};
     vx_pixel_value_t value1, value2;
     vx_border_t border;
 
@@ -2651,7 +2657,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
     vx_node node1 = 0, node2 = 0, node3 = 0;
     vx_image pyr_src1 = 0;
     vx_image pyr_src2 = 0;
-    vx_image pyr_dst[MAX_NUM_BUF];
+    vx_image pyr_dst[MAX_NUM_BUF] = {NULL};
     vx_enum policy = VX_CONVERT_POLICY_SATURATE;
     vx_size levels = 0;
     vx_enum type = VX_TYPE_INVALID;
@@ -2885,15 +2891,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF];
-    vx_scalar mean_s[MAX_NUM_BUF], stddev_s[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL};
+    vx_scalar mean_s[MAX_NUM_BUF] = {NULL}, stddev_s[MAX_NUM_BUF] = {NULL};
     vx_node n0;
     vx_float32 mean_out=0.0, stddev_out=0.0;
     vx_float32 mean_tolerance=1e-4, stddev_tolerance=1e-4;
     vx_float32 mean_diff, stddev_diff;
-    CT_Image ref_src[MAX_NUM_BUF];
-    vx_float32 mean_ref[MAX_NUM_BUF];
-    vx_float32 stddev_ref[MAX_NUM_BUF];
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL};
+    vx_float32 mean_ref[MAX_NUM_BUF] = {0.0f};
+    vx_float32 stddev_ref[MAX_NUM_BUF] = {0.0f};
     uint32_t width, height, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t rng;
@@ -3093,11 +3099,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
     uint32_t width, height, seq_init, pipeline_depth, num_buf, loop_cnt;
     uint32_t buf_id, loop_id, in_q_cnt;
     uint64_t exe_time;
@@ -3392,11 +3398,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_scalar d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_scalar in_scalar, out_scalar;
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
-    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
+    vx_uint32 in_value[MAX_NUM_BUF] = {0}, ref_out_value[MAX_NUM_BUF] = {0};
     vx_uint32 tmp_value = 0;
 
     uint32_t pipeline_depth, num_buf;
@@ -3576,7 +3582,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
@@ -3752,7 +3758,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, exemplar;
     vx_delay delay;
     vx_scalar in_scalar, out_scalar;
     vx_node n0;
@@ -3970,7 +3976,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, exemplar;
     vx_delay delay;
     vx_scalar in_scalar, out_scalar;
     vx_node n0, n1;
@@ -4196,7 +4202,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, exemplar;
     vx_delay delay;
     vx_scalar in_scalar, out_scalar;
     vx_node n0, n1, n2;
@@ -4454,7 +4460,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph;
-    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_scalar d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, exemplar;
     vx_delay delay;
     vx_scalar in_scalar, out_scalar;
     vx_node n0, n1;
@@ -4715,7 +4721,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     vx_graph graph;
     vx_delay delay;
     vx_image delay_image;
-    vx_image d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], d4[MAX_NUM_BUF];
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d2[MAX_NUM_BUF] = {NULL}, d4[MAX_NUM_BUF] = {NULL};
     vx_node n0, n1, n2;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
@@ -4733,7 +4739,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     vx_rectangle_t rect = {0, 0, arg_->width, arg_->height};
     vx_map_id map_id;
 
-    CT_Image ref_src[MAX_NUM_BUF], ref_src1[MAX_NUM_BUF], vxdst0, vxdst1;
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, ref_src1[MAX_NUM_BUF] = {NULL}, vxdst0, vxdst1;
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
