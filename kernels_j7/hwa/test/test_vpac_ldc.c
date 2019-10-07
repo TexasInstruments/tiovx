@@ -463,7 +463,6 @@ static vx_image mesh_create(vx_context context, int width, int height, int m)
     return mesh;
 }
 
-
 static vx_lut lut_create(vx_context context, void* data, vx_size count)
 {
     vx_size size = sizeof(vx_uint16);
@@ -506,6 +505,12 @@ typedef struct {
 
 typedef struct {
     const char* testName;
+    int input_data_format;
+    int output_data_format;
+} ArgFormats;
+
+typedef struct {
+    const char* testName;
     int negative_test;
     int condition;
 } ArgNegative;
@@ -540,6 +545,27 @@ typedef struct {
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES_LENA, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_read_image_8u, "lena.bmp", 0, 0)
+
+#define ADD_VX_IN_FORMATS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_U8", __VA_ARGS__, VX_DF_IMAGE_U8)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_U16", __VA_ARGS__, VX_DF_IMAGE_U16)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_DF_IMAGE_P12", __VA_ARGS__, TIVX_DF_IMAGE_P12)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_NV12", __VA_ARGS__, VX_DF_IMAGE_NV12)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_DF_IMAGE_NV12_P12", __VA_ARGS__, TIVX_DF_IMAGE_NV12_P12)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_UYVY", __VA_ARGS__, VX_DF_IMAGE_UYVY)), \
+
+#define ADD_VX_OUT_FORMATS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_U8", __VA_ARGS__, VX_DF_IMAGE_U8)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_U16", __VA_ARGS__, VX_DF_IMAGE_U16)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_DF_IMAGE_P12", __VA_ARGS__, TIVX_DF_IMAGE_P12)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_NV12", __VA_ARGS__, VX_DF_IMAGE_NV12)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_DF_IMAGE_NV12_P12", __VA_ARGS__, TIVX_DF_IMAGE_NV12_P12)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_UYVY", __VA_ARGS__, VX_DF_IMAGE_UYVY)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_YUYV", __VA_ARGS__, VX_DF_IMAGE_YUYV))
+
+#define PARAMETERS_FORMATS \
+    CT_GENERATE_PARAMETERS("testFormats", ADD_VX_IN_FORMATS, ADD_VX_OUT_FORMATS, ARG)
+
 
 #define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/negative_test=input_align_12bit", __VA_ARGS__, 0)), \
@@ -820,6 +846,175 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         {
             ASSERT_NO_FAILURE(warp_affine_check(input, output, arg_->interp_type, arg_->border, m));
         }
+    }
+}
+
+static uint8_t isFormatComboValid(int in, int out, int out_num)
+{
+    uint8_t valid = 1;
+
+    if ( (in == VX_DF_IMAGE_U8) &&
+         !((out == VX_DF_IMAGE_U8) || (out == TIVX_DF_IMAGE_P12)))
+    {
+        valid = 0;
+    }
+
+    if ( (in == VX_DF_IMAGE_U16) &&
+         !((out == VX_DF_IMAGE_U16) || ((out_num == 1) && (out == VX_DF_IMAGE_U8))))
+    {
+        valid = 0;
+    }
+
+    if ( (in == TIVX_DF_IMAGE_P12) &&
+         !((out == TIVX_DF_IMAGE_P12) || (out == VX_DF_IMAGE_U8)))
+    {
+        valid = 0;
+    }
+
+    if ( (in == VX_DF_IMAGE_NV12) &&
+         !((out == VX_DF_IMAGE_NV12) || (out == TIVX_DF_IMAGE_NV12_P12)))
+    {
+        valid = 0;
+    }
+
+    if ( (in == TIVX_DF_IMAGE_NV12_P12) &&
+         !((out == TIVX_DF_IMAGE_NV12_P12) || (out == VX_DF_IMAGE_NV12)))
+    {
+        valid = 0;
+    }
+
+    if ( (in == VX_DF_IMAGE_UYVY) &&
+         !((out == VX_DF_IMAGE_UYVY) || (out == VX_DF_IMAGE_YUYV) ||
+           (out == VX_DF_IMAGE_NV12) || (out == TIVX_DF_IMAGE_NV12_P12) ))
+    {
+        valid = 0;
+    }
+
+    return valid;
+}
+
+static uint32_t ldc_formats_checksums_ref[] = {
+    0x2d2cdc00, 0xffffa600, 0xbfa9b800, 0x2d2cf000,
+    0x49e48800, 0xe529b800, 0xffff8800
+};
+
+static uint32_t get_formats_checksum(int in, int out)
+{
+    uint32_t index = 0;
+
+    if ( ((in == VX_DF_IMAGE_U8) && (out == VX_DF_IMAGE_U8)) ||
+         ((in == VX_DF_IMAGE_NV12) && (out == VX_DF_IMAGE_NV12)) ||
+         ((in == VX_DF_IMAGE_UYVY) && (out == VX_DF_IMAGE_NV12)))
+    {
+        index = 0;
+    }
+    else if ( ((in == VX_DF_IMAGE_U8) && (out == TIVX_DF_IMAGE_P12)) ||
+              ((in == VX_DF_IMAGE_NV12) && (out == TIVX_DF_IMAGE_NV12_P12)) ||
+              ((in == VX_DF_IMAGE_UYVY) && (out == TIVX_DF_IMAGE_NV12_P12)))
+    {
+        index = 1U;
+    }
+    else if ( (in == VX_DF_IMAGE_U16) && (out == VX_DF_IMAGE_U16))
+    {
+        index = 2U;
+    }
+    else if ( ((in == TIVX_DF_IMAGE_P12) && (out == VX_DF_IMAGE_U8)) ||
+              ((in == TIVX_DF_IMAGE_NV12_P12) && (out == VX_DF_IMAGE_NV12)))
+    {
+        index = 3U;
+    }
+    else if ( (in == VX_DF_IMAGE_UYVY) && (out == VX_DF_IMAGE_UYVY))
+    {
+        index = 4U;
+    }
+    else if ( (in == VX_DF_IMAGE_UYVY) && (out == VX_DF_IMAGE_YUYV))
+    {
+        index = 5U;
+    }
+    else if ( ((in == TIVX_DF_IMAGE_P12) && (out == TIVX_DF_IMAGE_P12)) ||
+              ((in == TIVX_DF_IMAGE_NV12_P12) && (out == TIVX_DF_IMAGE_NV12_P12)))
+    {
+        index = 6U;
+    }
+    return ldc_formats_checksums_ref[index];
+}
+
+
+TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
+    PARAMETERS_FORMATS
+)
+{
+    vx_context context = context_->vx_context_;
+    tivx_vpac_ldc_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_image input_image = 0, output_image = 0;
+    vx_pixel_value_t pixel;
+    uint32_t checksum_actual;
+    uint32_t checksum_expected;
+    vx_rectangle_t rect;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    {
+        tivxHwaLoadKernels(context);
+
+        pixel.U32 = 0x0a7f1345;
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 640;
+        rect.end_y = 480;
+
+        ASSERT_VX_OBJECT(input_image = vxCreateUniformImage(context, 640, 480, arg_->input_data_format, &pixel), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_image = vxCreateImage(context, 640, 480, arg_->output_data_format), VX_TYPE_IMAGE);
+
+        tivx_vpac_ldc_params_init(&params);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
+                                                            sizeof(tivx_vpac_ldc_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
+                        param_obj,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL,
+                        input_image,
+                        output_image,
+                        NULL),
+                        VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+
+        if (0 == isFormatComboValid(arg_->input_data_format, arg_->output_data_format, 0))
+        {
+            EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+        else
+        {
+            VX_CALL(vxVerifyGraph(graph));
+            VX_CALL(vxProcessGraph(graph));
+            checksum_expected = get_formats_checksum(arg_->input_data_format, arg_->output_data_format);
+            checksum_actual = tivx_utils_simple_image_checksum(output_image, rect);
+            ASSERT(checksum_expected == checksum_actual);
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseImage(&output_image));
+        VX_CALL(vxReleaseImage(&input_image));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(output_image == 0);
+        ASSERT(input_image == 0);
+        ASSERT(param_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+
     }
 }
 
@@ -1167,4 +1362,4 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
     }
 }
 
-TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessing, testNegativeGraph)
+TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessing, testFormats, testNegativeGraph)
