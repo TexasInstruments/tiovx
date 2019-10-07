@@ -26,8 +26,6 @@ CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 
 DEFS += CORE_DSP CORE_C6XX
 
-include ASDFASDF/${BUILD_BAM}/ASDFADSF
-
 #ifeq ($(BUILD_BAM),yes)
 #DEFS += BUILD_BAM
 #CSOURCES    += tivx_bam_kernel_wrapper.c \
@@ -44,8 +42,6 @@ DEFS += CORE_DSP CORE_C6XX
 #CSOURCES    += tivx_bam_kernel_wrapper.c \
 #               tivx_bam_kernel_database.c
 #endif
-
-include asdf/${CSOURCES}/asdf
 
 endif
 
