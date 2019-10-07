@@ -255,6 +255,42 @@ void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, 
     }
 }
 
+void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16_0[], uint16_t src16_1[], uint16_t input_bits)
+{
+    vx_rectangle_t rect = src->valid_roi;
+    int32_t i, j;
+    uint32_t w = src->imagepatch_addr[0].dim_x;
+    uint32_t h = src->imagepatch_addr[0].dim_y / src->imagepatch_addr[0].step_y;
+    uint32_t stride = src->imagepatch_addr[0].stride_y;
+    uint16_t downshift = input_bits-8;
+    uint32_t y,u;
+
+    uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
+        tivxComputePatchOffset(rect.start_x, rect.start_y,
+        &src->imagepatch_addr[0]));
+
+    if (VX_DF_IMAGE_YUYV == src->format)
+    {
+        y=0;
+        u=1;
+    }
+    else
+    {
+        y=1;
+        u=0;
+    }
+
+    for(j = 0; j < h; j++)
+    {
+        for(i=0; i < w; i++)
+        {
+            /* Downshift bits to align msb to bit 7 */
+            src16_0[j*w+i+y] = src_addr8[j*stride+i*2+y] >> downshift;
+            src16_1[j*w+i+u] = src_addr8[j*stride+i*2+u] >> downshift;
+        }
+    }
+}
+
 void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
