@@ -6,6 +6,7 @@ TARGET      := vx_kernels_target_utils
 TARGETTYPE  := library
 CSOURCES    := tivx_kernels_target_utils.c
 IDIRS       += $(HOST_ROOT)/kernels/include
+IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
                $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes \

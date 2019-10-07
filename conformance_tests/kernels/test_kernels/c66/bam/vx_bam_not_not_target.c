@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -198,6 +198,7 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
     tivx_obj_desc_image_t *input_desc;
     tivx_obj_desc_image_t *output_desc;
     BAM_KernelId localBamKernelId;
+    tivx_bam_kernel_details_t kernel_details[4];
 
     if ( (num_params != TIVX_KERNEL_NOT_NOT_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX])
@@ -243,6 +244,11 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
 
         if (VX_SUCCESS == status)
         {
+            status = tivxBamInitKernelDetails(&kernel_details[0], 4, kernel);
+        }
+
+        if (VX_SUCCESS == status)
+        {
 
             input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX];
             output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX];
@@ -255,7 +261,6 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
             }
             else
             {
-                tivx_bam_kernel_details_t kernel_details[4];
                 VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
                 VXLIB_bufParams2D_t *buf_params[2];
 

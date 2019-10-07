@@ -370,3 +370,30 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
 
     return status;
 }
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node super_node, vx_uint32 block_width, vx_uint32 block_height)
+{
+    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    tivx_obj_desc_node_t *node_obj_desc;
+
+    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == vx_true_e)
+    {
+        /* In TI implementation, tivxSetSuperNodeTileSize() cannot be called after a graph is verified
+         *
+         * This is because it will set the tile size at the graph verify stage
+         */
+        if (super_node->node->graph->verified == vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxSetSuperNodeTileSize: Graph has been verified\n");
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            node_obj_desc = (tivx_obj_desc_node_t *)super_node->node->obj_desc[0];
+            node_obj_desc->block_width = block_width;
+            node_obj_desc->block_height = block_height;
+            status = VX_SUCCESS;
+        }
+    }
+    return status;
+}

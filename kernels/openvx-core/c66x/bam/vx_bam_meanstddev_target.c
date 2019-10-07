@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -183,6 +183,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
 {
     vx_status status = VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
@@ -200,6 +201,11 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         tivx_obj_desc_image_t *src;
 
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX];
@@ -208,7 +214,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src;
             VXLIB_bufParams2D_t *buf_params[1];
 
@@ -220,15 +225,12 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
              * is optionally disabled, put NULL */
             buf_params[0] = &vxlib_src;
 
-            kernel_details.compute_kernel_params = NULL;
-
             BAM_VXLIB_meanStdDev_i8u_o32f_getKernelInfo( NULL,
                                                    &kernel_details.kernel_info);
 
             status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_MEAN_STDDEV_I8U_O32F,
                                                    buf_params, &kernel_details,
                                                    &prms->graph_handle);
-
         }
         else
         {
@@ -407,7 +409,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMeanStdDevParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

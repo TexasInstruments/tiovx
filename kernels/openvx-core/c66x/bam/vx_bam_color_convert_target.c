@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -329,6 +329,11 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -347,7 +352,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             tivxInitBufParams(src, (VXLIB_bufParams2D_t*)&vxlib_src);
             tivxInitBufParams(dst, (VXLIB_bufParams2D_t*)&vxlib_dst);
 
-            kernel_details.compute_kernel_params = NULL;
             if ((VX_DF_IMAGE_RGB == src->format) &&
                 (VX_DF_IMAGE_YUV4 == dst->format))
             {
@@ -360,8 +364,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
@@ -380,8 +382,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBtoNV12_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
@@ -403,8 +403,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
 
-                kernel_details.compute_kernel_params = NULL;
-
                 BAM_VXLIB_colorConvert_RGBtoIYUV_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
 
@@ -421,8 +419,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
 
-                kernel_details.compute_kernel_params = NULL;
-
                 BAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
 
@@ -438,8 +434,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
@@ -461,8 +455,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
 
-                kernel_details.compute_kernel_params = NULL;
-
                 BAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
 
@@ -480,8 +472,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBXtoNV12_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
@@ -502,8 +492,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
@@ -895,7 +883,7 @@ void tivxAddTargetKernelBamColorConvert(void)
             NULL,
             NULL,
             MAX10(sizeof(BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_params),
-                 sizeof(BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params), 
+                 sizeof(BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params),
                  sizeof(BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_params),
                  sizeof(BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params),
                  sizeof(BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_params),
@@ -1371,10 +1359,10 @@ static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
     {
         *bam_node = prms->bam_node_num;
 
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX:
-                switch (plane) 
+                switch (plane)
                 {
                     case 0 :
                         *bam_port = 0;
@@ -1392,7 +1380,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
                 }
                 break;
             case TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX:
-                switch (plane) 
+                switch (plane)
                 {
                     case 0 :
                         *bam_port = 0;

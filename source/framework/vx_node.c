@@ -133,6 +133,9 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     obj_desc->num_pipeup_bufs = kernel->num_pipeup_bufs;
     obj_desc->source_state    = kernel->state;
 
+    obj_desc->block_width = TIVX_DEFAULT_TILE_WIDTH;
+    obj_desc->block_height = TIVX_DEFAULT_TILE_HEIGHT;
+
     obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
     if(obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
     {
@@ -1737,6 +1740,33 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             }
 
             first_node->replicated_flags[n] = replicate[n];
+        }
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 block_width, vx_uint32 block_height)
+{
+    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    tivx_obj_desc_node_t *node_obj_desc;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        /* In TI implementation, tivxSetNodeTileSize() cannot be called after a graph is verified
+         *
+         * This is because it will set the tile size at the graph verify stage
+         */
+        if (node->graph->verified == vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxSetNodeTileSize: Graph has been verified\n");
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
+            node_obj_desc->block_width = block_width;
+            node_obj_desc->block_height = block_height;
+            status = VX_SUCCESS;
         }
     }
     return status;

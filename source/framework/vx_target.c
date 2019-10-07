@@ -773,6 +773,10 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                 target_kernel_instance->state = VX_NODE_STATE_STEADY;
             }
 
+            /* setting the tile size for each node */
+            target_kernel_instance->block_width = node_obj_desc->block_width;
+            target_kernel_instance->block_height = node_obj_desc->block_height;
+
             /* save index key for fast retrival of handle during run-time */
             node_obj_desc->target_kernel_index[cnt] =
                 tivxTargetKernelInstanceGetIndex(target_kernel_instance);

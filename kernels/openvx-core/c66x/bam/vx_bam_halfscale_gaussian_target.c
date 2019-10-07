@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -212,10 +212,16 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *gsize;
     tivxHalfScaleGaussianParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
     int32_t gsize_value = 1;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -230,7 +236,6 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
@@ -360,28 +365,35 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
                 kernel_params.dstOffsetX = 1;
                 kernel_params.dstOffsetY = 1;
 
-                BAM_VXLIB_gaussian_3x3_i8u_o8u_getKernelInfo(
-                    NULL, &kernel_details_g3[GAUSSIAN_NODE].kernel_info);
+                status = tivxBamInitKernelDetails(&kernel_details_g3, 4, kernel);
 
-                BAM_VXLIB_scaleImageNearest_i8u_o8u_getKernelInfo(
-                    &kernel_params, &kernel_details_g3[SCALE_NODE].kernel_info);
+                if (VX_SUCCESS == status)
+                {
+                    BAM_VXLIB_gaussian_3x3_i8u_o8u_getKernelInfo(
+                        NULL, &kernel_details_g3[GAUSSIAN_NODE].kernel_info);
 
-                kernel_details_g3[SOURCE_NODE].compute_kernel_params = NULL;
-                kernel_details_g3[GAUSSIAN_NODE].compute_kernel_params = NULL;
-                kernel_details_g3[SCALE_NODE].compute_kernel_params = (void*)&kernel_params;
-                kernel_details_g3[SINK_NODE].compute_kernel_params = NULL;
+                    BAM_VXLIB_scaleImageNearest_i8u_o8u_getKernelInfo(
+                        &kernel_params, &kernel_details_g3[SCALE_NODE].kernel_info);
 
-                status = tivxBamCreateHandleMultiNode(node_list, edge_list,
-                                                      buf_params, kernel_details_g3,
-                                                      &prms->graph_handle);
+                    kernel_details_g3[SOURCE_NODE].compute_kernel_params = NULL;
+                    kernel_details_g3[GAUSSIAN_NODE].compute_kernel_params = NULL;
+                    kernel_details_g3[SCALE_NODE].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details_g3[SINK_NODE].compute_kernel_params = NULL;
+
+                    kernel_details_g3[0].is_block_size_set = kernel->is_block_size_set;
+                    kernel_details_g3[0].block_width = kernel->block_width;
+                    kernel_details_g3[0].block_height = kernel->block_height;
+
+                    status = tivxBamCreateHandleMultiNode(node_list, edge_list,
+                                                          buf_params, kernel_details_g3,
+                                                          &prms->graph_handle);
+                }
 #endif
             }
             else if (5 == gsize_value)
             {
                 vxlib_dst.dim_x -= 2;
                 vxlib_dst.dim_y -= 2;
-
-                kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_getKernelInfo(
                     NULL, &kernel_details.kernel_info);

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -278,6 +278,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *src2, *src3, *dst;
     tivxChannelCombineParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
     uint16_t plane_idx = 0;
 
     if ((num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS)
@@ -286,6 +287,11 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
         status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
     if (VX_SUCCESS == status)
@@ -300,18 +306,14 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_src2, vxlib_src3, vxlib_dst[3], vxlib_dst1;
             VXLIB_bufParams2D_t *buf_params[6];
-
-            kernel_details.compute_kernel_params = NULL;
 
             memset(prms, 0, sizeof(tivxChannelCombineParams));
 
             tivxInitBufParams(src0, &vxlib_src0);
             tivxInitBufParams(src1, &vxlib_src1);
             tivxInitBufParams(dst, &vxlib_dst[0]);
-
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -477,56 +479,61 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                         {BAM_END_NODE_MARKER, 0}},\
                 };
 
-                BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
-                    &multi_kernel_details[CHCOPY_NODE0].kernel_info);
+                status = tivxBamInitKernelDetails(&multi_kernel_details[0], 6, kernel);
 
-                BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
-                    &multi_kernel_details[CHCOPY_NODE1].kernel_info);
+                if (VX_SUCCESS == status)
+                {
+                    BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
+                        &multi_kernel_details[CHCOPY_NODE0].kernel_info);
 
-                multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                    BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
+                        &multi_kernel_details[CHCOPY_NODE1].kernel_info);
 
-                BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
-                    &multi_kernel_details[CHCOPY_NODE2].kernel_info);
+                    multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
+                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
+                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
+                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
+                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
 
-                multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                    horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
-                multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                    vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                    BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
+                        &multi_kernel_details[CHCOPY_NODE2].kernel_info);
 
-                multi_kernel_details[SOURCE_NODE1].compute_kernel_params = NULL;
-                multi_kernel_details[CHCOPY_NODE0].compute_kernel_params = NULL;
-                multi_kernel_details[CHCOPY_NODE1].compute_kernel_params = NULL;
-                multi_kernel_details[CHCOPY_NODE2].compute_kernel_params = NULL;
-                multi_kernel_details[SINK_NODE1].compute_kernel_params = NULL;
+                    multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
+                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
+                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
+                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                    multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
+                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
 
-                buf_params[0] = &vxlib_src0;
-                buf_params[1] = &vxlib_src1;
-                buf_params[2] = &vxlib_src2;
-                buf_params[3] = &vxlib_dst[0];
-                buf_params[4] = &vxlib_dst[1];
-                buf_params[5] = &vxlib_dst[2];
+                    multi_kernel_details[SOURCE_NODE1].compute_kernel_params = NULL;
+                    multi_kernel_details[CHCOPY_NODE0].compute_kernel_params = NULL;
+                    multi_kernel_details[CHCOPY_NODE1].compute_kernel_params = NULL;
+                    multi_kernel_details[CHCOPY_NODE2].compute_kernel_params = NULL;
+                    multi_kernel_details[SINK_NODE1].compute_kernel_params = NULL;
 
-                status = tivxBamCreateHandleMultiNode(node_list,
-                    sizeof(node_list)/sizeof(BAM_NodeParams),
-                    edge_list,
-                    sizeof(edge_list)/sizeof(BAM_EdgeParams),
-                    buf_params, multi_kernel_details,
-                    &prms->graph_handle);
+                    buf_params[0] = &vxlib_src0;
+                    buf_params[1] = &vxlib_src1;
+                    buf_params[2] = &vxlib_src2;
+                    buf_params[3] = &vxlib_dst[0];
+                    buf_params[4] = &vxlib_dst[1];
+                    buf_params[5] = &vxlib_dst[2];
+
+                    status = tivxBamCreateHandleMultiNode(node_list,
+                        sizeof(node_list)/sizeof(BAM_NodeParams),
+                        edge_list,
+                        sizeof(edge_list)/sizeof(BAM_EdgeParams),
+                        buf_params, multi_kernel_details,
+                        &prms->graph_handle);
+                }
             }
             else
             if ((dst->format == VX_DF_IMAGE_NV12)

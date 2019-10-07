@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -153,10 +153,16 @@ static vx_status VX_CALLBACK tivxKernelAccumulateCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxAccumulateParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ACCUMULATE_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -169,7 +175,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_add_i8u_i16s_o16s_params kernel_params;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[3];

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -283,6 +283,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
     uint32_t i;
     tivx_obj_desc_image_t *img;
     tivxHarrisCornersParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details[4];
     tivx_obj_desc_scalar_t *sc_dist, *sc_gs, *sc_bs, *sc_sens;
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
@@ -309,6 +310,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxBamInitKernelDetails(&kernel_details[0], 4, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
         sc_bs = (tivx_obj_desc_scalar_t *)obj_desc[
@@ -324,7 +330,6 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details[4];
             BAM_VXLIB_harrisCornersScore_i16s_i16s_o32f_params harris_score_kernel_params;
             VXLIB_bufParams2D_t vxlib_src;
             VXLIB_bufParams2D_t *buf_params[2];

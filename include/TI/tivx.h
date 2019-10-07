@@ -738,6 +738,17 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index);
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size);
 
+/*! \brief Sets the tile size for a given node in a graph. This is only valid for
+ * BAM-enabled kernels on C66 DSP.
+ * \param [in] node  The reference to the <tt>\ref vx_node</tt> object.
+ * \param [in] block_width The tile width in pixels.
+ * \param [in] block_height The tile height in lines.
+ * \ingroup group_tivx_ext_host
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS if the tile size is set correctly.
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 block_width, vx_uint32 block_height);
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -241,6 +241,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     tivx_obj_desc_threshold_t *thr;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
+    tivx_bam_kernel_details_t kernel_details[6];
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CANNY_MAX_PARAMS);
@@ -248,6 +249,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     if (VX_SUCCESS == status)
     {
         status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details[0], 6, kernel);
     }
 
     if (VX_SUCCESS == status)
@@ -267,7 +273,6 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details[6];
             BAM_VXLIB_doubleThreshold_i16u_i8u_params dbThreshold_kernel_params;
             VXLIB_bufParams2D_t vxlib_src;
             VXLIB_bufParams2D_t *buf_params[2];

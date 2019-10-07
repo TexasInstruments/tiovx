@@ -250,6 +250,12 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_SUPER_NODE_MAX_EDGES, 0, 0, "TIVX_SUPER_NODE_MAX_EDGES"
+    },
+    {
+        TIVX_DEFAULT_TILE_WIDTH, TIVX_DEFAULT_TILE_WIDTH, TIVX_DEFAULT_TILE_WIDTH, "TIVX_DEFAULT_TILE_WIDTH"
+    },
+    {
+        TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, "TIVX_DEFAULT_TILE_HEIGHT"
     }
 };
 

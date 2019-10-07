@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -161,9 +161,15 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
     tivxThresholdParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -176,7 +182,6 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
@@ -383,7 +388,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                     (*size >= sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)))
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U;
-                    
+
                     kernel_params->upper  = thr->upper;
                     kernel_params->lower  = thr->lower;
                     kernel_params->trueValue  = thr->true_value;
@@ -436,7 +441,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxThresholdParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_THRESHOLD_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

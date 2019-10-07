@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -198,15 +198,20 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxConvertDepthParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
     tivx_obj_desc_scalar_t *sc_desc[2];
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -223,7 +228,6 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
@@ -236,8 +240,6 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
              * is optionally disabled, put NULL */
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
-
-            kernel_details.compute_kernel_params = NULL;
 
             if (VXLIB_INT16 == vxlib_dst.data_type)
             {
@@ -501,7 +503,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxConvertDepthParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

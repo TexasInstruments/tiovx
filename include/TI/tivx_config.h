@@ -461,6 +461,15 @@ extern "C" {
  */
 #define TIVX_SUPER_NODE_MAX_EDGES   (16u)
 
+/*! \brief Default tile width
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_DEFAULT_TILE_WIDTH   (64u)
+
+/*! \brief Default tile height
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_DEFAULT_TILE_HEIGHT  (48u)
 
 #ifdef __cplusplus
 }

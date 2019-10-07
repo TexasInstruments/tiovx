@@ -83,6 +83,7 @@
 #include <VX/vx.h>
 #include "tivx_bam_kernel_database.h"
 #include "bam_common.h"
+#include "tivx_target_kernel_instance.h"
 
 /*!
  * \brief indicates if a plane is not connected
@@ -130,7 +131,8 @@ typedef struct _tivx_bam_kernel_details
 {
     BAM_KernelInfo    kernel_info;
     void *compute_kernel_params;
-
+    uint32_t block_width;
+    uint32_t block_height;
 }tivx_bam_kernel_details_t;
 
 
@@ -356,6 +358,27 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
  */
 void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle);
 
+/*!
+ * \brief BAM Initialize kernel details structure array
+ *
+ *        This function should be called before setting any parameters
+ *        within the kernel_details structure since it sets all parameters
+ *        to default values.
+ *
+ *        This is typically called in the "create" target kernel callback
+ *        for bam enabled kernels.
+ *
+ * \param [out] kernel_details Pointer to array of kernel_details to be initialized
+ * \param [in] num_bam_nodes Number of bam nodes in the kernel_details array
+ * \param [in] kernel Kernel instance input
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_PARAMETERS If kernel_details is NULL or if num_bam_nodes is 0.
+ * \ingroup group_tivx_ext_bam
+ */
+vx_status tivxBamInitKernelDetails(tivx_bam_kernel_details_t *kernel_details,
+                                   uint32_t num_bam_nodes,
+                                   tivx_target_kernel_instance kernel);
 
 /*!
 * \brief The "create in bam graph" target kernel callback

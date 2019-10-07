@@ -68,6 +68,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include <vx_internal.h>
 
 /* Added from source/include */
 #include <tivx_obj_desc_priv.h>
@@ -273,7 +274,12 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     tivx_obj_desc_super_node_t *super_node = (tivx_obj_desc_super_node_t *)obj_desc[0];
     tivx_edge_sort_indices indices;
 
-    prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
+    status = tivxBamInitKernelDetails(&kernel_details[0], TIVX_BAM_MAX_NODES, kernel);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
+    }
 
     if (NULL != prms)
     {

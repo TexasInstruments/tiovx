@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -169,9 +169,20 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxMedianParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -184,7 +195,6 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
@@ -201,8 +211,6 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
              * is optionally disabled, put NULL */
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
-
-            kernel_details.compute_kernel_params = NULL;
 
             BAM_VXLIB_median_3x3_i8u_o8u_getKernelInfo( NULL,
                                                              &kernel_details.kernel_info);
@@ -378,7 +386,7 @@ static vx_status VX_CALLBACK tivxKernelMedianGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMedianParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_MEDIAN3X3_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -172,10 +172,16 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     tivxMagnitudeParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_MAGNITUDE_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -190,7 +196,6 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[3];
 
@@ -204,8 +209,6 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
             buf_params[0] = &vxlib_src0;
             buf_params[1] = &vxlib_src1;
             buf_params[2] = &vxlib_dst;
-
-            kernel_details.compute_kernel_params = NULL;
 
             BAM_VXLIB_magnitude_i16s_i16s_o16s_getKernelInfo(
                 NULL, &kernel_details.kernel_info);
@@ -382,7 +385,7 @@ static vx_status VX_CALLBACK tivxKernelMagnitudeGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMagnitudeParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX:
                 *bam_node = prms->bam_node_num;

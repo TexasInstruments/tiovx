@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -161,9 +161,15 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
     tivx_obj_desc_matrix_t *mask;
     tivx_obj_desc_scalar_t *function_desc;
     tivxNonLinearFiltParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -187,7 +193,6 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 

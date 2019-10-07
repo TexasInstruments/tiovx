@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -153,10 +153,16 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
     tivx_obj_desc_image_t *src, *dst;
     tivxAccumulateSquareParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_desc;
+    tivx_bam_kernel_details_t kernel_details;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ACCUMULATE_SQUARE_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -171,7 +177,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_addSquare_i8u_i16s_o16s_params kernel_params;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[3];
@@ -181,15 +186,15 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
             tivxInitBufParams(src, &vxlib_src);
             tivxInitBufParams(dst, &vxlib_dst);
 
-            kernel_params.shift = sc_desc->data.u32;
-
-            kernel_details.compute_kernel_params = (void*)&kernel_params;
-
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
             buf_params[2] = &vxlib_dst;
+
+            kernel_params.shift = sc_desc->data.u32;
+
+            kernel_details.compute_kernel_params = (void*)&kernel_params;
 
             BAM_VXLIB_addSquare_i8u_i16s_o16s_getKernelInfo(NULL,
                 &kernel_details.kernel_info);

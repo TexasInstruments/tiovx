@@ -444,6 +444,14 @@ typedef struct _tivx_obj_desc_node
      */
     volatile uint32_t num_pipeup_bufs;
 
+    /*! \brief variable to store the tile width for the given node
+     */
+    volatile uint32_t block_width;
+
+    /*! \brief variable to store the tile height for the given node
+     */
+    volatile uint32_t block_height;
+
 } tivx_obj_desc_node_t;
 
 /*!

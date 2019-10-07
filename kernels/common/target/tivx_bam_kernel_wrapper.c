@@ -1185,8 +1185,8 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     if(VX_SUCCESS == status_v)
     {
-        block_width = VXLIB_min(64, buf_params[0]->dim_x);
-        block_height = VXLIB_min(48, buf_params[0]->dim_y);
+        block_width = VXLIB_min(kernel_details->block_width, buf_params[0]->dim_x);
+        block_height = VXLIB_min(kernel_details->block_height, buf_params[0]->dim_y);
 
         /*---------------------------------------------------------------*/
         /* Initialize Graph creation time parameters                     */
@@ -1707,8 +1707,8 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
-        block_width = VXLIB_min(64, buf_params[0]->dim_x);
-        block_height = VXLIB_min(48, buf_params[0]->dim_y);
+        block_width = VXLIB_min(kernel_details[0].block_width, buf_params[0]->dim_x);
+        block_height = VXLIB_min(kernel_details[0].block_height, buf_params[0]->dim_y);
 
         /*---------------------------------------------------------------*/
         /* Initialize Graph creation time parameters                     */
@@ -1892,4 +1892,33 @@ void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle)
 {
     tivxBamFreeContextPtrs(graph_handle);
     tivxMemFree(graph_handle, sizeof(tivx_bam_graph_handle_t), TIVX_MEM_EXTERNAL);
+}
+
+vx_status tivxBamInitKernelDetails(tivx_bam_kernel_details_t *kernel_details,
+                                   uint32_t num_bam_nodes,
+                                   tivx_target_kernel_instance kernel)
+{
+    vx_status status = VX_SUCCESS;
+
+    if( kernel_details != NULL )
+    {
+        if(num_bam_nodes > 0)
+        {
+            memset(&kernel_details[0], 0, sizeof(tivx_bam_kernel_details_t)*num_bam_nodes);
+            kernel_details[0].block_width = kernel->block_width;
+            kernel_details[0].block_height = kernel->block_height;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"num_bam_nodes is 0\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"kernel_details is NULL\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return status;
 }

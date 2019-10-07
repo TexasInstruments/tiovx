@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -162,9 +162,15 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxIntgImgParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -177,7 +183,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_integralImage_i8u_o32u_params kernel_params;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
@@ -385,7 +390,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxIntgImgParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_INTG_IMG_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

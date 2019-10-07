@@ -8,6 +8,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/kernels/include
+IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(ALGFRAMEWORK_PATH)/inc
 IDIRS       += $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes

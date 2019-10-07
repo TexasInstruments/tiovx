@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -184,6 +184,11 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
 
     if (VX_SUCCESS == status)
     {

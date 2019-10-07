@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -183,6 +183,7 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     tivxAbsDiffParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     /* Check number of buffers and NULL pointers */
     if (num_params != TIVX_KERNEL_ABSDIFF_MAX_PARAMS)
@@ -201,6 +202,11 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_ABSDIFF_IN1_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
@@ -212,7 +218,6 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[3];
 
@@ -226,8 +231,6 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
             buf_params[0] = &vxlib_src0;
             buf_params[1] = &vxlib_src1;
             buf_params[2] = &vxlib_dst;
-
-            kernel_details.compute_kernel_params = NULL;
 
             if (VXLIB_UINT8 == vxlib_dst.data_type)
             {
@@ -438,7 +441,7 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxAbsDiffParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_ABSDIFF_IN1_IDX:
                 *bam_node = prms->bam_node_num;

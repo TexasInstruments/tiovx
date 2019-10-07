@@ -202,6 +202,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
                                                           vx_enum target_enum,
                                                           const char* target_string);
 
+/*! \brief Sets the tile size for a given supernode in a graph. This is only valid for
+ * BAM-enabled kernels on C66 DSP.
+ * \param [in] super_node  The reference to the <tt>\ref vx_node</tt> object.
+ * \param [in] block_width The tile width in pixels.
+ * \param [in] block_height The tile height in lines.
+ * \ingroup group_super_node
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS if the tile size is set correctly.
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node super_node,
+                                                            vx_uint32 block_width,
+                                                            vx_uint32 block_height);
+
 #ifdef  __cplusplus
 }
 #endif

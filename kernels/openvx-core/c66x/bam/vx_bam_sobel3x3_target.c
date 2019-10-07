@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -222,6 +222,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dstx, *dsty;
     tivxSobelParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     /* Check number of buffers and NULL pointers */
     if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
@@ -240,6 +241,11 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
         dstx = (tivx_obj_desc_image_t *)obj_desc[
@@ -251,9 +257,10 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dstx, vxlib_dsty;
             VXLIB_bufParams2D_t *buf_params[3];
+
+            memset(prms, 0, sizeof(tivxSobelParams));
 
             tivxInitBufParams(src, &vxlib_src);
 
@@ -262,8 +269,6 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dstx;
             buf_params[2] = &vxlib_dsty;
-
-            kernel_details.compute_kernel_params = NULL;
 
             if (dstx != NULL)
             {
@@ -283,7 +288,6 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S,
                                                        buf_params, &kernel_details,
                                                        &prms->graph_handle);
-
             }
             else if (dstx != NULL)
             {
@@ -526,7 +530,7 @@ static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxSobelParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_SOBEL3X3_INPUT_IDX:
                 *bam_node = prms->bam_node_num;

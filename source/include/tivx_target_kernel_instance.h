@@ -71,7 +71,7 @@
 extern "C" {
 #endif
 
-#include <vx_internal.h>
+#include <VX/vx.h>
 
 /*!
  * \file
@@ -104,6 +104,12 @@ typedef struct _tivx_target_kernel_instance {
 
     /*! \brief capture state (VX_NODE_STATE_PIPEUP or VX_NODE_STATE_STEADY)*/
     vx_enum state;
+
+    /*! tile width for the kernel */
+    uint32_t block_width;
+
+    /*! tile height for the kernel */
+    uint32_t block_height;
 
 } tivx_target_kernel_instance_t;
 

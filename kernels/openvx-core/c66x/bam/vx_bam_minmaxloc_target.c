@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -273,6 +273,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
 {
     vx_status status = VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
+    tivx_bam_kernel_details_t kernel_details;
 
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
@@ -286,6 +287,11 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
         {
             status = VX_ERROR_NO_MEMORY;
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
     if (VX_SUCCESS == status)
@@ -305,7 +311,6 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_minMaxLoc_i8u_params kernel_params;
             VXLIB_bufParams2D_t vxlib_src;
             VXLIB_bufParams2D_t *buf_params[1];
@@ -527,7 +532,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
 
         prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
 
-        BAM_VXLIB_minMaxLoc_i8u_params *kernel_params = (BAM_VXLIB_minMaxLoc_i8u_params*)scratch;         
+        BAM_VXLIB_minMaxLoc_i8u_params *kernel_params = (BAM_VXLIB_minMaxLoc_i8u_params*)scratch;
 
         if ((NULL == kernel_params) || (NULL == prms) ||
             (sizeof(BAM_VXLIB_minMaxLoc_i8u_params) != *size))
@@ -567,7 +572,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
                 BAM_VXLIB_minMaxLoc_i8u_getKernelInfo(kernel_params,
                     &kernel_details[*bam_node_cnt].kernel_info);
             }
-            else 
+            else
             {
                 node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MINMAXLOC_I16S;
 
@@ -607,7 +612,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
     if ((VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMinMaxLocParams) == size))
     {
-        switch (ovx_port) 
+        switch (ovx_port)
         {
             case TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
