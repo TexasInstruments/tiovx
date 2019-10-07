@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 }
                 else
                 {
-                    lse_reformat_in(in_img, target_ptr, prms->inC_16, 0, 1); //Should this be 1?
+                    lse_reformat_in(in_img, target_ptr, prms->inC_16, 1, 1);
                 }
 
                 tivxMemBufferUnmap(target_ptr,
@@ -286,7 +286,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     }
                     else
                     {
-                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outC1_16, output_bits, 0);
+                        lse_reformat_out(in_img, out_img[0], target_ptr, prms->outC1_16, output_bits, 1);
                     }
 
                     tivxMemBufferUnmap(target_ptr,
@@ -318,7 +318,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     }
                     else
                     {
-                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outC3_16, output_bits, 0);
+                        lse_reformat_out(in_img, out_img[1], target_ptr, prms->outC3_16, output_bits, 1);
                     }
 
                     tivxMemBufferUnmap(target_ptr,
