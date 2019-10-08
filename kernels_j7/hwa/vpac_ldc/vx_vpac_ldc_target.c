@@ -143,7 +143,7 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxVpacLdcObj *ldc_obj);
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
     tivx_obj_desc_user_data_object_t *reg_prms_desc);
-static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
+static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
     Fvid2_Format *fmt, tivx_obj_desc_image_t *img_desc);
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
@@ -510,7 +510,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
         /* Set up input and output image formats */
         ldc_obj->num_output = 1U;
-        tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->inFmt, in_img_desc);
+        status = tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->inFmt, in_img_desc);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         if ((VX_DF_IMAGE_U16 == in_img_desc->format) &&
             (1u == ldc_prms->input_align_12bit))
         {
@@ -518,8 +522,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         }
 
         ldc_cfg->enableOutput[0U] = (uint32_t)TRUE;
-        tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->outFmt[0u], out0_img_desc);
+        status = tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->outFmt[0u], out0_img_desc);
+    }
 
+    if (VX_SUCCESS == status)
+    {
         if ((FVID2_DF_LUMA_ONLY == ldc_cfg->outFmt[0u].dataFormat) ||
             (FVID2_DF_CHROMA_ONLY == ldc_cfg->outFmt[0u].dataFormat))
         {
@@ -529,10 +536,13 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         if (NULL != out1_img_desc)
         {
             ldc_cfg->enableOutput[1U] = (uint32_t)TRUE;
-            tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->outFmt[1u], out1_img_desc);
+            status = tivxVpacLdcSetFmt(ldc_prms, &ldc_cfg->outFmt[1u], out1_img_desc);
             ldc_obj->num_output = 2U;
         }
+    }
 
+    if (VX_SUCCESS == status)
+    {
         /* By default back mapping is disabled */
         ldc_cfg->enableBackMapping = (uint32_t)FALSE;
 
@@ -853,9 +863,11 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxMutexUnlock(instObj->lock);
 }
 
-static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
+static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
     Fvid2_Format *fmt, tivx_obj_desc_image_t *img_desc)
 {
+    vx_status status = VX_SUCCESS;
+
     if (NULL != img_desc)
     {
         switch (img_desc->format)
@@ -863,6 +875,12 @@ static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
             case VX_DF_IMAGE_UYVY:
             {
                 fmt->dataFormat = FVID2_DF_YUV422I_UYVY;
+                fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
+                break;
+            }
+            case VX_DF_IMAGE_YUYV:
+            {
+                fmt->dataFormat = FVID2_DF_YUV422I_YUYV;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
@@ -919,6 +937,7 @@ static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
             }
             default:
             {
+                status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacLdcSetFmt: Invalid Vx Image Format\n");
                 break;
@@ -941,6 +960,8 @@ static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
         fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
         fmt->pitch[1]   = img_desc->imagepatch_addr[1].stride_y;
     }
+
+    return status;
 }
 
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
