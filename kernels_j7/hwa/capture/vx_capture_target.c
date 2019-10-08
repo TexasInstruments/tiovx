@@ -983,50 +983,52 @@ static vx_status VX_CALLBACK tivxCaptureControl(
         status = VX_FAILURE;
     }
 
-    switch (node_cmd_id)
-    {
-        case TIVX_CAPTURE_PRINT_STATISTICS:
+    if (VX_SUCCESS == status)
+    {    
+        switch (node_cmd_id)
         {
-            tivxCapturePrintStatus(prms);
-            break;
-        }
-        case TIVX_CAPTURE_GET_STATISTICS:
-        {
-            if (NULL != obj_desc[0])
+            case TIVX_CAPTURE_PRINT_STATISTICS:
             {
-                fvid2_status = Fvid2_control(prms->drvHandle,
-                                        IOCTL_CSIRX_GET_INST_STATUS,
-                                        &prms->captStatus,
-                                        NULL);
-                if (FVID2_SOK != fvid2_status)
+                tivxCapturePrintStatus(prms);
+                break;
+            }
+            case TIVX_CAPTURE_GET_STATISTICS:
+            {
+                if (NULL != obj_desc[0])
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxCaptureControl: Get status returned failure\n");
-                    status = VX_FAILURE;
+                    fvid2_status = Fvid2_control(prms->drvHandle,
+                                            IOCTL_CSIRX_GET_INST_STATUS,
+                                            &prms->captStatus,
+                                            NULL);
+                    if (FVID2_SOK != fvid2_status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "tivxCaptureControl: Get status returned failure\n");
+                        status = VX_FAILURE;
+                    }
+                    else
+                    {
+                        status = tivxCaptureGetStatistics(prms,
+                            (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
+                    }
                 }
                 else
                 {
-                    status = tivxCaptureGetStatistics(prms,
-                        (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxCaptureControl: User data object was NULL\n");
+                    status = VX_FAILURE;
                 }
+                break;
             }
-            else
+            default:
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxCaptureControl: User data object was NULL\n");
+                    "tivxCaptureControl: Invalid Command Id\n");
                 status = VX_FAILURE;
+                break;
             }
-            break;
-        }
-        default:
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxCaptureControl: Invalid Command Id\n");
-            status = VX_FAILURE;
-            break;
         }
     }
-
     return status;
 }
 
