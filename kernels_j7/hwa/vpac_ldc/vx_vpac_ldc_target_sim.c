@@ -91,6 +91,7 @@ typedef struct
     uint32_t outY2_buffer_size;
     uint32_t outC3_buffer_size;
     uint32_t mesh_buffer_size;
+    uint32_t input_align_12bit;
 
     ldc_config config;
 
@@ -249,6 +250,25 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         VX_READ_ONLY);
                 }
             }
+
+            if (VX_DF_IMAGE_U16 == in_img->format)
+            {
+                if(0 == prms->input_align_12bit)
+                {
+                    for(i=0; i < in_img->width * in_img->height; i++)
+                    {
+                        prms->inY_16[i] = prms->inY_16[i] & 0xFFF;
+                    }
+                }
+                else
+                {
+                    for(i=0; i < in_img->width * in_img->height; i++)
+                    {
+                        prms->inY_16[i] = prms->inY_16[i] >> 4;
+                    }
+                }
+            }
+
 #ifdef ENABLE_DEBUG_PRINT
             print_csettings(&prms->config.settings);
 #endif
@@ -529,6 +549,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 prms->config.settings.iw = in_img_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
                 prms->config.settings.ih = in_img_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
                 prms->config.settings.data_mode = data_mode;      // LD input data mode
+                prms->input_align_12bit = params->input_align_12bit;
 
                 if (NULL != out0_img_desc)
                 {
