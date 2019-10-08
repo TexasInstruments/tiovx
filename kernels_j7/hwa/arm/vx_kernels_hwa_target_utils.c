@@ -285,8 +285,8 @@ void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint
         for(i=0; i < w; i++)
         {
             /* Downshift bits to align msb to bit 7 */
-            src16_0[j*w+i+y] = src_addr8[j*stride+i*2+y] >> downshift;
-            src16_1[j*w+i+u] = src_addr8[j*stride+i*2+u] >> downshift;
+            src16_0[j*w+i] = src_addr8[j*stride+i*2+y] >> downshift;
+            src16_1[j*w+i] = src_addr8[j*stride+i*2+u] >> downshift;
         }
     }
 }
