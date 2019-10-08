@@ -301,16 +301,36 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
 
 
 /*! \brief [Graph] Creates a VPAC_LDC Node.
+ *
+ *  <b> Valid input/output format combinations: </b>
+ *
+ *  Input Format           | Output Format
+ *  -----------------------|--------------
+ *  VX_DF_IMAGE_U8         | VX_DF_IMAGE_U8
+ *  ^                      | TIVX_DF_IMAGE_P12
+ *  VX_DF_IMAGE_U16        | VX_DF_IMAGE_U16
+ *  TIVX_DF_IMAGE_P12      | TIVX_DF_IMAGE_P12
+ *  ^                      | VX_DF_IMAGE_U8
+ *  VX_DF_IMAGE_NV12       | VX_DF_IMAGE_NV12
+ *  ^                      | TIVX_DF_IMAGE_NV12_P12
+ *  TIVX_DF_IMAGE_NV12_P12 | TIVX_DF_IMAGE_NV12_P12
+ *  ^                      | VX_DF_IMAGE_NV12
+ *  VX_DF_IMAGE_UYVY       | VX_DF_IMAGE_UYVY
+ *  ^                      | VX_DF_IMAGE_YUYV
+ *  ^                      | VX_DF_IMAGE_NV12
+ *  ^                      | TIVX_DF_IMAGE_NV12_P12
+ *
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params
  *             structure of type <tt>\ref tivx_vpac_ldc_params_t</tt>.
  * \param [in] warp_matrix (optional) Input warp_matrix of type
- *             <tt>\vx_matrix</tt> for affine or
+ *             <tt>\ref vx_matrix</tt> for affine or
  *             perspective transform configuration.
  *             Must be 2x3 (affine) or 3x3 (perspective), and of type
  *             <tt>\ref VX_TYPE_INT16</tt> if using HW register values,
  *             or <tt>\ref VX_TYPE_FLOAT32</tt> if using matrix values
- *             defined in OpenVX warp functions.
+ *             defined in OpenVX warp functions ( \ref vxWarpAffineNode,
+ *             \ref vxWarpPerspectiveNode).
  * \param [in] region_prms (optional) The input object of a single params
  *             structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt>
  *             or <tt>\ref tivx_vpac_ldc_multi_region_params_t</tt>.
