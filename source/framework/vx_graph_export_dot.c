@@ -515,7 +515,10 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
         TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
         TIVX_EXPORT_WRITELN(fp, "");
 
+        /* Note: everything is set to DSP1 for PC, and is therefore misleading */
+        #ifndef PC
         exportTargetLegend(fp, graph);
+        #endif
 
         /* List nodes within a graph */
         TIVX_EXPORT_WRITELN(fp, "/* List of Nodes */");

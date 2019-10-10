@@ -451,6 +451,15 @@ void tivxPrintAllResourceStats();
 /*!
  * \brief Exports the max used values to a file
  *
+ *        Note 1: For PC emulation mode, the exported files will not have a legend with the correct target
+ *        Note 2: For target mode, only the .txt files will be generated.  These can be converted to JPEG's using the following command:
+ *
+ *        dot -Tjpg -o<output file path>/<jpg name>.jpg <text file name>
+ *
+ *        For example, to generate a JPEG named "graph.jpg" for the file "graph.txt" in the current directory, the following command would be used.
+ *
+ *        dot -Tjpg -o./graph.jpg graph.txt
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_status tivxExportAllResourceMaxUsedValueToFile();
@@ -568,6 +577,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  * Multiple representation of the graph are exported to different files
  * using 'output_file_prefix' as filename prefix.
  * The output files are stored at path 'output_file_path'
+ * Note: This must be called after vxVerifyGraph()
  *
  * \param [in] graph Graph reference
  * \param [in] output_file_path String specifying the ouput file path
