@@ -606,6 +606,150 @@ typedef struct {
     int base_predictor1;
 } ArgPredictors;
 
+static uint32_t dof_predictor_checksums_ref[] = {
+    0x1af9d081, 0x7808c689, 0x1af9d081, 0x823387e2, 0x4b189064, 0x7808c689, 0x7808c689, 0x7808c689,
+    0x5fc1c786, 0x272b0914, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x823387e2, 0x4b189064, 0x823387e2,
+    0x5fc1c786, 0x823387e2, 0x823387e2, 0x3c9f6976, 0x4b189064, 0x272b0914, 0x4b189064, 0x3c9f6976,
+    0x4b189064, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x79e08274, 0x448cb9b8, 0x7808c689, 0x7808c689,
+    0x7808c689, 0x6231bff6, 0x336b28eb, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x79e08274, 0x448cb9b8,
+    0x79e08274, 0x6231bff6, 0x79e08274, 0x79e08274, 0x3b6c67b5, 0x448cb9b8, 0x336b28eb, 0x448cb9b8,
+    0x3b6c67b5, 0x448cb9b8, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69, 0x53a521a1, 0x7808c689,
+    0x7808c689, 0x7808c689, 0x6f0abc42, 0x3faa30c3, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69,
+    0x53a521a1, 0x888a8e69, 0x6f0abc42, 0x888a8e69, 0x888a8e69, 0x48a5c889, 0x53a521a1, 0x3faa30c3,
+    0x53a521a1, 0x48a5c889, 0x53a521a1, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x918adc12, 0x4aebba3c,
+    0x7808c689, 0x7808c689, 0x7808c689, 0x6a8c32a5, 0x43710a30, 0x1af9d081, 0x7808c689, 0x1af9d081,
+    0x918adc12, 0x4aebba3c, 0x918adc12, 0x6a8c32a5, 0x918adc12, 0x918adc12, 0x44e6e85f, 0x4aebba3c,
+    0x43710a30, 0x4aebba3c, 0x44e6e85f, 0x4aebba3c, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x79e08274,
+    0x448cb9b8, 0x7808c689, 0x7808c689, 0x7808c689, 0x6231bff6, 0x336b28eb, 0x1af9d081, 0x7808c689,
+    0x1af9d081, 0x79e08274, 0x448cb9b8, 0x79e08274, 0x6231bff6, 0x79e08274, 0x79e08274, 0x3b6c67b5,
+    0x448cb9b8, 0x336b28eb, 0x448cb9b8, 0x3b6c67b5, 0x448cb9b8, 0x1af9d081, 0x7808c689, 0x1af9d081,
+    0x79e08274, 0x448cb9b8, 0x7808c689, 0x7808c689, 0x7808c689, 0x6231bff6, 0x336b28eb, 0x1af9d081,
+    0x7808c689, 0x1af9d081, 0x79e08274, 0x448cb9b8, 0x79e08274, 0x6231bff6, 0x79e08274, 0x79e08274,
+    0x3b6c67b5, 0x448cb9b8, 0x336b28eb, 0x448cb9b8, 0x3b6c67b5, 0x448cb9b8, 0x1af9d081, 0x7808c689,
+    0x1af9d081, 0x83115f15, 0x57d81054, 0x7808c689, 0x7808c689, 0x7808c689, 0x62a2a24d, 0x464a4b5e,
+    0x1af9d081, 0x7808c689, 0x1af9d081, 0x83115f15, 0x57d81054, 0x83115f15, 0x62a2a24d, 0x83115f15,
+    0x83115f15, 0x4861abd9, 0x57d81054, 0x464a4b5e, 0x57d81054, 0x4861abd9, 0x57d81054, 0x1af9d081,
+    0x7808c689, 0x1af9d081, 0x8037b14d, 0x56e1b154, 0x7808c689, 0x7808c689, 0x7808c689, 0x66ec130a,
+    0x4adc1203, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x8037b14d, 0x56e1b154, 0x8037b14d, 0x66ec130a,
+    0x8037b14d, 0x8037b14d, 0x527bddb3, 0x56e1b154, 0x4adc1203, 0x56e1b154, 0x527bddb3, 0x56e1b154,
+    0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69, 0x53a521a1, 0x7808c689, 0x7808c689, 0x7808c689,
+    0x6f0abc42, 0x3faa30c3, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69, 0x53a521a1, 0x888a8e69,
+    0x6f0abc42, 0x888a8e69, 0x888a8e69, 0x48a5c889, 0x53a521a1, 0x3faa30c3, 0x53a521a1, 0x48a5c889,
+    0x53a521a1, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x83115f15, 0x57d81054, 0x7808c689, 0x7808c689,
+    0x7808c689, 0x62a2a24d, 0x464a4b5e, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x83115f15, 0x57d81054,
+    0x83115f15, 0x62a2a24d, 0x83115f15, 0x83115f15, 0x4861abd9, 0x57d81054, 0x464a4b5e, 0x57d81054,
+    0x4861abd9, 0x57d81054, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69, 0x53a521a1, 0x7808c689,
+    0x7808c689, 0x7808c689, 0x6f0abc42, 0x3faa30c3, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x888a8e69,
+    0x53a521a1, 0x888a8e69, 0x6f0abc42, 0x888a8e69, 0x888a8e69, 0x48a5c889, 0x53a521a1, 0x3faa30c3,
+    0x53a521a1, 0x48a5c889, 0x53a521a1, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x8931d6ff, 0x4f323c68,
+    0x7808c689, 0x7808c689, 0x7808c689, 0x605128e5, 0x46677192, 0x1af9d081, 0x7808c689, 0x1af9d081,
+    0x8931d6ff, 0x4f323c68, 0x8931d6ff, 0x605128e5, 0x8931d6ff, 0x8931d6ff, 0x49d16e9a, 0x4f323c68,
+    0x46677192, 0x4f323c68, 0x49d16e9a, 0x4f323c68, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x918adc12,
+    0x4aebba3c, 0x7808c689, 0x7808c689, 0x7808c689, 0x6a8c32a5, 0x43710a30, 0x1af9d081, 0x7808c689,
+    0x1af9d081, 0x918adc12, 0x4aebba3c, 0x918adc12, 0x6a8c32a5, 0x918adc12, 0x918adc12, 0x44e6e85f,
+    0x4aebba3c, 0x43710a30, 0x4aebba3c, 0x44e6e85f, 0x4aebba3c, 0x1af9d081, 0x7808c689, 0x1af9d081,
+    0x8037b14d, 0x56e1b154, 0x7808c689, 0x7808c689, 0x7808c689, 0x66ec130a, 0x4adc1203, 0x1af9d081,
+    0x7808c689, 0x1af9d081, 0x8037b14d, 0x56e1b154, 0x8037b14d, 0x66ec130a, 0x8037b14d, 0x8037b14d,
+    0x527bddb3, 0x56e1b154, 0x4adc1203, 0x56e1b154, 0x527bddb3, 0x56e1b154, 0x1af9d081, 0x7808c689,
+    0x1af9d081, 0x8931d6ff, 0x4f323c68, 0x7808c689, 0x7808c689, 0x7808c689, 0x605128e5, 0x46677192,
+    0x1af9d081, 0x7808c689, 0x1af9d081, 0x8931d6ff, 0x4f323c68, 0x8931d6ff, 0x605128e5, 0x8931d6ff,
+    0x8931d6ff, 0x49d16e9a, 0x4f323c68, 0x46677192, 0x4f323c68, 0x49d16e9a, 0x4f323c68, 0x1af9d081,
+    0x7808c689, 0x1af9d081, 0x918adc12, 0x4aebba3c, 0x7808c689, 0x7808c689, 0x7808c689, 0x6a8c32a5,
+    0x43710a30, 0x1af9d081, 0x7808c689, 0x1af9d081, 0x918adc12, 0x4aebba3c, 0x918adc12, 0x6a8c32a5,
+    0x918adc12, 0x918adc12, 0x44e6e85f, 0x4aebba3c, 0x43710a30, 0x4aebba3c, 0x44e6e85f, 0x4aebba3c
+};
+
+static uint32_t get_predictor_checksum(uint16_t base_pred1, uint16_t base_pred2,
+    uint16_t inter_pred1, uint16_t inter_pred2)
+{
+    uint16_t a, b, c, d;
+    a = (inter_pred2 > 1) ? inter_pred2-1 : inter_pred2;
+    b = (inter_pred1 > 1) ? inter_pred1-1 : inter_pred1;
+    c = base_pred2;
+    d = base_pred1;
+
+    return dof_predictor_checksums_ref[(4U * 5U * 5U * a) + (5U * 5U * b) + (5U*c) + d];
+}
+
+static uint32_t dof_predictor2_checksums_ref[] = {
+    0x109b3df7, 0x5a5ded98, 0x53f00bc2, 0x433ba56d,
+    0x109b3df7, 0x5a5ded98, 0x56fedd73, 0x2b223be4,
+    0x109b3df7, 0x5a5ded98, 0x5c07edac, 0x460846aa,
+    0x109b3df7, 0x5a5ded98, 0x5407526d, 0x4232d38c,
+    0x109b3df7, 0x5a5ded98, 0x5b869bef, 0x40c16bb2,
+    0x109b3df7, 0x5a5ded98, 0x4f524859, 0x435c74ea,
+    0x109b3df7, 0x5a5ded98, 0x591404bb, 0x3bf60922
+};
+
+static uint32_t get_predictor2_checksum(uint16_t base_pred1, uint16_t base_pred2,
+    uint16_t inter_pred1, uint16_t inter_pred2)
+{
+    uint32_t index = 0, inter = 0;
+
+    if(      (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_NONE) ||
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_NONE) ||
+            ((base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) &&
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL)))
+
+    {
+        index = 0;
+    }
+    else if( (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    {
+        index = 1;
+    }
+    else if( (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT))
+    {
+        index = 2;
+    }
+    else if( (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+    {
+        index = 3;
+    }
+
+    if(     ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)) &&
+            ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)))
+    {
+        inter = 4;
+    }
+    else if(((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED)) &&
+            ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)))
+    {
+        inter = 5;
+    }
+    else if(((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED)) &&
+            ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)))
+    {
+        inter = 6;
+    }
+    else if( (inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    {
+        inter = 1;
+    }
+    else if( (inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT))
+    {
+        inter = 2;
+    }
+    else if( (inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
+    {
+        inter = 3;
+    }
+
+    return dof_predictor2_checksums_ref[inter*4 + index];
+}
+
 #define ADD_BASE_PRED1(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
@@ -738,15 +882,19 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
         rect.end_x = flow_width;
         rect.end_y = flow_height;
 
+        checksum_expected = get_predictor_checksum(arg_->base_predictor1, arg_->base_predictor2,
+            arg_->inter_predictor1, arg_->inter_predictor2);
         checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
-        printf(" Actual checksum: %x\n", checksum_actual);
+        ASSERT(checksum_expected == checksum_actual);
 
         if(temporal_pred_flag == 1)
         {
             copy_flow_image(flow_vector_out, flow_width, flow_height, flow_vector_in);
             VX_CALL(vxProcessGraph(graph));
+            checksum_expected = get_predictor2_checksum(arg_->base_predictor1, arg_->base_predictor2,
+                arg_->inter_predictor1, arg_->inter_predictor2);
             checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
-            printf(" Actual checksum: %x\n", checksum_actual);
+            ASSERT(checksum_expected == checksum_actual);
             VX_CALL(vxReleaseImage(&flow_vector_in));
         }
 
