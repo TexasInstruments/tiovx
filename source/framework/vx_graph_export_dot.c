@@ -243,6 +243,7 @@ static int exportAsJpg(char *output_file_path, char *output_file_prefix, char *o
     return status;
 }
 
+#ifndef PC
 static void exportTargetLegend(FILE *fp, vx_graph graph)
 {
     char line[TIVX_EXPORT_MAX_LINE_SIZE];
@@ -289,6 +290,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
     TIVX_EXPORT_WRITELN(fp, "");
     TIVX_EXPORT_WRITELN(fp, "");
 }
+#endif
 
 static void exportDataRef(FILE *fp, vx_reference ref)
 {
@@ -841,7 +843,10 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
         TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
         TIVX_EXPORT_WRITELN(fp, "");
 
+        /* Note: everything is set to DSP1 for PC, and is therefore misleading */
+        #ifndef PC
         exportTargetLegend(fp, graph);
+        #endif
 
         /* List node descriptor for each node and each pipeline in a graph */
         TIVX_EXPORT_WRITELN(fp, "/* List of nodes ( Pipeline = %d )*/", pipe_id);
@@ -1013,7 +1018,10 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
         TIVX_EXPORT_WRITELN(fp, "digraph %s {", output_file_prefix);
         TIVX_EXPORT_WRITELN(fp, "");
 
+        /* Note: everything is set to DSP1 for PC, and is therefore misleading */
+        #ifndef PC
         exportTargetLegend(fp, graph);
+        #endif
 
         /* List node descriptor for each node and each pipeline in a graph */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
