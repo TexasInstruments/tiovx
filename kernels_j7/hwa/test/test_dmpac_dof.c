@@ -694,8 +694,8 @@ static uint32_t get_predictor2_checksum(uint16_t base_pred1, uint16_t base_pred2
     {
         index = 0;
     }
-    else if( (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    else if( (base_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+             (base_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT))
     {
         index = 1;
     }
@@ -710,8 +710,8 @@ static uint32_t get_predictor2_checksum(uint16_t base_pred1, uint16_t base_pred2
         index = 3;
     }
 
-    if(     ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)) &&
+    if(     ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)) &&
             ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||
              (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)))
     {
@@ -726,13 +726,13 @@ static uint32_t get_predictor2_checksum(uint16_t base_pred1, uint16_t base_pred2
     }
     else if(((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED) ||
              (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED)) &&
-            ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)))
+            ((inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)))
     {
         inter = 6;
     }
-    else if( (inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    else if( (inter_pred1 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+             (inter_pred2 == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT))
     {
         inter = 1;
     }
@@ -752,27 +752,27 @@ static uint32_t get_predictor2_checksum(uint16_t base_pred1, uint16_t base_pred2
 
 #define ADD_BASE_PRED1(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
-    CT_EXPAND(nextmacro(testArgName "/base_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)), \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL)),   \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
     CT_EXPAND(nextmacro(testArgName "/base_pred1=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
 
 #define ADD_BASE_PRED2(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/base_pred2=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
-    CT_EXPAND(nextmacro(testArgName "/base_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)), \
     CT_EXPAND(nextmacro(testArgName "/base_pred2=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL)),   \
     CT_EXPAND(nextmacro(testArgName "/base_pred2=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
     CT_EXPAND(nextmacro(testArgName "/base_pred2=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
 
 #define ADD_INTER_PRED1(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/inter_pred1=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
-    CT_EXPAND(nextmacro(testArgName "/inter_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred1=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)), \
     CT_EXPAND(nextmacro(testArgName "/inter_pred1=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
     CT_EXPAND(nextmacro(testArgName "/inter_pred1=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
 
 #define ADD_INTER_PRED2(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/inter_pred2=NONE", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_NONE)),     \
-    CT_EXPAND(nextmacro(testArgName "/inter_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT)), \
+    CT_EXPAND(nextmacro(testArgName "/inter_pred2=DELAY_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT)), \
     CT_EXPAND(nextmacro(testArgName "/inter_pred2=PYR_LEFT", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT)),   \
     CT_EXPAND(nextmacro(testArgName "/inter_pred2=PYR_COL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED))
 

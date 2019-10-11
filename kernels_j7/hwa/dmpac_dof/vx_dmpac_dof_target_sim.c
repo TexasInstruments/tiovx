@@ -959,8 +959,8 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
                         tivx_dmpac_dof_params_t *params)
 {
     /* Check Base layer (all 4 are valid) */
-    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+       (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT))
     {
         prms->dofParams.baseLayerPredictorConfiguration[DELAYED_LEFT] = 1;
     }
@@ -985,8 +985,8 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
     }
 
     /* Check Inter layer (3 are valid) */
-    if((params->inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT) ||
-       (params->inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT))
+    if((params->inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
+       (params->inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT))
     {
         prms->dofParams.nonBaseNonTopLayerPredictorConfiguration[DELAYED_LEFT] = 1;
     }

@@ -119,7 +119,7 @@ extern "C" {
 #define TIVX_DMPAC_DOF_PREDICTOR_NONE                  (0U)
 
 /** \brief Delayed left predictor */
-#define TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT            (1U)
+#define TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT            (1U)
 
 /** \brief Temporal predictor, Need flow vector output from previous image pair
            as Temporal input, can only be set for base layer */
