@@ -69,6 +69,13 @@
 
 
 #include <VX/vx.h>
+#include <stdio.h>
+
+/** \brief Max file name size for output */
+#define TIVX_UTILS_POINT_MAX_FILENAME     (256u)
+
+/** \brief Max file line size for output */
+#define TIVX_UTILS_MAX_LINE_SIZE     (1024u)
 
 /**
  * \brief Print graph performance information to stdout via 'printf'
@@ -82,6 +89,21 @@
  * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_graph_perf_print(vx_graph graph);
+
+/**
+ * \brief Writes graph information to .md file for integration into user guide
+ *
+ *        Requires the file to be opened using appPerfStatsExportOpenFile and
+ *        closed using appPerfStatsExportCloseFile
+ *
+ * \param [in] fp     file handle
+ * \param [in] graph  graph handle
+ *
+ * \return VX_SUCCESS on success, else failure
+ *
+ * \ingroup group_tivx_ext_host_utils
+ */
+vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph);
 
 /**
  * \brief Print node performance information to stdout via 'printf'

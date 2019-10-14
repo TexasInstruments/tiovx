@@ -63,7 +63,12 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <TI/tivx.h>
+#include <tivx_utils_graph_perf.h>
 
+#define TIVX_UTILS_EXPORT_WRITELN(fp, message, ...) do { \
+    snprintf(line, TIVX_UTILS_POINT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
+    fwrite(line, 1, strlen(line), fp); \
+    } while (0)
 
 vx_status tivx_utils_node_perf_print(vx_node node)
 {
@@ -86,6 +91,46 @@ vx_status tivx_utils_node_perf_print(vx_node node)
                     printf(" NODE: %10s: %24s: avg = %6"PRIu64" usecs, min/max = %6"PRIu64" / %6"PRIu64" usecs, #executions = %10"PRIu64"\n",
                         target_name,
                         node_name,
+                        (node_perf.avg/1000u),
+                        (node_perf.min/1000u),
+                        (node_perf.max/1000u),
+                        (node_perf.num)
+                        );
+                }
+
+            }
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "invalid node object\n");
+        status = VX_FAILURE;
+    }
+    return status;
+}
+
+vx_status tivx_utils_node_perf_export(FILE *fp, vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+    vx_perf_t node_perf;
+    vx_char *node_name;
+    char target_name[TIVX_TARGET_MAX_NAME];
+    char line[TIVX_UTILS_MAX_LINE_SIZE];
+
+    if(node!=NULL)
+    {
+        status = vxQueryReference((vx_reference)node, VX_REFERENCE_NAME, &node_name, sizeof(vx_char*));
+        if(status==VX_SUCCESS)
+        {
+            status = vxQueryNode(node, TIVX_NODE_TARGET_STRING, target_name, TIVX_TARGET_MAX_NAME);
+            if(status==VX_SUCCESS)
+            {
+                status = vxQueryNode(node, VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
+                if(status==VX_SUCCESS)
+                {
+                    TIVX_UTILS_EXPORT_WRITELN(fp, " %24s (%10s)    | %6"PRIu64"    | %6"PRIu64" / %6"PRIu64"   | %10"PRIu64"",
+                        node_name,
+                        target_name,
                         (node_perf.avg/1000u),
                         (node_perf.min/1000u),
                         (node_perf.max/1000u),
@@ -131,6 +176,54 @@ vx_status tivx_utils_graph_perf_print(vx_graph graph)
                 printf("\n");
             }
         }
+    }
+
+    return status;
+}
+
+vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t num_nodes, i;
+    vx_perf_t graph_perf;
+    vx_char *graph_name;
+    char line[TIVX_UTILS_MAX_LINE_SIZE];
+
+    if (NULL != fp)
+    {
+        status = vxQueryReference((vx_reference)graph, VX_REFERENCE_NAME, &graph_name, sizeof(vx_char*));
+
+        if(status==VX_SUCCESS)
+        {
+            status = vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &graph_perf, sizeof(vx_perf_t));
+            if(status==VX_SUCCESS)
+            {
+                status = vxQueryGraph(graph, VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
+                if(status==VX_SUCCESS)
+                {
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\n# GRAPH: %16s Detailed Statistics\n", graph_name);
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\nNode Execution Table\n");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "Total Nodes      | Total executions ");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "----------|--------------");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "%3d       | %6d\n", num_nodes, (uint32_t)graph_perf.num);
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\nPer Node Breakdown\n");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "NODE      | avg (usecs)      | min/max (usecs)      | #executions");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "----------|------------------|----------------------|------------");
+
+                    for(i=0; i<num_nodes; i++)
+                    {
+                        vx_node node = tivxGraphGetNode(graph, i);
+
+                        tivx_utils_node_perf_export(fp, node);
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        status = VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "file pointer is NULL\n");
     }
 
     return status;
