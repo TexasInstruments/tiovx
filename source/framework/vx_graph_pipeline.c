@@ -150,7 +150,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
-                vx_uint32 num_refs, 
+                vx_uint32 num_refs,
                 vx_uint32 flags)
 {
     tivx_data_ref_queue data_ref_q = NULL;
@@ -204,8 +204,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
             /* Note: keeping compatibility with deprecated API */
             if(flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP)
             {
-                /* if enqueing buffers for pipeup then dont schedule graph, 
-                 * just enqueue the buffers 
+                /* if enqueing buffers for pipeup then dont schedule graph,
+                 * just enqueue the buffers
                  */
                 graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx--;
             }
@@ -404,9 +404,9 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
 
 static void ownGraphEnqueueFreeObjDesc(vx_graph graph, tivx_obj_desc_graph_t *obj_desc)
 {
-    if(obj_desc != NULL && obj_desc->pipeline_id < graph->pipeline_depth)
+    if((obj_desc != NULL) && (obj_desc->pipeline_id < graph->pipeline_depth))
     {
-        tivxQueuePut(&graph->free_q, obj_desc->pipeline_id, 0);
+        tivxQueuePut(&graph->free_q, obj_desc->pipeline_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 }
 

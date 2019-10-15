@@ -106,13 +106,19 @@ static void tivxObjDescIpcHandler(uint32_t payload)
 {
     vx_enum dst_target_id;
     uint16_t obj_desc_id;
+    vx_status status;
 
     obj_desc_id = tivxIpcPayloadGetObjDescId(payload);
 
     dst_target_id = tivxIpcPayloadGetTargetId(payload);
 
     /* now this is local target hence call target API directly */
-    tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
+    status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
+
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxObjDescIpcHandler: tivxTargetQueueObjDesc failed\n");
+    }
 }
 
 void tivxObjDescInit(void)

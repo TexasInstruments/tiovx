@@ -1342,6 +1342,15 @@ vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
     {
         status = tivxQueuePut(&target->job_queue_handle,
                 (uintptr_t)obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+        if(VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetQueueObjDesc: tivxQueuePut error\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetQueueObjDesc: target is NULL\n");
     }
 
     return status;
