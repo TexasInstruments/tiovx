@@ -955,3 +955,384 @@ static vx_status ownInitMetaFormatWithRawImage(
     return (status);
 }
 
+static vx_bool ownIsMetaFormatImageEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->img.width  == meta2->img.width) &&
+             (meta1->img.height == meta2->img.height) &&
+             (meta1->img.format == meta2->img.format) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatImageEqual: Image object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatArrayEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->arr.item_type == meta2->arr.item_type) &&
+             (meta1->arr.capacity  == meta2->arr.capacity) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatArrayEqual: Array object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatScalarEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->sc.type == meta2->sc.type) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatScalarEqual: Scalar object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatPyramidEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->pmd.width  == meta2->pmd.width) &&
+             (meta1->pmd.height == meta2->pmd.height) &&
+             (meta1->pmd.format == meta2->pmd.format) &&
+             (meta1->pmd.levels == meta2->pmd.levels) &&
+             (meta1->pmd.scale  == meta2->pmd.scale) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatPyramidEqual: Pyramid object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatMatrixEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->mat.type  == meta2->mat.type) &&
+             (meta1->mat.rows  == meta2->mat.rows) &&
+             (meta1->mat.cols  == meta2->mat.cols) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatMatrixEqual: Matrix object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatDistributionEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->dist.bins   == meta2->dist.bins) &&
+             (meta1->dist.offset == meta2->dist.offset) &&
+             (meta1->dist.range  == meta2->dist.range) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatDistributionEqual: Distribution object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatRemapEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->remap.src_width  == meta2->remap.src_width) &&
+             (meta1->remap.src_height == meta2->remap.src_height) &&
+             (meta1->remap.dst_width  == meta2->remap.dst_width) &&
+             (meta1->remap.dst_height == meta2->remap.dst_height) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatRemapEqual: Remap object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatThresholdEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->thres.type  == meta2->thres.type) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatThresholdEqual: Threshold object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatObjectArrayEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->objarr.item_type == meta2->objarr.item_type) &&
+             (meta1->objarr.num_items == meta2->objarr.num_items) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatObjectArrayEqual: Object Array object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatLutEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->lut.type  == meta2->lut.type) &&
+             (meta1->lut.count == meta2->lut.count) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatLutEqual: LUT object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatTensorEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+    vx_uint32 i;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->tensor.number_of_dimensions == meta2->tensor.number_of_dimensions) &&
+             (meta1->tensor.data_type == meta2->tensor.data_type) &&
+             (meta1->tensor.fixed_point_position == meta2->tensor.fixed_point_position) )
+        {
+            for (i = 0; i < meta1->tensor.number_of_dimensions; i++)
+            {
+                if (meta1->tensor.dimensions[i] != meta2->tensor.dimensions[i])
+                {
+                    break;
+                }
+            }
+            if (i == meta1->tensor.number_of_dimensions)
+            {
+                is_equal = vx_true_e;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatTensorEqual: Tensor object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatUserDataObjectEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->user_data_object.size == meta2->user_data_object.size) &&
+             ( 0 == strncmp(meta1->user_data_object.type_name, meta2->user_data_object.type_name, VX_MAX_REFERENCE_NAME) ) )
+        {
+            is_equal = vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatUserDataObjectEqual: User data object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+static vx_bool ownIsMetaFormatRawImageEqual(
+    vx_meta_format meta1, vx_meta_format meta2)
+{
+    vx_bool is_equal = vx_false_e;
+    vx_uint32 i;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        if ( (meta1->raw_image.width              == meta2->raw_image.width) &&
+             (meta1->raw_image.height             == meta2->raw_image.height) &&
+             (meta1->raw_image.num_exposures      == meta2->raw_image.num_exposures) &&
+             (meta1->raw_image.line_interleaved   == meta2->raw_image.line_interleaved) &&
+             (meta1->raw_image.meta_height_before == meta2->raw_image.meta_height_before) &&
+             (meta1->raw_image.meta_height_after  == meta2->raw_image.meta_height_after) )
+        {
+            for (i = 0; i < meta1->raw_image.num_exposures; i++)
+            {
+                if ( (meta1->raw_image.format[i].pixel_container != meta2->raw_image.format[i].pixel_container) ||
+                     (meta1->raw_image.format[i].msb != meta2->raw_image.format[i].msb))
+                {
+                    break;
+                }
+            }
+            if (i == meta1->raw_image.num_exposures)
+            {
+                is_equal = vx_true_e;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatRawImageEqual: Raw Image object meta data are not equivalent!\n");
+        }
+    }
+
+    return is_equal;
+}
+
+vx_bool ownIsMetaFormatEqual(
+    vx_meta_format meta1, vx_meta_format meta2, vx_enum type)
+{
+    vx_bool is_equal = vx_false_e;
+
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    {
+        switch (type)
+        {
+            case VX_TYPE_IMAGE:
+                is_equal = ownIsMetaFormatImageEqual(meta1, meta2);
+                break;
+            case VX_TYPE_ARRAY:
+                is_equal = ownIsMetaFormatArrayEqual(meta1, meta2);
+                break;
+            case VX_TYPE_SCALAR:
+                is_equal = ownIsMetaFormatScalarEqual(meta1, meta2);
+                break;
+            case VX_TYPE_PYRAMID:
+                is_equal = ownIsMetaFormatPyramidEqual(meta1, meta2);
+                break;
+            case VX_TYPE_MATRIX:
+                is_equal = ownIsMetaFormatMatrixEqual(meta1, meta2);
+                break;
+            case VX_TYPE_DISTRIBUTION:
+                is_equal = ownIsMetaFormatDistributionEqual(meta1, meta2);
+                break;
+            case VX_TYPE_THRESHOLD:
+                is_equal = ownIsMetaFormatThresholdEqual(meta1, meta2);
+                break;
+            case VX_TYPE_REMAP:
+                is_equal = ownIsMetaFormatRemapEqual(meta1, meta2);
+                break;
+            case VX_TYPE_LUT:
+                is_equal = ownIsMetaFormatLutEqual(meta1, meta2);
+                break;
+            case VX_TYPE_OBJECT_ARRAY:
+                is_equal = ownIsMetaFormatObjectArrayEqual(meta1, meta2);
+                break;
+            case VX_TYPE_TENSOR:
+                is_equal = ownIsMetaFormatTensorEqual(meta1, meta2);
+                break;
+            case VX_TYPE_USER_DATA_OBJECT:
+                is_equal = ownIsMetaFormatUserDataObjectEqual(meta1, meta2);
+                break;
+            case TIVX_TYPE_RAW_IMAGE:
+                is_equal = ownIsMetaFormatRawImageEqual(meta1, meta2);
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "ownIsMetaFormatEqual: invalid attribute\n");
+                break;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownIsMetaFormatEqual: Meta format is invalid!\n");
+    }
+
+    return is_equal;
+}

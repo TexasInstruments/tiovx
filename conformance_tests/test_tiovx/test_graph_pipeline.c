@@ -22,6 +22,8 @@
 #include <TI/tivx_config.h>
 #include "math.h"
 #include <limits.h>
+#include <TI/tivx_test_kernels.h>
+#include <TI/tivx_capture.h>
 
 TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -5018,6 +5020,208 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+
+/*
+ * This test case is a negative test that tries to create a data ref queue of images with inconsistent
+ * values for the width and height of images
+ *
+ */
+TEST(tivxGraphPipeline, negativeTestImageInconsistentRefs)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_node n0;
+
+    uint32_t initial_width, width, initial_height, height, num_buf, buf_id;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    initial_width = 64;
+    initial_height = 64;
+    width = 128;
+    height = 128;
+    num_buf = 2;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    ASSERT_VX_OBJECT(d0[0]    = vxCreateImage(context, initial_width, initial_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(d2[0]    = vxCreateImage(context, initial_width, initial_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(d0[1]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(d2[1]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    /* create other refs, these are not multiple refs and same refs is fed as parameter to the graph */
+    ASSERT_VX_OBJECT(d1    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    /* create node, input (index 0) and output (index 2) will be made as graph parameter
+     * so that we can enqueue and dequeue refs to it and thus do graph pipelining.
+     * d0[0], d2[0] used only for their meta data.
+     * Actual input and output used for graph processing will be the
+     * refs that are enqueued later
+     */
+    ASSERT_VX_OBJECT(n0    = vxOrNode(graph, d0[0], d1, d2[0]), VX_TYPE_NODE);
+
+    /* input @ node index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ node index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* This should fail because the queue params have inconsistent values for width and height
+     */
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    VX_CALL(vxReleaseNode(&n0));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ * This test case is a negative test that tries to create a data ref queue of images with inconsistent
+ * values for parameters of object arrays
+ *
+ */
+TEST(tivxGraphPipeline, negativeTestObjectArrayInconsistentRefs)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    uint32_t buf_id, num_buf;
+    vx_node n0;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar_exemplar;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+    vx_object_array obj_array_source[MAX_NUM_BUF];
+
+    /* Setting to num buf of capture node */
+    num_buf = 3;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar_exemplar  = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+         ASSERT_VX_OBJECT(obj_array_source[buf_id] = vxCreateObjectArray(context, (vx_reference)scalar_exemplar, buf_id+1), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    VX_CALL(vxReleaseScalar(&scalar_exemplar));
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSourceObjArrayNode(graph, obj_array_source[0]), VX_TYPE_NODE);
+
+    vxSetReferenceName((vx_reference)n0, "Source_node");
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&obj_array_source[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            1,
+            graph_parameters_queue_params_list
+            ));
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    /* since buffers could be held by source node, first release graph
+     * to delete source node, then free the buffers
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&obj_array_source[buf_id]));
+    }
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+/*
+ * This test case is a negative test that tries to create a data ref queue of images with inconsistent
+ * values for parameters of pyramids
+ *
+ */
+TEST(tivxGraphPipeline, negativeTestPyramidInconsistentRefs)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_node n1;
+    vx_pyramid pyr_1[MAX_NUM_BUF];
+    uint32_t width, height, i, j, val;
+    uint32_t pipeline_depth, num_buf;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+
+    width = 16;
+    height = 16;
+    num_buf = 3;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < num_buf; i++)
+    {
+        ASSERT_VX_OBJECT(pyr_1[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, width+i, height+i, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    }
+
+    ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_1[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 0);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&pyr_1[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            1,
+            graph_parameters_queue_params_list
+            ));
+
+    for (i = 0; i < num_buf; i++)
+    {
+        VX_CALL(vxReleasePyramid(&pyr_1[i]));
+    }
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -5040,7 +5244,10 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay3,
     testDelay4,
     negativeTestPipelineDepth,
-    testLoopCarriedDependency
+    testLoopCarriedDependency,
+    negativeTestImageInconsistentRefs,
+    negativeTestObjectArrayInconsistentRefs,
+    negativeTestPyramidInconsistentRefs
     )
 
 

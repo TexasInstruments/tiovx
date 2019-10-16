@@ -24,6 +24,8 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
+IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

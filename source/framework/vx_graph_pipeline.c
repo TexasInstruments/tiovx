@@ -67,6 +67,76 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph);
 static void ownGraphEnqueueFreeObjDesc(vx_graph graph,
                         tivx_obj_desc_graph_t *obj_desc);
 
+static vx_status ownGraphPipelineValidateRefsList(
+    const vx_graph_parameter_queue_params_t graph_parameters_queue_param
+    )
+{
+    vx_status status = VX_SUCCESS;
+    vx_meta_format meta_base = NULL, meta = NULL;
+    vx_uint32 i;
+
+    if (NULL != graph_parameters_queue_param.refs_list[0])
+    {
+        meta_base = vxCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
+        status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
+    }
+
+    if ( (VX_SUCCESS == status) && (NULL != meta_base) )
+    {
+        for (i = 1; i < graph_parameters_queue_param.refs_list_size; i++)
+        {
+            if (NULL != graph_parameters_queue_param.refs_list[i])
+            {
+                meta = vxCreateMetaFormat(graph_parameters_queue_param.refs_list[i]->context);
+
+                if (NULL != meta)
+                {
+                    status = vxSetMetaFormatFromReference(meta, graph_parameters_queue_param.refs_list[i]);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, "Meta Format is NULL\n");
+                }
+
+                if (VX_SUCCESS == status)
+                {
+                    if (graph_parameters_queue_param.refs_list[0]->type ==
+                        graph_parameters_queue_param.refs_list[i]->type)
+                    {
+                        if (vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
+                        {
+                            status = VX_ERROR_INVALID_PARAMETERS;
+                            VX_PRINT(VX_ZONE_ERROR, "Invalid meta data of reference list!\n");
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+                if (ownIsValidSpecificReference(&meta->base, VX_TYPE_META_FORMAT) == vx_true_e)
+                {
+                    vxReleaseMetaFormat(&meta);
+                }
+            }
+            else
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameter ref list!\n");
+            }
+        }
+    }
+
+    if (ownIsValidSpecificReference(&meta_base->base, VX_TYPE_META_FORMAT) == vx_true_e)
+    {
+        vxReleaseMetaFormat(&meta_base);
+    }
+
+    return status;
+}
+
 VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     vx_graph graph,
     vx_enum graph_schedule_mode,
@@ -118,11 +188,22 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                         graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
                         if(graph_parameters_queue_params_list[i].refs_list!=NULL)
                         {
-                            uint32_t buf_id;
+                            status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[i]);
 
-                            for(buf_id=0; buf_id<graph->parameters[i].num_buf; buf_id++)
+                            if (VX_SUCCESS == status)
                             {
-                                graph->parameters[i].refs_list[buf_id] = graph_parameters_queue_params_list[i].refs_list[buf_id];
+                                uint32_t buf_id;
+
+                                for(buf_id=0; buf_id<graph->parameters[i].num_buf; buf_id++)
+                                {
+                                    graph->parameters[i].refs_list[buf_id] = graph_parameters_queue_params_list[i].refs_list[buf_id];
+                                }
+                            }
+                            else
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, 
+                                    "Graph parameter refs list at index %d contains inconsistent meta data. Please ensure that all buffers in list contain the same meta data\n", i);
+                                break;
                             }
                         }
                     }

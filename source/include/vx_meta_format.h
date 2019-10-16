@@ -209,6 +209,26 @@ vx_status vxReleaseMetaFormat(vx_meta_format *meta);
  */
 vx_meta_format vxCreateMetaFormat(vx_context context);
 
+/*!
+ * \brief Check for equivalence between two meta format objects
+ * \details This API is used to check for equivalence between two meta format
+ *          objects. The function returns true if they are equal and false if not.
+ *
+ * \param [in] meta1 First meta format object to be compared.
+ * \param [in] meta2 Second meta format object to be compared.
+ * \param [in] type  Type of both meta format objects to be compared.
+ *                   Note: this must be the same for each meta object. This information
+ *                   cannot be extracted from the meta object because the type gets set
+ *                   at verify time and this could be called prior.
+ *
+ * \return vx_true_e in case of equal meta formats, vx_false else
+ *
+ * \ingroup group_int_meta_format
+ */
+vx_bool VX_API_CALL ownIsMetaFormatEqual(
+    vx_meta_format meta1, vx_meta_format meta2, vx_enum type);
+
+
 
 #ifdef __cplusplus
 }
