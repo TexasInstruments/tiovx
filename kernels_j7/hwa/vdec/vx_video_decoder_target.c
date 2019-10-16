@@ -719,48 +719,54 @@ void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_process_cb cb_type)
     uint32_t             cnt;
 
     /* Lock instance mutex */
-    tivxMutexLock(gTivxVideoDecoderInstObj.lock);
-    for (cnt = 0U; cnt < VIDEO_DECODER_MAX_HANDLES; cnt ++)
+    if (NULL != buff)
     {
-        if (1U == gTivxVideoDecoderInstObj.videoDecoderObj[cnt].isAlloc)
+        tivxMutexLock(gTivxVideoDecoderInstObj.lock);
+        for (cnt = 0U; cnt < VIDEO_DECODER_MAX_HANDLES; cnt ++)
         {
-            decoder_obj = &gTivxVideoDecoderInstObj.videoDecoderObj[cnt];
-            if(decoder_obj->channel_id == buff->chId)
+            if (1U == gTivxVideoDecoderInstObj.videoDecoderObj[cnt].isAlloc)
             {
-                break;
+                decoder_obj = &gTivxVideoDecoderInstObj.videoDecoderObj[cnt];
+                if(decoder_obj->channel_id == buff->chId)
+                {
+                    break;
+                }
             }
         }
-    }
-    /* Release instance mutex */
-    tivxMutexUnlock(gTivxVideoDecoderInstObj.lock);
+        /* Release instance mutex */
+        tivxMutexUnlock(gTivxVideoDecoderInstObj.lock);
 
-    if (decoder_obj->channel_id == buff->chId)
-    {
-        switch (cb_type) {
-        case MM_CB_STRUNIT_PROCESSED:
-            decoder_obj->processFlag |= 1;
-            break;
-        case MM_CB_PICT_DECODED:
-            break;
-        case MM_CB_PICT_DISPLAY:
-            decoder_obj->processFlag |= 2;
-            break;
-        case MM_CB_PICT_RELEASE:
-            decoder_obj->processFlag |= 4;
-            break;
-        case MM_CB_PICT_END:
-            break;
-        case MM_CB_STR_END:
-            break;
-        case MM_CB_ERROR_FATAL:
-            break;
-        default:
-            break;
-        }
-
-        if (7 == decoder_obj->processFlag || ((0 != decoder_obj->first_process) && (3 == decoder_obj->processFlag)))
+        if (NULL != decoder_obj)
         {
-            tivxEventPost(decoder_obj->waitForProcessCmpl);
+            if (decoder_obj->channel_id == buff->chId)
+            {
+                switch (cb_type) {
+                case MM_CB_STRUNIT_PROCESSED:
+                    decoder_obj->processFlag |= 1;
+                    break;
+                case MM_CB_PICT_DECODED:
+                    break;
+                case MM_CB_PICT_DISPLAY:
+                    decoder_obj->processFlag |= 2;
+                    break;
+                case MM_CB_PICT_RELEASE:
+                    decoder_obj->processFlag |= 4;
+                    break;
+                case MM_CB_PICT_END:
+                    break;
+                case MM_CB_STR_END:
+                    break;
+                case MM_CB_ERROR_FATAL:
+                    break;
+                default:
+                    break;
+                }
+
+                if (7 == decoder_obj->processFlag || ((0 != decoder_obj->first_process) && (3 == decoder_obj->processFlag)))
+                {
+                    tivxEventPost(decoder_obj->waitForProcessCmpl);
+                }
+            }
         }
     }
 }

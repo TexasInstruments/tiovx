@@ -252,7 +252,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     vx_graph graph = 0;
     vx_node node_decode = 0;
     vx_status status = VX_SUCCESS;
-    char input_file[256];
+    char input_file[MAX_ABS_FILENAME];
     FILE* in_fp = NULL;
     const uint32_t checksum_expected[NUM_ITERATIONS] =
     {
@@ -296,7 +296,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
 
         params.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
 
-        sprintf(input_file, "%s/tivx/video_decoder/1280x720_allIframe_CBR_20mbps_HIGHSPEED_HP_CABAC.264", ct_get_test_file_path());
+        snprintf(input_file, MAX_ABS_FILENAME, "%s/tivx/video_decoder/1280x720_allIframe_CBR_20mbps_HIGHSPEED_HP_CABAC.264", ct_get_test_file_path());
 
         in_fp = fopen(input_file, "r");
         ASSERT(in_fp != NULL);
@@ -395,8 +395,8 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     vx_node node_decode_s = 0;
     vx_node node_decode_l = 0;
     vx_status status = VX_SUCCESS;
-    char input_file_s[256];
-    char input_file_l[256];
+    char input_file_s[MAX_ABS_FILENAME];
+    char input_file_l[MAX_ABS_FILENAME];
     FILE* in_fp_s = NULL;
     FILE* in_fp_l = NULL;
     const uint32_t checksum_expected_s[NUM_ITERATIONS] =
@@ -474,11 +474,12 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
         params_s.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
         params_l.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
 
-        sprintf(input_file_s, "%s/tivx/video_decoder/1280x720_allIframe_CBR_20mbps_HIGHSPEED_HP_CABAC.264", ct_get_test_file_path());
-        sprintf(input_file_l, "%s/tivx/video_decoder/pedestrian_1920x1080_420sp_375F_25fps.264", ct_get_test_file_path());
+        snprintf(input_file_s, MAX_ABS_FILENAME, "%s/tivx/video_decoder/1280x720_allIframe_CBR_20mbps_HIGHSPEED_HP_CABAC.264", ct_get_test_file_path());
+        snprintf(input_file_l, MAX_ABS_FILENAME, "%s/tivx/video_decoder/pedestrian_1920x1080_420sp_375F_25fps.264", ct_get_test_file_path());
 
         in_fp_s = fopen(input_file_s, "r");
         in_fp_l = fopen(input_file_l, "r");
+
         ASSERT(in_fp_s != NULL);
         ASSERT(in_fp_l != NULL);
 
