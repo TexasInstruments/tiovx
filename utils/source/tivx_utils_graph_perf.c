@@ -201,13 +201,13 @@ vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph)
                 status = vxQueryGraph(graph, VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
                 if(status==VX_SUCCESS)
                 {
-                    TIVX_UTILS_EXPORT_WRITELN(fp, "\n# GRAPH: %16s Detailed Statistics\n", graph_name);
-                    TIVX_UTILS_EXPORT_WRITELN(fp, "\nNode Execution Table\n");
-                    TIVX_UTILS_EXPORT_WRITELN(fp, "Total Nodes      | Total executions ");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\n# GRAPH: Detailed Statistics\n");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\n##Node Execution Table\n");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "Total Nodes      | Total executions");
                     TIVX_UTILS_EXPORT_WRITELN(fp, "----------|--------------");
                     TIVX_UTILS_EXPORT_WRITELN(fp, "%3d       | %6d\n", num_nodes, (uint32_t)graph_perf.num);
-                    TIVX_UTILS_EXPORT_WRITELN(fp, "\nPer Node Breakdown\n");
-                    TIVX_UTILS_EXPORT_WRITELN(fp, "NODE      | avg (usecs)      | min/max (usecs)      | #executions");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "\n##Per Node Breakdown\n");
+                    TIVX_UTILS_EXPORT_WRITELN(fp, "NODE      | avg (usecs)      | min/max (usecs)      | Total Executions");
                     TIVX_UTILS_EXPORT_WRITELN(fp, "----------|------------------|----------------------|------------");
 
                     for(i=0; i<num_nodes; i++)
