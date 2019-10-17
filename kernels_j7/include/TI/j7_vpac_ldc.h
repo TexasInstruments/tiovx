@@ -405,25 +405,37 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_image             out1_img);
 
 /*!
- * \brief Function to initialize LDC Multi Region parameters
+ * \brief Function to initialize LDC Region parameters
+ *
+ * \param prms  [IN] Pointer to LDC region parameter structure
+ *
  * \ingroup group_vision_function_vpac_ldc
  */
 void tivx_vpac_ldc_region_params_init(tivx_vpac_ldc_region_params_t *prms);
 
 /*!
  * \brief Function to initialize LDC Multi Region parameters
+ *
+ * \param prms  [IN] Pointer to LDC multi region parameter structure
+ *
  * \ingroup group_vision_function_vpac_ldc
  */
 void tivx_vpac_ldc_multi_region_params_init(tivx_vpac_ldc_multi_region_params_t *prms);
 
 /*!
  * \brief Function to initialize LDC Mesh parameters
+ *
+ * \param prms  [IN] Pointer to LDC mesh parameter structure
+ *
  * \ingroup group_vision_function_vpac_ldc
  */
 void tivx_vpac_ldc_mesh_params_init(tivx_vpac_ldc_mesh_params_t *prms);
 
 /*!
  * \brief Function to initialize Bandwidth limiter parameters
+ *
+ * \param prms  [IN] Pointer to LDC bandwidth limiter parameter structure
+ *
  * \ingroup group_vision_function_vpac_ldc
  */
 void tivx_vpac_ldc_bandwidth_params_init(
@@ -431,6 +443,9 @@ void tivx_vpac_ldc_bandwidth_params_init(
 
 /*!
  * \brief Function to initialize LDC parameters with the default values
+ *
+ * \param prms  [IN] Pointer to LDC parameter structure
+ *
  * \ingroup group_vision_function_vpac_ldc
  */
 void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms);

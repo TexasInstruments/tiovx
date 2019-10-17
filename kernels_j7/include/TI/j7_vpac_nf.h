@@ -178,7 +178,7 @@ typedef struct {
     double  sigma_space[8];  /*!< Array of space sigmas used to generate a 5x5 gaussian filter around the center pixel */
     double  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
 } tivx_vpac_nf_bilateral_sigmas_t;
- 
+
 /*!
  * \brief Configuration parameters used to set HTS BW limit used by
           TIVX_KERNEL_VPAC_NF kernel.
@@ -277,7 +277,7 @@ void tivx_vpac_nf_bilateral_params_init(tivx_vpac_nf_bilateral_params_t *prms);
 /*!
  * \brief Function to initialize NF bilateral Sigmas
  *
- * \param prms  [IN] Pointer to NF bilateral sigmas
+ * \param sigmas  [IN] Pointer to NF bilateral sigmas
  *
  * \ingroup group_vision_function_vpac_nf
  */

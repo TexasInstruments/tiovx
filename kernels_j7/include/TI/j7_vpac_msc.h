@@ -323,25 +323,25 @@ void tivxUnRegisterHwaTargetVpacMscKernels(void);
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or
  *              <tt>\ref TIVX_DF_IMAGE_P12</tt> (12bit packed Luma only)
  *              format.
- * \param [out] (optional) out1_img The output image in
+ * \param [out] out1_img (optional) The output image in
  *              <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *              <tt>\ref VX_DF_IMAGE_U8</tt> (8bit Luma only),
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or
  *              <tt>\ref TIVX_DF_IMAGE_P12</tt> (12bit packed Luma only)
  *              format.
- * \param [out] (optional) out2_img The output image in
+ * \param [out] out2_img (optional) The output image in
  *              <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *              <tt>\ref VX_DF_IMAGE_U8</tt> (8bit Luma only),
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or
  *              <tt>\ref TIVX_DF_IMAGE_P12</tt> (12bit packed Luma only)
  *              format.
- * \param [out] (optional) out3_img The output image in
+ * \param [out] out3_img (optional) The output image in
  *              <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *              <tt>\ref VX_DF_IMAGE_U8</tt> (8bit Luma only),
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or
  *              <tt>\ref TIVX_DF_IMAGE_P12</tt> (12bit packed Luma only)
  *              format.
- * \param [out] (optional) out4_img The output image in
+ * \param [out] out4_img (optional) The output image in
  *              <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *              <tt>\ref VX_DF_IMAGE_U8</tt> (8bit Luma only),
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or

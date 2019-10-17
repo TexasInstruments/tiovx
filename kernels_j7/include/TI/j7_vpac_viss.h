@@ -568,7 +568,7 @@ void tivxUnRegisterHwaTargetVpacVissKernels(void);
  *                                       Supported image format are
  *                                          <tt>\ref VX_DF_IMAGE_U8</tt>
  *                                          <tt>\ref VX_DF_IMAGE_U16</tt>
- *                                          <tt>\ref VX_DF_IMAGE_P12</tt>
+ *                                          <tt>\ref TIVX_DF_IMAGE_P12</tt>
  *                                          <tt>\ref VX_DF_IMAGE_NV12</tt>
  *                                          <tt>\ref VX_DF_IMAGE_YUYV</tt>
  *                                          <tt>\ref VX_DF_IMAGE_UYVY</tt>
@@ -581,7 +581,7 @@ void tivxUnRegisterHwaTargetVpacVissKernels(void);
  *                                       Supported image format are
  *                                          <tt>\ref VX_DF_IMAGE_U8</tt>
  *                                          <tt>\ref VX_DF_IMAGE_U16</tt>
- *                                          <tt>\ref VX_DF_IMAGE_P12</tt>
+ *                                          <tt>\ref TIVX_DF_IMAGE_P12</tt>
  *                                       can be enabled only when output2 is not set
  *                                          to YUV420/UYVY/YUYV output formats.
  * \param [out] output4  (optional)      Output2 for 12bit or 8bit output.
@@ -593,7 +593,7 @@ void tivxUnRegisterHwaTargetVpacVissKernels(void);
  *                                       Supported image format are
  *                                          <tt>\ref VX_DF_IMAGE_U8</tt>
  *                                          <tt>\ref VX_DF_IMAGE_U16</tt>
- *                                          <tt>\ref VX_DF_IMAGE_P12</tt>
+ *                                          <tt>\ref TIVX_DF_IMAGE_P12</tt>
  * \param [out] h3a_output (optional)    AEWB/AF output.
  *                                       This output is used to get AEWB/AF output.
  *                                       User data object of type \ref tivx_h3a_data_t

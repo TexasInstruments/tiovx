@@ -273,7 +273,7 @@ void tivxUnRegisterHwaTargetArmKernels(void);
 /*! \brief [Graph] Creates a DMPAC_DOF Node.
  *
  * - The data format of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>,
- *   <tt>\ref TIVX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ *   <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * - The pyramid MUST use scale of \ref VX_SCALE_PYRAMID_HALF
  * - The max number of pyramid levels can be 6
  * - The width and height of base level MUST be interger multiple of 2^pyramidlevels
@@ -352,18 +352,27 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
 
 /*!
  * \brief Function to initialize DOF parameters with default value
+ *
+ * \param prms  [IN] Pointer to DOF parameter structure
+ *
  * \ingroup group_vision_function_dmpac_dof
  */
 void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms);
 
 /*!
  * \brief Function to initialize DOF SOF parameters with default value
+ *
+ * \param prms  [IN] Pointer to DOF SOF parameter structure
+ *
  * \ingroup group_vision_function_dmpac_dof
  */
 void tivx_dmpac_dof_sof_params_init(tivx_dmpac_dof_sof_params_t *prms);
 
 /*!
  * \brief Function to initialize DOF CS tree parameters with default value
+ *
+ * \param prms  [IN] Pointer to DOF confidence score parameter structure
+ *
  * \ingroup group_vision_function_dmpac_dof
  */
  void tivx_dmpac_dof_cs_tree_params_init(tivx_dmpac_dof_cs_tree_params_t *prms);
@@ -371,6 +380,9 @@ void tivx_dmpac_dof_sof_params_init(tivx_dmpac_dof_sof_params_t *prms);
 
 /*!
  * \brief Function to initialize DOF HTS bandwidth limit parameters with default value
+ *
+ * \param prms  [IN] Pointer to DOF bandwidth limiter parameter structure
+ *
  * \ingroup group_vision_function_dmpac_dof
  */
 void tivx_dmpac_dof_hts_bw_limit_params_init(
