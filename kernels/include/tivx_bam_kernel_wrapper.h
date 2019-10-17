@@ -432,12 +432,13 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_pre_post_process_f)(tivx_targe
  *
  *         This is intended to be run after adding the target kernel.
  *
- * \param [in] kernel The kernel for which the callbacks are associated with
+ * \param [in] target_kernel              The kernel for which the callbacks are associated with
  * \param [in] create_in_bam_func         Callback for giving information needed by supernode to create BAM graph.
  * \param [in] get_node_port_func         Callback for translating OpenVX node ports to BAM ports.
  * \param [in] append_internal_edges_func (optional) Callback for appending internal edges to BAM edge list (if there are any)
  * \param [in] preprocess_func            (optional) Callback for performing any processing before the BAM graph is called for each frame (if there is any)
  * \param [in] postprocess_func           (optional) Callback for performing any processing after the BAM graph is called for each frame (if there is any)
+ * \param [in] kernel_params_size         Size in bytes of the kernel_params structure
  * \param [in] priv_arg                   (optional) Private arguments to pass to the create callback
  *
  * \ingroup group_tivx_ext_bam_supernode

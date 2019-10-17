@@ -97,7 +97,7 @@ typedef struct _tivx_super_node * tivx_super_node;
  * \ingroup group_super_node
  */
 enum tivx_super_node_attribute_e {
-    /*! \brief Queries the target this super-node is run on. Read-only. Use a <tt>\ref char[]</tt> parameter of size
+    /*! \brief Queries the target this super-node is run on. Read-only. Use a <tt>\ref vx_char[]</tt> parameter of size
      *   TIVX_TARGET_MAX_NAME. */
     TIVX_SUPER_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x0,
     /*! \brief Queries the performance of the super node execution.
