@@ -1345,7 +1345,10 @@ vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
 
         if(VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetQueueObjDesc: tivxQueuePut error\n");
+            VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
+            VX_PRINT(VX_ZONE_ERROR,"FATAL ERROR: tivxQueuePut failed\n");
+            VX_PRINT(VX_ZONE_ERROR,"May need to increase the value of TIVX_TARGET_MAX_JOB_QUEUE_DEPTH in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
         }
     }
     else

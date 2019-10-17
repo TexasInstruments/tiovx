@@ -289,6 +289,14 @@ extern "C" {
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
 
 /*!
+ * \brief Max depth of queue associated with target
+ * \note Since this parameter is only used on target, it can not yet
+ *       be tracked for max usage, so generated report reports static value
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (96u)
+
+/*!
  * \brief Max possible references in a context
  *
  * \ingroup group_vx_context_cfg

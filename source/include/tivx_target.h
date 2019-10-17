@@ -76,12 +76,6 @@ extern "C" {
  * \brief Implementation of Target Object APIs
  */
 
-/*!
- * \brief Max depth of queue associated with target
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (48u)
-
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
@@ -235,7 +229,7 @@ typedef struct _tivx_target_create_params
      *         TIVX_TASK_PRI_LOWEST is lowest priority
      */
     uint32_t task_priority;
-    
+
     /*! \brief Task name associated with this target */
     char     task_name[TIVX_TARGET_MAX_TASK_NAME];
 

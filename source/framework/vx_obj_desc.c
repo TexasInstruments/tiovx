@@ -117,7 +117,7 @@ static void tivxObjDescIpcHandler(uint32_t payload)
 
     if(status != VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxObjDescIpcHandler: tivxTargetQueueObjDesc failed\n");
+        VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
     }
 }
 
@@ -229,6 +229,11 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     {
         /* target is on same CPU queue obj_desc using target APIs */
         status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
+
+        if(status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
+        }
     }
     else
     {
@@ -236,6 +241,11 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
         /* target is on remote CPU, send using IPC */
         status = tivxIpcSendMsg(cpu_id, ipc_payload);
+
+        if(status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxIpcSendMsg failed\n");
+        }
     }
 
     return status;
