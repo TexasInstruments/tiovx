@@ -204,7 +204,12 @@ typedef struct {
     */
     uint16_t  sof_max_pix_in_row;
     /*! \brief Number of paxel row with at least one enabled pixel. Paxel row is pair
-        of image row (eg. row 1 & 2, row 3 & 4 etc).
+        of image row (eg. row 0 & 1, row 2 & 3 etc).
+        \note Even if only 1 of the 2 row paxel row has output in mask, both rows will be output
+        to the output.
+        \note When configuring the SOF mask, it is forbidden to have an odd number of contiguous paxel rows
+        which have no outputs in the mask ... only even number of contiguous paxel rows which have no outputs
+        in the mask are allowed.
     */
     uint16_t  sof_fv_height;
 } tivx_dmpac_dof_sof_params_t;
@@ -274,6 +279,7 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  *
  * - The data format of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>,
  *   <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * - The max size of the base image of pyramid is 2048 width, and 1024 height.
  * - The pyramid MUST use scale of \ref VX_SCALE_PYRAMID_HALF
  * - The max number of pyramid levels can be 6
  * - The width and height of base level MUST be interger multiple of 2^pyramidlevels
@@ -315,17 +321,15 @@ void tivxUnRegisterHwaTargetArmKernels(void);
  * \param [in] input_reference Reference input pyramid.
  * \param [in] flow_vector_in (optional) Flow vector from previous execution of DOF.
  *             Size of image is base_width x base_height x size of data format.
- *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> or <tt>\ref VX_DF_IMAGE_U16 </tt> dataformat.
- *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
- *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
+ *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
  * \param [in] sparse_of_config (optional) The input object of a single params structure of
  *             type <tt>\ref tivx_dmpac_dof_sof_params_t</tt>. This can change from frame to frame
  *             and should be syncronized with changes to the sparse_of_map input.
- * \param [in] sparse_of_map (optional) Sparse OF bit-mask of size
+ * \param [in] sparse_of_map (optional) Sparse OF bit-mask of the input image.
  *             Size of image is base_width/8 x base_height.
  *             Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
  * \param [out] flow_vector_out Flow vector output.
- *             Size of image is base_width x base_height x size of data format.
+ *             When sparse_of_map is disabled, size of image is base_width x base_height x size of data format.
  *             Use <tt>\ref VX_DF_IMAGE_U32 </tt> or <tt>\ref VX_DF_IMAGE_U16 </tt> dataformat.
  *             <tt>\ref VX_DF_IMAGE_U32 </tt> format include confidence score and subpel fractional
  *             flow vectors, while <tt>\ref VX_DF_IMAGE_U16 </tt> is only integer flow vectors.
