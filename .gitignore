@@ -4,6 +4,7 @@ tiovx_dev/
 conformance_tests/test_data
 docs/pytiovx_guide
 docs/tutorial_guide
+docs/test_reports
 docs/user_guide
 *.pyc
 *.o
