@@ -77,6 +77,21 @@
 #define TIVX_BAM_MAX_EDGES 16
 #define TIVX_MAX_BUF_PARAMS 16
 
+typedef struct _tivx_edge_sort_indices {
+    uint16_t left_index;
+    uint16_t right_index;
+} tivx_edge_sort_indices;
+
+typedef struct _tivx_edge_sort_context {
+ /*! stack used while sorting */
+    tivx_edge_sort_indices  stack[TIVX_BAM_MAX_EDGES];
+    /*! stack top */
+    int16_t  stack_top;
+    /*! stack max size */
+    uint16_t  stack_max_elems;
+
+} tivx_edge_sort_context;
+
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
@@ -93,6 +108,15 @@ typedef struct
 
 static tivx_target_kernel vx_supernode_target_kernel = NULL;
 
+static void tivxEdgeSortSwap(BAM_EdgeParams *edge_in_left, BAM_EdgeParams *edge_in_right);
+static uint16_t tivxEdgeSortPartition(BAM_EdgeParams edge_list[], tivx_edge_sort_indices indices);
+static void tivxEdgeSortQuick(BAM_EdgeParams edge_list[], tivx_edge_sort_indices indices);
+
+static inline void tivxEdgeSortStackReset(tivx_edge_sort_context *context, uint16_t max_elems);
+static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tivx_edge_sort_indices indices);
+static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx_edge_sort_indices *indices);
+static inline vx_bool tivxEdgeSortStackIsEmpty(tivx_edge_sort_context *context);
+
 static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
@@ -104,8 +128,6 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
-
-static int edge_comparison (const void * edge_in_1, const void * edge_in_2);
 
 static void tivxSupernodeFreeMem(tivxSupernodeParams *prms);
 
@@ -249,6 +271,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     uint8_t found_edges_to_sink = 0;
     int32_t skip_port;
     tivx_obj_desc_super_node_t *super_node = (tivx_obj_desc_super_node_t *)obj_desc[0];
+    tivx_edge_sort_indices indices;
 
     prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
 
@@ -325,11 +348,34 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         strcpy(str1, "org.khronos.openvx.canny_edge_detector");
                         if (!tivx_obj_desc_strncmp(kernel_name, str1, strlen(str1)))
                         {
+                            tivx_obj_desc_node_t *src_node_obj_desc;
+                            tivx_obj_desc_kernel_name_t *src_kernel_name_obj_desc;
+                            volatile char *src_kernel_name = NULL;
+
                             one_shot_flag = 0;
-                            if (i != super_node->num_nodes-1)
+
+                            for(j = 0; j < super_node->num_edges; j++)
                             {
-                                VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Canny Edge Detector could only be the last node of a Supernode\n");
-                                status = VX_FAILURE;
+                                if(super_node->edge_list[j].src_node_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+                                {
+                                    src_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->edge_list[j].src_node_obj_desc_id);
+                                    src_kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescGet(src_node_obj_desc->kernel_name_obj_desc_id);
+
+                                    if(src_kernel_name_obj_desc!=NULL)
+                                    {
+                                        src_kernel_name = src_kernel_name_obj_desc->kernel_name;
+                                    }
+
+                                    if (!tivx_obj_desc_strncmp(src_kernel_name, str1, strlen(str1)))
+                                    {
+                                        if(super_node->edge_list[j].dst_node_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+                                        {
+                                            VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Canny Edge Detector's output could NOT be an internal edge in the supernode\n");
+                                            status = VX_FAILURE;
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
                         else
@@ -671,11 +717,9 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                 }
             }
 
-#if defined(HOST_EMULATION)
-            /* Disable now for target, as qsort is recursive and likely has a stack overflow
-             * TIOVX-695: need to implement an non-recursive sort function */
-            qsort(edge_list, bam_edge_cnt-1, sizeof(BAM_EdgeParams), edge_comparison);
-#endif
+            indices.left_index = 0;
+            indices.right_index = bam_edge_cnt-2;
+            tivxEdgeSortQuick(edge_list, indices);
 
             if (VX_SUCCESS == status)
             {
@@ -870,12 +914,130 @@ static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSup
     return status;
 }
 
-static int edge_comparison (const void * edge_in_1, const void * edge_in_2)
+static void tivxEdgeSortSwap(BAM_EdgeParams *edge_in_left, BAM_EdgeParams *edge_in_right)
 {
-    BAM_EdgeParams edge1 = *((BAM_EdgeParams*)edge_in_1);
-    BAM_EdgeParams edge2 = *((BAM_EdgeParams*)edge_in_2);
-    if (edge2.upStreamNode.id < edge1.upStreamNode.id)
-        return 1;
+    BAM_EdgeParams temp_edge = *edge_in_left;
+    *edge_in_left = *edge_in_right;
+    *edge_in_right = temp_edge;
+}
+
+static uint16_t tivxEdgeSortPartition(BAM_EdgeParams edge_list[], tivx_edge_sort_indices indices)
+{
+    uint16_t j;
+    uint32_t index_val;
+    uint32_t pivot_val = edge_list[indices.right_index].upStreamNode.id*1000  +
+                         edge_list[indices.right_index].upStreamNode.port*100 +
+                         edge_list[indices.right_index].downStreamNode.id*10  +
+                         edge_list[indices.right_index].downStreamNode.port;
+
+    uint16_t i = indices.left_index;
+
+    for (j = indices.left_index; j < indices.right_index; j++) {
+        index_val = edge_list[j].upStreamNode.id*1000  +
+                    edge_list[j].upStreamNode.port*100 +
+                    edge_list[j].downStreamNode.id*10  +
+                    edge_list[j].downStreamNode.port;
+        if (index_val <= pivot_val) {
+            tivxEdgeSortSwap(&edge_list[i], &edge_list[j]);
+            i++;
+        }
+    }
+    tivxEdgeSortSwap(&edge_list[i], &edge_list[indices.right_index]);
+    return i;
+}
+
+static void tivxEdgeSortQuick(BAM_EdgeParams edge_list[], tivx_edge_sort_indices indices)
+{
+    tivx_edge_sort_context *context;
+    tivx_edge_sort_indices left_array_indices, right_array_indices;
+
+    context = tivxMemAlloc(sizeof(tivx_edge_sort_context), TIVX_MEM_EXTERNAL);
+    memset(context, 0, sizeof(tivx_edge_sort_context));
+
+    tivxEdgeSortStackReset(context, indices.right_index + 1);
+
+    tivxEdgeSortStackPush(context, indices);
+
+    while (!tivxEdgeSortStackIsEmpty(context)) {
+
+        tivxEdgeSortStackPop(context, &indices);
+
+        uint16_t pivot = tivxEdgeSortPartition(edge_list, indices);
+
+        if (pivot - 1 > indices.left_index) {
+            left_array_indices.left_index = indices.left_index;
+            left_array_indices.right_index = pivot - 1;
+            tivxEdgeSortStackPush(context, left_array_indices);
+        }
+
+        if (pivot + 1 < indices.right_index) {
+            right_array_indices.left_index = pivot + 1;
+            right_array_indices.right_index = indices.right_index;
+            tivxEdgeSortStackPush(context, right_array_indices);
+        }
+    }
+
+    if (NULL != context)
+    {
+        tivxMemFree(context, sizeof(tivx_edge_sort_context), TIVX_MEM_EXTERNAL);
+    }
+}
+
+static inline void tivxEdgeSortStackReset(tivx_edge_sort_context *context, uint16_t max_elems)
+{
+    context->stack_top = 0;
+    context->stack_max_elems = max_elems;
+}
+
+static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tivx_edge_sort_indices indices)
+{
+    vx_bool status = vx_false_e;
+
+    if(context->stack_top < context->stack_max_elems)
+    {
+        context->stack[context->stack_top] = indices;
+        context->stack_top++;
+        status = vx_true_e;
+    }
     else
-        return -1;
+    {
+        /* for this to happen, edge_list size should have already passed TIVX_BAM_MAX_EDGES*/
+        VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStakPush: Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
+    }
+    return status;
+}
+
+static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx_edge_sort_indices *indices)
+{
+    vx_bool status = vx_false_e;
+
+    if ((context->stack_top > 0) && (context->stack_top < TIVX_BAM_MAX_EDGES))
+    {
+        *indices = context->stack[context->stack_top-1];
+        context->stack_top--;
+        status = vx_true_e;
+    }
+    else
+    {
+        if (context->stack_top <= 0) {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStackPop: Trying to pop while empty from Supernode's Edge Sort Stack\n");
+        }
+        else if (context->stack_top >= TIVX_BAM_MAX_EDGES)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStackPop: Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
+        }
+    }
+    return status;
+}
+
+static inline vx_bool tivxEdgeSortStackIsEmpty(tivx_edge_sort_context *context)
+{
+    if (context->stack_top > 0)
+    {
+        return vx_false_e;
+    }
+    else
+    {
+        return vx_true_e;
+    }
 }
