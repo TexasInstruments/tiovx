@@ -85,15 +85,16 @@ extern "C" {
  *********************************/
 
 /*!
- * \defgroup group_vision_function_video_decoder_bitstream_format Enumerations
- * \brief Enumerations for bitstream format in Video Decoder structures
+ * \defgroup group_vision_function_video_decoder_bitstream_format Bitstream Format Enumerations
+ * \brief Enumerations for bitstream format in Video Decoder structures for \ref tivx_video_decoder_params_t.bitstream_format
  * \ingroup group_vision_function_video_decoder
  * @{*/
 
+/*! H264 Bitstream format */
 #define TIVX_BITSTREAM_FORMAT_H264  (0u)
-
+/*! HEVC Bitstream format */
 #define TIVX_BITSTREAM_FORMAT_HEVC  (1u)
-
+/*! MJPEG Bitstream format */
 #define TIVX_BITSTREAM_FORMAT_MJPEG (2u)
 
 /*@}*/
@@ -110,6 +111,8 @@ extern "C" {
  * \ingroup group_vision_function_video_decoder
  */
 typedef struct {
+    /*! Bitstream format, \see group_vision_function_video_decoder_bitstream_format
+     *  \note Only \ref TIVX_BITSTREAM_FORMAT_H264 format supported in this release  */
     uint32_t bitstream_format;
 } tivx_video_decoder_params_t;
 
@@ -133,7 +136,10 @@ void tivxUnRegisterHwaTargetVdecKernels(void);
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of
  *             type <tt>\ref tivx_video_decoder_params_t</tt>.
- * \param [in] input_bitstream The input object of a uint8_t buffer.
+ * \param [in] input_bitstream The input object of a \ref vx_uint8 buffer.
+ *             The \ref vx_user_data_object should be sized as per worst case (uncompressed) bitstream size.
+ *             For each frame of input, the \ref TIVX_USER_DATA_OBJECT_VALID_SIZE attribute should be set on the
+ *             input_bitstream \ref vx_user_data_object to reflect the size of the specific bitstream buffer frame.
  *             Must be formatted as an H264 i-frame only stream.
  * \param [out] output_image Decoded output. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
  * \see <tt>TIVX_KERNEL_VIDEO_DECODER_NAME</tt>
