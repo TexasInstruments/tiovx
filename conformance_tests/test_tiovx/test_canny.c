@@ -845,8 +845,7 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
 }
 
 #ifdef BUILD_BAM
-/* Disabled until sort is implemented in supernode TIOVX-695*/
-#define testCannySupernode DISABLED_testCannySupernode
+#define testCannySupernode testCannySupernode
 #else
 #define testCannySupernode DISABLED_testCannySupernode
 #endif
