@@ -7490,7 +7490,7 @@ TESTCASE_TESTS(tiovxSupernodePerformance,
     tiovxSupernodePerfBox3x3,
     tiovxSupernodePerfDilate3x3,
     tiovxSupernodePerfErode3x3,
-    /*tiovxSupernodePerfCanny,*/
+    tiovxSupernodePerfCanny,
     tiovxSupernodePerfChannelCombine,
     tiovxSupernodePerfChannelExtract,
     tiovxSupernodePerfColorConvert,
