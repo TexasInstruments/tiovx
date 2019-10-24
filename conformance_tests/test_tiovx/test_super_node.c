@@ -555,6 +555,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
     int widthHardCoded = 1280, heightHardCoded = 720;
     int node_list_size = 0;
     int i = 0;
+    vx_uint32 num_nodes = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -619,6 +620,9 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
 
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_list_size), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_NUM_NODES, &num_nodes, sizeof(num_nodes)));
+    ASSERT_EQ_INT(node_list_size, num_nodes);
 
     status = vxVerifyGraph(graph);
 
@@ -730,6 +734,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     int node_list_size = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
     int i = 0;
+    vx_uint32 num_nodes = 0;
     vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
 
     ASSERT_VX_OBJECT(convdepth_shift = vxCreateScalar(context, VX_TYPE_INT32, &convdepth_shift_val), VX_TYPE_SCALAR);
@@ -796,6 +801,9 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
 
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_list_size), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_NUM_NODES, &num_nodes, sizeof(num_nodes)));
+    ASSERT_EQ_INT(node_list_size, num_nodes);
 
     status = vxVerifyGraph(graph);
 
@@ -918,6 +926,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
     int widthHardCoded = 1280, heightHardCoded = 720;
     int node_list_size = 0;
     int i = 0;
+    vx_uint32 num_nodes = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
 
@@ -976,6 +985,9 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
 
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_list_size), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_NUM_NODES, &num_nodes, sizeof(num_nodes)));
+    ASSERT_EQ_INT(node_list_size, num_nodes);
 
     status = vxVerifyGraph(graph);
 
@@ -1085,6 +1097,7 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
     int widthHardCoded = 1280, heightHardCoded = 720;
     int node_list_size = 0;
     int i = 0;
+    vx_uint32 num_nodes = 0;
     int node_vector[] = {arg_->node_list_index0, arg_->node_list_index1, arg_->node_list_index2, arg_->node_list_index3};
 
 
@@ -1160,6 +1173,9 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
 
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_list_size), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_NUM_NODES, &num_nodes, sizeof(num_nodes)));
+    ASSERT_EQ_INT(node_list_size, num_nodes);
 
     status = vxVerifyGraph(graph);
 

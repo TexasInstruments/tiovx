@@ -108,6 +108,8 @@ enum tivx_super_node_attribute_e {
     TIVX_SUPER_NODE_PERFORMANCE = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x1,
     /*! \brief Queries the status of the super node execution. Read-only. Use a <tt>\ref vx_status</tt> parameter. */
     TIVX_SUPER_NODE_STATUS = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x2,
+    /*! \brief Queries the number of nodes in a super node. Read-only. Use a <tt>\ref vx_uint32</tt> parameter.*/
+    TIVX_SUPER_NODE_NUM_NODES = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x3,
 };
 
 /*!

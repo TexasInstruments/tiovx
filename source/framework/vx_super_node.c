@@ -262,6 +262,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
 {
     vx_status status = VX_SUCCESS;
 
+    tivx_obj_desc_super_node_t *obj_desc = NULL;
+
+    obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;
+
     if (ownIsValidSuperNode(super_node) == vx_true_e)
     {
         switch (attribute)
@@ -302,6 +306,18 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node status failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_SUPER_NODE_NUM_NODES:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = obj_desc->num_nodes;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node num nodes failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
