@@ -625,6 +625,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
     if (status == VX_SUCCESS) {
         if (arg_->is_valid) {
 
+            vx_status node_status = VX_FAILURE;
+
             // run graph
 #ifdef CT_EXECUTE_ASYNC
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
@@ -633,6 +635,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance1, test_edge_vector_arg,
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
 
+            VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
             tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node));
             vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
@@ -798,6 +802,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
     if (status == VX_SUCCESS) {
         if (arg_->is_valid) {
 
+            vx_status node_status = VX_FAILURE;
+
             // run graph
 #ifdef CT_EXECUTE_ASYNC
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
@@ -806,6 +812,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance2, test_edge_vector_arg,
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
 
+            VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
             tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node));
             vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
@@ -974,6 +982,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
     if (status == VX_SUCCESS) {
         if (arg_->is_valid) {
 
+            vx_status node_status = VX_FAILURE;
+
             // run graph
 #ifdef CT_EXECUTE_ASYNC
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
@@ -982,6 +992,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance3, test_edge_vector_arg,
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
 
+            VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
             tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node));
             vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
@@ -1154,6 +1166,8 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
     if (status == VX_SUCCESS) {
         if (arg_->is_valid) {
 
+            vx_status node_status = VX_FAILURE;
+
             // run graph
 #ifdef CT_EXECUTE_ASYNC
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
@@ -1162,8 +1176,10 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeEdgeCompliance4, test_edge_vector_arg,
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
 
-            tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node));
-            vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+            VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
+            VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+            VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
             ASSERT_NO_FAILURE(referenceAnd(ref_src1, ref_src2, ref_intermediate_1));
             ASSERT_NO_FAILURE(referenceOr(ref_intermediate_1, ref_intermediate_1, ref_intermediate_2));
@@ -1242,7 +1258,7 @@ TEST(tivxSuperNode, testSuperNodeTargetConstraint1)
     int widthHardCoded = 360, heightHardCoded = 240;
     char supernodeTarget1[TIVX_TARGET_MAX_NAME], supernodeTarget2[TIVX_TARGET_MAX_NAME];
     char nodeTarget1[TIVX_TARGET_MAX_NAME], nodeTarget2[TIVX_TARGET_MAX_NAME], nodeTarget3[TIVX_TARGET_MAX_NAME], nodeTarget4[TIVX_TARGET_MAX_NAME];
-
+    vx_status node_status = VX_FAILURE;
 
     ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -1306,6 +1322,10 @@ TEST(tivxSuperNode, testSuperNodeTargetConstraint1)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
 
+    VX_CALL(tivxQuerySuperNode(super_node_1, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
+    VX_CALL(tivxQuerySuperNode(super_node_2, TIVX_SUPER_NODE_STATUS, &node_status, sizeof(vx_status)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, node_status);
     VX_CALL(tivxQuerySuperNode(super_node_1, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node_1, sizeof(perf_super_node_1)));
     VX_CALL(tivxQuerySuperNode(super_node_2, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node_2, sizeof(perf_super_node_2)));
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));

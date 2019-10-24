@@ -290,6 +290,22 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 break;
 
+            case TIVX_SUPER_NODE_STATUS:
+                if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
+                {
+                    /* returns  status for pipeline index 0,
+                     * may not reflect correct status
+                     * in pipelined mode
+                     */
+                    *(vx_status *)ptr = super_node->node->obj_desc[0]->exe_status;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node status failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             default:
                 VX_PRINT(VX_ZONE_ERROR, "tivxQuerySuperNode: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;

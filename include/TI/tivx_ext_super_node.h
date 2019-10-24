@@ -106,6 +106,8 @@ enum tivx_super_node_attribute_e {
      * \note Performance tracking must have been enabled. See <tt>\ref vx_directive_e</tt>.
      */
     TIVX_SUPER_NODE_PERFORMANCE = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x1,
+    /*! \brief Queries the status of the super node execution. Read-only. Use a <tt>\ref vx_status</tt> parameter. */
+    TIVX_SUPER_NODE_STATUS = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_SUPER_NODE) + 0x2,
 };
 
 /*!
