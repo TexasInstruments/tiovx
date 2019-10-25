@@ -1512,6 +1512,76 @@ TEST_WITH_ARG(tivxSuperNode, testSuperNodeTargetConstraint2, test_target_vector_
 
 }
 
+TEST(tivxSuperNode, testSuperNodeNegativeQuery)
+{
+    int node_count = 3;
+    vx_context context = context_->vx_context_;
+    vx_status status;
+    tivx_super_node super_node = 0;
+    vx_image src1, src2, dst, intermediate_1, intermediate_2, intermediate_3, intermediate_4;
+    CT_Image ref_src1, ref_src2;
+    vx_graph graph;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0, node5 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    vx_node node_list[MAX_NODES];
+    int widthHardCoded = 800, heightHardCoded = 600;
+    int node_list_size = 0;
+    int i = 0;
+
+    ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_4 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(ref_src1 = ct_allocate_ct_image_random(widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
+    ASSERT_NO_FAILURE(ref_src2 = ct_allocate_ct_image_random(widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
+
+    ASSERT_VX_OBJECT(src1 = ct_image_to_vx_image(ref_src1, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2 = ct_image_to_vx_image(ref_src2, context), VX_TYPE_IMAGE);
+
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxOrNode(graph, src1, src2, intermediate_1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, intermediate_1, intermediate_2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxOrNode(graph, src1, src2, intermediate_3), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxNotNode(graph, intermediate_3, intermediate_4), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node5 = vxAddNode(graph, intermediate_2, intermediate_4, VX_CONVERT_POLICY_SATURATE, dst), VX_TYPE_NODE);
+
+    node_list[0] = node1;
+    node_list[1] = node2;
+    node_list[2] = node3;
+    node_list[3] = node4;
+    node_list[4] = node5;
+    node_list_size = 5;
+
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_list_size), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(tivxSetSuperNodeTarget(super_node, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_super_node, sizeof(vx_perf_t)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryNode(node1, VX_NODE_STATUS, &status, sizeof(vx_status)));
+
+    VX_CALL(vxReleaseImage(&src1));
+    VX_CALL(vxReleaseImage(&src2));
+    VX_CALL(vxReleaseImage(&intermediate_1));
+    VX_CALL(vxReleaseImage(&intermediate_2));
+    VX_CALL(vxReleaseImage(&intermediate_3));
+    VX_CALL(vxReleaseImage(&intermediate_4));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node5));
+    VX_CALL(vxReleaseGraph(&graph));
+
+}
+
 /* On PC, targets get mapped to same target, so this test will fail */
 #ifdef PLATFORM_PC
 #define testSuperNodeTargetConstraint1 DISABLED_testSuperNodeTargetConstraint1
@@ -1526,7 +1596,8 @@ TESTCASE_TESTS(tivxSuperNode,
         testSuperNodeEdgeCompliance3,
         testSuperNodeEdgeCompliance4,
         testSuperNodeTargetConstraint1,
-        testSuperNodeTargetConstraint2
+        testSuperNodeTargetConstraint2,
+        testSuperNodeNegativeQuery
         )
 
 #endif

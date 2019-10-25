@@ -1226,6 +1226,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
         switch (attribute)
         {
             case VX_NODE_PERFORMANCE:
+                if(node->super_node != NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: 'node' is part of super node so VX_NODE_PERFORMANCE query is not available. Try to query the supernode instead.\n");
+                    status = VX_ERROR_NOT_SUPPORTED;
+                    break;
+                }
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &node->perf, size);
@@ -1237,6 +1243,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_STATUS:
+                if(node->super_node != NULL)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: 'node' is part of super node so VX_NODE_STATUS query is not available. Try to query the supernode instead.\n");
+                    status = VX_ERROR_NOT_SUPPORTED;
+                    break;
+                }
                 if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
                 {
                     /* returns  status for pipeline index 0,
@@ -1280,7 +1292,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node parameters failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node border failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1293,7 +1305,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query 'is node replicated' failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node parameters failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1316,6 +1328,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query 'is node replicated' failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1333,11 +1346,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node replicate failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node replicate flage failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
-            }
                 break;
+            }
             case VX_NODE_VALID_RECT_RESET:
                 if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
@@ -1347,7 +1360,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node local data size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node valid rect reset failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
