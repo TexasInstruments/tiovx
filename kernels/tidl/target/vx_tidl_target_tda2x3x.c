@@ -137,8 +137,10 @@ static int TIDL_createParamsInit(TIDL_CreateParams * params)
   return IALG_EOK;
 }
 
-/* The below function may not be required since in BIOS tivxMemShared2TargetPtr() calls
- * Utils_memPhysToVirt() which anyway returns the original pointer
+extern void* Utils_memPhysToVirt(uint64_t phys_ptr);
+
+/* The below function may not be required since in BIOS Utils_memPhysToVirt()
+ * anyway returns the original pointer
  */
 static int32_t tidl_convertNetParamsPtr(sTIDL_Network_t *net) {
 
@@ -152,39 +154,39 @@ static int32_t tidl_convertNetParamsPtr(sTIDL_Network_t *net) {
       sTIDL_ConvParams_t *conv2dPrms = \
           &net->TIDLLayers[i].layerParams.convParams;
 
-      conv2dPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)conv2dPrms->weights.ptr, TIVX_MEM_EXTERNAL);
-      conv2dPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)conv2dPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+      conv2dPrms->weights.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)conv2dPrms->weights.ptr);
+      conv2dPrms->bias.ptr = Utils_memPhysToVirt((uint64_t)(uintptr_t)conv2dPrms->bias.ptr);
 
     }
     else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
     {
       sTIDL_BiasParams_t *biasPrms = &net->TIDLLayers[i].layerParams.biasParams;
-      biasPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)biasPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+      biasPrms->bias.ptr = Utils_memPhysToVirt((uint64_t)(uintptr_t)biasPrms->bias.ptr);
     }
     else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
     {
       sTIDL_BatchNormParams_t *batchNormPrms = \
           &net->TIDLLayers[i].layerParams.batchNormParams;
-      batchNormPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->weights.ptr, TIVX_MEM_EXTERNAL);
-      batchNormPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+      batchNormPrms->weights.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)batchNormPrms->weights.ptr);
+      batchNormPrms->bias.ptr = Utils_memPhysToVirt((uint64_t)(uintptr_t)batchNormPrms->bias.ptr);
 
       if(TIDL_PRelU == batchNormPrms->reluParams.reluType)
       {
-        batchNormPrms->reluParams.slope.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->reluParams.slope.ptr, TIVX_MEM_EXTERNAL);
+        batchNormPrms->reluParams.slope.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)batchNormPrms->reluParams.slope.ptr);
       }
     }
     else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
     {
       sTIDL_InnerProductParams_t *ipPrms = \
           &net->TIDLLayers[i].layerParams.innerProductParams;
-      ipPrms->bias.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)ipPrms->bias.ptr, TIVX_MEM_EXTERNAL);
-      ipPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)ipPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+      ipPrms->bias.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)ipPrms->bias.ptr);
+      ipPrms->weights.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)ipPrms->weights.ptr);
     }
     else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
     {
       sTIDL_DetectOutputParams_t *detectPrms = \
           &net->TIDLLayers[i].layerParams.detectOutParams;
-      detectPrms->priorBox.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)detectPrms->priorBox.ptr, TIVX_MEM_EXTERNAL);
+      detectPrms->priorBox.ptr= Utils_memPhysToVirt((uint64_t)(uintptr_t)detectPrms->priorBox.ptr);
     }
   }
 

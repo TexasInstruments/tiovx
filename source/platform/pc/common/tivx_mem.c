@@ -213,6 +213,13 @@ void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr)
     return (void*)(uintptr_t)(shared_ptr->shared_ptr);
 }
 
+#ifdef J6_VSDK
+void* Utils_memPhysToVirt(uint64_t phys_ptr)
+{
+    return (void*)(uintptr_t)(phys_ptr);
+}
+#endif
+
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     return (shared_ptr);
