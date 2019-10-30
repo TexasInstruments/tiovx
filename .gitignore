@@ -1,3 +1,6 @@
+# Design doc files
+internal_docs/doxy_cfg_design/html
+
 *.o
 *.dll
 out/
