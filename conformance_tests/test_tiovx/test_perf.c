@@ -1491,7 +1491,23 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfColorConvert, color_arg,
         PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Color Convert", "IYUV=>YUV4", 0);
 }
 
-TEST(tiovxPerformance, tiovxPerfConvertDepth)
+typedef struct {
+    const char* testName;
+    vx_df_image input_format;
+    vx_df_image output_format;
+} convert_depth_arg;
+
+#define CONVERT_DEPTH_FUZZY_ARGS_(name, input_format, output_format)  \
+    ARG(#name "/ConvertDepth(" #input_format "->" #output_format ")",   \
+         VX_DF_IMAGE_##input_format, VX_DF_IMAGE_##output_format)
+
+#define CONVERT_DEPTH_FUZZY_ARGS(input_format, output_format)   \
+    CONVERT_DEPTH_FUZZY_ARGS_(Graph, input_format, output_format)
+
+
+TEST_WITH_ARG(tiovxPerformance, tiovxPerfConvertDepth, convert_depth_arg, 
+              CONVERT_DEPTH_FUZZY_ARGS(U8, S16),
+              CONVERT_DEPTH_FUZZY_ARGS(S16, U8))
 {
     vx_image src, dst;
     CT_Image ref_src, refdst, vxdst;
@@ -1503,10 +1519,10 @@ TEST(tiovxPerformance, tiovxPerfConvertDepth)
     vx_context context = context_->vx_context_;
     vx_perf_t perf_node, perf_graph;
 
-    ASSERT_NO_FAILURE(ref_src = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(ref_src = image_generate_random(WIDTH, HEIGHT, arg_->input_format));
     src = ct_image_to_vx_image(ref_src, context);
 
-    ASSERT_VX_OBJECT(dst = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, WIDTH, HEIGHT, arg_->output_format), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(node = vxConvertDepthNode(graph, src, dst, VX_CONVERT_POLICY_SATURATE, scalar_shift), VX_TYPE_NODE);
@@ -1523,7 +1539,10 @@ TEST(tiovxPerformance, tiovxPerfConvertDepth)
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
 
-    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Convert Depth", "U8 to S16", 0);
+    if (arg_->input_format == VX_DF_IMAGE_U8)
+        PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Convert Depth", "U8 to S16", 0);
+    else
+        PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Convert Depth", "S16 to U8", 0);
 }
 
 static vx_convolution convolution_create(vx_context context, int cols, int rows, vx_int16* data, vx_uint32 scale)
@@ -2711,7 +2730,10 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfLUT, Lut_Arg,
     ASSERT(src_image == 0);
 
     ct_free_mem(lut_data);
-    PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable", "S16", 0);
+    if (arg_->data_type == VX_DF_IMAGE_S16)
+        PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable", "S16", 0);
+    else
+        PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable", "U8", 0);
 }
 
 TEST(tiovxPerformance2, tiovxPerfMagnitude)
@@ -2818,10 +2840,24 @@ TEST(tiovxPerformance2, tiovxPerfMeanStdDev)
     PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Mean/Standard Deviation", "U8", 0);
 }
 
-TEST(tiovxPerformance2, tiovxPerfMinMaxLoc)
+
+typedef struct {
+    const char* testName;
+    vx_df_image format;
+} min_max_arg;
+
+#define MIN_MAX_FUZZY_ARGS_(name, format)  \
+    ARG(#name "/MinMax(" #format")",   \
+         VX_DF_IMAGE_##format)
+
+#define MIN_MAX_FUZZY_ARGS(format)   \
+    MIN_MAX_FUZZY_ARGS_(Graph, format)
+
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfMinMaxLoc, min_max_arg,
+     MIN_MAX_FUZZY_ARGS(U8),
+     MIN_MAX_FUZZY_ARGS(S16))
 {
     const int MAX_CAP = 300;
-    int format = VX_DF_IMAGE_U8;
     vx_image src;
     CT_Image src0;
     vx_graph graph = 0;
@@ -2833,10 +2869,10 @@ TEST(tiovxPerformance2, tiovxPerfMinMaxLoc)
     uint32_t mincount0 = 0, maxcount0 = 0, mincount = 0, maxcount = 0;
     vx_scalar minval_, maxval_, mincount_, maxcount_;
     vx_array minloc_ = 0, maxloc_ = 0;
-    vx_enum sctype = format == VX_DF_IMAGE_U8 ? VX_TYPE_UINT8 :
-                     format == VX_DF_IMAGE_S16 ? VX_TYPE_INT16 :
+    vx_enum sctype = arg_->format == VX_DF_IMAGE_U8 ? VX_TYPE_UINT8 :
+                     arg_->format == VX_DF_IMAGE_S16 ? VX_TYPE_INT16 :
                      VX_TYPE_INT32;
-    uint32_t pixsize = ct_image_bits_per_pixel(format)/8;
+    uint32_t pixsize = ct_image_bits_per_pixel(arg_->format)/8;
     vx_size bufbytes = 0, npoints = 0, bufcap = 0;
     vx_perf_t perf_node, perf_graph;
 
@@ -2860,7 +2896,7 @@ TEST(tiovxPerformance2, tiovxPerfMinMaxLoc)
     width = WIDTH;
     height = HEIGHT;
 
-    src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b);
+    src0 = ct_allocate_ct_image_random(width, height, arg_->format, &rng, a, b);
     stride = ct_stride_bytes(src0);
     src = ct_image_to_vx_image(src0, context);
 
@@ -2891,7 +2927,7 @@ TEST(tiovxPerformance2, tiovxPerfMinMaxLoc)
     VX_CALL(vxReleaseArray(&minloc_));
     VX_CALL(vxReleaseArray(&maxloc_));
 
-    if (format == VX_DF_IMAGE_U8)
+    if (arg_->format == VX_DF_IMAGE_U8)
         PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Min Max Loc", "U8", 0);
     else
         PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Min Max Loc", "S16", 0);
