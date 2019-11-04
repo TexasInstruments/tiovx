@@ -284,23 +284,37 @@ void tivxMemBufferMap(
      * a cache line, then stale data outside the mapping, but on a cache
      * line that was mapped, could inadvertently be written back.  Therefore,
      * to be safe, we still perform invalidate even in WRITE only mode. */
-    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
+    if ((NULL != host_ptr) && (0U != size))
     {
-        appMemCacheInv(
-            host_ptr,
-            size);
+        if (TIVX_MEMORY_TYPE_DMA != mem_type)
+        {
+            appMemCacheInv(
+                host_ptr,
+                size);
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferMap failed (either pointer is NULL or size is 0)\n");
     }
 }
 
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
-        ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+    if ((NULL != host_ptr) && (0U != size))
     {
-        appMemCacheWb(
-            host_ptr,
-            size);
+        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+        {
+            appMemCacheWb(
+                host_ptr,
+                size);
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap failed (either pointer is NULL or size is 0)\n");
     }
 }
 
