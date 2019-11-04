@@ -196,11 +196,19 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 void tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
+    if ((NULL == host_ptr) || (0U == size))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferMap failed (either pointer is NULL or size is 0)\n");
+    }
 }
 
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
+    if ((NULL == host_ptr) || (0U == size))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap failed (either pointer is NULL or size is 0)\n");
+    }
 }
 
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)

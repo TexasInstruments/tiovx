@@ -155,16 +155,23 @@ void tivxMemBufferMap(
      * a cache line, then stale data outside the mapping, but on a cache
      * line that was mapped, could inadvertently be written back.  Therefore,
      * to be safe, we still perform invalidate even in WRITE only mode. */
-    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
+    if ((NULL != host_ptr) && (0U != size))
     {
-        if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
+        if (TIVX_MEMORY_TYPE_DMA != mem_type)
         {
-            CMEM_cacheInv(host_ptr, size);
+            if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
+            {
+                CMEM_cacheInv(host_ptr, size);
+            }
+            else
+            {
+                System_ovxCacheInv((unsigned int)host_ptr, size);
+            }
         }
-        else
-        {
-            System_ovxCacheInv((unsigned int)host_ptr, size);
-        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferMap failed (either pointer is NULL or size is 0)\n");
     }
 }
 
@@ -187,17 +194,24 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
-        ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+    if ((NULL != host_ptr) && (0U != size))
     {
-        if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
+        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
         {
-            CMEM_cacheWb(host_ptr, size);
+            if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
+            {
+                CMEM_cacheWb(host_ptr, size);
+            }
+            else
+            {
+                System_ovxCacheWb((unsigned int)host_ptr, size);
+            }
         }
-        else
-        {
-            System_ovxCacheWb((unsigned int)host_ptr, size);
-        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap failed (either pointer is NULL or size is 0)\n");
     }
 }
 
