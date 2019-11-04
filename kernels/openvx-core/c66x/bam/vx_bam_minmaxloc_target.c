@@ -343,7 +343,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
                 prms->pMin_cnt = &prms->min_cnt;
             }
 
-            if ((NULL != sc[2u]) || (min_cap > 0))
+            if ((NULL != sc[3u]) || (max_cap > 0))
             {
                 prms->pMax_cnt = &prms->max_cnt;
             }
@@ -646,7 +646,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
         tivx_obj_desc_array_t *arr[2U];
         void *arr0_target_ptr = NULL;
         void *arr1_target_ptr = NULL;
-        uint32_t min_cap = 0;
+        uint32_t min_cap = 0, max_cap = 0;
 
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
@@ -663,12 +663,17 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
             min_cap = arr[0U]->mem_size / arr[0u]->item_size;
         }
 
+        if (NULL != arr[1u])
+        {
+            max_cap = arr[1U]->mem_size / arr[1u]->item_size;
+        }
+
         if ((NULL != sc[2u]) || (min_cap > 0))
         {
             prms->pMin_cnt = &prms->min_cnt;
         }
 
-        if ((NULL != sc[2u]) || (min_cap > 0))
+        if ((NULL != sc[3u]) || (max_cap > 0))
         {
             prms->pMax_cnt = &prms->max_cnt;
         }
@@ -796,11 +801,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPostprocessInBamGraph(
 
         if (NULL != arr[0u])
         {
+            arr0_target_ptr = tivxMemShared2TargetPtr(&arr[0U]->mem_ptr);
             tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
         if (NULL != arr[1u])
         {
+            arr1_target_ptr = tivxMemShared2TargetPtr(&arr[1U]->mem_ptr);
             tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
