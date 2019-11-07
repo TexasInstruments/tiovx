@@ -76,6 +76,7 @@
 #define TIVX_SUPER_NODE  "tivx_super_node"
 
 #include <VX/vx.h>
+#include <TI/tivx.h>
 
 #ifdef  __cplusplus
 extern "C" {
@@ -86,7 +87,7 @@ extern "C" {
  */
 #define TIVX_TYPE_SUPER_NODE          0x818 /*!< \brief A <tt>\ref tivx_super_node</tt>. */
 
-#define TIVX_KERNEL_SUPERNODE VX_KERNEL_BASE(VX_ID_TI, VX_LIBRARY_KHR_BASE) + 0x1
+#define TIVX_KERNEL_SUPERNODE VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_EXTENSION_BASE) + 0x0
 
 /*! \brief The Super Node Framework Object. Super Node is a strongly-typed container for connected nodes.
  * \ingroup group_super_node

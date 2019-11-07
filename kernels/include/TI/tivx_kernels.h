@@ -91,6 +91,8 @@ extern "C" {
 enum tivx_library_e {
     /*! \brief The set of kernels supported in ivision. */
    TIVX_LIBRARY_IVISION_BASE = 0,
+    /*! \brief TI Extension kernels. */
+   TIVX_LIBRARY_EXTENSION_BASE = 1,
 };
 
 /*!

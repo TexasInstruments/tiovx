@@ -261,15 +261,12 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     {
         arr_type = VX_TYPE_KEYPOINT;
 
-        for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
+        if (NULL != metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])
         {
-            if (NULL != metas[i])
-            {
-                vxSetMetaFormatAttribute(metas[i], VX_ARRAY_ITEMTYPE, &arr_type,
-                    sizeof(arr_type));
-                vxSetMetaFormatAttribute(metas[i], VX_ARRAY_CAPACITY,
-                    &arr_capacity, sizeof(arr_capacity));
-            }
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], VX_ARRAY_ITEMTYPE, &arr_type,
+                sizeof(arr_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], VX_ARRAY_CAPACITY,
+                &arr_capacity, sizeof(arr_capacity));
         }
     }
     return status;
