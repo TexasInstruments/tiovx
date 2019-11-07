@@ -180,7 +180,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
 VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_char *module)
 {
     uint32_t idx, kernels_loaded = 0;
-    vx_status status = VX_FAILURE;
+    vx_status status = VX_SUCCESS;
 
     ownCheckAndInitModule();
     for(idx=0; idx<dimof(g_module_table); idx++)
@@ -200,12 +200,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
                 kernels_loaded ++;
                 break;
             }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Publish function for module %s failed\n", module);
+            }
         }
     }
     if((idx>=dimof(g_module_table)) && (0 == kernels_loaded))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxLoadKernels: Module table is full\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        if (VX_SUCCESS == status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Kernels can not be loaded since module %s has not yet been regstered.  Call tivxRegisterModule first.\n", module);
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     return status;
@@ -229,13 +236,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
           )
         {
             status = g_module_table[idx].unpublish(context);
+
+            if (VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unublish function for module %s failed\n", module);
+            }
             g_module_table[idx].is_loaded = vx_false_e;
             break;
         }
     }
     if(idx>=dimof(g_module_table))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxUnloadKernels: Module table is full\n");
+        VX_PRINT(VX_ZONE_ERROR, "Unable to unload kernels for module %s\n", module);
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 
