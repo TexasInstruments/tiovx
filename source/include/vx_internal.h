@@ -99,7 +99,7 @@ extern "C" {
 /*! \brief Macro to align a 'value' to 'align' units
  * \ingroup group_vx_utils
  */
-#define TIVX_ALIGN(value, align)      ((((value)+((align)-1))/(align))*(align))
+#define TIVX_ALIGN(value, align)      ((((value)+((align)-1U))/(align))*(align))
 
 /*! \brief Macro to floor a 'value' to 'align' units
  * \ingroup group_vx_utils

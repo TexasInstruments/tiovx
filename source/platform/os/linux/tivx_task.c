@@ -219,8 +219,8 @@ void tivxTaskWaitMsecs(uint32_t msec)
     struct timespec delay_time, remain_time;
     int ret;
 
-    delay_time.tv_sec  = msec/1000;
-    delay_time.tv_nsec = (msec%1000)*1000000;
+    delay_time.tv_sec  = msec/1000U;
+    delay_time.tv_nsec = (msec%1000U)*1000000U;
 
     do
     {

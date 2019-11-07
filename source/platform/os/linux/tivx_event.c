@@ -169,7 +169,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
             while(!done)
             {
-                if(event->is_set==1)
+                if(event->is_set==1U)
                 {
                     /* clear event */
                     event->is_set = 0;

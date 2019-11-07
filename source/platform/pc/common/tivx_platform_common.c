@@ -103,12 +103,11 @@ vx_status tivxPlatformInit(void)
     vx_status status;
     uint32_t i = 0;
 
-
-    for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+    for (i = 0; i < (uint32_t)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
         status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             tivxPlatformDeInit();
             break;
@@ -129,7 +128,7 @@ void tivxPlatformDeInit(void)
 
     tivxIpcDeInit();
 
-    for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+    for (i = 0; i < (uint32_t)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
@@ -140,7 +139,7 @@ void tivxPlatformDeInit(void)
 
 void tivxPlatformSystemLock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((int32_t)lock_id < (int32_t)TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
     }
@@ -148,7 +147,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
 
 void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((int32_t)lock_id < (int32_t)TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
@@ -183,7 +182,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
 
     snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
 
-    if(target_id!=TIVX_TARGET_ID_INVALID)
+    if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
     {
         for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
         {
@@ -252,8 +251,8 @@ void tivxPlatformPrintf(const char *format)
     uint64_t cur_time = tivxPlatformGetTimeInUsecs();
 
     snprintf(buf, sizeof(buf), " %d.%ds: %s",
-        (uint32_t)(cur_time/1000000),
-        (uint32_t)(cur_time%1000000),
+        (uint32_t)(cur_time/1000000U),
+        (uint32_t)(cur_time%1000000U),
         format);
     printf(buf);
 }

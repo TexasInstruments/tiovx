@@ -78,9 +78,9 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
     }
     else
     {
-        timeInUsecs = tv.tv_sec * 1000000ull + tv.tv_usec;
+        timeInUsecs = (uint64_t)(((uint64_t)tv.tv_sec * 1000000ULL) + (uint64_t)tv.tv_usec);
     }
-    if(g_start_time==0)
+    if(0U == g_start_time)
     {
         g_start_time = timeInUsecs;
     }

@@ -61,7 +61,7 @@ static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type)
 {
     vx_bool res = vx_false_e;
 
-    if (ownGetArrayItemSize(context, item_type) != 0)
+    if (ownGetArrayItemSize(context, item_type) != 0U)
     {
         res = vx_true_e;
     }
@@ -79,8 +79,8 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
     {
         if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
                 vx_true_e) &&
-            (capacity > 0) &&
-            (VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
+            (capacity > 0U) &&
+            ((vx_enum)VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
             (vx_true_e == arr->base.is_virtual))
         {
             ownInitArrayObject(arr, item_type, capacity, vx_true_e);
@@ -90,23 +90,23 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
-            if ((ownIsValidArrayItemType(arr->base.context, item_type) !=
-                    vx_true_e))
+            if (ownIsValidArrayItemType(arr->base.context, item_type) !=
+                    vx_true_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Own is valid array item type failed\n");
             }
 
-            if (!(capacity > 0))
+            if (!(capacity > 0U))
             {
                 VX_PRINT(VX_ZONE_ERROR,"Array capacity is not greater than 0\n");
             }
 
-            if (VX_TYPE_INVALID == item_type)
+            if ((vx_enum)VX_TYPE_INVALID == item_type)
             {
                 VX_PRINT(VX_ZONE_ERROR,"array item type is invalid\n");
             }
 
-            if (vx_true_e != arr->base.is_virtual)
+            if (vx_true_e != (arr->base.is_virtual))
             {
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }
@@ -134,13 +134,13 @@ vx_array VX_API_CALL vxCreateArray(
 
     if(ownIsValidContext(context) == vx_true_e)
     {
-        if ((capacity > 0) &&
+        if ((capacity > 0U) &&
             (vx_true_e == ownIsValidArrayItemType(context, item_type)))
         {
             arr = (vx_array)ownCreateReference(context, VX_TYPE_ARRAY,
                 VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)arr) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)arr) == (vx_status)VX_SUCCESS) &&
                 (arr->base.type == VX_TYPE_ARRAY))
             {
                 /* assign refernce type specific callback's */
@@ -314,7 +314,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     {
         status = ownAllocArrayBuffer((vx_reference)arr);
 
-        if (obj_desc->capacity == 0)
+        if (obj_desc->capacity == 0U)
         {
             VX_PRINT(VX_ZONE_ERROR,"Array capacity is 0\n");
             /* Array is still not allocated */
@@ -335,14 +335,14 @@ vx_status VX_API_CALL vxAddArrayItems(
             status = VX_FAILURE;
         }
 
-        if ((stride < obj_desc->item_size) || (stride == 0))
+        if ((stride < obj_desc->item_size) || (stride == 0U))
         {
             VX_PRINT(VX_ZONE_ERROR,"Stride should be >= item_size\n");
             status = VX_FAILURE;
         }
     }
 
-    if (status == VX_SUCCESS)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
         offset = obj_desc->num_items * obj_desc->item_size;
@@ -387,7 +387,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
     }
     else
     {
-        if (obj_desc->capacity == 0)
+        if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated\n");
@@ -402,7 +402,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         }
     }
 
-    if (status == VX_SUCCESS)
+    if ((vx_status)VX_SUCCESS == status)
     {
         obj_desc->num_items = new_num_items;
     }
@@ -438,7 +438,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; user pointer is NULL\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
-        if (obj_desc->capacity == 0)
+        if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; capacity is 0\n");
@@ -446,7 +446,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         }
 
         if ((stride < obj_desc->item_size) ||
-            (stride == 0))
+            (stride == 0U))
         {
             /* Array is full */
             VX_PRINT(VX_ZONE_ERROR,"Array is full\n");
@@ -472,14 +472,14 @@ vx_status VX_API_CALL vxCopyArrayRange(
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
 
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR,"Invalid user_mem_type; must be VX_MEMORY_TYPE_HOST\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (status == VX_SUCCESS)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
         start_offset = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr +
@@ -487,7 +487,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         inst = range_end - range_start;
 
         /* Copy from arr object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -585,7 +585,7 @@ vx_status VX_API_CALL vxMapArrayRange(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (i < TIVX_ARRAY_MAX_MAPS)
         {
@@ -609,7 +609,7 @@ vx_status VX_API_CALL vxMapArrayRange(
 
                 *map_id = i;
 
-                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", i+1);
+                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", i+1U);
             }
         }
         else
@@ -651,14 +651,14 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
             (arr->maps[map_id].map_addr == NULL) ||
-            (arr->maps[map_id].map_size == 0))
+            (arr->maps[map_id].map_size == 0U))
         {
             VX_PRINT(VX_ZONE_ERROR,"Array map is invalid\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(arr->maps[map_id].map_addr,
             arr->maps[map_id].map_size, arr->maps[map_id].mem_type,

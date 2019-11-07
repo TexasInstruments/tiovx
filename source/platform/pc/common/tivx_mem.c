@@ -119,14 +119,14 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
-    if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
+    if( ((vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
     {
         uint32_t mem_offset;
 
-        mem_offset = TIVX_ALIGN(gL2RAM_mem_offset, TIVX_MEM_L2RAM_ALIGN);
+        mem_offset = TIVX_ALIGN(gL2RAM_mem_offset, (uint32_t)TIVX_MEM_L2RAM_ALIGN);
 
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation */
-        if(size+mem_offset <= TIVX_MEM_L2RAM_SIZE)
+        if((size + mem_offset) <= (uint32_t)TIVX_MEM_L2RAM_SIZE)
         {
             ptr = &gL2RAM_mem[mem_offset];
 
@@ -143,7 +143,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
-    if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
+    if( ((vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
     {
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation
          * Free in this case resets the offset to 0
@@ -185,10 +185,10 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
+        if( ((vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
         {
             stats->mem_size = TIVX_MEM_L2RAM_SIZE;
-            stats->free_size = TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
+            stats->free_size = (uint32_t)TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
         }
     }
 }
@@ -237,7 +237,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
     vx_status status = VX_FAILURE;
 
-    if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
+    if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {
         /* Return success since there is not scratch mem region on PC */
         status = VX_SUCCESS;
