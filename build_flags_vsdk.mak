@@ -3,7 +3,7 @@ BUILD_CONFORMANCE_TEST?=yes
 # currently required to be set to yes
 BUILD_TUTORIAL?=yes
 # currently required to be set to no
-BUILD_BAM?=no
+BUILD_BAM?=yes
 # currently required to be set to yes
 BUILD_IGNORE_LIB_ORDER?=yes
 

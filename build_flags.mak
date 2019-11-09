@@ -10,7 +10,7 @@ BUILD_IGNORE_LIB_ORDER?=yes
 # Build for SoC
 BUILD_TARGET_MODE?=yes
 # Build for x86 PC
-BUILD_EMULATION_MODE?=no
+BUILD_EMULATION_MODE?=yes
 # valid values: X86 x86_64 all
 BUILD_EMULATION_ARCH?=x86_64
 
@@ -29,8 +29,11 @@ BUILD_CT_TIOVX_HWA_DISPLAY_TESTS=no
 PROFILE?=all
 
 # Applied to target mode only
-BUILD_LINUX_A72?=no
-# Applied to target mode only
+BUILD_LINUX_A72?=yes
+# Applied to target mode only - by default kept as no so that all users don't have to change
+BUILD_QNX_A72?=no
+ifeq ($(TARGET_OS),QNX)
 BUILD_QNX_A72?=yes
+endif
 # Applied to target mode only
 BUILD_VLAB?=no

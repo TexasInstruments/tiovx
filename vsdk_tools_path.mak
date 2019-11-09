@@ -38,17 +38,6 @@ ARP32CGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT ?= /usr/
 endif
 
-ifeq ($(BUILD_OS),QNX)
-XDC_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/linux/xdctools_3_32_01_22_core
-TIARMCGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-arm_16.9.2.LTS
-GCC_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/gcc-arm-none-eabi-4_9-2015q3
-GCC_LINUX_ARM_ROOT ?= $(VSDK_TOOLS_PATH)/os_tools/linux/linaro/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf
-GCC_QNX_ARM_ROOT ?= $(QNX_HOST)/usr/bin
-CGT6X_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-c6000_8.2.4
-ARP32CGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
-GCC_LINUX_ROOT ?= /usr/
-endif
-
 VXLIB_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/vxlib_c66x_1_1_3_0
 TIDL_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.TIDL.01.01.03.00/modules/ti_dl
 EVE_SW_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/eve_sw_01_20_00_00

@@ -1,6 +1,6 @@
 
 ifeq ($(TARGET_PLATFORM),TDAX)
-ifeq ($(TARGET_OS),LINUX QNX)
+ifeq ($(TARGET_OS), $(filter $(TARGET_OS), LINUX QNX))
 
 include $(PRELUDE)
 TARGET      := vx_platform_vision_sdk_linux
@@ -8,7 +8,8 @@ TARGETTYPE  := library
 
 ifeq ($(TARGET_OS),LINUX)
     COMMON_FILES_REL_PATH = ../../os/linux
-else
+endif
+ifeq ($(TARGET_OS),QNX)
     COMMON_FILES_REL_PATH = ../../os/qnx
 endif
 
