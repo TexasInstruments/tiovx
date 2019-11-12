@@ -620,7 +620,8 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 
     if(status==VX_SUCCESS)
     {
-        img_width = img_height = 0;
+        img_height = 0;
+        img_width = 0;
 
         vxQueryImage(image, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));

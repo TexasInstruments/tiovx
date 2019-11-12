@@ -519,8 +519,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
             vx_uint8* map_addr = NULL;
             uint32_t map_size;
 
-            map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
-            map_size = (size > 0) ? size : obj_desc->mem_size - offset;
+            map_addr = (vx_uint8*)(uintptr_t)(obj_desc->mem_ptr.host_ptr + offset);
+            map_size = (size > 0) ? size : (obj_desc->mem_size - offset);
 
             user_data_object->maps[i].map_addr = map_addr;
             user_data_object->maps[i].map_size = map_size;

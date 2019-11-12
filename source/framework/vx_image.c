@@ -692,7 +692,7 @@ void ownPrintImage(vx_image image)
             df_image,
             obj_desc->width,
             obj_desc->height,
-            obj_desc->create_type==TIVX_IMAGE_UNIFORM?"CONSTANT":"MUTABLE",
+            (obj_desc->create_type == TIVX_IMAGE_UNIFORM)?"CONSTANT":"MUTABLE",
             obj_desc->planes
         );
     VX_PRINT(VX_ZONE_IMAGE,"\n");

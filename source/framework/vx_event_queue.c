@@ -123,12 +123,12 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 {
     vx_status status = VX_FAILURE;
 
-    if(event_q != NULL && event_q->enable==vx_true_e)
+    if((event_q != NULL) && (event_q->enable == vx_true_e))
     {
         uintptr_t index;
 
         status = tivxQueueGet(&event_q->free_queue, &index, TIVX_EVENT_TIMEOUT_NO_WAIT);
-        if(status==VX_SUCCESS && index < TIVX_EVENT_QUEUE_MAX_SIZE)
+        if((status == VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
         {
             tivx_event_queue_elem_t *elem;
 
@@ -148,7 +148,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
                 tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", index+1);
             }
         }
-        if(status!=VX_SUCCESS)
+        if(status != VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventQueueAddEvent: Unable to add event, dropping it\n");
         }
@@ -251,7 +251,7 @@ vx_status vxWaitEventQueue(
 
     status = tivxQueueGet(&event_q->ready_queue, &index, timeout);
 
-    if(status==VX_SUCCESS && index < TIVX_EVENT_QUEUE_MAX_SIZE)
+    if((status == VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
     {
         tivx_event_queue_elem_t *elem;
         elem = &event_q->event_list[index];

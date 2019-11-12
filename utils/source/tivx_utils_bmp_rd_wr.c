@@ -136,18 +136,22 @@ static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image i
     size_t size;
     char file[MAXPATHLENGTH];
 
-    if (fileName)
+    if (fileName != NULL)
     {
-        size = snprintf(file, MAXPATHLENGTH, "%s", fileName);
+        size = (size_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
         ASSERT(size < MAXPATHLENGTH);
 
         dotpos = strrchr(file, '.');
-        if(dotpos &&
-           (strcmp(dotpos, ".bmp") == 0 ||
-            strcmp(dotpos, ".BMP") == 0))
+        if((dotpos != NULL) &&
+           ((strcmp(dotpos, ".bmp") == 0) ||
+            (strcmp(dotpos, ".BMP") == 0)))
+        {
             result = ct_write_bmp(file, image);
+        }
         if( result < 0 )
+        {
             CT_ADD_FAILURE("Can not write image to \"%s\"", fileName);
+        }
     }
     else
     {
@@ -535,7 +539,8 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
 
     if(status==VX_SUCCESS)
     {
-        img_width = img_height = 0;
+        img_height = 0;
+        img_width = 0;
 
         vxQueryImage(image, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
@@ -562,12 +567,12 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
 
         if(df!=img_df)
         {
-            if(df==VX_DF_IMAGE_RGB && img_df==VX_DF_IMAGE_U8 && convert_to_gray_scale)
+            if((df==VX_DF_IMAGE_RGB) && (img_df==VX_DF_IMAGE_U8) && convert_to_gray_scale)
             {
                 enable_rgb2gray = vx_true_e;
             }
             else
-            if(df==VX_DF_IMAGE_U8 && img_df==VX_DF_IMAGE_RGB)
+            if((df==VX_DF_IMAGE_U8) && (img_df==VX_DF_IMAGE_RGB))
             {
                 enable_gray2rgb = vx_true_e;
             }
@@ -605,7 +610,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             rect.end_x = dst_start_x + copy_width;
             rect.end_y = dst_start_y + copy_height;
 
-            data_ptr = (void*)((uint8_t*)data_ptr + (stride*src_start_y) + src_start_x*bpp);
+            data_ptr = (void*)((uint8_t*)data_ptr + (stride*src_start_y) + (src_start_x*bpp));
 
             vxMapImagePatch(image,
                 &rect,
@@ -638,9 +643,9 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 {
                     for(x=0; x<copy_width; x++)
                     {
-                        b = ((uint8_t*)data_ptr)[3*x + 0];
-                        g = ((uint8_t*)data_ptr)[3*x + 1];
-                        r = ((uint8_t*)data_ptr)[3*x + 2];
+                        b = ((uint8_t*)data_ptr)[(3*x) + 0];
+                        g = ((uint8_t*)data_ptr)[(3*x) + 1];
+                        r = ((uint8_t*)data_ptr)[(3*x) + 2];
 
                         ((uint8_t*)dst_data_ptr)[x] = (r+b+g)/3;
                     }
@@ -659,9 +664,9 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                     {
                         g = ((uint8_t*)data_ptr)[x];
 
-                        ((uint8_t*)dst_data_ptr)[3*x+0] = g;
-                        ((uint8_t*)dst_data_ptr)[3*x+1] = g;
-                        ((uint8_t*)dst_data_ptr)[3*x+2] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 0] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 1] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 2] = g;
                     }
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);

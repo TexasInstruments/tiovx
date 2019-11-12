@@ -462,7 +462,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case VX_TENSOR_DIMS:
-                if (size <= (sizeof(vx_size)*TIVX_CONTEXT_MAX_TENSOR_DIMS) && ((vx_size)ptr & 0x3) == 0)
+                if ((size <= (sizeof(vx_size)*TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3) == 0))
                 {
                     int i;
                     const vx_size *p = ptr;
@@ -582,7 +582,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case TIVX_RAW_IMAGE_FORMAT:
-                if (size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES) && ((vx_size)ptr & 0x3) == 0)
+                if ((size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES)) && (((vx_size)ptr & 0x3) == 0))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
 

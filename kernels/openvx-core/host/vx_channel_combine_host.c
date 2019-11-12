@@ -339,7 +339,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
     }
 
 #if 1
-    
+
     if (VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
@@ -564,8 +564,10 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
 
     if (VX_SUCCESS == status)
     {
-        out_rect.start_x = out_rect.start_y = 0;
-        out_rect.end_x = out_rect.end_y = 0xFFFFFFFF;
+        out_rect.start_y = 0;
+        out_rect.start_x = 0;
+        out_rect.end_y = 0xFFFFFFFFU;
+        out_rect.end_x = 0xFFFFFFFFU;
 
         for (i = 0; i < prms->num_input_images; i ++)
         {
@@ -577,8 +579,8 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
             }
             else
             {
-                if ((i == 0) || 
-                    (fmt != VX_DF_IMAGE_IYUV && fmt != VX_DF_IMAGE_NV12 && 
+                if ((i == 0) ||
+                    (fmt != VX_DF_IMAGE_IYUV && fmt != VX_DF_IMAGE_NV12 &&
                      fmt != VX_DF_IMAGE_NV21 && fmt != VX_DF_IMAGE_YUYV && fmt != VX_DF_IMAGE_UYVY))
                 {
                     if (rect.start_x > out_rect.start_x)

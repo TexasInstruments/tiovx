@@ -356,7 +356,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             {
                 ref = NULL;
                 status = tivxDataRefQueueDequeueDoneRef(data_ref_q, &ref);
-                if(status == VX_SUCCESS && ref != NULL)
+                if((status == VX_SUCCESS) && (ref != NULL))
                 {
                     /* reference is dequeued break from do - while loop with success */
                     exit_loop = vx_true_e;
@@ -453,7 +453,7 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
 {
     vx_status status = VX_FAILURE;
 
-    if(graph != NULL && graph_parameter_index < graph->num_params && ref != NULL)
+    if((graph != NULL) && (graph_parameter_index < graph->num_params) && (ref != NULL))
     {
         uint32_t buf_id;
 
@@ -476,7 +476,7 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
     uintptr_t pipeline_id;
 
     status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
-    if(status==VX_SUCCESS && pipeline_id < graph->pipeline_depth)
+    if((status == VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
     {
         obj_desc = graph->obj_desc[pipeline_id];
     }
@@ -832,7 +832,7 @@ tivx_data_ref_queue ownGraphGetParameterDataRefQueue(vx_graph graph, vx_uint32 g
 {
     tivx_data_ref_queue ref = NULL;
 
-    if(graph != NULL && graph_parameter_index < graph->num_params)
+    if((graph != NULL) && (graph_parameter_index < graph->num_params))
     {
         ref = graph->parameters[graph_parameter_index].data_ref_queue;
     }

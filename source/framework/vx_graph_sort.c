@@ -207,8 +207,8 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
             {
                 next_node = ownNodeGetNextInNode(cur_node, in_node_idx);
                 if(next_node &&
-                   next_node->super_node == super_node &&
-                   next_node->incounter == 0)
+                   (next_node->super_node == super_node) &&
+                   (next_node->incounter == 0U))
                 {
                     next_node->incounter = 1;
                     tivxGraphSortStackPush(context, next_node);
@@ -220,8 +220,8 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
             {
                 next_node = ownNodeGetNextNode(cur_node, out_node_idx);
                 if(next_node &&
-                   next_node->super_node == super_node &&
-                   next_node->incounter == 0)
+                   (next_node->super_node == super_node) &&
+                   (next_node->incounter == 0U))
                 {
                     next_node->incounter = 1;
                     tivxGraphSortStackPush(context, next_node);

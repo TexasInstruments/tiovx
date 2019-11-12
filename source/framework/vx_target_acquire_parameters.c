@@ -276,7 +276,7 @@ static void tivxTargetNodeDescReleaseParameterInDelay(
 
     cur_data_ref_q = data_ref_q_obj_desc;
 
-    for(i=0; i<delay_slots-1; i++)
+    for(i=0; i<(delay_slots-1); i++)
     {
         next_data_ref_q = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(cur_data_ref_q->next_obj_desc_id_in_delay);
 

@@ -284,7 +284,7 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
     volatile uint8_t *s=(uint8_t*)src;
     uint32_t i;
 
-    for(i=0; i<size-1; i++)
+    for(i=0; i<(size-1); i++)
     {
         d[i] = s[i];
         if(s[i]==0)
@@ -325,7 +325,7 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
 
     for(i=0; i<size; i++)
     {
-        if(d[i] != s[i] || d[i]==0 || s[i]==0)
+        if((d[i] != s[i]) || (d[i] == 0) || (s[i] == 0))
         {
             ret = (d[i] - s[i]);
             break;

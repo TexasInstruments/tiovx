@@ -227,7 +227,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
     if (NULL != table_info)
     {
-		tivx_obj_desc_t *tmp_obj_desc = NULL;
+        tivx_obj_desc_t *tmp_obj_desc = NULL;
         uint32_t i;
 
         table_info->table_base = gTivxObjDescShmEntry;

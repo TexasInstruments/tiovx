@@ -44,7 +44,7 @@ static vx_status ownDestructGraph(vx_reference ref)
 
         for(i=0; i<graph->num_params; i++)
         {
-            if(graph->parameters[i].queue_enable && graph->parameters[i].data_ref_queue != NULL)
+            if((graph->parameters[i].queue_enable) && (graph->parameters[i].data_ref_queue != NULL))
             {
                 tivxDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
             }
@@ -142,7 +142,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
             vx_true_e) &&
-            pipeline_id < graph->pipeline_depth)
+            (pipeline_id < graph->pipeline_depth))
     {
         uint64_t beg_time, end_time;
         tivx_obj_desc_graph_t *obj_desc;
@@ -791,9 +791,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
         (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH) ==
             vx_true_e))
     {
-        if (graph->state == VX_GRAPH_STATE_RUNNING
-           || graph->state == VX_GRAPH_STATE_COMPLETED
-           || graph->state == VX_GRAPH_STATE_ABANDONED)
+        if ((graph->state == VX_GRAPH_STATE_RUNNING)
+           || (graph->state == VX_GRAPH_STATE_COMPLETED)
+           || (graph->state == VX_GRAPH_STATE_ABANDONED))
         {
             /* wait for all previous graph executions to finish
              *
@@ -834,7 +834,7 @@ void ownGraphSetReverify(vx_graph graph)
 
 void ownSendGraphCompletedEvent(vx_graph graph)
 {
-    if(graph!=NULL && graph->base.context!=NULL)
+    if((graph != NULL) && (graph->base.context != NULL))
     {
         if(graph->is_enable_send_complete_event)
         {
@@ -915,7 +915,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
 
 void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state)
 {
-    if(graph != NULL && pipeline_id < graph->pipeline_depth )
+    if((graph != NULL) && (pipeline_id < graph->pipeline_depth))
     {
         tivx_obj_desc_graph_t *graph_obj_desc = graph->obj_desc[pipeline_id];
 

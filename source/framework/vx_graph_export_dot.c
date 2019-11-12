@@ -308,9 +308,9 @@ static void exportDataRef(FILE *fp, vx_reference ref)
         }
 
         {
-            if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+            if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                     ||
-                ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                )
             {
                 snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
@@ -323,9 +323,9 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 is_virtual_label,
                 is_replicated_label
                 );
-        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                 ||
-            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
            )
         {
             exportDataRef(fp, ref->scope);
@@ -370,9 +370,9 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
             snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
             snprintf(is_virtual_label, 64, "| virtual");
         }
-        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
             ||
-            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
         )
         {
             snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
@@ -388,9 +388,9 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
                 ref->obj_desc->obj_desc_id
                 );
         }
-        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
             ||
-            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
         )
         {
             exportDataRefObjDesc(fp, ref->scope);
@@ -558,9 +558,9 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
 
             for(slot_id=0; slot_id<delay->count; slot_id++)
             {
-                if(delay->refs[slot_id]!=NULL
+                if((delay->refs[slot_id] != NULL)
                     &&
-                    (delay->refs[(slot_id+1)%delay->count] != NULL)
+                    ((delay->refs[(slot_id+1)%delay->count] != NULL))
                 )
                 {
                     exportDataRef(fp, delay->refs[slot_id]);
@@ -722,7 +722,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
             tivx_obj_desc_queue_t *obj_desc_queue
                 = (tivx_obj_desc_queue_t *)tivxObjDescGet(data_ref_q->acquire_q_obj_desc_id);
 
-            if(obj_desc_queue!=NULL && obj_desc_queue->count>0)
+            if((obj_desc_queue != NULL) && (obj_desc_queue->count > 0))
             {
                 uint32_t data_id;
 
@@ -734,9 +734,9 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
 
                     if(ref!=NULL)
                     {
-                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                             ||
-                            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                            (	ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                         )
                         {
                             ref = ref->scope;
@@ -1129,9 +1129,9 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
                     if(ref!=NULL)
                     {
-                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                             ||
-                            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                         )
                         {
                             ref = ref->scope;
@@ -1163,9 +1163,9 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 {
                     ref = graph->data_ref_q_list[prm_id].refs_list[buf_id];
 
-                    if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                         ||
-                        ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                        (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                     )
                     {
                         ref = ref->scope;

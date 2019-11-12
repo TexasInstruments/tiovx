@@ -67,7 +67,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
 {
     vx_status status = VX_SUCCESS;
 
-    if(data_ref_q == NULL || ref == NULL)
+    if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'ref' is invalid \n");
@@ -124,7 +124,7 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
 {
     vx_status status = VX_SUCCESS;
 
-    if(data_ref_q == NULL || ref == NULL)
+    if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'ref' is invalid \n");
@@ -143,7 +143,7 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
 
         tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        if(status==VX_SUCCESS && ref_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+        if((status == VX_SUCCESS) && (ref_obj_desc_id != TIVX_OBJ_DESC_INVALID))
         {
             VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d)\n",
                              queue_obj_desc_id,
@@ -187,7 +187,7 @@ vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_u
 {
     vx_status status = VX_SUCCESS;
 
-    if(data_ref_q == NULL || count == NULL)
+    if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'count' is invalid or 'queue_id' is invalid\n");
@@ -213,7 +213,7 @@ vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_
 {
     vx_status status = VX_SUCCESS;
 
-    if(data_ref_q == NULL || count == NULL)
+    if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'count' is invalid or 'queue_id' is invalid\n");
@@ -239,7 +239,7 @@ uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline
 {
     uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
-    if(ref!=NULL && pipeline_id < ref->pipeline_depth)
+    if((ref != NULL) && (pipeline_id < ref->pipeline_depth))
     {
         obj_desc_id = ref->obj_desc[pipeline_id]->base.obj_desc_id;
     }
@@ -311,7 +311,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
     tivx_data_ref_queue ref = NULL;
     vx_status status = VX_SUCCESS;
 
-    if(graph!=NULL && prms != NULL)
+    if((graph != NULL) && (prms != NULL))
     {
         ref = (tivx_data_ref_queue)ownCreateReference(graph->base.context,
             TIVX_TYPE_DATA_REF_Q, VX_INTERNAL, &graph->base);

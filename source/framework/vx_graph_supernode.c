@@ -185,7 +185,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                             break;
                                         }
                                     }
-                                    if(i+1 > num_found_external_refs)
+                                    if((i + 1) > num_found_external_refs)
                                     {
                                         found_external_refs[num_found_external_refs] = ref1;
                                         obj_desc->edge_list[cnt].src_node_prm_idx = num_found_external_refs;
@@ -284,7 +284,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                                     break;
                                                                 }
                                                             }
-                                                            if(i+1 > num_found_external_refs)
+                                                            if((i + 1) > num_found_external_refs)
                                                             {
                                                                 found_external_refs[num_found_external_refs] = ref1;
                                                                 obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
@@ -337,7 +337,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                 break;
                                             }
                                         }
-                                        if(i+1 > num_found_external_refs)
+                                        if((i + 1) > num_found_external_refs)
                                         {
                                             found_external_refs[num_found_external_refs] = ref1;
                                             obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;

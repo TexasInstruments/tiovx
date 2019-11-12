@@ -198,7 +198,7 @@ void ownPrintScalar(vx_scalar scalar)
             VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %zu\n", scalar, obj_desc->data.size);
             break;
         case VX_TYPE_BOOL:
-            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, obj_desc->data.boolean == vx_true_e?"TRUE":"FALSE");
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, (obj_desc->data.boolean == vx_true_e)?"TRUE":"FALSE");
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Case %08x is not covered!\n", obj_desc->data_type);

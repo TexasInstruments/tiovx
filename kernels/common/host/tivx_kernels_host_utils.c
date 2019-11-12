@@ -273,8 +273,10 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
 
     if (VX_SUCCESS == status)
     {
-        out_rect.start_x = out_rect.start_y = 0;
-        out_rect.end_x = out_rect.end_y = 0xFFFFFFFF;
+        out_rect.start_y = 0;
+        out_rect.start_x = 0;
+        out_rect.end_y = 0xFFFFFFFFU;
+        out_rect.end_x = 0xFFFFFFFFU;
 
         for (i = 0; i < prms->num_input_images; i ++)
         {

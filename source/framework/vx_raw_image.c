@@ -654,7 +654,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 }
                 break;
             case TIVX_RAW_IMAGE_FORMAT:
-                if (size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES) && ((vx_size)ptr & 0x3) == 0)
+                if ((size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES)) && (((vx_size)ptr & 0x3) == 0))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
 

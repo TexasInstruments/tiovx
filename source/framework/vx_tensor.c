@@ -333,7 +333,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 }
                 break;
             case VX_TENSOR_DIMS:
-                if (size >= (sizeof(vx_size)*obj_desc->number_of_dimensions) && ((vx_size)ptr & 0x3) == 0)
+                if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3) == 0))
                 {
                     int i;
                     vx_size *p = ptr;

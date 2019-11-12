@@ -645,7 +645,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 ownContextSetKernelRemoveLock(context, vx_true_e);
 
                 for (idx = 0;
-                     idx < sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]);
+                     idx < (sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]));
                      idx ++)
                 {
                     /* this loads default module kernels
@@ -693,7 +693,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             ownContextSetKernelRemoveLock(context, vx_true_e);
 
             for (idx = 0;
-                 idx < sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]);
+                 idx < (sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]));
                  idx ++)
             {
             /* Unload kernels */

@@ -479,7 +479,8 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
     w = obj_desc->width;
     h = obj_desc->height;
-    t1 = scale = obj_desc->scale;
+    scale = obj_desc->scale;
+    t1 = obj_desc->scale;
 
     for (i = 0; i < obj_desc->num_levels; i++)
     {

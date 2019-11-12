@@ -87,7 +87,8 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
     VXLIB_F32 currentSum, currentSqSum;
 
     pixelsProcessed = 0U;
-    currentSum = currentSqSum = 0.0f;
+    currentSqSum = 0.0f;
+    currentSum = 0.0f;
 
     if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {

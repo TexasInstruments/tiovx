@@ -835,7 +835,7 @@ vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_
             else
             {
                 /* Remove old node from the list */
-                for(j=i; j<num_out_nodes-1; j++)
+                for(j=i; j<(num_out_nodes-1); j++)
                 {
                     node->obj_desc[0]->out_node_id[j] = node->obj_desc[0]->out_node_id[j+1];
                 }
@@ -917,7 +917,7 @@ vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in
             else
             {
                 /* Remove old node from the list */
-                for(j=i; j<num_in_nodes-1; j++)
+                for(j=i; j<(num_in_nodes-1); j++)
                 {
                     node->obj_desc[0]->in_node_id[j] = node->obj_desc[0]->in_node_id[j+1];
                 }
@@ -948,7 +948,7 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node, uint32_t pipeline_id)
 {
     vx_status status = VX_SUCCESS;
 
-    if(NULL != node && pipeline_id < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
+    if((NULL != node) && (pipeline_id < TIVX_GRAPH_MAX_PIPELINE_DEPTH))
     {
         tivx_obj_desc_node_t *obj_desc = node->obj_desc[pipeline_id];
         tivx_obj_desc_cmd_t *obj_desc_cmd = node->obj_desc_cmd[pipeline_id];
@@ -1026,7 +1026,7 @@ uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id)
 {
     uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
-    if(node!=NULL && (pipeline_id < node->pipeline_depth) && (node->obj_desc[pipeline_id]!=NULL) )
+    if((node!=NULL) && (pipeline_id < node->pipeline_depth) && (node->obj_desc[pipeline_id]!=NULL) )
     {
         obj_desc_id = node->obj_desc[pipeline_id]->base.obj_desc_id;
     }
@@ -1057,7 +1057,7 @@ void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uin
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 
-    if(node!=NULL && node->base.context!=NULL)
+    if((node!=NULL) && (node->base.context!=NULL))
     {
         if(node->is_enable_send_complete_event)
         {
@@ -1082,7 +1082,7 @@ void ownNodeCheckAndSendErrorEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 
-    if(node!=NULL && node->base.context!=NULL)
+    if((node!=NULL) && (node->base.context!=NULL))
     {
         if(node->is_enable_send_complete_event)
         {
@@ -1985,7 +1985,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if(node->pipeline_depth == 1 && pipeline_depth > 1)
+    if((node->pipeline_depth == 1) && (pipeline_depth > 1))
     {
         tivx_obj_desc_node_t *obj_desc;
         tivx_obj_desc_node_t *obj_desc_0; /* 0th object descriptor */
@@ -2104,9 +2104,9 @@ uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
 {
     vx_uint32 num_buf = 0, num_pipeup_bufs = 0, sink_bufs = 0;
 
-    if(node != NULL
-      && index < ownNodeGetNumParameters(node)
-      && ownNodeGetParameterDir(node, index) == VX_OUTPUT)
+    if((node != NULL)
+      && (index < ownNodeGetNumParameters(node))
+      && (ownNodeGetParameterDir(node, index) == VX_OUTPUT))
     {
         num_buf = node->parameter_index_num_buf[index];
 
@@ -2135,9 +2135,9 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
         }
         if(status==VX_SUCCESS)
         {
-            if( index < ownNodeGetNumParameters(node)
-                && num_buf < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH
-                && ownNodeGetParameterDir(node, index) == VX_OUTPUT
+            if( (index < ownNodeGetNumParameters(node))
+                && (num_buf < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
+                && (ownNodeGetParameterDir(node, index) == VX_OUTPUT)
                 )
             {
                 node->parameter_index_num_buf[index] = num_buf;

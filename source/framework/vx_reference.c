@@ -465,9 +465,9 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
             ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
             if((NULL != scope) && (NULL != scope->obj_desc))
             {
-                if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
                         ||
-                    ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                    (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                     )
                 {
                     /* set scope_obj_desc_id in obj_desc only for composite objects like pyramid and object array */
