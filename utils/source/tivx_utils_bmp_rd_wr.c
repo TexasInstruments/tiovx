@@ -278,6 +278,10 @@ int32_t tivx_utils_bmp_file_write(
             vx_df_image df,
             void *data_ptr)
 {
+
+    /* workaround to enable CT context */
+    CT_SetHasRunningTest();
+    
     CT_Image image = NULL;
     uint32_t bpp;
     vx_status status;
