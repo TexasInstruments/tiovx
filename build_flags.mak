@@ -32,8 +32,6 @@ PROFILE?=all
 BUILD_LINUX_A72?=yes
 # Applied to target mode only - by default kept as no so that all users don't have to change
 BUILD_QNX_A72?=no
-ifeq ($(TARGET_OS),QNX)
-BUILD_QNX_A72?=yes
-endif
+
 # Applied to target mode only
 BUILD_VLAB?=no
