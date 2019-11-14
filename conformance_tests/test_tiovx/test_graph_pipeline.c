@@ -740,6 +740,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
  * - Number of buffers = pipeline depth
  * - Virtual objects, no hints provided except for pipeline depth
  * - fixed pipeline depth of 2
+ * Note: The d1 buffer is not accessible by the application in this
+ *       example.  If the application needs access to this buffer,
+ *       please refer to the testTwoNodes as an example.
  *
  */
 TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
@@ -920,6 +923,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
  * This test case test the below
  * - Single input, single output nodes
  * - Two nodes on two different targets
+ * Note: a graph parameter is created from the d1 buffer queue in this application
+ *       This is only necessary in the case that the application must access the data
+ *       for this buffer.  In the case that this is not needed, please refer to 
+ *       testTwoNodesBasic.
  *
  */
 TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
