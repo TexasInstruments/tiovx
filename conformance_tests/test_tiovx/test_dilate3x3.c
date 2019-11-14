@@ -385,11 +385,25 @@ TEST_WITH_ARG(tivxDilate3x3, negativeTestBorderMode, Arg,
     ASSERT(src_image == 0);
 }
 
+typedef struct {
+    const char* testName;
+    CT_Image (*generator)(const char* fileName, int width, int height);
+    const char* fileName;
+    vx_border_t border;
+    int width, height;
+    uint32_t block_width, block_height;
+} Arg2;
+
+#define ADD_BLOCK_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/blk_sz=64x48", __VA_ARGS__, 64, 48)), \
+    CT_EXPAND(nextmacro(testArgName "/blk_sz=32x24", __VA_ARGS__, 32, 24)), \
+    CT_EXPAND(nextmacro(testArgName "/blk_sz=160x120", __VA_ARGS__, 160, 120))
+
 
 #define SUPERNODE_PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, dilate3x3_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ADD_BLOCK_SIZE, ARG, dilate3x3_generate_random, NULL)
 
-TEST_WITH_ARG(tivxDilate3x3, testDilate3x3Supernode, Arg,
+TEST_WITH_ARG(tivxDilate3x3, testDilate3x3Supernode, Arg2,
     SUPERNODE_PARAMETERS
 )
 {
@@ -423,11 +437,13 @@ TEST_WITH_ARG(tivxDilate3x3, testDilate3x3Supernode, Arg,
     VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
 
-    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[0] = node1);
     ASSERT_NO_FAILURE(node_list[1] = node2);
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
-    
+
+    VX_CALL(tivxSetSuperNodeTileSize(super_node, arg_->block_width, arg_->block_height));
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -469,14 +485,81 @@ TEST_WITH_ARG(tivxDilate3x3, testDilate3x3Supernode, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+#define BLOCK_SIZE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ADD_BLOCK_SIZE, ARG, dilate3x3_generate_random, NULL)
+
+TEST_WITH_ARG(tivxDilate3x3, testBlockSize, Arg2,
+    BLOCK_SIZE_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(dst_image = ct_create_similar_image(src_image), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxDilate3x3Node(graph, src_image, virt), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxDilate3x3Node(graph, virt, dst_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(tivxSetNodeTileSize(node1, arg_->block_width, arg_->block_height));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(sequential_dilate3x3_check(src, dst, border));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
+}
+
+
 #ifdef BUILD_BAM
 #define testDilate3x3Supernode testDilate3x3Supernode
 #else
 #define testDilate3x3Supernode DISABLED_testDilate3x3Supernode
 #endif
 
-TESTCASE_TESTS(tivxDilate3x3, 
+TESTCASE_TESTS(tivxDilate3x3,
                testGraphProcessing,
                testValidRegion,
                negativeTestBorderMode,
-               testDilate3x3Supernode)
+               testDilate3x3Supernode,
+               testBlockSize)

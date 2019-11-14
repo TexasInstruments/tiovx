@@ -32,6 +32,8 @@
 #define ENABLE_SUPERNODE   1
 #define WIDTH           (640)
 #define HEIGHT          (480)
+#define DEFAULT_BLOCK_WIDTH  64
+#define DEFAULT_BLOCK_HEIGHT 48
 #define OUTPUT_FILE     "tiovx_performance.html"
 #define SUPERNODE_OFILE "tiovx_sperformance.html"
 #define MAX_CONV_SIZE   (15)
@@ -70,6 +72,15 @@ TESTCASE(tiovxPerformance2, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tiovxSupernodePerformance, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tiovxSupernodePerformance2, CT_VXContext, ct_setup_vx_context, 0)
 #endif
+
+static void ctSetTileSize(vx_node node)
+{
+#ifndef SYSBIOS
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetNodeTileSize(node,
+        (getenv("TIOVX_BLOCK_WIDTH") == NULL) ? DEFAULT_BLOCK_WIDTH : (vx_uint32)atoi(getenv("TIOVX_BLOCK_WIDTH")),
+        (getenv("TIOVX_BLOCK_HEIGHT") == NULL) ? DEFAULT_BLOCK_HEIGHT : (vx_uint32)atoi(getenv("TIOVX_BLOCK_HEIGHT"))));
+#endif
+}
 
 static void openFile()
 {
@@ -186,11 +197,11 @@ static void openSupernodeFile()
         fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Variant</b></td>");
         fprintf(spernode_perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
         fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
-        if (ENABLE_SUPERNODE) 
+        if (ENABLE_SUPERNODE)
         {
             fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Supernode Performance (msec) </b></td>");
         }
-        else 
+        else
         {
             fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node1 Performance (msec) </b></td>");
             fprintf(spernode_perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node2 Performance (msec) </b></td>");
@@ -275,6 +286,8 @@ TEST(tiovxPerformance, tiovxPerfAccumulate)
 
     ASSERT_VX_OBJECT(node = vxAccumulateImageNode(graph, input, accum), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -319,6 +332,8 @@ TEST(tiovxPerformance, tiovxPerfAccumulateSquare)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxAccumulateSquareImageNode(graph, input, shift_scalar, accum), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -366,6 +381,8 @@ TEST(tiovxPerformance, tiovxPerfAccumulateWeighted)
 
     ASSERT_VX_OBJECT(node = vxAccumulateWeightedImageNode(graph, input, alpha_scalar, accum), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -410,6 +427,8 @@ TEST(tiovxPerformance, tiovxPerfAdd888)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxAddNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -457,6 +476,8 @@ TEST(tiovxPerformance, tiovxPerfAdd8816)
 
     ASSERT_VX_OBJECT(node = vxAddNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -502,6 +523,8 @@ TEST(tiovxPerformance, tiovxPerfAdd81616)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxAddNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -549,6 +572,8 @@ TEST(tiovxPerformance, tiovxPerfAdd161616)
 
     ASSERT_VX_OBJECT(node = vxAddNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -594,6 +619,8 @@ TEST(tiovxPerformance, tiovxPerfSubtract888)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxSubtractNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -641,6 +668,8 @@ TEST(tiovxPerformance, tiovxPerfSubtract8816)
 
     ASSERT_VX_OBJECT(node = vxSubtractNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -686,6 +715,8 @@ TEST(tiovxPerformance, tiovxPerfSubtract81616)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxSubtractNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -733,6 +764,8 @@ TEST(tiovxPerformance, tiovxPerfSubtract161616)
 
     ASSERT_VX_OBJECT(node = vxSubtractNode(graph, input1, input2, VX_ENUM_OVERFLOW, output), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -768,6 +801,8 @@ TEST(tiovxPerformance, tiovxPerfNot)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(dst   = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(node = vxNotNode(graph, src, dst), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
@@ -810,6 +845,8 @@ TEST(tiovxPerformance, tiovxPerfBinOp8)
 
         ASSERT_VX_OBJECT(node = vxFunc[cnt](graph, src1, src2, dst), VX_TYPE_NODE);
 
+        ctSetTileSize(node);
+
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
@@ -847,6 +884,8 @@ TEST(tiovxPerformance, tiovxPerfBinOp16)
 
     // build one-node graph
     ASSERT_VX_OBJECT(node = vxAbsDiffNode(graph, src1, src2, dst), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
@@ -886,6 +925,8 @@ TEST(tiovxPerformance, tiovxPerfBox3x3)
     ASSERT_VX_OBJECT(node = vxBox3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -956,6 +997,8 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfCanny, canny_arg,
     ASSERT_VX_OBJECT(node = vxCannyEdgeDetectorNode(graph, src, hyst, arg_->grad_size, arg_->norm_type, dst), VX_TYPE_NODE);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
@@ -1016,6 +1059,8 @@ TEST(tiovxPerformance, tiovxPerfChannelCombineRGB)
     node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1073,6 +1118,8 @@ TEST(tiovxPerformance, tiovxPerfChannelCombineRGBX)
 
     node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -1132,6 +1179,8 @@ TEST(tiovxPerformance, tiovxPerfChannelCombineYUYV)
     node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1190,6 +1239,8 @@ TEST(tiovxPerformance, tiovxPerfChannelCombineNV12)
     node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1236,6 +1287,8 @@ TEST(tiovxPerformance, tiovxPerfChannelExtractRGB)
     node = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1279,6 +1332,8 @@ TEST(tiovxPerformance, tiovxPerfChannelExtractRGBX)
     node = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1321,6 +1376,8 @@ TEST(tiovxPerformance, tiovxPerfChannelExtractNV12)
 
     node = vxChannelExtractNode(graph, src_image, VX_CHANNEL_U, dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -1432,6 +1489,9 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfColorConvert, color_arg,
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(node = vxColorConvertNode(graph, src, dst), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1505,7 +1565,7 @@ typedef struct {
     CONVERT_DEPTH_FUZZY_ARGS_(Graph, input_format, output_format)
 
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfConvertDepth, convert_depth_arg, 
+TEST_WITH_ARG(tiovxPerformance, tiovxPerfConvertDepth, convert_depth_arg,
               CONVERT_DEPTH_FUZZY_ARGS(U8, S16),
               CONVERT_DEPTH_FUZZY_ARGS(S16, U8))
 {
@@ -1526,6 +1586,8 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfConvertDepth, convert_depth_arg,
     ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(node = vxConvertDepthNode(graph, src, dst, VX_CONVERT_POLICY_SATURATE, scalar_shift), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
@@ -1655,6 +1717,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfConvolve, Convolve_Arg,
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1737,6 +1801,8 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfDilate3x3, Filter3x3_Arg,
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1779,6 +1845,8 @@ TEST(tiovxPerformance2, tiovxPerfEqualizeHistogram)
     node = vxEqualizeHistNode(graph, src, dst);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1820,6 +1888,8 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfErode3x3, Filter3x3_Arg,
     ASSERT_VX_OBJECT(node = vxErode3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -1898,6 +1968,9 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfFastCorners, fast_arg,
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     node = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -1945,6 +2018,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfGaussian3x3, Filter3x3_Arg,
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -2025,6 +2100,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfGaussianPyramid, GaussianPmd_Arg,
     if (border.mode != VX_BORDER_UNDEFINED)
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2084,6 +2161,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfHalfScaleGaussian, HDG_Arg,
     ASSERT_VX_OBJECT(node = vxHalfScaleGaussianNode(graph, src_image, dst_image, arg_->kernel_size), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -2262,6 +2341,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfHarrisCorners, HarrisC_Arg,
                                                 sensitivity_scalar, arg_->gradient_size, arg_->block_size, corners,
                                                 num_corners_scalar), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2326,6 +2407,8 @@ TEST(tiovxPerformance2, tiovxPerfHistogram)
     node = vxHistogramNode(graph, src, dist1);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2369,6 +2452,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfIntegralImg, Integral_Arg,
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = vxIntegralImageNode(graph, src_image, dst_image), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -2417,6 +2502,8 @@ static void own_laplacian_pyramid_openvx(vx_context context, vx_border_t border,
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2446,6 +2533,8 @@ static void own_laplacian_reconstruct_openvx(vx_context context, vx_border_t bor
     ASSERT_VX_OBJECT(node = vxLaplacianReconstructNode(graph, laplacian, input, output), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -2709,6 +2798,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfLUT, Lut_Arg,
     node = vxTableLookupNode(graph, src_image, lut, dst_image);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2769,6 +2860,8 @@ TEST(tiovxPerformance2, tiovxPerfMagnitude)
     node = vxMagnitudeNode(graph, dx, dy, mag);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2819,6 +2912,9 @@ TEST(tiovxPerformance2, tiovxPerfMeanStdDev)
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     node = vxMeanStdDevNode(graph, src, mean_s, stddev_s);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2908,6 +3004,9 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfMinMaxLoc, min_max_arg,
                            return_count ? mincount_ : 0,
                            return_count ? maxcount_ : 0);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -2957,6 +3056,8 @@ TEST(tiovxPerformance2, tiovxPerfMultiply888)
     // build one-node graph
     ASSERT_VX_OBJECT(node = vxMultiplyNode(graph, src1, src2, scale, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, dst), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
     vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
@@ -2994,6 +3095,8 @@ TEST(tiovxPerformance2, tiovxPerfMultiply8816)
 
     // build one-node graph
     ASSERT_VX_OBJECT(node = vxMultiplyNode(graph, src1, src2, scale, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, dst), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
@@ -3033,6 +3136,8 @@ TEST(tiovxPerformance2, tiovxPerfMultiply81616)
     // build one-node graph
     ASSERT_VX_OBJECT(node = vxMultiplyNode(graph, src1, src2, scale, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, dst), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
     vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
@@ -3070,6 +3175,8 @@ TEST(tiovxPerformance2, tiovxPerfMultiply161616)
 
     // build one-node graph
     ASSERT_VX_OBJECT(node = vxMultiplyNode(graph, src1, src2, scale, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, dst), VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 
@@ -3111,6 +3218,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfMedian3x3, Filter3x3_Arg,
     ASSERT_VX_OBJECT(node = vxMedian3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -3193,6 +3302,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfNonLinearFilter, NLFilter_Arg,
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -3279,6 +3390,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfScale, Scale_Arg,
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -3335,6 +3448,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfSobel3x3, Filter3x3_Arg,
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -3544,6 +3659,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfOptFlow, Arg,
         old_points_arr, old_points_arr, new_points_arr,
         VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -3605,6 +3722,8 @@ TEST(tiovxPerformance2, tiovxPerfPhase)
 
     node = vxPhaseNode(graph, dx, dy, ph);
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -3743,6 +3862,8 @@ TEST(tiovxPerformance2, tiovxPerfRemapBilinear)
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -3789,6 +3910,8 @@ TEST(tiovxPerformance2, tiovxPerfRemapNearest)
     ASSERT_VX_OBJECT(node = vxRemapNode(graph, input_image, map, VX_INTERPOLATION_NEAREST_NEIGHBOR, output_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -4021,6 +4144,9 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfThreshold, threshold_arg,
         /* do not expect graph to be in verified state before vxGraphVerify call */
         CT_FAIL("check for vxIsGraphVerified() failed\n");
     }
+
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     if(!vxIsGraphVerified(graph))
     {
@@ -4076,6 +4202,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfWarpAffine, WarpAffine_Arg,
     ASSERT_VX_OBJECT(node = vxWarpAffineNode(graph, input_image, matrix, arg_->interp_type, output_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ctSetTileSize(node);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -4249,6 +4377,8 @@ TEST_WITH_ARG(tiovxPerformance2, tiovxPerfWarpPerspective, WarpPerspective_Arg,
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
+    ctSetTileSize(node);
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -4310,7 +4440,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAdd, arithm_arg, ARIT
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4332,9 +4462,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAdd, arithm_arg, ARIT
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, arg_->policy, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, arg_->policy, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4344,7 +4474,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAdd, arithm_arg, ARIT
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4363,7 +4493,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAdd, arithm_arg, ARIT
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -4394,7 +4524,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfSubtract, arithm_arg,
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4416,9 +4546,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfSubtract, arithm_arg,
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, arg_->policy, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, arg_->policy, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4427,8 +4557,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfSubtract, arithm_arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4447,8 +4577,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfSubtract, arithm_arg,
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -4495,19 +4625,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfNot)
     ASSERT_VX_OBJECT(node2 = vxNotNode(graph, virt1, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxNotNode(graph, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -4524,7 +4654,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfNot)
     VX_CALL(vxReleaseImage(&dst));
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -4558,7 +4688,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAnd, binop_arg, BINOP
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4580,9 +4710,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAnd, binop_arg, BINOP
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4591,8 +4721,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAnd, binop_arg, BINOP
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4611,8 +4741,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAnd, binop_arg, BINOP
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -4634,7 +4764,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfOr, binop_arg, BINOP_
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4656,9 +4786,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfOr, binop_arg, BINOP_
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4667,8 +4797,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfOr, binop_arg, BINOP_
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4687,7 +4817,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfOr, binop_arg, BINOP_
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -4708,7 +4838,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfXor, binop_arg, BINOP
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4730,9 +4860,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfXor, binop_arg, BINOP
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4741,8 +4871,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfXor, binop_arg, BINOP
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4761,8 +4891,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfXor, binop_arg, BINOP
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -4785,7 +4915,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff8, binop_arg, 
     vx_perf_t perf_super_node, perf_graph;
     tivx_super_node super_node = 0;
     vx_node node_list[MAX_NODES];
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -4807,9 +4937,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff8, binop_arg, 
     ASSERT_VX_OBJECT(node2 = arg_->vxFunc(graph, src3, src4, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = arg_->vxFunc(graph, virt1, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -4818,8 +4948,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff8, binop_arg, 
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4838,8 +4968,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff8, binop_arg, 
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -4883,19 +5013,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff16)
     ASSERT_VX_OBJECT(node2 = vxAbsDiffNode(graph, src3, src4, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxAbsDiffNode(graph, virt1, virt2, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4914,8 +5044,8 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfAbsdiff16)
     VX_CALL(vxReleaseImage(&dst));
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -4963,19 +5093,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfBox3x3)
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -4988,7 +5118,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfBox3x3)
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5047,19 +5177,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfDilate3x3)
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5071,7 +5201,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfDilate3x3)
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5130,19 +5260,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfErode3x3)
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5154,7 +5284,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfErode3x3)
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5225,19 +5355,19 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfCanny, canny_arg,
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5254,7 +5384,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfCanny, canny_arg,
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5278,8 +5408,8 @@ typedef struct {
 
 #define CHANNEL_COMBINE_FUZZY_ARGS(ccomb_format, cconvert_format, intermediate_kernel)                         \
     CHANNEL_COMBINE_FUZZY_ARGS_(Graph, ccomb_format, cconvert_format, intermediate_kernel, WIDTH, HEIGHT)
-    
-TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelCombine, channel_comb_arg, 
+
+TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelCombine, channel_comb_arg,
               CHANNEL_COMBINE_FUZZY_ARGS(RGB, RGBX, ColorConvert),
               CHANNEL_COMBINE_FUZZY_ARGS(RGBX, RGB, ColorConvert),
               CHANNEL_COMBINE_FUZZY_ARGS(NV12, IYUV, ColorConvert),
@@ -5305,7 +5435,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelCombine, chann
     CT_Image src1[4] = {NULL, NULL, NULL, NULL};
     CT_Image dst_dummy = NULL;
     vx_enum channel_ref;
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->ccomb_dst_format));
@@ -5324,35 +5454,35 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelCombine, chann
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, arg_->ccomb_dst_format), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, 0, 0, arg_->convert_format), VX_TYPE_IMAGE);
-    
-    if (arg_->convert_format == VX_DF_IMAGE_U8) 
+
+    if (arg_->convert_format == VX_DF_IMAGE_U8)
     {
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, arg_->width, arg_->height, arg_->convert_format), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(node1 = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], virt1), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node2 = vxChannelExtractNode(graph, virt1, VX_CHANNEL_Y, virt2), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node3 = vxNotNode(graph, virt2, dst_image), VX_TYPE_NODE);
     }
-    else 
+    else
     {
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, arg_->width, arg_->height, arg_->ccomb_dst_format), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(node1 = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], virt1), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node2 = vxColorConvertNode(graph, virt1, virt2), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node3 = vxColorConvertNode(graph, virt2, dst_image), VX_TYPE_NODE);
     }
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5372,7 +5502,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelCombine, chann
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst_image));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5412,38 +5542,38 @@ typedef struct {
 
 #define COLOR_CONVERT_FUZZY_ARGS(srcfmt, int1fmt, int2fmt, dstfmt, node2name, node3name) \
     COLOR_CONVERT_FUZZY_ARGS_(Graph, srcfmt, int1fmt, int2fmt, dstfmt, node2name, node3name)
-    
+
 TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_conv_arg,
               COLOR_CONVERT_FUZZY_ARGS(RGB, YUV4, U8, U8, ChannelExtract, Not),
               COLOR_CONVERT_FUZZY_ARGS(RGB, RGBX, RGB, RGBX, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(RGB, NV12, RGBX, RGB, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(RGB, IYUV, RGBX, IYUV, ColorConvert, ColorConvert),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(RGBX, RGB, RGBX, YUV4, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(RGBX, NV12, RGB, NV12, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(RGBX, IYUV, RGB, RGBX, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(RGBX, YUV4, U8, U8, ChannelExtract, Not),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(NV12, YUV4, U8, U8, ChannelExtract, Not),
               COLOR_CONVERT_FUZZY_ARGS(NV12, RGB, NV12, RGB, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(NV12, RGBX, NV12, IYUV, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(NV12, IYUV, NV12, YUV4, ColorConvert, ColorConvert),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(NV21, RGB, IYUV, YUV4, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(NV21, RGBX, IYUV, NV12, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(NV21, IYUV, YUV4, U8, ColorConvert, ChannelExtract),
               COLOR_CONVERT_FUZZY_ARGS(NV21, YUV4, U8, U8, ChannelExtract, Not),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(IYUV, YUV4, U8, U8, ChannelExtract, Not),
               COLOR_CONVERT_FUZZY_ARGS(IYUV, RGB, YUV4, U8, ColorConvert, ChannelExtract),
               COLOR_CONVERT_FUZZY_ARGS(IYUV, RGBX, YUV4, U8, ColorConvert, ChannelExtract),
               COLOR_CONVERT_FUZZY_ARGS(IYUV, NV12, IYUV, RGB, ColorConvert, ColorConvert),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(UYVY, RGB, NV12, RGBX, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(UYVY, RGBX, RGB, IYUV, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(UYVY, NV12, YUV4, U8, ColorConvert, ChannelExtract),
               COLOR_CONVERT_FUZZY_ARGS(UYVY, IYUV, RGB, NV12, ColorConvert, ColorConvert),
-              
+
               COLOR_CONVERT_FUZZY_ARGS(YUYV, RGB, RGBX, NV12, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(YUYV, RGBX, NV12, RGB, ColorConvert, ColorConvert),
               COLOR_CONVERT_FUZZY_ARGS(YUYV, NV12, RGB, IYUV, ColorConvert, ColorConvert),
@@ -5466,13 +5596,13 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
     vx_context context = context_->vx_context_;
     uint64_t rng;
     vx_enum channel_ref;
-    char *buffer = malloc(50); 
-    
+    char *buffer = malloc(50);
+
     rng = CT()->seed_;
 
     int width = WIDTH;
     int height = HEIGHT;
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     if( srcformat == VX_DF_IMAGE_RGB || srcformat == VX_DF_IMAGE_RGBX )
@@ -5496,7 +5626,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
 
 
     ASSERT_VX_OBJECT(node1 = vxColorConvertNode(graph, src, virt1), VX_TYPE_NODE);
-    if (int2format == VX_DF_IMAGE_U8) 
+    if (int2format == VX_DF_IMAGE_U8)
     {
         channel_ref = (int1format==VX_DF_IMAGE_RGB)||(int1format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
         ASSERT_VX_OBJECT(node2 = vxChannelExtractNode(graph, virt1, channel_ref, virt2), VX_TYPE_NODE);
@@ -5505,7 +5635,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
     else
     {
         ASSERT_VX_OBJECT(node2 = vxColorConvertNode(graph, virt1, virt2), VX_TYPE_NODE);
-        if (dstformat == VX_DF_IMAGE_U8) 
+        if (dstformat == VX_DF_IMAGE_U8)
         {
             channel_ref = (int2format==VX_DF_IMAGE_RGB)||(int2format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
             ASSERT_VX_OBJECT(node3 = vxChannelExtractNode(graph, virt2, channel_ref, dst), VX_TYPE_NODE);
@@ -5516,9 +5646,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         }
     }
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -5528,7 +5658,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5539,12 +5669,12 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
     }
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
-    
+
     VX_CALL(vxReleaseImage(&src));
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5571,7 +5701,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         sprintf(buffer,"YUV4=>");
     else if (srcformat == VX_DF_IMAGE_U8)
         sprintf(buffer,"U8=>");
-    
+
     if (int1format == VX_DF_IMAGE_RGB)
     sprintf(buffer+strlen(buffer),"RGB=>");
     else if (int1format == VX_DF_IMAGE_RGBX)
@@ -5590,7 +5720,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         sprintf(buffer+strlen(buffer),"YUV4=>");
     else if (int1format == VX_DF_IMAGE_U8)
         sprintf(buffer+strlen(buffer),"U8=>");
-    
+
     if (int2format == VX_DF_IMAGE_RGB)
         sprintf(buffer+strlen(buffer),"RGB=>");
     else if (int2format == VX_DF_IMAGE_RGBX)
@@ -5609,7 +5739,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         sprintf(buffer+strlen(buffer),"YUV4=>");
     else if (int2format == VX_DF_IMAGE_U8)
         sprintf(buffer+strlen(buffer),"U8=>");
-    
+
     if (dstformat == VX_DF_IMAGE_RGB)
         sprintf(buffer+strlen(buffer),"RGB");
     else if (dstformat == VX_DF_IMAGE_RGBX)
@@ -5628,14 +5758,14 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfColorConvert, color_c
         sprintf(buffer+strlen(buffer),"YUV4");
     else if (dstformat == VX_DF_IMAGE_U8)
         sprintf(buffer+strlen(buffer),"U8=>");
-    
-    if (int2format == VX_DF_IMAGE_U8) 
+
+    if (int2format == VX_DF_IMAGE_U8)
     {
         PrintSupernodePerf(perf_graph, perf_super_node, perf_node1, perf_node2, perf_node3, width, height, "ColorConvert-ChannelExtract-Not (3)", buffer, 0);
     }
     else
     {
-        if (dstformat == VX_DF_IMAGE_U8) 
+        if (dstformat == VX_DF_IMAGE_U8)
         {
             PrintSupernodePerf(perf_graph, perf_super_node, perf_node1, perf_node2, perf_node3, width, height, "ColorConvert-ColorConvert-ChannelExtract (3)", buffer, 0);
         }
@@ -5690,14 +5820,14 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelExtract, chann
     vx_enum channel_ref;
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
-    
+
     ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->format));
     ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->format));
-    
+
     ASSERT_NO_FAILURE(src_dummy = channel_extract_image_generate_random(WIDTH, HEIGHT, arg_->format));
     ASSERT_NO_FAILURE(dst_ref0 = channel_extract_create_reference_image(src_dummy, arg_->channel0));
     ASSERT_NO_FAILURE(dst_ref1 = channel_extract_create_reference_image(src_dummy, arg_->channel1));
-    
+
     channel_ref = (arg_->format==VX_DF_IMAGE_RGB)||(arg_->format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
     for (i = 0; i < channels; i++)
     {
@@ -5710,26 +5840,26 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelExtract, chann
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, arg_->format), VX_TYPE_IMAGE);
-    
+
     ASSERT_VX_OBJECT(dst_image0 = vxCreateImage(context, dst_ref0->width, dst_ref0->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(dst_image1 = vxCreateImage(context, dst_ref1->width, dst_ref1->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(node1 = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], virt), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node2 = vxChannelExtractNode(graph, virt, arg_->channel0, dst_image0), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxChannelExtractNode(graph, virt, arg_->channel1, dst_image1), VX_TYPE_NODE);
-    
-    if (ENABLE_SUPERNODE) 
+
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5749,7 +5879,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance, tiovxSupernodePerfChannelExtract, chann
     VX_CALL(vxReleaseImage(&virt));
     VX_CALL(vxReleaseImage(&dst_image0));
     VX_CALL(vxReleaseImage(&dst_image1));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5788,7 +5918,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfConvertDepth)
     vx_int32 shift = 2;
     vx_int32 tmp = 0;
     vx_context context = context_->vx_context_;
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(src = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -5805,19 +5935,19 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfConvertDepth)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyScalar(scalar_shift, &shift, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -5836,7 +5966,7 @@ TEST(tiovxSupernodePerformance, tiovxSupernodePerfConvertDepth)
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&src));
     VX_CALL(vxReleaseScalar(&scalar_shift));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -5905,9 +6035,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfConvolve, Convolve_A
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -5917,7 +6047,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfConvolve, Convolve_A
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -5929,7 +6059,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfConvolve, Convolve_A
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6017,19 +6147,19 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfGaussian3x3)
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6041,7 +6171,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfGaussian3x3)
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6096,7 +6226,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfHistogram)
     ASSERT_VX_OBJECT(src, VX_TYPE_IMAGE);
 
     dist1 = vxCreateDistribution(context, nbins, offset, range);
-    ASSERT_VX_OBJECT(dist1, VX_TYPE_DISTRIBUTION);    
+    ASSERT_VX_OBJECT(dist1, VX_TYPE_DISTRIBUTION);
     dist2 = vxCreateDistribution(context, nbins, offset, range);
     ASSERT_VX_OBJECT(dist2, VX_TYPE_DISTRIBUTION);
 
@@ -6108,9 +6238,9 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfHistogram)
     ASSERT_VX_OBJECT(node2 = vxHistogramNode(graph, virt, dist1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxHistogramNode(graph, virt, dist2), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -6120,7 +6250,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfHistogram)
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -6137,7 +6267,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfHistogram)
     VX_CALL(vxReleaseImage(&virt));
     VX_CALL(vxReleaseDistribution(&dist1));
     VX_CALL(vxReleaseDistribution(&dist2));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6176,9 +6306,9 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfIntegralImg)
     ASSERT_VX_OBJECT(node2 = vxIntegralImageNode(graph, virt, dst1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxIntegralImageNode(graph, virt, dst2), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -6188,7 +6318,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfIntegralImg)
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -6205,7 +6335,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfIntegralImg)
     VX_CALL(vxReleaseImage(&virt));
     VX_CALL(vxReleaseImage(&dst1));
     VX_CALL(vxReleaseImage(&dst2));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6262,9 +6392,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfLUT, Lut_Arg,
     ASSERT_VX_OBJECT(lut3 = lut_create(context, lut3_data, data_type), VX_TYPE_LUT);
 
     dst_image = ct_create_similar_image(src_image);
-    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);    
+    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
     virt1 = ct_create_similar_image(src_image);
-    ASSERT_VX_OBJECT(virt1, VX_TYPE_IMAGE);    
+    ASSERT_VX_OBJECT(virt1, VX_TYPE_IMAGE);
     virt2 = ct_create_similar_image(src_image);
     ASSERT_VX_OBJECT(virt2, VX_TYPE_IMAGE);
 
@@ -6272,25 +6402,25 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfLUT, Lut_Arg,
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
 
     node1 = vxTableLookupNode(graph, src_image, lut1, virt1);
-    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);    
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
     node2 = vxTableLookupNode(graph, virt1, lut2, virt2);
-    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);    
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
     node3 = vxTableLookupNode(graph, virt2, lut3, dst_image);
     ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6302,7 +6432,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfLUT, Lut_Arg,
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6339,7 +6469,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfLUT, Lut_Arg,
         PrintSupernodePerf(perf_graph, perf_super_node, perf_node1, perf_node2, perf_node3, \
                        WIDTH, HEIGHT, "LookUpTable-LookUpTable-LookUpTable (3)", "U8=>U8=>U8", 0);
     }
-    else 
+    else
     {
         PrintSupernodePerf(perf_graph, perf_super_node, perf_node1, perf_node2, perf_node3, \
                        WIDTH, HEIGHT, "LookUpTable-LookUpTable-LookUpTable (3)", "S16=>S16=>S16", 0);
@@ -6366,7 +6496,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMeanStdDev)
     int a = 0, b = 256;
 
     rng = CT()->seed_;
-    
+
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     mean_s0 = vxCreateScalar(context, VX_TYPE_FLOAT32, &mean0);
@@ -6377,10 +6507,10 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMeanStdDev)
     ASSERT_VX_OBJECT(mean_s1, VX_TYPE_SCALAR);
     stddev_s1 = vxCreateScalar(context, VX_TYPE_FLOAT32, &stddev);
     ASSERT_VX_OBJECT(stddev_s1, VX_TYPE_SCALAR);
-    
+
     src0 = ct_allocate_ct_image_random(WIDTH, HEIGHT, format, &rng, a, b);
     src = ct_image_to_vx_image(src0, context);
-    
+
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -6388,19 +6518,19 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMeanStdDev)
     ASSERT_VX_OBJECT(node2 = vxMeanStdDevNode(graph, virt, mean_s0, stddev_s0), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxMeanStdDevNode(graph, virt, mean_s1, stddev_s1), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
@@ -6415,7 +6545,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMeanStdDev)
 
     VX_CALL(vxReleaseImage(&src));
     VX_CALL(vxReleaseImage(&virt));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6469,19 +6599,19 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMedian3x3)
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6493,7 +6623,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMedian3x3)
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6572,19 +6702,19 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMagnitude)
     node3 = vxMagnitudeNode(graph, virt1, virt2, mag);
     ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6603,7 +6733,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfMagnitude)
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&mag));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6636,7 +6766,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     uint64_t rng;
     int a, b;
     vx_scalar minval_1, maxval_1, mincount_1, maxcount_1;
-    vx_array minloc_1 = 0, maxloc_1 = 0;    
+    vx_array minloc_1 = 0, maxloc_1 = 0;
     vx_scalar minval_2, maxval_2, mincount_2, maxcount_2;
     vx_array minloc_2 = 0, maxloc_2 = 0;
     vx_enum sctype = arg_->format == VX_DF_IMAGE_U8 ? VX_TYPE_UINT8 :
@@ -6657,8 +6787,8 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     maxcount_1 = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
     minloc_1 = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
     maxloc_1 = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
-    ASSERT(vxGetStatus((vx_reference)minloc_1) == VX_SUCCESS && 
-           vxGetStatus((vx_reference)maxloc_1) == VX_SUCCESS);    
+    ASSERT(vxGetStatus((vx_reference)minloc_1) == VX_SUCCESS &&
+           vxGetStatus((vx_reference)maxloc_1) == VX_SUCCESS);
 
     minval_2 = ct_scalar_from_int(context, sctype, 0);
     maxval_2 = ct_scalar_from_int(context, sctype, 0);
@@ -6666,13 +6796,13 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     maxcount_2 = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
     minloc_2 = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
     maxloc_2 = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
-    ASSERT(vxGetStatus((vx_reference)minloc_2) == VX_SUCCESS && 
+    ASSERT(vxGetStatus((vx_reference)minloc_2) == VX_SUCCESS &&
            vxGetStatus((vx_reference)maxloc_2) == VX_SUCCESS);
 
     rng = CT()->seed_;
 
     int return_loc1 = CT_RNG_NEXT_INT(rng, 0, 2);
-    int return_count1 = CT_RNG_NEXT_INT(rng, 0, 2);    
+    int return_count1 = CT_RNG_NEXT_INT(rng, 0, 2);
     int return_loc2 = CT_RNG_NEXT_INT(rng, 0, 2);
     int return_count2 = CT_RNG_NEXT_INT(rng, 0, 2);
     int width, height;
@@ -6682,7 +6812,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    if (arg_->format == VX_DF_IMAGE_S16) 
+    if (arg_->format == VX_DF_IMAGE_S16)
     {
         ASSERT_VX_OBJECT(src1 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
@@ -6728,9 +6858,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
         ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
     }
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -6740,7 +6870,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6758,7 +6888,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     VX_CALL(vxReleaseImage(&virt1));
     if (arg_->format == VX_DF_IMAGE_S16)
         VX_CALL(vxReleaseImage(&virt2));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6772,7 +6902,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMinMaxLoc, minmax_ar
     VX_CALL(vxReleaseScalar(&mincount_1));
     VX_CALL(vxReleaseScalar(&maxcount_1));
     VX_CALL(vxReleaseArray(&minloc_1));
-    VX_CALL(vxReleaseArray(&maxloc_1));    
+    VX_CALL(vxReleaseArray(&maxloc_1));
     VX_CALL(vxReleaseScalar(&minval_2));
     VX_CALL(vxReleaseScalar(&maxval_2));
     VX_CALL(vxReleaseScalar(&mincount_2));
@@ -6808,7 +6938,7 @@ typedef struct {
     MUL_FUZZY_ARGS_(owp, WIDTH, HEIGHT, S16, S16, S16, TO_ZERO, ONE_2_0),\
     MUL_FUZZY_ARGS_(owp, WIDTH, HEIGHT, U8, S16, S16, TO_ZERO, ONE_2_0)
 
-TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMultiply, 
+TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMultiply,
                 multiply_fuzzy_arg, MULT_FUZZY_ARGS(WRAP))
 {
     int node_count = 3;
@@ -6843,19 +6973,19 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMultiply,
     ASSERT_VX_OBJECT(node2 = vxMultiplyNode(graph, src3, src4, scale, arg_->overflow_policy, arg_->round_policy, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxMultiplyNode(graph, virt1, virt2, scale, arg_->overflow_policy, arg_->round_policy, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
     }
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -6875,7 +7005,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfMultiply,
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&dst));
     VX_CALL(vxReleaseScalar(&scale));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -6995,7 +7125,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfNonLinearFilter, non
     node1 = vxNonLinearFilterNode(graph, arg_->function, src_image, mask, virt1);
     ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
     node2 = vxNonLinearFilterNode(graph, arg_->function, virt1, mask, virt2);
-    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);    
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
     node3 = vxNonLinearFilterNode(graph, arg_->function, virt2, mask, dst_image);
     ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
 
@@ -7003,9 +7133,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfNonLinearFilter, non
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -7015,7 +7145,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfNonLinearFilter, non
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -7027,7 +7157,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfNonLinearFilter, non
     }
     VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -7102,9 +7232,9 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfPhase)
     ASSERT_VX_OBJECT(node2 = vxSobel3x3Node(graph, virt1, virt2, virt3), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxPhaseNode(graph, virt2, virt3, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -7114,7 +7244,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfPhase)
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -7132,7 +7262,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfPhase)
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&virt3));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -7183,9 +7313,9 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfSobel3x3)
     ASSERT_VX_OBJECT(node2 = vxPhaseNode(graph, virt1, virt2, virt3), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxSobel3x3Node(graph, virt3, dst1, dst2), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -7195,7 +7325,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfSobel3x3)
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -7213,7 +7343,7 @@ TEST(tiovxSupernodePerformance2, tiovxSupernodePerfSobel3x3)
     VX_CALL(vxReleaseImage(&virt1));
     VX_CALL(vxReleaseImage(&virt2));
     VX_CALL(vxReleaseImage(&virt3));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -7311,7 +7441,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
             CT_FAIL("check for query threshold attribute VX_THRESHOLD_THRESHOLD_UPPER failed\n");
         }
 
-        ta += 20; 
+        ta += 20;
         tc -= 20;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt2, VX_THRESHOLD_THRESHOLD_LOWER, &ta, sizeof(ta)));
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt2, VX_THRESHOLD_THRESHOLD_UPPER, &tc, sizeof(tc)));
@@ -7328,7 +7458,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
             CT_FAIL("check for query threshold attribute VX_THRESHOLD_THRESHOLD_UPPER failed\n");
         }
 
-        ta += 20; 
+        ta += 20;
         tc -= 20;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt3, VX_THRESHOLD_THRESHOLD_LOWER, &ta, sizeof(ta)));
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt3, VX_THRESHOLD_THRESHOLD_UPPER, &tc, sizeof(tc)));
@@ -7360,9 +7490,9 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
     ASSERT_VX_OBJECT(node2 = vxThresholdNode(graph, virt1, vxt2, virt2), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(node3 = vxThresholdNode(graph, virt2, vxt3, dst), VX_TYPE_NODE);
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
-        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[0] = node1);
         ASSERT_NO_FAILURE(node_list[1] = node2);
         ASSERT_NO_FAILURE(node_list[2] = node3);
         ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
@@ -7372,7 +7502,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
     {
         VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
     }
@@ -7391,7 +7521,7 @@ TEST_WITH_ARG(tiovxSupernodePerformance2, tiovxSupernodePerfThreshold, threshold
     VX_CALL(vxReleaseThreshold(&vxt1));
     VX_CALL(vxReleaseThreshold(&vxt2));
     VX_CALL(vxReleaseThreshold(&vxt3));
-    if (ENABLE_SUPERNODE) 
+    if (ENABLE_SUPERNODE)
         VX_CALL(tivxReleaseSuperNode(&super_node));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
@@ -7495,7 +7625,7 @@ TESTCASE_TESTS(tiovxSupernodePerformance,
     tiovxSupernodePerfChannelExtract,
     tiovxSupernodePerfColorConvert,
     tiovxSupernodePerfConvertDepth)
-    
+
 TESTCASE_TESTS(tiovxSupernodePerformance2,
     tiovxSupernodePerfConvolve,
     /*tiovxSupernodePerfEqualizeHistogram,*/
