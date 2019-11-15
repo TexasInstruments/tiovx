@@ -115,6 +115,10 @@ void tivxPlatformSystemLock(vx_enum lock_id)
              */
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
+        else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        {
+            // add wrapper API for posix semaphore
+        }
     }
 }
 
@@ -126,6 +130,10 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+        }
+        else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        {
+            // add wrapper API for posix semaphore
         }
 
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[

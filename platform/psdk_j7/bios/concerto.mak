@@ -16,7 +16,6 @@ CSOURCES    := 	tivx_event.c \
 				../common/tivx_mem.c \
 				../common/tivx_ipc.c \
 				../common/tivx_platform.c \
-				../common/tivx_platform_common.c \
 				../common/tivx_host.c
 
 IDIRS       += $(HOST_ROOT)/source/include

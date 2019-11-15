@@ -17,7 +17,7 @@ CSOURCES    := \
     ../common/tivx_target_config_mpu1_0.c           \
     ../common/tivx_ipc.c                            \
     ../common/tivx_init.c                           \
-    ../common/tivx_platform_common.c                \
+    tivx_platform_linux.c                           \
 	../common/tivx_host.c                           \
     ../common/tivx_platform.c                       \
 	../common/tivx_mem.c                                      \
