@@ -10,6 +10,9 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk_j7.h>
 #include <utils/ipc/include/app_ipc.h>
+#include <semaphore.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -30,6 +33,10 @@ typedef struct tivx_platform_info
     /*! \brief Platform locks to protect access to the descriptor id
      */
     tivx_mutex g_platform_lock[TIVX_PLATFORM_LOCK_MAX];
+
+    /*! \brief POSIX semaphore to protect memory
+     */
+    sem_t *semaphore;
 } tivx_platform_info_t;
 
 
@@ -79,6 +86,16 @@ vx_status tivxPlatformInit(void)
             }
         }
         tivxIpcInit();
+
+        g_tivx_platform_info.semaphore = sem_open("tiovxsem", (O_CREAT | O_EXCL), (00700), 1);
+
+        sem_unlink("tiovxsem");
+
+        if (SEM_FAILED == g_tivx_platform_info.semaphore)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: POSIX semaphore create failed\n");
+            status = VX_FAILURE;
+        }
     }
 
     return (status);
@@ -88,6 +105,8 @@ vx_status tivxPlatformInit(void)
 void tivxPlatformDeInit(void)
 {
     uint32_t i;
+
+    sem_close(g_tivx_platform_info.semaphore);
 
     tivxIpcDeInit();
 
@@ -117,7 +136,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
         }
         else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            // add wrapper API for posix semaphore
+            sem_wait(g_tivx_platform_info.semaphore);
         }
     }
 }
@@ -133,7 +152,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         }
         else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
-            // add wrapper API for posix semaphore
+            sem_post(g_tivx_platform_info.semaphore);
         }
 
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
