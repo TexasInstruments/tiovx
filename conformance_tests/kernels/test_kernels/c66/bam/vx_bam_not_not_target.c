@@ -215,7 +215,7 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
 
             if (VX_SUCCESS == status)
             {
-                if ( BAM_TI_KERNELID_UNDEFINED != localBamKernelId )
+                if ( (BAM_KernelId)BAM_TI_KERNELID_UNDEFINED != localBamKernelId )
                 {
                     status = VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "tivxBamGetKernelIdFromName failed negative test\n");
