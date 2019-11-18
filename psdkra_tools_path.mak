@@ -22,6 +22,7 @@ XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_55_02_22_core
 PDK_PATH ?= $(PSDK_PATH)/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
 VIDEO_CODEC_PATH ?= $(PSDK_PATH)/video_codec
+MATHLIB_PATH     ?= $(PSDK_PATH)/mathlib_c66x_3_1_2_1
 
 BUILD_OS ?= Linux
 
