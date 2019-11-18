@@ -537,14 +537,14 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         /* Override gains from AWB results */
         if (NULL != ae_awb_res)
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
             }
         }
         else
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
             }
@@ -622,14 +622,14 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         /* Override gains from AWB results */
         if (NULL != ae_awb_res)
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
             }
         }
         else
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
             }
@@ -646,14 +646,14 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         /* Override gains from AWB results */
         if (NULL != ae_awb_res)
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
             }
         }
         else
         {
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
                 nsf4Cfg->gains[cnt1] = 512u;
             }

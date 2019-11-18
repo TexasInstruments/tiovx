@@ -416,6 +416,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             vissDrvPrms->enableGlbce = (uint32_t)FALSE;
         }
+
         if (0U == vissPrms->bypass_nsf4)
         {
             vissDrvPrms->enableNsf4 = (uint32_t)TRUE;
@@ -441,22 +442,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to set Output Params\n");
-            }
-        }
-
-        if (VX_SUCCESS == status)
-        {
-            /* All Formats, frame size, module enables are set in
-             * viss parameters, call this ioctl to set validate and set
-             * them in the driver */
-            fvid2_status = Fvid2_control(vissObj->handle,
-                IOCTL_VHWA_M2M_VISS_SET_PARAMS, (void *)vissDrvPrms, NULL);
-
-            if (FVID2_SOK != fvid2_status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissCreate: Failed to set Params in driver\n");
-                status = VX_FAILURE;
             }
         }
     }
@@ -494,6 +479,17 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
             }
+
+            /* Enable DPC based in driver */
+            if (((uint32_t)TRUE == vissObj->vissCfg.dpcLutCfg.enable) ||
+                ((uint32_t)TRUE == vissObj->vissCfg.dpcOtfCfg.enable))
+            {
+                vissDrvPrms->enableDpc = (uint32_t)TRUE;
+            }
+            else
+            {
+                vissDrvPrms->enableDpc = (uint32_t)FALSE;
+            }
         }
         else
         {
@@ -502,6 +498,22 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
             tivxVpacVissDccMapFlexCCParams(vissObj);
             tivxVpacVissDccMapEeParams(vissObj);
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* All Formats, frame size, module enables are set in
+         * viss parameters, call this ioctl to set validate and set
+         * them in the driver */
+        fvid2_status = Fvid2_control(vissObj->handle,
+            IOCTL_VHWA_M2M_VISS_SET_PARAMS, (void *)vissDrvPrms, NULL);
+
+        if (FVID2_SOK != fvid2_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCreate: Failed to set Params in driver\n");
+            status = VX_FAILURE;
         }
     }
 
