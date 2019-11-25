@@ -130,7 +130,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static void tivxSupernodeFreeMem(tivxSupernodeParams *prms);
+static void tivxSupernodeDestruct(tivxSupernodeParams *prms, tivx_obj_desc_super_node_t *super_node);
 
 static uint8_t tivxGetNodeIndexFromNodeList(
     uint16_t node_obj_desc_id,
@@ -276,6 +276,9 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
     status = tivxBamInitKernelDetails(&kernel_details[0], TIVX_BAM_MAX_NODES, kernel);
 
+    memset(size, 0, sizeof(size));
+    memset(scratch, 0, sizeof(scratch));
+
     if (VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
@@ -284,8 +287,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     if (NULL != prms)
     {
         memset(prms, 0, sizeof(tivxSupernodeParams));
-        memset(size, 0, sizeof(size));
-        memset(scratch, 0, sizeof(scratch));
+
         /* ************** */
         /* FILL NODE LIST */
         /* ************** */
@@ -319,7 +321,13 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                 node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
 
             /* Adds Bam nodes to top level node list (can be more than 1) */
-            if (NULL != prms->target_kernel_instance[i])
+            if (NULL == prms->target_kernel_instance[i])
+            {
+                VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance[%d] is NULL\n", i);
+                status = VX_ERROR_NO_RESOURCES;
+                break;
+            }
+            else
             {
                 /* copy border mode also in the target_kernel_instance */
                 tivx_obj_desc_memcpy(&prms->target_kernel_instance[i]->border_mode, &node_obj_desc->border_mode, sizeof(vx_border_t));
@@ -333,20 +341,37 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     if ( size[i] > 0 )
                     {
                         scratch[i] = tivxMemAlloc(size[i], TIVX_MEM_EXTERNAL);
-                        memset(scratch[i], 0, size[i]);
+                        if(NULL == scratch[i])
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "scratch[%d] is NULL, size[%d] = %d\n", i, i, size[i]);
+                            status = VX_ERROR_NO_RESOURCES;
+                            break;
+                        }
+                        else
+                        {
+                            memset(scratch[i], 0, size[i]);
+                        }
                     }
 
                     status = prms->knl[i]->create_in_bam_func(
                         prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg,
                         node_list, kernel_details, &bam_node_cnt, scratch[i], &size[i]);
+
+                    if(VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "create_in_bam_func[%d] failed\n", i);
+                        break;
+                    }
                 }
                 else
                 {
-                    tivxTargetKernelInstanceFree(&prms->target_kernel_instance[i]);
-                    VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Kernel does not support being part of a supernode\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Kernel does not support being part of a supernode\n");
                     status = VX_FAILURE;
+                    break;
                 }
-                if (VX_SUCCESS == status) {
+
+                if (VX_SUCCESS == status)
+                {
                     if(kernel_details[bam_node_cnt].kernel_info.numOutputDataBlocks == 0)
                     {
                         char str1[50];
@@ -376,7 +401,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                                     {
                                         if(super_node->edge_list[j].dst_node_obj_desc_id != TIVX_OBJ_DESC_INVALID)
                                         {
-                                            VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Canny Edge Detector's output could NOT be an internal edge in the supernode\n");
+                                            VX_PRINT(VX_ZONE_ERROR, "Canny Edge Detector's output could NOT be an internal edge in the supernode\n");
                                             status = VX_FAILURE;
                                             break;
                                         }
@@ -394,35 +419,35 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
             if (VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Kernel create callback failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Kernel create callback failed\n");
                 break;
             }
 
             bam_node_cnt++;
         }
 
-        node_list[bam_node_cnt].nodeIndex = bam_node_cnt;
-        if (!one_shot_flag) {
-            node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_AUTOINCREMENT;
-        }
-        else
-        {
-            node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_NULL;
-        }
-        node_list[bam_node_cnt].kernelArgs = NULL;
-        bam_node_cnt++;
-
-        node_list[bam_node_cnt].nodeIndex = BAM_END_NODE_MARKER;
-        node_list[bam_node_cnt].kernelId = 0;
-        node_list[bam_node_cnt].kernelArgs = NULL;
-        bam_node_cnt++;
-
-        /* ************** */
-        /* FILL EDGE LIST */
-        /* ************** */
-
         if (VX_SUCCESS == status)
         {
+            node_list[bam_node_cnt].nodeIndex = bam_node_cnt;
+            if (!one_shot_flag) {
+                node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_AUTOINCREMENT;
+            }
+            else
+            {
+                node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_NULL;
+            }
+            node_list[bam_node_cnt].kernelArgs = NULL;
+            bam_node_cnt++;
+
+            node_list[bam_node_cnt].nodeIndex = BAM_END_NODE_MARKER;
+            node_list[bam_node_cnt].kernelId = 0;
+            node_list[bam_node_cnt].kernelArgs = NULL;
+            bam_node_cnt++;
+
+            /* ************** */
+            /* FILL EDGE LIST */
+            /* ************** */
+
             for(i = 0; i < super_node->num_edges; i++)
             {
                 uint8_t port_used = 0;
@@ -652,9 +677,13 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             }
             if (found_edges_to_sink & one_shot_flag)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: In a supernode, reduction kernels cannot be used with any other kernels which have image outputs\n");
+                VX_PRINT(VX_ZONE_ERROR, "In a supernode, reduction kernels cannot be used with any other kernels which have image outputs\n");
                 status = VX_FAILURE;
             }
+        }
+
+        if (VX_SUCCESS == status)
+        {
             edge_list[bam_edge_cnt].upStreamNode.id     = BAM_END_NODE_MARKER;
             edge_list[bam_edge_cnt].upStreamNode.port   = 0;
             edge_list[bam_edge_cnt].downStreamNode.id   = BAM_END_NODE_MARKER;
@@ -682,6 +711,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     }
                 }
             }
+
             for (i = 0; i < bam_edge_cnt; i++)
             {
                 if (edge_list[i].downStreamNode.id == BAM_NULL_NODE)
@@ -704,6 +734,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     }
                 }
             }
+
             for (i = 0; i < bam_edge_cnt; i++)
             {
                 if ((edge_list[i].upStreamNode.id == 255U) && (edge_list[i].upStreamNode.port == 255U))
@@ -727,19 +758,17 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             indices.right_index = bam_edge_cnt-2;
             tivxEdgeSortQuick(edge_list, indices);
 
-            if (VX_SUCCESS == status)
-            {
-                status = tivxBamCreateHandleMultiNode(node_list,
-                    bam_node_cnt,
-                    edge_list,
-                    bam_edge_cnt,
-                    pBuf_params, kernel_details,
-                    &prms->graph_handle);
-            }
+            status = tivxBamCreateHandleMultiNode(node_list,
+                bam_node_cnt,
+                edge_list,
+                bam_edge_cnt,
+                pBuf_params, kernel_details,
+                &prms->graph_handle);
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "prms is NULL\n");
         status = VX_ERROR_NO_MEMORY;
     }
 
@@ -758,10 +787,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     }
     else
     {
-        if (NULL != prms)
-        {
-            tivxSupernodeFreeMem(prms);
-        }
+        tivxSupernodeDestruct(prms, super_node);
     }
 
     return (status);
@@ -772,7 +798,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t size, i, j;
+    uint32_t size;
     tivxSupernodeParams *prms = NULL;
     tivx_obj_desc_super_node_t *super_node = (tivx_obj_desc_super_node_t *)obj_desc[0];
 
@@ -784,46 +810,64 @@ static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxSupernodeParams) == size))
         {
-            for(i = 0; i < super_node->num_nodes; i++)
-            {
-                tivx_obj_desc_node_t *node_obj_desc;
-                tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
-
-                node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->node_obj_desc_id[i]);
-
-                for(j=0; j<node_obj_desc->num_params ; j++)
-                {
-                    params[j] = tivxObjDescGet(node_obj_desc->data_id[j]);
-                }
-
-                if ((NULL != prms->knl[i]) && (NULL != prms->knl[i]->delete_func))
-                {
-                    status = prms->knl[i]->delete_func(
-                        prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg);
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Kernel does not have delete function registered\n");
-                    status = VX_FAILURE;
-                }
-
-                if (NULL != prms->target_kernel_instance[i])
-                {
-                    tivxTargetKernelInstanceFree(&prms->target_kernel_instance[i]);
-                }
-            }
-            tivxBamDestroyHandle(prms->graph_handle);
-            tivxSupernodeFreeMem(prms);
+            tivxSupernodeDestruct(prms, super_node);
         }
     }
 
     return (status);
 }
 
-static void tivxSupernodeFreeMem(tivxSupernodeParams *prms)
+static void tivxSupernodeDestruct(tivxSupernodeParams *prms, tivx_obj_desc_super_node_t *super_node)
 {
+    uint32_t i, j;
+    vx_status status = VX_SUCCESS;
+
+    if ((NULL != super_node) && (NULL != prms))
+    {
+        for(i = 0; i < super_node->num_nodes; i++)
+        {
+            tivx_obj_desc_node_t *node_obj_desc;
+            tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
+
+            node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->node_obj_desc_id[i]);
+
+            for(j=0; j<node_obj_desc->num_params ; j++)
+            {
+                params[j] = tivxObjDescGet(node_obj_desc->data_id[j]);
+            }
+
+            if (NULL != prms->knl[i])
+            {
+                if (NULL != prms->knl[i]->delete_func)
+                {
+                    status = prms->knl[i]->delete_func(
+                        prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg);
+                    if( VX_SUCCESS != status )
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Kernel[%d] delete function failed\n", i);
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Kernel[%d] does not have delete function registered\n", i);
+                    status = VX_FAILURE;
+                }
+            }
+
+            if (NULL != prms->target_kernel_instance[i])
+            {
+                tivxTargetKernelInstanceFree(&prms->target_kernel_instance[i]);
+            }
+        }
+    }
+
     if (NULL != prms)
     {
+        if (NULL != prms->graph_handle)
+        {
+            tivxBamDestroyHandle(prms->graph_handle);
+        }
+
         tivxMemFree(prms, sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
     }
 }
