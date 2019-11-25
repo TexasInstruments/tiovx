@@ -1383,7 +1383,12 @@ class KernelExportCode :
             if Type.USER_DATA_OBJECT == prm.type :
                 contains_user_data_object = True
         if self.prms_needed:
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating")
         self.target_c_code.write_comment_line("                  local memory buffers, one time initialization, etc) >")
@@ -1447,6 +1452,9 @@ class KernelExportCode :
 
             # Allocating memory for local structure
             if self.prms_needed:
+                if self.prms_commented_out:
+                    self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                    self.target_c_code.write_line("#if 0" , files=self.prms_write)
                 self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
                 self.target_c_code.write_line("if (NULL != prms)", files=self.prms_write)
                 self.target_c_code.write_open_brace(files=self.prms_write)
@@ -1483,7 +1491,8 @@ class KernelExportCode :
                 self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
                 self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
                 self.target_c_code.write_close_brace(files=self.prms_write)
-
+                if self.prms_commented_out:
+                    self.target_c_code.write_line("#endif" , files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
 
 
@@ -1500,12 +1509,20 @@ class KernelExportCode :
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         if self.prms_needed :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
             self.target_c_code.write_line("uint32_t size;", files=self.prms_write)
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
         self.target_c_code.write_newline(files=self.prms_write)
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing")
         self.target_c_code.write_comment_line("                  local memory buffers, etc) >")
         if self.prms_needed :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             # checks function parameters
             self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) , files=self.prms_write)
             for prm in self.kernel.params :
@@ -1537,7 +1554,8 @@ class KernelExportCode :
             self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
-
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
         self.target_c_code.write_close_brace()
@@ -1649,7 +1667,12 @@ class KernelExportCode :
         # define status variables and obj descriptor variable
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         if self.prms_needed :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
         need_plane_idx_var = False
         need_pyramid_idx_var = False
         printed_incrementer = False
@@ -1700,7 +1723,12 @@ class KernelExportCode :
         self.target_c_code.write_open_brace()
 
         if self.prms_needed :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("uint32_t size;", files=self.prms_write)
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
 
         # assigned descriptors to local variables
         for prm in self.kernel.params :
@@ -1711,6 +1739,9 @@ class KernelExportCode :
 
         # retrieving prms struct for use
         if self.prms_needed :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,", files=self.prms_write)
             self.target_c_code.write_line("    (void **)&prms, &size);", files=self.prms_write)
             self.target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||", files=self.prms_write)
@@ -1718,6 +1749,8 @@ class KernelExportCode :
             self.target_c_code.write_open_brace(files=self.prms_write)
             self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
 
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
@@ -1978,7 +2011,12 @@ class KernelExportCode :
         self.target_c_code.write_newline()
         # Calling method for creating struct based on if localMem is needing to be allocated
         if self.prms_needed == True :
+            if self.prms_commented_out:
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
+                self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.generate_target_c_struct()
+            if self.prms_commented_out:
+                self.target_c_code.write_line("#endif" , files=self.prms_write)
         self.target_c_code.write_line("static tivx_target_kernel vx_%s_target_kernel = NULL;" % (self.kernel.name_lower))
         self.target_c_code.write_newline()
 
@@ -3012,9 +3050,14 @@ class KernelExportCode :
         elif self.target_uses_dsp and self.kernel.localMem == False :
             self.prms_write = 1
 
-        self.prms_needed = False
+        # TIOVX-815: Setting the kernel instance context regardless of mem being used
+        self.prms_needed = True
+
+        # TIOVX-815: Adding an #if 0 so the mem alloc doesn't fail on target
+        self.prms_commented_out = True
+
         if self.target_uses_dsp or self.kernel.localMem == True :
-            self.prms_needed = True
+            self.prms_commented_out = False
 
         print ('Generating C code for OpenVX kernel ...')
         print ()
