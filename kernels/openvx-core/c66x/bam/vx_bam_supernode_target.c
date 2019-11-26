@@ -74,10 +74,6 @@
 #include <tivx_obj_desc_priv.h>
 #include <tivx_target_kernel_instance.h>
 
-#define TIVX_BAM_MAX_NODES 10
-#define TIVX_BAM_MAX_EDGES 16
-#define TIVX_MAX_BUF_PARAMS 16
-
 typedef struct _tivx_edge_sort_indices {
     uint16_t left_index;
     uint16_t right_index;
@@ -279,6 +275,12 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     memset(size, 0, sizeof(size));
     memset(scratch, 0, sizeof(scratch));
 
+    if (TIVX_SUPER_NODE_MAX_NODES < super_node->num_nodes)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "num_nodes in supernode exceeds TIVX_SUPER_NODE_MAX_NODES\n");
+        status = VX_FAILURE;
+    }
+
     if (VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
@@ -307,27 +309,35 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->node_obj_desc_id[i]);
 
             kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescGet(node_obj_desc->kernel_name_obj_desc_id);
-            if(kernel_name_obj_desc!=NULL)
+            if(kernel_name_obj_desc != NULL)
             {
                 kernel_name = kernel_name_obj_desc->kernel_name;
             }
-
-            for(j=0; j<node_obj_desc->num_params ; j++)
-            {
-                params[j] = tivxObjDescGet(node_obj_desc->data_id[j]);
-            }
-
-            prms->target_kernel_instance[i] = tivxTargetKernelInstanceAlloc(
-                node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
-
-            /* Adds Bam nodes to top level node list (can be more than 1) */
-            if (NULL == prms->target_kernel_instance[i])
-            {
-                VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance[%d] is NULL\n", i);
-                status = VX_ERROR_NO_RESOURCES;
-                break;
-            }
             else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "kernel_name_obj_desc[%d] is NULL\n", i);
+                status = VX_FAILURE;
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                for(j=0; j<node_obj_desc->num_params ; j++)
+                {
+                    params[j] = tivxObjDescGet(node_obj_desc->data_id[j]);
+                }
+
+                prms->target_kernel_instance[i] = tivxTargetKernelInstanceAlloc(
+                    node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
+
+                /* Adds Bam nodes to top level node list (can be more than 1) */
+                if (NULL == prms->target_kernel_instance[i])
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance[%d] is NULL, out of memory\n", i);
+                    status = VX_ERROR_NO_RESOURCES;
+                }
+            }
+
+            if (VX_SUCCESS == status)
             {
                 /* copy border mode also in the target_kernel_instance */
                 tivx_obj_desc_memcpy(&prms->target_kernel_instance[i]->border_mode, &node_obj_desc->border_mode, sizeof(vx_border_t));
@@ -343,9 +353,8 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         scratch[i] = tivxMemAlloc(size[i], TIVX_MEM_EXTERNAL);
                         if(NULL == scratch[i])
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "scratch[%d] is NULL, size[%d] = %d\n", i, i, size[i]);
+                            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate scratch for kernel[%s], size = %d\n", kernel_name, size[i]);
                             status = VX_ERROR_NO_RESOURCES;
-                            break;
                         }
                         else
                         {
@@ -353,21 +362,29 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         }
                     }
 
-                    status = prms->knl[i]->create_in_bam_func(
-                        prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg,
-                        node_list, kernel_details, &bam_node_cnt, scratch[i], &size[i]);
-
-                    if(VX_SUCCESS != status)
+                    if (VX_SUCCESS == status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "create_in_bam_func[%d] failed\n", i);
-                        break;
+                        status = prms->knl[i]->create_in_bam_func(
+                            prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg,
+                            node_list, kernel_details, &bam_node_cnt, scratch[i], &size[i]);
+
+                        if(VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Kernel[%s] 'create_in_bam_func' failed\n", kernel_name);
+                        }
+
+                        /* In addition to nodes added here, there are 2 nodes which will be added at end, consider it here so we only need to check in one place */
+                        if(bam_node_cnt >= (TIVX_BAM_MAX_NODES-2))
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_NODES.  May need to increase value of TIVX_BAM_MAX_NODES in kernels/include/tivx_bam_kernel_wrapper.h\n");
+                            status = VX_FAILURE;
+                        }
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Kernel does not support being part of a supernode\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Kernel[%s] does not support being part of a supernode\n", kernel_name);
                     status = VX_FAILURE;
-                    break;
                 }
 
                 if (VX_SUCCESS == status)
@@ -419,7 +436,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
             if (VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Kernel create callback failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Supernode failed to create BAM node for kernel [%s]\n", kernel_name);
                 break;
             }
 
@@ -487,92 +504,128 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
                                     for (k = 0; k < src->planes; k++)
                                     {
-                                        status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, j, k, 1);
+                                        status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, j, k, 1);
+                                        if (VX_SUCCESS != status)
+                                        {
+                                            break;
+                                        }
                                         valid_node_port = edge_list[bam_edge_cnt].downStreamNode.port;
 
                                         if (valid_node_port != TIVX_IMAGE_NULL_PLANE) {
                                             prms->obj_desc_image_planes[prms->obj_desc_image_count][k] = 1U;
                                         }
                                     }
+                                    if (VX_SUCCESS != status)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
 
-                            for(j = i; j < super_node->num_edges; j++)
+                            if (VX_SUCCESS == status)
                             {
-                                if ((super_node->edge_list[j].src_node_obj_desc_id == TIVX_OBJ_DESC_INVALID) &&
-                                    (super_node->edge_list[j].src_node_prm_idx == super_node->edge_list[i].src_node_prm_idx))
+                                for(j = i; j < super_node->num_edges; j++)
                                 {
-                                    node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[j].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
-
-                                    skip_port = 0;
-
-                                    for (k = 0; k < src->planes; k++)
+                                    if ((super_node->edge_list[j].src_node_obj_desc_id == TIVX_OBJ_DESC_INVALID) &&
+                                        (super_node->edge_list[j].src_node_prm_idx == super_node->edge_list[i].src_node_prm_idx))
                                     {
-                                        status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, j, k, 1);
-                                        valid_node_port = edge_list[bam_edge_cnt].downStreamNode.port;
+                                        node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[j].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
 
-                                        if (valid_node_port != TIVX_IMAGE_NULL_PLANE) {
-                                            edge_list[bam_edge_cnt].upStreamNode.id = 0;
-                                            edge_list[bam_edge_cnt].upStreamNode.port = port_count + k;
-                                            /*filling the gaps*/
-                                           if ((k == 1) &&
-                                               (prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0))
-                                            {
-                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
-                                            }
+                                        skip_port = 0;
 
-                                            if ((k == 2) &&
-                                                ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0) &&
-                                                (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 0)))
-                                            {
-                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 2;
-                                            }
-                                            else if ((k == 2) &&
-                                                     ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 1) &&
-                                                     (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 0)))
-                                            {
-                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
-                                            }
-                                            else if ((k == 2) &&
-                                                     ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0) &&
-                                                     (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 1)))
-                                            {
-                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
-                                            }
-                                            else if (k == 2)
-                                            {
-                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k;
-                                            }
-
-                                            edge_list[bam_edge_cnt].downStreamNode.port = valid_node_port - skip_port;
-                                            bam_edge_cnt++;
-                                        }
-                                        else
+                                        for (k = 0; k < src->planes; k++)
                                         {
-                                            skip_port++;
+                                            status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, j, k, 1);
+                                            if (VX_SUCCESS != status)
+                                            {
+                                                break;
+                                            }
+
+                                            valid_node_port = edge_list[bam_edge_cnt].downStreamNode.port;
+
+                                            if (valid_node_port != TIVX_IMAGE_NULL_PLANE) {
+                                                edge_list[bam_edge_cnt].upStreamNode.id = 0;
+                                                edge_list[bam_edge_cnt].upStreamNode.port = port_count + k;
+                                                /*filling the gaps*/
+                                                if ((k == 1) &&
+                                                   (prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0))
+                                                {
+                                                    edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
+                                                }
+
+                                                if ((k == 2) &&
+                                                    ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0) &&
+                                                    (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 0)))
+                                                {
+                                                    edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 2;
+                                                }
+                                                else if ((k == 2) &&
+                                                         ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 1) &&
+                                                         (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 0)))
+                                                {
+                                                    edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
+                                                }
+                                                else if ((k == 2) &&
+                                                         ((prms->obj_desc_image_planes[prms->obj_desc_image_count][0] == 0) &&
+                                                         (prms->obj_desc_image_planes[prms->obj_desc_image_count][1] == 1)))
+                                                {
+                                                    edge_list[bam_edge_cnt].upStreamNode.port = port_count + k - 1;
+                                                }
+                                                else if (k == 2)
+                                                {
+                                                    edge_list[bam_edge_cnt].upStreamNode.port = port_count + k;
+                                                }
+
+                                                edge_list[bam_edge_cnt].downStreamNode.port = valid_node_port - skip_port;
+                                                bam_edge_cnt++;
+                                            }
+                                            else
+                                            {
+                                                skip_port++;
+                                            }
+                                        }
+                                        if (VX_SUCCESS != status)
+                                        {
+                                            break;
                                         }
                                     }
                                 }
-
                             }
 
-                            prms->obj_desc_image[prms->obj_desc_image_count] = src;
-                            tivxInitBufParams(src, &prms->buf_params[ref_count]);
-
-                            for (j = 0; j < src->planes; j++)
+                            if (VX_SUCCESS == status)
                             {
-                                if (prms->obj_desc_image_planes[prms->obj_desc_image_count][j])
+                                prms->obj_desc_image[prms->obj_desc_image_count] = src;
+                                tivxInitBufParams(src, &prms->buf_params[ref_count]);
+
+                                for (j = 0; j < src->planes; j++)
                                 {
-                                    pBuf_params[prms->buf_params_cnt] = &prms->buf_params[ref_count];
-                                    prms->buf_params_cnt++;
+                                    if (prms->obj_desc_image_planes[prms->obj_desc_image_count][j])
+                                    {
+                                        if(prms->buf_params_cnt < TIVX_MAX_BUF_PARAMS)
+                                        {
+                                            pBuf_params[prms->buf_params_cnt] = &prms->buf_params[ref_count];
+                                            prms->buf_params_cnt++;
+                                        }
+                                        else
+                                        {
+                                            VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_MAX_BUF_PARAMS.  May need to increase value of TIVX_MAX_BUF_PARAMS in kernels/include/tivx_bam_kernel_wrapper.h\n");
+                                            status = VX_FAILURE;
+                                            break;
+                                        }
+                                    }
+                                    ref_count++;
                                 }
-                                ref_count++;
+
+                                port_count += prms->obj_desc_image_planes[prms->obj_desc_image_count][0] +
+                                              prms->obj_desc_image_planes[prms->obj_desc_image_count][1] +
+                                              prms->obj_desc_image_planes[prms->obj_desc_image_count][2];
+                                prms->obj_desc_image_count++;
                             }
 
-                            port_count += prms->obj_desc_image_planes[prms->obj_desc_image_count][0] +
-                                          prms->obj_desc_image_planes[prms->obj_desc_image_count][1] +
-                                          prms->obj_desc_image_planes[prms->obj_desc_image_count][2];
-                            prms->obj_desc_image_count++;
+                            if (VX_SUCCESS != status)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -588,11 +641,28 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             {
                 if (NULL != prms->knl[i]->append_internal_edges_func)
                 {
-                    status |= prms->knl[i]->append_internal_edges_func(
+                    status = prms->knl[i]->append_internal_edges_func(
                         prms->target_kernel_instance[i], edge_list, &bam_edge_cnt);
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Kernel[%d] 'append_internal_edges_func' callback failed\n", i);
+                    }
+                    if (bam_edge_cnt >= TIVX_BAM_MAX_EDGES)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "When calling kernel[%d] 'append_internal_edges_func',\n", i);
+                        VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_EDGES.  May need to increase value of TIVX_BAM_MAX_EDGES in kernels/include/tivx_bam_kernel_wrapper.h\n");
+                        status = VX_FAILURE;
+                    }
+                    if (VX_SUCCESS != status)
+                    {
+                        break;
+                    }
                 }
             }
+        }
 
+        if (VX_SUCCESS == status)
+        {
             for(i = 0; i < super_node->num_edges; i++)
             {
                 /* Find all the internal edges */
@@ -617,6 +687,11 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         {
                             status |= tivxGetNodePort(super_node, prms, edge_list, src_node_index, bam_edge_cnt, i, j, 0);
                             status |= tivxGetNodePort(super_node, prms, edge_list, dst_node_index, bam_edge_cnt, i, j, 1);
+                            if (VX_SUCCESS != status)
+                            {
+                                break;
+                            }
+
                             valid_node_port = edge_list[bam_edge_cnt].downStreamNode.port;
 
                             if (valid_node_port == TIVX_IMAGE_NULL_PLANE)
@@ -631,10 +706,17 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                             }
                             bam_edge_cnt++;
                         }
+                        if (VX_SUCCESS != status)
+                        {
+                            break;
+                        }
                     }
                 }
             }
+        }
 
+        if (VX_SUCCESS == status)
+        {
             for(i = 0; i < super_node->num_edges; i++)
             {
                 /* Find all the sink edges */
@@ -655,29 +737,61 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         for (j = 0; j < dst->planes; j++)
                         {
                             prms->obj_desc_image_planes[prms->obj_desc_image_count][j] = 1U;
-                            pBuf_params[prms->buf_params_cnt] = &prms->buf_params[ref_count];
-                            prms->buf_params_cnt++;
-                            ref_count++;
-                        }
-                        prms->obj_desc_image_count++;
-
-                        node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].src_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
-
-                        for (j = 0; j < dst->planes; j++) {
-                            status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, j, 0);
-                            edge_list[bam_edge_cnt].downStreamNode.id = bam_node_cnt-2;
-                            edge_list[bam_edge_cnt].downStreamNode.port = out_ref_count;
-                            bam_edge_cnt++;
-                            out_ref_count++;
+                            if(prms->buf_params_cnt < TIVX_MAX_BUF_PARAMS)
+                            {
+                                pBuf_params[prms->buf_params_cnt] = &prms->buf_params[ref_count];
+                                prms->buf_params_cnt++;
+                                ref_count++;
+                            }
+                            else
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_MAX_BUF_PARAMS.  May need to increase value of TIVX_MAX_BUF_PARAMS in kernels/include/tivx_bam_kernel_wrapper.h\n");
+                                status = VX_FAILURE;
+                                break;
+                            }
                         }
 
-                        found_edges_to_sink = 1;
+                        if (VX_SUCCESS == status)
+                        {
+                            prms->obj_desc_image_count++;
+
+                            node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].src_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
+
+                            for (j = 0; j < dst->planes; j++)
+                            {
+                                status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, j, 0);
+                                if (VX_SUCCESS != status)
+                                {
+                                    break;
+                                }
+                                edge_list[bam_edge_cnt].downStreamNode.id = bam_node_cnt-2;
+                                edge_list[bam_edge_cnt].downStreamNode.port = out_ref_count;
+                                bam_edge_cnt++;
+                                out_ref_count++;
+                            }
+
+                            found_edges_to_sink = 1;
+                        }
+
+                        if (VX_SUCCESS != status)
+                        {
+                            break;
+                        }
                     }
                 }
             }
             if (found_edges_to_sink & one_shot_flag)
             {
                 VX_PRINT(VX_ZONE_ERROR, "In a supernode, reduction kernels cannot be used with any other kernels which have image outputs\n");
+                status = VX_FAILURE;
+            }
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            if (bam_edge_cnt >= TIVX_BAM_MAX_EDGES)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_EDGES.  May need to increase value of TIVX_BAM_MAX_EDGES in kernels/include/tivx_bam_kernel_wrapper.h\n");
                 status = VX_FAILURE;
             }
         }
@@ -933,32 +1047,40 @@ static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSup
 
     if (super_node->num_nodes > node_index)
     {
-        if (NULL != prms->knl[node_index]->get_node_port_func)
+        if (bam_edge_cnt < TIVX_BAM_MAX_EDGES)
         {
-            if (0 == src_dst)
+            if (NULL != prms->knl[node_index]->get_node_port_func)
             {
-                status = prms->knl[node_index]->get_node_port_func(
-                    prms->target_kernel_instance[node_index], super_node->edge_list[i].src_node_prm_idx, plane,
-                    &edge_list[bam_edge_cnt].upStreamNode.id,
-                    &edge_list[bam_edge_cnt].upStreamNode.port);
+                if (0 == src_dst)
+                {
+                    status = prms->knl[node_index]->get_node_port_func(
+                        prms->target_kernel_instance[node_index], super_node->edge_list[i].src_node_prm_idx, plane,
+                        &edge_list[bam_edge_cnt].upStreamNode.id,
+                        &edge_list[bam_edge_cnt].upStreamNode.port);
+                }
+                else
+                {
+                    status = prms->knl[node_index]->get_node_port_func(
+                        prms->target_kernel_instance[node_index], super_node->edge_list[i].dst_node_prm_idx, plane,
+                        &edge_list[bam_edge_cnt].downStreamNode.id,
+                        &edge_list[bam_edge_cnt].downStreamNode.port);
+                }
             }
             else
             {
-                status = prms->knl[node_index]->get_node_port_func(
-                    prms->target_kernel_instance[node_index], super_node->edge_list[i].dst_node_prm_idx, plane,
-                    &edge_list[bam_edge_cnt].downStreamNode.id,
-                    &edge_list[bam_edge_cnt].downStreamNode.port);
+                VX_PRINT(VX_ZONE_ERROR, "get_node_port_func is NULL\n");
+                status = VX_FAILURE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: get_node_port_func is NULL\n");
-            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_EDGES.  May need to increase value of TIVX_BAM_MAX_EDGES in kernels/include/tivx_bam_kernel_wrapper.h\n");
+            status = VX_ERROR_NO_RESOURCES;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: invalid node index\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node index\n");
         status = VX_FAILURE;
     }
     return status;

@@ -85,9 +85,24 @@
 #include "bam_common.h"
 #include "tivx_target_kernel_instance.h"
 
+
+/*! \brief Max number of nodes in a BAM graph
+ * \ingroup group_tivx_ext_bam
+ */
+#define TIVX_BAM_MAX_NODES  (16u)
+
+/*! \brief Max number of edges in a BAM graph
+ * \ingroup group_tivx_ext_bam
+ */
+#define TIVX_BAM_MAX_EDGES  (32u)
+
+/*! \brief Max number of buf params in a BAM graph
+ * \ingroup group_tivx_ext_bam
+ */
+#define TIVX_MAX_BUF_PARAMS  (32u)
+
 /*!
  * \brief indicates if a plane is not connected
- *
  * \ingroup group_tivx_ext_bam
  */
 #define TIVX_IMAGE_NULL_PLANE        (255)

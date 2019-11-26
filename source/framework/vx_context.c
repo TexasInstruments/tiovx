@@ -541,21 +541,26 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         if(status == VX_SUCCESS)
         {
             status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-        }
 
-        if(status == VX_SUCCESS)
-        {
-            if (VX_SUCCESS != context->obj_desc_cmd->cmd_status)
+            if(status == VX_SUCCESS)
             {
-                VX_PRINT(VX_ZONE_ERROR,"sending object descriptor failed\n");
-                status = VX_FAILURE;
+                if (VX_SUCCESS != context->obj_desc_cmd->cmd_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Command ack message returned failure cmd_status: %d\n", context->obj_desc_cmd->cmd_status);
+                    status = VX_FAILURE;
+                }
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"sending object descriptor failed\n");
         }
 
         ownContextUnlock(context);
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR,"invalid parameters\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 

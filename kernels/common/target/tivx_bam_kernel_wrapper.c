@@ -75,9 +75,6 @@ extern CSL_EdmaccRegs dummyEDMAreg;
 extern uint32_t edmaBase[1];
 #endif
 
-#define TIVX_BAM_MAX_EDGES 16
-#define TIVX_BAM_MAX_NODES 16
-
 #define SOURCE_NODE  0U
 #define COMPUTE_NODE 1U
 #define SINK_NODE    2U
@@ -1048,6 +1045,13 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         status_v = VX_FAILURE;
     }
 
+    if( ((kernel_details->kernel_info.numInputDataBlocks +
+          (kernel_details->kernel_info.numOutputDataBlocks == 0) ? 1 : kernel_details->kernel_info.numOutputDataBlocks) + 1U) > TIVX_BAM_MAX_EDGES)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_EDGES.  May need to increase value of TIVX_BAM_MAX_EDGES in kernels/include/tivx_bam_kernel_wrapper.h\n");
+        status_v = VX_FAILURE;
+    }
+
     if(VX_SUCCESS == status_v)
     {
         /* Initialize to NULL in case there are any failures */
@@ -1375,12 +1379,14 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if((NULL == node_list) || (NULL == edge_list) || (NULL == buf_params) || (NULL == kernel_details))
         {
+            VX_PRINT(VX_ZONE_ERROR, "NULL input parameter pointer\n");
             status_v = VX_FAILURE;
         }
 
         if ((0 == max_nodes) || (0 == max_edges) ||
-            (max_nodes >= TIVX_BAM_MAX_NODES) || (max_edges >= 100))
+            (max_nodes > TIVX_BAM_MAX_NODES) || (max_edges > TIVX_BAM_MAX_EDGES))
         {
+            VX_PRINT(VX_ZONE_ERROR, "Unsupported value for either max_nodes or max_edges\n");
             status_v = VX_FAILURE;
         }
     }
@@ -1394,7 +1400,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                 break;
             }
         }
-        if ((i == MAX_NODES) || (i == max_nodes))
+        if ((i == TIVX_BAM_MAX_NODES) || (i == max_nodes))
         {
             status_v = VX_FAILURE;
         }
@@ -1413,7 +1419,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                 break;
             }
         }
-        if ((i == 100) || (i == max_edges))
+        if ((i == TIVX_BAM_MAX_EDGES) || (i == max_edges))
         {
             status_v = VX_FAILURE;
         }
