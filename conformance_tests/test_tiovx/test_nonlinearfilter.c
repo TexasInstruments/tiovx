@@ -217,7 +217,7 @@ static void filter_check2(vx_enum function, CT_Image src, vx_matrix mask1, vx_bo
     VX_CALL(vxCopyMatrix(mask2, m2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     ASSERT_NO_FAILURE(pattern_check(m2, cols2, rows2, pattern2));
-    
+
     ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, src, &origin1, cols1, rows1, m1, &virt_ref, border1));
     ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, virt_ref, &origin2, cols2, rows2, m2, &dst_ref, border2));
 
@@ -233,7 +233,7 @@ static void filter_check2(vx_enum function, CT_Image src, vx_matrix mask1, vx_bo
         ct_adjust_roi(dst_ref, left, top, right, bottom);
     }
     );
-    
+
     ASSERT_NO_FAILURE(
     if (border2->mode == VX_BORDER_UNDEFINED)
     {
@@ -626,11 +626,11 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
     VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
 
-    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[0] = node1);
     ASSERT_NO_FAILURE(node_list[1] = node2);
     ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
-    
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
@@ -677,14 +677,110 @@ TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G");
 }
 
+TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernodeThreadTest, Filter_Arg,
+    FILTER_PARAMETERS
+    )
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image src0_image1 = 0, src0_image2 = 0, dst0_image = 0;
+    vx_image virt_image1 = 0, virt_image2 = 0, virt_image3 = 0;
+    vx_matrix mask = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+    vx_enum pattern = 0;
+    vx_perf_t perf_super_node1, perf_super_node2, perf_graph;
+    tivx_super_node super_node1 = 0, super_node2 = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+    vx_threshold vxt;
+
+    CT_Image src0 = NULL, dst0 = NULL, vxvirt = NULL, vxdst = NULL;
+    vx_border_t border = arg_->border;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_NO_FAILURE(src0 = arg_->generator(NULL, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src0_image1 = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src0_image2 = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
+    dst0_image = ct_create_similar_image(src0_image1);
+    ASSERT_VX_OBJECT(dst0_image, VX_TYPE_IMAGE);
+
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_width, arg_->mask_height);
+    ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
+    ASSERT_EQ_INT(arg_->pattern, pattern);
+
+    vxt = vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+    vx_int32 ta = 0;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_THRESHOLD_VALUE, &ta, sizeof(ta)));
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt_image1 = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt_image2 = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt_image3 = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxNonLinearFilterNode(graph, arg_->function, src0_image1, mask, virt_image1);
+    node2 = vxThresholdNode(graph, src0_image2, vxt, virt_image2);
+    node3 = vxNonLinearFilterNode(graph, arg_->function, virt_image2, mask, virt_image3);
+    node4 = vxOrNode(graph, virt_image1, virt_image3, dst0_image);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1);
+    ASSERT_NO_FAILURE(node_list[1] = node4);
+    ASSERT_VX_OBJECT(super_node1 = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node1));
+
+    ASSERT_NO_FAILURE(node_list[0] = node2);
+    ASSERT_NO_FAILURE(node_list[1] = node3);
+    ASSERT_VX_OBJECT(super_node2 = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node2));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node1, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node1, sizeof(perf_super_node1)));
+    VX_CALL(tivxQuerySuperNode(super_node2, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node2, sizeof(perf_super_node2)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node1));
+    VX_CALL(tivxReleaseSuperNode(&super_node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    VX_CALL(vxReleaseMatrix(&mask));
+    VX_CALL(vxReleaseImage(&src0_image1));
+    VX_CALL(vxReleaseImage(&src0_image2));
+    VX_CALL(vxReleaseImage(&virt_image1));
+    VX_CALL(vxReleaseImage(&virt_image2));
+    VX_CALL(vxReleaseImage(&virt_image3));
+    VX_CALL(vxReleaseThreshold(&vxt));
+    VX_CALL(vxReleaseImage(&dst0_image));
+
+    printPerformance(perf_super_node1, arg_->width * arg_->height, "SN");
+    printPerformance(perf_super_node2, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
 #ifdef BUILD_BAM
 #define testNonLinearFilterSupernode testNonLinearFilterSupernode
+#define testNonLinearFilterSupernodeThreadTest testNonLinearFilterSupernodeThreadTest
 #else
 #define testNonLinearFilterSupernode DISABLED_testNonLinearFilterSupernode
+#define testNonLinearFilterSupernodeThreadTest DISABLED_testNonLinearFilterSupernodeThreadTest
 #endif
 
 TESTCASE_TESTS(tivxNonLinearFilter,
                testVirtualImage,
                testGraphProcessing,
                negativeTestBorderMode,
-               testNonLinearFilterSupernode)
+               testNonLinearFilterSupernode,
+               testNonLinearFilterSupernodeThreadTest)

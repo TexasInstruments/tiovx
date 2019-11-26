@@ -73,7 +73,7 @@ static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node);
  */
 static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node)
 {
-    vx_node node_cur, node_next;
+    vx_node node_cur, node_next, node_next_tmp;
     uint32_t node_cur_idx, node_next_idx, i;
     uint32_t prm_cur_idx, prm_next_idx;
     uint32_t prm_cur_dir, prm_next_dir;
@@ -147,12 +147,23 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                 else
                                                 {
                                                     /* Edge is external to super node, we can add edge to edge list */
-                                                    /* add node_next as output node for super node if not already added */
-                                                    status = ownNodeAddInNode(super_node->node, node_next);
+
+                                                    /* Check to see if node_next is part of a supernode, if so use the supernode node */
+                                                    if(node_next->super_node == NULL)
+                                                    {
+                                                        node_next_tmp = node_next;
+                                                    }
+                                                    else
+                                                    {
+                                                        node_next_tmp = node_next->super_node->node;
+                                                    }
+
+                                                    /* add node_next_tmp as input node for super node if not already added */
+                                                    status = ownNodeAddInNode(super_node->node, node_next_tmp);
 
                                                     if(status == VX_SUCCESS)
                                                     {
-                                                        /* replace super node as input node for next node and remove duplicates */
+                                                        /* replace super node as output node for next node and remove duplicates */
                                                         status = ownNodeReplaceOutNode(node_next, node_cur, super_node->node);
                                                         if (status != VX_SUCCESS)
                                                         {
@@ -296,7 +307,18 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                             }
 
                                                             /* add node_next as output node for super node if not already added */
-                                                            status = ownNodeAddOutNode(super_node->node, node_next);
+
+                                                            /* Check to see if node_next is part of a supernode, if so use the supernode node */
+                                                            if(node_next->super_node == NULL)
+                                                            {
+                                                                node_next_tmp = node_next;
+                                                            }
+                                                            else
+                                                            {
+                                                                node_next_tmp = node_next->super_node->node;
+                                                            }
+
+                                                            status = ownNodeAddOutNode(super_node->node, node_next_tmp);
 
                                                             if(status == VX_SUCCESS)
                                                             {
