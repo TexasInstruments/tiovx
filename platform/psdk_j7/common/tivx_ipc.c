@@ -59,7 +59,7 @@ void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 }
 
 vx_status tivxIpcSendMsg(
-    vx_enum cpu_id, uint32_t payload)
+    vx_enum cpu_id, uint32_t payload, uint32_t port_id)
 {
     /* convert OpenVX CPU ID to VSDK CPU ID */
     uint32_t vsdk_cpu_id;
@@ -69,9 +69,10 @@ vx_status tivxIpcSendMsg(
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
-        status = appIpcSendNotify(
+        status = appIpcSendNotifyPort(
             vsdk_cpu_id,
-            payload);
+            payload,
+            port_id);
 
         if( status != VX_SUCCESS)
         {
@@ -105,6 +106,11 @@ vx_enum tivxGetSelfCpuId(void)
     }
 
     return (cpu_id);
+}
+
+uint32_t tivxIpcGetSelfPortId(void)
+{
+    return appIpcGetSelfPortId();
 }
 
 void tivxIpcInit(void)
