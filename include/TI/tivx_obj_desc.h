@@ -81,7 +81,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (584U)
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (600U)
 
 /*!
  * \brief Max possible planes of data in an image
@@ -302,6 +302,9 @@ typedef struct _tivx_obj_desc_t {
 
     /*! \brief holds the index ID in the case that this is an element within a pyramid or object array */
     volatile uint32_t element_idx;
+
+    /*! \brief holds the index of the IPC port for this object descriptor */
+    volatile uint32_t port_id;
 
 } tivx_obj_desc_t;
 

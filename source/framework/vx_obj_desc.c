@@ -151,6 +151,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->element_idx = 0;
             tmp_obj_desc->type = type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
+            tmp_obj_desc->port_id = tivxIpcGetSelfPortId();
 
             g_obj_desc_table.last_alloc_index
                 = (idx+1)%g_obj_desc_table.num_entries;
@@ -222,6 +223,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     vx_enum cpu_id;
     uint32_t ipc_payload;
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc;
 
     cpu_id = tivxTargetGetCpuId(dst_target_id);
 
@@ -239,12 +241,22 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     {
         ipc_payload = tivxIpcPayloadMake(dst_target_id, obj_desc_id);
 
-        /* target is on remote CPU, send using IPC */
-        status = tivxIpcSendMsg(cpu_id, ipc_payload);
+        obj_desc = tivxObjDescGet(obj_desc_id);
 
-        if(status != VX_SUCCESS)
+        if (NULL != obj_desc)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxIpcSendMsg failed\n");
+            /* target is on remote CPU, send using IPC */
+            status = tivxIpcSendMsg(cpu_id, ipc_payload, obj_desc->port_id);
+
+            if(status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"tivxIpcSendMsg failed\n");
+            }
+        }
+        else
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjDescGet failed\n");
         }
     }
 
