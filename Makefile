@@ -101,6 +101,7 @@ doxy_docs:
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
 	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_j7/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 
 doxy_docs_design:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt
