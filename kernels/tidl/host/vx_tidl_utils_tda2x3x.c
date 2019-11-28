@@ -303,11 +303,11 @@ int32_t vx_tidl_utils_getNetParamsTotalSize(sTIDL_Network_t *net, uint32_t *pTot
       sTIDL_InnerProductParams_t *ipPrms = \
           &net->TIDLLayers[i].layerParams.innerProductParams;
       ipPrms->bias.bufSize =  net->biasElementSize * ipPrms->numOutNodes;
-      totalSize+= ipPrms->bias.bufSize + DEFAULT_ALIGN;
+      totalSize+= ipPrms->bias.bufSize + 128 + DEFAULT_ALIGN;
 
       ipPrms->weights.bufSize = \
           net->weightsElementSize* ipPrms->numInNodes * ipPrms->numOutNodes;
-      totalSize+= ipPrms->weights.bufSize + DEFAULT_ALIGN;
+      totalSize+= ipPrms->weights.bufSize + 16*ipPrms->numInNodes + 1024 + DEFAULT_ALIGN;
     }
     else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
     {
