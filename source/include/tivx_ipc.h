@@ -87,7 +87,7 @@ typedef void (*tivx_ipc_handler_f)(uint32_t payload);
  *
  * \ingroup group_tivx_ipc
  */
-vx_status tivxIpcSendMsg(vx_enum cpu_id, uint32_t payload, uint32_t port_id);
+vx_status tivxIpcSendMsg(vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id);
 
 /*!
  * \brief Register callback to call when IPC message is received

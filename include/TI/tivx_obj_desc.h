@@ -303,8 +303,12 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the index ID in the case that this is an element within a pyramid or object array */
     volatile uint32_t element_idx;
 
-    /*! \brief holds the index of the IPC port for this object descriptor */
-    volatile uint32_t port_id;
+    /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor */
+    volatile uint32_t host_port_id;
+
+    /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
+    volatile uint32_t host_cpu_id;
+
 
 } tivx_obj_desc_t;
 
