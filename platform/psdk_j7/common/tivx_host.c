@@ -16,10 +16,15 @@ void tivxPlatformResetObjDescTableInfo(void);
 
 void tivxHostInit(void)
 {
-    tivxPlatformResetObjDescTableInfo();
+    /* Dont init Obj Desc table here, since its done during system time by RTOS core
+     * This API will be called by each TIOVX linux process.
+     * So if obj desc are init every time a TIOVX process is created
+     * then some other TIOVX process running in background would lose its state and things will go wrong
+     */
+    /* tivxPlatformResetObjDescTableInfo(); */
     tivxObjectInit();
     tivxRegisterOpenVXCoreKernels();
-    
+
     if(tivxGetSelfCpuId()==TIVX_CPU_ID_IPU1_0)
     {
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
@@ -29,9 +34,9 @@ void tivxHostInit(void)
     {
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
     }
-    
+
     /* Note: eventually register HWA kernels here (deferring for now) */
-    
+
     VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
 }
 

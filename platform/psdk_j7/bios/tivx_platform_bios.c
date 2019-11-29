@@ -12,6 +12,8 @@
 #include <utils/ipc/include/app_ipc.h>
 #include <utils/udma/include/app_udma.h>
 
+void tivxPlatformResetObjDescTableInfo(void);
+
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
  * \ingroup group_tivx_platform
@@ -74,6 +76,9 @@ vx_status tivxPlatformInit(void)
     }
     if(status==VX_SUCCESS)
     {
+        /* init obj desc on RTOS side, it is assumed that linux starts after RTOS, so linux need not init the object descriptors */
+        tivxPlatformResetObjDescTableInfo();
+
         for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);

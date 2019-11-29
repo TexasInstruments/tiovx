@@ -59,7 +59,7 @@ void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 }
 
 vx_status tivxIpcSendMsg(
-    vx_enum cpu_id, uint32_t payload, uint32_t port_id)
+    vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id)
 {
     /* convert OpenVX CPU ID to VSDK CPU ID */
     uint32_t vsdk_cpu_id;
@@ -69,10 +69,27 @@ vx_status tivxIpcSendMsg(
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
-        status = appIpcSendNotifyPort(
-            vsdk_cpu_id,
-            payload,
-            port_id);
+        /* if dest CPU and the host CPU is same then send IPC message to
+         * the specific host port ID so that the process (Linux) which
+         * created the object descriptor gets the response
+         *
+         * if dest CPU is not host CPU then this is some other RTOS CPU,
+         * in this case send to the common global TIOVX port ID used by all
+         * RTOS
+         */
+        if(cpu_id==host_cpu_id)
+        {
+            status = appIpcSendNotifyPort(
+                vsdk_cpu_id,
+                payload,
+                host_port_id);
+        }
+        else
+        {
+            status = appIpcSendNotify(
+                vsdk_cpu_id,
+                payload);
+        }
 
         if( status != VX_SUCCESS)
         {

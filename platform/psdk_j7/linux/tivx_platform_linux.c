@@ -87,9 +87,11 @@ vx_status tivxPlatformInit(void)
         }
         tivxIpcInit();
 
-        g_tivx_platform_info.semaphore = sem_open("tiovxsem", (O_CREAT | O_EXCL), (00700), 1);
-
-        sem_unlink("tiovxsem");
+        /* create a named semaphore that is used by all TIOVX process
+         * to serialize access to critical resources shared between processes
+         * example, obj desc shared memory
+         */
+        g_tivx_platform_info.semaphore = sem_open("/tmp/tiovxsem", (O_CREAT), (00700), 1);
 
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {

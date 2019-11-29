@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk_j7.h>
 
-#define TIVX_TARGET_DEFAULT_STACK_SIZE      (32U * 1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE      (64U * 1024U)
 
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
 
@@ -19,9 +19,9 @@
  * \brief Target Stack
  *******************************************************************************
  */
-/* IMPORTANT NOTE: For C7x, 
- * - stack size and stack ptr MUST be 8KB aligned 
- * - AND min stack size MUST be 16KB 
+/* IMPORTANT NOTE: For C7x,
+ * - stack size and stack ptr MUST be 8KB aligned
+ * - AND min stack size MUST be 16KB
  * - AND stack assigned for task context is "size - 8KB"
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */
@@ -38,7 +38,7 @@ void tivxPlatformCreateTargets(void)
     vx_enum self_cpu, target_id;
 
     self_cpu = tivxGetSelfCpuId();
-    
+
     tivxTargetSetDefaultCreateParams(&target_create_prms);
 
     target_create_prms.task_stack_ptr = gTarget_tskStack;
