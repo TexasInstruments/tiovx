@@ -916,22 +916,68 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
 
             fprintf(fout, "#AdaboostCompactDescriptor: 16 2 10 7\n");
             fprintf(fout, "###################### Depth = 0 Node = 0 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][0]); fprintf(fout, "  #FIDS(FeatureIds)\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][0]); fprintf(fout, "  #TH(Thresholds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][0]);
+            }
+            fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][0]);
+            }
+            fprintf(fout, "  #TH(Thresholds)\n");
+
             fprintf(fout, "###################### Depth = 1 Node = 1 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][1]); fprintf(fout, "  #FIDS(FeatureIds)\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][1]); fprintf(fout, "  #TH(Thresholds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][1]);
+            }
+            fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][1]);
+            }
+            fprintf(fout, "  #TH(Thresholds)\n");
+
             fprintf(fout, "###################### Depth = 1 Node = 2 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][2]); fprintf(fout, "  #FIDS(FeatureIds)\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][2]); fprintf(fout, "  #TH(Thresholds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_index[idx][2]);
+            }
+            fprintf(fout, "  #FIDS(FeatureIds)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_threshold[idx][2]);
+            }
+            fprintf(fout, "  #TH(Thresholds)\n");
+
             fprintf(fout, "###################### Depth = 2 Node = 3 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][0]); fprintf(fout, "  #WT(Weights)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][0]);
+            }
+            fprintf(fout, "  #WT(Weights)\n");
+
             fprintf(fout, "###################### Depth = 2 Node = 4 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][1]); fprintf(fout, "  #WT(Weights)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][1]);
+            }
+            fprintf(fout, "  #WT(Weights)\n");
+
             fprintf(fout, "###################### Depth = 2 Node = 5 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][2]); fprintf(fout, "  #WT(Weights)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][2]);
+            }
+            fprintf(fout, "  #WT(Weights)\n");
+
             fprintf(fout, "###################### Depth = 2 Node = 6 ######################\n");
-            for(idx=0; idx<16; idx++) fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][3]); fprintf(fout, "  #WT(Weights)\n");
+            for(idx=0; idx<16U; idx++)
+            {
+                fprintf(fout, "%9d", cs_prms->decision_tree_weight[idx][3]);
+            }
+            fprintf(fout, "  #WT(Weights)\n");
 
             fclose(fout);
 

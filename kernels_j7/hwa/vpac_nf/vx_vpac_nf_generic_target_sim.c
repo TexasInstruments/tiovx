@@ -178,6 +178,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                 int32_t m;
 
                 for (m = -2; m < 3; m++)
+                {
                     for (k = -2; k < 3; k++)
                     {
                         if ( ((int32_t)m < (int32_t)(-(conv->rows/2))) || ((int32_t)m > (int32_t)(conv->rows/2)))
@@ -196,6 +197,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                                                                        (k + conv->columns/2)];
                         }
                     }
+                }
             }
 
             /* Since it is convolution, flip the matrix (decide later to do this or not) */

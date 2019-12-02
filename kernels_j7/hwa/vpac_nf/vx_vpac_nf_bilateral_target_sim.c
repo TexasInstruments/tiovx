@@ -578,7 +578,8 @@ static uint32_t bilateral_coefsLUTGen
                 }
             }
             /* Overwrite center pixel weight to be 1 */
-            f_wt_lut[12] = max = 1.0;
+            max = 1.0;
+            f_wt_lut[12] = 1.0;
         }
         else {
             if (mode == 0) /* Bilateral Filter Weights */
@@ -609,8 +610,12 @@ static uint32_t bilateral_coefsLUTGen
             else if (mode == 3) /* Highest Value Weights */
             {
                 for (col = 0; col < lut_w; col++)
+                {
                     for (row = 0; row < lut_h; row++)
+                    {
                         f_wt_lut[(row * lut_w) + col] = 1.0;
+                    }
+                }
                 max = 1.0;
             }
             else
@@ -654,10 +659,12 @@ static void interleaveTables(uint16_t **i_lut, uint8_t numTables, uint32_t range
     uint32_t i, j;
 
     for (j = 0; j < numTables; j++)
+    {
         for (i = 0; i < LUT_ROWS * rangeLutEntries; i++)
         {
             newLut[numTables*i + j] = oldLut[j * LUT_ROWS * rangeLutEntries + i];
         }
+    }
 
     memcpy(oldLut, newLut, LUT_ROWS*256*sizeof(uint16_t));
 }
@@ -665,8 +672,11 @@ static void interleaveTables(uint16_t **i_lut, uint8_t numTables, uint32_t range
 static int getSubRangeBits(int i)
 {
     int out = 0;
-    while(i >>= 1) {
+    int j = i >> 1;
+    while(j != 0)
+    {
         out++;
+        j = j >> 1;
     }
     return out;
 }

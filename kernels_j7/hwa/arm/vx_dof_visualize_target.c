@@ -312,7 +312,9 @@ static void visualizeFlowAndConfidance2(
 
             confidence_ptr[y*confidence_stride + x] = c << 4;
 
-            r = g = b = 0;
+            b = 0;
+            g = 0;
+            r = 0;
 
             if( c > confidence_threshold)
             {
