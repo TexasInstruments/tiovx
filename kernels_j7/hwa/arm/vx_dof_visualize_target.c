@@ -110,7 +110,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
     tivx_obj_desc_scalar_t *confidence_threshold_desc;
     int confidence_threshold = 8; /* default value */
 
-    if ( num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX])
@@ -305,12 +305,12 @@ static void visualizeFlowAndConfidance2(
     {
         for(x=0;x<valid_width; x++)
         {
-            cur_flow = (int32_t)flow_ptr[ y*size[1] + x ];
+            cur_flow = (int32_t)flow_ptr[(y*size[1]) + x];
             c = (uint16_t)(cur_flow & 0x0000000F);
             u = (int16_t)((int32_t)cur_flow >> 16);
             v = (int16_t)(((int32_t)((int32_t)cur_flow << 16)) >> 20);
 
-            confidence_ptr[y*confidence_stride + x] = c << 4;
+            confidence_ptr[(y*confidence_stride) + x] = c << 4;
 
             b = 0;
             g = 0;
@@ -330,17 +330,17 @@ static void visualizeFlowAndConfidance2(
                 u += lut_offset;
                 v += lut_offset;
 
-                lut_index = v * g_vx_dof_visualise_lut_w + u;
+                lut_index = (v * g_vx_dof_visualise_lut_w) + u;
 
                 if(lut_index < lut_size)
                 {
-                    r = lut_ptr[lut_index*lut_bpp + 0];
-                    g = lut_ptr[lut_index*lut_bpp + 1];
-                    b = lut_ptr[lut_index*lut_bpp + 2];
+                    r = lut_ptr[(lut_index*lut_bpp) + 0];
+                    g = lut_ptr[(lut_index*lut_bpp) + 1];
+                    b = lut_ptr[(lut_index*lut_bpp) + 2];
                 }
             }
 
-            cur_ptr = &rgb_ptr[y*rgb_stride + x*3];
+            cur_ptr = &rgb_ptr[(y*rgb_stride) + (x*3)];
             cur_ptr[0] = r;
             cur_ptr[1] = g;
             cur_ptr[2] = b;

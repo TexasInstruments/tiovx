@@ -192,7 +192,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivxVpacVissParams *prms = NULL;
     tivx_vpac_viss_params_t *params;
 
-    if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
@@ -516,7 +516,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* Missing for now */
 
         /* Convert nsf4 16-bit output to 32-bit input to CFA */
-        for(i=0; i < prms->buffer_size/2; i++)
+        for(i=0; i < (prms->buffer_size/2); i++)
         {
             prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_nsf4v_out[i];
         }
@@ -724,7 +724,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
     tivx_obj_desc_user_data_object_t *dcc_desc;
 
-    if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
@@ -999,20 +999,20 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         {
                             ae_size += 4;
                         }
-                        if (i%8 == 7 && i > 0)
+                        if (((i%8) == 7) && (i > 0))
                         {
                             ae_size += 4;
                         }
-                        if (i%prms->h3a_params.aewwin1_WINHC == (prms->h3a_params.aewwin1_WINHC -1) && ae_size%8 == 4 && i != (num_aew_windows-1))
+                        if (((i%prms->h3a_params.aewwin1_WINHC) == (prms->h3a_params.aewwin1_WINHC -1)) && ((ae_size%8) == 4) && (i != (num_aew_windows-1)))
                         {
                             ae_size += 4;
                         }
                     }
-                    if (num_aew_windows%8 != 0)
+                    if ((num_aew_windows%8) != 0)
                     {
                         ae_size += 4;
                     }
-                    if (ae_size %8 != 0)
+                    if ((ae_size%8) != 0)
                     {
                         ae_size+= 4;
                     }
@@ -1035,7 +1035,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                     /* H3A can operate in AF or AEWB mode. */
                     /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
-                    max_h3a_out_buffer_size = (prms->aew_buffer_size > prms->af_buffer_size ?
+                    max_h3a_out_buffer_size = ((prms->aew_buffer_size > prms->af_buffer_size) ?
                                                prms->aew_buffer_size : prms->af_buffer_size);
                     if(max_h3a_out_buffer_size > TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES)
                     {
@@ -1311,7 +1311,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 {
     vx_status status = VX_SUCCESS;
 
-    if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )

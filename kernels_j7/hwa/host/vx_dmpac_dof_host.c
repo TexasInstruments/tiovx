@@ -395,7 +395,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != sparse_of_map)
         {
-            if (sparse_of_map_w*8 != input_current_w)
+            if ((sparse_of_map_w*8) != input_current_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' width should be == 'input_current' width / 8\n");
@@ -505,8 +505,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 );
         }
 
-        if( (input_current_w / (1U<<((uint32_t)input_current_levels-1U)) < 32U) ||
-            (input_current_h / (1U<<((uint32_t)input_current_levels-1U)) < 16U)
+        if( ((input_current_w / (1U<<((uint32_t)input_current_levels-1U))) < 32U) ||
+            ((input_current_h / (1U<<((uint32_t)input_current_levels-1U))) < 16U)
           )
         {
             status = VX_ERROR_INVALID_PARAMETERS;

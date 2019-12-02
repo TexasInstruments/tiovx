@@ -193,8 +193,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                         }
                         else
                         {
-                            temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + conv->rows/2) * conv->columns) +
-                                                                       (k + conv->columns/2)];
+                            temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + (conv->rows/2)) * conv->columns) +
+                                                                       (k + (conv->columns/2))];
                         }
                     }
                 }

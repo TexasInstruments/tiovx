@@ -251,7 +251,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
     tivx_obj_desc_pyramid_t *out_pmd_desc = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         status = VX_FAILURE;
@@ -365,7 +365,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdDelete(
     tivxVpacMscPmdParams  *prms = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         status = VX_FAILURE;
@@ -410,7 +410,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
     uint32_t                  pmd_level_cnt;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         status = VX_FAILURE;

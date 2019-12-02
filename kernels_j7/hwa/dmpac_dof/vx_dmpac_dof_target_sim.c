@@ -1072,15 +1072,10 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
         {
             uint32_t flag_valid_line = 0;
 
-            for(i=0; i<width/8; i++)
+            for(i=0; i<(width/8); i++)
             {
                 /* Check if there are any outputs on this line */
-                if(sof_mask[j*sof_mask_stride + i])
-                {
-                    flag_valid_line = 1;
-                    break;
-                }
-                if(sof_mask[(j+1)*sof_mask_stride + i])
+                if(sof_mask[(j*sof_mask_stride) + i] || sof_mask[((j+1)*sof_mask_stride) + i])
                 {
                     flag_valid_line = 1;
                     break;
@@ -1093,9 +1088,9 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
                 {
                     uint32_t col_cnt = 0;
 
-                    for(i=0; i<width/8; i++)
+                    for(i=0; i<(width/8); i++)
                     {
-                        uint8_t maskVal = sof_mask[(j+k)*sof_mask_stride + i];
+                        uint8_t maskVal = sof_mask[((j+k)*sof_mask_stride) + i];
 
                         for(bitCnt=0; bitCnt<8; bitCnt++)
                         {
@@ -1103,7 +1098,7 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
                             {
                                 if(maskVal & 1)
                                 {
-                                    output_ptr[flow_width*out_line_cnt + col_cnt] = input_ptr[(j+k)*width + (i*8) + bitCnt];
+                                    output_ptr[(flow_width*out_line_cnt) + col_cnt] = input_ptr[((j+k)*width) + (i*8) + bitCnt];
                                     col_cnt++;
                                 }
                                 maskVal >>= 1;
@@ -1112,7 +1107,7 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
                     }
                     for(;col_cnt < flow_width; col_cnt++)
                     {
-                        output_ptr[flow_width*out_line_cnt + col_cnt] = 0;
+                        output_ptr[(flow_width*out_line_cnt) + col_cnt] = 0;
                     }
                     out_line_cnt++;
 

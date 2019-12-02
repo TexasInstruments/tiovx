@@ -488,7 +488,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_x should be between 0 and 8191 inclusive\n");
         }
-        else if (0U != params.init_x % 8U)
+        else if (0U != (params.init_x % 8U))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_x should be a multiple of 8\n");
@@ -498,7 +498,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_y should be between 0 and 8191 inclusive\n");
         }
-        else if (0U != params.init_y % 2U)
+        else if (0U != (params.init_y % 2U))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_y should be a multiple of 2\n");
@@ -521,7 +521,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_width should be between 8 and 255 inclusive\n");
             }
-            else if (0U != ldc_region_params.out_block_width % 8U)
+            else if (0U != (ldc_region_params.out_block_width % 8U))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_width should be a multiple of 8\n");
@@ -532,7 +532,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_height should be between 2 and 255 inclusive\n");
             }
-            else if (0U != ldc_region_params.out_block_height % 2U)
+            else if (0U != (ldc_region_params.out_block_height % 2U))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_height should be a multiple of 2\n");

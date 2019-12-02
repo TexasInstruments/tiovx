@@ -177,7 +177,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
     tivx_obj_desc_image_t *in_img;
     tivx_obj_desc_image_t *out_img[2];
 
-    if ( num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX]))
@@ -255,14 +255,14 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             {
                 if(0 == prms->input_align_12bit)
                 {
-                    for(i=0; i < in_img->width * in_img->height; i++)
+                    for(i=0; i < (in_img->width * in_img->height); i++)
                     {
                         prms->inY_16[i] = prms->inY_16[i] & 0xFFF;
                     }
                 }
                 else
                 {
-                    for(i=0; i < in_img->width * in_img->height; i++)
+                    for(i=0; i < (in_img->width * in_img->height); i++)
                     {
                         prms->inY_16[i] = prms->inY_16[i] >> 4;
                     }
@@ -365,7 +365,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     tivx_obj_desc_image_t            *out1_img_desc = NULL;
     tivxVpacLdcParams                *prms = NULL;
 
-    if ( num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX]))
@@ -634,7 +634,7 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
 {
     vx_status status = VX_SUCCESS;
 
-    if ( num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX]))

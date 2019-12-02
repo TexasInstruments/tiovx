@@ -602,7 +602,7 @@ static uint32_t bilateral_coefsLUTGen
                 }
                 max = 1.0;
             }
-            else if (mode == 1 || mode == 2) /* Passthrough Weights */
+            else if ((mode == 1) || (mode == 2)) /* Passthrough Weights */
             {
                 f_wt_lut[0] = 1.0;
                 max = 1.0;
@@ -634,10 +634,10 @@ static uint32_t bilateral_coefsLUTGen
             *mmrCenterPixelWeight = 1;
         }
         else {
-            for (i = 0; i < LUT_ROWS * lutSize; i++) {
-                i_wt_lut_full[i] = (uint16_t)((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1) + 0.5);
+            for (i = 0; i < (LUT_ROWS * lutSize); i++) {
+                i_wt_lut_full[i] = (uint16_t)(((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1)) + 0.5);
             }
-            *mmrCenterPixelWeight = (uint16_t)(max * (double)(1 << out_bitw) - 1);
+            *mmrCenterPixelWeight = (uint16_t)((max * (double)(1 << out_bitw)) - 1);
         }
     }
 
@@ -660,9 +660,9 @@ static void interleaveTables(uint16_t **i_lut, uint8_t numTables, uint32_t range
 
     for (j = 0; j < numTables; j++)
     {
-        for (i = 0; i < LUT_ROWS * rangeLutEntries; i++)
+        for (i = 0; i < (LUT_ROWS * rangeLutEntries); i++)
         {
-            newLut[numTables*i + j] = oldLut[j * LUT_ROWS * rangeLutEntries + i];
+            newLut[(numTables*i) + j] = oldLut[((j * LUT_ROWS) * rangeLutEntries) + i];
         }
     }
 

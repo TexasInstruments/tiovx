@@ -570,7 +570,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter ee_mode should be either:\n TIVX_VPAC_VISS_EE_MODE_OFF or TIVX_VPAC_VISS_EE_MODE_Y12 or TIVX_VPAC_VISS_EE_MODE_Y8\n");
         }
-        if ((TIVX_VPAC_VISS_MUX1_UV12 == params.mux_output1 || TIVX_VPAC_VISS_MUX3_UV8 == params.mux_output3) &&
+        if (((TIVX_VPAC_VISS_MUX1_UV12 == params.mux_output1) || (TIVX_VPAC_VISS_MUX3_UV8 == params.mux_output3)) &&
             (TIVX_VPAC_VISS_CHROMA_MODE_420 != params.chroma_mode) &&
             (TIVX_VPAC_VISS_CHROMA_MODE_422 != params.chroma_mode))
         {

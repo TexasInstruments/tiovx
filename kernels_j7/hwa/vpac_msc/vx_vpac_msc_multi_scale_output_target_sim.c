@@ -187,7 +187,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
     tivxMscScaleParams *prms = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -313,7 +313,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
     uint32_t size;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -594,7 +594,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleDelete(
     vx_status status = VX_SUCCESS;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,

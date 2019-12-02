@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     tivx_obj_desc_image_t *output_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 {
     vx_status status = VX_SUCCESS;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
@@ -403,7 +403,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
 {
     vx_status status = VX_SUCCESS;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
