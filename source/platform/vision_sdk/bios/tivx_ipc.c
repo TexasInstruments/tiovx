@@ -90,6 +90,12 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
+uint32_t tivxIpcGetSelfPortId(void)
+{
+    /* NOT used */
+    return 0;
+}
+
 vx_enum tivxGetSelfCpuId(void)
 {
     vx_enum cpu_id = TIVX_CPU_ID_INVALID;
