@@ -257,7 +257,7 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
                 if (((img->imagepatch_addr[0].dim_x*4u) + arr->capacity + 30u) >
                         512u)
                 {
-                    size = img->imagepatch_addr[0].dim_x*4u +
+                    size = (img->imagepatch_addr[0].dim_x*4u) +
                         arr->capacity + 30u;
                 }
                 else

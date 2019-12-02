@@ -200,7 +200,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_RGB == dst_desc->format))
         {
-            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoRGB_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], u_pix,
@@ -209,7 +209,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_RGBX == dst_desc->format))
         {
-            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0],
@@ -218,7 +218,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
-            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
@@ -227,7 +227,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_IYUV == dst_desc->format))
         {
-            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],

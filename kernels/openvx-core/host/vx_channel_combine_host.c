@@ -580,8 +580,8 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
             else
             {
                 if ((i == 0) ||
-                    (fmt != VX_DF_IMAGE_IYUV && fmt != VX_DF_IMAGE_NV12 &&
-                     fmt != VX_DF_IMAGE_NV21 && fmt != VX_DF_IMAGE_YUYV && fmt != VX_DF_IMAGE_UYVY))
+                    ((fmt != VX_DF_IMAGE_IYUV) && (fmt != VX_DF_IMAGE_NV12) &&
+                     (fmt != VX_DF_IMAGE_NV21) && (fmt != VX_DF_IMAGE_YUYV) && (fmt != VX_DF_IMAGE_UYVY)))
                 {
                     if (rect.start_x > out_rect.start_x)
                     {
@@ -602,20 +602,20 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
                     }
                 }
                 else {
-                    if (rect.start_x*2U > out_rect.start_x)
+                    if ((rect.start_x*2U) > out_rect.start_x)
                     {
                         out_rect.start_x = rect.start_x*2U;
                     }
-                    if (rect.start_y*2U > out_rect.start_y)
+                    if ((rect.start_y*2U) > out_rect.start_y)
                     {
                         out_rect.start_y = rect.start_y*2U;
                     }
 
-                    if (rect.end_x*2U < out_rect.end_x)
+                    if ((rect.end_x*2U) < out_rect.end_x)
                     {
                         out_rect.end_x = rect.end_x*2U;
                     }
-                    if (rect.end_y*2U < out_rect.end_y)
+                    if ((rect.end_y*2U) < out_rect.end_y)
                     {
                         out_rect.end_y = rect.end_y*2U;
                     }

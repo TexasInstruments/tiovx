@@ -89,18 +89,18 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
             VX_NOGAP_X
             );
 
-        stride_xby2 = (image_addr.stride_x == 0) ? 3 : image_addr.stride_x*2;
+        stride_xby2 = (image_addr.stride_x == 0) ? 3 : (image_addr.stride_x*2);
 
         if (VX_SUCCESS == status)
         {
-            for (i = 0U; i < (image_addr.dim_y * image_addr.stride_y) / 4U; i += image_addr.stride_y / 4U)
+            for (i = 0U; i < ((image_addr.dim_y * image_addr.stride_y) / 4U); i += (image_addr.stride_y / 4U))
             {
-                for (j = 0U; j < ((image_addr.dim_x * stride_xby2) / 2U) / 4U; j++)
+                for (j = 0U; j < (((image_addr.dim_x * stride_xby2) / 2U) / 4U); j++)
                 {
                     sum += data_ptr[i + j];
                 }
 
-                if (0U != ((image_addr.dim_x * stride_xby2) / 2U) % 4U)
+                if (0U != (((image_addr.dim_x * stride_xby2) / 2U) % 4U))
                 {
                     sum += data_ptr[i + j] >> ((4U - (((image_addr.dim_x * stride_xby2) / 2U) % 4U)) * 8U);
                 }

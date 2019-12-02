@@ -318,7 +318,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->new_params.data_type = VXLIB_UINT8;
 
             /* Adjust scale for all but smallest resoltion */
-            if (level != (vx_int32)num_levels-1) {
+            if (level != ((vx_int32)num_levels-1)) {
                 scale = 1.0f/pyramid_scale;
             }
 

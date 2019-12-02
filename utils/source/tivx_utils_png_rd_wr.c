@@ -125,7 +125,7 @@ vx_status tivx_utils_png_file_read(
         int nbytes;
 
         nbytes = fread(header, 1, 8, fp);
-        if ( nbytes < 8 || png_sig_cmp(header, 0, 8) != 0 )
+        if ( (nbytes < 8) || (png_sig_cmp(header, 0, 8) != 0) )
         {
             status = VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, " PNG: Invalid PNG header [%s]\n", filename);
@@ -202,7 +202,7 @@ vx_status tivx_utils_png_file_read(
                     png_context->data_ptr = *data_ptr;
                 }
             }
-            if(png_context == NULL || png_context->row_pointers == NULL || png_context->data_ptr == NULL)
+            if((png_context == NULL) || (png_context->row_pointers == NULL) || (png_context->data_ptr == NULL))
             {
                 status = VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for data_ptr, row_pointers [%s]\n", filename);
@@ -219,7 +219,7 @@ vx_status tivx_utils_png_file_read(
                 *height = png_height;
                 *stride = png_get_rowbytes(png_ptr,info_ptr);
                 *data_ptr = png_context->data_ptr;
-                if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth == 8)
+                if((color_type == PNG_COLOR_TYPE_GRAY) && (bit_depth == 8))
                 {
                     *df = VX_DF_IMAGE_U8;
                 }
@@ -246,7 +246,7 @@ void tivx_utils_png_file_read_release(void *png_file_context)
     {
         if(png_context->row_pointers)
             tivxMemFree(png_context->row_pointers, png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
-        if(png_context->data_ptr && png_context->data_ptr_size > 0)
+        if(png_context->data_ptr && (png_context->data_ptr_size > 0))
             tivxMemFree(png_context->data_ptr, png_context->data_ptr_size, TIVX_MEM_EXTERNAL);
         tivxMemFree(png_context, sizeof(png_context_t), TIVX_MEM_EXTERNAL);
     }
@@ -361,7 +361,7 @@ int32_t tivx_utils_png_file_write(
                 png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
                 png_context->data_ptr = data_ptr;
             }
-            if(png_context == NULL || png_context->row_pointers == NULL || png_context->data_ptr == NULL)
+            if((png_context == NULL) || (png_context->row_pointers == NULL) || (png_context->data_ptr == NULL))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
                 status = VX_FAILURE;
@@ -648,12 +648,12 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 
         if(df!=img_df)
         {
-            if(df==VX_DF_IMAGE_RGB && img_df==VX_DF_IMAGE_U8 && convert_to_gray_scale)
+            if((df==VX_DF_IMAGE_RGB) && (img_df==VX_DF_IMAGE_U8) && convert_to_gray_scale)
             {
                 enable_rgb2gray = vx_true_e;
             }
             else
-            if(df==VX_DF_IMAGE_U8 && img_df==VX_DF_IMAGE_RGB)
+            if((df==VX_DF_IMAGE_U8) && (img_df==VX_DF_IMAGE_RGB))
             {
                 enable_gray2rgb = vx_true_e;
             }
@@ -691,7 +691,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             rect.end_x = dst_start_x + copy_width;
             rect.end_y = dst_start_y + copy_height;
 
-            data_ptr = (void*)((uint8_t*)data_ptr + (stride*src_start_y) + src_start_x*bpp);
+            data_ptr = (void*)((uint8_t*)data_ptr + (stride*src_start_y) + (src_start_x*bpp));
 
             vxMapImagePatch(image,
                 &rect,
@@ -724,9 +724,9 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
                 {
                     for(x=0; x<copy_width; x++)
                     {
-                        b = ((uint8_t*)data_ptr)[3*x + 0];
-                        g = ((uint8_t*)data_ptr)[3*x + 1];
-                        r = ((uint8_t*)data_ptr)[3*x + 2];
+                        b = ((uint8_t*)data_ptr)[(3*x) + 0];
+                        g = ((uint8_t*)data_ptr)[(3*x) + 1];
+                        r = ((uint8_t*)data_ptr)[(3*x) + 2];
 
                         ((uint8_t*)dst_data_ptr)[x] = (r+b+g)/3;
                     }
@@ -745,9 +745,9 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
                     {
                         g = ((uint8_t*)data_ptr)[x];
 
-                        ((uint8_t*)dst_data_ptr)[3*x+0] = g;
-                        ((uint8_t*)dst_data_ptr)[3*x+1] = g;
-                        ((uint8_t*)dst_data_ptr)[3*x+2] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 0] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 1] = g;
+                        ((uint8_t*)dst_data_ptr)[(3*x) + 2] = g;
                     }
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);

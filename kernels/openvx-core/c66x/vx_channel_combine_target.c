@@ -191,10 +191,10 @@ vx_status VX_CALLBACK tivxChannelCombine(
 
             tivxSetPointerLocation(dst_desc, dst_desc_target_ptr, (uint8_t**)&dst_addr);
 
-            if (   dst_desc->format == VX_DF_IMAGE_RGB
-                || dst_desc->format == VX_DF_IMAGE_RGBX
-                || dst_desc->format == VX_DF_IMAGE_YUYV
-                || dst_desc->format == VX_DF_IMAGE_UYVY
+            if (   (dst_desc->format == VX_DF_IMAGE_RGB)
+                || (dst_desc->format == VX_DF_IMAGE_RGBX)
+                || (dst_desc->format == VX_DF_IMAGE_YUYV)
+                || (dst_desc->format == VX_DF_IMAGE_UYVY)
                 )
             {
                 tivxInitBufParams(dst_desc, &vxlib_dst);
