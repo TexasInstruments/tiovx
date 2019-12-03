@@ -1419,7 +1419,7 @@ typedef struct _vx_perf_t {
 /*! \brief Initializes a <tt>\ref vx_perf_t</tt> on the stack.
  * \ingroup group performance
  */
-#define VX_PERF_INIT    {0ul, 0ul, 0ul, 0ul, 0ul, 0ul}
+#define VX_PERF_INIT    {0UL, 0UL, 0UL, 0UL, 0UL, 0UL}
 
 /*! \brief The Kernel Information Structure. This is returned by the Context
  * to indicate which kernels are available in the OpenVX implementation.

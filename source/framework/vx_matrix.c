@@ -37,7 +37,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
     vx_context context, vx_enum data_type, vx_size columns, vx_size rows)
 {
     vx_matrix matrix = NULL;
-    vx_size dim = 0ul;
+    vx_size dim = 0UL;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
@@ -65,10 +65,10 @@ vx_matrix VX_API_CALL vxCreateMatrix(
         }
         else
         {
-            dim = 0ul;
+            dim = 0UL;
         }
 
-        if ((rows != 0) && (columns != 0) && (dim != 0ul))
+        if ((rows != 0) && (columns != 0) && (dim != 0UL))
         {
             matrix = (vx_matrix)ownCreateReference(context, VX_TYPE_MATRIX,
                 VX_EXTERNAL, &context->base);
@@ -119,7 +119,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
 {
     vx_status status = VX_SUCCESS;
     vx_matrix matrix = NULL;
-    vx_size dim = 0ul, i, j;
+    vx_size dim = 0UL, i, j;
     vx_uint8 *pTempDataPtr;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 

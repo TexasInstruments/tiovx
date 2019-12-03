@@ -161,7 +161,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
         /* If x is even, proper offset
          * if x is odd, then offset is on byte alignment 4 bits before start of pixel */
         offset = (addr->stride_y * (y / addr->step_y)) +
-                 ((12ul * (x / addr->step_x))/8ul);
+                 ((12UL * (x / addr->step_x))/8UL);
     }
     else
     {
@@ -175,7 +175,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
 
 static vx_size ownSizeOfChannel(vx_df_image color)
 {
-    vx_size size = 0ul;
+    vx_size size = 0UL;
     if (ownIsSupportedFourcc(color))
     {
         switch (color)
@@ -191,10 +191,10 @@ static vx_size ownSizeOfChannel(vx_df_image color)
                 break;
             case TIVX_DF_IMAGE_P12:
             case TIVX_DF_IMAGE_NV12_P12:
-                size = 0ul; /* Special case for (bits per pixel % 8) != 0 */
+                size = 0UL; /* Special case for (bits per pixel % 8) != 0 */
                 break;
             default:
-                size = 1ul;
+                size = 1UL;
                 break;
         }
     }
@@ -359,7 +359,7 @@ static void ownInitPlane(vx_image image,
         else /* Only for P12 and NV12_P12 */
         {
             imagepatch_addr->stride_y = TIVX_ALIGN(
-                        (((imagepatch_addr->dim_x*bits_per_pixel)+7ul)/8ul),
+                        (((imagepatch_addr->dim_x*bits_per_pixel)+7UL)/8UL),
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         );
         }
@@ -754,7 +754,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 /* ensure row-major memory layout */
                 if ((color == TIVX_DF_IMAGE_P12) || (color == TIVX_DF_IMAGE_NV12_P12))
                 {
-                    if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < (vx_int32)(((addrs[plane_idx].dim_x * 12ul)+7ul)/8ul)) )
+                    if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < (vx_int32)(((addrs[plane_idx].dim_x * 12UL)+7UL)/8UL)) )
                     {
                         vxReleaseImage(&image);
                         image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
@@ -1442,7 +1442,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
                                        const vx_rectangle_t *rect,
                                        vx_uint32 plane_index)
 {
-    vx_size size = 0ul, num_pixels;
+    vx_size size = 0UL, num_pixels;
     vx_uint32 start_x = 0u, start_y = 0u, end_x = 0u, end_y = 0u;
     vx_imagepatch_addressing_t *imagepatch_addr;
     tivx_obj_desc_image_t *obj_desc = NULL;
@@ -1571,7 +1571,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    vx_size size = 0ul;
+                    vx_size size = 0UL;
                     vx_uint32 p;
                     for (p = 0; p < obj_desc->planes; p++)
                     {
@@ -1712,7 +1712,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
         if (image_addr->stride_x == 0)
         {
-            pImageLine = pImagePtr + ((start_y*image_addr->stride_y)/image_addr->step_y) + (((start_x*12ul)/8ul)/image_addr->step_x);
+            pImageLine = pImagePtr + ((start_y*image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x);
 
             if (user_addr->stride_x == 1)
             {
@@ -1738,7 +1738,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
             {
                 if(image_addr->stride_x == 0)
                 {
-                    len = ((((end_x - start_x)*12ul)+7ul)/8ul)/image_addr->step_x;
+                    len = ((((end_x - start_x)*12UL)+7UL)/8UL)/image_addr->step_x;
                 }
                 else
                 {

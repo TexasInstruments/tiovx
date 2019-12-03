@@ -89,7 +89,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
 vx_size ownSizeOfEnumType(vx_enum item_type)
 {
     vx_uint32 i = 0;
-    vx_size size = 0ul;
+    vx_size size = 0UL;
 
     for (i = 0; i < dimof(g_reference_enum_type_sizes); i++) {
         if (item_type == g_reference_enum_type_sizes[i].item_type) {

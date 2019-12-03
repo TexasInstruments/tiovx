@@ -111,7 +111,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
         /* If x is even, proper offset
          * if x is odd, then offset is on byte alignment 4 bits before start of pixel */
         offset = (addr->stride_y * y) +
-                 ((12ul * x)/8ul);
+                 ((12UL * x)/8UL);
     }
     else
     {
@@ -372,14 +372,14 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         {
             imagepatch_addr.stride_x = 0;
             imagepatch_addr.stride_y = TIVX_ALIGN(
-                        (((imagepatch_addr.dim_x*12ul)+7ul)/8ul),
+                        (((imagepatch_addr.dim_x*12UL)+7UL)/8UL),
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         ) * stride_y_multiplier;
         }
 
         mem_size = (imagepatch_addr.stride_y*(imagepatch_addr.dim_y + (params->meta_height_before + params->meta_height_after)));
 
-        if( (vx_true_e == params->line_interleaved) && (exp_idx > 0u) )
+        if( (vx_true_e == params->line_interleaved) && (exp_idx > 0U) )
         {
             obj_desc->mem_size[exp_idx] = 0;
         }
@@ -816,7 +816,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
         if (image_addr->stride_x == 0)
         {
-            pImageLine = pImagePtr + ((start_y*image_addr->stride_y)/image_addr->step_y) + (((start_x*12ul)/8ul)/image_addr->step_x);
+            pImageLine = pImagePtr + ((start_y*image_addr->stride_y)/image_addr->step_y) + (((start_x*12UL)/8UL)/image_addr->step_x);
 
             if (user_addr->stride_x == 1)
             {
@@ -879,7 +879,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                 {
                     if(image_addr->stride_x == 0)
                     {
-                        len = ((((end_x - start_x)*12ul)+7ul)/8ul)/image_addr->step_x;
+                        len = ((((end_x - start_x)*12UL)+7UL)/8UL)/image_addr->step_x;
                     }
                     else
                     {

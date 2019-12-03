@@ -43,7 +43,7 @@ static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type)
     vx_size res = ownSizeOfEnumType(item_type);
     vx_uint32 i = 0;
 
-    if (res == 0ul)
+    if (res == 0UL)
     {
         for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
         {

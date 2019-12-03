@@ -184,7 +184,7 @@ uint32_t ct_floor_u32_no_overflow(float v);
 #define CT_CAST_U8(x)  (uint8_t)((x) < 0 ? 0 : (x) > 255 ? 255 : (x))
 #define CT_CAST_U16(x) (uint16_t)((x) < 0 ? 0 : (x) > 65535 ? 65535 : (x))
 #define CT_CAST_S16(x) (int16_t)((x) < -32768 ? -32768 : (x) > 32767 ? 32767 : (x))
-#define CT_CAST_U32(x) (uint32_t)((x) < 0 ? 0 : (x) > ((1ll << 32) - 1) ? ((1ll << 32) - 1) : (x))
+#define CT_CAST_U32(x) (uint32_t)((x) < 0 ? 0 : (x) > ((1LL << 32) - 1) ? ((1LL << 32) - 1) : (x))
 #define CT_CAST_S32(x) (int32_t)(x)
 
 #define CT_SATURATE_U8(x) CT_CAST_U8(x)
