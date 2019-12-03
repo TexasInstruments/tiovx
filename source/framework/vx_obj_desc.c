@@ -301,7 +301,9 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
     {
         d[i] = s[i];
         if(s[i]==0)
+        {
             break;
+        }
     }
     d[i] = 0;
 }

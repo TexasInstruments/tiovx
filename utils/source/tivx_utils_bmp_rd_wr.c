@@ -115,7 +115,9 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
     fclose(f);
 
     if(!image)
+    {
         CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
+    }
 
     return image;
 }
@@ -182,12 +184,18 @@ vx_status tivx_utils_bmp_file_read(
     if(image != NULL)
     {
         if( image->format == VX_DF_IMAGE_U8 )
+        {
             bpp = 1;
+        }
         else
         if( image->format == VX_DF_IMAGE_RGB )
+        {
             bpp = 3;
+        }
         else
+        {
             bpp = 4; /* RGBX */
+        }
 
         *width = image->width;
         *height = image->height;
@@ -236,12 +244,18 @@ vx_status tivx_utils_bmp_file_read_from_memory(
     if(image != NULL)
     {
         if( image->format == VX_DF_IMAGE_U8 )
+        {
             bpp = 1;
+        }
         else
         if( image->format == VX_DF_IMAGE_RGB )
+        {
             bpp = 3;
+        }
         else
+        {
             bpp = 4; /* RGBX */
+        }
 
         *width = image->width;
         *height = image->height;
@@ -291,15 +305,23 @@ int32_t tivx_utils_bmp_file_write(
     vx_status status;
 
     if( df == VX_DF_IMAGE_U8 )
+    {
         bpp = 1;
+    }
     else
     if( df == VX_DF_IMAGE_RGB )
+    {
         bpp = 3;
+    }
     else
     if( df == VX_DF_IMAGE_RGBX )
+    {
         bpp = 4;
+    }
     else
+    {
         bpp = 0;
+    }
 
     status = VX_FAILURE;
     if( bpp > 0)
@@ -387,15 +409,23 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
             uint32_t bpp;
 
             if( df == VX_DF_IMAGE_U8 )
+            {
                 bpp = 1;
+            }
             else
             if( df == VX_DF_IMAGE_RGB )
+            {
                 bpp = 3;
+            }
             else
             if( df == VX_DF_IMAGE_RGBX )
+            {
                 bpp = 4;
+            }
             else
+            {
                 bpp = 1; /* it should not reach here for BMP files */
+            }
 
             image_addr.dim_x = width;
             image_addr.dim_y = height;
@@ -547,14 +577,22 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
         vxQueryImage(image, VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
 
         if(img_width>width)
+        {
             copy_width = width;
+        }
         else
+        {
             copy_width = img_width;
+        }
 
         if(img_height>height)
+        {
             copy_height = height;
+        }
         else
+        {
             copy_height = img_height;
+        }
 
         src_start_x = (width - copy_width)/2;
         src_start_y = (height - copy_height)/2;
@@ -595,15 +633,23 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             uint32_t bpp;
 
             if( df == VX_DF_IMAGE_U8 )
+            {
                 bpp = 1;
+            }
             else
             if( df == VX_DF_IMAGE_RGB )
+            {
                 bpp = 3;
+            }
             else
             if( df == VX_DF_IMAGE_RGBX )
+            {
                 bpp = 4;
+            }
             else
+            {
                 bpp = 1; /* it should not reach here for BMP files */
+            }
 
             rect.start_x = dst_start_x;
             rect.start_y = dst_start_y;

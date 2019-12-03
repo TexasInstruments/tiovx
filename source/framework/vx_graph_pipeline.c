@@ -1,4 +1,4 @@
-/*
+	/*
 *
 * Copyright (c) 2018 Texas Instruments Incorporated
 *
@@ -894,7 +894,9 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
                             graph->parameters[i].data_ref_queue, &count);
 
                     if(count<min_count)
+                    {
                         min_count = count;
+                    }
                 }
             }
             if(min_count == (uint32_t)-1)

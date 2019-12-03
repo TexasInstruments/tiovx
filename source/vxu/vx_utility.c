@@ -179,7 +179,9 @@ static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, con
         }
     }
     if (status == VX_SUCCESS)
+    {
         status = vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border));
+    }
     return status;
 }
 
@@ -1146,7 +1148,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuWarpAffine(vx_context context, vx_image in
                 status = setNodeTarget(node);
             }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
