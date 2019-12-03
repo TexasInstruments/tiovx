@@ -92,9 +92,9 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
     vx_scalar confidence_threshold = NULL;
     vx_enum confidence_threshold_scalar_type;
 
-    vx_image flow_vector_rgb = NULL;
-    vx_df_image flow_vector_rgb_fmt;
-    vx_uint32 flow_vector_rgb_w, flow_vector_rgb_h;
+    vx_image flow_vector_image = NULL;
+    vx_df_image flow_vector_image_fmt;
+    vx_uint32 flow_vector_image_w, flow_vector_image_h;
 
     vx_image confidence_image = NULL;
     vx_df_image confidence_image_fmt;
@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     if ( (num != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX])
-        || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IMAGE_IDX])
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX])
     )
     {
@@ -114,7 +114,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
     {
         flow_vector = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
         confidence_threshold = (vx_scalar)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
-        flow_vector_rgb = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
+        flow_vector_image = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IMAGE_IDX];
         confidence_image = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
     }
 
@@ -132,9 +132,9 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
             tivxCheckStatus(&status, vxQueryScalar(confidence_threshold, VX_SCALAR_TYPE, &confidence_threshold_scalar_type, sizeof(confidence_threshold_scalar_type)));
         }
 
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_rgb, VX_IMAGE_FORMAT, &flow_vector_rgb_fmt, sizeof(flow_vector_rgb_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_rgb, VX_IMAGE_WIDTH, &flow_vector_rgb_w, sizeof(flow_vector_rgb_w)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_rgb, VX_IMAGE_HEIGHT, &flow_vector_rgb_h, sizeof(flow_vector_rgb_h)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_FORMAT, &flow_vector_image_fmt, sizeof(flow_vector_image_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_WIDTH, &flow_vector_image_w, sizeof(flow_vector_image_w)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_HEIGHT, &flow_vector_image_h, sizeof(flow_vector_image_h)));
 
         tivxCheckStatus(&status, vxQueryImage(confidence_image, VX_IMAGE_FORMAT, &confidence_image_fmt, sizeof(confidence_image_fmt)));
         tivxCheckStatus(&status, vxQueryImage(confidence_image, VX_IMAGE_WIDTH, &confidence_image_w, sizeof(confidence_image_w)));
@@ -160,10 +160,13 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
             }
         }
 
-        if (VX_DF_IMAGE_RGB != flow_vector_rgb_fmt)
+        if (VX_DF_IMAGE_RGB != flow_vector_image_fmt)
         {
+          if(VX_DF_IMAGE_NV12 != flow_vector_image_fmt)
+          {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'flow_vector_rgb' should be an image of type:\n VX_DF_IMAGE_RGB \n");
+            VX_PRINT(VX_ZONE_ERROR, "'flow_vector_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 \n");
+          }
         }
 
         if (VX_DF_IMAGE_U8 != confidence_image_fmt)
@@ -173,22 +176,21 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
         }
     }
 
-
     /* PARAMETER RELATIONSHIP CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        if( (flow_vector_w != flow_vector_rgb_w) ||
+        if( (flow_vector_w != flow_vector_image_w) ||
             (flow_vector_w != confidence_image_w))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_rgb' and 'confidence_image' should have the same value for VX_IMAGE_WIDTH\n");
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_image' and 'confidence_image' should have the same value for VX_IMAGE_WIDTH\n");
         }
-        if( (flow_vector_h != flow_vector_rgb_h) ||
+        if( (flow_vector_h != flow_vector_image_h) ||
             (flow_vector_h != confidence_image_h))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_rgb' and 'confidence_image' should have the same value for VX_IMAGE_HEIGHT\n");
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_image' and 'confidence_image' should have the same value for VX_IMAGE_HEIGHT\n");
         }
     }
 
@@ -208,7 +210,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeInitialize(vx_node node,
 
     if ( (num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX])
-        || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IMAGE_IDX])
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX])
     )
     {
@@ -325,5 +327,3 @@ vx_status tivxRemoveKernelDofVisualize(vx_context context)
 
     return status;
 }
-
-
