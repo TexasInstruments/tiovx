@@ -357,14 +357,21 @@ static void visualizeFlowAndConfidance3(
                 uint8_t k1 = c > confidence_threshold;
 
                 if(v > lut_pos_limit)
+                {
                     v =  lut_pos_limit;
+                }
                 if(v < lut_neg_limit)
+                {
                     v = lut_neg_limit;
+                }
                 if(u > lut_pos_limit)
+                {
                     u =  lut_pos_limit;
+                }
                 if(u < lut_neg_limit)
+                {
                     u = lut_neg_limit;
-
+                }
                 u += lut_offset;
                 v += lut_offset;
 
@@ -409,14 +416,21 @@ static void visualizeFlowAndConfidance3(
                 if(c > confidence_threshold)
                 {
                     if(v > lut_pos_limit)
+                    {
                         v =  lut_pos_limit;
+                    }
                     if(v < lut_neg_limit)
+                    {
                         v = lut_neg_limit;
+                    }
                     if(u > lut_pos_limit)
+                    {
                         u =  lut_pos_limit;
+                    }
                     if(u < lut_neg_limit)
+                    {
                         u = lut_neg_limit;
-
+                    }
                     u += lut_offset;
                     v += lut_offset;
 

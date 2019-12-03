@@ -489,7 +489,9 @@ static void generate_LUT
     }
 
     if (numTables > 1)
+    {
         interleaveTables(&i_lut, numTables, rangeLutEntries);
+    }
 }
 
 static uint32_t bilateral_coefsLUTGen
@@ -519,11 +521,17 @@ static uint32_t bilateral_coefsLUTGen
 
     /* Translate filter size (5x5, 3x3, 1x1) into spatialDistances */
     if (filtSize == 3)
+    {
         numspatialDistances = 2;
+    }
     else if (filtSize == 1)
+    {
         numspatialDistances = 0;
+    }
     else
+    {
         numspatialDistances = 5;
+    }
 
     /*---------------------------------------------------------------------*/
     /* Compute LUT width and height.                                       */
@@ -619,7 +627,9 @@ static uint32_t bilateral_coefsLUTGen
                 max = 1.0;
             }
             else
+            {
                 return 1;
+            }
         }
         *mmrCenterPixelWeight = (uint16_t)max;
     }
