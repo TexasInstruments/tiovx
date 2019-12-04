@@ -92,8 +92,8 @@ void tivxTargetKernelDeInit(void)
 
 static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                              vx_enum kernel_id,
-                             char *kernel_name,
-                             char *target_name,
+                             const char *kernel_name,
+                             const char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
@@ -160,7 +160,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
 
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              const char *kernel_name,
-                             char *target_name,
+                             const char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
@@ -174,7 +174,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
 
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              vx_enum kernel_id,
-                             char *target_name,
+                             const char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,

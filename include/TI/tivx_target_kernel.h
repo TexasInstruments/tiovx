@@ -145,7 +145,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_control_f)(
  */
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              vx_enum kernel_id,
-                             char *target_name,
+                             const char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
@@ -162,7 +162,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
  */
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              const char *kernel_name,
-                             char *target_name,
+                             const char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
