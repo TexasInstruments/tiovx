@@ -347,12 +347,12 @@ static void visualizeFlowAndConfidance3(
         {
             for(x = 0; x < valid_width; x++)
             {
-                cur_flow = (int32_t)flow_ptr[ y * flow_stride + x ];
+                cur_flow = (int32_t)flow_ptr[(y * flow_stride) + x];
                 c = (cur_flow & 0x0000000F);
                 u = ((int32_t)cur_flow >> 16);
                 v = (((int32_t)((int32_t)cur_flow << 16)) >> 20);
 
-                confidence_ptr[y*confidence_stride + x] = c << 4;
+                confidence_ptr[(y*confidence_stride) + x] = c << 4;
 
                 uint8_t k1 = c > confidence_threshold;
 
@@ -381,11 +381,11 @@ static void visualizeFlowAndConfidance3(
 
                 uint8_t r, g, b;
 
-                r = rgb_lut_ptr[lut_index*lut_bpp*k2 + 0];
-                g = rgb_lut_ptr[lut_index*lut_bpp*k2 + 1];
-                b = rgb_lut_ptr[lut_index*lut_bpp*k2 + 2];
+                r = rgb_lut_ptr[((lut_index*lut_bpp)*k2) + 0];
+                g = rgb_lut_ptr[((lut_index*lut_bpp)*k2) + 1];
+                b = rgb_lut_ptr[((lut_index*lut_bpp)*k2) + 2];
 
-                cur_ptr = &image1_ptr[y*image_stride + x*3];
+                cur_ptr = &image1_ptr[(y*image_stride) + (x*3)];
                 cur_ptr[0] = r * k1;
                 cur_ptr[1] = g * k1;
                 cur_ptr[2] = b * k1;
@@ -398,18 +398,18 @@ static void visualizeFlowAndConfidance3(
         {
             for(x = 0; x < valid_width; x++)
             {
-                cur_flow = (int32_t)flow_ptr[ y * flow_stride + x ];
+                cur_flow = (int32_t)flow_ptr[(y * flow_stride) + x];
                 c = (cur_flow & 0x0000000F);
                 u = ((int32_t)cur_flow >> 16);
                 v = (((int32_t)((int32_t)cur_flow << 16)) >> 20);
 
-                confidence_ptr[y*confidence_stride + x] = c << 4;
+                confidence_ptr[(y*confidence_stride) + x] = c << 4;
 
                 uint8_t Y = 0;
                 uint8_t Cb = 128;
                 uint8_t Cr = 128;
 
-                Y_ptr  = &image1_ptr[y*image_stride + x];
+                Y_ptr  = &image1_ptr[(y*image_stride) + x];
                 Cb_ptr = &image2_ptr[((y >> 1) * image_stride) + ((x >> 1) << 1) + 0];
                 Cr_ptr = &image2_ptr[((y >> 1) * image_stride) + ((x >> 1) << 1) + 1];
 
@@ -434,7 +434,7 @@ static void visualizeFlowAndConfidance3(
                     u += lut_offset;
                     v += lut_offset;
 
-                    lut_index = v * g_vx_dof_visualise_lut_w + u;
+                    lut_index = (v * g_vx_dof_visualise_lut_w) + u;
 
                     if(lut_index < lut_size)
                     {
