@@ -228,7 +228,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
     }
 }
 
-static int exportAsJpg(char *output_file_path, char *output_file_prefix, const char *out_file_id_str, char *in_filename)
+static int exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename)
 {
     int status = 0;
     #if TIVX_EXPORT_GRAPH_AS_JPG
