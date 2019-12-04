@@ -693,7 +693,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 
             params = (tivx_dmpac_dof_params_t *)params_array_target_ptr;
 
-            prms->magic = 0xC0DEFACE;
+            prms->magic = (int)0xC0DEFACEU;
             prms->dofParams.direction = params->motion_direction ;
             prms->dofParams.flowPostFiltering = params->median_filter_enable ;
             prms->dofParams.nonBaseLevelFlowPostFiltering = params->median_filter_enable ;
