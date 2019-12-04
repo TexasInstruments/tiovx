@@ -116,7 +116,7 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
 }
 
 vx_node tivxCreateNodeByKernelName(vx_graph graph,
-                                char *kernel_name,
+                                const char *kernel_name,
                                 vx_reference params[],
                                 vx_uint32 num)
 {

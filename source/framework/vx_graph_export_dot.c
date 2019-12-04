@@ -228,7 +228,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
     }
 }
 
-static int exportAsJpg(char *output_file_path, char *output_file_prefix, char *out_file_id_str, char *in_filename)
+static int exportAsJpg(char *output_file_path, char *output_file_prefix, const char *out_file_id_str, char *in_filename)
 {
     int status = 0;
     #if TIVX_EXPORT_GRAPH_AS_JPG
@@ -333,7 +333,7 @@ static void exportDataRef(FILE *fp, vx_reference ref)
     }
 }
 
-static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, char *prefix)
+static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const char *prefix)
 {
     tivx_obj_desc_node_t *node_desc;
     char node_color_name[TIVX_EXPORT_MAX_NODE_COLOR_NAME];

@@ -146,7 +146,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
+VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
 {
     vx_status status = VX_FAILURE;
     uint32_t idx;

@@ -120,7 +120,7 @@ extern "C" {
  * \param [in] ... The variable list of arguments.
  * \ingroup group_vx_debug
  */
-void tivx_print(vx_enum zone, char *format, ...);
+void tivx_print(vx_enum zone, const char *format, ...);
 
 /*! \brief Sets a zone bit in the debug mask
  * \param [in] zone The debug zone from \ref tivx_debug_zone_e.

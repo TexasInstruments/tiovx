@@ -390,7 +390,7 @@ void tivxHostDeInit(void);
  *
  * \ingroup group_tivx_ext_host
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name);
+VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const char *target_name);
 
 /*!
  * \brief Set the number of sink buffers
@@ -425,7 +425,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
  *
  * \ingroup group_tivx_ext_host
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
+VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name);
 
 /*!
  * \brief Return CPU ID of the CPU on which this API is called
@@ -522,7 +522,7 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
  * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelName(vx_graph graph,
-                                char *kernel_name,
+                                const char *kernel_name,
                                 vx_reference params[],
                                 vx_uint32 num);
 

@@ -115,7 +115,7 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
     return zone_enabled;
 }
 
-void tivx_print(vx_enum zone, char *format, ...)
+void tivx_print(vx_enum zone, const char *format, ...)
 {
     if (g_debug_zonemask & ZONE_BIT(zone))
     {

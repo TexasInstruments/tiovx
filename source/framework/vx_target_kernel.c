@@ -159,7 +159,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
 }
 
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
-                             char *kernel_name,
+                             const char *kernel_name,
                              char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,

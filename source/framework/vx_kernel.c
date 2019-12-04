@@ -394,7 +394,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name)
+VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const char *target_name)
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
