@@ -644,10 +644,14 @@ static uint32_t bilateral_coefsLUTGen
             *mmrCenterPixelWeight = 1;
         }
         else {
+            int32_t one_lsl_out_bitw = (1 << out_bitw);
+            double temp0 = ((max * (double)one_lsl_out_bitw) - 1.0f);
             for (i = 0; i < (LUT_ROWS * lutSize); i++) {
-                i_wt_lut_full[i] = (uint16_t)(((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1)) + 0.5);
+				int32_t one_lsl_out_bitw_minus_one = (one_lsl_out_bitw - 1);
+				double temp1 = (((double)(f_wt_lut[i] / max) * (double)one_lsl_out_bitw_minus_one) + 0.5f);
+                i_wt_lut_full[i] = (uint16_t)temp1;
             }
-            *mmrCenterPixelWeight = (uint16_t)((max * (double)(1 << out_bitw)) - 1);
+            *mmrCenterPixelWeight = (uint16_t)temp0;
         }
     }
 
