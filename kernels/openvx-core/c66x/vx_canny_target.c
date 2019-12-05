@@ -209,8 +209,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         }
 
         /* Edge Tracing requires 1 pixel border of zeros */
-        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
-        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
+        memset(border_addr_tl, 0, (size_t)prms->vxlib_dst.dim_x + (size_t)2);
+        memset(border_addr_bl, 0, (size_t)prms->vxlib_dst.dim_x + (size_t)2);
         for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
         {
             border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;

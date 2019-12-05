@@ -738,7 +738,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 
                 for(y=0; y<copy_height; y++)
                 {
-                    memcpy(dst_data_ptr, data_ptr, copy_width*bpp);
+                    memcpy(dst_data_ptr, data_ptr, (size_t)copy_width * (size_t)bpp);
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
                 }

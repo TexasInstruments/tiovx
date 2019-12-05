@@ -345,7 +345,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
-        offset = obj_desc->num_items * obj_desc->item_size;
+        offset = (vx_size)obj_desc->num_items * (vx_size)obj_desc->item_size;
         temp_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
 
         tivxMemBufferMap(
@@ -597,7 +597,7 @@ vx_status VX_API_CALL vxMapArrayRange(
             if ((NULL != ptr) && (NULL != map_id))
             {
                 arr->maps[i].map_addr = start_offset;
-                arr->maps[i].map_size = inst*obj_desc->item_size;
+                arr->maps[i].map_size = (vx_size)inst * (vx_size)obj_desc->item_size;
                 arr->maps[i].mem_type = mem_type;
                 arr->maps[i].usage = usage;
 
