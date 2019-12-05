@@ -964,6 +964,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 {
                     int32_t num_aew_windows, ae_size, af_pad;
                     uint32_t max_h3a_out_buffer_size;
+                    int16_t temp_num_aew_windows;
 
                     if(1u == prms->use_dcc)
                     {
@@ -987,7 +988,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     prms->aew_config.aewsubwin_AEWINCH = prms->h3a_params.aewsubwin_AEWINCH;
 
                     /* Compute AEW buffer size */
-                    num_aew_windows = (prms->h3a_params.aewwin1_WINVC+1)*(prms->h3a_params.aewwin1_WINHC);
+                    temp_num_aew_windows = (prms->h3a_params.aewwin1_WINVC+1)*(prms->h3a_params.aewwin1_WINHC);
+                    num_aew_windows = (int32_t)temp_num_aew_windows;
                     ae_size = 0;
                     for (i = 0; i < num_aew_windows; i++)
                     {
@@ -1021,16 +1023,21 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     /* Compute AF buffer size */
                     if (prms->h3a_params.pcr_AF_VF_EN)
                     {
-                        prms->af_buffer_size = (16U * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * sizeof(uint32_t);
+						int16_t temp_af_buffer_size = ((int16_t)16 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * (int16_t)sizeof(uint32_t);
+                        prms->af_buffer_size = (uint32_t)temp_af_buffer_size;
                     }
                     else
                     {
+						int16_t temp0 = prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC;
+                        int32_t temp1;
                         af_pad = 0;
-                        if (1U == (prms->h3a_params.afpax2_PAXHC%2))
+                        if ((int16_t)1 == (prms->h3a_params.afpax2_PAXHC%2))
                         {
-                            af_pad = 4*prms->h3a_params.afpax2_PAXVC;
+							int16_t temp_af_pad = 4*prms->h3a_params.afpax2_PAXVC;
+                            af_pad = (int32_t)temp_af_pad;
                         }
-                        prms->af_buffer_size = ((12 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) + af_pad) * sizeof(uint32_t);
+                        temp1 = ((12 * (int32_t)temp0) + af_pad) * (int32_t)sizeof(uint32_t);
+                        prms->af_buffer_size = (uint32_t)temp1;
                     }
 
                     /* H3A can operate in AF or AEWB mode. */
