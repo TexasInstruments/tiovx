@@ -89,7 +89,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
                 if(out_bit_alignment == 0)
                 {
                     /* Put 8 bits to 12 */
-                    src16[(j*w)+i] = src_addr8[(j*stride)+i] << 4;
+                    src16[(j*w)+i] = (uint16_t)src_addr8[(j*stride)+i] << 4;
                 }
                 else
                 {
@@ -285,8 +285,8 @@ void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint
         for(i=0; i < w; i++)
         {
             /* Downshift bits to align msb to bit 7 */
-            src16_0[(j*w)+i] = src_addr8[(j*stride)+(i*2)+y] >> downshift;
-            src16_1[(j*w)+i] = src_addr8[(j*stride)+(i*2)+u] >> downshift;
+            src16_0[(j*w)+i] = (uint16_t)src_addr8[(j*stride)+(i*2)+y] >> downshift;
+            src16_1[(j*w)+i] = (uint16_t)src_addr8[(j*stride)+(i*2)+u] >> downshift;
         }
     }
 }
@@ -451,7 +451,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
             for(i=0; i < w; i++)
             {
                 /* Put 8 bits to 12 */
-                src16[(j*w)+i] = src_addr8[(j*stride)+i] << 4;
+                src16[(j*w)+i] = (uint16_t)src_addr8[(j*stride)+i] << 4;
             }
         }
     }
