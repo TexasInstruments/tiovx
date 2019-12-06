@@ -155,6 +155,8 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj[]);
+static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxVpacMscScaleObj *msc_obj,
+    tivx_obj_desc_user_data_object_t *usr_data_obj[]);
 
 /* Local Functions */
 static tivxVpacMscScaleObj *tivxVpacMscScaleAllocObject(
@@ -777,6 +779,12 @@ static vx_status VX_CALLBACK tivxVpacMscScaleControl(
                     (tivx_obj_desc_user_data_object_t **)&obj_desc[0U]);
                 break;
             }
+            case TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS:
+            {
+                status = tivxVpacMscScaleSetCropParamsCmd(msc_obj,
+                    (tivx_obj_desc_user_data_object_t **)&obj_desc[0U]);
+                break;
+            }
             default:
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -1241,6 +1249,70 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
 
     return (status);
 }
+
+static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxVpacMscScaleObj *msc_obj,
+    tivx_obj_desc_user_data_object_t *usr_data_obj[])
+{
+    vx_status                         status = VX_SUCCESS;
+    uint32_t                          cnt, idx;
+    tivx_vpac_msc_crop_params_t      *out_prms = NULL;
+    void                             *target_ptr;
+    Msc_ScConfig                     *sc_cfg = NULL;
+
+    for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+    {
+        if (NULL != usr_data_obj[cnt])
+        {
+            target_ptr = tivxMemShared2TargetPtr(&usr_data_obj[cnt]->mem_ptr);
+
+            tivxMemBufferMap(target_ptr, usr_data_obj[cnt]->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
+            if (sizeof(tivx_vpac_msc_crop_params_t) ==
+                    usr_data_obj[cnt]->mem_size)
+            {
+                out_prms = (tivx_vpac_msc_crop_params_t *)target_ptr;
+
+                idx = msc_obj->sc_map_idx[cnt];
+                sc_cfg = &msc_obj->msc_prms.mscCfg.scCfg[idx];
+
+                sc_cfg->inRoi.cropStartX = out_prms->crop_start_x;
+                sc_cfg->inRoi.cropStartY = out_prms->crop_start_y;
+                sc_cfg->inRoi.cropWidth = out_prms->crop_width;
+                sc_cfg->inRoi.cropHeight = out_prms->crop_height;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacMscScaleSetCropParamsCmd: Invalid Mem Size for Crop Params\n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+
+            tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        }
+
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            break;
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = (vx_status)Fvid2_control(msc_obj->handle,
+            VHWA_M2M_IOCTL_MSC_SET_PARAMS, &msc_obj->msc_prms, NULL);
+        if ((vx_status)FVID2_SOK != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacMscScaleSetCropParamsCmd: Failed to Set Crop Params\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    return (status);
+}
+
 
 /* ========================================================================== */
 /*                              Driver Callbacks                              */

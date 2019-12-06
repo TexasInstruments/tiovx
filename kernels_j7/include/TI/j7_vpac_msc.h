@@ -134,6 +134,27 @@ extern "C" {
  */
 #define TIVX_VPAC_MSC_CMD_SET_OUTPUT_PARAMS            (0x20000002u)
 
+/*! \brief Control Command to set MSC output croping parameters.
+ *
+ *         This command takes an array of vx_references as an argument,
+ *         where each index contains crop parameters for the
+ *         corresponding scaler. For example, the crop parameters at
+ *         the index0 contains crop parameters required by output0 and so on. 
+ *         The crop parameters are applied on the corrosponding input image.
+ *         If the reference is set to null for a scaler, default
+ *         scaler parameters or previously set/configured parameters
+ *         are used for that scaler. (Default: no crop)
+ *
+ *         Used to configure/select number of phases for the
+ *         scaling operation, the coefficients and other scaler parameters.
+ *
+ *         This command takes an array of user objects containing
+ *         tivx_vpac_msc_crop_params_t parameters..
+ *
+ *  \ingroup group_vision_function_vpac_msc
+ */
+#define TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS            (0x20000003u)
+
 /*********************************
  *      VPAC_MSC Defines
  *********************************/
@@ -242,6 +263,22 @@ typedef struct {
     /*! Multi-phase initial vertical resize phase (U12Q12) [Range (0-4095)] */
     uint32_t  init_phase_y;
 } tivx_vpac_msc_multi_phase_params_t;
+ 
+/*!
+ * \brief The crop config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_vision_function_vpac_msc
+ */
+typedef struct {
+    /*! Source region of interest X offset [Range (0-width)] */
+    uint32_t  crop_start_x;
+    /*! Source region of interest Y offset [Range (0-height)] */
+    uint32_t  crop_start_y;
+    /*! Source region of interest X width [Range (0-(width-startx))] */
+    uint32_t  crop_width;
+    /*! Source region of interest Y height [Range (0-(height-starty))] */
+    uint32_t  crop_height;
+} tivx_vpac_msc_crop_params_t;
 
 /*!
  * \brief The output config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
