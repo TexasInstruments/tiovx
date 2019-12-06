@@ -267,6 +267,10 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 0 (disparity_min + 63) if width < 64\n");
         }
+        else
+        {
+            /* do nothing */
+        }
         if (255U < params.threshold_left_right)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -283,6 +287,10 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter threshold_texture should be between 0 and 255 inclusive if texture_filter_enable is 1\n");
+        }
+        else
+        {
+            /* do nothing */
         }
         if (127U < params.aggregation_penalty_p1)
         {

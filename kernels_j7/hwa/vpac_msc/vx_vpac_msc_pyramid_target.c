@@ -248,7 +248,7 @@ tivxVpacMscPmdInstObj gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_NUM_INST];
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxAddTargetKernelVpacMscGaussianPyramid()
+void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
     vx_status               status;
     uint32_t                cnt;
@@ -347,7 +347,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscGaussianPyramid()
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
 {
     vx_status               status = VX_SUCCESS;
     uint32_t                cnt;
@@ -378,7 +378,7 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid()
 }
 
 
-void tivxAddTargetKernelVpacMscPyramid()
+void tivxAddTargetKernelVpacMscPyramid(void)
 {
     vx_status               status;
     uint32_t                cnt;
@@ -477,7 +477,7 @@ void tivxAddTargetKernelVpacMscPyramid()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscPyramid()
+void tivxRemoveTargetKernelVpacMscPyramid(void)
 {
     vx_status               status = VX_SUCCESS;
     uint32_t                cnt;
@@ -521,7 +521,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
     tivx_target_kernel       target_kernel = NULL;
 
     if ((TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS != num_params) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         status = VX_FAILURE;
@@ -740,7 +740,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdDelete(
     tivxVpacMscPmdInstObj *inst_obj = NULL;
 
     if ((TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS != num_params) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         status = VX_FAILURE;
@@ -803,7 +803,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
     tivxVpacMscPmdInstObj    *inst_obj = NULL;
 
     if ((TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS != num_params) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -1003,6 +1003,10 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacMscPmdControl: Invalid Object Size\n");
         status = VX_FAILURE;
+    }
+    else
+	{
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)

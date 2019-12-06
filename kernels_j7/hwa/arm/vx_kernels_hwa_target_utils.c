@@ -424,16 +424,16 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
     }
 }
 
-void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exp)
+void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exposure)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[exp].dim_x;
-    uint32_t h = src->imagepatch_addr[exp].dim_y;
-    uint32_t stride = src->imagepatch_addr[exp].stride_y;
-    uint32_t idx = exp;
+    uint32_t w = src->imagepatch_addr[exposure].dim_x;
+    uint32_t h = src->imagepatch_addr[exposure].dim_y;
+    uint32_t stride = src->imagepatch_addr[exposure].stride_y;
+    uint32_t idx = exposure;
 
     if(src->params.line_interleaved)
     {
@@ -444,7 +444,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exp]));
+            &src->imagepatch_addr[exposure]));
 
         for(j = 0; j < h; j++)
         {
@@ -459,7 +459,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exp]));
+            &src->imagepatch_addr[exposure]));
         stride /= 2;
 
         for(j = 0; j < h; j++)
@@ -475,7 +475,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     {
         uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exp]));
+            &src->imagepatch_addr[exposure]));
         stride /= 4;
 
         for(j = 0; j < h; j++)

@@ -65,20 +65,20 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelDisplay();
+void tivxAddTargetKernelDisplay(void);
 
-void tivxRemoveTargetKernelDisplay();
+void tivxRemoveTargetKernelDisplay(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelDisplay, &tivxRemoveTargetKernelDisplay}
 };
 
-void tivxRegisterHwaTargetDisplayKernels()
+void tivxRegisterHwaTargetDisplayKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHwaTargetDisplayKernels()
+void tivxUnRegisterHwaTargetDisplayKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

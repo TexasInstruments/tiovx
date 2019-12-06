@@ -67,7 +67,7 @@ vx_status tivxPlatformInit(void)
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
     if( (0U != retVal) || (gTivxObjDescShmEntry == NULL)
-        || shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*sizeof(tivx_obj_desc_shm_entry_t)))
+        || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
         /* insufficient shared memory size */
         VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: insufficient shared memory size\n");
@@ -90,8 +90,9 @@ vx_status tivxPlatformInit(void)
         /* create a named semaphore that is used by all TIOVX process
          * to serialize access to critical resources shared between processes
          * example, obj desc shared memory
+         * mode/permissions = 00700 octal = 0x01C0
          */
-        g_tivx_platform_info.semaphore = sem_open("/tiovxsem", (O_CREAT), (00700), 1);
+        g_tivx_platform_info.semaphore = sem_open("/tiovxsem", (O_CREAT), (0x01C0), 1);
 
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {
@@ -140,6 +141,10 @@ void tivxPlatformSystemLock(vx_enum lock_id)
         {
             sem_wait(g_tivx_platform_info.semaphore);
         }
+        else
+        {
+            /* do nothing */
+        }
     }
 }
 
@@ -155,6 +160,10 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             sem_post(g_tivx_platform_info.semaphore);
+        }
+        else
+        {
+            /* do nothing */
         }
 
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
@@ -212,7 +221,7 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
-void tivxPlatformResetObjDescTableInfo()
+void tivxPlatformResetObjDescTableInfo(void)
 {
     tivx_obj_desc_t *tmp_obj_desc = NULL;
     uint32_t i;

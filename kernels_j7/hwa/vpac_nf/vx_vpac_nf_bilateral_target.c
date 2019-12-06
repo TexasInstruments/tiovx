@@ -288,6 +288,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Incorrect object size\n");
             status = VX_FAILURE;
         }
+        else
+        {
+            /* do nothing */
+        }
     }
 
     if (VX_SUCCESS == status)
@@ -643,6 +647,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
             "tivxVpacNfBilateralControl: Wrong Size for Nf Bilateral Obj\n");
         status = VX_FAILURE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -829,11 +837,17 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
 
     /* Translate filter size (5x5, 3x3, 1x1) into spatialDistances */
     if (filtSize == 3)
+    {
         numspatialDistances = 2;
+    }
     else if (filtSize == 1)
+    {
         numspatialDistances = 0;
+    }
     else
+    {
         numspatialDistances = 5;
+    }
 
     /*---------------------------------------------------------------------*/
     /* Compute LUT width and height.                                       */
@@ -891,7 +905,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
             f_wt_lut[12] = max = 1.0;
         }
         else {
-            if (mode == 0) /* Bilateral Filter Weights */
+            if (mode == 0u) /* Bilateral Filter Weights */
             {
                 for (col = 0; col < lut_w; col++)
                 {
@@ -911,20 +925,26 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                 }
                 max = 1.0;
             }
-            else if (mode == 1 || mode == 2) /* Passthrough Weights */
+            else if ((mode == 1u) || (mode == 2u)) /* Passthrough Weights */
             {
                 f_wt_lut[0] = 1.0;
                 max = 1.0;
             }
-            else if (mode == 3) /* Highest Value Weights */
+            else if (mode == 3u) /* Highest Value Weights */
             {
                 for (col = 0; col < lut_w; col++)
+                {
                     for (row = 0; row < lut_h; row++)
+                    {
                         f_wt_lut[(row * lut_w) + col] = 1.0;
+                    }
+                }
                 max = 1.0;
             }
             else
+            {
                 return 1;
+            }
         }
     }
 
@@ -934,13 +954,17 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     if (i_wt_lut_full){
         int i;
         memset(i_wt_lut_full, 0, LUT_ROWS * lutSize*sizeof(uint32_t));
-        if (mode == 2) {
+        if (mode == 2u)
+        {
+			/* do nothing */
         }
         else {
-            for (i = 0; i < LUT_ROWS * lutSize; i++) {
+            for (i = 0; i < (LUT_ROWS * lutSize); i++) {
                 if (0 != max)
                 {
-                    i_wt_lut_full[i] = (uint32_t)((double)(f_wt_lut[i] / max) * (double)((1 << out_bitw) - 1) + 0.5);
+                    int32_t one_lsl_out_bitw_minus_one = (1 << out_bitw) - 1;
+                    double temp = ((f_wt_lut[i] / max) * (double)one_lsl_out_bitw_minus_one) + 0.5f;
+                    i_wt_lut_full[i] = (uint32_t)temp;
                 }
             }
         }
@@ -965,10 +989,12 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTab
     uint32_t i, j;
 
     for (j = 0; j < numTables; j++)
-        for (i = 0; i < LUT_ROWS * rangeLutEntries; i++)
+    {
+        for (i = 0; i < (LUT_ROWS * rangeLutEntries); i++)
         {
-            newLut[numTables*i + j] = oldLut[j * LUT_ROWS * rangeLutEntries + i];
+            newLut[(numTables * i) + j] = oldLut[((j * LUT_ROWS) * rangeLutEntries) + i];
         }
+    }
 
     memcpy(oldLut, newLut, LUT_ROWS*256*sizeof(uint32_t));
 }
@@ -1150,6 +1176,10 @@ void tivxVpacNfBilateralErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *a
         {
             /* SL2 WR Error */
             errEvents = (errEvents & (~VHWA_NF_WR_ERR));
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 }

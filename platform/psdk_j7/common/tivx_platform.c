@@ -22,23 +22,23 @@ void tivxPlatformPrintf(const char *format)
     appLogPrintf(format);
 }
 
-void tivxPlatformActivate()
+void tivxPlatformActivate(void)
 {
 
 }
 
-void tivxPlatformDeactivate()
+void tivxPlatformDeactivate(void)
 {
 
 }
 
-char *tivxPlatformGetEnv(char *env_var)
+char *tivxPlatformGetEnv(const char *env_var)
 {
-    char *value=" ";
+    const char *value=" ";
     
     if(strcmp(env_var, "VX_TEST_DATA_PATH")==0)
     {
         value="/test_data/";
     }
-    return value;
+    return ((char *)value);
 }

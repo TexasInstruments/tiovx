@@ -47,7 +47,7 @@ static tivx_platform_info_t g_tivx_platform_info =
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
 
-void *tivxPlatformGetDmaObj()
+void *tivxPlatformGetDmaObj(void)
 {
    return appUdmaGetObj();
 }
@@ -68,7 +68,7 @@ vx_status tivxPlatformInit(void)
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
     if( (0U != retVal) || (gTivxObjDescShmEntry == NULL)
-        || shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*sizeof(tivx_obj_desc_shm_entry_t)))
+        || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
         /* insufficient shared memory size */
         VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: insufficient shared memory size\n");
@@ -194,7 +194,7 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
-void tivxPlatformResetObjDescTableInfo()
+void tivxPlatformResetObjDescTableInfo(void)
 {
     tivx_obj_desc_t *tmp_obj_desc = NULL;
     uint32_t i;

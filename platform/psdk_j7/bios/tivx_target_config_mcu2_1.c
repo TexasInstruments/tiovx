@@ -25,7 +25,7 @@ __attribute__ ((aligned(8192)))
     ;
 
 
-void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, char *name)
+void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;

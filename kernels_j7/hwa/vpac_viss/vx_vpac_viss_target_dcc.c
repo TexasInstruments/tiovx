@@ -1224,6 +1224,10 @@ static void tivxVpacVissDccMapMergeParams(tivxVpacVissObj *vissObj,
 
             vissObj->vissCfgRef.wdr2Cfg         = mergeCfg;
         }
+        else
+        {
+            /* do nothing */
+        }
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -1276,6 +1280,10 @@ static void tivxVpacVissDccMapRfeLutParams(tivxVpacVissObj *vissObj, uint32_t lu
             }
 
             vissObj->vissCfgRef.h3aLutCfg = lutCfg;
+        }
+        else
+        {
+            /* do nothing */
         }
 
         /* Setting config flag to 1,
@@ -1523,6 +1531,10 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 
             vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
             vissObj->vissCfgRef.vsLutCfg = lutCfg;
+        }
+        else
+        {
+            /* do nothing */
         }
 
         /* Setting config flag to 1,

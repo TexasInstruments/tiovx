@@ -493,6 +493,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_x should be a multiple of 8\n");
         }
+        else
+        {
+            /* do nothing */
+        }
         if (8191U < params.init_y)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -502,6 +506,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter init_y should be a multiple of 2\n");
+        }
+        else
+        {
+            /* do nothing */
         }
         if (1U < params.yc_mode)
         {
@@ -526,6 +534,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_width should be a multiple of 8\n");
             }
+            else
+            {
+                /* do nothing */
+            }
             if ((2U > ldc_region_params.out_block_height) ||
                 (255U < ldc_region_params.out_block_height))
             {
@@ -536,6 +548,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Region parameter out_block_height should be a multiple of 2\n");
+            }
+            else
+            {
+                /* do nothing */
             }
             if (15U < ldc_region_params.pixel_pad)
             {

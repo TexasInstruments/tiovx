@@ -190,7 +190,7 @@ int32_t gVpacMscScaleMpCoeff[2U][64u*5u] = TIVX_VPAC_MSC_MP_SCALE_COEFFICIENTS;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxAddTargetKernelVpacMscHalfScaleGaussian()
+void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 {
     vx_status                status;
     uint32_t                 cnt;
@@ -291,7 +291,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscHalfScaleGaussian()
+void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void)
 {
     vx_status                status = VX_SUCCESS;
     uint32_t                 cnt;
@@ -321,7 +321,7 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian()
     }
 }
 
-void tivxAddTargetKernelVpacMscScale()
+void tivxAddTargetKernelVpacMscScale(void)
 {
     vx_status                status;
     uint32_t                 cnt;
@@ -422,7 +422,7 @@ void tivxAddTargetKernelVpacMscScale()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscScale()
+void tivxRemoveTargetKernelVpacMscScale(void)
 {
     vx_status                status = VX_SUCCESS;
     uint32_t                 cnt;
@@ -737,6 +737,10 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             status = VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Incorrect Object Size\n");
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 

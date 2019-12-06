@@ -461,7 +461,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             }
             else
             {
-                if(pyr_lvl % 2 == 0)
+                if((pyr_lvl % 2U) == 0U)
                 {
                     dofObj->inFrm[DOF_INPUT_PYRAMID_PRED].addr[0] =
                                                             dofObj->inter_buff1;
@@ -902,6 +902,10 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofControl: Invalid Input\n");
         status = VX_FAILURE;
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)

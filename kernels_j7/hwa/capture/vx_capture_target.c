@@ -202,7 +202,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
             output_image_target_ptr = tivxMemShared2TargetPtr(&raw_image->mem_ptr[0]);
 
             captured_frame = ((uintptr_t)output_image_target_ptr +
-                tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
+                (uint64_t)tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
         }
         else
         {
@@ -213,7 +213,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
             output_image_target_ptr = tivxMemShared2TargetPtr(&image->mem_ptr[0]);
 
             captured_frame = ((uintptr_t)output_image_target_ptr +
-                tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
+                (uint64_t)tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
         }
 
         tivxQueueGet(&prms->freeFvid2FrameQ[chId], (uintptr_t*)&fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
@@ -303,6 +303,9 @@ static uint32_t tivxCaptureMapInstId(uint32_t instId)
             break;
         case 1:
             drvInstId = CSIRX_INSTANCE_ID_1;
+            break;
+        default:
+            /* do nothing */
             break;
     }
 
@@ -502,17 +505,19 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                     tmp_desc[chId] = NULL;
                 }
 
-                while(!is_all_ch_frame_available)
+                while(is_all_ch_frame_available == 0U)
                 {
                     is_all_ch_frame_available = 1;
                     for(chId=0; chId<prms->numCh; chId++)
                     {
                         tivxQueuePeek(&prms->pendingFrameQ[chId], (uintptr_t*)&tmp_desc[chId]);
                         if(NULL==tmp_desc[chId])
+                        {
                             is_all_ch_frame_available = 0;
+                        }
                     }
 
-                    if(!is_all_ch_frame_available)
+                    if(is_all_ch_frame_available == 0U)
                     {
                         tivxEventWait(prms->frame_available, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
@@ -730,6 +735,10 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             }
 
             tivxMemFree(prms, sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 
@@ -981,6 +990,10 @@ static vx_status VX_CALLBACK tivxCaptureControl(
         VX_PRINT(VX_ZONE_ERROR,
             "tivxCaptureControl: Invalid Object Size\n");
         status = VX_FAILURE;
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)

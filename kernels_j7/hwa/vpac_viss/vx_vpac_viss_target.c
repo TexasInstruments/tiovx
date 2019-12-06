@@ -955,6 +955,10 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
             "tivxVpacVissControl: Incorrect Object Size\n");
         status = VX_FAILURE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -1148,6 +1152,10 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
     {
         vissDrvPrms->inputMode = VHWA_M2M_VISS_MODE_THREE_FRAME_MERGE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     /* Set the Input Format */
     fmt->width = raw_img_desc->params.width;
@@ -1165,6 +1173,9 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
             break;
         case TIVX_RAW_IMAGE_P12_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+            break;
+        default:
+            /* do nothing */
             break;
     }
 

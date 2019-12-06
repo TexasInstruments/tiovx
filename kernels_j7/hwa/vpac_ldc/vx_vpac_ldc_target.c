@@ -173,7 +173,7 @@ tivxVpacLdcInstObj gTivxVpacLdcInstObj;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxAddTargetKernelVpacLdc()
+void tivxAddTargetKernelVpacLdc(void)
 {
     vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -221,7 +221,7 @@ void tivxAddTargetKernelVpacLdc()
     }
 }
 
-void tivxRemoveTargetKernelVpacLdc()
+void tivxRemoveTargetKernelVpacLdc(void)
 {
     vx_status status = VX_SUCCESS;
 
@@ -267,7 +267,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
     if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -300,6 +300,10 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcProcess: Null Desc for output1\n");
             status = VX_FAILURE;
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 
@@ -405,7 +409,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
     if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -719,7 +723,7 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
 
     if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -1013,29 +1017,43 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
         {
             mat_addr = (float *)((uintptr_t)warp_matrix_target_ptr);
 
-            if(3 == warp_matrix_desc->columns)
+            if(3u == warp_matrix_desc->columns)
             {
-                cfg->coeffA     = (int16_t)((mat_addr[0] / mat_addr[9]) * 4096.0f);
-                cfg->coeffB     = (int16_t)((mat_addr[3] / mat_addr[9]) * 4096.0f);
-                cfg->coeffC     = (int16_t)((mat_addr[6] / mat_addr[9]) * 8.0f);
-                cfg->coeffD     = (int16_t)((mat_addr[1] / mat_addr[9]) * 4096.0f);
-                cfg->coeffE     = (int16_t)((mat_addr[4] / mat_addr[9]) * 4096.0f);
-                cfg->coeffF     = (int16_t)((mat_addr[7] / mat_addr[9]) * 8.0f);
-                cfg->coeffG     = (int16_t)((mat_addr[2] / mat_addr[9]) * 8388608.0f);
-                cfg->coeffH     = (int16_t)((mat_addr[5] / mat_addr[9]) * 8388608.0f);
-                cfg->enableWarp = 1;
+				float temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
+                cfg->coeffA       = (int16_t)temp_coeffA;
+                float temp_coeffB = (mat_addr[3] / mat_addr[9]) * 4096.0f;
+                cfg->coeffB       = (int16_t)temp_coeffB;
+                float temp_coeffC = (mat_addr[6] / mat_addr[9]) * 8.0f;
+                cfg->coeffC       = (int16_t)temp_coeffC;
+                float temp_coeffD = (mat_addr[1] / mat_addr[9]) * 4096.0f;
+                cfg->coeffD       = (int16_t)temp_coeffD;
+                float temp_coeffE = (mat_addr[4] / mat_addr[9]) * 4096.0f;
+                cfg->coeffE       = (int16_t)temp_coeffE;
+                float temp_coeffF = (mat_addr[7] / mat_addr[9]) * 8.0f;
+                cfg->coeffF       = (int16_t)temp_coeffF;
+                float temp_coeffG = (mat_addr[2] / mat_addr[9]) * 8388608.0f;
+                cfg->coeffG       = (int16_t)temp_coeffG;
+                float temp_coeffH = (mat_addr[5] / mat_addr[9]) * 8388608.0f;
+                cfg->coeffH       = (int16_t)temp_coeffH;
+                cfg->enableWarp   = 1;
             }
             else
             {
-                cfg->coeffA     = (int16_t)(mat_addr[0] * 4096.0f);
-                cfg->coeffB     = (int16_t)(mat_addr[2] * 4096.0f);
-                cfg->coeffC     = (int16_t)(mat_addr[4] * 8.0f);
-                cfg->coeffD     = (int16_t)(mat_addr[1] * 4096.0f);
-                cfg->coeffE     = (int16_t)(mat_addr[3] * 4096.0f);
-                cfg->coeffF     = (int16_t)(mat_addr[5] * 8.0f);
-                cfg->coeffG     = 0;
-                cfg->coeffH     = 0;
-                cfg->enableWarp = 0;
+				float temp_coeffA = mat_addr[0] * 4096.0f;
+                cfg->coeffA       = (int16_t)temp_coeffA;
+                float temp_coeffB = mat_addr[2] * 4096.0f;
+                cfg->coeffB       = (int16_t)temp_coeffB;
+                float temp_coeffC = mat_addr[4] * 8.0f;
+                cfg->coeffC       = (int16_t)temp_coeffC;
+                float temp_coeffD = mat_addr[1] * 4096.0f;
+                cfg->coeffD       = (int16_t)temp_coeffD;
+                float temp_coeffE = mat_addr[3] * 4096.0f;
+                cfg->coeffE       = (int16_t)temp_coeffE;
+                float temp_coeffF = mat_addr[5] * 8.0f;
+                cfg->coeffF       = (int16_t)temp_coeffF;
+                cfg->coeffG       = 0;
+                cfg->coeffH       = 0;
+                cfg->enableWarp   = 0;
             }
         }
         tivxMemBufferUnmap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,

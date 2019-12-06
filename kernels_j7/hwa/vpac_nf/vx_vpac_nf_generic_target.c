@@ -282,6 +282,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Incorrect object size\n");
             status = VX_FAILURE;
         }
+        else
+        {
+            /* do nothing */
+        }
     }
 
     if (VX_SUCCESS == status)
@@ -311,20 +315,20 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             {
                 for (k = -2; k < 3; k++)
                 {
-                    if ( ((int32_t)m < (int32_t)(-(conv->rows/2))) || ((int32_t)m > (int32_t)(conv->rows/2)))
+                    if ( (m < (-((int32_t)conv->rows/2))) || (m > ((int32_t)conv->rows/2)))
                     {
                         /* Force to zero */
-                            temp_lut[((m + 2) * 5) + (k + 2)] = 0;
+                        temp_lut[((m + 2) * 5) + (k + 2)] = 0;
                     }
-                    else if ( ((int32_t)k < (int32_t)(-(conv->columns/2))) || ((int32_t)k > (int32_t)(conv->columns/2)))
+                    else if ( (k < (-((int32_t)conv->columns/2))) || (k > ((int32_t)conv->columns/2)))
                     {
                         /* Force to zero */
                         temp_lut[((m + 2) * 5) + (k + 2)] = 0;
                     }
                     else
                     {
-                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + conv->rows/2) * conv->columns) +
-                                                                       (k + conv->columns/2)];
+                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + (conv->rows/2)) * conv->columns) +
+                                                                       (k + (conv->columns/2))];
                     }
                 }
             }
@@ -556,20 +560,20 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             {
                 for (k = -2; k < 3; k++)
                 {
-                    if ( ((int32_t)m < (int32_t)(-(conv->rows/2))) || ((int32_t)m > (int32_t)(conv->rows/2)))
+                    if ( (m < (-((int32_t)conv->rows/2))) || (m > ((int32_t)conv->rows/2)))
                     {
                         /* Force to zero */
-                            temp_lut[((m + 2) * 5) + (k + 2)] = 0;
+                        temp_lut[((m + 2) * 5) + (k + 2)] = 0;
                     }
-                    else if ( ((int32_t)k < (int32_t)(-(conv->columns/2))) || ((int32_t)k > (int32_t)(conv->columns/2)))
+                    else if ( (k < (-((int32_t)conv->columns/2))) || (k > ((int32_t)conv->columns/2)))
                     {
                         /* Force to zero */
                         temp_lut[((m + 2) * 5) + (k + 2)] = 0;
                     }
                     else
                     {
-                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + conv->rows/2) * conv->columns) +
-                                                                       (k + conv->columns/2)];
+                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + (conv->rows/2)) * conv->columns) +
+                                                                       (k + (conv->columns/2))];
                     }
                 }
             }
@@ -724,6 +728,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
         status = VX_FAILURE;
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)
@@ -1019,6 +1027,10 @@ void tivxVpacNfGenericErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *app
         {
             /* SL2 WR Error */
             errEvents = (errEvents & (~VHWA_NF_WR_ERR));
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 }

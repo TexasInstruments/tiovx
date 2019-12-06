@@ -180,7 +180,7 @@ tivxVpacMscScaleInstObj gTivxVpacMscMScaleInstObj[VHWA_M2M_MSC_MAX_INST];
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxAddTargetKernelVpacMscMultiScale()
+void tivxAddTargetKernelVpacMscMultiScale(void)
 {
     vx_status status;
     uint32_t cnt;
@@ -277,7 +277,7 @@ void tivxAddTargetKernelVpacMscMultiScale()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscMultiScale()
+void tivxRemoveTargetKernelVpacMscMultiScale(void)
 {
     vx_status status = VX_SUCCESS;
     uint32_t cnt;
@@ -329,7 +329,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
     Msc_ScConfig            *sc_cfg = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         status = VX_FAILURE;
@@ -530,7 +530,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
     tivxVpacMscScaleInstObj *inst_obj = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -588,7 +588,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     tivxVpacMscScaleInstObj *inst_obj = NULL;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX] ||
+        ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -750,6 +750,10 @@ static vx_status VX_CALLBACK tivxVpacMscScaleControl(
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacMscScaleControl: Invalid Object Size\n");
         status = VX_FAILURE;
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)

@@ -264,7 +264,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             if (VX_DF_IMAGE_U16 == obj_desc_img->format)
             {
                 chroma_ptr16 = (uint16_t *)chroma_target_ptr;
-                for (cnt = 0; cnt < dispPrms->chromaBufSize / 2; cnt ++)
+                for (cnt = 0; cnt < (dispPrms->chromaBufSize / 2); cnt ++)
                 {
                        *chroma_ptr16 = 0x800u; 
                        chroma_ptr16 ++;
@@ -278,6 +278,10 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                        *chroma_ptr8 = 0x80u; 
                        chroma_ptr8 ++;
                 }
+            }
+            else
+            {
+                /* do nothing */
             }
 
             tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
@@ -673,6 +677,10 @@ static vx_status VX_CALLBACK tivxDisplayControl(
             "tivxDisplayControl: Invalid Object Size\n");
         status = VX_FAILURE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -969,7 +977,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     return status;
 }
 
-void tivxAddTargetKernelDisplay()
+void tivxAddTargetKernelDisplay(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -1004,7 +1012,7 @@ void tivxAddTargetKernelDisplay()
     }
 }
 
-void tivxRemoveTargetKernelDisplay()
+void tivxRemoveTargetKernelDisplay(void)
 {
     vx_status status = VX_SUCCESS;
 

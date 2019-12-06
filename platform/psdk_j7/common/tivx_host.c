@@ -34,6 +34,10 @@ void tivxHostInit(void)
     {
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
     }
+    else
+    {
+        /* do nothing */
+    }
 
     /* Note: eventually register HWA kernels here (deferring for now) */
 

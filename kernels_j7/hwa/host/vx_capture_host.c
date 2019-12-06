@@ -162,6 +162,10 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
                         VX_PRINT(VX_ZONE_ERROR, "image format is invalid \n");
                     }
                 }
+                else
+                {
+                    /* do nothing */
+                }
             }
             else
             {

@@ -250,7 +250,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     Fvid2_FrameList                  *outFrmList;
     uint64_t cur_time;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
@@ -273,6 +273,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Object Size\n");
             status = VX_FAILURE;
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 
@@ -427,7 +431,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 	tivx_obj_desc_image_t            *output_desc;
     void                             *params_array_target_ptr = NULL;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
@@ -524,19 +528,19 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         /* Set SDE Config parameters */
         aligned_width = left_desc->imagepatch_addr[0].dim_x;
         aligned_height = left_desc->imagepatch_addr[0].dim_y;
-        if (aligned_width < 128) {
-            aligned_width = 128;    /* Minimum width = 128 */
+        if (aligned_width < 128U) {
+            aligned_width = 128U;    /* Minimum width = 128 */
         }
-        if (aligned_width & 15) {
-            aligned_width += 16;
-            aligned_width &= ~15;   /* Must be multiple of 16 */
+        if (aligned_width & 15U) {
+            aligned_width += 16U;
+            aligned_width &= ~15U;   /* Must be multiple of 16 */
         }
-        if (aligned_height < 64) {
-            aligned_height = 64;    /* Minimum height = 64 */
+        if (aligned_height < 64U) {
+            aligned_height = 64U;    /* Minimum height = 64 */
         }
-        if (aligned_height & 15) {
-            aligned_height += 16;
-            aligned_height &= ~15;   /* Must be multiple of 16 */
+        if (aligned_height & 15U) {
+            aligned_height += 16U;
+            aligned_height &= ~15U;   /* Must be multiple of 16 */
         }
         if (SDE_MAX_IMAGE_WIDTH < aligned_width)
         {
@@ -646,7 +650,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
     uint32_t                 size;
     tivxDmpacSdeObj    *sde_obj = NULL;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
@@ -707,6 +711,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
 	    VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
         status = VX_FAILURE;
+    }
+    else
+    {
+        /* do nothing */
     }
 
     if (VX_SUCCESS == status)
@@ -890,6 +898,10 @@ void tivxDmpacSdeErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData)
         {
             /* FOCO0 VBUSM RD Error */
             errEvents = (errEvents & (~VHWA_SDE_FOCO0_VBUSM_RD_ERR));
+        }
+        else
+        {
+            /* do nothing */
         }
     }
 }

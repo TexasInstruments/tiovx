@@ -493,8 +493,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             }
         }
 
-        if( ((input_current_w % (1U<<(uint32_t)input_current_levels)) != 0) ||
-            ((input_current_h % (1U<<(uint32_t)input_current_levels)) != 0)
+        if( ((input_current_w % ((vx_uint32)1U<<input_current_levels)) != 0U) ||
+            ((input_current_h % ((vx_uint32)1U<<input_current_levels)) != 0U)
           )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -505,8 +505,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 );
         }
 
-        if( ((input_current_w / (1U<<((uint32_t)input_current_levels-1U))) < 32U) ||
-            ((input_current_h / (1U<<((uint32_t)input_current_levels-1U))) < 16U)
+        if( ((input_current_w / ((vx_uint32)1U<<(input_current_levels-1U))) < 32U) ||
+            ((input_current_h / ((vx_uint32)1U<<(input_current_levels-1U))) < 16U)
           )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -608,6 +608,10 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be no greater than 170 if vertical_search_range values are 62\n");
+        }
+        else
+        {
+            /* do nothing */
         }
         if (1U < params.median_filter_enable)
         {

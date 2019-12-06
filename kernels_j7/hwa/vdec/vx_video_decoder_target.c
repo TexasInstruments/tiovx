@@ -269,6 +269,10 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
             VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderProcess: Incorrect object size\n");
             status = VX_FAILURE;
         }
+        else
+        {
+            /* do nothing */
+        }
     }
 
     if (VX_SUCCESS == status)
@@ -590,6 +594,10 @@ static vx_status VX_CALLBACK tivxVideoDecoderDelete(
         VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderDelete: Incorrect object size\n");
         status = VX_FAILURE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     if (VX_SUCCESS == status)
     {
@@ -762,7 +770,7 @@ void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_process_cb cb_type)
                     break;
                 }
 
-                if (7 == decoder_obj->processFlag || ((0 != decoder_obj->first_process) && (3 == decoder_obj->processFlag)))
+                if ((7U == decoder_obj->processFlag) || ((0U != decoder_obj->first_process) && (3U == decoder_obj->processFlag)))
                 {
                     tivxEventPost(decoder_obj->waitForProcessCmpl);
                 }
