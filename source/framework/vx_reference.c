@@ -177,7 +177,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 {
-    vx_uint32 result = UINT32_MAX;
+    vx_uint32 result = (uint32_t)UINT32_MAX;
     if (ref)
     {
         ownReferenceLock(ref);
@@ -641,15 +641,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
     }
     else
     {
-        switch (hint)
-        {
-            /*! \todo add hints to the sample implementation */
-
-            default:
-                VX_PRINT(VX_ZONE_ERROR,"vxHint: Hint not supported\n");
-                status = VX_ERROR_NOT_SUPPORTED;
-                break;
-        }
+        VX_PRINT(VX_ZONE_ERROR,"vxHint: Hint not supported\n");
+        status = VX_ERROR_NOT_SUPPORTED;
     }
 
     return status;

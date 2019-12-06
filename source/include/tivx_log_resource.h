@@ -84,14 +84,14 @@ extern "C" {
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceInit();
+void tivxLogResourceInit(void);
 
 /*!
  * \brief De-Initialize max value structs
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceDeInit();
+void tivxLogResourceDeInit(void);
 
 /*!
  * \brief Allocate new resource

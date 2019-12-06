@@ -145,7 +145,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                     obj_desc->src_height = src_height;
                     obj_desc->dst_width = dst_width;
                     obj_desc->dst_height = dst_height;
-                    obj_desc->mem_size = dst_width*dst_height*sizeof(tivx_remap_point_t);
+                    obj_desc->mem_size = dst_width*dst_height*(vx_uint32)sizeof(tivx_remap_point_t);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;

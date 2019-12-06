@@ -210,7 +210,7 @@ void tivxPlatformDeleteTargets(void);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformActivate();
+void tivxPlatformActivate(void);
 
 /*!
  * \brief Utility function to disable Platform specific things
@@ -218,7 +218,7 @@ void tivxPlatformActivate();
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeactivate();
+void tivxPlatformDeactivate(void);
 
 /*!
  * \brief Utility function to get Platform specific things
@@ -226,7 +226,7 @@ void tivxPlatformDeactivate();
  *
  * \ingroup group_tivx_platform
  */
-void *tivxPlatformGetDmaObj();
+void *tivxPlatformGetDmaObj(void);
 
 #ifdef __cplusplus
 }

@@ -261,14 +261,14 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
 
 #define TIVX_RESOURCE_STATS_TABLE_SIZE (sizeof(g_tivx_resource_stats_table)/sizeof(g_tivx_resource_stats_table[0]))
 
-void tivxLogResourceInit()
+void tivxLogResourceInit(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexCreate(&g_tivx_log_resource_lock);
 #endif
 }
 
-void tivxLogResourceDeInit()
+void tivxLogResourceDeInit(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexDelete(&g_tivx_log_resource_lock);
@@ -390,7 +390,7 @@ static int getNumDigits(int value)
     return numDigits;
 }
 
-void tivxPrintAllResourceStats()
+void tivxPrintAllResourceStats(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int i, j;
@@ -432,7 +432,7 @@ void tivxPrintAllResourceStats()
 #endif
 }
 
-static char *test_file_path()
+static char *test_file_path(void)
 {
     char *tivxPlatformGetEnv(char *env_var);
 
@@ -443,7 +443,7 @@ static char *test_file_path()
     #endif
 }
 
-vx_status tivxExportAllResourceMaxUsedValueToFile()
+vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 {
     vx_status status = VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE

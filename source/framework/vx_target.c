@@ -290,8 +290,8 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         for(i=0; i<node_obj_desc->num_params ; i++)
         {
             parent_obj_desc[i] = NULL;
-
-            if(is_prm_replicated & (1U<<i))
+            
+            if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
             {
                 prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
                 if(prm_obj_desc)
@@ -311,7 +311,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         for(i=0; i<node_obj_desc->num_params ; i++)
         {
             params[i] = NULL;
-            if(is_prm_replicated & (1U<<i))
+            if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
             {
                 if(parent_obj_desc[i])
                 {
@@ -334,9 +334,9 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                     }
                 }
             }
-            else if(is_prm_array_element & (1U<<i))
+            else if((is_prm_array_element & ((uint32_t)1U << i)) != 0U)
             {
-                if(is_prm_data_ref_q_flag & (1U<<i))
+                if((is_prm_data_ref_q_flag & ((uint32_t)1U << i)) != 0U)
                 {
                     /* this is a case of parameter expected by node being a
                      * element within a object array or pyramid
@@ -409,7 +409,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                  *       the type of the node object.  If these match, then the parent object should be returned.
                  *       If they don't, then the element of the parent should be returned.
                  */
-                if(is_prm_data_ref_q_flag & (1U<<i))
+                if((is_prm_data_ref_q_flag & ((uint32_t)1U << i)) != 0U)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(params[i]->scope_obj_desc_id);
 
@@ -548,6 +548,10 @@ vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_d
         {
             /* this is trigger from prev node or due to resource being released so proceed with execution */
             node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
+        }
+        else
+        {
+            /* do nothing */
         }
     }
     return is_prev_node_blocked;
@@ -785,7 +789,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             {
                 parent_obj_desc[i] = NULL;
 
-                if(is_prm_replicated & (1U<<i))
+                if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
                 {
                     prm_obj_desc = tivxObjDescGet(node_obj_desc->data_id[i]);
                     if(prm_obj_desc)
@@ -799,7 +803,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             for(i=0; i<node_obj_desc->num_params ; i++)
             {
                 params[i] = NULL;
-                if(is_prm_replicated & (1U<<i))
+                if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
                 {
                     if(parent_obj_desc[i])
                     {
@@ -1123,6 +1127,10 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                         if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_CONTROL)
                         {
                             status = tivxTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
+                        }
+                        else
+                        {
+                            /* do nothing */
                         }
                     }
                 }

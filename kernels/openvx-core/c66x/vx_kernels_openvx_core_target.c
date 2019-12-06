@@ -169,7 +169,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
 
 #endif
 
-void tivxRegisterOpenVXCoreTargetKernels()
+void tivxRegisterOpenVXCoreTargetKernels(void)
 {
 
 #ifdef BUILD_BAM
@@ -181,7 +181,7 @@ void tivxRegisterOpenVXCoreTargetKernels()
     tivxReserveC66xL2MEM();
 }
 
-void tivxUnRegisterOpenVXCoreTargetKernels()
+void tivxUnRegisterOpenVXCoreTargetKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

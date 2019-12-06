@@ -70,10 +70,10 @@ static tivx_module_t g_module_table[TIVX_MODULE_MAX];
 
 static void ownCheckAndInitModule(void)
 {
-    static vx_bool is_init = vx_false_e;
+    static vx_bool is_init = (vx_bool)vx_false_e;
     uint32_t idx;
 
-    if(!is_init)
+    if(!(is_init != (vx_bool)vx_false_e))
     {
         for(idx=0; idx<dimof(g_module_table); idx++)
         {

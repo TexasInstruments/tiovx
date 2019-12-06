@@ -1941,6 +1941,10 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
             {
                 node->node_error_app_value = app_value;
             }
+            else
+            {
+                /* do nothing */
+            }
 
             VX_PRINT(VX_ZONE_INFO, "Enabling event at node [%s]\n", node->base.name);
         }

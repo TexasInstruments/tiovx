@@ -126,6 +126,10 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
     {
         VX_PRINT(VX_ZONE_WARNING, "ownGraphAddDataReference: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/TI/tivx_config.h\n");
     }
+    else
+    {
+        /* do nothing */
+    }
 
     if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
             ||
@@ -1022,6 +1026,10 @@ static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph,
                 {
                     ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
                 }
+                else
+                {
+                    /* do nothing */
+                }
                 if(node_prm_ref->scope==ref)
                 {
                     ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
@@ -1455,7 +1463,10 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_objec
             {
                 status |= ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar->ref[i], (vx_pyramid)ref->ref[i]);
             }
-
+            else
+            {
+                /* do nothing */
+            }
         }
     }
     if(status!=VX_SUCCESS)
@@ -1486,6 +1497,10 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
     {
         status = ownGraphUpdateImageRefAfterKernetInit(graph, (vx_image)exemplar, (vx_image)ref);
     }
+    else
+    {
+        /* do nothing */
+    }
 
     /* below is to take care of replicate case */
     if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
@@ -1498,6 +1513,10 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
       && (ownIsValidSpecificReference(exemplar->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e))
     {
         status = ownGraphUpdateObjArrRefAfterKernetInit(graph, (vx_object_array)exemplar->scope, (vx_object_array)ref->scope);
+    }
+    else
+    {
+        /* do nothing */
     }
     if(status!=VX_SUCCESS)
     {

@@ -160,8 +160,8 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
         /* TIVX_DF_IMAGE_P12 case */
         /* If x is even, proper offset
          * if x is odd, then offset is on byte alignment 4 bits before start of pixel */
-        offset = (addr->stride_y * (y / addr->step_y)) +
-                 ((12UL * (x / addr->step_x))/8UL);
+        offset = ((vx_uint32)addr->stride_y * (y / addr->step_y)) +
+                 ((12U * (x / addr->step_x))/8U);
     }
     else
     {
@@ -359,7 +359,7 @@ static void ownInitPlane(vx_image image,
         else /* Only for P12 and NV12_P12 */
         {
             imagepatch_addr->stride_y = TIVX_ALIGN(
-                        (((imagepatch_addr->dim_x*bits_per_pixel)+7UL)/8UL),
+                        (((imagepatch_addr->dim_x*bits_per_pixel)+7U)/8U),
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         );
         }
@@ -754,7 +754,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 /* ensure row-major memory layout */
                 if ((color == TIVX_DF_IMAGE_P12) || (color == TIVX_DF_IMAGE_NV12_P12))
                 {
-                    if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < (vx_int32)(((addrs[plane_idx].dim_x * 12UL)+7UL)/8UL)) )
+                    if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < ((((vx_int32)addrs[plane_idx].dim_x * 12)+7)/8)) )
                     {
                         vxReleaseImage(&image);
                         image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
@@ -764,7 +764,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 }
                 else
                 {
-                    if((addrs[plane_idx].stride_x <= 0) || (addrs[plane_idx].stride_y < (vx_int32)(addrs[plane_idx].stride_x * addrs[plane_idx].dim_x) ) )
+                    if((addrs[plane_idx].stride_x <= 0) || (addrs[plane_idx].stride_y < (addrs[plane_idx].stride_x * (vx_int32)addrs[plane_idx].dim_x) ) )
                     {
                         vxReleaseImage(&image);
                         image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
@@ -1110,19 +1110,19 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                             pixel = (vx_uint16 *)&value->YUV_12;
                         }
 
-                        if (p == 0)
+                        if (p == 0u)
                         {
-                            value_p12_0 = pixel[0] & 0x0FFF;
+                            value_p12_0 = pixel[0] & 0x0FFFu;
                             value_p12_1 = value_p12_0;
                         }
                         else
                         {
-                            value_p12_0 = pixel[1] & 0x0FFF;
-                            value_p12_1 = pixel[2] & 0x0FFF;
+                            value_p12_0 = pixel[1] & 0x0FFFu;
+                            value_p12_1 = pixel[2] & 0x0FFFu;
                         }
 
-                        value_b0 = (vx_uint8)(value_p12_0 & 0xFF);
-                        value_b1 = (vx_uint8)(value_p12_0>>8u) | (vx_uint8)((value_p12_1 & 0x0F)<<4u);
+                        value_b0 = (vx_uint8)(value_p12_0 & 0xFFu);
+                        value_b1 = (vx_uint8)(value_p12_0>>8u) | (vx_uint8)((value_p12_1 & 0x0Fu)<<4u);
                         value_b2 = (vx_uint8)(value_p12_1>>4u);
 
                         for (y = 0; y < addr.dim_y; y+=addr.step_y)
@@ -1464,9 +1464,9 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
                 imagepatch_addr = &obj_desc->imagepatch_addr[plane_index];
 
                 num_pixels  =
-                            ((end_x-start_x)/imagepatch_addr->step_x)
+                            (((vx_size)end_x-(vx_size)start_x)/(vx_size)imagepatch_addr->step_x)
                             *
-                            ((end_y-start_y)/imagepatch_addr->step_y)
+                            (((vx_size)end_y-(vx_size)start_y)/(vx_size)imagepatch_addr->step_y)
                             ;
 
                 format = obj_desc->format;
@@ -1738,7 +1738,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
             {
                 if(image_addr->stride_x == 0)
                 {
-                    len = ((((end_x - start_x)*12UL)+7UL)/8UL)/image_addr->step_x;
+                    len = ((((end_x - start_x)*12U)+7U)/8U)/image_addr->step_x;
                 }
                 else
                 {

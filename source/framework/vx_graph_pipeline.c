@@ -401,6 +401,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 {
                     refs[ref_id] = ref->scope;
                 }
+                else
+                {
+                    /* do nothing */
+                }
 
                 /* If the ref type doesn't match graph parameter type, throw an error */
                 if (refs[ref_id]->type != graph->parameters[graph_parameter_index].type)

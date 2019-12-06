@@ -172,7 +172,7 @@ vx_status tivx_utils_bmp_file_read(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = convert_to_gray_scale ? 1 : -1;
+    int dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 
@@ -232,7 +232,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = convert_to_gray_scale ? 1 : -1;
+    int dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 
@@ -669,7 +669,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 VX_NOGAP_X
                 );
 
-            if(!enable_rgb2gray && !enable_gray2rgb)
+            if((enable_rgb2gray == (vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)vx_false_e))
             {
                 uint32_t y;
 
@@ -717,6 +717,10 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
                 }
+            }
+            else
+            {
+                /* do nothing */
             }
 
             vxUnmapImagePatch(image, map_id);

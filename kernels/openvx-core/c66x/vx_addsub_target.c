@@ -296,7 +296,7 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
     return (status);
 }
 
-void tivxAddTargetKernelAdd()
+void tivxAddTargetKernelAdd(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
 
@@ -329,7 +329,7 @@ void tivxAddTargetKernelAdd()
 }
 
 
-void tivxRemoveTargetKernelAdd()
+void tivxRemoveTargetKernelAdd(void)
 {
     tivxRemoveTargetKernel(vx_add_target_kernel);
 }

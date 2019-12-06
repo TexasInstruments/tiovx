@@ -408,6 +408,6 @@ static vx_bool vxIsPowerOfTwo(vx_uint32 a)
 
 static int8_t isodd(size_t a)
 {
-    return (int8_t)(a & 1U);
+    return (int8_t)((a & 1ULL) != 0ULL);
 }
 

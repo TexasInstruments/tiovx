@@ -69,7 +69,7 @@
 
 typedef struct IM_Fxns
 {
-  IVISION_Fxns * fxns;
+    IVISION_Fxns * fxns;
 }IM_Fxns;
 
 /* Local Functions */
@@ -80,72 +80,70 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
 static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t *heap_id)
 {
-  int32_t status = VX_SUCCESS;
+    int32_t status = VX_SUCCESS;
 
-  *heap_id = TIVX_MEM_EXTERNAL;
-  switch(space)
-  {
-  default:
-    status = VX_FAILURE;
-    break;
-  case IALG_EPROG:
-  case IALG_IPROG:
-  case IALG_ESDATA:
-  case IALG_EXTERNAL:
-    if(attrs==IALG_SCRATCH)
+    *heap_id = TIVX_MEM_EXTERNAL;
+    switch(space)
     {
-       *heap_id = TIVX_MEM_EXTERNAL_SCRATCH;
-    }
-    else
-    {
-       *heap_id = TIVX_MEM_EXTERNAL;
-    }
-    break;
-  case IALG_DARAM0:
-  case IALG_DARAM1:
-  case IALG_SARAM0:
-  case IALG_SARAM1:
-  case IALG_DARAM2:
-  case IALG_SARAM2:
-    if(attrs==IALG_SCRATCH)
-    {
-      if(space==IALG_DARAM0)
-      {
-        *heap_id = TIVX_MEM_INTERNAL_L1;
-      }
-      else
-        if(space==IALG_DARAM1)
-        {
+        default:
+            status = VX_FAILURE;
+            break;
+        case IALG_EPROG:
+        case IALG_IPROG:
+        case IALG_ESDATA:
+        case IALG_EXTERNAL:
+            if(attrs==IALG_SCRATCH)
+            {
+               *heap_id = TIVX_MEM_EXTERNAL_SCRATCH;
+            }
+            else
+            {
+               *heap_id = TIVX_MEM_EXTERNAL;
+            }
+            break;
+        case IALG_DARAM0:
+        case IALG_DARAM1:
+        case IALG_SARAM0:
+        case IALG_SARAM1:
+        case IALG_DARAM2:
+        case IALG_SARAM2:
+            if(attrs==IALG_SCRATCH)
+            {
+                if(space==IALG_DARAM0)
+                {
+                  *heap_id = TIVX_MEM_INTERNAL_L1;
+                }
+                else
+                if(space==IALG_DARAM1)
+                {
 #ifdef TDAX
-          tivx_cpu_id_e cpuId;
-          /* EVE does not have any L2 memory so DARAM1 space must be mapped to external memory instead */
-          cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
-          if ( (cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4) )
-          {
-            *heap_id = TIVX_MEM_EXTERNAL;
-
-          }
-          else
-          {
-            *heap_id = TIVX_MEM_INTERNAL_L2;
-          }
+                    tivx_cpu_id_e cpuId;
+                    /* EVE does not have any L2 memory so DARAM1 space must be mapped to external memory instead */
+                    cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+                    if ( (cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4) )
+                    {
+                        *heap_id = TIVX_MEM_EXTERNAL;
+                    }
+                    else
+                    {
+                        *heap_id = TIVX_MEM_INTERNAL_L2;
+                    }
 #else
-          *heap_id = TIVX_MEM_INTERNAL_L2;
+                    *heap_id = TIVX_MEM_INTERNAL_L2;
 #endif
-
-        }
-        else
-        {
-          *heap_id = TIVX_MEM_INTERNAL_L3;
-        }
+                }
+                else
+                {
+                  *heap_id = TIVX_MEM_INTERNAL_L3;
+                }
+            }
+            else
+            {
+                *heap_id = TIVX_MEM_EXTERNAL;
+            }
+            break;
     }
-    else
-    {
-      *heap_id = TIVX_MEM_EXTERNAL;
-    }
-    break;
-  }
-  return status;
+    return status;
 }
 
 /**
@@ -161,47 +159,47 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
  */
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 {
-  vx_uint32 memRecId, heap_id;
-  vx_status status = VX_SUCCESS;
+    vx_uint32 memRecId, heap_id;
+    vx_status status = VX_SUCCESS;
 
-  for (memRecId = 0u; memRecId < numMemRec; memRecId++)
-  {
-    VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n",
-        memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
-
-    status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-    if(status==VX_SUCCESS)
+    for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
-      memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size,
-          heap_id);
-    }
+        VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n",
+                 memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
 
-    VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n",
-        memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].base);
+        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        if(status==VX_SUCCESS)
+        {
+            memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size, heap_id);
+        }
 
-    if (NULL == memRec[memRecId].base)
-    {
-      VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n",
-          memRecId, memRec[memRecId].space, memRec[memRecId].size);
-      status = VX_FAILURE;
-      break;
+        VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n",
+                 memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].base);
+
+        if (NULL == memRec[memRecId].base)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n",
+                     memRecId, memRec[memRecId].space, memRec[memRecId].size);
+            status = VX_FAILURE;
+            break;
+        }
     }
-  }
 /* Free the records that ahs SCRATCH attribute and that are in L2 so their space can be re-used for another iVision algorithm */
 #ifndef HOST_EMULATION
-  for (memRecId = 0u; memRecId < numMemRec; memRecId++)
-  {
-    status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-    if(status==VX_SUCCESS)
+    for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
-      if ((heap_id== TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH)) {
-        tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
-      }
+        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        if(status==VX_SUCCESS)
+        {
+            if ((heap_id== TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
+            {
+                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+            }
+        }
     }
-  }
 #endif
 
-  return (status);
+    return (status);
 }
 
 
@@ -219,133 +217,138 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
  */
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
 {
-  vx_uint32 memRecId, heap_id;
-  vx_status status = VX_SUCCESS;
+    vx_uint32 memRecId, heap_id;
+    vx_status status = VX_SUCCESS;
 
-  for (memRecId = 0; memRecId < numMemRec; memRecId++)
-  {
-    status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-    if(status==VX_SUCCESS)
+    for (memRecId = 0; memRecId < numMemRec; memRecId++)
     {
+        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        if(status==VX_SUCCESS)
+        {
 #ifndef HOST_EMULATION
-      if ((heap_id!= TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH)) {
-        tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
-      }
+            if ((heap_id!= TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
+            {
+                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+            }
 #else
-      tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+            tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
 #endif
+        }
     }
-  }
 
-  return status;
+    return status;
 }
 
 vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
 {
-  vx_uint32 numMemRec;
-  IALG_MemRec   *memRec;
-  IM_Fxns *ivision = (IM_Fxns *)algHandle;
-  vx_status status = 0;
+    vx_uint32 numMemRec;
+    IALG_MemRec   *memRec;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    vx_status status = 0;
 
-  numMemRec = ivision->fxns->ialg.algNumAlloc();
+    numMemRec = ivision->fxns->ialg.algNumAlloc();
 
-  /*
-   * Allocate memory for the records. These are NOT the actual memory of
-   * tha algorithm
-   */
-  memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+    /*
+     * Allocate memory for the records. These are NOT the actual memory of
+     * tha algorithm
+     */
+    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
 
-  if(memRec != NULL)
-  {
-    status = ivision->fxns->ialg.algFree(algHandle, memRec);
-
-    if(status==IALG_EOK)
+    if(memRec != NULL)
     {
-      status = tivxAlgiVisionFreeMem(numMemRec, memRec);
+        status = ivision->fxns->ialg.algFree(algHandle, memRec);
+
+        if(status==IALG_EOK)
+        {
+            status = tivxAlgiVisionFreeMem(numMemRec, memRec);
+        }
+
+        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
     }
 
-    tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
-  }
-
-  return status;
+    return status;
 }
 
 void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
 {
-  vx_uint32 numMemRec;
-  IALG_MemRec *memRec;
-  IM_Fxns *algHandle = NULL;
-  vx_status status = VX_SUCCESS;
+    vx_uint32 numMemRec;
+    IALG_MemRec *memRec;
+    IM_Fxns *algHandle = NULL;
+    vx_status status = VX_SUCCESS;
 
-  VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
+    VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
 
-  numMemRec = fxns->ialg.algNumAlloc();
+    numMemRec = fxns->ialg.algNumAlloc();
 
-  VX_PRINT(VX_ZONE_INFO, "Allocating %d memory records ...\n", numMemRec);
+    VX_PRINT(VX_ZONE_INFO, "Allocating %d memory records ...\n", numMemRec);
 
-  /*
-   * Allocate memory for the records. These are NOT the actual memory of
-   * tha algorithm
-   */
-  memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+    /*
+     * Allocate memory for the records. These are NOT the actual memory of
+     * tha algorithm
+     */
+    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
 
-  if(NULL != memRec)
-  {
-    VX_PRINT(VX_ZONE_INFO, "Calling ialg.algAlloc ...\n");
-
-    status = fxns->ialg.algAlloc(pAlgPrms, NULL, memRec);
-
-    if(status==IALG_EOK)
+    if(NULL != memRec)
     {
-      status = tivxAlgiVisionAllocMem(numMemRec, memRec);
-      if(status==IALG_EOK)
-      {
-        tivx_cpu_id_e cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+        VX_PRINT(VX_ZONE_INFO, "Calling ialg.algAlloc ...\n");
 
-        VX_PRINT(VX_ZONE_INFO, "Calling ialg.algInit ...\n");
+        status = fxns->ialg.algAlloc(pAlgPrms, NULL, memRec);
 
-        algHandle = (IM_Fxns *)memRec[0].base;
-        status = fxns->ialg.algInit(
-            (IALG_Handle)(algHandle),
-            memRec,
-            NULL,
-            pAlgPrms);
-
-        if(status != IALG_EOK)
+        if(status==IALG_EOK)
         {
-          VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algInit failed with status = %d\n", status);
-          tivxAlgiVisionDeleteAlg(algHandle);
-          algHandle = NULL;
+            status = tivxAlgiVisionAllocMem(numMemRec, memRec);
+            if(status==IALG_EOK)
+            {
+                tivx_cpu_id_e cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+
+                VX_PRINT(VX_ZONE_INFO, "Calling ialg.algInit ...\n");
+
+                algHandle = (IM_Fxns *)memRec[0].base;
+                status = fxns->ialg.algInit((IALG_Handle)(algHandle),
+                                            memRec,
+                                            NULL,
+                                            pAlgPrms);
+
+                if(status != IALG_EOK)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algInit failed with status = %d\n", status);
+                    tivxAlgiVisionDeleteAlg(algHandle);
+                    algHandle = NULL;
+                }
+                else if ( (cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+                {
+                    /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
+                    tivxMemBufferUnmap(memRec[0].base, memRec[0].size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+                }
+                else
+                {
+                    /* do nothing */
+                }
+            }
         }
-        else if ( (cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2)) {
-          /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
-          tivxMemBufferUnmap(memRec[0].base, memRec[0].size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+        else
+        {
+          VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algAlloc failed with status = %d\n", status);
         }
-      }
+
+        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
     }
     else
     {
-      VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algAlloc failed with status = %d\n", status);
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate %d memory records !!!\n", numMemRec);
     }
 
-    tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
-  }
-  else
-  {
-    VX_PRINT(VX_ZONE_ERROR, "Unable to allocate %d memory records !!!\n", numMemRec);
-  }
+    if(algHandle != NULL)
+    {
+      VX_PRINT(VX_ZONE_INFO, "Created AlgiVision handle.\n");
+    }
 
-  if(algHandle != NULL)
-  {
-    VX_PRINT(VX_ZONE_INFO, "Created AlgiVision handle.\n");
-  }
-
-  return algHandle;
+    return algHandle;
 }
 
 vx_int32 tivxAlgiVisionDelete(void *algHandle)
 {
-  return tivxAlgiVisionDeleteAlg(algHandle);
+    return tivxAlgiVisionDeleteAlg(algHandle);
 }
 
 vx_int32 tivxAlgiVisionProcess(void *algHandle,
@@ -354,22 +357,21 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IVISION_InArgs *inArgs,
     IVISION_OutArgs *outArgs)
 {
-  IM_Fxns *ivision = (IM_Fxns *)algHandle;
-  vx_status status = VX_SUCCESS;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    vx_status status = VX_SUCCESS;
 
-  ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
+    ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
 
-  status = ivision->fxns->algProcess(
-      (IVISION_Handle)ivision,
-      inBufs,
-      outBufs,
-      inArgs,
-      outArgs);
+    status = ivision->fxns->algProcess((IVISION_Handle)ivision,
+                                       inBufs,
+                                       outBufs,
+                                       inArgs,
+                                       outArgs);
 
 
-  ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
+    ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
 
-  return status;
+    return status;
 }
 
 vx_int32 tivxAlgiVisionControl(void *algHandle,
@@ -377,28 +379,27 @@ vx_int32 tivxAlgiVisionControl(void *algHandle,
     const IALG_Params *inParams,
     IALG_Params *outParams)
 {
-  IM_Fxns *ivision = (IM_Fxns *)algHandle;
-  vx_status status = VX_SUCCESS;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    vx_status status = VX_SUCCESS;
 
-  status = ivision->fxns->algControl(
-      (IVISION_Handle)ivision,
-      cmd,
-      inParams,
-      outParams);
+    status = ivision->fxns->algControl((IVISION_Handle)ivision,
+                                       cmd,
+                                       inParams,
+                                       outParams);
 
-  return status;
+    return status;
 }
 
 void tivxAlgiVisionActivate(void *algHandle)
 {
-  IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
 
-  ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
+    ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
 }
 
 void tivxAlgiVisionDeActivate(void *algHandle)
 {
-  IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
 
-  ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
+    ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
 }

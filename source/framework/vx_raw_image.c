@@ -111,7 +111,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
         /* If x is even, proper offset
          * if x is odd, then offset is on byte alignment 4 bits before start of pixel */
         offset = (addr->stride_y * y) +
-                 ((12UL * x)/8UL);
+                 ((12U * x)/8U);
     }
     else
     {
@@ -879,7 +879,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                 {
                     if(image_addr->stride_x == 0)
                     {
-                        len = ((((end_x - start_x)*12UL)+7UL)/8UL)/image_addr->step_x;
+                        len = ((((end_x - start_x)*12U)+7U)/8U)/image_addr->step_x;
                     }
                     else
                     {

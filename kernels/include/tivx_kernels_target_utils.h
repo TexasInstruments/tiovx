@@ -79,7 +79,7 @@ extern "C" {
 #define MAX9(a, b, c, d, e, f, g, h, i) (MAX2(MAX8((a), (b), (c), (d), (e), (f), (g), (h)), (i)))
 #define MAX10(a, b, c, d, e, f, g, h, i, j) (MAX2(MAX9((a), (b), (c), (d), (e), (f), (g), (h), (i)), (j)))
 
-typedef void (*tivxTargetKernel_Fxn) ();
+typedef void (*tivxTargetKernel_Fxn) (void);
 
 typedef struct  {
     tivxTargetKernel_Fxn    add_kernel;

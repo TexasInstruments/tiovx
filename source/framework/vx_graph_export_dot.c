@@ -225,6 +225,10 @@ static void getNodeColor(vx_node node, char *node_color_name)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
         }
+        else
+        {
+            /* do nothing */
+        }
     }
 }
 
@@ -556,19 +560,19 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
             vx_delay delay = graph->delays[data_id];
             uint32_t slot_id;
 
-            for(slot_id=0; slot_id<delay->count; slot_id++)
+            for(slot_id=0U; slot_id<delay->count; slot_id++)
             {
                 if((delay->refs[slot_id] != NULL)
                     &&
-                    ((delay->refs[(slot_id+1)%delay->count] != NULL))
+                    ((delay->refs[(slot_id+1U)%delay->count] != NULL))
                 )
                 {
                     exportDataRef(fp, delay->refs[slot_id]);
 
                     TIVX_EXPORT_WRITELN(fp, "%s -> %s [label = %d, style=dashed, color=gray]\n",
                         delay->refs[slot_id]->name,
-                        delay->refs[(slot_id+1)%delay->count]->name,
-                        -((slot_id+1)%delay->count)
+                        delay->refs[(slot_id+1U)%delay->count]->name,
+                        -(((int32_t)slot_id+1)%(int32_t)delay->count)
                         );
                 }
             }

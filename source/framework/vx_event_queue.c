@@ -292,6 +292,10 @@ vx_status vxWaitEventQueue(
                 event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
             }
+            else
+            {
+                /* do nothing */
+            }
         }
 
         /* release index into free queue,
@@ -359,6 +363,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
         {
             status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
         }
+        else
+        {
+            /* do nothing */
+        }
+    }
+    else
+    {
+        /* do nothing */
     }
 
     return status;

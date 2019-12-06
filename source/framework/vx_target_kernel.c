@@ -264,6 +264,10 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
                     knl = tmp_knl;
                 }
             }
+            else
+            {
+                /* do nothing */
+            }
             if(knl!=NULL)
             {
                 /* kernel found */

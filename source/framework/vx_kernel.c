@@ -326,7 +326,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     kernel->signature.states[idx] = VX_TYPE_INVALID;
                 }
                 kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
-                if( !kernel->is_target_kernel )
+                if(kernel->is_target_kernel == (vx_bool)vx_false_e)
                 {
                     /* for user kernel, add to HOST target by default */
                     tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);

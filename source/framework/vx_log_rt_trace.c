@@ -67,49 +67,49 @@
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
-  ((byte & 0x08) ? '1' : '0'), \
-  ((byte & 0x04) ? '1' : '0'), \
-  ((byte & 0x02) ? '1' : '0'), \
-  ((byte & 0x01) ? '1' : '0')
+  (((byte & 0x08U) != 0U) ? '1' : '0'), \
+  (((byte & 0x04U) != 0U) ? '1' : '0'), \
+  (((byte & 0x02U) != 0U) ? '1' : '0'), \
+  (((byte & 0x01U) != 0U) ? '1' : '0')
 
-void tivxLogRtTraceNodeExeStart(uint64_t time, tivx_obj_desc_node_t *node_obj_desc)
+void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
         printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
-            time,
+            timestamp,
             BYTE_TO_BINARY(node_obj_desc->pipeline_id),
             (uintptr_t)node_obj_desc->base.host_ref);
     }
 }
 
-void tivxLogRtTraceNodeExeEnd(uint64_t time, tivx_obj_desc_node_t *node_obj_desc)
+void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
         printf("#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
-            time,
+            timestamp,
             (uintptr_t)node_obj_desc->base.host_ref);
     }
 }
 
-void tivxLogRtTraceGraphExeStart(uint64_t time, tivx_obj_desc_graph_t *graph_obj_desc)
+void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
         printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" g_%d\n",
-            time,
+            timestamp,
             BYTE_TO_BINARY(graph_obj_desc->pipeline_id),
             graph_obj_desc->base.obj_desc_id);
     }
 }
 
-void tivxLogRtTraceGraphExeEnd(uint64_t time, tivx_obj_desc_graph_t *graph_obj_desc)
+void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
         printf("#%" PRIu64 "\n" "bZ g_%d\n",
-            time,
+            timestamp,
             graph_obj_desc->base.obj_desc_id);
     }
 }

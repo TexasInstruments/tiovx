@@ -148,6 +148,10 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         VX_PRINT(VX_ZONE_ERROR,"Context event deletion failed\n");
         status = VX_FAILURE;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     return status;
 }

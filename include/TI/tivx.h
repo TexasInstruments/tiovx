@@ -446,7 +446,7 @@ vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_
  *
  * \ingroup group_tivx_ext_host
  */
-void tivxPrintAllResourceStats();
+void tivxPrintAllResourceStats(void);
 
 /*!
  * \brief Exports the max used values to a file
@@ -462,7 +462,7 @@ void tivxPrintAllResourceStats();
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status tivxExportAllResourceMaxUsedValueToFile();
+vx_status tivxExportAllResourceMaxUsedValueToFile(void);
 
 
 /*! \brief Macro to find size of array

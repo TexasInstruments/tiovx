@@ -146,6 +146,9 @@ void tivxInitBufParams(
             case VX_DF_IMAGE_UYVY:
                 buf_params[i].data_type = VXLIB_UINT16;
                 break;
+            default:
+                /* do nothing */
+                break;
         }
     }
 }
@@ -238,6 +241,9 @@ void tivxInitTwoBufParams(
             case VX_DF_IMAGE_UYVY:
                 buf_params0[i].data_type = VXLIB_UINT16;
                 break;
+            default:
+                /* do nothing */
+                break;
         }
 
         switch(obj_desc1->format)
@@ -268,6 +274,9 @@ void tivxInitTwoBufParams(
             case VX_DF_IMAGE_YUYV:
             case VX_DF_IMAGE_UYVY:
                 buf_params1[i].data_type = VXLIB_UINT16;
+                break;
+            default:
+                /* do nothing */
                 break;
         }
     }
