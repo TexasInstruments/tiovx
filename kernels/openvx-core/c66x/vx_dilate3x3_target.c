@@ -71,8 +71,8 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 
-typedef VXLIB_STATUS (*VxLib_Filt3x3_Fxn)(const uint8_t *,
-    const VXLIB_bufParams2D_t *, uint8_t *, const VXLIB_bufParams2D_t *);
+typedef VXLIB_STATUS (*VxLib_Filt3x3_Fxn)(const uint8_t *src_addr,
+    const VXLIB_bufParams2D_t *vxlib_src, uint8_t *dst_addr, const VXLIB_bufParams2D_t *vxlib_dst);
 
 typedef struct
 {
