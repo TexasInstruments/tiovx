@@ -109,7 +109,7 @@ extern "C" {
 /*! \brief Macro to specify default alignment to use for stride in Y-direction
  * \ingroup group_vx_utils
  */
-#define TIVX_DEFAULT_STRIDE_Y_ALIGN   (16U)
+#define TIVX_DEFAULT_STRIDE_Y_ALIGN   (64U)
 
 /*! \brief Used to determine if a type is a scalar.
  * \ingroup group_vx_utils
