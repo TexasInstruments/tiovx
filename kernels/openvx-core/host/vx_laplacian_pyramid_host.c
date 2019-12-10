@@ -104,8 +104,8 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool laplacian_is_virtual = vx_false_e;
-    vx_bool output_is_virtual = vx_false_e;
+    vx_bool laplacian_is_virtual = (vx_bool)vx_false_e;
+    vx_bool output_is_virtual = (vx_bool)vx_false_e;
 
     vx_uint32 w;
     vx_uint32 h;
@@ -169,7 +169,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (vx_false_e == laplacian_is_virtual)
+        if ((vx_bool)vx_false_e == laplacian_is_virtual)
         {
             if (VX_DF_IMAGE_S16 != laplacian_fmt)
             {
@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             }
         }
 
-        if (vx_false_e == output_is_virtual)
+        if ((vx_bool)vx_false_e == output_is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -202,7 +202,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             h = (vx_uint32)ceilf(h * laplacian_scale);
         }
 
-        if (vx_false_e == laplacian_is_virtual)
+        if ((vx_bool)vx_false_e == laplacian_is_virtual)
         {
             if (input_w != laplacian_w)
             {
@@ -217,7 +217,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             }
         }
 
-        if (vx_false_e == output_is_virtual)
+        if ((vx_bool)vx_false_e == output_is_virtual)
         {
             if (w != output_w)
             {

@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeValidate(vx_node node,
     vx_uint32 mag_h;
     vx_df_image mag_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_MAGNITUDE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX])
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'grad_y' should be an image of type:\n VX_DF_IMAGE_S16 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_S16 != mag_fmt)
             {
@@ -187,7 +187,7 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'grad_x' and 'grad_y' should should have the same value for VX_IMAGE_HEIGHT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (grad_x_w != mag_w)
             {

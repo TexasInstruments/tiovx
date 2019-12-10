@@ -143,8 +143,8 @@ vx_status tivxLogRtTrace(vx_graph graph)
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if (   (NULL != graph)
-        && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
-        && (graph->verified == vx_true_e))
+        && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (graph->verified == (vx_bool)vx_true_e))
     {
         for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
         {
@@ -174,18 +174,18 @@ vx_status tivxLogRtTrace(vx_graph graph)
                 }
                 if(node->obj_desc[0])
                 {
-                    vx_bool done = vx_false_e;
+                    vx_bool done = (vx_bool)vx_false_e;
                     for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
                     {
-                        done = vx_false_e;
+                        done = (vx_bool)vx_false_e;
                         if(node->obj_desc[0]->target_id==targets[target_id])
                         {
-                            done = vx_true_e;
+                            done = (vx_bool)vx_true_e;
                         }
                         if(targets[target_id]==TIVX_TARGET_ID_INVALID)
                         {
                             targets[target_id] = node->obj_desc[0]->target_id;
-                            done = vx_true_e;
+                            done = (vx_bool)vx_true_e;
                         }
                         if(done)
                         {

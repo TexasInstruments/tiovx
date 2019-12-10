@@ -1163,13 +1163,13 @@ static inline void tivxEdgeSortStackReset(tivx_edge_sort_context *context, uint1
 
 static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tivx_edge_sort_indices indices)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if(context->stack_top < context->stack_max_elems)
     {
         context->stack[context->stack_top] = indices;
         context->stack_top++;
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
     else
     {
@@ -1181,13 +1181,13 @@ static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tiv
 
 static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx_edge_sort_indices *indices)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if ((context->stack_top > 0) && (context->stack_top < TIVX_BAM_MAX_EDGES))
     {
         *indices = context->stack[context->stack_top-1];
         context->stack_top--;
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
     else
     {
@@ -1206,10 +1206,10 @@ static inline vx_bool tivxEdgeSortStackIsEmpty(tivx_edge_sort_context *context)
 {
     if (context->stack_top > 0)
     {
-        return vx_false_e;
+        return (vx_bool)vx_false_e;
     }
     else
     {
-        return vx_true_e;
+        return (vx_bool)vx_true_e;
     }
 }

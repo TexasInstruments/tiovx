@@ -102,9 +102,9 @@
  *   The implementation on HOST side for user kernel and target kernel is largely the same. Any
  *   difference in implementation between user kernel and target kernel is shown by using
  *   using boolen variable 'add_as_target_kernel'.
- *   - When 'add_as_target_kernel' is 'vx_false_e', it is the
+ *   - When 'add_as_target_kernel' is '(vx_bool)vx_false_e', it is the
  *   implementation for user kernel.
- *   - When 'add_as_target_kernel' is 'vx_true_e', it is the implementation
+ *   - When 'add_as_target_kernel' is '(vx_bool)vx_true_e', it is the implementation
  *   for target kernel.
  *
  * Include below file to use the HOST callable interface for the user/target kernel
@@ -132,8 +132,8 @@
 /**
  * \brief Tutorial Entry Point
  *
- * \param add_as_target_kernel [in] 'vx_false_e', run this tutorial with custom kernel running as user kernel \n
- *                                  'vx_true_e', run this tutorial with custom kernel running as target kernel \n
+ * \param add_as_target_kernel [in] '(vx_bool)vx_false_e', run this tutorial with custom kernel running as user kernel \n
+ *                                  '(vx_bool)vx_true_e', run this tutorial with custom kernel running as target kernel \n
  */
 void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
 {
@@ -228,7 +228,7 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
          * \code
          */
         printf(" Loading file %s ...\n", IN_FILE_NAME);
-        status = load_image_from_file(uc.input, IN_FILE_NAME, vx_true_e);
+        status = load_image_from_file(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
         /** \endcode */
 
         /**

@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
     vx_uint32 accum_h;
     vx_df_image accum_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_ACCUMULATE_SQUARE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX])
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'shift' should be a scalar of type:\n VX_TYPE_UINT32 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_S16 != accum_fmt)
             {
@@ -172,7 +172,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != accum_w)
             {

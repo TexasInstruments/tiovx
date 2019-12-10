@@ -177,7 +177,7 @@ vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 output
 {
     vx_status status = VX_SUCCESS;
 
-    if (vx_false_e == tivxIsReferenceVirtual((vx_reference)outputImage))
+    if ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)outputImage))
     {
         /* Check for frame sizes */
         if ((expectedWidth != outputWidth) || (expectedHeight != outputHeight))

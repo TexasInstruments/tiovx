@@ -138,8 +138,8 @@ static vx_enum phase_rgb_user_kernel_id = VX_ERROR_INVALID_PARAMETERS;
  * \brief Add user/target kernel to OpenVX context
  *
  * \param context [in] OpenVX context into with the user kernel is added
- * \param add_as_target_kernel [in] 'vx_false_e', add this kernel as user kernel \n
- *                                  'vx_true_e', add this kernel as target kernel \n
+ * \param add_as_target_kernel [in] '(vx_bool)vx_false_e', add this kernel as user kernel \n
+ *                                  '(vx_bool)vx_true_e', add this kernel as target kernel \n
  */
 vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_kernel)
 {
@@ -153,11 +153,11 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
      * \ref phase_rgb_user_kernel_id is set as part of this function invocation.
      * \code
      */
-    if(add_as_target_kernel==vx_false_e)
+    if(add_as_target_kernel==(vx_bool)vx_false_e)
     {
         kernel = phase_rgb_user_kernel_add_as_user_kernel(context);
     }
-    if(add_as_target_kernel==vx_true_e)
+    if(add_as_target_kernel==(vx_bool)vx_true_e)
     {
         kernel = phase_rgb_user_kernel_add_as_target_kernel(context);
     }
@@ -461,7 +461,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
         }
     }
     if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual(
+        ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             parameters[PHASE_RGB_OUT0_IMG_IDX])))
     {
         /* Get the image width/heigh and format */
@@ -493,7 +493,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
         }
 
         /* Check for frame sizes */
-        if (vx_false_e == tivxIsReferenceVirtual(
+        if ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             parameters[PHASE_RGB_OUT0_IMG_IDX]))
         {
             if ((w[PHASE_RGB_IN0_IMG_IDX] !=

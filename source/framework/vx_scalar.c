@@ -198,7 +198,7 @@ void ownPrintScalar(vx_scalar scalar)
             VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %zu\n", scalar, obj_desc->data.size);
             break;
         case VX_TYPE_BOOL:
-            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, (obj_desc->data.boolean == vx_true_e)?"TRUE":"FALSE");
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, (obj_desc->data.boolean == (vx_bool)vx_true_e)?"TRUE":"FALSE");
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Case %08x is not covered!\n", obj_desc->data_type);
@@ -214,7 +214,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
     vx_scalar scalar = NULL;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
 
-    if (ownIsValidContext(context) == vx_true_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (!TIVX_TYPE_IS_SCALAR(data_type))
         {
@@ -264,7 +264,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
     vx_status status = VX_SUCCESS;
     vx_scalar pscalar = (vx_scalar)scalar;
 
-    if (ownIsValidSpecificReference(&pscalar->base,VX_TYPE_SCALAR) == vx_false_e)
+    if (ownIsValidSpecificReference(&pscalar->base,VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
 {
     vx_status status = VX_SUCCESS;
 
-    if (vx_false_e == ownIsValidSpecificReference(&scalar->base, VX_TYPE_SCALAR))
+    if ((vx_bool)vx_false_e == ownIsValidSpecificReference(&scalar->base, VX_TYPE_SCALAR))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;

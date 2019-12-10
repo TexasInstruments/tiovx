@@ -115,7 +115,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( ((num != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS) && (num != (TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS - 1U)))
         || (NULL == parameters[TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX])
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'block_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_TYPE_KEYPOINT != corners_item_type)
             {

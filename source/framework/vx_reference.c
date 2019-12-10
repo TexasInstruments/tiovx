@@ -103,15 +103,15 @@ vx_size ownSizeOfEnumType(vx_enum item_type)
 
 vx_bool ownIsValidReference(vx_reference ref)
 {
-    vx_bool ret = vx_false_e;
+    vx_bool ret = (vx_bool)vx_false_e;
     if (ref != NULL)
     {
         if ( (ref->magic == TIVX_MAGIC) &&
-             (ownIsValidType(ref->type) == vx_true_e) &&
-             (( (ref->type != VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == vx_true_e) ) ||
+             (ownIsValidType(ref->type) == (vx_bool)vx_true_e) &&
+             (( (ref->type != VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == (vx_bool)vx_true_e) ) ||
               ( (ref->type == VX_TYPE_CONTEXT) && (ref->context == NULL) )) )
         {
-            ret = vx_true_e;
+            ret = (vx_bool)vx_true_e;
         }
         else if (ref->magic == TIVX_BAD_MAGIC)
         {
@@ -148,11 +148,11 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->destructor_callback = NULL;
         ref->delay = NULL;
         ref->delay_slot_index = 0;
-        ref->is_virtual = vx_false_e;
+        ref->is_virtual = (vx_bool)vx_false_e;
         ref->obj_desc = NULL;
         ref->lock = NULL;
-        ref->is_accessible = vx_false_e;
-        ref->is_array_element = vx_false_e;
+        ref->is_accessible = (vx_bool)vx_false_e;
+        ref->is_array_element = (vx_bool)vx_false_e;
 
         ownReferenceSetScope(ref, scope);
 
@@ -250,13 +250,13 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
     vx_status status = VX_SUCCESS;
     vx_reference ref = (pref ? *pref : NULL);
     if ((NULL != ref) &&
-        (ownIsValidSpecificReference(ref, type) == vx_true_e))
+        (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e))
     {
         if (ownDecrementReference(ref, reftype) == 0)
         {
             tivx_reference_callback_f destructor = special_destructor;
 
-            if (ownRemoveReferenceFromContext(ref->context, ref) == vx_false_e)
+            if (ownRemoveReferenceFromContext(ref->context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt: Invalid reference\n");
                 status = VX_ERROR_INVALID_REFERENCE;
@@ -303,7 +303,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         if(status==VX_SUCCESS)
         {
             ownIncrementReference(ref, reftype);
-            if (ownAddReferenceToContext(context, ref) == vx_false_e)
+            if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Add reference to context failed\n");
                 status = VX_ERROR_NO_RESOURCES;
@@ -331,14 +331,14 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 
 vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
 {
-    vx_bool ret = vx_false_e;
+    vx_bool ret = (vx_bool)vx_false_e;
     if (ref != NULL)
     {
         if ((ref->magic == TIVX_MAGIC) &&
             (ref->type == type) &&
-            (ownIsValidContext(ref->context) == vx_true_e))
+            (ownIsValidContext(ref->context) == (vx_bool)vx_true_e))
         {
-            ret = vx_true_e;
+            ret = (vx_bool)vx_true_e;
         }
     }
     return ret;
@@ -358,26 +358,26 @@ void ownPrintReference(vx_reference ref)
 
 vx_bool ownIsValidType(vx_enum type)
 {
-    vx_bool ret = vx_false_e;
+    vx_bool ret = (vx_bool)vx_false_e;
     if (type <= VX_TYPE_INVALID)
     {
-        ret = vx_false_e;
+        ret = (vx_bool)vx_false_e;
     }
     else if (TIVX_TYPE_IS_SCALAR(type)) /* some scalar */
     {
-        ret = vx_true_e;
+        ret = (vx_bool)vx_true_e;
     }
     else if (TIVX_TYPE_IS_STRUCT(type)) /* some struct */
     {
-        ret = vx_true_e;
+        ret = (vx_bool)vx_true_e;
     }
     else if (TIVX_TYPE_IS_OBJECT(type)) /* some object */
     {
-        ret = vx_true_e;
+        ret = (vx_bool)vx_true_e;
     }
     else if (TIVX_TYPE_IS_TI_OBJECT(type)) /* some object */
     {
-        ret = vx_true_e;
+        ret = (vx_bool)vx_true_e;
     }
     else
     {
@@ -439,7 +439,7 @@ vx_status ownReferenceAllocMem(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidReference(ref) == vx_true_e)
+    if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
         if(ref->mem_alloc_callback)
         {
@@ -465,9 +465,9 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
             ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
             if((NULL != scope) && (NULL != scope->obj_desc))
             {
-                if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                         ||
-                    (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                    (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                     )
                 {
                     /* set scope_obj_desc_id in obj_desc only for composite objects like pyramid and object array */
@@ -496,8 +496,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
     vx_status status = VX_SUCCESS;
 
     /* if it is not a reference and not a context */
-    if ((ownIsValidReference(ref) == vx_false_e) &&
-        (ownIsValidContext((vx_context)ref) == vx_false_e)) {
+    if ((ownIsValidReference(ref) == (vx_bool)vx_false_e) &&
+        (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)) {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -567,7 +567,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseReference(vx_reference* ref_ptr)
     vx_status status = VX_ERROR_INVALID_REFERENCE;
 
     vx_reference ref = (ref_ptr ? *ref_ptr : NULL);
-    if (ownIsValidReference(ref) == vx_true_e)
+    if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
         if(ref->release_callback)
         {
@@ -582,7 +582,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidReference(ref) == vx_true_e)
+    if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
         ownIncrementReference(ref, VX_EXTERNAL);
     }
@@ -605,7 +605,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
         VX_PRINT(VX_ZONE_ERROR,"vxGetStatus: Reference is NULL\n");
         status = VX_ERROR_NO_RESOURCES;
     }
-    else if (ownIsValidReference(ref) == vx_true_e)
+    else if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
         if (ref->type == VX_TYPE_ERROR)
         {
@@ -617,7 +617,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
             status = VX_SUCCESS;
         }
     }
-    else if (ownIsValidContext((vx_context)ref) == vx_true_e)
+    else if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_true_e)
     {
         status = VX_SUCCESS;
     }
@@ -634,7 +634,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
     vx_status status = VX_SUCCESS;
 
     /* reference param should be a valid OpenVX reference*/
-    if ((ownIsValidContext((vx_context)reference) == vx_false_e) && (ownIsValidReference(reference) == vx_false_e))
+    if ((ownIsValidContext((vx_context)reference) == (vx_bool)vx_false_e) && (ownIsValidReference(reference) == (vx_bool)vx_false_e))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxHint: Invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -651,11 +651,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
 VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
 {
     vx_context context = NULL;
-    if (ownIsValidReference(reference) == vx_true_e)
+    if (ownIsValidReference(reference) == (vx_bool)vx_true_e)
     {
         context = reference->context;
     }
-    else if (ownIsValidContext((vx_context)reference) == vx_true_e)
+    else if (ownIsValidContext((vx_context)reference) == (vx_bool)vx_true_e)
     {
         context = (vx_context)reference;
     }
@@ -668,7 +668,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
 
 vx_bool tivxIsReferenceVirtual(vx_reference ref)
 {
-    vx_bool ret = vx_false_e;
+    vx_bool ret = (vx_bool)vx_false_e;
 
     if (NULL != ref)
     {
@@ -682,9 +682,9 @@ vx_reference tivxGetReferenceParent(vx_reference child_ref)
 {
     vx_reference ref = NULL;
 
-    if (ownIsValidReference(child_ref) == vx_true_e)
+    if (ownIsValidReference(child_ref) == (vx_bool)vx_true_e)
     {
-        if (vx_true_e == child_ref->is_array_element)
+        if ((vx_bool)vx_true_e == child_ref->is_array_element)
         {
             ref = child_ref->scope;
         }

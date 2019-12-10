@@ -165,7 +165,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         status = pthread_mutex_lock(&event->lock);
         if(status == 0)
         {
-            vx_bool done = vx_false_e;
+            vx_bool done = (vx_bool)vx_false_e;
 
             while(!done)
             {
@@ -174,14 +174,14 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                     /* clear event */
                     event->is_set = 0;
                     status = VX_SUCCESS;
-                    done = vx_true_e;
+                    done = (vx_bool)vx_true_e;
                 }
                 else
                 if(timeout==TIVX_EVENT_TIMEOUT_NO_WAIT)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
                     status = VX_FAILURE;
-                    done = vx_true_e;
+                    done = (vx_bool)vx_true_e;
                 }
                 else
                 {

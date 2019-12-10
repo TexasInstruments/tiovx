@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
     vx_uint32 output_h_meta;
     vx_df_image output_fmt_meta = VX_DF_IMAGE_U8;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX])
@@ -169,7 +169,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'channel' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -190,7 +190,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
             ((VX_CHANNEL_U == channel_val) ||
             (VX_CHANNEL_V == channel_val)))
         {
-            if (vx_false_e == is_virtual)
+            if ((vx_bool)vx_false_e == is_virtual)
             {
                 if ((input_w / 2U) != output_w)
                 {
@@ -213,7 +213,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
             ((VX_CHANNEL_U == channel_val) ||
             (VX_CHANNEL_V == channel_val)))
         {
-            if (vx_false_e == is_virtual)
+            if ((vx_bool)vx_false_e == is_virtual)
             {
                 if ((input_w / 2U) != output_w)
                 {
@@ -233,7 +233,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         }
         else
         {
-            if (vx_false_e == is_virtual)
+            if ((vx_bool)vx_false_e == is_virtual)
             {
                 if (input_w != output_w)
                 {

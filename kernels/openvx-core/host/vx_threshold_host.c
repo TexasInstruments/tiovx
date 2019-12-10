@@ -94,7 +94,7 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
     vx_uint32 output_h;
     vx_df_image output_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_THRESHOLD_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_THRESHOLD_INPUT_IDX])
@@ -145,7 +145,7 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
         }
 
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {

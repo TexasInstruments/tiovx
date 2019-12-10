@@ -229,7 +229,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     }
 
     if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual(
+        ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             (vx_reference)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])))
     {
         arr = (vx_array)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX];

@@ -127,7 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX])
@@ -235,7 +235,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'new_points_estimates' should be an array of type:\n VX_TYPE_KEYPOINT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_TYPE_KEYPOINT != new_points_item_type)
             {
@@ -306,7 +306,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'old_points' and 'new_points_estimates' should have the same value for VX_ARRAY_CAPACITY \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (old_points_capacity != new_points_capacity)
             {
@@ -366,7 +366,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
     vx_image old_image;
     vx_image new_image;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     vx_uint32 i;
 
@@ -420,7 +420,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
     {
         tivxKernelValidRectParams_init(&prms);
 
-        if(vx_false_e == is_virtual)
+        if((vx_bool)vx_false_e == is_virtual)
         {
             for (i = 0U; i < old_images_levels; i++)
             {

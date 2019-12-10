@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
     vx_uint32 out_h;
     vx_df_image out_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_MULTIPLY_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX])
@@ -207,7 +207,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'rounding_policy' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if ((VX_DF_IMAGE_U8 != out_fmt) &&
                 (VX_DF_IMAGE_S16 != out_fmt))
@@ -235,7 +235,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' should have the same value for VX_IMAGE_HEIGHT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if ((VX_DF_IMAGE_U8 == out_fmt) &&
                 ((VX_DF_IMAGE_S16 == in1_fmt) ||

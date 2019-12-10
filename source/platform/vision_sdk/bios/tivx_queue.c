@@ -64,8 +64,8 @@ vx_status tivxQueueCreate(
 
         if (VX_SUCCESS == status)
         {
-            queue->blockedOnGet = vx_false_e;
-            queue->blockedOnPut = vx_false_e;
+            queue->blockedOnGet = (vx_bool)vx_false_e;
+            queue->blockedOnPut = (vx_bool)vx_false_e;
         }
         else
         {
@@ -105,7 +105,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;
     uint32_t cookie;
-    volatile vx_bool do_break = vx_false_e;
+    volatile vx_bool do_break = (vx_bool)vx_false_e;
 
     do
     {
@@ -138,7 +138,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             }
 
             /* exit, with success */
-            do_break = vx_true_e;
+            do_break = (vx_bool)vx_true_e;
 
         }
         else
@@ -150,7 +150,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 
             if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
             {
-                do_break = vx_true_e; /* non-blocking, so exit with error */
+                do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
             }
             else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
             {
@@ -160,17 +160,17 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 
                 /* take semaphore and block until timeout occurs or
                  * semaphore is posted */
-                queue->blockedOnPut = vx_true_e;
+                queue->blockedOnPut = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-                queue->blockedOnPut = vx_false_e;
+                queue->blockedOnPut = (vx_bool)vx_false_e;
                 if (VX_SUCCESS != wait_status)
                 {
-                    do_break = vx_true_e;
+                    do_break = (vx_bool)vx_true_e;
                     /* error, exit with error */
                 }
                 else
                 {
-                    do_break = vx_false_e;
+                    do_break = (vx_bool)vx_false_e;
                 }
                 /* received semaphore, recheck for available space in the que */
             }
@@ -179,11 +179,11 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 /* blocking on que put disabled */
 
                 /* exit with error */
-                do_break = vx_true_e;
+                do_break = (vx_bool)vx_true_e;
             }
         }
 
-        if (vx_true_e == do_break)
+        if ((vx_bool)vx_true_e == do_break)
         {
             break;
         }
@@ -197,7 +197,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;/* init status to error */
     uint32_t cookie;
-    volatile vx_bool do_break = vx_false_e;
+    volatile vx_bool do_break = (vx_bool)vx_false_e;
 
     do
     {
@@ -230,7 +230,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             }
 
             /* exit with success */
-            do_break = vx_true_e;
+            do_break = (vx_bool)vx_true_e;
         }
         else
         {
@@ -241,7 +241,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 
             if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
             {
-                do_break = vx_true_e; /* non-blocking, exit with error */
+                do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
             }
             else
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
@@ -254,16 +254,16 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                  * semaphore is posted
                  */
 
-                queue->blockedOnGet = vx_true_e;
+                queue->blockedOnGet = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_rd, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-                queue->blockedOnGet = vx_false_e;
+                queue->blockedOnGet = (vx_bool)vx_false_e;
                 if (VX_SUCCESS != wait_status)
                 {
-                    do_break = vx_true_e; /* exit with error */
+                    do_break = (vx_bool)vx_true_e; /* exit with error */
                 }
                 else
                 {
-                    do_break = vx_false_e;
+                    do_break = (vx_bool)vx_false_e;
                 }
                 /* received semaphore, check que again */
             }
@@ -272,11 +272,11 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 /* blocking on que get disabled */
 
                 /* exit with error */
-                do_break = vx_true_e;
+                do_break = (vx_bool)vx_true_e;
             }
         }
 
-        if (vx_true_e == do_break)
+        if ((vx_bool)vx_true_e == do_break)
         {
             break;
         }
@@ -288,7 +288,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 
 vx_bool tivxQueueIsEmpty(tivx_queue *queue)
 {
-    vx_bool is_empty = vx_false_e;
+    vx_bool is_empty = (vx_bool)vx_false_e;
     uint32_t cookie;
 
     /* disable interrupts */
@@ -296,7 +296,7 @@ vx_bool tivxQueueIsEmpty(tivx_queue *queue)
 
     if (queue->count == 0)
     {
-        is_empty = vx_true_e;
+        is_empty = (vx_bool)vx_true_e;
     }
 
     /* restore interrupts */

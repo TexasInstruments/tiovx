@@ -101,8 +101,8 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool is_output_x_virtual = vx_false_e;
-    vx_bool is_output_y_virtual = vx_false_e;
+    vx_bool is_output_x_virtual = (vx_bool)vx_false_e;
+    vx_bool is_output_y_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX])
@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
         if (NULL != output_x)
         {
-            if (vx_false_e == is_output_x_virtual)
+            if ((vx_bool)vx_false_e == is_output_x_virtual)
             {
                 if (VX_DF_IMAGE_S16 != output_x_fmt)
                 {
@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
         if (NULL != output_y)
         {
-            if (vx_false_e == is_output_y_virtual)
+            if ((vx_bool)vx_false_e == is_output_y_virtual)
             {
                 if (VX_DF_IMAGE_S16 != output_y_fmt)
                 {
@@ -196,7 +196,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
     {
         if (NULL != output_x)
         {
-            if (vx_false_e == is_output_x_virtual)
+            if ((vx_bool)vx_false_e == is_output_x_virtual)
             {
                 if (output_x_w != input_w)
                 {
@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
         if (NULL != output_y)
         {
-            if (vx_false_e == is_output_y_virtual)
+            if ((vx_bool)vx_false_e == is_output_y_virtual)
             {
                 if (output_y_w != input_w)
                 {

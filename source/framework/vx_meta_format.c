@@ -62,7 +62,7 @@ vx_meta_format vxCreateMetaFormat(vx_context context)
 {
     vx_meta_format meta = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         meta = (vx_meta_format)ownCreateReference(
             context, VX_TYPE_META_FORMAT, VX_EXTERNAL, &context->base);
@@ -91,7 +91,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&meta->base, VX_TYPE_META_FORMAT) ==
-            vx_false_e)
+            (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid meta format reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -958,16 +958,16 @@ static vx_status ownInitMetaFormatWithRawImage(
 static vx_bool ownIsMetaFormatImageEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->img.width  == meta2->img.width) &&
              (meta1->img.height == meta2->img.height) &&
              (meta1->img.format == meta2->img.format) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -981,15 +981,15 @@ static vx_bool ownIsMetaFormatImageEqual(
 static vx_bool ownIsMetaFormatArrayEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->arr.item_type == meta2->arr.item_type) &&
              (meta1->arr.capacity  == meta2->arr.capacity) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1003,14 +1003,14 @@ static vx_bool ownIsMetaFormatArrayEqual(
 static vx_bool ownIsMetaFormatScalarEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->sc.type == meta2->sc.type) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1024,10 +1024,10 @@ static vx_bool ownIsMetaFormatScalarEqual(
 static vx_bool ownIsMetaFormatPyramidEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->pmd.width  == meta2->pmd.width) &&
              (meta1->pmd.height == meta2->pmd.height) &&
@@ -1035,7 +1035,7 @@ static vx_bool ownIsMetaFormatPyramidEqual(
              (meta1->pmd.levels == meta2->pmd.levels) &&
              (meta1->pmd.scale  == meta2->pmd.scale) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1049,16 +1049,16 @@ static vx_bool ownIsMetaFormatPyramidEqual(
 static vx_bool ownIsMetaFormatMatrixEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->mat.type  == meta2->mat.type) &&
              (meta1->mat.rows  == meta2->mat.rows) &&
              (meta1->mat.cols  == meta2->mat.cols) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1072,16 +1072,16 @@ static vx_bool ownIsMetaFormatMatrixEqual(
 static vx_bool ownIsMetaFormatDistributionEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->dist.bins   == meta2->dist.bins) &&
              (meta1->dist.offset == meta2->dist.offset) &&
              (meta1->dist.range  == meta2->dist.range) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1095,17 +1095,17 @@ static vx_bool ownIsMetaFormatDistributionEqual(
 static vx_bool ownIsMetaFormatRemapEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->remap.src_width  == meta2->remap.src_width) &&
              (meta1->remap.src_height == meta2->remap.src_height) &&
              (meta1->remap.dst_width  == meta2->remap.dst_width) &&
              (meta1->remap.dst_height == meta2->remap.dst_height) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1119,14 +1119,14 @@ static vx_bool ownIsMetaFormatRemapEqual(
 static vx_bool ownIsMetaFormatThresholdEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->thres.type  == meta2->thres.type) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1140,15 +1140,15 @@ static vx_bool ownIsMetaFormatThresholdEqual(
 static vx_bool ownIsMetaFormatObjectArrayEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->objarr.item_type == meta2->objarr.item_type) &&
              (meta1->objarr.num_items == meta2->objarr.num_items) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1162,15 +1162,15 @@ static vx_bool ownIsMetaFormatObjectArrayEqual(
 static vx_bool ownIsMetaFormatLutEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->lut.type  == meta2->lut.type) &&
              (meta1->lut.count == meta2->lut.count) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1184,11 +1184,11 @@ static vx_bool ownIsMetaFormatLutEqual(
 static vx_bool ownIsMetaFormatTensorEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->tensor.number_of_dimensions == meta2->tensor.number_of_dimensions) &&
              (meta1->tensor.data_type == meta2->tensor.data_type) &&
@@ -1203,7 +1203,7 @@ static vx_bool ownIsMetaFormatTensorEqual(
             }
             if (i == meta1->tensor.number_of_dimensions)
             {
-                is_equal = vx_true_e;
+                is_equal = (vx_bool)vx_true_e;
             }
         }
         else
@@ -1218,15 +1218,15 @@ static vx_bool ownIsMetaFormatTensorEqual(
 static vx_bool ownIsMetaFormatUserDataObjectEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->user_data_object.size == meta2->user_data_object.size) &&
              ( 0 == strncmp(meta1->user_data_object.type_name, meta2->user_data_object.type_name, VX_MAX_REFERENCE_NAME) ) )
         {
-            is_equal = vx_true_e;
+            is_equal = (vx_bool)vx_true_e;
         }
         else
         {
@@ -1240,11 +1240,11 @@ static vx_bool ownIsMetaFormatUserDataObjectEqual(
 static vx_bool ownIsMetaFormatRawImageEqual(
     vx_meta_format meta1, vx_meta_format meta2)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
     vx_uint32 i;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         if ( (meta1->raw_image.width              == meta2->raw_image.width) &&
              (meta1->raw_image.height             == meta2->raw_image.height) &&
@@ -1263,7 +1263,7 @@ static vx_bool ownIsMetaFormatRawImageEqual(
             }
             if (i == meta1->raw_image.num_exposures)
             {
-                is_equal = vx_true_e;
+                is_equal = (vx_bool)vx_true_e;
             }
         }
         else
@@ -1278,10 +1278,10 @@ static vx_bool ownIsMetaFormatRawImageEqual(
 vx_bool ownIsMetaFormatEqual(
     vx_meta_format meta1, vx_meta_format meta2, vx_enum type)
 {
-    vx_bool is_equal = vx_false_e;
+    vx_bool is_equal = (vx_bool)vx_false_e;
 
-    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == vx_true_e) &&
-         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == vx_true_e) )
+    if ( (ownIsValidSpecificReference(&meta1->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&meta2->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
         switch (type)
         {

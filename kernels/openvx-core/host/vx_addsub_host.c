@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
     vx_uint32 out_h;
     vx_df_image out_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_ADDSUB_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_ADDSUB_IN1_IDX])
@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'policy' should be a scalar of type:\n VX_ENUM \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if ((VX_DF_IMAGE_U8 != out_fmt) &&
                 (VX_DF_IMAGE_S16 != out_fmt))
@@ -212,7 +212,7 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' should have the same value for VX_IMAGE_HEIGHT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (in1_w != out_w)
             {

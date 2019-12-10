@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxAddKernelMedian3X3Validate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_MEDIAN3X3_INPUT_IDX])
@@ -147,7 +147,7 @@ static vx_status VX_CALLBACK tivxAddKernelMedian3X3Validate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -162,7 +162,7 @@ static vx_status VX_CALLBACK tivxAddKernelMedian3X3Validate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {

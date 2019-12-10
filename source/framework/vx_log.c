@@ -31,18 +31,18 @@
 
 VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context cntxt, vx_log_callback_f callback, vx_bool reentrant)
 {
-    if (ownIsValidContext(cntxt) == vx_true_e)
+    if (ownIsValidContext(cntxt) == (vx_bool)vx_true_e)
     {
         ownContextLock(cntxt);
         if ((cntxt->log_callback == NULL) && (callback != NULL))
         {
-            cntxt->log_enabled = vx_true_e;
+            cntxt->log_enabled = (vx_bool)vx_true_e;
 
             /* reentrant is ignored, lock is always taken */
         }
         if ((cntxt->log_callback != NULL) && (callback == NULL))
         {
-            cntxt->log_enabled = vx_false_e;
+            cntxt->log_enabled = (vx_bool)vx_false_e;
         }
         cntxt->log_callback = callback;
         ownContextUnlock(cntxt);
@@ -57,9 +57,9 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
     /* this is non-reentrant hence need to take lock */
     static vx_char string[VX_MAX_LOG_MESSAGE_LEN];
 
-    if (ownIsValidReference(ref) == vx_false_e)
+    if (ownIsValidReference(ref) == (vx_bool)vx_false_e)
     {
-        if (ownIsValidContext((vx_context)ref) == vx_false_e)
+        if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid reference!\n");
             ret = VX_ERROR_INVALID_REFERENCE;
@@ -102,7 +102,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
     }
     if(ret==VX_SUCCESS)
     {
-        if (context->log_enabled == vx_false_e)
+        if (context->log_enabled == (vx_bool)vx_false_e)
         {
 
         }

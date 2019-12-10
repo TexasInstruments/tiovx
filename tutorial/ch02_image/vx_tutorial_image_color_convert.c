@@ -172,7 +172,7 @@ void vx_tutorial_image_color_convert()
      * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
-    rgb_image = create_image_from_file(context, IN_FILE_NAME, vx_false_e);
+    rgb_image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)rgb_image, "RGB_IMAGE");

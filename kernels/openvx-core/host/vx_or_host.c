@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxAddKernelOrValidate(vx_node node,
     vx_uint32 out_h;
     vx_df_image out_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_OR_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_OR_IN1_IDX])
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxAddKernelOrValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'in2' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if(vx_false_e == is_virtual)
+        if((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != out_fmt)
             {
@@ -187,7 +187,7 @@ static vx_status VX_CALLBACK tivxAddKernelOrValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' should have the same value for VX_IMAGE_HEIGHT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (in1_w != out_w)
             {

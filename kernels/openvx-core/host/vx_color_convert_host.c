@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
     vx_df_image output_fmt;
     vx_size output_planes;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX])
@@ -173,7 +173,7 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {

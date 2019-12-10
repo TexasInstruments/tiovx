@@ -271,7 +271,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     }
 
     if (VX_SUCCESS == status &&
-        (vx_false_e == tivxIsReferenceVirtual(
+        ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             (vx_reference)parameters[TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX])))
     {
         img = (vx_image)parameters[TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX];
@@ -294,7 +294,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     }
 
     if (VX_SUCCESS == status &&
-        (vx_false_e == tivxIsReferenceVirtual(
+        ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             (vx_reference)parameters[TIVX_KERNEL_RGB_IR_OUT_IR_IDX])))
     {
         img = (vx_image)parameters[TIVX_KERNEL_RGB_IR_OUT_IR_IDX];

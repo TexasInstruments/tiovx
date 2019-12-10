@@ -255,14 +255,14 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
     char target_name_list[TIVX_TARGET_MAX_TARGETS_IN_CPU][TIVX_TARGET_MAX_NAME];
     char node_color_name_list[TIVX_TARGET_MAX_TARGETS_IN_CPU][TIVX_EXPORT_MAX_NODE_COLOR_NAME];
     uint32_t node_id, target_id, num_targets = 0;
-    vx_bool new_target = vx_true_e;
+    vx_bool new_target = (vx_bool)vx_true_e;
 
     TIVX_EXPORT_WRITELN(fp, "  ColorScheme [shape=none, margin=0, label=<\n");
     TIVX_EXPORT_WRITELN(fp, "        <TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\n");
 
     for(node_id=0; node_id<graph->num_nodes; node_id++)
     {
-        new_target = vx_true_e;
+        new_target = (vx_bool)vx_true_e;
 
         if(graph->nodes[node_id]->obj_desc[0])
         {
@@ -271,12 +271,12 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
             {
                 if(strcmp(target_name, target_name_list[target_id]) == 0)
                 {
-                    new_target = vx_false_e;
+                    new_target = (vx_bool)vx_false_e;
                     break;
                 }
             }
 
-            if (vx_true_e == new_target)
+            if ((vx_bool)vx_true_e == new_target)
             {
                 num_targets++;
                 getNodeColor(graph->nodes[node_id], node_color_name_list[target_id]);
@@ -312,9 +312,9 @@ static void exportDataRef(FILE *fp, vx_reference ref)
         }
 
         {
-            if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+            if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                     ||
-                (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                )
             {
                 snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
@@ -327,9 +327,9 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 is_virtual_label,
                 is_replicated_label
                 );
-        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                 ||
-            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
            )
         {
             exportDataRef(fp, ref->scope);
@@ -374,9 +374,9 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
             snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
             snprintf(is_virtual_label, 64, "| virtual");
         }
-        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
             ||
-            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
         )
         {
             snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
@@ -392,9 +392,9 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
                 ref->obj_desc->obj_desc_id
                 );
         }
-        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
             ||
-            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
         )
         {
             exportDataRefObjDesc(fp, ref->scope);
@@ -738,9 +738,9 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
 
                     if(ref!=NULL)
                     {
-                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             ||
-                            (	ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                            (	ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                         )
                         {
                             ref = ref->scope;
@@ -784,7 +784,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
                 if (graph->parameters[i].data_ref_queue)
                 {
                     exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, 
-                        vx_true_e, vx_false_e, graph->parameters[i].data_ref_queue->pipeline_depth);
+                        (vx_bool)vx_true_e, (vx_bool)vx_false_e, graph->parameters[i].data_ref_queue->pipeline_depth);
                     tivxExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
                 }
             }
@@ -794,7 +794,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
             if (graph->data_ref_q_list[i].data_ref_queue)
             {
                 exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf,
-                    vx_false_e, vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                    (vx_bool)vx_false_e, vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
                 tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
                     graph->num_params+i);
             }
@@ -804,7 +804,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
             if (graph->delay_data_ref_q_list[i].data_ref_queue)
             {
                 exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1,
-                    vx_false_e, vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                    (vx_bool)vx_false_e, vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
                 tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
                     graph->num_params+graph->num_data_ref_q+i);
             }
@@ -900,7 +900,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
 
-                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e, 1);
+                exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, vx_true_e, 1);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -909,14 +909,14 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
             uint32_t num_buf = graph->data_ref_q_list[data_id].num_buf;
             tivx_data_ref_queue ref = graph->data_ref_q_list[data_id].data_ref_queue;
 
-            exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e, 1);
+            exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_false_e, (vx_bool)vx_true_e, 1);
         }
         TIVX_EXPORT_WRITELN(fp, "");
         for(data_id=0; data_id<graph->num_delay_data_ref_q; data_id++)
         {
             tivx_data_ref_queue ref = graph->delay_data_ref_q_list[data_id].data_ref_queue;
 
-            exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e, 1);
+            exportDataRefQueueObjDesc(fp, ref, 1, (vx_bool)vx_false_e, (vx_bool)vx_true_e, 1);
         }
         TIVX_EXPORT_WRITELN(fp, "");
         #endif
@@ -1125,7 +1125,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 exportDataRefQueue(fp,
                     graph->parameters[prm_id].data_ref_queue,
                     graph->parameters[prm_id].num_buf,
-                    vx_true_e);
+                    (vx_bool)vx_true_e);
 
                 for(buf_id=0; buf_id<graph->parameters[prm_id].num_buf; buf_id++)
                 {
@@ -1133,9 +1133,9 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
                     if(ref!=NULL)
                     {
-                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                        if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             ||
-                            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                            (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                         )
                         {
                             ref = ref->scope;
@@ -1161,15 +1161,15 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 exportDataRefQueue(fp,
                     graph->data_ref_q_list[prm_id].data_ref_queue,
                     graph->data_ref_q_list[prm_id].num_buf,
-                    vx_false_e);
+                    (vx_bool)vx_false_e);
 
                 for(buf_id=0; buf_id<graph->data_ref_q_list[prm_id].num_buf; buf_id++)
                 {
                     ref = graph->data_ref_q_list[prm_id].refs_list[buf_id];
 
-                    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                         ||
-                        (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                        (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                     )
                     {
                         ref = ref->scope;
@@ -1194,7 +1194,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 exportDataRefQueue(fp,
                     graph->delay_data_ref_q_list[prm_id].data_ref_queue,
                     1,
-                    vx_false_e);
+                    (vx_bool)vx_false_e);
 
                 if(graph->delay_data_ref_q_list[prm_id].node)
                 {
@@ -1243,7 +1243,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
                 if (ref)
                 {
-                    exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e, ref->pipeline_depth);
+                    exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, vx_true_e, ref->pipeline_depth);
                 }
             }
         }
@@ -1255,7 +1255,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
             if (ref)
             {
-                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e, ref->pipeline_depth);
+                exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_false_e, (vx_bool)vx_true_e, ref->pipeline_depth);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -1265,7 +1265,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
             if (ref)
             {
-                exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e, ref->pipeline_depth);
+                exportDataRefQueueObjDesc(fp, ref, 1, (vx_bool)vx_false_e, (vx_bool)vx_true_e, ref->pipeline_depth);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -1358,8 +1358,8 @@ vx_status tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *out
     if (   (NULL != graph)
         && (output_file_path!=NULL)
         && (output_file_prefix!=NULL)
-        && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
-        && (graph->verified == vx_true_e))
+        && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (graph->verified == (vx_bool)vx_true_e))
     {
         status = tivxExportGraphTopLevelToDot(graph, output_file_path, output_file_prefix);
         if(status==VX_SUCCESS)

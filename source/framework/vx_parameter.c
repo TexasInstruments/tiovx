@@ -39,7 +39,7 @@ static vx_status ownDestructParameter(vx_reference ref)
     {
         if (param->node)
         {
-            if (ownIsValidSpecificReference(&param->node->base, VX_TYPE_NODE) == vx_true_e)
+            if (ownIsValidSpecificReference(&param->node->base, VX_TYPE_NODE) == (vx_bool)vx_true_e)
             {
                 vx_node node = (vx_node)param->node;
                 ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
@@ -47,7 +47,7 @@ static vx_status ownDestructParameter(vx_reference ref)
         }
         if (param->kernel)
         {
-            if (ownIsValidSpecificReference(&param->kernel->base, VX_TYPE_KERNEL) == vx_true_e)
+            if (ownIsValidSpecificReference(&param->kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 vx_kernel kernel = (vx_kernel)param->kernel;
                 ownReleaseReferenceInt((vx_reference *)&kernel, VX_TYPE_KERNEL, VX_INTERNAL, NULL);
@@ -63,11 +63,11 @@ vx_bool ownIsValidDirection(vx_enum dir)
 
     if ((dir == VX_INPUT) || (dir == VX_OUTPUT)) /* Bidirectional is not valid for user kernels */
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
     else
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
 
     return is_valid;
@@ -75,12 +75,12 @@ vx_bool ownIsValidDirection(vx_enum dir)
 
 vx_bool ownIsValidTypeMatch(vx_enum expected, vx_enum supplied)
 {
-    vx_bool match = vx_false_e;
+    vx_bool match = (vx_bool)vx_false_e;
     if (expected == supplied)
     {
-        match = vx_true_e;
+        match = (vx_bool)vx_true_e;
     }
-    if (match == vx_false_e)
+    if (match == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Expected %08x and got %08x!\n", expected, supplied);
     }
@@ -94,11 +94,11 @@ vx_bool ownIsValidState(vx_enum state)
     if ((state == VX_PARAMETER_STATE_REQUIRED) ||
         (state == VX_PARAMETER_STATE_OPTIONAL))
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
     else
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
 
     return is_valid;
@@ -112,7 +112,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 {
     vx_parameter parameter = NULL;
 
-    if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
+    if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < kernel->signature.num_parameters))
         {
@@ -141,7 +141,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uint32 index)
 {
     vx_parameter param = NULL;
-    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         if (node->kernel == NULL)
         {
@@ -188,7 +188,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
     vx_enum type = 0;
     vx_enum data_type = 0;
 
-    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_false_e)
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Supplied node was not actually a node\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -223,7 +223,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
         else
         {
             /* if it's required, it's got to exist */
-            if (ownIsValidReference(value) == vx_false_e)
+            if (ownIsValidReference(value) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Supplied value was not actually a reference\n");
                 status = VX_ERROR_INVALID_REFERENCE;
@@ -267,7 +267,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     if (node->parameters[index]->delay!=NULL) {
                         /* we already have a delay element here */
                         vx_bool res = ownRemoveAssociationToDelay(node->parameters[index], node, index);
-                        if (res == vx_false_e) {
+                        if (res == (vx_bool)vx_false_e) {
                             VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
                             status = VX_ERROR_INVALID_REFERENCE;
                         }
@@ -280,7 +280,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 if (value->delay!=NULL) {
                     /* the new parameter is a delay element */
                     vx_bool res = ownAddAssociationToDelay(value, node, index);
-                    if (res == vx_false_e) {
+                    if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
                         status = VX_ERROR_INVALID_REFERENCE;
                     }
@@ -316,7 +316,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parameter, vx_reference value)
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
-    if (ownIsValidSpecificReference((vx_reference)parameter, VX_TYPE_PARAMETER) == vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)parameter, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         if (parameter->node)
         {
@@ -329,7 +329,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parame
 VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
-    if (ownIsValidSpecificReference(&parameter->base, VX_TYPE_PARAMETER) == vx_true_e)
+    if (ownIsValidSpecificReference(&parameter->base, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {

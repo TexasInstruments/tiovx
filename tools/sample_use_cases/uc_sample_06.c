@@ -264,7 +264,7 @@ vx_status uc_sample_06_data_create(uc_sample_06 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_bool value = vx_true_e;
+        vx_bool value = (vx_bool)vx_true_e;
         
         usecase->scalar_14 = vxCreateScalar(context, VX_TYPE_BOOL, &value);
         if (usecase->scalar_14 == NULL)

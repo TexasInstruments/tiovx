@@ -42,7 +42,7 @@ static void ownReleaseRefFromObjArray(
 
 static vx_bool ownIsValidObject(vx_enum type)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if ((VX_TYPE_IMAGE == type) ||
         (VX_TYPE_TENSOR == type) ||
@@ -57,7 +57,7 @@ static vx_bool ownIsValidObject(vx_enum type)
         (VX_TYPE_REMAP == type)  ||
         (VX_TYPE_LUT == type))
     {
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
 
     return (status);
@@ -76,10 +76,10 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
     vx_object_array objarr = NULL;
     vx_status status = VX_SUCCESS;
 
-    if ((ownIsValidContext(context) == vx_true_e) &&
+    if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (NULL != exemplar))
     {
-        if ((vx_true_e == ownIsValidObject(exemplar->type)) &&
+        if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
@@ -143,12 +143,12 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_context context;
 
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
-                vx_true_e) &&
+                (vx_bool)vx_true_e) &&
         (NULL != exemplar))
     {
         context = graph->base.context;
 
-        if ((vx_true_e == ownIsValidObject(exemplar->type)) &&
+        if (((vx_bool)vx_true_e == ownIsValidObject(exemplar->type)) &&
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
@@ -187,7 +187,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     ownInitObjArrayFromObject(context, objarr, exemplar);
 
-                    objarr->base.is_virtual = vx_true_e;
+                    objarr->base.is_virtual = (vx_bool)vx_true_e;
                     ownReferenceSetScope(&objarr->base, &graph->base);
                 }
             }
@@ -205,14 +205,14 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
     if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) ==
-            vx_true_e) && (obj_desc != NULL) &&
+            (vx_bool)vx_true_e) && (obj_desc != NULL) &&
         (index < obj_desc->num_items) &&
-        (objarr->base.is_virtual == vx_false_e))
+        (objarr->base.is_virtual == (vx_bool)vx_false_e))
     {
         ref = objarr->ref[index];
         ownIncrementReference(ref, VX_EXTERNAL);
         /* set is_array_element flag */
-        ref->is_array_element = vx_true_e;
+        ref->is_array_element = (vx_bool)vx_true_e;
     }
 
     return (ref);
@@ -223,7 +223,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 {
     vx_status status = VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == vx_false_e)
+    if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         ||
         (objarr->base.obj_desc == NULL)
         )
@@ -288,7 +288,7 @@ static vx_status ownInitObjArrayFromObject(
         ref = ownCreateReferenceFromExemplar(context, exemplar);
 
         status = VX_SUCCESS;
-        if(ownIsValidReference(ref)==vx_false_e)
+        if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"ownInitObjArrayFromObject: Invalid reference type\n");
             status = VX_ERROR_INVALID_REFERENCE;

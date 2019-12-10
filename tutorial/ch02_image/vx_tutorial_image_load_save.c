@@ -166,7 +166,7 @@ void vx_tutorial_image_load_save()
      * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
-    image = create_image_from_file(context, IN_FILE_NAME, vx_false_e);
+    image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e);
     /** \endcode */
 
     /**
@@ -223,12 +223,12 @@ void vx_tutorial_image_load_save()
  *
  * \param context [in] OpenVX context within which the image object will get created
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
- *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
  * \return Image data object. \n
- *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is vx_false_e \n
- *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is vx_true_e
+ *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is (vx_bool)vx_false_e \n
+ *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is (vx_bool)vx_true_e
  */
 vx_image  create_image_from_file(vx_context context, char *filename, vx_bool convert_to_gray_scale)
 {
@@ -473,8 +473,8 @@ vx_status save_image_to_file(char *filename, vx_image image)
  *
  * \param image [in] Previouly created image object
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
- *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
  * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
  */

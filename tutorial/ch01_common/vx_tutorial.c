@@ -93,7 +93,7 @@ void vx_tutorial_run_all()
 void vx_tutorial_run_interactive()
 {
     char ch;
-    vx_bool done = vx_false_e;
+    vx_bool done = (vx_bool)vx_false_e;
 
     while(!done)
     {
@@ -123,7 +123,7 @@ void vx_tutorial_run_interactive()
                 vx_tutorial_run_all();
                 break;
             case 'x':
-                done = vx_true_e;
+                done = (vx_bool)vx_true_e;
                 break;
             case '\n':
                 break;

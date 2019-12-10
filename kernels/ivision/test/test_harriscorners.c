@@ -172,7 +172,7 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
     vx_perf_t perf_node;
     vx_perf_t perf_graph;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
+    if ((vx_bool)vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
     {
         IVisionLoadKernels(context);
 

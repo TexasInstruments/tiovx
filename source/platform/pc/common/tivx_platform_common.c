@@ -198,7 +198,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
 vx_bool tivxPlatformTargetMatch(
     const char *kernel_target_name, const char *target_string)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
     uint32_t i;
 
     if ((NULL != kernel_target_name) && (NULL != target_string))
@@ -213,7 +213,7 @@ vx_bool tivxPlatformTargetMatch(
                         target_string,
                         TIVX_TARGET_MAX_NAME))
                 {
-                    status = vx_true_e;
+                    status = (vx_bool)vx_true_e;
                     break;
                 }
             }

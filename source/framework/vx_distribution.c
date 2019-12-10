@@ -39,7 +39,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
     vx_distribution dist = NULL;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((0 != num_bins) && (0 != range))
         {
@@ -97,7 +97,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -195,7 +195,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     vx_uint32 size;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -270,7 +270,7 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -300,7 +300,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }

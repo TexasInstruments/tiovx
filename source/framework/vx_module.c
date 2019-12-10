@@ -70,18 +70,18 @@ static tivx_module_t g_module_table[TIVX_MODULE_MAX];
 
 static void ownCheckAndInitModule(void)
 {
-    static vx_bool is_init = (vx_bool)vx_false_e;
+    static vx_bool is_init = (vx_bool)(vx_bool)vx_false_e;
     uint32_t idx;
 
-    if(!(is_init != (vx_bool)vx_false_e))
+    if(!(is_init != (vx_bool)(vx_bool)vx_false_e))
     {
         for(idx=0; idx<dimof(g_module_table); idx++)
         {
             g_module_table[idx].publish = NULL;
             g_module_table[idx].unpublish = NULL;
-            g_module_table[idx].is_loaded = vx_false_e;
+            g_module_table[idx].is_loaded = (vx_bool)vx_false_e;
         }
-        is_init = vx_true_e;
+        is_init = (vx_bool)vx_true_e;
     }
 }
 
@@ -196,7 +196,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
 
             if (VX_SUCCESS == status)
             {
-                g_module_table[idx].is_loaded = vx_true_e;
+                g_module_table[idx].is_loaded = (vx_bool)vx_true_e;
                 kernels_loaded ++;
                 break;
             }
@@ -241,7 +241,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unublish function for module %s failed\n", module);
             }
-            g_module_table[idx].is_loaded = vx_false_e;
+            g_module_table[idx].is_loaded = (vx_bool)vx_false_e;
             break;
         }
     }

@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     char node_target[TIVX_TARGET_MAX_NAME];
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX])
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'src' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != dst_fmt)
             {
@@ -193,7 +193,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
         if ((0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME)) ||
             (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME)))
         {
-            if (vx_false_e == is_virtual)
+            if ((vx_bool)vx_false_e == is_virtual)
             {
                 if (dst_w > src_w)
                 {

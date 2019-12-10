@@ -72,7 +72,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
     vx_uint32 i;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (width == 0)
         {
@@ -178,7 +178,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     vx_image img = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) ==
-            vx_true_e) && (prmd->base.obj_desc != NULL) &&
+            (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
         (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
             num_levels))
     {
@@ -189,7 +189,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
         ownIncrementReference(&img->base, VX_EXTERNAL);
 
         /* setting is_array_element flag */
-        img->base.is_array_element = vx_true_e;
+        img->base.is_array_element = (vx_bool)vx_true_e;
     }
     else
     {
@@ -211,7 +211,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
-            vx_true_e) &&
+            (vx_bool)vx_true_e) &&
         (levels > 0) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
         ( ((scale == VX_SCALE_PYRAMID_ORB) && (levels <= TIVX_PYRAMID_MAX_LEVELS_ORB)) ||
            (scale == VX_SCALE_PYRAMID_HALF) ) )
@@ -251,7 +251,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 obj_desc->scale = scale;
                 obj_desc->format = format;
 
-                prmd->base.is_virtual = vx_true_e;
+                prmd->base.is_virtual = (vx_bool)vx_true_e;
                 ownReferenceSetScope(&prmd->base, &graph->base);
 
                 prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
@@ -284,7 +284,7 @@ vx_status ownInitVirtualPyramid(
     vx_status status = VX_FAILURE;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_true_e)
+    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
         &&
         (prmd->base.obj_desc != NULL))
     {
@@ -292,7 +292,7 @@ vx_status ownInitVirtualPyramid(
 
         if ((width > 0) &&
             (height > 0) &&
-            (prmd->base.is_virtual == vx_true_e))
+            (prmd->base.is_virtual == (vx_bool)vx_true_e))
         {
             obj_desc->width = width;
             obj_desc->height = height;
@@ -311,7 +311,7 @@ vx_status VX_API_CALL vxQueryPyramid(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_false_e)
+    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
             || (prmd->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid reference\n");

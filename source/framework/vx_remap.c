@@ -119,7 +119,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
     vx_remap remap = NULL;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context)==vx_true_e)
+    if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
         if ((src_width != 0) && (src_height != 0) && (dst_width != 0) && (dst_height != 0))
         {
@@ -173,7 +173,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_false_e)
+    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == (vx_bool)vx_false_e)
         &&
         (remap->base.obj_desc == NULL))
     {
@@ -245,7 +245,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
     vx_status status = VX_FAILURE;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
+    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == (vx_bool)vx_true_e)
          &&
         (remap->base.obj_desc != NULL)
          )
@@ -314,7 +314,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
     vx_status status = VX_FAILURE;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
+    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == (vx_bool)vx_true_e)
          &&
         (remap->base.obj_desc != NULL)
          )

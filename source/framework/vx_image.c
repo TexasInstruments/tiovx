@@ -64,7 +64,7 @@ static vx_status ownCopyAndMapCheckParams(
 
 static vx_bool ownIsSupportedFourcc(vx_df_image code)
 {
-    vx_bool is_supported_fourcc = vx_false_e;
+    vx_bool is_supported_fourcc = (vx_bool)vx_false_e;
 
     switch (code)
     {
@@ -85,10 +85,10 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
         case TIVX_DF_IMAGE_P12:
         case TIVX_DF_IMAGE_NV12_P12:
         case TIVX_DF_IMAGE_RGB565:
-            is_supported_fourcc = vx_true_e;
+            is_supported_fourcc = (vx_bool)vx_true_e;
             break;
         default:
-            is_supported_fourcc = vx_false_e;
+            is_supported_fourcc = (vx_bool)vx_false_e;
             break;
     }
 
@@ -99,17 +99,17 @@ static vx_bool ownIsValidImage(vx_image image)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&image->base, VX_TYPE_IMAGE) == vx_true_e) &&
+    if ((ownIsValidSpecificReference(&image->base, VX_TYPE_IMAGE) == (vx_bool)vx_true_e) &&
         (image->base.obj_desc != NULL) &&
         (ownIsSupportedFourcc(((tivx_obj_desc_image_t*)image->base.obj_desc)->
-            format) == vx_true_e)
+            format) == (vx_bool)vx_true_e)
        )
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
     else
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
 
     return is_valid;
@@ -120,11 +120,11 @@ static vx_bool ownIsOdd(vx_uint32 a)
     vx_bool isOdd;
     if (a & 0x1U)
     {
-        isOdd = vx_true_e;
+        isOdd = (vx_bool)vx_true_e;
     }
     else
     {
-        isOdd = vx_false_e;
+        isOdd = (vx_bool)vx_false_e;
     }
 
     return (isOdd);
@@ -132,16 +132,16 @@ static vx_bool ownIsOdd(vx_uint32 a)
 
 static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_image color)
 {
-    vx_bool is_valid = vx_true_e;
+    vx_bool is_valid = (vx_bool)vx_true_e;
 
     if ((ownIsOdd(width)) && ( (color == VX_DF_IMAGE_UYVY) || (color == VX_DF_IMAGE_YUYV)))
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
     else if (((ownIsOdd(width)) || (ownIsOdd(height))) &&
               ((color == VX_DF_IMAGE_IYUV) || (color == VX_DF_IMAGE_NV12) || (color == VX_DF_IMAGE_NV21)))
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
     else
     {
@@ -524,11 +524,11 @@ static vx_image ownCreateImageInt(vx_context context,
     vx_image image = NULL;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (ownIsValidContext(context) == vx_true_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (ownIsSupportedFourcc(color) == vx_true_e)
+        if (ownIsSupportedFourcc(color) == (vx_bool)vx_true_e)
         {
-            if (ownIsValidDimensions(width, height, color) == vx_true_e)
+            if (ownIsValidDimensions(width, height, color) == (vx_bool)vx_true_e)
             {
                 image = (vx_image)ownCreateReference(context, VX_TYPE_IMAGE, VX_EXTERNAL, &context->base);
                 if ( (vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
@@ -595,7 +595,7 @@ static vx_status ownCopyAndMapCheckParams(
     if(status == VX_SUCCESS)
     {
         /* bad references */
-        if ( ownIsValidImage(image) == vx_false_e )
+        if ( ownIsValidImage(image) == (vx_bool)vx_false_e )
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is not valid\n");
             status = VX_ERROR_INVALID_REFERENCE;
@@ -650,9 +650,9 @@ static vx_status ownCopyAndMapCheckParams(
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: Can't write to constant data, only read!\n");
         }
-        if ( (image->base.is_virtual == vx_true_e)
+        if ( (image->base.is_virtual == (vx_bool)vx_true_e)
             &&
-            (image->base.is_accessible == vx_false_e)
+            (image->base.is_accessible == (vx_bool)vx_false_e)
             )
         {
             /* cannot be accessed by app */
@@ -714,7 +714,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 wi
     vx_image image;
 
     if ((width == 0) || (height == 0) ||
-        (ownIsSupportedFourcc(format) == vx_false_e) || (format == VX_DF_IMAGE_VIRT))
+        (ownIsSupportedFourcc(format) == (vx_bool)vx_false_e) || (format == VX_DF_IMAGE_VIRT))
     {
         image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
     }
@@ -734,7 +734,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     if ((addrs[0].dim_x == 0) || (addrs[0].dim_y == 0) ||
-        (ownIsSupportedFourcc(color) == vx_false_e) || (color == VX_DF_IMAGE_VIRT))
+        (ownIsSupportedFourcc(color) == (vx_bool)vx_false_e) || (color == VX_DF_IMAGE_VIRT))
     {
         image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
     }
@@ -808,7 +808,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
     vx_context context;
     tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         context = vxGetContext((vx_reference)image);
 
@@ -973,7 +973,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
     uint32_t mem_size;
     tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         context = vxGetContext((vx_reference)image);
 
@@ -1052,7 +1052,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
     vx_image image = NULL;
     vx_reference gref = (vx_reference)graph;
 
-    if (ownIsValidSpecificReference(gref, VX_TYPE_GRAPH) == vx_true_e)
+    if (ownIsValidSpecificReference(gref, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         /* for now virtual image is same as normal image */
         image = (vx_image)ownCreateImageInt(graph->base.context,
@@ -1060,7 +1060,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
         if ((vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE))
         {
             ownReferenceSetScope(&image->base, &graph->base);
-            image->base.is_virtual = vx_true_e;
+            image->base.is_virtual = (vx_bool)vx_true_e;
         }
     }
 
@@ -1282,14 +1282,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
     if (image != NULL)
     {
         vx_image this_image = image[0];
-        if (ownIsValidSpecificReference((vx_reference)this_image, VX_TYPE_IMAGE) == vx_true_e)
+        if (ownIsValidSpecificReference((vx_reference)this_image, VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         {
             vx_image parent = this_image->parent;
 
             /* clear this image from its parent' subimages list */
             if ((NULL != parent) &&
                 (ownIsValidSpecificReference((vx_reference)parent, VX_TYPE_IMAGE) ==
-                    vx_true_e) )
+                    (vx_bool)vx_true_e) )
             {
                 vx_uint32 subimage_idx;
 
@@ -1340,7 +1340,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
 
@@ -1383,7 +1383,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -1448,7 +1448,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
     tivx_obj_desc_image_t *obj_desc = NULL;
     vx_df_image format;
 
-    if ((ownIsValidImage(image) == vx_true_e) && (NULL != rect))
+    if ((ownIsValidImage(image) == (vx_bool)vx_true_e) && (NULL != rect))
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         if ((rect->start_x <= rect->end_x) && (rect->start_y <= rect->end_y) &&
@@ -1497,7 +1497,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         switch (attribute)
@@ -1614,7 +1614,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
 VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {
@@ -1995,7 +1995,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
     vx_status status = VX_SUCCESS;
 
     /* bad references */
-    if (ownIsValidImage(image) == vx_false_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -2003,9 +2003,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
 
     if(status == VX_SUCCESS)
     {
-        if ((image->base.is_virtual == vx_true_e)
+        if ((image->base.is_virtual == (vx_bool)vx_true_e)
             &&
-            (image->base.is_accessible == vx_false_e)
+            (image->base.is_accessible == (vx_bool)vx_false_e)
             )
         {
             /* cannot be accessed by app */
@@ -2075,7 +2075,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
     vx_image subimage;
     tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
-    if (ownIsValidImage(image) == vx_true_e)
+    if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -2210,13 +2210,13 @@ vx_status ownInitVirtualImage(
 {
     vx_status status = VX_FAILURE;
 
-    if ((ownIsValidSpecificReference(&img->base, VX_TYPE_IMAGE) == vx_true_e)
+    if ((ownIsValidSpecificReference(&img->base, VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         &&
         (img->base.obj_desc != NULL))
     {
         if ((width > 0) &&
             (height > 0) &&
-            (img->base.is_virtual == vx_true_e))
+            (img->base.is_virtual == (vx_bool)vx_true_e))
         {
             ownInitImage(img, width, height, format);
             status = VX_SUCCESS;
@@ -2230,7 +2230,7 @@ vx_status ownInitVirtualImage(
         {
             VX_PRINT(VX_ZONE_ERROR, "ownInitVirtualImage: Height is not greater than 0\n");
         }
-        if (!(img->base.is_virtual == vx_true_e))
+        if (!(img->base.is_virtual == (vx_bool)vx_true_e))
         {
             VX_PRINT(VX_ZONE_ERROR, "ownInitVirtualImage: Image is not virtual\n");
         }

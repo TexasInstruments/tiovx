@@ -30,8 +30,8 @@
 
 #include <vx_internal.h>
 
-#define tivxIsValidDelay(d) ((NULL != d) && (ownIsValidSpecificReference((vx_reference)(d), VX_TYPE_DELAY) == vx_true_e))
-#define tivxIsValidGraph(g) ((NULL != g) && (ownIsValidSpecificReference((vx_reference)(g), VX_TYPE_GRAPH) == vx_true_e))
+#define tivxIsValidDelay(d) ((NULL != d) && (ownIsValidSpecificReference((vx_reference)(d), VX_TYPE_DELAY) == (vx_bool)vx_true_e))
+#define tivxIsValidGraph(g) ((NULL != g) && (ownIsValidSpecificReference((vx_reference)(g), VX_TYPE_GRAPH) == (vx_bool)vx_true_e))
 
 static vx_bool ownIsValidObject(vx_enum type);
 static void ownResetDelayPrmPool(vx_delay delay);
@@ -46,7 +46,7 @@ static void ownDelayInit(vx_delay delay, vx_size count, vx_enum type);
 
 static vx_bool ownIsValidObject(vx_enum type)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if ((VX_TYPE_IMAGE == type) ||
         (VX_TYPE_ARRAY == type) ||
@@ -63,7 +63,7 @@ static vx_bool ownIsValidObject(vx_enum type)
         (TIVX_TYPE_RAW_IMAGE == type)
         )
     {
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
 
     return (status);
@@ -117,7 +117,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
 {
     vx_delay delay = value->delay;
     vx_int32 delay_index = value->delay_slot_index;
-    vx_bool status = vx_true_e;
+    vx_bool status = (vx_bool)vx_true_e;
 
     vx_int32 index = (delay->index + abs(delay_index)) % (vx_int32)delay->count;
 
@@ -142,7 +142,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                 }
                 else
                 {
-                    status = vx_false_e;
+                    status = (vx_bool)vx_false_e;
                 }
                 break;
             }
@@ -153,7 +153,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
         } while (1);
     }
 
-    if(status == vx_true_e)
+    if(status == (vx_bool)vx_true_e)
     {
         /* Increment a reference to the delay */
         ownIncrementReference((vx_reference)delay, VX_INTERNAL);
@@ -171,7 +171,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     vx_bool do_break;
 
     vx_int32 index = delay_index;
-    vx_bool status = vx_true_e;
+    vx_bool status = (vx_bool)vx_true_e;
 
     if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
     {
@@ -182,7 +182,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     {
         tivx_delay_param_t **ptr = &delay->set[index].next;
         tivx_delay_param_t *next = NULL;
-        do_break = vx_false_e;
+        do_break = (vx_bool)vx_false_e;
         do
         {
             if (*ptr != NULL)
@@ -192,7 +192,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                     next = (*ptr)->next;
                     ownFreeDelayPrm(delay, *ptr);
                     *ptr = next;
-                    do_break = vx_true_e;
+                    do_break = (vx_bool)vx_true_e;
                 }
                 else
                 {
@@ -201,11 +201,11 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
             }
             else
             {
-                status = vx_false_e;
-                do_break = vx_true_e;
+                status = (vx_bool)vx_false_e;
+                do_break = (vx_bool)vx_true_e;
             }
 
-            if (vx_true_e == do_break)
+            if ((vx_bool)vx_true_e == do_break)
             {
                 break;
             }
@@ -213,7 +213,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     }
 
 
-    if (status == vx_true_e) /* Release the delay */
+    if (status == (vx_bool)vx_true_e) /* Release the delay */
     {
         vx_reference ref=(vx_reference)delay;
         ownReleaseReferenceInt(&ref, VX_TYPE_DELAY, VX_INTERNAL, NULL);
@@ -376,7 +376,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     {
                         ref = ownCreateReferenceFromExemplar(context, exemplar);
                         status = VX_SUCCESS;
-                        if(ownIsValidReference(ref)==vx_false_e)
+                        if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference type\n");
                             status = VX_ERROR_INVALID_REFERENCE;
@@ -506,7 +506,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(
     vx_delay delay, vx_int32 index)
 {
     vx_reference ref = NULL;
-    if (tivxIsValidDelay(delay) == vx_true_e)
+    if (tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
     {
         if ((vx_uint32)abs(index) < delay->count)
         {
@@ -527,7 +527,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
 {
     vx_status status = VX_SUCCESS;
 
-    if (tivxIsValidDelay(delay) == vx_true_e)
+    if (tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {
@@ -577,7 +577,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
 {
     vx_status status = VX_SUCCESS;
 
-    if (tivxIsValidDelay(delay) == vx_true_e)
+    if (tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
     {
         vx_int32 i,j;
 

@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
 
     vx_border_t border;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_REMAP_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_REMAP_INPUT_IDX])
@@ -175,7 +175,7 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'policy' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -202,7 +202,7 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should have the same value for VX_IMAGE_HEIGHT as 'table' does for VX_REMAP_SOURCE_HEIGHT \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (output_w != table_dst_w)
             {

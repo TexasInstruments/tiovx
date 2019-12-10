@@ -748,10 +748,10 @@ static uint8_t *ownAllocObject(
 
     for (i = 0;i < max_objects; i ++)
     {
-        if (vx_false_e == inUse[i])
+        if ((vx_bool)vx_false_e == inUse[i])
         {
             obj_ptr = obj_start_ptr;
-            inUse[i] = vx_true_e;
+            inUse[i] = (vx_bool)vx_true_e;
             tivxLogResourceAlloc(resource_name, 1);
             break;
         }
@@ -775,9 +775,9 @@ static vx_status ownFreeObject(
 
     for (i = 0;i < max_objects; i ++)
     {
-        if ((obj_ptr == obj_start_ptr) && (vx_true_e == inUse[i]))
+        if ((obj_ptr == obj_start_ptr) && ((vx_bool)vx_true_e == inUse[i]))
         {
-            inUse[i] = vx_false_e;
+            inUse[i] = (vx_bool)vx_false_e;
             status = VX_SUCCESS;
             tivxLogResourceFree(resource_name, 1);
             break;
@@ -794,7 +794,7 @@ static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele)
 
     for (i = 0; i < num_ele; i ++)
     {
-        inUse[i] = vx_false_e;
+        inUse[i] = (vx_bool)vx_false_e;
     }
 }
 
@@ -805,7 +805,7 @@ static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele)
 
     for (i = 0; i < num_ele; i ++)
     {
-        if (vx_true_e == inUse[i])
+        if ((vx_bool)vx_true_e == inUse[i])
         {
             status = VX_FAILURE;
         }

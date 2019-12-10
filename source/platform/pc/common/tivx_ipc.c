@@ -120,5 +120,5 @@ void tivxIpcDeInit(void)
 
 vx_bool tivxIsTargetEnabled(char target_name[])
 {
-    return (vx_true_e);
+    return ((vx_bool)vx_true_e);
 }

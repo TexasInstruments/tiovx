@@ -87,16 +87,16 @@ void vx_tutorial_graph_run_all()
 {
     vx_tutorial_graph_image_gradients();
     vx_tutorial_graph_image_gradients_pytiovx();
-    vx_tutorial_graph_user_kernel(vx_false_e);
-    vx_tutorial_graph_user_kernel_pytiovx(vx_false_e);
-    vx_tutorial_graph_user_kernel(vx_true_e);
-    vx_tutorial_graph_user_kernel_pytiovx(vx_true_e);
+    vx_tutorial_graph_user_kernel((vx_bool)vx_false_e);
+    vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_false_e);
+    vx_tutorial_graph_user_kernel((vx_bool)vx_true_e);
+    vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_true_e);
 }
 
 void vx_tutorial_graph_run_interactive()
 {
     char ch;
-    vx_bool done = vx_false_e;
+    vx_bool done = (vx_bool)vx_false_e;
 
     while(!done)
     {
@@ -113,22 +113,22 @@ void vx_tutorial_graph_run_interactive()
                 vx_tutorial_graph_image_gradients_pytiovx();
                 break;
             case '3':
-                vx_tutorial_graph_user_kernel(vx_false_e);
+                vx_tutorial_graph_user_kernel((vx_bool)vx_false_e);
                 break;
             case '4':
-                vx_tutorial_graph_user_kernel_pytiovx(vx_false_e);
+                vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_false_e);
                 break;
             case '5':
-                vx_tutorial_graph_user_kernel(vx_true_e);
+                vx_tutorial_graph_user_kernel((vx_bool)vx_true_e);
                 break;
             case '6':
-                vx_tutorial_graph_user_kernel_pytiovx(vx_true_e);
+                vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_true_e);
                 break;
             case 'a':
                 vx_tutorial_graph_run_all();
                 break;
             case 'x':
-                done = vx_true_e;
+                done = (vx_bool)vx_true_e;
                 break;
             case '\n':
                 break;

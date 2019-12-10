@@ -46,7 +46,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
     vx_threshold thresh = NULL;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (((VX_THRESHOLD_TYPE_BINARY == thr_type) ||
              (VX_THRESHOLD_TYPE_RANGE == thr_type)) &&
@@ -95,7 +95,7 @@ vx_status VX_API_CALL vxQueryThreshold(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == vx_false_e)
+    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )
@@ -203,7 +203,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == vx_false_e)
+    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )

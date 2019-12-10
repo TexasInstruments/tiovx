@@ -172,7 +172,7 @@ vx_status tivx_utils_bmp_file_read(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
+    int dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 
@@ -232,7 +232,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
+    int dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 
@@ -600,19 +600,19 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
         dst_start_x = (img_width - copy_width)/2;
         dst_start_y = (img_height - copy_height)/2;
 
-        enable_rgb2gray = vx_false_e;
-        enable_gray2rgb = vx_false_e;
+        enable_rgb2gray = (vx_bool)vx_false_e;
+        enable_gray2rgb = (vx_bool)vx_false_e;
 
         if(df!=img_df)
         {
             if((df==VX_DF_IMAGE_RGB) && (img_df==VX_DF_IMAGE_U8) && convert_to_gray_scale)
             {
-                enable_rgb2gray = vx_true_e;
+                enable_rgb2gray = (vx_bool)vx_true_e;
             }
             else
             if((df==VX_DF_IMAGE_U8) && (img_df==VX_DF_IMAGE_RGB))
             {
-                enable_gray2rgb = vx_true_e;
+                enable_gray2rgb = (vx_bool)vx_true_e;
             }
             else
             {
@@ -669,7 +669,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 VX_NOGAP_X
                 );
 
-            if((enable_rgb2gray == (vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)vx_false_e))
+            if((enable_rgb2gray == (vx_bool)(vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)(vx_bool)vx_false_e))
             {
                 uint32_t y;
 

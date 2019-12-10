@@ -218,7 +218,7 @@ static vx_bool tivxTargetNodeDescCanNodeExecute(
     tivx_obj_desc_node_t *prev_node_obj_desc;
     uint16_t prev_node_obj_desc_id;
     uint16_t i;
-    vx_bool can_execute = vx_true_e;
+    vx_bool can_execute = (vx_bool)vx_true_e;
 
     for(i=0; i<node_obj_desc->num_in_nodes; i++)
     {
@@ -228,9 +228,9 @@ static vx_bool tivxTargetNodeDescCanNodeExecute(
         if( tivxObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) )
         {
             if( tivxFlagIsBitSet(prev_node_obj_desc->flags,
-                        TIVX_NODE_FLAG_IS_EXECUTED) == vx_false_e)
+                        TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
-                can_execute = vx_false_e;
+                can_execute = (vx_bool)vx_false_e;
             }
         }
     }
@@ -256,7 +256,7 @@ static void tivxTargetNodeDescTriggerNextNodes(
         {
             can_execute = tivxTargetNodeDescCanNodeExecute(next_node_obj_desc);
 
-            if(can_execute == vx_true_e)
+            if(can_execute == (vx_bool)vx_true_e)
             {
                 tivxObjDescSend( next_node_obj_desc->target_id, next_node_obj_desc_id);
             }
@@ -277,7 +277,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     tivx_obj_desc_t *prm_obj_desc;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
-        vx_true_e)
+        (vx_bool)vx_true_e)
     {
         loop_max = node_obj_desc->num_of_replicas;
     }
@@ -454,7 +454,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
         {
             if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
-                vx_true_e)
+                (vx_bool)vx_true_e)
             {
                 params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
@@ -477,15 +477,15 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
      */
     for(i=0; i<node_obj_desc->num_params ; i++)
     {
-        if(    (tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1<<i)) == vx_true_e)
-            && (tivxFlagIsBitSet(is_prm_replicated, (1<<i)) == vx_false_e)
+        if(    (tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1<<i)) == (vx_bool)vx_true_e)
+            && (tivxFlagIsBitSet(is_prm_replicated, (1<<i)) == (vx_bool)vx_false_e)
             )
         {
             if(params[i]==NULL)
             {
                 prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
             }
-            else if(tivxFlagIsBitSet(is_prm_array_element, (1<<i)) == vx_true_e)
+            else if(tivxFlagIsBitSet(is_prm_array_element, (1<<i)) == (vx_bool)vx_true_e)
             {
                 prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
 
@@ -526,7 +526,7 @@ static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_o
 vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_obj_desc_node_t *prev_node_obj_desc;
-    vx_bool is_prev_node_blocked = vx_false_e;
+    vx_bool is_prev_node_blocked = (vx_bool)vx_false_e;
 
     prev_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc->prev_pipe_node_id);
     if(prev_node_obj_desc!=NULL)
@@ -540,7 +540,7 @@ vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_d
                  */
                 node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_BLOCKED;
                 prev_node_obj_desc->blocked_node_id = node_obj_desc->base.obj_desc_id;
-                is_prev_node_blocked = vx_true_e;
+                is_prev_node_blocked = (vx_bool)vx_true_e;
             }
         }
         else
@@ -576,19 +576,19 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
     uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS];
 
     /* if node is already executed do nothing */
-    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == vx_false_e )
+    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e )
     {
         /* check if same node in previous pipeline instance is blocked, if yes then
          * dont acquire parameters for this node
          */
-        if(tivxTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==vx_false_e)
+        if(tivxTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==(vx_bool)vx_false_e)
         {
             vx_bool is_node_blocked;
             tivx_target_kernel_instance target_kernel_instance;
             vx_enum kernel_instance_state = VX_NODE_STATE_STEADY;
             uint32_t num_bufs = 1;
 
-            is_node_blocked = vx_false_e;
+            is_node_blocked = (vx_bool)vx_false_e;
 
             VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
@@ -647,7 +647,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
             tivxTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked);
 
-            if(is_node_blocked==vx_false_e)
+            if(is_node_blocked==(vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
@@ -737,7 +737,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     volatile char *kernel_name = NULL;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
-        vx_true_e)
+        (vx_bool)vx_true_e)
     {
         loop_max = node_obj_desc->num_of_replicas;
     }
@@ -836,7 +836,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
 
             {
                 if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
-                    vx_true_e)
+                    (vx_bool)vx_true_e)
                 {
                     params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
@@ -883,7 +883,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
-        vx_true_e)
+        (vx_bool)vx_true_e)
     {
         loop_max = node_obj_desc->num_of_replicas;
     }
@@ -909,7 +909,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
                 }
 
                 if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
-                    vx_true_e)
+                    (vx_bool)vx_true_e)
                 {
                     params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
@@ -969,7 +969,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     uint16_t cnt, loop_max = 1;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
-        vx_true_e)
+        (vx_bool)vx_true_e)
     {
         loop_max = node_obj_desc->num_of_replicas;
 
@@ -1038,7 +1038,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
 {
     vx_action action;
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
-    vx_bool is_send_graph_complete_event = vx_false_e;
+    vx_bool is_send_graph_complete_event = (vx_bool)vx_false_e;
 
     /* return action is ignored */
     action = ownNodeExecuteUserCallback(node);
@@ -1105,7 +1105,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
         case TIVX_CMD_NODE_CREATE:
         case TIVX_CMD_NODE_DELETE:
         case TIVX_CMD_NODE_CONTROL:
-            if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) == vx_false_e )
+            if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) == (vx_bool)vx_false_e )
             {
                 node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
                 node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc_id);
@@ -1198,7 +1198,7 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
     uint16_t obj_desc_id;
     vx_status status = VX_SUCCESS;
 
-    while(target->targetExitRequest == vx_false_e)
+    while(target->targetExitRequest == (vx_bool)vx_false_e)
     {
         status = tivxTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -1246,7 +1246,7 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
         }
     }
 
-    target->targetExitDone = vx_true_e;
+    target->targetExitDone = (vx_bool)vx_true_e;
 }
 
 vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *params)
@@ -1275,8 +1275,8 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
         strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
         target->task_params.task_name[TIVX_MAX_TASK_NAME-1] = 0;
 
-        target->targetExitRequest = vx_false_e;
-        target->targetExitDone = vx_false_e;
+        target->targetExitRequest = (vx_bool)vx_false_e;
+        target->targetExitDone = (vx_bool)vx_false_e;
 
         /* create job queue */
         status = tivxQueueCreate(&target->job_queue_handle,
@@ -1314,13 +1314,13 @@ vx_status tivxTargetDelete(vx_enum target_id)
     if (NULL != target)
     {
         /* set flag to break target from main loop */
-        target->targetExitRequest = vx_true_e;
+        target->targetExitRequest = (vx_bool)vx_true_e;
 
         /* queue a invalid object descriptor to unblock queue wait */
         tivxTargetQueueObjDesc(target_id, TIVX_OBJ_DESC_INVALID);
 
         /* wait until target exit is done */
-        while(target->targetExitDone==vx_false_e)
+        while(target->targetExitDone==(vx_bool)vx_false_e)
         {
             tivxTaskWaitMsecs(1);
         }

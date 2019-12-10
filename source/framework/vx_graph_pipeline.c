@@ -104,7 +104,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                     if (graph_parameters_queue_param.refs_list[0]->type ==
                         graph_parameters_queue_param.refs_list[i]->type)
                     {
-                        if (vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
+                        if ((vx_bool)vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
                         {
                             status = VX_ERROR_INVALID_PARAMETERS;
                             VX_PRINT(VX_ZONE_ERROR, "Invalid meta data of reference list!\n");
@@ -116,7 +116,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                     break;
                 }
 
-                if (ownIsValidSpecificReference(&meta->base, VX_TYPE_META_FORMAT) == vx_true_e)
+                if (ownIsValidSpecificReference(&meta->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
                     vxReleaseMetaFormat(&meta);
                 }
@@ -129,7 +129,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
-    if (ownIsValidSpecificReference(&meta_base->base, VX_TYPE_META_FORMAT) == vx_true_e)
+    if (ownIsValidSpecificReference(&meta_base->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
         vxReleaseMetaFormat(&meta_base);
     }
@@ -146,9 +146,9 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if (graph->verified == vx_true_e)
+        if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Not supported on verified graph\n");
             status = VX_ERROR_NOT_SUPPORTED;
@@ -183,7 +183,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                     }
                     else
                     {
-                        graph->parameters[i].queue_enable = vx_true_e;
+                        graph->parameters[i].queue_enable = (vx_bool)vx_true_e;
                         graph->parameters[i].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
                         graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
                         if(graph_parameters_queue_params_list[i].refs_list!=NULL)
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
                 /* if graph mode is 'VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO' and
                  * enqueue of a reference at this parameter should trigger
                  * a graph schedule then schedule the graph */
-                if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==vx_true_e)
+                if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==(vx_bool)vx_true_e)
                 {
                     ownGraphScheduleGraph(graph, num_enqueue);
                 }
@@ -349,7 +349,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
         for(ref_id=0; ref_id<max_refs; ref_id++)
         {
             vx_reference ref;
-            vx_bool exit_loop = vx_false_e;
+            vx_bool exit_loop = (vx_bool)vx_false_e;
 
             /* wait until a reference is dequeued */
             do
@@ -359,7 +359,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 if((status == VX_SUCCESS) && (ref != NULL))
                 {
                     /* reference is dequeued break from do - while loop with success */
-                    exit_loop = vx_true_e;
+                    exit_loop = (vx_bool)vx_true_e;
                 }
                 else
                 {
@@ -369,10 +369,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     if(status!=VX_SUCCESS)
                     {
                         /* some error in waiting for event, break loop with error */
-                        exit_loop = vx_true_e;
+                        exit_loop = (vx_bool)vx_true_e;
                     }
                 }
-            } while(exit_loop == vx_false_e);
+            } while(exit_loop == (vx_bool)vx_false_e);
             if(status==VX_SUCCESS)
             {
                 /* If the ref type matches the graph parameter type, return graph parameter */
@@ -397,7 +397,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     refs[ref_id] = (vx_reference)pyr->img[0];
                 }
                 /* If the ref type is an array element that didn't match the graph parameter type, return parent of element */
-                else if(vx_true_e == ref->is_array_element)
+                else if((vx_bool)vx_true_e == ref->is_array_element)
                 {
                     refs[ref_id] = ref->scope;
                 }
@@ -585,7 +585,7 @@ void ownGraphFreeObjDesc(vx_graph graph)
 
 vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 {
-    vx_bool is_send_graph_complete_event = vx_false_e;
+    vx_bool is_send_graph_complete_event = (vx_bool)vx_false_e;
     tivx_obj_desc_graph_t *graph_obj_desc;
     uint32_t schedule_count = 0;
 
@@ -594,7 +594,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
     graph_obj_desc = ownGraphGetObjDesc(graph, pipeline_id);
     if (graph_obj_desc != NULL)
     {
-        vx_bool is_completed = vx_false_e;
+        vx_bool is_completed = (vx_bool)vx_false_e;
 
         /* a leaf node completed so increment 'complete_leaf_nodes' */
         graph_obj_desc->complete_leaf_nodes++;
@@ -605,16 +605,16 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
             /* reset value to 0 for next graph run */
             graph_obj_desc->complete_leaf_nodes = 0;
 
-            is_completed = vx_true_e;
+            is_completed = (vx_bool)vx_true_e;
         }
 
         /* all leaf nodes completed, threfore graph is completed */
-        if(is_completed==vx_true_e)
+        if(is_completed==(vx_bool)vx_true_e)
         {
             uint64_t end_time;
             uint32_t i;
 
-            is_send_graph_complete_event = vx_true_e;
+            is_send_graph_complete_event = (vx_bool)vx_true_e;
 
             /* a submitted graph is completed so decrement this field */
 
@@ -792,7 +792,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
     }
 
     if( (graph->schedule_mode!=VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
-        (vx_true_e == graph->is_streaming_enabled) )
+        ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
     {
         /* Below logic updates the pending graph schedule
          */
@@ -817,7 +817,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 
 vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_parameter_index)
 {
-    vx_bool do_schedule_graph_after_enqueue = vx_false_e;
+    vx_bool do_schedule_graph_after_enqueue = (vx_bool)vx_false_e;
 
     if(graph != NULL)
     {
@@ -825,7 +825,7 @@ vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_param
         {
             if(graph_parameter_index == 0)
             {
-                do_schedule_graph_after_enqueue = vx_true_e;
+                do_schedule_graph_after_enqueue = (vx_bool)vx_true_e;
             }
         }
     }
@@ -847,9 +847,9 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if (graph->verified == vx_true_e)
+        if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxSetGraphPipelineDepth: Not supported on verified graph\n");
             status = VX_ERROR_NOT_SUPPORTED;

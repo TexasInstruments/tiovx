@@ -68,7 +68,7 @@ vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
 {
     vx_status status = VX_SUCCESS;
 
-    event_q->enable = vx_true_e;
+    event_q->enable = (vx_bool)vx_true_e;
 
     status = tivxQueueCreate(&event_q->free_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->free_queue_memory, 0 /* non-blocking */
@@ -107,7 +107,7 @@ vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
 
 void tivxEventQueueDelete(tivx_event_queue_t *event_q)
 {
-    event_q->enable = vx_false_e;
+    event_q->enable = (vx_bool)vx_false_e;
 
     tivxQueueDelete(&event_q->free_queue);
     tivxQueueDelete(&event_q->ready_queue);
@@ -123,7 +123,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 {
     vx_status status = VX_FAILURE;
 
-    if((event_q != NULL) && (event_q->enable == vx_true_e))
+    if((event_q != NULL) && (event_q->enable == (vx_bool)vx_true_e))
     {
         uintptr_t index;
 
@@ -160,14 +160,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableEvents(vx_context context)
 {
     vx_status status;
 
-    if (ownIsValidContext(context) == vx_false_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        tivxEventQueueEnableEvents(&context->event_queue, vx_true_e);
+        tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_true_e);
         status = VX_SUCCESS;
     }
     return status;
@@ -177,14 +177,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context)
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidContext(context) == vx_false_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        tivxEventQueueEnableEvents(&context->event_queue, vx_false_e);
+        tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_false_e);
         status = VX_SUCCESS;
     }
     return status;
@@ -194,7 +194,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
 {
     vx_status status;
 
-    if (ownIsValidContext(context) == vx_false_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -218,7 +218,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidContext(context) == vx_false_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -240,7 +240,7 @@ vx_status vxWaitEventQueue(
     uintptr_t index;
     uint32_t timeout;
 
-    if(vx_true_e == do_not_block)
+    if((vx_bool)vx_true_e == do_not_block)
     {
         timeout = 0;
     }
@@ -322,7 +322,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 {
     vx_status status = VX_ERROR_NOT_SUPPORTED;
 
-    if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == vx_true_e)
+    if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         if( (type==VX_EVENT_NODE_COMPLETED) ||
             (type==VX_EVENT_NODE_ERROR) )
@@ -331,12 +331,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 
             if (TIVX_EVENT_GRAPH_QUEUE == queue_type)
             {
-                node->is_graph_event = vx_true_e;
+                node->is_graph_event = (vx_bool)vx_true_e;
                 status = VX_SUCCESS;
             }
             else if (TIVX_EVENT_CONTEXT_QUEUE == queue_type)
             {
-                node->is_context_event = vx_true_e;
+                node->is_context_event = (vx_bool)vx_true_e;
                 status = VX_SUCCESS;
             }
             else
@@ -352,7 +352,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
         }
     }
     else
-    if (ownIsValidSpecificReference(ref, VX_TYPE_GRAPH) == vx_true_e)
+    if (ownIsValidSpecificReference(ref, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if(type==VX_EVENT_GRAPH_COMPLETED)
         {

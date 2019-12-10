@@ -142,7 +142,7 @@ void vx_tutorial_image_query()
      * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
-    image = create_image_from_file(context, IN_FILE_NAME, vx_false_e);
+    image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)image, "MY_IMAGE");

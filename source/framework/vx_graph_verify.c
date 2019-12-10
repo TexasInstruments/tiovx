@@ -131,9 +131,9 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         /* do nothing */
     }
 
-    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
             ||
-        (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+        (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
        )
     {
         /* Check set to 0 because a data_ref_num_in_nodes is not supposed to be set for parent object */
@@ -380,7 +380,7 @@ static vx_status ownGraphInitVirtualNode(
         if( (ref != NULL) && (mf != NULL) )
         {
             if ((node->kernel->signature.directions[i] == VX_OUTPUT) &&
-                (vx_true_e == ref->is_virtual))
+                ((vx_bool)vx_true_e == ref->is_virtual))
             {
                 if ((ref->scope->type == VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
                 {
@@ -618,18 +618,18 @@ static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
 
 static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2)
 {
-    vx_bool is_match = vx_false_e;
+    vx_bool is_match = (vx_bool)vx_false_e;
 
     if((NULL != ref1) && (NULL != ref2))
     {
         if(ref1 == ref2)
         {
-            is_match = vx_true_e;
+            is_match = (vx_bool)vx_true_e;
         }
         else if (((vx_reference)graph != ref2->scope) &&
             (ref1 == ref2->scope))
         {
-            is_match = vx_true_e;
+            is_match = (vx_bool)vx_true_e;
         }
         else if ( (VX_TYPE_IMAGE==ref1->type) &&
                   (VX_TYPE_IMAGE==ref2->type) )
@@ -643,7 +643,7 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
             {
                 if (parent_ref1 == (vx_image)image_ref2)
                 {
-                    is_match = vx_true_e;
+                    is_match = (vx_bool)vx_true_e;
                 }
             }
 
@@ -651,23 +651,23 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
             {
                 if (parent_ref2 == (vx_image)image_ref1)
                 {
-                    is_match = vx_true_e;
+                    is_match = (vx_bool)vx_true_e;
                 }
             }
         }
         else
         {
-            is_match = vx_false_e;
+            is_match = (vx_bool)vx_false_e;
         }
     }
     return is_match;
 }
 
 /* Abstracted check for checking if references match
- * "vx_true_e" will be returned if references match or if references parent object matches */
+ * "(vx_bool)vx_true_e" will be returned if references match or if references parent object matches */
 vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2)
 {
-    vx_bool ret = vx_false_e;
+    vx_bool ret = (vx_bool)vx_false_e;
     vx_reference parent_ref_node_cur, parent_ref_node_next;
 
     parent_ref_node_cur = NULL;
@@ -675,7 +675,7 @@ vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference 
 
     if (NULL != ref1)
     {
-        if (vx_true_e == ref1->is_array_element)
+        if ((vx_bool)vx_true_e == ref1->is_array_element)
         {
             parent_ref_node_cur = ref1->scope;
         }
@@ -683,7 +683,7 @@ vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference 
 
     if (NULL != ref2)
     {
-        if (vx_true_e == ref2->is_array_element)
+        if ((vx_bool)vx_true_e == ref2->is_array_element)
         {
             parent_ref_node_next = ref2->scope;
         }
@@ -695,7 +695,7 @@ vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference 
          ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
          ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
      {
-         ret = vx_true_e;
+         ret = (vx_bool)vx_true_e;
      }
 
      return ret;
@@ -820,7 +820,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
         node = graph->nodes[i];
 
         if((node->super_node == NULL) ||
-           (node->is_super_node == vx_true_e))
+           (node->is_super_node == (vx_bool)vx_true_e))
         {
 
             num_in = ownNodeGetNumInNodes(node);
@@ -984,7 +984,7 @@ static void ownGraphLinkArrayElements(vx_graph graph)
             ref = ownNodeGetParameterRef(node, prm_id);
             if(ref!=NULL)
             {
-                if(vx_true_e == ref->is_array_element)
+                if((vx_bool)vx_true_e == ref->is_array_element)
                 {
                     ownNodeLinkArrayElement(node, prm_id);
                 }
@@ -1176,7 +1176,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
 
         for(delay_slot_index=0; delay_slot_index<delay->count; delay_slot_index++)
         {
-            auto_age_delay_slot[delay_slot_index] = vx_false_e;
+            auto_age_delay_slot[delay_slot_index] = (vx_bool)vx_false_e;
             if((delay->set[delay_slot_index].node ==
                 node)
                 &&
@@ -1197,7 +1197,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                     graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].delay_slot_index = delay_slot_index;
 
                     data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
-                    data_ref_create_prms.enable_user_queueing = vx_false_e;
+                    data_ref_create_prms.enable_user_queueing = (vx_bool)vx_false_e;
                     if(delay->set[delay_slot_index].node!=NULL)
                     {
                         data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
@@ -1210,10 +1210,10 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                          * Such a delay slot needs to be auto aged.
                          */
                         data_ref_create_prms.num_in_nodes = 0;
-                        auto_age_delay_slot[delay_slot_index] = vx_true_e;
+                        auto_age_delay_slot[delay_slot_index] = (vx_bool)vx_true_e;
                     }
                     data_ref_create_prms.is_enable_send_ref_consumed_event =
-                                    vx_false_e;
+                                    (vx_bool)vx_false_e;
                     data_ref_create_prms.graph_parameter_index = (uint32_t)-1;
 
                     graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue =
@@ -1258,10 +1258,10 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
     for(i=0; i<graph->num_data_ref_q; i++)
     {
         data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
-        data_ref_create_prms.enable_user_queueing = vx_false_e;
+        data_ref_create_prms.enable_user_queueing = (vx_bool)vx_false_e;
         data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
                         graph, graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
-        data_ref_create_prms.is_enable_send_ref_consumed_event = vx_false_e;
+        data_ref_create_prms.is_enable_send_ref_consumed_event = (vx_bool)vx_false_e;
         data_ref_create_prms.graph_parameter_index = (uint32_t)-1;
 
         graph->data_ref_q_list[i].data_ref_queue =
@@ -1326,7 +1326,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
         if(graph->parameters[i].queue_enable)
         {
             data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
-            data_ref_create_prms.enable_user_queueing = vx_true_e;
+            data_ref_create_prms.enable_user_queueing = (vx_bool)vx_true_e;
             data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
                             graph, graph->parameters[i].node, graph->parameters[i].index);
             data_ref_create_prms.is_enable_send_ref_consumed_event =
@@ -1452,14 +1452,14 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_objec
     {
         for(i=0; i<ref_count; i++)
         {
-            if ((ownIsValidSpecificReference(ref->ref[i], VX_TYPE_IMAGE) == vx_true_e)
-              && (ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_IMAGE) == vx_true_e))
+            if ((ownIsValidSpecificReference(ref->ref[i], VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
+              && (ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_IMAGE) == (vx_bool)vx_true_e))
             {
                 status |= ownGraphUpdateImageRefAfterKernetInit(graph, (vx_image)exemplar->ref[i], (vx_image)ref->ref[i]);
             }
             else
-            if ((ownIsValidSpecificReference(ref->ref[i], VX_TYPE_PYRAMID) == vx_true_e)
-              && (ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_PYRAMID) == vx_true_e))
+            if ((ownIsValidSpecificReference(ref->ref[i], VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+              && (ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
             {
                 status |= ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar->ref[i], (vx_pyramid)ref->ref[i]);
             }
@@ -1480,20 +1480,20 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
 {
     vx_status status = VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == vx_true_e)
-        && (ownIsValidSpecificReference(exemplar, VX_TYPE_PYRAMID) == vx_true_e))
+    if ((ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+        && (ownIsValidSpecificReference(exemplar, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
     {
         status = ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar, (vx_pyramid)ref);
     }
     else
-    if ((ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
-        && (ownIsValidSpecificReference(exemplar, VX_TYPE_OBJECT_ARRAY) == vx_true_e))
+    if ((ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+        && (ownIsValidSpecificReference(exemplar, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e))
     {
         status = ownGraphUpdateObjArrRefAfterKernetInit(graph, (vx_object_array)exemplar, (vx_object_array)ref);
     }
     else
-    if ((ownIsValidSpecificReference(ref, VX_TYPE_IMAGE) == vx_true_e)
-      && (ownIsValidSpecificReference(exemplar, VX_TYPE_IMAGE) == vx_true_e))
+    if ((ownIsValidSpecificReference(ref, VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
+      && (ownIsValidSpecificReference(exemplar, VX_TYPE_IMAGE) == (vx_bool)vx_true_e))
     {
         status = ownGraphUpdateImageRefAfterKernetInit(graph, (vx_image)exemplar, (vx_image)ref);
     }
@@ -1503,14 +1503,14 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
     }
 
     /* below is to take care of replicate case */
-    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
-      && (ownIsValidSpecificReference(exemplar->scope, VX_TYPE_PYRAMID) == vx_true_e))
+    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+      && (ownIsValidSpecificReference(exemplar->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
     {
         status = ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar->scope, (vx_pyramid)ref->scope);
     }
     else
-    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
-      && (ownIsValidSpecificReference(exemplar->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e))
+    if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+      && (ownIsValidSpecificReference(exemplar->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e))
     {
         status = ownGraphUpdateObjArrRefAfterKernetInit(graph, (vx_object_array)exemplar->scope, (vx_object_array)ref->scope);
     }
@@ -1594,7 +1594,7 @@ static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
  */
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index)
 {
-    vx_bool skip_add_data_ref_q = vx_false_e;
+    vx_bool skip_add_data_ref_q = (vx_bool)vx_false_e;
     vx_status status = VX_SUCCESS;
     vx_reference param_ref;
 
@@ -1615,10 +1615,10 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
              !((param_ref->delay != NULL) && ownIsValidSpecificReference((vx_reference)param_ref->delay, VX_TYPE_DELAY)))
         )
     {
-        skip_add_data_ref_q = vx_true_e;
+        skip_add_data_ref_q = (vx_bool)vx_true_e;
     }
 
-    if(skip_add_data_ref_q==vx_false_e)
+    if(skip_add_data_ref_q==(vx_bool)vx_false_e)
     {
         uint32_t i;
 
@@ -1628,15 +1628,15 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
         {
             if((graph->parameters[i].node==node) &&
                 (graph->parameters[i].index==index) &&
-                (graph->parameters[i].queue_enable == vx_true_e))
+                (graph->parameters[i].queue_enable == (vx_bool)vx_true_e))
             {
-                skip_add_data_ref_q = vx_true_e;
+                skip_add_data_ref_q = (vx_bool)vx_true_e;
                 break;
             }
         }
     }
 
-    if(skip_add_data_ref_q==vx_false_e)
+    if(skip_add_data_ref_q==(vx_bool)vx_false_e)
     {
         if(graph->num_data_ref_q<TIVX_GRAPH_MAX_DATA_REF_QUEUE)
         {
@@ -1677,12 +1677,12 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                     {
                         if(is_replicated)
                         {
-                            if (ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == vx_true_e)
+                            if (ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             {
                                 vx_pyramid pyramid = (vx_pyramid)ref;
                                 ref = (vx_reference)pyramid->img[0];
                             }
-                            else if (ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                            else if (ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                             {
                                 vx_object_array object_array = (vx_object_array)ref;
                                 ref = object_array->ref[0];
@@ -1800,12 +1800,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     uint32_t i;
     vx_status status = VX_SUCCESS;
     vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS] = {NULL};
-    vx_bool first_time_verify = vx_true_e;
+    vx_bool first_time_verify = (vx_bool)vx_true_e;
 
     if (NULL != graph)
     {
-        first_time_verify = ((graph->verified == vx_false_e) &&
-            (graph->reverify == vx_false_e)) ? vx_true_e : vx_false_e;
+        first_time_verify = ((graph->verified == (vx_bool)vx_false_e) &&
+            (graph->reverify == (vx_bool)vx_false_e)) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
     }
     else
     {
@@ -1830,9 +1830,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     {
         ownReferenceLock(&graph->base);
 
-        graph->verified = vx_false_e;
+        graph->verified = (vx_bool)vx_false_e;
 
-        if(first_time_verify == vx_false_e)
+        if(first_time_verify == (vx_bool)vx_false_e)
         {
             ownGraphNodeKernelDeinit(graph);
         }
@@ -2030,8 +2030,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             if(status == VX_SUCCESS)
             {
                 /* everything passed, now graph is verified */
-                graph->verified = vx_true_e;
-                graph->reverify = vx_false_e;
+                graph->verified = (vx_bool)vx_true_e;
+                graph->reverify = (vx_bool)vx_false_e;
                 graph->state = VX_GRAPH_STATE_VERIFIED;
             }
 

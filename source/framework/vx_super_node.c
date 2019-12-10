@@ -69,38 +69,38 @@ static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32
 
 static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t num_nodes)
 {
-    vx_bool is_valid = vx_true_e;
+    vx_bool is_valid = (vx_bool)vx_true_e;
 
     if (TIVX_SUPER_NODE_MAX_NODES < num_nodes)
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: num_nodes is higher than TIVX_SUPER_NODE_MAX_NODES\n");
         VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: May need to increase the value of TIVX_SUPER_NODE_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
     }
 
-    if( vx_true_e == is_valid )
+    if( (vx_bool)vx_true_e == is_valid )
     {
         uint32_t i;
 
         for(i=0; i < num_nodes; i++)
         {
-            if ((ownIsValidSpecificReference(&nodes[i]->base, VX_TYPE_NODE) == vx_false_e))
+            if ((ownIsValidSpecificReference(&nodes[i]->base, VX_TYPE_NODE) == (vx_bool)vx_false_e))
             {
-                is_valid = vx_false_e;
+                is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not a valid node\n", i);
                break;
             }
 
             if (nodes[i]->graph != graph)
             {
-                is_valid = vx_false_e;
+                is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not in graph\n", i);
                 break;
             }
 
             if (nodes[i]->super_node != NULL)
             {
-                is_valid = vx_false_e;
+                is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is already in a super node\n", i);
                 break;
             }
@@ -113,15 +113,15 @@ static vx_bool ownIsValidSuperNode(tivx_super_node super_node)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == vx_true_e) &&
+    if ((ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e) &&
         (super_node->base.obj_desc != NULL)
        )
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
     else
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
 
     return is_valid;
@@ -175,9 +175,9 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
 
     vx_context context = vxGetContext((vx_reference)graph);
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if (ownIsValidCreateParams(graph, nodes, num_nodes) == vx_true_e)
+        if (ownIsValidCreateParams(graph, nodes, num_nodes) == (vx_bool)vx_true_e)
         {
             super_node = (tivx_super_node)ownCreateReference(context, TIVX_TYPE_SUPER_NODE, VX_EXTERNAL, &graph->base);
 
@@ -212,7 +212,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                         {
                             vx_status status;
                             super_node->node->super_node = super_node;
-                            super_node->node->is_super_node = vx_true_e;
+                            super_node->node->is_super_node = (vx_bool)vx_true_e;
                             tivxFlagBitSet(&super_node->node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_SUPERNODE);
                             super_node->node->obj_desc[0]->base.scope_obj_desc_id = obj_desc->base.obj_desc_id;
                             status = ownGraphAddSuperNode(graph, super_node);
@@ -266,7 +266,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
 
     obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;
 
-    if (ownIsValidSuperNode(super_node) == vx_true_e)
+    if (ownIsValidSuperNode(super_node) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {
@@ -344,7 +344,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     uint32_t i, num_nodes;
 
-    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == vx_true_e)
+    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
     {
         tivx_obj_desc_super_node_t *obj_desc = NULL;
 
@@ -376,13 +376,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node supe
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_node_t *node_obj_desc;
 
-    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == vx_true_e)
+    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
     {
         /* In TI implementation, tivxSetSuperNodeTileSize() cannot be called after a graph is verified
          *
          * This is because it will set the tile size at the graph verify stage
          */
-        if (super_node->node->graph->verified == vx_true_e)
+        if (super_node->node->graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxSetSuperNodeTileSize: Graph has been verified\n");
             status = VX_ERROR_NOT_SUPPORTED;

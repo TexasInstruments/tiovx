@@ -97,7 +97,7 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
     vx_uint32 output_h;
     vx_df_image output_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_LUT_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_LUT_INPUT_IDX])
@@ -158,7 +158,7 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'lut' should be a lut of type:\n VX_TYPE_UINT8 or VX_DF_IMAGE_S16 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if ((VX_DF_IMAGE_U8 != output_fmt) &&
                 (VX_DF_IMAGE_S16 != output_fmt))
@@ -183,7 +183,7 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'lut' should should have the same bitsize and sign as 'input' \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
              if (input_fmt != output_fmt)
              {

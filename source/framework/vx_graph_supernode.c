@@ -91,7 +91,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
         node_cur = graph->nodes[node_cur_idx];
 
         /* The ones in the super node */
-        if ((node_cur->super_node == super_node) && (vx_false_e == node_cur->is_super_node))
+        if ((node_cur->super_node == super_node) && ((vx_bool)vx_false_e == node_cur->is_super_node))
         {
             /* For each parameter */
             for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
@@ -113,7 +113,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                         /* Look for dangling or external inputs to the supernode */
                         if(prm_cur_dir == VX_INPUT)
                         {
-                            found = vx_false_e;
+                            found = (vx_bool)vx_false_e;
 
                             /* for each input, see if it matches any node output data */
                             for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
@@ -142,7 +142,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                     /* Edge is internal to super node */
                                                     /* Since we are looking for external edge inputs now, skip this edge for now */
                                                     /* It will be added when we scan supernode node outputs later */
-                                                    found = vx_true_e;
+                                                    found = (vx_bool)vx_true_e;
                                                 }
                                                 else
                                                 {
@@ -183,7 +183,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                     }
                                 }
                             }
-                            if (found == vx_false_e)
+                            if (found == (vx_bool)vx_false_e)
                             {
                                 if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
                                 {
@@ -233,7 +233,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
             node_cur = graph->nodes[node_cur_idx];
 
             /* The ones in the super node */
-            if ((node_cur->super_node == super_node) && (vx_false_e == node_cur->is_super_node))
+            if ((node_cur->super_node == super_node) && ((vx_bool)vx_false_e == node_cur->is_super_node))
             {
                 /* For each parameter */
                 for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
@@ -248,7 +248,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
 
                             if( (prm_cur_dir == VX_OUTPUT) || (prm_cur_dir == VX_BIDIRECTIONAL))
                             {
-                                found = vx_false_e;
+                                found = (vx_bool)vx_false_e;
 
                                 /* for each output, see if it matches any node input data */
                                 for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
@@ -277,7 +277,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                         if(node_next->super_node == super_node)
                                                         {
                                                             /* Edge is internal to super node */
-                                                            found = vx_true_e;
+                                                            found = (vx_bool)vx_true_e;
                                                             obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
                                                             obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
                                                             obj_desc->edge_list[cnt].dst_node_obj_desc_id = node_next->obj_desc[0]->base.obj_desc_id;
@@ -347,7 +347,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                         }
                                     }
                                 }
-                                if (found == vx_false_e)
+                                if (found == (vx_bool)vx_false_e)
                                 {
                                     if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
                                     {
@@ -435,7 +435,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
         /* Copy topological sorted list related to supernode into supernode list */
         for(j=0; j<graph->num_nodes; j++)
         {
-            if((vx_false_e == graph->nodes[j]->is_super_node) &&
+            if(((vx_bool)vx_false_e == graph->nodes[j]->is_super_node) &&
                (super_node == graph->nodes[j]->super_node))
             {
                 node_obj_desc = (tivx_obj_desc_node_t *)graph->nodes[j]->obj_desc[0];
@@ -467,7 +467,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
         {
             /* Check for continuity for each node in super node */
-            vx_bool is_continuous = vx_false_e;
+            vx_bool is_continuous = (vx_bool)vx_false_e;
 
             ownContextLock(graph->base.context);
 
@@ -486,7 +486,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
             ownContextUnlock(graph->base.context);
 
-            if(is_continuous == vx_false_e)
+            if(is_continuous == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have continuity of all nodes within it\n", i);
                 status = VX_FAILURE;

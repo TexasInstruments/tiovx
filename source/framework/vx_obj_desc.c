@@ -207,13 +207,13 @@ tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id)
 
 vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
 {
-    vx_bool is_valid = vx_false_e;
+    vx_bool is_valid = (vx_bool)vx_false_e;
 
     if(    (NULL != obj_desc)
         && (obj_desc->type == type)
         && (obj_desc->obj_desc_id < g_obj_desc_table.num_entries))
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
 
     return is_valid;

@@ -270,7 +270,7 @@ vx_status uc_superset2_data_create(uc_superset2 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_bool value = vx_true_e;
+        vx_bool value = (vx_bool)vx_true_e;
 
         usecase->scalar_27 = vxCreateScalar(context, VX_TYPE_BOOL, &value);
         if (usecase->scalar_27 == NULL)
@@ -344,7 +344,7 @@ vx_status uc_superset2_data_create(uc_superset2 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_bool value = vx_true_e;
+        vx_bool value = (vx_bool)vx_true_e;
 
         usecase->scalar_43 = vxCreateScalar(context, VX_TYPE_BOOL, &value);
         if (usecase->scalar_43 == NULL)

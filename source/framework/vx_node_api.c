@@ -691,7 +691,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
         /* default value for Warp node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        ownSetNodeAttributeValidRectReset(node, vx_true_e);
+        ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;
@@ -718,7 +718,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image 
         /* default value for Warp node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        ownSetNodeAttributeValidRectReset(node, vx_true_e);
+        ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;
@@ -832,7 +832,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
         /* default value for Remap node */
         /* change node attribute as kernel attributes alreay copied to node */
         /* in tivxCreateNodeByKernelEnum() */
-        ownSetNodeAttributeValidRectReset(node, vx_true_e);
+        ownSetNodeAttributeValidRectReset(node, (vx_bool)vx_true_e);
     }
 
     return node;

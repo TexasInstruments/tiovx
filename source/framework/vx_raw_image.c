@@ -47,17 +47,17 @@ static vx_status ownCopyAndMapCheckParams(
 
 static vx_bool ownIsValidCreateParams(tivx_raw_image_create_params_t *params)
 {
-    vx_bool is_valid = vx_true_e;
+    vx_bool is_valid = (vx_bool)vx_true_e;
 
     if( (params->width < 2u ) || (params->height < 1u ) || ((params->width & 1u) == 1u) )
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: invalid width and/or height\n");
     }
 
     if( (params->num_exposures < 1) || (params->num_exposures > TIVX_RAW_IMAGE_MAX_EXPOSURES) )
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
         VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: invalid num_exposures\n");
     }
     else
@@ -68,13 +68,13 @@ static vx_bool ownIsValidCreateParams(tivx_raw_image_create_params_t *params)
         {
             if( params->format[i].pixel_container > TIVX_RAW_IMAGE_P12_BIT )
             {
-                is_valid = vx_false_e;
+                is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: invalid pixel_container for exposure index %d\n", i);
             }
 
             if( params->format[i].msb > 15u )
             {
-                is_valid = vx_false_e;
+                is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: invalid msb for exposure index %d\n", i);
             }
         }
@@ -87,15 +87,15 @@ static vx_bool ownIsValidRawImage(tivx_raw_image image)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&image->base, TIVX_TYPE_RAW_IMAGE) == vx_true_e) &&
+    if ((ownIsValidSpecificReference(&image->base, TIVX_TYPE_RAW_IMAGE) == (vx_bool)vx_true_e) &&
         (image->base.obj_desc != NULL)
        )
     {
-        is_valid = vx_true_e;
+        is_valid = (vx_bool)vx_true_e;
     }
     else
     {
-        is_valid = vx_false_e;
+        is_valid = (vx_bool)vx_false_e;
     }
 
     return is_valid;
@@ -223,7 +223,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
             {
                 uint32_t img_line_offset = obj_desc->params.meta_height_before;
                 uint32_t meta_line_offset = 0;
-                vx_bool new_allocation = vx_false_e;
+                vx_bool new_allocation = (vx_bool)vx_false_e;
 
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -233,7 +233,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 
                     /* memory is not allocated, so allocate it */
                     if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL) &&
-                        ((obj_desc->params.line_interleaved == vx_false_e) || (exp_idx == 0))
+                        ((obj_desc->params.line_interleaved == (vx_bool)vx_false_e) || (exp_idx == 0))
                       )
                     {
                         tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], TIVX_MEM_EXTERNAL);
@@ -247,7 +247,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                         }
                         else
                         {
-                            new_allocation = vx_true_e;
+                            new_allocation = (vx_bool)vx_true_e;
 
                             obj_desc->mem_ptr[exp_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
@@ -257,9 +257,9 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                         }
                     }
 
-                    if ( new_allocation == vx_true_e )
+                    if ( new_allocation == (vx_bool)vx_true_e )
                     {
-                        if( obj_desc->params.line_interleaved == vx_true_e )
+                        if( obj_desc->params.line_interleaved == (vx_bool)vx_true_e )
                         {
                             alloc_idx = 0;
                             exposure_offset = exp_idx;
@@ -350,7 +350,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
     imagepatch_addr.step_x = 1;
     imagepatch_addr.step_y = 1;
 
-    if(vx_true_e == params->line_interleaved)
+    if((vx_bool)vx_true_e == params->line_interleaved)
     {
         stride_y_multiplier = params->num_exposures;
     }
@@ -379,7 +379,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
 
         mem_size = (imagepatch_addr.stride_y*(imagepatch_addr.dim_y + (params->meta_height_before + params->meta_height_after)));
 
-        if( (vx_true_e == params->line_interleaved) && (exp_idx > 0U) )
+        if( ((vx_bool)vx_true_e == params->line_interleaved) && (exp_idx > 0U) )
         {
             obj_desc->mem_size[exp_idx] = 0;
         }
@@ -408,9 +408,9 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
     tivx_raw_image raw_image = NULL;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
-    if (ownIsValidContext(context) == vx_true_e)
+    if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (ownIsValidCreateParams(params) == vx_true_e)
+        if (ownIsValidCreateParams(params) == (vx_bool)vx_true_e)
         {
             raw_image = (tivx_raw_image)ownCreateReference(context, TIVX_TYPE_RAW_IMAGE, VX_EXTERNAL, &context->base);
 
@@ -475,7 +475,7 @@ static vx_status ownCopyAndMapCheckParams(
     if(status == VX_SUCCESS)
     {
         /* bad references */
-        if ( ownIsValidRawImage(image) == vx_false_e )
+        if ( ownIsValidRawImage(image) == (vx_bool)vx_false_e )
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is not valid\n");
             status = VX_ERROR_INVALID_REFERENCE;
@@ -545,9 +545,9 @@ static vx_status ownCopyAndMapCheckParams(
 
     if(status==VX_SUCCESS)
     {
-        if ( (image->base.is_virtual == vx_true_e)
+        if ( (image->base.is_virtual == (vx_bool)vx_true_e)
             &&
-            (image->base.is_accessible == vx_false_e)
+            (image->base.is_accessible == (vx_bool)vx_false_e)
             )
         {
             /* cannot be accessed by app */
@@ -573,14 +573,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image* image)
     if (image != NULL)
     {
         tivx_raw_image this_image = image[0];
-        if (ownIsValidSpecificReference((vx_reference)this_image, TIVX_TYPE_RAW_IMAGE) == vx_true_e)
+        if (ownIsValidSpecificReference((vx_reference)this_image, TIVX_TYPE_RAW_IMAGE) == (vx_bool)vx_true_e)
         {
             tivx_raw_image parent = this_image->parent;
 
             /* clear this image from its parent' subimages list */
             if ((NULL != parent) &&
                 (ownIsValidSpecificReference((vx_reference)parent, TIVX_TYPE_RAW_IMAGE) ==
-                    vx_true_e) )
+                    (vx_bool)vx_true_e) )
             {
                 vx_uint32 subimage_idx;
 
@@ -604,7 +604,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
-    if (ownIsValidRawImage(raw_image) == vx_true_e)
+    if (ownIsValidRawImage(raw_image) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)raw_image->base.obj_desc;
         switch (attribute)
@@ -830,7 +830,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
         }
         pUserLine = pUserPtr;
 
-        if(obj_desc->params.line_interleaved == vx_true_e)
+        if(obj_desc->params.line_interleaved == (vx_bool)vx_true_e)
         {
             alloc_index = 0;
         }
@@ -1104,7 +1104,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 break;
         }
 
-        if(obj_desc->params.line_interleaved == vx_true_e)
+        if(obj_desc->params.line_interleaved == (vx_bool)vx_true_e)
         {
             alloc_index = 0;
         }
@@ -1186,7 +1186,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
     vx_status status = VX_SUCCESS;
 
     /* bad references */
-    if (ownIsValidRawImage(raw_image) == vx_false_e)
+    if (ownIsValidRawImage(raw_image) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxUnmapRawImagePatch: invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -1194,9 +1194,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
 
     if(status == VX_SUCCESS)
     {
-        if ((raw_image->base.is_virtual == vx_true_e)
+        if ((raw_image->base.is_virtual == (vx_bool)vx_true_e)
             &&
-            (raw_image->base.is_accessible == vx_false_e)
+            (raw_image->base.is_accessible == (vx_bool)vx_false_e)
             )
         {
             /* cannot be accessed by app */

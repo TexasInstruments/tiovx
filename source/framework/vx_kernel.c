@@ -34,7 +34,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&((*kernel)->base), VX_TYPE_KERNEL) == vx_true_e) )
+        (ownIsValidSpecificReference(&((*kernel)->base), VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
         ownReleaseReferenceInt((vx_reference *)kernel, VX_TYPE_KERNEL, VX_EXTERNAL, NULL);
     }
@@ -50,7 +50,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kern) &&
-        (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_kernel kernel = kern;
         switch (attribute)
@@ -128,7 +128,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         switch (attribute)
         {
@@ -178,11 +178,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) ==
-            vx_true_e))
+            (vx_bool)vx_true_e))
     {
-        if((kernel->lock_kernel_remove == vx_true_e)
+        if((kernel->lock_kernel_remove == (vx_bool)vx_true_e)
             &&
-            (ownContextGetKernelRemoveLock(kernel->base.context) == vx_false_e)
+            (ownContextGetKernelRemoveLock(kernel->base.context) == (vx_bool)vx_false_e)
             )
         {
             /* kernel removal is locked, return error */
@@ -214,26 +214,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_kernel kern = kernel;
         if (index < kern->signature.num_parameters)
         {
-            if (((ownIsValidType(data_type) == vx_false_e) ||
-                 (ownIsValidDirection(dir) == vx_false_e) ||
-                 (ownIsValidState(state) == vx_false_e)) ||
+            if (((ownIsValidType(data_type) == (vx_bool)vx_false_e) ||
+                 (ownIsValidDirection(dir) == (vx_bool)vx_false_e) ||
+                 (ownIsValidState(state) == (vx_bool)vx_false_e)) ||
                  ((data_type == VX_TYPE_DELAY) && (dir != VX_INPUT)))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                if (ownIsValidType(data_type) == vx_false_e)
+                if (ownIsValidType(data_type) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid data type\n");
                 }
-                if (ownIsValidDirection(dir) == vx_false_e)
+                if (ownIsValidDirection(dir) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid direction\n");
                 }
-                if (ownIsValidState(state) == vx_false_e)
+                if (ownIsValidState(state) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid state\n");
                 }
@@ -279,15 +279,15 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
     vx_bool is_found;
     uint32_t idx;
 
-    if(ownIsValidContext(context)==vx_true_e)
+    if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
-        is_found = vx_false_e;
+        is_found = (vx_bool)vx_false_e;
 
         ownIsKernelInContext(context, enumeration, name, &is_found);
 
         if((numParams <= TIVX_KERNEL_MAX_PARAMS)
             && (
-            (is_found == vx_false_e) /* not a duplicate kernel */
+            (is_found == (vx_bool)vx_false_e) /* not a duplicate kernel */
             ||
             (strncmp(name, "com.ti.tidl", VX_MAX_KERNEL_NAME)==0)
             ))
@@ -313,11 +313,11 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
                 if(kernel->function)
                 {
-                    kernel->is_target_kernel = vx_false_e;
+                    kernel->is_target_kernel = (vx_bool)vx_false_e;
                 }
                 else
                 {
-                    kernel->is_target_kernel = vx_true_e;
+                    kernel->is_target_kernel = (vx_bool)vx_true_e;
                 }
                 for(idx=0; idx<TIVX_KERNEL_MAX_PARAMS; idx++)
                 {
@@ -326,7 +326,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     kernel->signature.states[idx] = VX_TYPE_INVALID;
                 }
                 kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
-                if(kernel->is_target_kernel == (vx_bool)vx_false_e)
+                if(kernel->is_target_kernel == (vx_bool)(vx_bool)vx_false_e)
                 {
                     /* for user kernel, add to HOST target by default */
                     tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
@@ -345,7 +345,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_uint32 p = 0;
 
@@ -365,7 +365,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
 
-                if (ownIsValidType(kernel->signature.types[p]) == vx_false_e)
+                if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Invalid kernel signature type\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
@@ -398,7 +398,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
 {
     vx_status status = VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         if(kernel->num_targets < TIVX_MAX_TARGETS_PER_KERNEL)
         {
@@ -429,7 +429,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
     vx_status status = VX_SUCCESS;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         kernel->num_sink_bufs = num_sink_bufs;
     }
@@ -446,7 +446,7 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         if(kernel->num_targets==0)
         {
@@ -470,7 +470,7 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
 
     if ((NULL != kernel) &&
           (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) ==
-                vx_true_e) &&
+                (vx_bool)vx_true_e) &&
           (NULL != target_string))
     {
         if(kernel->num_targets==0)

@@ -155,8 +155,8 @@ vx_status tivxQueueCreate(
             }
             if ((vx_status)VX_SUCCESS == status)
             {
-                queue->blockedOnGet = vx_false_e;
-                queue->blockedOnPut = vx_false_e;
+                queue->blockedOnGet = (vx_bool)vx_false_e;
+                queue->blockedOnPut = (vx_bool)vx_false_e;
             }
             else
             {
@@ -201,7 +201,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;
-    volatile vx_bool do_break = vx_false_e;
+    volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
 
     if(queue && queue->context)
@@ -236,7 +236,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     }
 
                     /* exit, with success */
-                    do_break = vx_true_e;
+                    do_break = (vx_bool)vx_true_e;
                 }
                 else
                 {
@@ -245,14 +245,14 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: queue is full\n");
                         status = VX_FAILURE;
-                        do_break = vx_true_e; /* non-blocking, so exit with error */
+                        do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
                     }
                     else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
                     {
                         /* blocking on que put enabled */
-                        queue->blockedOnPut = vx_true_e;
+                        queue->blockedOnPut = (vx_bool)vx_true_e;
                         pthread_cond_wait(&context->condPut, &context->lock);
-                        queue->blockedOnPut = vx_false_e;
+                        queue->blockedOnPut = (vx_bool)vx_false_e;
                     }
                     else
                     {
@@ -261,11 +261,11 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         /* exit with error */
                         VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: blocking on queue is disabled\n");
                         status = VX_FAILURE;
-                        do_break = vx_true_e;
+                        do_break = (vx_bool)vx_true_e;
                     }
                 }
 
-                if ((vx_bool)vx_true_e == do_break)
+                if ((vx_bool)(vx_bool)vx_true_e == do_break)
                 {
                     break;
                 }
@@ -282,7 +282,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;/* init status to error */
-    volatile vx_bool do_break = vx_false_e;
+    volatile vx_bool do_break = (vx_bool)vx_false_e;
     tivx_queue_context context = NULL;
 
     if(queue && queue->context)
@@ -315,7 +315,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     }
 
                     /* exit with success */
-                    do_break = vx_true_e;
+                    do_break = (vx_bool)vx_true_e;
                 }
                 else
                 {
@@ -323,16 +323,16 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
                         status = VX_FAILURE;
-                        do_break = vx_true_e; /* non-blocking, exit with error */
+                        do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
                     }
                     else
                     if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
                     {
                         /* blocking on que get enabled */
 
-                        queue->blockedOnGet = vx_true_e;
+                        queue->blockedOnGet = (vx_bool)vx_true_e;
                         pthread_cond_wait(&context->condGet, &context->lock);
-                        queue->blockedOnGet = vx_false_e;
+                        queue->blockedOnGet = (vx_bool)vx_false_e;
                         /* received semaphore, check que again */
                     }
                     else
@@ -342,11 +342,11 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                         /* exit with error */
                         VX_PRINT(VX_ZONE_ERROR, "tivxQueueGet: blocking on que get disabled\n");
                         status = VX_FAILURE;
-                        do_break = vx_true_e;
+                        do_break = (vx_bool)vx_true_e;
                     }
                 }
 
-                if ((vx_bool)vx_true_e == do_break)
+                if ((vx_bool)(vx_bool)vx_true_e == do_break)
                 {
                     break;
                 }
@@ -360,7 +360,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 
 vx_bool tivxQueueIsEmpty(tivx_queue *queue)
 {
-    vx_bool is_empty = vx_true_e;
+    vx_bool is_empty = (vx_bool)vx_true_e;
     tivx_queue_context context = NULL;
     vx_status status;
 
@@ -373,11 +373,11 @@ vx_bool tivxQueueIsEmpty(tivx_queue *queue)
         {
             if (queue->count == 0U)
             {
-                is_empty = vx_true_e;
+                is_empty = (vx_bool)vx_true_e;
             }
             else
             {
-                is_empty = vx_false_e;
+                is_empty = (vx_bool)vx_false_e;
             }
 
             pthread_mutex_unlock(&context->lock);

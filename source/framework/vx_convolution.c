@@ -41,7 +41,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
     vx_convolution cnvl = NULL;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((isodd(columns) == 1) && (columns >= 3) &&
             (columns < VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
@@ -212,7 +212,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     vx_uint32 scale = *(vx_uint32 *)ptr;
-                    if (vxIsPowerOfTwo(scale) == vx_true_e)
+                    if (vxIsPowerOfTwo(scale) == (vx_bool)vx_true_e)
                     {
                         obj_desc->scale = scale;
                     }
@@ -392,15 +392,15 @@ static vx_bool vxIsPowerOfTwo(vx_uint32 a)
     vx_bool isPowTwo;
     if (a == 0)
     {
-        isPowTwo =vx_false_e;
+        isPowTwo =(vx_bool)vx_false_e;
     }
     else if ((a & ((a) - 1)) == 0)
     {
-        isPowTwo = vx_true_e;
+        isPowTwo = (vx_bool)vx_true_e;
     }
     else
     {
-        isPowTwo = vx_false_e;
+        isPowTwo = (vx_bool)vx_false_e;
     }
 
     return (isPowTwo);

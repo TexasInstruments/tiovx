@@ -40,7 +40,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
     vx_size dim = 0UL;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8))
         {
@@ -124,7 +124,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     /* Check for errors */
-    if(ownIsValidContext(context) != vx_true_e)
+    if(ownIsValidContext(context) != (vx_bool)vx_true_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: invalid context\n");
         status = VX_FAILURE;
@@ -329,7 +329,7 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e)
+    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )
@@ -435,7 +435,7 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e)
+    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )

@@ -80,26 +80,26 @@ static inline void tivxGraphSortStackReset(tivx_graph_sort_context *context, uin
 
 static inline vx_bool tivxGraphSortStackPush(tivx_graph_sort_context *context, vx_node elem)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if(context->stack_top < context->stack_max_elems)
     {
         context->stack[context->stack_top] = elem;
         context->stack_top++;
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
     return status;
 }
 
 static inline vx_bool tivxGraphSortStackPop(tivx_graph_sort_context *context, vx_node *elem)
 {
-    vx_bool status = vx_false_e;
+    vx_bool status = (vx_bool)vx_false_e;
 
     if ((context->stack_top > 0) && (context->stack_top < TIVX_GRAPH_MAX_NODES))
     {
         *elem = context->stack[context->stack_top-1];
         context->stack_top--;
-        status = vx_true_e;
+        status = (vx_bool)vx_true_e;
     }
     return status;
 }
@@ -119,7 +119,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             cur_node = nodes[cur_node_idx];
 
             cur_node->incounter = ownNodeGetNumInNodes(cur_node);
-            if((cur_node->incounter==0) && (cur_node->is_super_node == vx_false_e))
+            if((cur_node->incounter==0) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
                 tivxGraphSortStackPush(context, cur_node);
             }
@@ -148,7 +148,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
         {
             cur_node = nodes[i];
 
-            if(cur_node->is_super_node == vx_true_e)
+            if(cur_node->is_super_node == (vx_bool)vx_true_e)
             {
                 context->sorted_nodes[cur_node_idx] = cur_node;
                 cur_node_idx++;
@@ -164,11 +164,11 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                 nodes[tmp_cur_node_idx] =
                     context->sorted_nodes[tmp_cur_node_idx];
             }
-            *has_cycle = vx_false_e;
+            *has_cycle = (vx_bool)vx_false_e;
         }
         else
         {
-            *has_cycle = vx_true_e;
+            *has_cycle = (vx_bool)vx_true_e;
         }
     }
 }
@@ -232,11 +232,11 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
 
         if( cur_node_idx == num_nodes)
         {
-            *is_continuous = vx_true_e;
+            *is_continuous = (vx_bool)vx_true_e;
         }
         else
         {
-            *is_continuous = vx_false_e;
+            *is_continuous = (vx_bool)vx_false_e;
         }
     }
 }
@@ -255,7 +255,7 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
         {
             cur_node = nodes[cur_node_idx];
 
-            if((cur_node->super_node != NULL) && (cur_node->is_super_node == vx_false_e))
+            if((cur_node->super_node != NULL) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
                 /* Count nodes within the supernodes, but don't push to stack
                  * since they are no longer connected (supernode is connected) */
@@ -290,11 +290,11 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
         }
         if( cur_node_idx == num_nodes)
         {
-            *has_cycle = vx_false_e;
+            *has_cycle = (vx_bool)vx_false_e;
         }
         else
         {
-            *has_cycle = vx_true_e;
+            *has_cycle = (vx_bool)vx_true_e;
         }
     }
 }

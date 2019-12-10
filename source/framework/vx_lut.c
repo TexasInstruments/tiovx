@@ -47,7 +47,7 @@ vx_lut VX_API_CALL vxCreateLUT(
     vx_size dim = 0;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if(ownIsValidContext(context) == vx_true_e)
+    if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8) || (data_type == VX_TYPE_CHAR))
         {
@@ -125,7 +125,7 @@ vx_status VX_API_CALL vxQueryLUT(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -220,7 +220,7 @@ vx_status VX_API_CALL vxCopyLUT(
     vx_uint32 size;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -294,7 +294,7 @@ vx_status VX_API_CALL vxMapLUT(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -324,7 +324,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )

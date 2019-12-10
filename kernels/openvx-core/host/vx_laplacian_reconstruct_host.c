@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
 
     vx_border_t border;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     vx_uint32 w;
     vx_uint32 h;
@@ -173,7 +173,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
@@ -197,7 +197,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
             h = (vx_uint32)ceilf(h * laplacian_scale);
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (laplacian_w != output_w)
             {

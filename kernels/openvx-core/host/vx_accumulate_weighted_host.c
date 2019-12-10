@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
     vx_uint32 accum_h;
     vx_df_image accum_fmt;
 
-    vx_bool is_virtual = vx_false_e;
+    vx_bool is_virtual = (vx_bool)vx_false_e;
 
     if ( (num != TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX])
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
             VX_PRINT(VX_ZONE_ERROR, "'alpha' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (VX_DF_IMAGE_U8 != accum_fmt)
             {
@@ -174,7 +174,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
 
     if (VX_SUCCESS == status)
     {
-        if (vx_false_e == is_virtual)
+        if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != accum_w)
             {

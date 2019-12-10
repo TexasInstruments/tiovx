@@ -136,7 +136,7 @@ void vx_tutorial_graph_image_gradients_pytiovx()
     vx_tutorial_graph_image_gradients_pytiovx_uc_t uc;
     /** \endcode */
 
-    if (vx_false_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
+    if ((vx_bool)vx_false_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         printf(" vx_tutorial_graph_image_gradients_pytiovx: "
                "Not Supported on this platform\n");
@@ -167,7 +167,7 @@ void vx_tutorial_graph_image_gradients_pytiovx()
      *       in the .py file
      * \code
      */
-    status = load_image_from_file(uc.input, IN_FILE_NAME, vx_true_e);
+    status = load_image_from_file(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
     /** \endcode */
 
    /**
