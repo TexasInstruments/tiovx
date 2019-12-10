@@ -302,7 +302,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
             if (NULL != dcc_buf_desc)
             {
-                vissObj->h3a_out_enabled = vx_true_e;
+                vissObj->h3a_out_enabled = (vx_bool)vx_true_e;
             }
             else
             {
@@ -1119,7 +1119,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
      * Enable it if required */
     if (VX_SUCCESS == status)
     {
-        if (vx_true_e == vissObj->h3a_out_enabled)
+        if ((vx_bool)vx_true_e == vissObj->h3a_out_enabled)
         {
             outPrms = &vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_H3A_IDX];
             outPrms->enable = (uint32_t)TRUE;

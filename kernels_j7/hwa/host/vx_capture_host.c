@@ -302,7 +302,7 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
     if (NULL != prms)
     {
         prms->instId = 0u;
-        prms->enableCsiv2p0Support = (uint32_t)vx_true_e;
+        prms->enableCsiv2p0Support = (uint32_t)(vx_bool)vx_true_e;
         prms->numDataLanes = 4u;
         prms->dataLanesMap[0u] = 1u;
         prms->dataLanesMap[1u] = 2u;

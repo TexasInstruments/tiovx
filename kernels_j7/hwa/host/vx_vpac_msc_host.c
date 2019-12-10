@@ -667,7 +667,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     }
 
     if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
+        ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
     {
         status = vxQueryPyramid(pmd, VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
         status |= vxQueryPyramid(pmd, VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));

@@ -144,7 +144,7 @@ void tivxIpcDeInit(void)
 
 vx_bool tivxIsTargetEnabled(char target_name[])
 {
-    vx_bool isEnabled = vx_false_e;
+    vx_bool isEnabled = (vx_bool)vx_false_e;
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
     vx_enum cpu_id;
     uint32_t vsdk_cpu_id;
@@ -165,11 +165,11 @@ vx_bool tivxIsTargetEnabled(char target_name[])
 
                 if (1U == vsdk_isenabled)
                 {
-                    isEnabled = vx_true_e;
+                    isEnabled = (vx_bool)vx_true_e;
                 }
                 else
                 {
-                    isEnabled = vx_false_e;
+                    isEnabled = (vx_bool)vx_false_e;
                 }
             }
         }
