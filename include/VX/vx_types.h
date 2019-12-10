@@ -349,11 +349,11 @@ enum vx_type_e {
     VX_TYPE_KHRONOS_OBJECT_START = 0x800,/*!< \brief A Khronos defined object base index. */
     VX_TYPE_VENDOR_OBJECT_START  = 0xC00,/*!< \brief A vendor defined object base index. */
 
-    VX_TYPE_KHRONOS_STRUCT_MAX   = VX_TYPE_USER_STRUCT_START - 1,/*!< \brief A value for comparison between Khronos defined structs and user structs. */
+    VX_TYPE_KHRONOS_STRUCT_MAX   = (vx_enum)VX_TYPE_USER_STRUCT_START - 1,/*!< \brief A value for comparison between Khronos defined structs and user structs. */
 
-    VX_TYPE_USER_STRUCT_END      = VX_TYPE_VENDOR_STRUCT_START - 1,/*!< \brief A value for comparison between user structs and vendor structs. */
-    VX_TYPE_VENDOR_STRUCT_END    = VX_TYPE_KHRONOS_OBJECT_START - 1,/*!< \brief A value for comparison between vendor structs and Khronos defined objects. */
-    VX_TYPE_KHRONOS_OBJECT_END   = VX_TYPE_VENDOR_OBJECT_START - 1,/*!< \brief A value for comparison between Khronos defined objects and vendor structs. */
+    VX_TYPE_USER_STRUCT_END      = (vx_enum)VX_TYPE_VENDOR_STRUCT_START - 1,/*!< \brief A value for comparison between user structs and vendor structs. */
+    VX_TYPE_VENDOR_STRUCT_END    = (vx_enum)VX_TYPE_KHRONOS_OBJECT_START - 1,/*!< \brief A value for comparison between vendor structs and Khronos defined objects. */
+    VX_TYPE_KHRONOS_OBJECT_END   = (vx_enum)VX_TYPE_VENDOR_OBJECT_START - 1,/*!< \brief A value for comparison between Khronos defined objects and vendor structs. */
     VX_TYPE_VENDOR_OBJECT_END    = 0xFFF,/*!< \brief A value used for bound checking of vendor objects */
 
 
@@ -501,7 +501,7 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
  * \note Use a <tt>\ref vx_df_image</tt> variable to hold the value.
  * \ingroup group_basic_features
  */
-#define VX_DF_IMAGE(a,b,c,d)                  ((a) | (b << 8) | (c << 16) | (d << 24))
+#define VX_DF_IMAGE(a,b,c,d)                  (((vx_uint32)(vx_uint8)a) | ((vx_uint32)(vx_uint8)b << 8U) | ((vx_uint32)(vx_uint8)c << 16U) | ((vx_uint32)(vx_uint8)d << 24U))
 
 /*! \def VX_ATTRIBUTE_BASE
  * \brief Defines the manner in which to combine the Vendor and Object IDs to get

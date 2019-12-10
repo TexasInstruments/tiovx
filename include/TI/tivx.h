@@ -279,10 +279,10 @@ typedef struct _tivx_resource_stats_t {
 typedef enum _tivx_attribute_extensions_e {
 
     /*! \brief Returns the target string corresponding to the node */
-    TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x0,
+    TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x0,
 
     /*! \brief Sets the valid data size within the user data object */
-    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1
+    TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x1
 
 } tivx_attribute_extensions_e;
 

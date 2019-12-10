@@ -90,8 +90,8 @@ extern "C" {
 /*! \brief The enum type enumeration for raw images.
  * \ingroup group_raw_image
  */
-#define TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS      0x0   /*!< \brief A <tt>\ref tivx_raw_image_buffer_access_e</tt>. */
-#define TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER    0x1   /*!< \brief A <tt>\ref tivx_raw_image_pixel_container_e</tt>. */
+#define TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS      (vx_enum)0x0   /*!< \brief A <tt>\ref tivx_raw_image_buffer_access_e</tt>. */
+#define TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER    (vx_enum)0x1   /*!< \brief A <tt>\ref tivx_raw_image_pixel_container_e</tt>. */
 
 /*! \brief Maximum number of RAW image exposures that can be contained in a raw image object.
  * \ingroup group_raw_image
