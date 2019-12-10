@@ -121,12 +121,12 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -140,7 +140,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -153,7 +153,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -163,7 +163,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -173,7 +173,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -183,7 +183,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -193,7 +193,7 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -203,17 +203,17 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
@@ -248,12 +248,12 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -267,7 +267,7 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -280,7 +280,7 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -290,17 +290,17 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
@@ -405,7 +405,7 @@ void tivx_vpac_msc_output_params_init(tivx_vpac_msc_output_params_t *prms)
 static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params, vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_uint32 cnt;
 
@@ -422,12 +422,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
         (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX]))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,
             "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         in_img = (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX];
 
@@ -439,7 +439,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
     }
 
     /* PARAMETER ATTRIBUTE FETCH */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT,
             &in_img_fmt, sizeof(in_img_fmt)));
@@ -449,7 +449,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             &in_img_h, sizeof(in_img_h)));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
@@ -463,7 +463,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
                 tivxCheckStatus(&status, vxQueryImage(out_img[cnt],
                     VX_IMAGE_HEIGHT, &out_img_h[cnt], sizeof(out_img_h[cnt])));
             }
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
@@ -477,13 +477,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             (VX_DF_IMAGE_U16 != in_img_fmt) &&
             (TIVX_DF_IMAGE_P12 != in_img_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddKernelVpacMscScaleValidate: Incorrect in_img fmt \n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
@@ -498,7 +498,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
                 (VX_DF_IMAGE_U16 != out_img_fmt[cnt]) &&
                 (TIVX_DF_IMAGE_P12 != out_img_fmt[cnt]))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Incorrect out img fmt \n");
                 break;
@@ -507,7 +507,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             if ((VX_DF_IMAGE_NV12 == out_img_fmt[cnt]) &&
                 (VX_DF_IMAGE_NV12 != in_img_fmt))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Incorrect out img fmt \n");
                 break;
@@ -515,7 +515,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
 
             if ((out_img_w[cnt] > in_img_w))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Incorrect Out Width \n");
                 break;
@@ -523,7 +523,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
 
             if ((out_img_h[cnt] > in_img_h))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Incorrect Out Height \n");
                 break;
@@ -533,7 +533,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             {
                 if (out_img_fmt[cnt] != out_img_fmt[cnt-1u])
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddKernelVpacLdcValidate: Format must be same for all outputs\n");
                     break;
@@ -549,18 +549,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params)
 {
     uint32_t out_idx;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
         (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX]))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,
             "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -614,7 +614,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleInitialize(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num, vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_image img;
     vx_pyramid pmd;
     vx_uint32 w, h, i;
@@ -634,11 +634,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         /* Check for NULL */
         if (NULL == parameters[i])
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
             break;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX];
         pmd = (vx_pyramid)parameters[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX];
@@ -652,7 +652,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             &h, sizeof(h)));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
         if( (VX_DF_IMAGE_NV12 != fmt) &&
@@ -660,13 +660,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             (VX_DF_IMAGE_U16 != fmt) &&
             (TIVX_DF_IMAGE_P12 != fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddKernelVpacMscPyramidValidate: Incorrect Input Image Format \n");
         }
     }
 
-    if ((VX_SUCCESS == status) &&
+    if (((vx_status)VX_SUCCESS == status) &&
         ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
     {
         status = vxQueryPyramid(pmd, VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
@@ -677,7 +677,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         if (((w / TIVX_VPAC_MSC_MAX_DS_FACTOR) > p_w) ||
             ((h / TIVX_VPAC_MSC_MAX_DS_FACTOR) > p_h))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Check for validity of data format */
@@ -686,7 +686,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             (VX_DF_IMAGE_U16 != p_fmt) &&
             (TIVX_DF_IMAGE_P12 != p_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddKernelVpacMscPyramidValidate: Incorrect Pyramid Format\n");
         }
@@ -694,40 +694,40 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         if ((VX_DF_IMAGE_NV12 == p_fmt) &&
             (VX_DF_IMAGE_NV12 != fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddKernelVpacMscPyramidValidate: Pyramid Format MisMatch\n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxQueryPyramid(pmd, VX_PYRAMID_SCALE, &scale,
             sizeof(scale));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxQueryPyramid(pmd, VX_PYRAMID_LEVELS, &num_levels,
             sizeof(num_levels));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((border.mode != VX_BORDER_REPLICATE) &&
                 (border.mode != VX_BORDER_UNDEFINED))
             {
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacMscPyramidValidate: Only replicate/Undefined border mode is supported \n");
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (NULL != metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])
         {
@@ -751,11 +751,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (num_params != TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;

@@ -122,13 +122,13 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 {
     tivxVpacNfGenericParams *prms = NULL;
     tivx_obj_desc_convolution_t *conv;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src, *dst;
         int32_t k;
@@ -147,13 +147,13 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxVpacNfGenericParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
@@ -219,11 +219,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
             if (0 != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 #endif
         }
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
 
             lse_reformat_out(src, dst, dst_target_ptr, prms->dst16, 12, 0);
@@ -245,12 +245,12 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         tivxVpacNfGenericParams *prms = NULL;
@@ -269,19 +269,19 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->dst16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivx_vpac_nf_common_params_t *params;
                 tivx_obj_desc_user_data_object_t *params_array;
@@ -326,10 +326,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxVpacNfGenericParams));
@@ -351,12 +351,12 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxVpacNfGenericParams *prms = NULL;
@@ -364,7 +364,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxVpacNfGenericParams) == size))
         {
             tivxVpacNfGenericFreeMem(prms);
@@ -376,7 +376,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
 
 void tivxAddTargetKernelVpacNfGeneric(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -385,14 +385,14 @@ void tivxAddTargetKernelVpacNfGeneric(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
@@ -407,10 +407,10 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
 void tivxRemoveTargetKernelVpacNfGeneric(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_vpac_nf_generic_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_nf_generic_target_kernel = NULL;
     }

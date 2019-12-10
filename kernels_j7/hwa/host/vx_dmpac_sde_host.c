@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
@@ -116,11 +116,11 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         left = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
@@ -132,7 +132,7 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
@@ -162,12 +162,12 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((configuration_size != sizeof(tivx_dmpac_sde_params_t)) ||
             (strncmp(configuration_name, "tivx_dmpac_sde_params_t", sizeof(configuration_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_dmpac_sde_params_t \n");
         }
 
@@ -175,7 +175,7 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             (VX_DF_IMAGE_U16 != left_fmt) &&
             (TIVX_DF_IMAGE_P12 != left_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'left' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
@@ -183,13 +183,13 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             (VX_DF_IMAGE_U16 != right_fmt) &&
             (TIVX_DF_IMAGE_P12 != right_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'right' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
         if (VX_DF_IMAGE_S16 != output_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_S16 \n");
         }
 
@@ -198,73 +198,73 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if( (left_w != right_w) ||
             (left_w != output_w))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' and 'output' should have the same value for VX_IMAGE_WIDTH\n");
         }
         if( (left_h != right_h) ||
             (left_h != output_h))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' and 'output' should have the same value for VX_IMAGE_HEIGHT\n");
         }
 
         if (left_fmt != right_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' should have the same value for VX_IMAGE_FORMAT\n");
         }
     }
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ( (0U != params.median_filter_enable) &&
              (1U != params.median_filter_enable))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter median_filter_enable should be either 0 (Disabled) or 1 (Enable post-processing 5x5 median filter)\n");
         }
         if ( (0U != params.reduced_range_search_enable) &&
              (1U != params.reduced_range_search_enable))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter reduced_range_search_enable should be either 0 (Disabled) or 1 (Enable reduced range search on pixels near right)\n");
         }
         if ( (0U != params.disparity_min) &&
              (1U != params.disparity_min))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_min should be either 0 (minimum disparity == 0) or 1 (minimum disparity == -3)\n");
         }
         if ( (0U != params.disparity_max) &&
              (1U != params.disparity_max) &&
              (2U != params.disparity_max))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should be either 0 (disparity_min + 63), 1 (disparity_min + 127), or 2 (disparity_min + 191)\n");
         }
         else if ( (2U == params.disparity_max) &&
              (192U > left_w))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 2 (disparity_min + 191) if width < 192\n");
         }
         else if ( (1U == params.disparity_max) &&
              (128U > left_w))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 1 (disparity_min + 127) if width < 128\n");
         }
         else if ( (0U == params.disparity_max) &&
              (64U > left_w))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 0 (disparity_min + 63) if width < 64\n");
         }
         else
@@ -273,19 +273,19 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
         }
         if (255U < params.threshold_left_right)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter threshold_left_right should be between 0 and 255 inclusive\n");
         }
         if ( (0U != params.texture_filter_enable) &&
              (1U != params.texture_filter_enable))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter texture_filter_enable should be either 0 (Disabled) or 1 (Enable texture based filtering)\n");
         }
         else if ( (1U == params.texture_filter_enable) &&
              (255U < params.threshold_texture))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter threshold_texture should be between 0 and 255 inclusive if texture_filter_enable is 1\n");
         }
         else
@@ -294,31 +294,31 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
         }
         if (127U < params.aggregation_penalty_p1)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter aggregation_penalty_p1 should be between 0 and 127 inclusive\n");
         }
         if (255U < params.aggregation_penalty_p2)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter aggregation_penalty_p2 should be between 0 and 255 inclusive\n");
         }
         for(i = 0U; i < 8U; i++)
         {
             if (127U < params.confidence_score_map[i])
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map should contain values between 0 and 127 inclusive\n");
                 break;
             }
             if ((7U > i) && (126U < params.confidence_score_map[i]))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map (0-6) should contain values between 0 and 126 inclusive\n");
                 break;
             }
             if ((0U != i) && (params.confidence_score_map[i] <= params.confidence_score_map[i - 1]))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map should contain strictly increasing values\n");
                 break;
             }
@@ -332,7 +332,7 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
@@ -342,10 +342,10 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -381,12 +381,12 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -400,7 +400,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -413,7 +413,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -423,7 +423,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -433,7 +433,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -443,7 +443,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -453,16 +453,16 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DMPAC_SDE);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

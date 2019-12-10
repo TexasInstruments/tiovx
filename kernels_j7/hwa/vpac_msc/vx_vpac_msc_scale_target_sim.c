@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxScaleParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *sc;
@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
@@ -120,16 +120,16 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((NULL == prms) || (size != sizeof(tivxScaleParams)))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
 
@@ -146,7 +146,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t iw = src->imagepatch_addr[0].dim_x;
         uint32_t ih = src->imagepatch_addr[0].dim_y;
@@ -247,7 +247,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
 #endif
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t stub;
         void *dst_target_ptr;
@@ -273,14 +273,14 @@ static vx_status VX_CALLBACK tivxKernelScaleCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *imgIn, *imgOut;
     tivxScaleParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
         imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
@@ -297,10 +297,10 @@ static vx_status VX_CALLBACK tivxKernelScaleCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size_in, TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->buffer_size_out = imgOut->imagepatch_addr[0].dim_x *
                                         imgOut->imagepatch_addr[0].dim_y * 2;
@@ -308,7 +308,7 @@ static vx_status VX_CALLBACK tivxKernelScaleCreate(
                 prms->dst16 = tivxMemAlloc(prms->buffer_size_out, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
@@ -317,7 +317,7 @@ static vx_status VX_CALLBACK tivxKernelScaleCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -328,12 +328,12 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxScaleParams *prms = NULL;
@@ -341,7 +341,7 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxScaleParams) == size))
         {
             tivxKernelScaleFreeMem(prms);

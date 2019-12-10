@@ -150,7 +150,7 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
 {
     uint32_t i, size;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i++)
     {
@@ -165,42 +165,42 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
         size = (prms->pyramid_size[i][0])*(prms->pyramid_size[i][1])*sizeof(int);
 
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             prms->input_current[i] = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
             if(prms->input_current[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             prms->input_reference[i] = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
             if(prms->input_reference[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
     size = prms->pyramid_size[0][0]*prms->pyramid_size[0][1]*sizeof(int);
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         prms->current_prediction = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
         if(prms->current_prediction==NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         prms->past_prediction = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
         if(prms->past_prediction==NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -251,7 +251,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t   *input_current_base_desc = NULL;
     tivx_obj_desc_image_t   *input_reference_base_desc = NULL;
@@ -275,23 +275,23 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxDmpacDofParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         void *configuration_target_ptr;
         void *flow_vector_in_target_ptr = NULL;
@@ -515,7 +515,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         if(handle == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to load libDOF.so\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -524,7 +524,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
             if (dlerror() != NULL)  {
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to load dofProcess symbol from libDOF.so\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -623,7 +623,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
@@ -632,10 +632,10 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
         )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxDmpacDofParams *prms = NULL;
 
@@ -720,7 +720,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             status = tivxDmpacDofAllocMem(prms);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxDmpacDofParams));
@@ -742,14 +742,14 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxDmpacDofParams *prms = NULL;
@@ -757,7 +757,7 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxDmpacDofParams) == size))
         {
             tivxDmpacDofFreeMem(prms);
@@ -772,7 +772,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
 
     uint32_t size;
     tivxDmpacDofParams *prms = NULL;
@@ -780,7 +780,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -805,7 +805,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofControl: Invalid Input\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -816,7 +816,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
 
 void tivxAddTargetKernelDmpacDof(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -825,14 +825,14 @@ void tivxAddTargetKernelDmpacDof(void)
     if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_dof_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_DMPAC_DOF_NAME,
@@ -847,10 +847,10 @@ void tivxAddTargetKernelDmpacDof(void)
 
 void tivxRemoveTargetKernelDmpacDof(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_dmpac_dof_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_dof_target_kernel = NULL;
     }
@@ -863,7 +863,7 @@ void tivxRemoveTargetKernelDmpacDof(void)
 static vx_status tivxDmpacDofGetErrStatusCmd(
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
 
     if (NULL != scalar_obj_desc)
     {
@@ -874,7 +874,7 @@ static vx_status tivxDmpacDofGetErrStatusCmd(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofGetErrStatus: Null argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -884,7 +884,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
                         tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     uint32_t                            idx;
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
     tivx_dmpac_dof_cs_tree_params_t    *cs_prms;
     void                               *target_ptr;
     FILE                               *fout;
@@ -893,10 +893,10 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofSetCsPrms: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
@@ -986,7 +986,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofSetCsPrms: Invalid Argument\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1055,7 +1055,7 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
 
 static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t sof_mask_stride)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     int i, j, k, bitCnt;
 
     int *input_ptr = prms->current_prediction;
@@ -1125,7 +1125,7 @@ static vx_status dof_sof(tivxDmpacDofParams *prms, uint8_t *sof_mask, uint32_t s
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return status;

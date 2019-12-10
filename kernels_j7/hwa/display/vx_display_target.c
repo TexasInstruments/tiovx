@@ -144,7 +144,7 @@ static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                             status = VX_SUCCESS;
+    vx_status                             status = (vx_status)VX_SUCCESS;
     tivx_display_select_channel_params_t *ch_prms = NULL;
     void                                 *target_ptr;
 
@@ -165,7 +165,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDisplaySwitchChannel: Invalid Size \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
@@ -175,7 +175,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDisplaySwitchChannel: User Data Object is NULL \n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -184,7 +184,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
 static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_img,
                                                Fvid2_Format *format)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     Fvid2Format_init(format);
     format->width = obj_desc_img->imagepatch_addr[0].dim_x;
     format->height = obj_desc_img->imagepatch_addr[0].dim_y;
@@ -227,7 +227,7 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
@@ -238,7 +238,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                                             Fvid2_Format *fmt,
                                             tivx_obj_desc_image_t *obj_desc_img)
 {
-    int32_t status = VX_SUCCESS;
+    int32_t status = (vx_status)VX_SUCCESS;
     uint32_t cnt;
     void *chroma_target_ptr;
     uint16_t *chroma_ptr16;
@@ -250,7 +250,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             (fmt->pitch[1] * fmt->height) / 2u;
         status = tivxMemBufferAlloc(&dispPrms->chroma_mem_ptr,
             dispPrms->chromaBufSize, TIVX_MEM_EXTERNAL);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             dispPrms->chromaBufAddr =
                 tivxMemShared2PhysPtr(dispPrms->chroma_mem_ptr.shared_ptr,
@@ -309,7 +309,7 @@ static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData)
 {
     tivxDisplayParams *displayParams = (tivxDisplayParams *)(appData);
     SemaphoreP_post(displayParams->waitSem);
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static uint32_t tivxDisplayGetPipeType(uint32_t drvId)
@@ -326,7 +326,7 @@ static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
                                        uint32_t *copySize0,
                                        uint32_t *copySize1)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     switch (obj_desc_image->format)
     {
         case VX_DF_IMAGE_RGB:
@@ -345,7 +345,7 @@ static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
         default:
             *copySize0 = 0;
             *copySize1 = 0;
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             break;
     }
     return status;
@@ -356,7 +356,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     int32_t fvid2_status = FVID2_SOK;
     tivx_obj_desc_user_data_object_t *obj_desc_configuration;
     tivx_obj_desc_image_t *obj_desc_image;
@@ -370,7 +370,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -385,15 +385,15 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Couldn't allocate memory!\r\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
         if(sizeof(tivx_display_params_t) != obj_desc_configuration->mem_size)
         {
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display params size is not correct!\r\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             display_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc_configuration->mem_ptr);
 
@@ -407,11 +407,11 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             drvId = params->pipeId;
             if(drvId >= DSS_DISP_INST_MAX)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Invalid pipe id used by display!\r\n");
             }
         }
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             Dss_dispCreateParamsInit(&displayParams->createParams);
             Fvid2CbParams_init(&displayParams->cbParams);
@@ -424,7 +424,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             displayParams->waitSem = SemaphoreP_create(0U, &semParams);
             if(NULL == displayParams->waitSem)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Semaphore Create Failed!\r\n");
             }
             else
@@ -437,12 +437,12 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                 if((NULL == displayParams->drvHandle) ||
                    (FVID2_SOK != displayParams->createStatus.retVal))
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Create Failed!\r\n");
                 }
             }
         }
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             Dss_dispParamsInit(&displayParams->dispParams);
             displayParams->dispParams.pipeCfg.pipeType = tivxDisplayGetPipeType(drvId);
@@ -459,14 +459,14 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             status = tivxDisplayAllocChromaBuff(displayParams,
                 &displayParams->dispParams.pipeCfg.inFmt,
                 obj_desc_image);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == params->opMode)
             {
@@ -474,7 +474,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                                                  &displayParams->copyImageSize[0],
                                                  &displayParams->copyImageSize[1]);
 
-                if(VX_SUCCESS == status)
+                if((vx_status)VX_SUCCESS == status)
                 {
                     if(displayParams->copyImageSize[0] != 0)
                     {
@@ -490,7 +490,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                 displayParams->currIdx = 0;
             }
         }
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             fvid2_status = Fvid2_control(displayParams->drvHandle,
                                    IOCTL_DSS_DISP_SET_DSS_PARAMS,
@@ -498,16 +498,16 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                                    NULL);
             if(FVID2_SOK != fvid2_status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Set Parameters Failed!\r\n");
             }
         }
         /* Creating FVID2 frame Q */
-        if((VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
+        if(((vx_status)VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
         {
             uint32_t bufId;
             status = tivxQueueCreate(&displayParams->fvid2FrameQ, TIVX_DISPLAY_MAX_NUM_BUFS, displayParams->fvid2FrameQMem, 0);
-            if(VX_SUCCESS != status)
+            if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Fvid2 queue create failed!\r\n");
             }
@@ -518,7 +518,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             }
         }
 
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             tivxMemBufferUnmap(display_config_target_ptr,
                                obj_desc_configuration->mem_size,
@@ -544,7 +544,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     int32_t fvid2_status = FVID2_SOK;
     tivxDisplayParams *displayParams = NULL;
     Fvid2_FrameList frmList;
@@ -555,7 +555,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Invalid parameters!\r\n");
     }
     else
@@ -565,31 +565,31 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
                                                     (void **) &displayParams,
                                                     &size);
 
-        if(VX_SUCCESS != status)
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not obtain display kernel instance context!\r\n");
         }
 
         if (NULL == displayParams)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display params is NULL!\r\n");
         }
 
         /* Stop Display */
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             fvid2_status = Fvid2_stop(displayParams->drvHandle, NULL);
 
             if(FVID2_SOK != fvid2_status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Stop Failed!\r\n");
             }
         }
 
         /* Dequeue all the request from the driver */
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             do
             {
@@ -604,26 +604,26 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
 
             if(FVID2_SOK != fvid2_status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Delete Failed!\r\n");
             }
         }
 
         /* Deleting FVID2 frame Q */
-        if((VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
+        if(((vx_status)VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
         {
             tivxQueueDelete(&displayParams->fvid2FrameQ);
         }
 
         /* Delete the wait semaphore */
-        if((VX_SUCCESS == status) && (NULL != displayParams->waitSem))
+        if(((vx_status)VX_SUCCESS == status) && (NULL != displayParams->waitSem))
         {
             SemaphoreP_delete(displayParams->waitSem);
             displayParams->waitSem = NULL;
         }
 
         /* Delete kernel instance params object */
-        if((VX_SUCCESS == status) && (NULL != displayParams))
+        if(((vx_status)VX_SUCCESS == status) && (NULL != displayParams))
         {
             displayParams->drvHandle = NULL;
 
@@ -658,14 +658,14 @@ static vx_status VX_CALLBACK tivxDisplayControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status            status = VX_SUCCESS;
+    vx_status            status = (vx_status)VX_SUCCESS;
     uint32_t             size;
     tivxDisplayParams   *dispPrms = NULL;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&dispPrms, &size);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDisplayControl: Failed to Get Target Kernel Instance Context\n");
@@ -675,14 +675,14 @@ static vx_status VX_CALLBACK tivxDisplayControl(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDisplayControl: Invalid Object Size\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         /* do nothing */
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -696,7 +696,7 @@ static vx_status VX_CALLBACK tivxDisplayControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDisplayControl: Invalid Command Id\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -711,7 +711,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     int32_t fvid2_status = FVID2_SOK;
     tivxDisplayParams *displayParams = NULL;
     tivx_obj_desc_image_t *obj_desc_image;
@@ -726,24 +726,24 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
                                                     (void *)&displayParams,
                                                     &size);
 
-        if((VX_SUCCESS != status) ||
+        if(((vx_status)VX_SUCCESS != status) ||
            (NULL == displayParams) ||
            (sizeof(tivxDisplayParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         active_channel = displayParams->active_channel;
         if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
@@ -806,13 +806,13 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 fvid2_status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
                 if(FVID2_SOK != fvid2_status)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Unable to queue frame!\r\n");
                 }
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not get frame from queue!\r\n");
             }
 
@@ -821,7 +821,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 fvid2_status = Fvid2_start(displayParams->drvHandle, NULL);
                 if(FVID2_SOK != fvid2_status)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not start display!\r\n");
                 }
                 else
@@ -848,9 +848,9 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                     obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX] = frm->appData;
                     tivxQueuePut(&displayParams->fvid2FrameQ, (uintptr_t)frm, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 }
-                else /* (1U != frmList.numFrames) || ((VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
+                else /* (1U != frmList.numFrames) || (((vx_status)VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Dequeue operation failed!\r\n");
                 }
             }
@@ -924,7 +924,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             fvid2_status = Fvid2_queue(displayParams->drvHandle, &frmList, 0U);
             if(FVID2_SOK != fvid2_status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Unable to queue copy frame!\r\n");
             }
             if(TRUE == displayParams->firstFrameDisplay)
@@ -932,7 +932,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 fvid2_status = Fvid2_start(displayParams->drvHandle, NULL);
                 if(FVID2_SOK != fvid2_status)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not start display!\r\n");
                 }
                 displayParams->firstFrameDisplay = FALSE;
@@ -960,16 +960,16 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                         displayParams->currIdx = 0;
                     }
                 }
-                else /* (1U != frmList.numFrames) || ((VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
+                else /* (1U != frmList.numFrames) || (((vx_status)VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Dequeue operation failed!\r\n");
                 }
             }
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Wrong Operation Mode Selected!\r\n");
         }
     }
@@ -1014,15 +1014,15 @@ void tivxAddTargetKernelDisplay(void)
 
 void tivxRemoveTargetKernelDisplay(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_display_target_kernel1);
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_display_target_kernel1 = NULL;
     }
     status = tivxRemoveTargetKernel(vx_display_target_kernel2);
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_display_target_kernel2 = NULL;
     }

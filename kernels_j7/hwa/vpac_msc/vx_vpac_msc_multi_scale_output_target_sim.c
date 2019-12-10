@@ -182,7 +182,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
     uint16_t num_params, void *priv_arg)
 {
     uint32_t cnt;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *imgIn, *imgOut;
     tivxMscScaleParams *prms = NULL;
 
@@ -192,10 +192,10 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxKernelMscScaleCreate: Invalid Parameters\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         imgIn = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX];
@@ -207,14 +207,14 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxKernelMscScaleCreate: Params allocation error\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {
             memset(prms, 0x0, sizeof(tivxMscScaleParams));
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             prms->buffer_size_in = imgIn->imagepatch_addr[0].dim_x *
                                    imgIn->imagepatch_addr[0].dim_y * 2;
@@ -224,10 +224,10 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if((VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+            if(((vx_status)VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
             {
                 prms->buffer_size_in_cbcr = imgIn->imagepatch_addr[1].dim_x *
                                             (imgIn->imagepatch_addr[1].dim_y / imgIn->imagepatch_addr[1].step_y) * 2;
@@ -237,12 +237,12 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
             {
@@ -262,10 +262,10 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                         VX_PRINT(VX_ZONE_ERROR,
                             "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
                             cnt);
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
-                    if((VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+                    if(((vx_status)VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
                     {
                         prms->buffer_size_out_cbcr[cnt] =
                             imgOut->imagepatch_addr[1].dim_x *
@@ -278,14 +278,14 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                             VX_PRINT(VX_ZONE_ERROR,
                                 "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
                                 cnt);
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
                 }
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxVpacMscScaleInitParams(&prms->config.settings);
 
@@ -306,7 +306,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
     uint16_t num_params, void *priv_arg)
 {
     uint32_t cnt;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMscScaleParams *prms = NULL;
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_image_t *dst[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT] = {NULL};
@@ -318,10 +318,10 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacMscScaleProcess: Invalid Descriptor\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX];
 
@@ -334,16 +334,16 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((NULL == prms) || (size != sizeof(tivxMscScaleParams)))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
 
@@ -375,7 +375,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t iw = src->imagepatch_addr[0].dim_x;
         uint32_t ih = src->imagepatch_addr[0].dim_y;
@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 #endif
     }
 
-    if ((VX_SUCCESS == status) && (src->format == VX_DF_IMAGE_NV12))
+    if (((vx_status)VX_SUCCESS == status) && (src->format == VX_DF_IMAGE_NV12))
     {
         uint32_t iw = src->imagepatch_addr[1].dim_x;
         uint32_t ih = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
@@ -541,7 +541,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 #endif
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t stub;
         void *dst_target_ptr;
@@ -591,7 +591,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
         ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
@@ -599,10 +599,10 @@ static vx_status VX_CALLBACK tivxKernelMscScaleDelete(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxKernelMscScaleDelete: Invalid Parameters\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxMscScaleParams *prms = NULL;
@@ -610,7 +610,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMscScaleParams) == size))
         {
             tivxVpacMscScaleFreeMem(prms);
@@ -625,27 +625,27 @@ static vx_status VX_CALLBACK tivxKernelMscScaleControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                     status = VX_SUCCESS;
+    vx_status                     status = (vx_status)VX_SUCCESS;
     uint32_t                      size;
     tivxMscScaleParams           *prms = NULL;
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMscScaleParams) == size))
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -669,7 +669,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleControl(
             }
             default:
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -792,7 +792,7 @@ static void tivxVpacMscScaleInitParams(Scaler_Config *settings)
 static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                     status = VX_SUCCESS;
+    vx_status                     status = (vx_status)VX_SUCCESS;
     void                         *target_ptr;
     tivx_vpac_msc_coefficients_t *coeffs;
     uint32_t                      i, j, idx;
@@ -838,7 +838,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxMscScaleParams *prms,
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -847,7 +847,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxMscScaleParams *prms,
 static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     tivx_vpac_msc_input_params_t     *in_prms = NULL;
     void                             *target_ptr;
 
@@ -883,7 +883,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
                 default:
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacMscScaleSetInputParamsCmd: Invalid Kernel Size\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
             }
 
@@ -892,7 +892,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleSetInputParamsCmd: Invalid Size \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
@@ -902,7 +902,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacMscScaleSetInputParamsCmd: User Data Object is NULL \n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -911,7 +911,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
 static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj[])
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          cnt;
     tivx_vpac_msc_output_params_t    *out_prms = NULL;
     void                             *target_ptr;
@@ -949,7 +949,7 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
             }
             else
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 
             tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
@@ -957,11 +957,11 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             break;
         }

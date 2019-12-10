@@ -182,7 +182,7 @@ int32_t yee_lut[] =
 vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
     tivx_vpac_viss_params_t *vissPrms)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vissObj->dcc_in_prms.analog_gain = 1000;
     vissObj->dcc_in_prms.cameraId = vissPrms->sensor_dcc_id;
@@ -201,7 +201,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissInitDcc: dcc_update Failed !!!\n");
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -221,7 +221,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res)
 {
-    vx_status                   status = VX_SUCCESS;
+    vx_status                   status = (vx_status)VX_SUCCESS;
     int                         dcc_status;
     dcc_parser_input_params_t  *dcc_in_prms;
     dcc_parser_output_params_t *dcc_out_prms;
@@ -256,14 +256,14 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacVissSetParamsFromDcc: dcc_update Failed !!!\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissSetParamsFromDcc: Dcc_Create Failed !!!\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             tivxMemBufferUnmap(dcc_in_prms->dcc_buf,
@@ -273,10 +273,10 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissSetParamsFromDcc: Incorrect DCC Input Buf memory !!!\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
@@ -356,7 +356,7 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
 vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result)
 {
-    vx_status                        status = VX_SUCCESS;
+    vx_status                        status = (vx_status)VX_SUCCESS;
     int                              dcc_status;
     tivxVpacVissConfig              *vsCfg;
     Rfe_GainOfstConfig              *wbCfg;
@@ -398,7 +398,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissApplyAEWBParams: DCC Update Failed !!!\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {

@@ -105,17 +105,17 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj)
 
     status = tivxVpacVissSetRfeConfig(vissObj, &vissObj->vissCfgRef);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxVpacVissSetGlbceConfig(vissObj, &vissObj->vissCfgRef);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxVpacVissSetNsf4Config(vissObj, &vissObj->vissCfgRef);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxVpacVissSetFcpConfig(vissObj, &vissObj->vissCfgRef);
     }
@@ -126,7 +126,7 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj)
 static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    vx_status           status = VX_SUCCESS;
+    vx_status           status = (vx_status)VX_SUCCESS;
     int32_t             fvid2_status = FVID2_SOK;
     Rfe_Control         rfeCtrl;
 
@@ -390,11 +390,11 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     /* Convert FVID2 status to OpenVX Status */
     if (FVID2_SOK != fvid2_status)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -403,7 +403,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    vx_status           status = VX_SUCCESS;
+    vx_status           status = (vx_status)VX_SUCCESS;
     int32_t             fvid2_status = FVID2_SOK;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
     Glbce_Control       glbceCtrl;
@@ -462,11 +462,11 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
     /* Convert FVID2 status to OpenVX Status */
     if (FVID2_SOK != fvid2_status)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -475,7 +475,7 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    vx_status           status = VX_SUCCESS;
+    vx_status           status = (vx_status)VX_SUCCESS;
     int32_t             fvid2_status = FVID2_SOK;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
 
@@ -498,11 +498,11 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     /* Convert FVID2 status to OpenVX Status */
     if (FVID2_SOK != fvid2_status)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -511,7 +511,7 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
 static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {
-    int32_t             status = VX_SUCCESS;
+    int32_t             status = (vx_status)VX_SUCCESS;
     Fcp_Control         fcpCtrl;
     Vhwa_M2mVissParams *vissDrvPrms = NULL;
 

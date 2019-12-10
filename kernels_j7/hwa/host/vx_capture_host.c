@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_user_data_object input = NULL;
     vx_object_array output = NULL;
@@ -98,11 +98,11 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_CAPTURE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_user_data_object)parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX];
         output = (vx_object_array)parameters[TIVX_KERNEL_CAPTURE_OUTPUT_IDX];
@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_NAME, &input_name, sizeof(input_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_SIZE, &input_size, sizeof(input_size)));
@@ -122,18 +122,18 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((input_size != sizeof(tivx_capture_params_t)) ||
             (strncmp(input_name, "tivx_capture_params_t", sizeof(input_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be a user_data_object of type:\n tivx_capture_params_t \n");
         }
 
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         obj_arr_element = vxGetObjectArrayItem(output, 0);
 
@@ -141,12 +141,12 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
         {
             tivxCheckStatus(&status, vxQueryReference(obj_arr_element, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 if ( (TIVX_TYPE_RAW_IMAGE != ref_type) &&
                      (VX_TYPE_IMAGE != ref_type) )
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "output object array must contain either TIVX_TYPE_RAW_IMAGE or VX_TYPE_IMAGE \n");
                 }
                 else if (VX_TYPE_IMAGE == ref_type)
@@ -158,7 +158,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
                         (VX_DF_IMAGE_UYVY != img_fmt) &&
                         (VX_DF_IMAGE_YUYV != img_fmt))
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "image format is invalid \n");
                     }
                 }
@@ -176,7 +176,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' object array elements are NULL \n");
         }
     }
@@ -188,14 +188,14 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX])
         || (NULL == parameters[TIVX_KERNEL_CAPTURE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
     return status;
@@ -209,12 +209,12 @@ vx_status tivxAddKernelCapture(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -228,7 +228,7 @@ vx_status tivxAddKernelCapture(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 num_bufs = TIVX_CAPTURE_MIN_PIPEUP_BUFS;
 
@@ -236,7 +236,7 @@ vx_status tivxAddKernelCapture(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -249,7 +249,7 @@ vx_status tivxAddKernelCapture(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -259,17 +259,17 @@ vx_status tivxAddKernelCapture(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

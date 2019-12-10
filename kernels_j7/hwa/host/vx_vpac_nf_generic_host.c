@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
@@ -108,11 +108,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
         input = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
@@ -123,7 +123,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
@@ -143,12 +143,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((configuration_size != sizeof(tivx_vpac_nf_common_params_t)) ||
             (strncmp(configuration_name, "tivx_vpac_nf_common_params_t", sizeof(configuration_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_nf_common_params_t \n");
         }
 
@@ -156,7 +156,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
             (VX_DF_IMAGE_U16 != input_fmt) &&
             (TIVX_DF_IMAGE_P12 != input_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
@@ -165,7 +165,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
             (VX_DF_IMAGE_U16 != output_fmt) &&
             (TIVX_DF_IMAGE_P12 != output_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
     }
@@ -173,16 +173,16 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (input_w != output_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH\n");
         }
         if (input_h != output_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT\n");
         }
     }
@@ -192,73 +192,73 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
     /*                   covered by the code-generation script.) > */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
         if ((conv_col > TIVX_KERNEL_VPAC_NF_GENERIC_CONV_DIM_H) ||
             (conv_row > TIVX_KERNEL_VPAC_NF_GENERIC_CONV_DIM_V))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 		vx_border_t border;
         status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((border.mode != VX_BORDER_UNDEFINED) &&
                 (border.mode != VX_BORDER_REPLICATE))
             {
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (1U < params.input_interleaved)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter input_interleaved should be either 0 or 1\n");
         }
         if ((-8 > params.output_downshift) ||
             (7 < params.output_downshift))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter output_downshift should be a value between -8 and 7 inclusive\n");
         }
         if (4095U < params.output_offset)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter output_offset should be between 0 and 4095 inclusive\n");
         }
         if (1U < params.output_pixel_skip)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter output_pixel_skip should be either 0 or 1\n");
         }
         if (1U < params.output_pixel_skip_odd)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter output_pixel_skip_odd should be either 0 or 1\n");
         }
         if (4U < params.kern_ln_offset)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter kern_ln_offset should be between 0 and 4 inclusive\n");
         }
         if ((1U > params.kern_sz_height) ||
             (5U < params.kern_sz_height))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter kern_sz_height should be a value between 1 and 5 inclusive\n");
         }
         if (1U < params.src_ln_inc_2)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter src_ln_inc_2 should be either 0 or 1\n");
         }
     }
@@ -270,7 +270,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS)
@@ -280,20 +280,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 		vx_border_t border;
         status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((border.mode != VX_BORDER_UNDEFINED) &&
                 (border.mode != VX_BORDER_REPLICATE))
             {
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
             }
         }
@@ -324,12 +324,12 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -343,7 +343,7 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -356,7 +356,7 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -366,7 +366,7 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -376,7 +376,7 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -386,16 +386,16 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_NF);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

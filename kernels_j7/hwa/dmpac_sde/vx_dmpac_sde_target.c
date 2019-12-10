@@ -161,7 +161,7 @@ tivxDmpacSdeInstObj gTivxDmpacSdeInstObj;
 
 void tivxAddTargetKernelDmpacSde(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -170,7 +170,7 @@ void tivxAddTargetKernelDmpacSde(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
         
         vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_DMPAC_SDE_NAME,
@@ -184,7 +184,7 @@ void tivxAddTargetKernelDmpacSde(void)
         {
             /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxDmpacSdeInstObj.lock);
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelDmpacSde: Failed to create Mutex\n");
@@ -200,17 +200,17 @@ void tivxAddTargetKernelDmpacSde(void)
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelDmpacSde: Failed to Add SDE TargetKernel\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 }
 
 void tivxRemoveTargetKernelDmpacSde(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_dmpac_sde_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_sde_target_kernel = NULL;
     }
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
     uint32_t                          size;
     void                             *left_target_ptr;
@@ -258,21 +258,21 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     )
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Descriptor\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Null Desc\n");
         }
         else if (sizeof(tivxDmpacSdeObj) != size)
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Object Size\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -280,7 +280,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         inFrmList                 = &sde_obj->inFrmList;
         outFrmList                = &sde_obj->outFrmList;
@@ -339,11 +339,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeProcess: Failed to Submit Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
         tivxEventWait(sde_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -354,11 +354,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeProcess: Failed to Get Processed Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get Histogram */
         if(NULL != confidence_histogram_desc)
@@ -370,12 +370,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacSdeProcess: Histogram Request failed\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_M2mSdePrms                  *sdePrms = NULL;
 
@@ -389,7 +389,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             );
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(left_target_ptr,
             left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -417,7 +417,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
 	uint32_t                          i;
     uint32_t                          aligned_width;
@@ -440,7 +440,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeCreate: Required input parameter set to NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -460,16 +460,16 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Alloc Sde Bilateral Object\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_M2mSdeCreateArgsInit(&sde_obj->createPrms);
 
         status = tivxEventCreate(&sde_obj->waitForProcessCmpl);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             sde_obj->cbPrms.cbFxn   = tivxDmpacSdeFrameComplCb;
             sde_obj->cbPrms.appData = sde_obj;
@@ -483,7 +483,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 				VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Alloc Sde Object\n");
 
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
@@ -494,7 +494,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     }
 
     /* Register Error Callback */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         sde_obj->errEvtPrms.errEvents = VHWA_SDE_RD_ERR | VHWA_SDE_WR_ERR |
 		    VHWA_SDE_FOCO0_SL2_WR_ERR | VHWA_SDE_FOCO0_VBUSM_RD_ERR;
@@ -507,11 +507,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
 			VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Register Error Callback\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         sdePrms = &sde_obj->sdePrms;
 
@@ -544,17 +544,17 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         }
         if (SDE_MAX_IMAGE_WIDTH < aligned_width)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Aligned width should be no greater than %d\n", SDE_MAX_IMAGE_WIDTH);
         }
         if (SDE_MAX_IMAGE_HEIGHT < aligned_height)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter height should be no greater than %d\n", SDE_MAX_IMAGE_HEIGHT);
         }
     }
     
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 		sdePrms->sdeCfg.enableSDE = 1U;
 		sdePrms->sdeCfg.medianFilter = (uint32_t) (params->median_filter_enable);
@@ -601,7 +601,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Set parameters request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             if (FVID2_EALLOC == fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -614,7 +614,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
     }
         
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, sde_obj,
             sizeof(tivxDmpacSdeObj));
@@ -646,7 +646,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 size;
     tivxDmpacSdeObj    *sde_obj = NULL;
 
@@ -659,14 +659,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeDelete: Invalid Descriptor\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != sde_obj) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != sde_obj) &&
             (sizeof(tivxDmpacSdeObj) == size))
         {
             if (NULL != sde_obj->handle)
@@ -693,14 +693,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          size;
     tivxDmpacSdeObj                  *sde_obj = NULL;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&sde_obj, &size);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
 	    VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeControl: Failed to Get Target Kernel Instance Context\n");
@@ -710,14 +710,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
     {
 	    VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         /* do nothing */
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -731,7 +731,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacSdeControl: Invalid Node Command Id\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -841,7 +841,7 @@ static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
 static vx_status tivxDmpacSdeGetErrStatusCmd(tivxDmpacSdeObj *sde_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
 
     if (NULL != scalar_obj_desc)
     {
@@ -851,7 +851,7 @@ static vx_status tivxDmpacSdeGetErrStatusCmd(tivxDmpacSdeObj *sde_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeGetErrStatusCmd: Null argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);

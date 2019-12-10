@@ -20,7 +20,7 @@
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
 
     if ((NULL == mem_ptr) || (0U == size))
@@ -33,7 +33,7 @@ vx_status tivxMemBufferAlloc(
         {
             VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -57,12 +57,12 @@ vx_status tivxMemBufferAlloc(
             /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
 
         /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             mem_ptr->host_ptr = (uintptr_t)appMemAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
@@ -78,7 +78,7 @@ vx_status tivxMemBufferAlloc(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Shared mem ptr allocation failed\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
     }
@@ -88,7 +88,7 @@ vx_status tivxMemBufferAlloc(
 
 void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
     void *ptr = NULL;
 
@@ -111,11 +111,11 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         ptr = appMemAlloc(heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
     }
@@ -125,7 +125,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
 
     switch (mem_heap_region)
@@ -147,11 +147,11 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         appMemFree(heap_id, ptr, size);
     }
@@ -160,7 +160,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
     int32_t ret_val;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
 
     if ((NULL == mem_ptr) || (0U == size))
@@ -173,7 +173,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         {
             VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -196,11 +196,11 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             ret_val = appMemFree(
                 heap_id, (void*)(uintptr_t)mem_ptr->host_ptr, size);
@@ -216,7 +216,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Shared ptr mem free failed\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
@@ -227,7 +227,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 {
     int32_t ret_val;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t heap_id;
     app_mem_stats_t heap_stats;
 
@@ -259,11 +259,11 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             ret_val = appMemStats(heap_id, &heap_stats);
 
@@ -321,7 +321,7 @@ void tivxMemBufferUnmap(
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
     uint32_t heap_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint64_t phys = 0;
 
     switch (mem_heap_region)
@@ -343,10 +343,10 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
     }
@@ -370,7 +370,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 
 int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {

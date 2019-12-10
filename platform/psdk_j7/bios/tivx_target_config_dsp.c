@@ -33,7 +33,7 @@ __attribute__ ((aligned(8192)))
 
 void tivxPlatformCreateTargets(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_target_create_params_t target_create_prms;
     vx_enum self_cpu, target_id;
 
@@ -62,14 +62,14 @@ void tivxPlatformCreateTargets(void)
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxTargetCreate(target_id, &target_create_prms);
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
         }
@@ -78,7 +78,7 @@ void tivxPlatformCreateTargets(void)
 
 void tivxPlatformDeleteTargets(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum self_cpu, target_id;
 
     self_cpu = tivxGetSelfCpuId();
@@ -97,14 +97,14 @@ void tivxPlatformDeleteTargets(void)
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxTargetDelete(target_id);
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
         }

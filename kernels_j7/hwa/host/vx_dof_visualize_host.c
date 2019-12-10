@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image flow_vector = NULL;
     vx_df_image flow_vector_fmt;
@@ -106,11 +106,11 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         flow_vector = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
         confidence_threshold = (vx_scalar)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(flow_vector, VX_IMAGE_FORMAT, &flow_vector_fmt, sizeof(flow_vector_fmt)));
         tivxCheckStatus(&status, vxQueryImage(flow_vector, VX_IMAGE_WIDTH, &flow_vector_w, sizeof(flow_vector_w)));
@@ -143,11 +143,11 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U32 != flow_vector_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector' should be an image of type:\n VX_DF_IMAGE_U32 \n");
         }
 
@@ -155,7 +155,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
         {
             if (VX_TYPE_UINT32 != confidence_threshold_scalar_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'confidence_threshold' should be a scalar of type:\n VX_TYPE_UINT32 \n");
             }
         }
@@ -164,32 +164,32 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
         {
           if(VX_DF_IMAGE_NV12 != flow_vector_image_fmt)
           {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 \n");
           }
         }
 
         if (VX_DF_IMAGE_U8 != confidence_image_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'confidence_image' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
     }
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if( (flow_vector_w != flow_vector_image_w) ||
             (flow_vector_w != confidence_image_w))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_image' and 'confidence_image' should have the same value for VX_IMAGE_WIDTH\n");
         }
         if( (flow_vector_h != flow_vector_image_h) ||
             (flow_vector_h != confidence_image_h))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector' and 'flow_vector_image' and 'confidence_image' should have the same value for VX_IMAGE_HEIGHT\n");
         }
     }
@@ -206,7 +206,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX])
@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
@@ -229,12 +229,12 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -248,7 +248,7 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -261,7 +261,7 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -271,7 +271,7 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -281,7 +281,7 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -291,18 +291,18 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

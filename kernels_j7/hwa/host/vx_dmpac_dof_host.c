@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
@@ -145,11 +145,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
         input_current_base = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
@@ -232,12 +232,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((configuration_size != sizeof(tivx_dmpac_dof_params_t)) ||
             (strncmp(configuration_name, "tivx_dmpac_dof_params_t", sizeof(configuration_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_dmpac_dof_params_t \n");
         }
 
@@ -247,7 +247,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 (VX_DF_IMAGE_U16 != input_current_base_fmt) &&
                 (TIVX_DF_IMAGE_P12 != input_current_base_fmt))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_current_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
@@ -258,7 +258,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 (VX_DF_IMAGE_U16 != input_reference_base_fmt) &&
                 (TIVX_DF_IMAGE_P12 != input_reference_base_fmt))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_reference_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
@@ -267,7 +267,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             (VX_DF_IMAGE_U16 != input_current_fmt) &&
             (TIVX_DF_IMAGE_P12 != input_current_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input_current' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             (VX_DF_IMAGE_U16 != input_reference_fmt) &&
             (TIVX_DF_IMAGE_P12 != input_reference_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input_reference' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
@@ -283,7 +283,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if( VX_DF_IMAGE_U32 != flow_vector_in_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U32 \n");
             }
         }
@@ -293,7 +293,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             if ((sparse_of_config_size != sizeof(tivx_dmpac_dof_sof_params_t)) ||
                 (strncmp(sparse_of_config_name, "tivx_dmpac_dof_sof_params_t", sizeof(sparse_of_config_name)) != 0))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_config' should be a user_data_object of type:\n tivx_dmpac_dof_sof_params_t \n");
             }
         }
@@ -302,7 +302,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != sparse_of_map_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -310,7 +310,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         if( (VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
             (VX_DF_IMAGE_U32 != flow_vector_out_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector_out' should be an image of type:\n VX_DF_IMAGE_U16 or VX_DF_IMAGE_U32 \n");
         }
 
@@ -319,31 +319,31 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (input_current_levels != input_reference_levels)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_LEVELS\n");
         }
         if (input_current_scale != input_reference_scale)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_SCALE\n");
         }
         if (input_current_w != input_reference_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_WIDTH\n");
         }
         if (input_current_h != input_reference_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_HEIGHT\n");
         }
         if (input_current_fmt != input_reference_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_FORMAT\n");
         }
 
@@ -351,12 +351,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (input_current_w != flow_vector_out_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
             }
             if (input_current_h != flow_vector_out_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
@@ -364,12 +364,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (input_current_w < flow_vector_out_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_current' width should be greater that or equal to 'flow_vector_out' width\n");
             }
             if (input_current_h < flow_vector_out_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_current' height should be greater that or equal to 'flow_vector_out' height\n");
             }
         }
@@ -378,17 +378,17 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (flow_vector_in_w != flow_vector_out_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
             }
             if (flow_vector_in_h != flow_vector_out_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
             }
             if (flow_vector_in_h != flow_vector_out_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
@@ -397,12 +397,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if ((sparse_of_map_w*8) != input_current_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' width should be == 'input_current' width / 8\n");
             }
             if (sparse_of_map_h != input_current_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'sparse_of_map' and 'input_current' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
@@ -411,17 +411,17 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (input_current_base_w != input_reference_base_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_WIDTH\n");
             }
             if (input_current_base_h != input_reference_base_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_HEIGHT\n");
             }
             if (input_current_base_fmt != input_reference_base_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_FORMAT\n");
             }
         }
@@ -429,12 +429,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (((NULL != input_current_base) && (NULL == input_reference_base)) ||
             ((NULL == input_current_base) && (NULL != input_reference_base)))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should both be NULL or not NULL !!!\n");
         }
 
@@ -442,7 +442,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (input_current_levels > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of total pyramid levels %d exceeds max supported values of %d !!!\n",
                     input_current_levels,
                     TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
@@ -453,7 +453,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if ( (input_current_levels+1) > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of total pyramid levels %d exceeds max supported values of %d !!!\n",
                     input_current_levels+1,
                     TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
@@ -463,7 +463,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if(input_current_scale != VX_SCALE_PYRAMID_HALF )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Scale of pyramid %3.1f does not match required scale of %3.1f!!!\n",
                 input_current_scale,
                 VX_SCALE_PYRAMID_HALF
@@ -472,7 +472,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if((input_current_w > 2048U) || (input_current_h > 1024U))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH exceeds max supported limit !!!\n"
                 );
         }
@@ -481,14 +481,14 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if((input_current_base_w > 2048U) || (input_current_base_h > 1024U))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH exceeds max supported limit !!!\n");
             }
 
             if((input_current_base_w != (input_current_w * 2U)) ||
                (input_current_base_h != (input_current_h * 2U)))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Base image WxH is not twice WxH of pyramid base size !!!\n");
             }
         }
@@ -497,7 +497,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             ((input_current_h % ((vx_uint32)1U<<input_current_levels)) != 0U)
           )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH of %d %d MUST be integer divisible by %d pixels !!!\n",
                 input_current_w,
                 input_current_h,
@@ -509,7 +509,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             ((input_current_h / ((vx_uint32)1U<<(input_current_levels-1U))) < 16U)
           )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: The highest level must have minimum dimensions WxH of 32x16 !!!\n");
         }
 
@@ -519,7 +519,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                (confidence_histogram_range!=TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS) ||
                (confidence_histogram_offset!=0))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Confidence measure histogram meta properties "
                     "(bins=%d, offset=%d, range=%d) do NOT match expected meta properties (bins=%d, offset=0, range=%d)!!!\n",
                     confidence_histogram_numBins, confidence_histogram_range, confidence_histogram_offset,
@@ -529,26 +529,26 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if((confidence_histogram != NULL) &&
            (VX_DF_IMAGE_U16 == flow_vector_out_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'confidence_histogram' should be NULL when the flow vector output is set to VX_DF_IMAGE_U16 type\n");
         }
 
         if(((sparse_of_config != NULL) && (sparse_of_map == NULL)) ||
            ((sparse_of_config == NULL) && (sparse_of_map != NULL)))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'sparse_of_config' and 'sparse_of_map' should both be NULL, or both be non-NULL\n");
         }
 
         if((params.inter_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
            (params.inter_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL is not a supported option for configuration.inter_predictor[n]\n");
         }
 
@@ -557,21 +557,21 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (NULL == flow_vector_in)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_in' is NULL\n");
                 VX_PRINT(VX_ZONE_ERROR, "   'flow_vector_in' should be non-NULL when temporal prediction is enabled\n");
             }
 
             if (NULL != sparse_of_map)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'sparse_of_map' is not NULL\n");
                 VX_PRINT(VX_ZONE_ERROR, "   Sparse optical flow is not supported when temporal prediction is enabled\n");
             }
 
             if (VX_DF_IMAGE_U16 == flow_vector_out_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_out_fmt' is VX_DF_IMAGE_U16\n");
                 VX_PRINT(VX_ZONE_ERROR, "   'flow_vector_out' format of VX_DF_IMAGE_U16 is not supported when temporal prediction is enabled\n");
             }
@@ -580,7 +580,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             if (NULL != flow_vector_in)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter 'flow_vector_in' is non-NULL, but configuration.base_predictor[n] set not set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL\n");
                 VX_PRINT(VX_ZONE_ERROR, "   If temporal prediction is disabled, then 'flow_vector_in' should be NULL\n");
             }
@@ -589,24 +589,24 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         if ((62U < params.vertical_search_range[0U]) ||
             (62U < params.vertical_search_range[1U]))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter vertical_search_range values should be between 0 and 62 inclusive\n");
         }
         else if (191U < params.horizontal_search_range)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be between 0 and 191 inclusive\n");
         }
         else if ((191U == params.horizontal_search_range) &&
             (112U < (params.vertical_search_range[0U] + params.vertical_search_range[1U])))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter vertical_search_range should sum to no greater than 112 if horizontal_search_range is 191\n");
         }
         else if (((62U == params.vertical_search_range[0U]) && (62U == params.vertical_search_range[1U])) &&
             (170U < (params.horizontal_search_range)))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be no greater than 170 if vertical_search_range values are 62\n");
         }
         else
@@ -615,23 +615,23 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         }
         if (1U < params.median_filter_enable)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter median_filter_enable should be either 0 or 1\n");
         }
         if (31U < params.motion_smoothness_factor)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter motion_smoothness_factor should be a value between 0 and 31 inclusive\n");
         }
         if (3U < params.motion_direction)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter motion_direction should be a value between 0 and 3 inclusive\n");
         }
         if ((1U > params.iir_filter_alpha) ||
             (255U < params.iir_filter_alpha))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter iir_filter_alpha should be a value between 1 and 255 inclusive\n");
         }
     }
@@ -643,11 +643,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;
@@ -661,12 +661,12 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -680,7 +680,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -693,7 +693,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -703,7 +703,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -713,7 +713,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -723,7 +723,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -733,7 +733,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -743,7 +743,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -753,7 +753,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -763,7 +763,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -773,7 +773,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -783,16 +783,16 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DMPAC_DOF);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

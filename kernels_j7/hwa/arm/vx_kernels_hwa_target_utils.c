@@ -543,17 +543,17 @@ vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t 
     uint32_t data;
     uint32_t *base_addr = (uint32_t*)base_address;
     volatile uint32_t* const regs = base_addr;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* Check if config size is as expected */
     data = GET_REG(REG_STATUS);
     if(( data >> 16 )  != config_size)
     {
         VX_PRINT(VX_ZONE_ERROR, "%s: vlab model expecting different config size: model=%d, local=%d\n", kernel_prefix, data >> 16, config_size);
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Set config address, and start processing */
         SET_REG(REG_ADDR_LO, (uintptr_t)pConfig);
@@ -586,7 +586,7 @@ vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t 
                 VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error VLAB_PARAM_ERROR\n", kernel_prefix);
             }
 
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     return status;

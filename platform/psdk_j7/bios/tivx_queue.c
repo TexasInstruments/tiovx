@@ -16,11 +16,11 @@ vx_status tivxQueueCreate(
     tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory,
     uint32_t flags)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if ((NULL != queue) && (NULL != queue_memory) && (0 != max_elements))
     {
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
 
         /*
          * init queue to 0's
@@ -59,7 +59,7 @@ vx_status tivxQueueCreate(
             status = tivxEventCreate(&queue->block_wr);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             queue->blockedOnGet = (vx_bool)vx_false_e;
             queue->blockedOnPut = (vx_bool)vx_false_e;
@@ -75,7 +75,7 @@ vx_status tivxQueueCreate(
 
 vx_status tivxQueueDelete(tivx_queue *queue)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if (NULL != queue)
     {
@@ -92,7 +92,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
             tivxEventDelete(&queue->block_wr);
         }
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -100,7 +100,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 
 vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
@@ -124,7 +124,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             HwiP_restore(cookie);
 
             /* mark status as success */
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
 
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
             {
@@ -160,7 +160,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                 queue->blockedOnPut = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnPut = (vx_bool)vx_false_e;
-                if (VX_SUCCESS != wait_status)
+                if ((vx_status)VX_SUCCESS != wait_status)
                 {
                     do_break = (vx_bool)vx_true_e;
                     /* error, exit with error */
@@ -192,7 +192,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 
 vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 {
-    vx_status status = VX_FAILURE;/* init status to error */
+    vx_status status = (vx_status)VX_FAILURE;/* init status to error */
     uint32_t cookie;
     volatile vx_bool do_break = (vx_bool)vx_false_e;
 
@@ -216,7 +216,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             HwiP_restore(cookie);
 
             /* set status as success */
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
 
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
             {
@@ -254,7 +254,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 queue->blockedOnGet = (vx_bool)vx_true_e;
                 wait_status = tivxEventWait(queue->block_rd, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnGet = (vx_bool)vx_false_e;
-                if (VX_SUCCESS != wait_status)
+                if ((vx_status)VX_SUCCESS != wait_status)
                 {
                     do_break = (vx_bool)vx_true_e; /* exit with error */
                 }
@@ -304,7 +304,7 @@ vx_bool tivxQueueIsEmpty(tivx_queue *queue)
 
 vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data)
 {
-    vx_status status = VX_FAILURE;/* init status to error */
+    vx_status status = (vx_status)VX_FAILURE;/* init status to error */
 
     uint32_t cookie;
 
@@ -317,7 +317,7 @@ vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data)
         *data = queue->queue[queue->cur_rd];
 
         /* set status as success */
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     /* restore interrupts */

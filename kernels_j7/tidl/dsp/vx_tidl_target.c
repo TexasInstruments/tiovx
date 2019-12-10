@@ -262,7 +262,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     void *priv_arg
 )
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     tivxTIDLObj *tidlObj;
     uint32_t i, size;
@@ -289,22 +289,22 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     {
         if (NULL == obj_desc[i])
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel, (void **)&tidlObj, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == tidlObj) ||  (sizeof(tivxTIDLObj) != size))
+        if (((vx_status)VX_SUCCESS != status) || (NULL == tidlObj) ||  (sizeof(tivxTIDLObj) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_user_data_object_t *network;
         void *network_target_ptr = NULL;
@@ -324,7 +324,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_tensor_t *inTensor;
         tivx_obj_desc_tensor_t *outTensor;
@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
   void *priv_arg
 )
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     tivx_obj_desc_user_data_object_t *config;
     tivx_obj_desc_user_data_object_t *network;
@@ -484,15 +484,15 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     {
         if (NULL == obj_desc[i])
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* IMPORTANT! Config data is assumed to be available at index 0 */
         config    = (tivx_obj_desc_user_data_object_t *)obj_desc[0];
@@ -511,10 +511,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
           config_target_ptr = tivxMemShared2TargetPtr(&config->mem_ptr);
           tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -532,14 +532,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         tidlObj->netSize = network->mem_size;
         if (NULL == tidlObj->tidlNet)
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         #else
         tidlObj->tidlNet = NULL;
         tidlObj->netSize = 0;
         #endif
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
           network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
           tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -560,7 +560,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
           }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
           create_params_target_ptr = tivxMemShared2TargetPtr(&createParams->mem_ptr);
           tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
@@ -568,7 +568,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
           memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             /* reset scratch heap offset to zero by doing a dummy free */
             tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L1);
@@ -610,7 +610,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
             if (NULL == tidlObj->algHandle)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
@@ -638,7 +638,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
         tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, tidlObj,  sizeof(tivxTIDLObj));
         }
@@ -674,7 +674,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivxTIDLObj *tidlObj = NULL;
@@ -683,16 +683,16 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     {
         if (NULL == obj_desc[i])
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel, (void **)&tidlObj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != tidlObj) && (sizeof(tivxTIDLObj) == size))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != tidlObj) && (sizeof(tivxTIDLObj) == size))
         {
             if (tidlObj->algHandle)
             {
@@ -720,7 +720,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLControl(
     tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelTIDL()
@@ -805,7 +805,7 @@ static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize)
 
 static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size, uint32_t loc)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_uint8 qcData[TIVX_TIDL_J7_CHECKSUM_SIZE];
     int32_t match = 1;
@@ -827,7 +827,7 @@ static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size,
     {
       VX_PRINT(VX_ZONE_ERROR, "Computing checksum at 0x%016X, size = %d\n", dataPtr,  data_size);
       VX_PRINT(VX_ZONE_ERROR, "QC code mismatch at %d \n", loc);
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
     }
     else
     {

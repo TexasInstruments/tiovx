@@ -163,7 +163,7 @@ tivxVpacNfGenericInstObj gTivxVpacNfGenericInstObj;
 
 void tivxAddTargetKernelVpacNfGeneric(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -172,7 +172,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
         
         vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
@@ -186,7 +186,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
         {
             /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVpacNfGenericInstObj.lock);
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacNfGeneric: Failed to create Mutex\n");
@@ -199,7 +199,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
 
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
@@ -215,10 +215,10 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
 void tivxRemoveTargetKernelVpacNfGeneric(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_vpac_nf_generic_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_nf_generic_target_kernel = NULL;
     }
@@ -242,7 +242,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                    status = VX_SUCCESS;
+    vx_status                    status = (vx_status)VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
     uint32_t                     size;
     int32_t                      k;
@@ -263,24 +263,24 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Invalid Descriptor\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_generic_obj, &size);
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Null Desc\n");
         }
         else if (sizeof(tivxVpacNfGenericObj) != size)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Incorrect object size\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -288,7 +288,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         inFrmList = &nf_generic_obj->inFrmList;
         outFrmList = &nf_generic_obj->outFrmList;
@@ -354,14 +354,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericProcess: Set parameters request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Set NF coeff */
         fvid2_status = Fvid2_control(nf_generic_obj->handle, IOCTL_VHWA_M2M_NF_SET_FILTER_COEFF,
@@ -370,11 +370,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericProcess: Set coeff request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Initialize NF Input Frame List */
         inFrmList->frames[0U] =
@@ -396,11 +396,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericProcess: Failed to Submit Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
         tivxEventWait(nf_generic_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -411,11 +411,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericProcess: Failed to Get Processed Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
@@ -425,7 +425,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             );
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -443,7 +443,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
     int32_t                           k;
     int32_t                           m;
@@ -462,13 +462,13 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericCreate: Required input parameter set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         nf_generic_obj = tivxVpacNfGenericAllocObject(&gTivxVpacNfGenericInstObj);
         if (NULL != nf_generic_obj)
@@ -484,16 +484,16 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericCreate: Failed to Alloc Nf Generic Object\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_M2mNfCreatePrmsInit(&nf_generic_obj->createPrms);
 
         status = tivxEventCreate(&nf_generic_obj->waitForProcessCmpl);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             nf_generic_obj->cbPrms.cbFxn   = tivxVpacNfGenericFrameComplCb;
             nf_generic_obj->cbPrms.appData = nf_generic_obj;
@@ -506,7 +506,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericCreate: Failed to Alloc Nf Generic Object\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
@@ -518,7 +518,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     }
 
     /* Register Error Callback */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         nf_generic_obj->errEvtPrms.errEvents = VHWA_NF_RD_ERR | VHWA_NF_WR_ERR;
         nf_generic_obj->errEvtPrms.cbFxn     = tivxVpacNfGenericErrorCb;
@@ -530,11 +530,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericCreate: Failed to Register Error Callback\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         nf_cfg = &nf_generic_obj->nf_cfg;
 
@@ -613,7 +613,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericCreate: Set parameters request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         /* Set NF coeff */
@@ -623,14 +623,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericCreate: Set coeffs request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
         
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, nf_generic_obj,
             sizeof(tivxVpacNfGenericObj));
@@ -662,19 +662,19 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 size;
     tivxVpacNfGenericObj    *nf_generic_obj = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_generic_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != nf_generic_obj) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != nf_generic_obj) &&
             (sizeof(tivxVpacNfGenericObj) == size))
         {
             if (NULL != nf_generic_obj->handle)
@@ -710,14 +710,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          size;
     tivxVpacNfGenericObj             *nf_generic_obj = NULL;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&nf_generic_obj, &size);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericControl: Failed to get Target Kernel Instance Context\n");
@@ -727,14 +727,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         /* do nothing */
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -760,7 +760,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacNfGenericControl: Invalid Node Command Id\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -873,7 +873,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                                status = VX_SUCCESS;
+    vx_status                                status = (vx_status)VX_SUCCESS;
     int32_t                                  fvid2_status = FVID2_SOK;
     Vhwa_HtsLimiter                          hts_limit;
     tivx_vpac_nf_hts_bw_limit_params_t      *app_hts_prms;
@@ -883,10 +883,10 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     {
         VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericSetHtsLimitCmd: Invalid Argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
@@ -908,14 +908,14 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacNfGenericSetHtsLimitCmd: Set HTS limit request failed\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericSetHtsLimitCmd: Invalid Argument\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -932,7 +932,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
 static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
     Nf_WgtTableConfig                *wgtTbl = NULL;
     void                             *target_ptr;
@@ -955,14 +955,14 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacNfGenericSetCoeff: Set coeff request failed\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericSetCoeff: Invalid Argument\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -971,7 +971,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericSetCoeff: Null Argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -980,7 +980,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
 static vx_status tivxVpacNfGenericGetErrStatusCmd(tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
 
     if (NULL != scalar_obj_desc)
     {
@@ -990,7 +990,7 @@ static vx_status tivxVpacNfGenericGetErrStatusCmd(tivxVpacNfGenericObj *nf_gener
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericGetErrStatusCmd: Null argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);

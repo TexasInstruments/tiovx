@@ -101,7 +101,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxGassPyrmdParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_pyramid_t *pmd;
@@ -112,7 +112,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
@@ -120,7 +120,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((NULL != prms) && (size == sizeof(tivxGassPyrmdParams)))
             {
@@ -131,19 +131,19 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                 {
                     if (NULL == prms->img_obj_desc[levels])
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                     }
                 }
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
 
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         imgInput[0] = prms->src16;
         imgOutput[0] = prms->dst16[0];
@@ -259,7 +259,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 #endif
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t bufCnt = 1;
         tivx_obj_desc_image_t stub;
@@ -292,7 +292,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         imgOutput[0] = NULL;
 
         /* Process remaining levels one at a time */
-        for (levels = 2; (levels < pmd->num_levels) && (VX_SUCCESS == status);
+        for (levels = 2; (levels < pmd->num_levels) && ((vx_status)VX_SUCCESS == status);
                 levels ++)
         {
             src = prms->img_obj_desc[levels - 1U];
@@ -340,14 +340,14 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *img;
     tivxGassPyrmdParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
@@ -364,24 +364,24 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->dst16[0] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16[0])
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->dst16[1] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16[1])
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
@@ -390,7 +390,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -401,12 +401,12 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxGassPyrmdParams *prms = NULL;
@@ -414,7 +414,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxGassPyrmdParams) == size))
         {
             tivxKernelGsnPmdFreeMem(prms);

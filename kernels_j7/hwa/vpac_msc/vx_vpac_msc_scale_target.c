@@ -236,7 +236,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
             {
                 /* Allocate lock semaphore */
                 status = tivxMutexCreate(&inst_obj->lock);
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
@@ -261,7 +261,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
@@ -273,7 +273,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
         }
 
         /* Clean up allocated resources */
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
@@ -293,7 +293,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 
 void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 cnt;
     uint32_t                 inst_start;
     tivxVpacMscScaleInstObj *inst_obj;
@@ -304,7 +304,7 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void)
         inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
         status = tivxRemoveTargetKernel(inst_obj->target_kernel);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             inst_obj->target_kernel = NULL;
         }
@@ -367,7 +367,7 @@ void tivxAddTargetKernelVpacMscScale(void)
             {
                 /* Allocate lock semaphore */
                 status = tivxMutexCreate(&inst_obj->lock);
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
@@ -392,7 +392,7 @@ void tivxAddTargetKernelVpacMscScale(void)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
@@ -404,7 +404,7 @@ void tivxAddTargetKernelVpacMscScale(void)
         }
 
         /* Clean up allocated resources */
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
@@ -424,7 +424,7 @@ void tivxAddTargetKernelVpacMscScale(void)
 
 void tivxRemoveTargetKernelVpacMscScale(void)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 cnt;
     uint32_t                 inst_start;
     tivxVpacMscScaleInstObj *inst_obj;
@@ -435,7 +435,7 @@ void tivxRemoveTargetKernelVpacMscScale(void)
         inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
         status = tivxRemoveTargetKernel(inst_obj->target_kernel);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             inst_obj->target_kernel = NULL;
         }
@@ -461,7 +461,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     int32_t                  fvid2_status = FVID2_SOK;
     vx_uint32                cnt;
     vx_uint32                idx;
@@ -477,14 +477,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         target_kernel = tivxTargetKernelInstanceGetKernel(kernel);
         if (NULL == target_kernel)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleCreate: Failed to get Target Kernel\n");
-            status = VX_ERROR_INVALID_NODE;
+            status = (vx_status)VX_ERROR_INVALID_NODE;
         }
         else
         {
@@ -502,12 +502,12 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacMscScaleCreate: Invalid Target Kernel\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         msc_obj = tivxVpacMscScaleAllocObject(inst_obj);
         if (NULL != msc_obj)
@@ -524,15 +524,15 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleCreate: Failed to allocate Handle Object, increase VHWA_M2M_MSC_MAX_HANDLES macro in PDK driver\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             Vhwa_M2mMscCreatePrmsInit(&msc_obj->createArgs);
 
             status = tivxEventCreate(&msc_obj->wait_for_compl);
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 msc_obj->cbPrms.cbFxn   = tivxVpacMscScaleFrameComplCb;
                 msc_obj->cbPrms.appData = msc_obj;
@@ -545,7 +545,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacMscScaleCreate: Fvid2_create failed\n");
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
             }
             else
@@ -556,7 +556,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         msc_prms = &msc_obj->msc_prms;
 
@@ -594,11 +594,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleCreate: Fvid2_control Failed: Set Params\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
 
             /* Set up Frame List */
             msc_obj->inFrmList.numFrames = 1U;
@@ -608,7 +608,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, msc_obj,
             sizeof(tivxVpacMscHsgObj));
@@ -640,7 +640,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status       status = VX_SUCCESS;
+    vx_status       status = (vx_status)VX_SUCCESS;
     uint32_t        size;
     tivxVpacMscHsgObj *msc_obj = NULL;
     tivxVpacMscScaleInstObj *inst_obj = NULL;
@@ -648,12 +648,12 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&msc_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != msc_obj) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != msc_obj) &&
             (sizeof(tivxVpacMscHsgObj) == size))
         {
             inst_obj = msc_obj->inst_obj;
@@ -686,7 +686,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     int32_t                  fvid2_status = FVID2_SOK;
     int32_t                  gsize_value;
     uint32_t                 size;
@@ -704,7 +704,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         in_img_desc = (tivx_obj_desc_image_t *)obj_desc
             [TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
@@ -719,14 +719,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             "tivxVpacMscScaleProcess: NULL Params check failed\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&msc_obj, &size);
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Invalid Target Instance Context\n");
@@ -734,7 +734,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         else if ((NULL == msc_obj) ||
             (sizeof(tivxVpacMscHsgObj) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Incorrect Object Size\n");
         }
@@ -745,7 +745,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     }
 
     /* First change the coefficient based on the gvalue */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         coeffCfg = &msc_obj->coeffCfg;
 
@@ -791,11 +791,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to create coefficients\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         frm = &msc_obj->inFrm;
         for (plane_cnt = 0u; plane_cnt < TIVX_IMAGE_MAX_PLANES; plane_cnt ++)
@@ -822,11 +822,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to Submit Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
         tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -837,11 +837,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscScaleProcess: Failed to Get Processed Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 

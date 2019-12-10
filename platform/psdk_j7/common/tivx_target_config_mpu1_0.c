@@ -38,7 +38,7 @@ void tivxPlatformCreateTargets(void)
     target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1] = 0;
 
     status = tivxTargetCreate(TIVX_TARGET_ID_A72_0, &target_create_prms);
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
     }
@@ -49,7 +49,7 @@ void tivxPlatformDeleteTargets(void)
     vx_status status;
 
     status = tivxTargetDelete(TIVX_TARGET_ID_A72_0);
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }

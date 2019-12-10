@@ -137,7 +137,7 @@ tivxVpacVissInstObj gTivxVpacVissInstObj;
 
 void tivxAddTargetKernelVpacViss(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -146,29 +146,29 @@ void tivxAddTargetKernelVpacViss(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxAddTargetKernelVpacViss: Invalid CPU ID\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         memset(&gTivxVpacVissInstObj, 0x0, sizeof(tivxVpacVissInstObj));
 
         status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxAddTargetKernelVpacViss: Failed to Allocate lock \n");
         }
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_viss_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_VISS_NAME,
@@ -183,7 +183,7 @@ void tivxAddTargetKernelVpacViss(void)
 
 void tivxRemoveTargetKernelVpacViss(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (NULL != gTivxVpacVissInstObj.lock)
     {
@@ -191,7 +191,7 @@ void tivxRemoveTargetKernelVpacViss(void)
     }
 
     status = tivxRemoveTargetKernel(vx_vpac_viss_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_viss_target_kernel = NULL;
     }
@@ -211,7 +211,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                  status = VX_SUCCESS;
+    vx_status                  status = (vx_status)VX_SUCCESS;
     int32_t                    fvid2_status = FVID2_SOK;
     uint32_t                   cnt;
     uint32_t                   out_start;
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
     /* Check for mandatory descriptor */
     status = tivxVpacVissCheckInputDesc(num_params, obj_desc);
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissCreate: Input Descriptor Error\n");
@@ -263,14 +263,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissCreate: Alloc Failed for Viss Object\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(config_desc->mem_size != sizeof(tivx_vpac_viss_params_t))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
 
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: tivx_vpac_viss_params_t, host size (%d) != target size (%d)\n",
@@ -278,11 +278,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
         }
 
-        if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
         {
             if(aewb_res_desc->mem_size != sizeof(tivx_ae_awb_params_t))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
 
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: tivx_ae_awb_params_t, host size (%d) != target size (%d)\n",
@@ -290,11 +290,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
         }
 
-        if ((VX_SUCCESS == status) && (NULL != h3a_out_desc))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != h3a_out_desc))
         {
             if(h3a_out_desc->mem_size != sizeof(tivx_h3a_data_t))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
 
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
@@ -311,17 +311,17 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             status = tivxMutexCreate(&vissObj->config_lock);
         }
 
         /* Now Map config Desc and get VISS Parameters */
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             status = tivxVpacVissMapUserDesc(&vissObj->viss_prms_target_ptr,
                 config_desc, sizeof(tivx_vpac_viss_params_t));
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 vissPrms = (tivx_vpac_viss_params_t *)
                     vissObj->viss_prms_target_ptr;
@@ -340,11 +340,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
         /* Extract AEWB Result parameters, it might be needed in
          * setting some of the VISS configuration */
-        if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
         {
             status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
                 aewb_res_desc, sizeof(tivx_ae_awb_params_t));
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 ae_awb_result = (tivx_ae_awb_params_t *)
                     vissObj->aewb_res_target_ptr;
@@ -358,18 +358,18 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Now allocate the require resources and open the FVID2 driver */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_m2mVissCreateArgsInit(&vissObj->createArgs);
 
         status = tivxEventCreate(&vissObj->waitForProcessCmpl);
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissCreate: Failed to allocate Event\n");
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             vissObj->cbPrms.cbFxn   = tivxVpacVissFrameComplCb;
             vissObj->cbPrms.appData = vissObj;
@@ -382,7 +382,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to Open Driver\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
         else
@@ -393,7 +393,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Allocate memory for the GLBCE Statistics */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vhwaVissAllocMemForCtx(vissObj, vissPrms);
     }
@@ -401,7 +401,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     /* Extract the format information from the config descriptor
      * and output images and set the format in Driver using
      * SET_PARAMS ioctl  */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vissDrvPrms = &vissObj->vissPrms;
 
@@ -438,7 +438,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
              * viss output format */
             status = tivxVpacVissSetOutputParams(
                 vissObj, vissPrms, img_desc);
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to set Output Params\n");
@@ -446,7 +446,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Set H3A Source parameters, this mainly sets up the
          * input source to the h3a. */
@@ -455,7 +455,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
     /* Extract individual module specific parameters from the DCC data
      * base and set it in the driver */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (NULL != dcc_buf_desc)
         {
@@ -463,12 +463,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
             status = tivxVpacVissInitDcc(vissObj, vissPrms);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 /* Parse DCC Database and store the output in local variables */
                 status = tivxVpacVissSetParamsFromDcc(
                     vissObj, dcc_buf_desc, h3a_out_desc, ae_awb_result);
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
@@ -501,7 +501,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* All Formats, frame size, module enables are set in
          * viss parameters, call this ioctl to set validate and set
@@ -513,18 +513,18 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissCreate: Failed to set Params in driver\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
     /* Now Set the parsed parameters in the VISS Driver,
      * This is required even for the non-DCC parameters, like
      * H3A Input source */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxVpacVissSetConfigInDrv(vissObj);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             /* Reset this flag, as the config is already applied to driver */
             vissObj->isConfigUpdated = 0U;
@@ -537,7 +537,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Unmap descriptor memories */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* If the target pointer is non null, descriptor is also non null,
          * Even if there is any error, if this pointer is non-null,
@@ -558,7 +558,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(
             kernel, vissObj, sizeof(tivxVpacVissObj));
@@ -581,7 +581,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         vissObj->sensor_dcc_id = vissPrms->sensor_dcc_id;
     }
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         if (NULL != vissObj)
         {
@@ -617,13 +617,13 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 size;
     tivxVpacVissObj         *vissObj = NULL;
 
     /* Check for mandatory descriptor */
     status = tivxVpacVissCheckInputDesc(num_params, obj_desc);
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissDelete: Input Descriptor Error\n");
@@ -634,7 +634,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
             (void **)&vissObj, &size);
 
         /* Check the validity of context object */
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissDelete: Incorrect kernel instance context\n");
@@ -644,7 +644,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissDelete: Incorrect Object Size\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -677,7 +677,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                  status = VX_SUCCESS;
+    vx_status                  status = (vx_status)VX_SUCCESS;
     int32_t                    fvid2_status = FVID2_SOK;
     uint32_t                   cnt;
     uint32_t                   out_start;
@@ -696,7 +696,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     /* Check for mandatory descriptor */
     status = tivxVpacVissCheckInputDesc(num_params, obj_desc);
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissProcess: Input Descriptor Error\n");
@@ -707,7 +707,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             (void **)&vissObj, &size);
 
         /* Check the validity of context object */
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissProcess: Incorrect kernel instance context\n");
@@ -717,7 +717,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissProcess: Incorrect Object Size\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -741,12 +741,12 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Config Desc Cannot be null */
         status = tivxVpacVissMapUserDesc(&vissObj->viss_prms_target_ptr,
             config_desc, sizeof(tivx_vpac_viss_params_t));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             vissPrms = (tivx_vpac_viss_params_t *)vissObj->viss_prms_target_ptr;
         }
@@ -757,11 +757,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
 
         /* AEWB Result is optional parameter */
-        if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
         {
             status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
                 aewb_res_desc, sizeof(tivx_ae_awb_params_t));
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 ae_awb_result =
                     (tivx_ae_awb_params_t *)vissObj->aewb_res_target_ptr;
@@ -773,13 +773,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (NULL != h3a_out_desc)
             {
                 status = tivxVpacVissMapUserDesc(&vissObj->h3a_out_target_ptr,
                     h3a_out_desc, sizeof(tivx_h3a_data_t));
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     h3a_out =
                         (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
@@ -793,7 +793,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Update Configuration in Driver */
         tivxMutexLock(vissObj->config_lock);
@@ -804,18 +804,18 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         if (NULL != ae_awb_result)
         {
             status = tivxVpacVissApplyAEWBParams(vissObj, ae_awb_result);
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissProcess: Failed to apply AEWB Result\n");
             }
         }
 
-        if ((VX_SUCCESS == status) && (1u == vissObj->isConfigUpdated))
+        if (((vx_status)VX_SUCCESS == status) && (1u == vissObj->isConfigUpdated))
         {
             status = tivxVpacVissSetConfigInDrv(vissObj);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissProcess: Failed to Set Config in Driver\n");
@@ -824,7 +824,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         tivxMutexUnlock(vissObj->config_lock);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Set the buffer address in the input buffer */
         for (cnt = 0u; cnt < vissObj->num_in_buf; cnt ++)
@@ -864,7 +864,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vhwaVissRestoreCtx(vissObj);
 
@@ -877,7 +877,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissProcess: Failed to Submit Request\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -890,14 +890,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissProcess: Failed to Get Processed Request\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
 
         vhwaVissSaveCtx(vissObj);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
@@ -910,7 +910,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     /* If the target pointer is non null, descriptor is also non null,
      * Even if there is any error, if this pointer is non-null,
      * unmap must be called */
-    if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
+    if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr, aewb_res_desc);
     }
@@ -918,12 +918,12 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     /* If the target pointer is non null, descriptor is also non null
      * Even if there is any error, if this pointer is non-null,
      * unmap must be called */
-    if ((VX_SUCCESS == status) && (NULL != config_desc))
+    if (((vx_status)VX_SUCCESS == status) && (NULL != config_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr, config_desc);
     }
 
-    if ((VX_SUCCESS == status) && (NULL != h3a_out_desc))
+    if (((vx_status)VX_SUCCESS == status) && (NULL != h3a_out_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->h3a_out_target_ptr, h3a_out_desc);
     }
@@ -936,14 +936,14 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          size;
     tivxVpacVissObj                  *vissObj = NULL;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&vissObj, &size);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissControl: Failed to Get Target Kernel Instance Context\n");
@@ -953,14 +953,14 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissControl: Incorrect Object Size\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         /* do nothing */
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -977,7 +977,7 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissControl: Invalid Node Command Id\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -1047,7 +1047,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
     tivx_vpac_viss_params_t *vissPrms,
     tivx_obj_desc_image_t *obj_desc[])
 {
-    vx_status                 status = VX_SUCCESS;
+    vx_status                 status = (vx_status)VX_SUCCESS;
     uint32_t                  cnt;
     uint32_t                  out_cnt;
     uint32_t                  out_start;
@@ -1077,7 +1077,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
                 &outPrms->fmt.dataFormat, &outPrms->fmt.ccsFormat, out_start,
                 im_desc->format, mux_val[out_cnt]);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 outPrms->enable = TRUE;
                 outPrms->fmt.width = im_desc->width;
@@ -1107,7 +1107,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
             }
         }
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             break;
         }
@@ -1117,7 +1117,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
 
     /* H3A is one of the output for the Driver,
      * Enable it if required */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_bool)vx_true_e == vissObj->h3a_out_enabled)
         {
@@ -1201,7 +1201,7 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
 
 static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (VX_DF_IMAGE_U16 == vxFmt)
     {
@@ -1219,7 +1219,7 @@ static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissMapStorageFormat: Invalid Storage Format \n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -1228,7 +1228,7 @@ static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt)
 static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
     uint32_t out_id, uint32_t vxFmt, uint32_t mux_val)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     switch (mux_val)
     {
@@ -1237,7 +1237,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             /* Map single plane storage format */
             status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: Map Storage Format Failed\n");
@@ -1257,7 +1257,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: mux0 not supported on output4\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         }
@@ -1266,7 +1266,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             /* Map single plane storage format */
             status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: Map Storage Format Failed\n");
@@ -1288,7 +1288,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: mux1 not supported on output0/1\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         }
@@ -1297,7 +1297,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             /* Map single plane storage format */
             status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: Map Storage Format Failed\n");
@@ -1314,7 +1314,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: mux2 not supported on output0\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         }
@@ -1323,7 +1323,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             /* Map single plane storage format */
             status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: Map Storage Format Failed\n");
@@ -1342,7 +1342,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: mux3 not supported on output1/3\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         }
@@ -1360,10 +1360,10 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: only NV12 supported on mux4\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 if ((TIVX_KERNEL_VPAC_VISS_OUT0_IDX == out_id) ||
                     (TIVX_KERNEL_VPAC_VISS_OUT2_IDX == out_id))
@@ -1374,7 +1374,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacVissMapFormat: only output0/2 supports on mux4\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
             }
             break;
@@ -1397,14 +1397,14 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacVissMapFormat: only UYVY/YUYV formats supported \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
             }
             else
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissMapFormat: mux5 is supported only on output2 \n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         }
@@ -1412,7 +1412,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissMapFormat: Invalid value of mux \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             break;
         }
     }
@@ -1423,7 +1423,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
 static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     tivx_obj_desc_user_data_object_t *desc, uint32_t size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (desc->mem_size == size)
     {
@@ -1436,7 +1436,7 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissMapUserDesc: Incorrect descriptor\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -1453,7 +1453,7 @@ static void tivxVpacVissUnmapUserDesc(void **target_ptr,
 static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     tivx_obj_desc_t *obj_desc[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t cnt;
     uint32_t out_start;
 
@@ -1468,7 +1468,7 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissCheckInputDesc: Invalid Descriptor\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
 
         if (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         {
@@ -1497,7 +1497,7 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissCheckInputDesc: Atleast one output must be enabled\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
@@ -1507,7 +1507,7 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
 static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
     tivx_vpac_viss_params_t *vissPrms)
 {
-    vx_status           status = VX_SUCCESS;
+    vx_status           status = (vx_status)VX_SUCCESS;
     int32_t             fvid2_status = FVID2_SOK;
     Glbce_Control       glbceCtrl;
 
@@ -1522,7 +1522,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             if (FVID2_SOK != fvid2_status)
             {
                 vissObj->ctx_mem_phys_ptr = 0u;
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR,
                     "vhwaVissAllocMemForCtx: Failed to get GLBCE Stats Info!!!\n");
             }
@@ -1533,7 +1533,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
                 if (NULL == vissObj->ctx_mem_ptr.host_ptr)
                 {
                     vissObj->ctx_mem_phys_ptr = 0u;
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     VX_PRINT(VX_ZONE_ERROR,
                         "vhwaVissAllocMemForCtx: Failed to allocate memory!!!\n");
                 }
@@ -1552,7 +1552,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);

@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *left_desc;
     tivx_obj_desc_image_t *right_desc;
@@ -120,7 +120,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -141,13 +141,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxDmpacSdeParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             left_target_ptr = tivxMemShared2TargetPtr(&left_desc->mem_ptr[0]);
             right_target_ptr = tivxMemShared2TargetPtr(&right_desc->mem_ptr[0]);
@@ -192,11 +192,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
             if (0 != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 #endif
         }
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             lse_reformat_out(left_desc, output_desc, output_target_ptr, prms->dst16, 12, 0);
 
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
@@ -243,10 +243,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *left_desc;
         tivxDmpacSdeParams *prms = NULL;
@@ -279,12 +279,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             }
             if (2048 < aligned_width)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Aligned width should be no greater than 2048\n");
             }
             if (1024 < aligned_height)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                   VX_PRINT(VX_ZONE_ERROR, "Parameter height should be no greater than 1024\n");
             }
 
@@ -295,28 +295,28 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             prms->left16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->left16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->right16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->right16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->dst16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivx_dmpac_sde_params_t *params;
                 uint32_t disp_max;
@@ -376,10 +376,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxDmpacSdeParams));
@@ -401,7 +401,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
@@ -410,10 +410,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxDmpacSdeParams *prms = NULL;
@@ -421,7 +421,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxDmpacSdeParams) == size))
         {
             tivxDmpacSdeFreeMem(prms);
@@ -433,7 +433,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
 
 void tivxAddTargetKernelDmpacSde(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -442,14 +442,14 @@ void tivxAddTargetKernelDmpacSde(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_DMPAC_SDE_NAME,
@@ -464,10 +464,10 @@ void tivxAddTargetKernelDmpacSde(void)
 
 void tivxRemoveTargetKernelDmpacSde(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_dmpac_sde_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_sde_target_kernel = NULL;
     }

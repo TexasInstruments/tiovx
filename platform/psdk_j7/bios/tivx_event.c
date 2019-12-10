@@ -14,7 +14,7 @@
 
 vx_status tivxEventCreate(tivx_event *event)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     SemaphoreP_Handle handle;
     SemaphoreP_Params semParams;
 
@@ -30,12 +30,12 @@ vx_status tivxEventCreate(tivx_event *event)
         if (NULL == handle)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Semaphore creation failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
             *event = (tivx_event)handle;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
 
@@ -44,7 +44,7 @@ vx_status tivxEventCreate(tivx_event *event)
 
 vx_status tivxEventDelete(tivx_event *event)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     SemaphoreP_Handle handle;
 
     if ((NULL != event) && (*event != NULL))
@@ -52,7 +52,7 @@ vx_status tivxEventDelete(tivx_event *event)
         handle = (SemaphoreP_Handle)*event;
         SemaphoreP_delete(handle);
         *event = NULL;
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -65,12 +65,12 @@ vx_status tivxEventPost(tivx_event event)
         SemaphoreP_post((SemaphoreP_Handle)event);
     }
 
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     SemaphoreP_Status retVal;
     uint32_t bsp_timeout;
 
@@ -90,13 +90,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         if (SemaphoreP_OK != retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Semaphore wait returned an error\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Event was NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -104,7 +104,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
 vx_status tivxEventClear(tivx_event event)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (NULL != event)
     {
@@ -113,7 +113,7 @@ vx_status tivxEventClear(tivx_event event)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventClear: Event was NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return status;

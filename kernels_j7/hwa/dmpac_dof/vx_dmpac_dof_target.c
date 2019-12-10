@@ -164,7 +164,7 @@ tivxDmpacDofInstObj gTivxDmpacDofInstObj;
 
 void tivxAddTargetKernelDmpacDof(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -173,16 +173,16 @@ void tivxAddTargetKernelDmpacDof(void)
     if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelDmpacDof: Invalid CPU ID\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_dof_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_DMPAC_DOF_NAME,
@@ -196,7 +196,7 @@ void tivxAddTargetKernelDmpacDof(void)
         {
             /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxDmpacDofInstObj.lock);
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelDmpacDof: Failed to create Mutex\n");
@@ -218,10 +218,10 @@ void tivxAddTargetKernelDmpacDof(void)
 
 void tivxRemoveTargetKernelDmpacDof(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_dmpac_dof_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_dmpac_dof_target_kernel = NULL;
     }
@@ -245,7 +245,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                     status = VX_SUCCESS;
+    vx_status                     status = (vx_status)VX_SUCCESS;
     int32_t                       fvid2_status = FVID2_SOK;
     uint32_t                      size;
     uint32_t                      pyr_lvl, pyr_cnt;
@@ -280,16 +280,16 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofProcess: Required input parameter set to NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&dofObj, &size);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* point to descriptors with correct type */
         input_current_base_desc = (tivx_obj_desc_image_t *)
@@ -353,7 +353,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofProcess: Invalid Pyramid Count\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         if(NULL != sparse_of_config_desc)
@@ -378,12 +378,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofProcess: Invalid Target Instance Context\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint64_t cur_time;
 
@@ -475,7 +475,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 }
             }
 
-            if(VX_SUCCESS == status)
+            if((vx_status)VX_SUCCESS == status)
             {
                 /* Set pyramid level to be processed */
                 fvid2_status = Fvid2_control(dofObj->handle,
@@ -484,11 +484,11 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofProcess: Failed to set next pyramid\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
 
-            if(VX_SUCCESS == status)
+            if((vx_status)VX_SUCCESS == status)
             {
                 /* Submit DOF Request*/
                 fvid2_status = Fvid2_processRequest(dofObj->handle, inFrmList,
@@ -497,11 +497,11 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofProcess: Failed to Submit Request\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 /* Wait for Frame Completion */
                 tivxEventWait(dofObj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -512,7 +512,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofProcess: Failed to Get Processed Request\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
         }
@@ -524,7 +524,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             dofObj->dofPrms.coreCfg.width*dofObj->dofPrms.coreCfg.height /* pixels processed */
             );
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             /* Get Histogram */
             if(NULL != confidence_histogram_desc)
@@ -541,7 +541,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofProcess: Histogram Request failed\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
 
                 tivxMemBufferUnmap(target_ptr, confidence_histogram_desc->mem_size,
@@ -593,7 +593,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
     tivx_dmpac_dof_params_t          *dofAppPrms = NULL;
     tivx_dmpac_dof_sof_params_t      *sofAppPrms = NULL;
@@ -613,10 +613,10 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofCreate: Required input parameter set to NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dofObj = tivxDmpacDofAllocObject(&gTivxDmpacDofInstObj);
         if (NULL != dofObj)
@@ -646,16 +646,16 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofCreate: May need to increase the value of VHWA_M2M_DOF_MAX_HANDLES in pdk/packages/ti/drv/vhwa/include/vhwa_m2mDof.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_m2mDofCreateArgsInit(&dofObj->createArgs);
 
         status = tivxEventCreate(&dofObj->waitForProcessCmpl);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             dofObj->cbPrms.cbFxn   = tivxDmpacDofFrameComplCb;
             dofObj->cbPrms.appData = dofObj;
@@ -668,7 +668,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacDofCreate: Invalid Handle\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
@@ -679,7 +679,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     }
 
     /* Register Error Callback */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dofObj->errEvtPrms.errEvents =
             VHWA_DOF_RD_ERR | VHWA_DOF_WR_ERR |
@@ -694,12 +694,12 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofCreate: Error CB registration failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
     /* Set DOF Configuration Parameters */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dofPrms = &dofObj->dofPrms;
 
@@ -741,14 +741,14 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofCreate: Set parameters request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
     /* Initialize and set the Confidence score parameters to default value */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_m2mConfScoreParamInit(&dofObj->csPrms);
 
@@ -758,19 +758,19 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofCreate: Set CS parameter reqeust failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
     /* Allocate intermediate buffers for Pyramid processing */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Size = base image width * height * 2 bytes/pixel / 4 (half scale is largest size needed) */
         dofObj->inter_buff_size = (dofObj->dofPrms.coreCfg.width *
                                    dofObj->dofPrms.coreCfg.height) / 2;
 
         status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             dofObj->inter_buff1 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
@@ -784,7 +784,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
                 "tivxDmpacDofCreate: Buffer Alloc 1 Failed\n");
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             dofObj->inter_buff2 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
@@ -798,7 +798,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     }
 
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, dofObj,
             sizeof(tivxDmpacDofObj));
@@ -830,7 +830,7 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status       status = VX_SUCCESS;
+    vx_status       status = (vx_status)VX_SUCCESS;
     uint32_t        size;
     tivxDmpacDofObj *dofObj = NULL;
 
@@ -838,15 +838,15 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofDelete: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&dofObj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != dofObj) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != dofObj) &&
             (sizeof(tivxDmpacDofObj) == size))
         {
             if (NULL != dofObj->handle)
@@ -884,14 +884,14 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          size;
     tivxDmpacDofObj                   *dofObj = NULL;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&dofObj, &size);
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofControl: Failed to Get Target Kernel Instance Context\n");
@@ -901,14 +901,14 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofControl: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
         /* do nothing */
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         switch (node_cmd_id)
         {
@@ -934,7 +934,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofControl: Invalid Input\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -1227,17 +1227,17 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
                         tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format)
 {
-    vx_status                    status = VX_SUCCESS;
+    vx_status                    status = (vx_status)VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
 
     if(NULL == dofAppPrms)
     {
         VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofUpdateCfgPrms: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         dof_obj->dofPrms.mPredictor1 = dofAppPrms->inter_predictor[0];
         dof_obj->dofPrms.mPredictor2 = dofAppPrms->inter_predictor[1];
@@ -1285,14 +1285,14 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofUpdateCfgPrms: Set Parameter request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
             memcpy(&dof_obj->dofAppPrms, dofAppPrms,
                                             sizeof(tivx_dmpac_dof_params_t));
 
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
 
@@ -1303,17 +1303,17 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
 static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
                         tivx_dmpac_dof_sof_params_t *sofAppPrms)
 {
-    vx_status                    status = VX_SUCCESS;
+    vx_status                    status = (vx_status)VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
 
     if(NULL == sofAppPrms)
     {
         VX_PRINT(VX_ZONE_ERROR,
                         "tivxDmpacDofUpdateSofPrms: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         dof_obj->dofPrms.coreCfg.maxMVsInSof = sofAppPrms->sof_max_pix_in_row;
         dof_obj->dofPrms.flowVectorHeight = sofAppPrms->sof_fv_height;
@@ -1324,7 +1324,7 @@ static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofUpdateSofPrms: Set Parameter request failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -1345,7 +1345,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
 {
     uint32_t                            idx;
     uint32_t                            cnt;
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
     int32_t                             fvid2_status = FVID2_SOK;
     tivx_dmpac_dof_cs_tree_params_t    *cs_prms;
     Dof_ConfScoreParam                  csPrms;
@@ -1355,10 +1355,10 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofSetCsPrms: Invalid Input\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
@@ -1394,14 +1394,14 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacDofSetCsPrms: Set CS parameter request failed\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofSetCsPrms: Invalid Argument\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -1418,7 +1418,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
 static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
-    vx_status                           status = VX_SUCCESS;
+    vx_status                           status = (vx_status)VX_SUCCESS;
 
     if (NULL != scalar_obj_desc)
     {
@@ -1428,7 +1428,7 @@ static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofGetErrStatus: Null argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -1437,7 +1437,7 @@ static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
 static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
                                tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
-    vx_status                                status = VX_SUCCESS;
+    vx_status                                status = (vx_status)VX_SUCCESS;
     int32_t                                  fvid2_status = FVID2_SOK;
     Vhwa_HtsLimiter                          hts_limit;
     tivx_dmpac_dof_hts_bw_limit_params_t    *app_hts_prms;
@@ -1447,10 +1447,10 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofSetHtsBwLimit: Invalid Argument\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
@@ -1472,14 +1472,14 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxDmpacDofSetHtsBwLimit: Set HTS limit request failed\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofSetRdBwLimit: Invalid Argument\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

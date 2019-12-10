@@ -149,13 +149,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
     tivx_obj_desc_user_data_object_t *sigmas_desc;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *output_desc;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *configuration_target_ptr;
         void *input_target_ptr;
@@ -170,13 +170,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxVpacNfBilateralParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
             input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
@@ -209,12 +209,12 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
             if (0 != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 #endif
 
         }
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
 
             lse_reformat_out(input_desc, output_desc, output_target_ptr, prms->dst16, 12, 0);
@@ -242,12 +242,12 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         tivxVpacNfBilateralParams *prms = NULL;
@@ -266,19 +266,19 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->dst16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivx_vpac_nf_bilateral_params_t *params;
                 tivx_vpac_nf_bilateral_sigmas_t *sigmas;
@@ -337,10 +337,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxVpacNfBilateralParams));
@@ -362,12 +362,12 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxVpacNfBilateralParams *prms = NULL;
@@ -375,7 +375,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxVpacNfBilateralParams) == size))
         {
             tivxVpacNfBilateralFreeMem(prms);
@@ -387,7 +387,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
 
 void tivxAddTargetKernelVpacNfBilateral(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -396,14 +396,14 @@ void tivxAddTargetKernelVpacNfBilateral(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_NF_BILATERAL_NAME,
@@ -418,10 +418,10 @@ void tivxAddTargetKernelVpacNfBilateral(void)
 
 void tivxRemoveTargetKernelVpacNfBilateral(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_vpac_nf_bilateral_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_nf_bilateral_target_kernel = NULL;
     }

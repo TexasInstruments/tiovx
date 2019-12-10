@@ -53,7 +53,7 @@ tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
 vx_status tivxPlatformInit(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i = 0, shmSize = 0;
     int32_t retVal;
 
@@ -71,15 +71,15 @@ vx_status tivxPlatformInit(void)
     {
         /* insufficient shared memory size */
         VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: insufficient shared memory size\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 tivxPlatformDeInit();
                 break;
@@ -97,7 +97,7 @@ vx_status tivxPlatformInit(void)
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: POSIX semaphore create failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 

@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
@@ -96,11 +96,11 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
     if((num != TIVX_KERNEL_DISPLAY_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX];
         in_image      = (vx_image)parameters[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
@@ -108,7 +108,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
@@ -123,12 +123,12 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((configuration_size != sizeof(tivx_display_params_t)) ||
             (strncmp(configuration_name, "tivx_display_params_t", sizeof(configuration_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an user_data_object of type:\n tivx_display_params_t \n");
         }
 
@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
                 (VX_DF_IMAGE_U8 != in_image_fmt) &&
                 (TIVX_DF_IMAGE_RGB565 != in_image_fmt) )
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'in_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_RGB565 or TIVX_DF_IMAGE_U16 or TIVX_DF_IMAGE_U8\n");
             }
         }
@@ -155,16 +155,16 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ((num_params != TIVX_KERNEL_DISPLAY_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -194,12 +194,12 @@ vx_status tivxAddKernelDisplay(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -213,7 +213,7 @@ vx_status tivxAddKernelDisplay(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -226,7 +226,7 @@ vx_status tivxAddKernelDisplay(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -236,17 +236,17 @@ vx_status tivxAddKernelDisplay(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

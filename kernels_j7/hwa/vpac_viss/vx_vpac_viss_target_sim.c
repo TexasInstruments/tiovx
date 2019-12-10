@@ -177,8 +177,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-    vx_status dcc_status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status dcc_status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
@@ -197,10 +197,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
 
@@ -218,14 +218,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxVpacVissParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         int32_t i;
         void *configuration_target_ptr;
@@ -711,8 +711,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-    vx_status dcc_status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status dcc_status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
     tivx_obj_desc_image_t *y12_desc;
@@ -729,10 +729,10 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         tivxVpacVissParams *prms = NULL;
         tivx_vpac_viss_params_t *params;
@@ -760,14 +760,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             if(NULL == prms->dcc_input_params)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
             prms->dcc_output_params = (dcc_parser_output_params_t *)tivxMemAlloc(sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
             if(NULL == prms->dcc_output_params)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
             prms->buffer_size = (width * height) * 2;
@@ -775,124 +775,124 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             prms->raw0_16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->raw0_16)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status) /* always allocate as per cmodel */
+            if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
             {
                 prms->raw1_16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->raw1_16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status) /* always allocate as per cmodel */
+            if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
             {
                 prms->raw2_16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->raw2_16)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_rawfe_raw_out = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_rawfe_raw_out)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_rawfe_h3a_out = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_rawfe_h3a_out)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_nsf4v_out = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_nsf4v_out)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_cfa_in)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
             for (i = 0; i < FLXD_NUM_FIR; i++)
             {
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     prms->scratch_cfa_out[i] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                     if (NULL == prms->scratch_cfa_out[i])
                     {
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
                 }
             }
 
             for (i = 0; i < 8; i++)
             {
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     prms->scratch_cc_out[i] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                     if (NULL == prms->scratch_cc_out[i])
                     {
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_hist = tivxMemAlloc(256*sizeof(uint32_t), TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_hist)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_ee_in = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_ee_in)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_ee_out = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_ee_out)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->scratch_ee_shift_out = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_ee_shift_out)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 void *configuration_target_ptr;
 
@@ -904,7 +904,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 if(NULL != dcc_desc)
                 {
@@ -929,14 +929,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         }
                         else
                         {
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
 
                         tivxMemBufferUnmap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
                     }
                     else
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
                 else
@@ -1048,24 +1048,24 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
                                                  max_h3a_out_buffer_size, TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES);
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->scratch_aew_result = tivxMemAlloc(prms->aew_buffer_size, TIVX_MEM_EXTERNAL);
                         if (NULL == prms->scratch_aew_result)
                         {
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->scratch_af_result = tivxMemAlloc(prms->af_buffer_size, TIVX_MEM_EXTERNAL);
                         if (NULL == prms->scratch_af_result)
                         {
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
                 }
@@ -1291,10 +1291,10 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxVpacVissParams));
@@ -1316,17 +1316,17 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
         tivxVpacVissParams *prms = NULL;
@@ -1334,7 +1334,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxVpacVissParams) == size))
         {
             tivxVpacVissFreeMem(prms);
@@ -1346,7 +1346,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 
 void tivxAddTargetKernelVpacViss(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -1355,14 +1355,14 @@ void tivxAddTargetKernelVpacViss(void)
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_viss_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_VISS_NAME,
@@ -1377,10 +1377,10 @@ void tivxAddTargetKernelVpacViss(void)
 
 void tivxRemoveTargetKernelVpacViss(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_vpac_viss_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_vpac_viss_target_kernel = NULL;
     }
