@@ -16,7 +16,7 @@
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL == mem_ptr) || (0U == size))
     {
@@ -28,7 +28,7 @@ vx_status tivxMemBufferAlloc(
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
         }
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -44,7 +44,7 @@ vx_status tivxMemBufferAlloc(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem host pointer was not allocated\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -70,7 +70,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL == mem_ptr) || (mem_ptr->host_ptr == (uintptr_t)NULL) || (0U == size))
     {
@@ -86,7 +86,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
         }
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -179,7 +179,7 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 
 vx_status tivxMemInit(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return (status);
 }

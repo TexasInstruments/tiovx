@@ -78,7 +78,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc;
     tivx_obj_desc_image_t *dst_desc;
     tivx_obj_desc_scalar_t *gsize_desc;
@@ -89,7 +89,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -143,7 +143,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                 void *gaussOut;
                 uint32_t gaussOut_size;
                 status = tivxGetTargetKernelInstanceContext(kernel, &gaussOut, &gaussOut_size);
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     pGauss = (uint8_t*)(gaussOut);
                     status |= VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
@@ -159,7 +159,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr,
@@ -178,7 +178,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     tivx_obj_desc_image_t *src_desc;
@@ -187,7 +187,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
 
     if (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -195,13 +195,13 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
         gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
@@ -221,7 +221,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
 
             if (NULL == temp_ptr)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
@@ -242,7 +242,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     uint32_t temp_ptr_size;
@@ -251,7 +251,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
 
     if (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -259,13 +259,13 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
         gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
@@ -282,7 +282,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
@@ -296,7 +296,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
 
 void tivxAddTargetKernelHalfscaleGaussian(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -305,20 +305,20 @@ void tivxAddTargetKernelHalfscaleGaussian(void)
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     if ( self_cpu == TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_halfscale_gaussian_target_kernel = tivxAddTargetKernel(
                             VX_KERNEL_HALFSCALE_GAUSSIAN,
@@ -333,10 +333,10 @@ void tivxAddTargetKernelHalfscaleGaussian(void)
 
 void tivxRemoveTargetKernelHalfscaleGaussian(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_halfscale_gaussian_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_halfscale_gaussian_target_kernel = NULL;
     }

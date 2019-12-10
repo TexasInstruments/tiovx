@@ -107,7 +107,7 @@ vx_status tivxPlatformInit(void)
     {
         status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-        if ((vx_status)VX_SUCCESS != status)
+        if ((vx_status)(vx_status)VX_SUCCESS != status)
         {
             tivxPlatformDeInit();
             break;

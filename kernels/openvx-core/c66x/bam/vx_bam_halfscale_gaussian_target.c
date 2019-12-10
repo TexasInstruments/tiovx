@@ -109,7 +109,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxHalfScaleGaussianParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *gsize;
@@ -120,7 +120,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
         gsize = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
@@ -129,14 +129,14 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxHalfScaleGaussianParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -208,7 +208,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *gsize;
     tivxHalfScaleGaussianParams *prms = NULL;
@@ -218,12 +218,12 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
@@ -367,7 +367,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
 
                 status = tivxBamInitKernelDetails(&kernel_details_g3, 4, kernel);
 
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     BAM_VXLIB_gaussian_3x3_i8u_o8u_getKernelInfo(
                         NULL, &kernel_details_g3[GAUSSIAN_NODE].kernel_info);
@@ -405,15 +405,15 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxHalfScaleGaussianParams));
@@ -434,7 +434,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxHalfScaleGaussianParams *prms = NULL;
     tivx_obj_desc_scalar_t *gsize;
@@ -442,12 +442,12 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxHalfScaleGaussianParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);

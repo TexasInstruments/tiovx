@@ -200,7 +200,7 @@ void vx_tutorial_graph_image_gradients_pytiovx()
     tivxExportGraphToDot(uc.graph_0, ".", "vx_tutorial_graph_image_gradients_pytiovx");
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" Executing graph ...\n");
 

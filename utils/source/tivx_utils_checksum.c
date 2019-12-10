@@ -66,7 +66,7 @@
 
 uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
 {
-    vx_status                   status = VX_FAILURE;
+    vx_status                   status = (vx_status)VX_FAILURE;
     vx_imagepatch_addressing_t  image_addr;
     vx_map_id                   map_id;
     uint32_t                   *data_ptr;
@@ -91,7 +91,7 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
 
         stride_xby2 = (image_addr.stride_x == 0) ? 3 : (image_addr.stride_x*2);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             for (i = 0U; i < ((image_addr.dim_y * image_addr.stride_y) / 4U); i += (image_addr.stride_y / 4U))
             {

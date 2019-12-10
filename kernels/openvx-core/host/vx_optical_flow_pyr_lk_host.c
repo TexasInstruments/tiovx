@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_pyramid old_images = NULL;
     vx_uint32 old_images_w;
@@ -142,11 +142,11 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         old_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
         new_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_WIDTH, &old_images_w, sizeof(old_images_w)));
         tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_HEIGHT, &old_images_h, sizeof(old_images_h)));
@@ -209,29 +209,29 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != old_images_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_DF_IMAGE_U8 != new_images_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'new_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_TYPE_KEYPOINT != old_points_item_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
         }
 
         if (VX_TYPE_KEYPOINT != new_points_estimates_item_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'new_points_estimates' should be an array of type:\n VX_TYPE_KEYPOINT \n");
         }
 
@@ -239,7 +239,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
         {
             if (VX_TYPE_KEYPOINT != new_points_item_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'new_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
             }
         }
@@ -248,25 +248,25 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             (VX_TERM_CRITERIA_EPSILON != termination_scalar_type) &&
             (VX_TERM_CRITERIA_BOTH != termination_scalar_type))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'termination' should be a scalar of type:\n VX_TERM_CRITERIA_ITERATIONS or VX_TERM_CRITERIA_EPSILON or VX_TERM_CRITERIA_BOTH \n");
         }
 
         if (VX_TYPE_FLOAT32 != epsilon_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'epsilon' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
         if (VX_TYPE_UINT32 != num_iterations_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'num_iterations' should be a scalar of type:\n VX_TYPE_UINT32 \n");
         }
 
         if (VX_TYPE_BOOL != use_initial_estimate_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'use_initial_estimate' should be a scalar of type:\n VX_TYPE_BOOL \n");
         }
     }
@@ -274,35 +274,35 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (old_images_levels != new_images_levels)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_LEVELS\n");
         }
 
         if (old_images_scale != new_images_scale)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_SCALE \n");
         }
 
         if (old_images_w != new_images_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_WIDTH \n");
         }
 
         if (old_images_h != new_images_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_HEIGHT \n");
         }
 
         if (old_points_capacity != new_points_estimates_capacity)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_points' and 'new_points_estimates' should have the same value for VX_ARRAY_CAPACITY \n");
         }
 
@@ -310,7 +310,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
         {
             if (old_points_capacity != new_points_capacity)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'old_points' and 'new_points' should have the same value for VX_ARRAY_CAPACITY \n");
             }
         }
@@ -319,29 +319,29 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 #if 0
         if (TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM < window_dimension_val)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'window_dimension' must not be greater than VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION \n");
         }
 #endif
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED != border.mode)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for optical flow \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity));
@@ -356,7 +356,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
     vx_pyramid old_images = NULL;
     vx_size old_images_levels;
@@ -383,17 +383,17 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
         || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         old_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
         new_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
 
@@ -407,16 +407,16 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
 
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (old_images_levels != new_images_levels)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_LEVELS\n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -458,12 +458,12 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -477,7 +477,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -490,7 +490,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -500,7 +500,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -510,7 +510,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -520,7 +520,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -530,7 +530,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -540,7 +540,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -550,7 +550,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -560,7 +560,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -570,7 +570,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -579,17 +579,17 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

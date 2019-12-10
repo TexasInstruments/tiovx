@@ -115,7 +115,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxHistogramParams *prms = NULL;
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_distribution_t *dst;
@@ -125,7 +125,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_INPUT_IDX];
         dst = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
@@ -133,14 +133,14 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxHistogramParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[1];
         void *src_target_ptr;
@@ -174,7 +174,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_distribution_t *dst;
     tivxHistogramParams *prms = NULL;
@@ -183,12 +183,12 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_HISTOGRAM_INPUT_IDX];
@@ -226,10 +226,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxHistogramParams));
@@ -250,19 +250,19 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxHistogramParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxHistogramParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -329,7 +329,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *dist;
     tivxHistogramParams *prms = NULL;
 
@@ -337,7 +337,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dist = (tivx_obj_desc_distribution_t *)obj_desc[
             TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
@@ -349,10 +349,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         if ((NULL == kernel_params) || (NULL == prms) ||
             (sizeof(BAM_VXLIB_histogram_i8u_o32u_params) != *size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             memset(prms, 0, sizeof(tivxHistogramParams));
 
@@ -373,10 +373,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxHistogramParams));
@@ -403,7 +403,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxHistogramParams) == size))
     {
         switch (ovx_port)
@@ -414,7 +414,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelHistogramGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }
@@ -426,7 +426,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramPreprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxHistogramParams *prms = NULL;
     tivx_obj_desc_distribution_t *dst;
     uint32_t size;
@@ -436,13 +436,13 @@ static vx_status VX_CALLBACK tivxKernelHistogramPreprocessInBamGraph(
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
         (sizeof(tivxHistogramParams) != size))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *dst_target_ptr;
 
@@ -463,17 +463,17 @@ static vx_status VX_CALLBACK tivxKernelHistogramPostprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *dst;
 
     dst = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
 
     if (NULL == g_handle)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *dst_target_ptr;
 

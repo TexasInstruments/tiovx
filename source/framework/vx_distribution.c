@@ -46,7 +46,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
             dist = (vx_distribution)ownCreateReference(context,
                 VX_TYPE_DISTRIBUTION, VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)dist) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)dist) == (vx_status)VX_SUCCESS) &&
                 (dist->base.type == VX_TYPE_DISTRIBUTION))
             {
                 /* assign refernce type specific callback's */
@@ -61,10 +61,10 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 {
                     vxReleaseDistribution(&dist);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate dist object descriptor\n");
                     dist = (vx_distribution)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -94,7 +94,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)
 vx_status VX_API_CALL vxQueryDistribution(
     vx_distribution dist, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
@@ -105,7 +105,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     if (obj_desc == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: Invalid Object Descriptor! \n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -120,7 +120,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution dimensions query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DISTRIBUTION_OFFSET:
@@ -131,7 +131,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution offset query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DISTRIBUTION_RANGE:
@@ -142,7 +142,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution range query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DISTRIBUTION_BINS:
@@ -153,7 +153,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution bins query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DISTRIBUTION_WINDOW:
@@ -164,7 +164,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution window query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DISTRIBUTION_SIZE:
@@ -175,12 +175,12 @@ vx_status VX_API_CALL vxQueryDistribution(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: distribution size query failed \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryDistribution: invalid attribute \n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -191,7 +191,7 @@ vx_status VX_API_CALL vxQueryDistribution(
 vx_status VX_API_CALL vxCopyDistribution(
     vx_distribution dist, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 size;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
@@ -203,14 +203,14 @@ vx_status VX_API_CALL vxCopyDistribution(
     if (obj_desc == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: Invalid Object Descriptor! \n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: user_mem_type is not VX_MEMORY_TYPE_HOST\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
@@ -218,17 +218,17 @@ vx_status VX_API_CALL vxCopyDistribution(
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: Memory still allocated\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == user_ptr)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: user pointer is NULL\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         size = obj_desc->mem_size;
 
@@ -247,7 +247,7 @@ vx_status VX_API_CALL vxCopyDistribution(
         {
             status = ownAllocDistributionBuffer(&dist->base);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -267,7 +267,7 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_distribution dist, vx_map_id *map_id, void **ptr, vx_enum usage, vx_enum mem_type,
     vx_bitfield flags)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
@@ -278,7 +278,7 @@ vx_status VX_API_CALL vxMapDistribution(
     if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapDistribution: object descriptor is NULL or host ptr is NULL\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -297,7 +297,7 @@ vx_status VX_API_CALL vxMapDistribution(
 
 vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
@@ -308,7 +308,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxUnmapDistribution: object descriptor is NULL or host ptr is NULL\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -322,7 +322,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
 
 static vx_status ownAllocDistributionBuffer(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
     if(ref->type == VX_TYPE_DISTRIBUTION)
@@ -341,7 +341,7 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR, "ownAllocDistributionBuffer: could not allocate memory\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
                 else
                 {
@@ -355,13 +355,13 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "ownAllocDistributionBuffer: object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownAllocDistributionBuffer: reference type is not distribution\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -385,7 +385,7 @@ static vx_status ownDestructDistribution(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 

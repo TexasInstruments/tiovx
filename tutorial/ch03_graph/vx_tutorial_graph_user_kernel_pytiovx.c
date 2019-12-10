@@ -200,13 +200,13 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
      * \code
      */
     status = phase_rgb_user_kernel_add(context, add_as_target_kernel);
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" vx_tutorial_graph_user_kernel_pytiovx: ERROR: unable to add user kernel !!!\n");
     }
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Create the OpenVX use-case using the generated create API.
@@ -258,7 +258,7 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
         tivxExportGraphToDot(uc.graph_0, ".", "vx_tutorial_graph_user_kernel_pytiovx");
         /** \endcode */
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             printf(" Executing graph ...\n");
 

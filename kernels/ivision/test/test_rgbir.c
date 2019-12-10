@@ -95,7 +95,7 @@ static void CheckOutput(vx_image outBayer, vx_image outIR)
   status= vxGetValidRegionImage(outBayer, &rect);
   status|= vxMapImagePatch(outBayer, &rect, 0, &map_id, &addr_pattern, &pOut, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     for (y=0; y < addr_pattern.dim_y; y++)
     {
@@ -110,7 +110,7 @@ static void CheckOutput(vx_image outBayer, vx_image outIR)
     status= vxGetValidRegionImage(outIR, &rect);
     status|= vxMapImagePatch(outIR, &rect, 0, &map_id, &addr_pattern, &pOut, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       for (y=0; y < addr_pattern.dim_y; y++)
       {

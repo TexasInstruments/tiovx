@@ -77,7 +77,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src;
     vx_uint8 *src_addr;
     VXLIB_bufParams2D_t vxlib_src;
@@ -88,7 +88,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
 
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -96,11 +96,11 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *arr0_target_ptr = NULL;
@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         }
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         if (NULL != sc[2U])
@@ -218,14 +218,14 @@ static vx_status VX_CALLBACK tivxKernelMmlCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelMmlDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelMinMaxLoc(void)

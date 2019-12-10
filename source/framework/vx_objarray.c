@@ -74,7 +74,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
     vx_context context, vx_reference exemplar, vx_size count)
 {
     vx_object_array objarr = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (NULL != exemplar))
@@ -85,7 +85,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
             objarr = (vx_object_array)ownCreateReference(
                 context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)objarr) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
                 (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
@@ -100,11 +100,11 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 {
                     vxReleaseObjectArray(&objarr);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
                     VX_PRINT(VX_ZONE_WARNING, "vxCreateObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -118,15 +118,15 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
 
-                    if(status != VX_SUCCESS)
+                    if(status != (vx_status)VX_SUCCESS)
                     {
                         vxReleaseObjectArray(&objarr);
 
-                        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
                         VX_PRINT(VX_ZONE_ERROR,"vxCreateObjectArray: Could not allocate objarr object descriptor\n");
                         objarr = (vx_object_array)ownGetErrorObject(
-                            context, VX_ERROR_NO_RESOURCES);
+                            context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
                 }
             }
@@ -154,7 +154,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
             objarr = (vx_object_array)ownCreateReference(
                 context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)objarr) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
                 (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
@@ -169,11 +169,11 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 {
                     vxReleaseObjectArray(&objarr);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
                     VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -221,7 +221,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
 vx_status VX_API_CALL vxQueryObjectArray(
     vx_object_array objarr, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         ||
@@ -229,7 +229,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
         )
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Invalid object array reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -246,7 +246,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Query object array item type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_OBJECT_ARRAY_NUMITEMS:
@@ -260,12 +260,12 @@ vx_status VX_API_CALL vxQueryObjectArray(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Query object array num items failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Invalid query attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -276,7 +276,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 static vx_status ownInitObjArrayFromObject(
     vx_context context, vx_object_array objarr, vx_reference exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref;
     tivx_obj_desc_object_array_t *obj_desc =
         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
@@ -287,23 +287,23 @@ static vx_status ownInitObjArrayFromObject(
     {
         ref = ownCreateReferenceFromExemplar(context, exemplar);
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
         if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"ownInitObjArrayFromObject: Invalid reference type\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             status = ownAddRefToObjArray(context, objarr, ref, i);
         }
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             break;
         }
     }
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         ownReleaseRefFromObjArray(objarr, i);
     }
@@ -313,9 +313,9 @@ static vx_status ownInitObjArrayFromObject(
 
 static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr, vx_reference ref, uint32_t i)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    if (vxGetStatus(ref) == VX_SUCCESS)
+    if (vxGetStatus(ref) == (vx_status)VX_SUCCESS)
     {
         tivx_obj_desc_object_array_t *obj_desc =
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
@@ -335,9 +335,9 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR,"ownAddRefToObjArray: Could not allocate image object descriptor\n");
-        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
            "Could not allocate image object descriptor\n");
    }
 
@@ -377,12 +377,12 @@ static vx_status ownDestructObjArray(vx_reference ref)
             tivxObjDescFree(&objarr->base.obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
     vx_object_array objarr = (vx_object_array)objarr_ref;
     tivx_obj_desc_object_array_t *obj_desc = NULL;
@@ -399,13 +399,13 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
 
                 if (ref)
                 {
-                    status = VX_SUCCESS;
+                    status = (vx_status)VX_SUCCESS;
                     if(ref->mem_alloc_callback)
                     {
                         status = ref->mem_alloc_callback(ref);
                     }
 
-                    if (VX_SUCCESS != status)
+                    if ((vx_status)VX_SUCCESS != status)
                     {
                         break;
                     }
@@ -413,20 +413,20 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Object array reference is NULL for %d num_item\n", i);
-                    status = VX_ERROR_INVALID_VALUE;
+                    status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Object array object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Data type is not Object Array\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;

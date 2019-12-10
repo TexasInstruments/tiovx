@@ -108,7 +108,7 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxDilateParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
@@ -117,7 +117,7 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Process(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_DILATE3X3_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DILATE3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -126,14 +126,14 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Process(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxDilateParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -155,7 +155,7 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Process(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Create(
     uint16_t num_params, void *priv_arg)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxDilateParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -174,12 +174,12 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Create(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_DILATE3X3_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_DILATE3X3_INPUT_IDX];
@@ -216,10 +216,10 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Create(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxDilateParams));
@@ -240,19 +240,19 @@ static vx_status VX_CALLBACK tivxKernelDilate3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxDilateParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_DILATE3X3_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxDilateParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -319,14 +319,14 @@ static vx_status VX_CALLBACK tivxKernelDilateCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxDilateParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_DILATE3X3_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxDilateParams), TIVX_MEM_EXTERNAL);
 
@@ -347,10 +347,10 @@ static vx_status VX_CALLBACK tivxKernelDilateCreateInBamGraph(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxDilateParams));
@@ -377,7 +377,7 @@ static vx_status VX_CALLBACK tivxKernelDilateGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxDilateParams) == size))
     {
         switch (ovx_port)
@@ -392,7 +392,7 @@ static vx_status VX_CALLBACK tivxKernelDilateGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelDilateGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

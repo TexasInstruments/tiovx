@@ -118,7 +118,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
 
     if ((num_params != PHASE_RGB_MAX_PARAMS)
@@ -126,7 +126,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
         || (NULL == obj_desc[PHASE_RGB_OUT0_IMG_IDX])
         )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -225,7 +225,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
  */
 vx_status VX_CALLBACK vxTutotrialPhaseRgbCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -240,7 +240,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbCreate(tivx_target_kernel_instance kern
  */
 vx_status VX_CALLBACK vxTutotrialPhaseRgbDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -257,7 +257,7 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbDelete(tivx_target_kernel_instance kern
 vx_status VX_CALLBACK vxTutotrialPhaseRgbControl(tivx_target_kernel_instance kernel,
     uint32_t replicated_node_idx, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -331,7 +331,7 @@ void vxTutorialAddTargetKernelPhaseRgb(void)
  */
 void vxTutorialRemoveTargetKernelPhaseRgb(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /**
      * - UnRegister target kernel from TIOVX framework
@@ -344,7 +344,7 @@ void vxTutorialRemoveTargetKernelPhaseRgb(void)
     status = tivxRemoveTargetKernel(phase_rgb_target_kernel);
     /** \endcode */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         phase_rgb_target_kernel = NULL;
     }

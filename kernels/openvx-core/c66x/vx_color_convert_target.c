@@ -78,7 +78,7 @@ static vx_status tivxKernelColorConvert(
     uint16_t num_params,
     vx_enum kern_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     uint32_t i;
     void *src_addr[4] = {NULL}, *dst_addr[4] = {NULL};
@@ -88,7 +88,7 @@ static vx_status tivxKernelColorConvert(
 
     if (num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -96,12 +96,12 @@ static vx_status tivxKernelColorConvert(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_desc_target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL, NULL, NULL};
         void *dst_desc_target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL, NULL, NULL};
@@ -140,7 +140,7 @@ static vx_status tivxKernelColorConvert(
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBtoNV12_i8u_o8u((uint8_t *)src_addr[0],
                     &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1], &vxlib_dst[1],
@@ -157,7 +157,7 @@ static vx_status tivxKernelColorConvert(
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
                     &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
@@ -173,7 +173,7 @@ static vx_status tivxKernelColorConvert(
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBXtoNV12_i8u_o8u((uint8_t *)src_addr[0],
                     &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
@@ -190,7 +190,7 @@ static vx_status tivxKernelColorConvert(
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
                     &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
@@ -310,12 +310,12 @@ static vx_status tivxKernelColorConvert(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         if (VXLIB_SUCCESS != status)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         for (i = 0; i < src_desc->planes; i++)
@@ -340,14 +340,14 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     tivx_obj_desc_image_t *dst, *src;
 
     if (num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -355,13 +355,13 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
@@ -382,7 +382,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
 
             if (NULL == temp_ptr)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
@@ -399,7 +399,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     uint32_t temp_ptr_size;
@@ -407,7 +407,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
 
     if (num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -415,13 +415,13 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
@@ -438,7 +438,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {

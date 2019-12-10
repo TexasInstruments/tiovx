@@ -88,7 +88,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivxLaplacianPyramidParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst, *low_img;
@@ -101,7 +101,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
     if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -109,12 +109,12 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
@@ -124,7 +124,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((NULL != prms) &&
                 (size == sizeof(tivxLaplacianPyramidParams)))
@@ -136,19 +136,19 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 {
                     if (NULL == prms->img_obj_desc[levels])
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                     }
                 }
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *low_img_target_ptr;
@@ -176,7 +176,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         prms->vxlib_gauss1.data_type = VXLIB_UINT8;
         prms->vxlib_dst.data_type = VXLIB_INT16;
 
-        for (levels = 0; (levels < pmd->num_levels) && (VX_SUCCESS == status);
+        for (levels = 0; (levels < pmd->num_levels) && ((vx_status)VX_SUCCESS == status);
                 levels ++)
         {
             uint32_t buf = levels & 1;
@@ -261,7 +261,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
             if (status != VXLIB_SUCCESS)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -280,14 +280,14 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_image_t *img;
     tivxLaplacianPyramidParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -295,13 +295,13 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
@@ -321,30 +321,30 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
 
             if (NULL == prms->upsample_output)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->gauss_output = tivxMemAlloc(prms->buff_size,
                     TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->gauss_output)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
                         TIVX_MEM_EXTERNAL);
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hsg_output[0] = tivxMemAlloc(prms->buff_size / 4,
                     TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[0])
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->gauss_output, prms->buff_size,
@@ -352,14 +352,14 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hsg_output[1] = tivxMemAlloc(prms->buff_size / 16,
                     TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[1])
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->gauss_output, prms->buff_size,
@@ -373,7 +373,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxSetTargetKernelInstanceContext(kernel, prms,
                     sizeof(tivxLaplacianPyramidParams));
@@ -381,7 +381,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -392,14 +392,14 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivxLaplacianPyramidParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -407,18 +407,18 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxLaplacianPyramidParams) == size))
         {
 

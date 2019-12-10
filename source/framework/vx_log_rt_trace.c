@@ -139,7 +139,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
     uint32_t node_id, pipe_id, target_id;
     #define TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH  (64u)
     vx_enum targets[TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH];
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if (   (NULL != graph)
@@ -226,7 +226,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid parameters or graph node not verified");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
 }

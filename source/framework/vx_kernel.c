@@ -32,7 +32,7 @@
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&((*kernel)->base), VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
@@ -41,14 +41,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxReleaseKernel: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kern) &&
         (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
@@ -63,7 +63,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel parameters failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_KERNEL_NAME:
@@ -74,7 +74,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel name failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_KERNEL_ENUM:
@@ -85,7 +85,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel enum failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_KERNEL_LOCAL_DATA_SIZE:
@@ -96,7 +96,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel local data size failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_KERNEL_PIPEUP_OUTPUT_DEPTH:
@@ -107,26 +107,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel local data size failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Invalid query attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enum attribute, const void * ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
@@ -140,7 +140,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set local data size failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_KERNEL_PIPEUP_OUTPUT_DEPTH:
@@ -156,26 +156,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set pipeup buffers failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Invalid set kernel attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) ==
             (vx_bool)vx_true_e))
@@ -187,7 +187,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
         {
             /* kernel removal is locked, return error */
             VX_PRINT(VX_ZONE_ERROR, "vxRemoveKernel: Kernel is locked\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
         {
@@ -200,7 +200,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxRemoveKernel: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
@@ -211,7 +211,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                                         vx_enum data_type,
                                         vx_enum state)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
@@ -224,7 +224,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                  (ownIsValidState(state) == (vx_bool)vx_false_e)) ||
                  ((data_type == VX_TYPE_DELAY) && (dir != VX_INPUT)))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 if (ownIsValidType(data_type) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid data type\n");
@@ -248,20 +248,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                 kern->signature.types[index] = data_type;
                 kern->signature.states[index] = state;
                 tivxLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", kern->signature.num_parameters);
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Index value is greater than the number of parameters\n");
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: May need to increase the value of TIVX_KERNEL_MAX_PARAMS in tiovx/include/tivx_config.h\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
@@ -293,7 +293,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
             ))
         {
             kernel = (vx_kernel)ownCreateReference(context, VX_TYPE_KERNEL, VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)kernel) == VX_SUCCESS) && (kernel->base.type == VX_TYPE_KERNEL))
+            if ((vxGetStatus((vx_reference)kernel) == (vx_status)VX_SUCCESS) && (kernel->base.type == VX_TYPE_KERNEL))
             {
                 strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
                 kernel->name[VX_MAX_KERNEL_NAME-1]=0;
@@ -335,7 +335,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
         }
         else
         {
-            kernel = (vx_kernel)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+            kernel = (vx_kernel)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }
     return kernel;
@@ -343,7 +343,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
 
 VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
@@ -356,26 +356,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
                 if (kernel->signature.directions[p] < VX_INPUT)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Kernel signature directions less than VX_INPUT\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if (kernel->signature.directions[p] > VX_BIDIRECTIONAL)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Kernel signature directions greater than VX_BIDIRECTIONAL\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Invalid kernel signature type\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
                 }
             }
-            if (status == VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS)
             {
                 status = ownAddKernelToContext(kernel->base.context, kernel);
             }
@@ -383,20 +383,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Number of parameters greater than maximum allowable\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const char *target_name)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
@@ -411,7 +411,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
         }
         else
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Number of targets greater than maximum allowable\n");
             VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: May need to increase the value of TIVX_MAX_TARGETS_PER_KERNEL in tiovx/include/tivx_config.h\n");
         }
@@ -419,14 +419,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint32_t num_sink_bufs)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
@@ -436,7 +436,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxSetKernelSinkDepth: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }

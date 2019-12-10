@@ -98,7 +98,7 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     uint8_t *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
@@ -110,7 +110,7 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
         (NULL == obj_desc[1U]) || (NULL == kernel) ||
         (NULL == priv_arg))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -122,11 +122,11 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
 
         if ((NULL == src_desc) || (NULL == dst_desc))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         kern_info = (tivxBox3X3KernelInfo *)priv_arg;
 
@@ -138,7 +138,7 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
         if ((NULL == src_desc_target_ptr) ||
             (NULL == dst_desc_target_ptr))
         {
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
 
         if ((src_desc->imagepatch_addr[0U].stride_y <
@@ -146,11 +146,11 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
             (dst_desc->imagepatch_addr[0U].stride_y <
                 dst_desc->imagepatch_addr[0U].dim_x))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc_target_ptr,
@@ -177,7 +177,7 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
         }
         if (VXLIB_SUCCESS != status)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr,
@@ -195,7 +195,7 @@ vx_status VX_CALLBACK tivxBox3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -204,7 +204,7 @@ vx_status VX_CALLBACK tivxBox3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -241,11 +241,11 @@ void tivxAddTargetKernelBox3X3(void)
 
 void tivxRemoveTargetKernelBox3X3(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
         status = tivxRemoveTargetKernel(gTivxBox3X3KernelInfo.target_kernel);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             gTivxBox3X3KernelInfo.target_kernel = NULL;
         }

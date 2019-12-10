@@ -95,7 +95,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_pyramid_t *old_pyramid_desc;
     tivx_obj_desc_pyramid_t *new_pyramid_desc;
     tivx_obj_desc_array_t *prevpts_desc;
@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX])
     )
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((NULL != prms) && (size == sizeof(tivxOpticalFlowPyrLkParams)))
             {
@@ -170,7 +170,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 {
                     if (NULL == prms->img_obj_desc_old[levels])
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                     }
                 }
@@ -184,19 +184,19 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 {
                     if (NULL == prms->img_obj_desc_new[levels])
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                     }
                 }
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *prevpts_target_ptr;
         void *estimatedpts_target_ptr;
@@ -361,7 +361,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_scalar_t *window_dimension_desc;
     tivx_obj_desc_pyramid_t *old_pyramid_desc;
@@ -377,7 +377,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
     if (num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -385,13 +385,13 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
         window_dimension_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
@@ -424,10 +424,10 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
             if (NULL == prms->scratch)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->tracking_buff_size = list_length*sizeof(uint8_t);
 
@@ -436,13 +436,13 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
                 if (NULL == prms->tracking)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->scratch, prms->scratch_buff_size,
                         TIVX_MEM_EXTERNAL);
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->points_size = list_length*sizeof(__float2_t);
 
@@ -451,7 +451,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
                 if (NULL == prms->oldPoints)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->scratch, prms->scratch_buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->tracking, prms->tracking_buff_size,
@@ -459,14 +459,14 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->newPoints = tivxMemAlloc(prms->points_size,
                     TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->newPoints)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->scratch, prms->scratch_buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->tracking, prms->tracking_buff_size,
@@ -476,7 +476,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->sch_size = width*height*sizeof(int16_t);
 
@@ -485,7 +485,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
                 if (NULL == prms->pSchX)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->scratch, prms->scratch_buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->tracking, prms->tracking_buff_size,
@@ -497,14 +497,14 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->pSchY = tivxMemAlloc(prms->sch_size,
                     TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->pSchY)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->scratch, prms->scratch_buff_size,
                         TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->tracking, prms->tracking_buff_size,
@@ -518,7 +518,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxSetTargetKernelInstanceContext(kernel, prms,
                     sizeof(tivxOpticalFlowPyrLkParams));
@@ -526,7 +526,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -538,14 +538,14 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivxOpticalFlowPyrLkParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -553,18 +553,18 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxOpticalFlowPyrLkParams) == size))
         {
 
@@ -606,7 +606,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
 
 void tivxAddTargetKernelOpticalFlowPyrLk(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -615,20 +615,20 @@ void tivxAddTargetKernelOpticalFlowPyrLk(void)
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     if ( self_cpu == TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_optical_flow_pyr_lk_target_kernel = tivxAddTargetKernel(
                             VX_KERNEL_OPTICAL_FLOW_PYR_LK,
@@ -643,10 +643,10 @@ void tivxAddTargetKernelOpticalFlowPyrLk(void)
 
 void tivxRemoveTargetKernelOpticalFlowPyrLk(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_optical_flow_pyr_lk_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_optical_flow_pyr_lk_target_kernel = NULL;
     }

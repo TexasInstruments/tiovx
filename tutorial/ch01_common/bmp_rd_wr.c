@@ -104,7 +104,7 @@ vx_status bmp_file_read(
 
         *bmp_file_context = image;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -114,7 +114,7 @@ vx_status bmp_file_read(
         *data_ptr = NULL;
 
         *bmp_file_context = NULL;
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     return status;
 }
@@ -150,7 +150,7 @@ int32_t bmp_file_write(
     else
         bpp = 0;
 
-    status = VX_FAILURE;
+    status = (vx_status)VX_FAILURE;
     if( bpp > 0)
     {
         image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
@@ -159,7 +159,7 @@ int32_t bmp_file_write(
 
         CT_FreeObject(image);
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     return status;
 }

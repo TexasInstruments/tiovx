@@ -131,7 +131,7 @@ static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context);
 static vx_kernel phase_rgb_user_kernel = NULL;
 
 /** \brief Kernel ID of the registered user kernel. Used to create a node for the kernel function [static global] */
-static vx_enum phase_rgb_user_kernel_id = VX_ERROR_INVALID_PARAMETERS;
+static vx_enum phase_rgb_user_kernel_id = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
 
 /**
@@ -169,7 +169,7 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
      */
     status = vxGetStatus((vx_reference)kernel);
     /** \endcode */
-    if ( status == VX_SUCCESS)
+    if ( status == (vx_status)VX_SUCCESS)
     {
         /**
          * - Now define parameters for the kernel
@@ -183,7 +183,7 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
          */
         index = 0;
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -193,7 +193,7 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -208,12 +208,12 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
          * - After all parameters are defined, now the kernel is finalized, i.e it is ready for use.
          * \code
          */
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
         /** \endcode */
-        if( status != VX_SUCCESS)
+        if( status != (vx_status)VX_SUCCESS)
         {
             printf(" phase_rgb_user_kernel_add: ERROR: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
             vxReleaseKernel(&kernel);
@@ -226,7 +226,7 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
         printf(" phase_rgb_user_kernel_add: ERROR: vxAddUserKernel failed (%d)!!!\n", status);
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Set kernel handle to the global user kernel handle
@@ -262,11 +262,11 @@ static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context)
      */
     status = vxAllocateUserKernelId(context, &phase_rgb_user_kernel_id);
     /** \endcode */
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_add_as_user_kernel: ERROR: vxAllocateUserKernelId failed (%d)!!!\n", status);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Register kernel to OpenVX context
@@ -316,11 +316,11 @@ static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
      */
     status = vxAllocateUserKernelId(context, &phase_rgb_user_kernel_id);
     /** \endcode */
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_add_as_target_kernel: ERROR: vxAllocateUserKernelId failed (%d)!!!\n", status);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Register kernel to OpenVX context
@@ -350,7 +350,7 @@ static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
         status = vxGetStatus((vx_reference)kernel);
         /** \endcode */
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             /**
              * - Add supported target's on which this target kernel can be run
@@ -383,12 +383,12 @@ vx_status phase_rgb_user_kernel_remove(vx_context context)
     phase_rgb_user_kernel = NULL;
     /** \endcode */
 
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_remove: Unable to remove kernel (%d)!!!\n", status);
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_remove: SUCCESS !!!\n");
     }
@@ -410,14 +410,14 @@ vx_status phase_rgb_user_kernel_remove(vx_context context)
  *  \param num [in] Number of parameter references
  *  \param metas [in/out] Meta references update with attribute values
  *
- *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_image img[PHASE_RGB_MAX_PARAMS];
     vx_uint32 w[PHASE_RGB_MAX_PARAMS];
     vx_uint32 h[PHASE_RGB_MAX_PARAMS];
@@ -427,7 +427,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
     if (num != PHASE_RGB_MAX_PARAMS)
     {
         printf(" phase_rgb_user_kernel_validate: ERROR: Number of parameters dont match !!!\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     for (i = 0U; i < PHASE_RGB_MAX_PARAMS; i ++)
@@ -438,11 +438,11 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
         if (NULL == img[i])
         {
             printf(" phase_rgb_user_kernel_validate: ERROR: Parameter %d is NULL !!!\n", i);
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
             break;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[PHASE_RGB_IN0_IMG_IDX],
@@ -455,12 +455,12 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             VX_IMAGE_HEIGHT, &h[PHASE_RGB_IN0_IMG_IDX],
             sizeof(vx_uint32));
 
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             printf(" phase_rgb_user_kernel_validate: ERROR: Unable to query input image !!!\n");
         }
     }
-    if ((VX_SUCCESS == status) &&
+    if (((vx_status)VX_SUCCESS == status) &&
         ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             parameters[PHASE_RGB_OUT0_IMG_IDX])))
     {
@@ -475,20 +475,20 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             VX_IMAGE_HEIGHT, &h[PHASE_RGB_OUT0_IMG_IDX],
             sizeof(vx_uint32));
 
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             printf(" phase_rgb_user_kernel_validate: ERROR: Unable to query output image !!!\n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
         if (VX_DF_IMAGE_U8 != fmt[PHASE_RGB_IN0_IMG_IDX] &&
             VX_DF_IMAGE_RGB != fmt[PHASE_RGB_OUT0_IMG_IDX]
             )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             printf(" phase_rgb_user_kernel_validate: ERROR: Input/Output image format not correct !!!\n");
         }
 
@@ -501,13 +501,13 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
                 (h[PHASE_RGB_IN0_IMG_IDX] !=
                  h[PHASE_RGB_OUT0_IMG_IDX]))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 printf(" phase_rgb_user_kernel_validate: ERROR: Input/Output image wxh do not match !!!\n");
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         out_fmt = VX_DF_IMAGE_RGB;
         out_w = w[PHASE_RGB_OUT0_IMG_IDX];
@@ -521,7 +521,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             sizeof(out_h));
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_validate: SUCCESS !!!\n");
     }
@@ -540,14 +540,14 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num)
 {
     printf(" phase_rgb_user_kernel_init: SUCCESS !!!\n");
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 /**
@@ -561,7 +561,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
             const vx_reference parameters[ ],
@@ -570,7 +570,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     vx_image in_image = (vx_image)parameters[PHASE_RGB_IN0_IMG_IDX];
     vx_image out_image = (vx_image)parameters[PHASE_RGB_OUT0_IMG_IDX];
     vx_rectangle_t rect = { 0 };
-    vx_map_id in_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS, out_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS;
+    vx_map_id in_map_id = (vx_map_id)(vx_status)VX_ERROR_INVALID_PARAMETERS, out_map_id = (vx_map_id)(vx_status)VX_ERROR_INVALID_PARAMETERS;
     vx_imagepatch_addressing_t in_image_addr, out_image_addr;
     vx_uint32 out_w=0, out_h=0;
     vx_status status=0;
@@ -588,7 +588,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     rect.end_x   = out_w;
     rect.end_y   = out_h;
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         status = vxMapImagePatch(in_image,
                 &rect,
@@ -599,7 +599,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
                 VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         status = vxMapImagePatch(out_image,
                 &rect,
@@ -609,7 +609,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
                 (void**)&out_data_ptr,
                 VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         vx_uint32 x, y;
 
@@ -651,16 +651,16 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
 
     }
 
-    if(in_map_id!=(vx_map_id)VX_ERROR_INVALID_PARAMETERS)
+    if(in_map_id!=(vx_map_id)(vx_status)VX_ERROR_INVALID_PARAMETERS)
     {
         vxUnmapImagePatch(in_image, in_map_id);
     }
-    if(out_map_id!=(vx_map_id)VX_ERROR_INVALID_PARAMETERS)
+    if(out_map_id!=(vx_map_id)(vx_status)VX_ERROR_INVALID_PARAMETERS)
     {
         vxUnmapImagePatch(out_image, out_map_id);
     }
 
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_run: ERROR: Run failed (%d)!!!\n", status);
     }
@@ -677,14 +677,14 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_deinit(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num)
 {
     printf(" phase_rgb_user_kernel_deinit: SUCCESS !!!\n");
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 /**

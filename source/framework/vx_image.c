@@ -261,13 +261,13 @@ static vx_status ownDestructImage(vx_reference ref)
             ownReleaseReferenceInt((vx_reference *)&image->parent, VX_TYPE_IMAGE, VX_INTERNAL, NULL);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownAllocImageBuffer(vx_reference ref)
 {
     tivx_obj_desc_image_t *obj_desc = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t plane_idx;
 
     if(ref->type == VX_TYPE_IMAGE)
@@ -291,7 +291,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: could not allocate memory\n");
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                             break;
                         }
                         else
@@ -313,13 +313,13 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: reference type is not an image\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -488,14 +488,14 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             /*! should not get here unless there's a bug in the
              * ownIsSupportedFourcc call.
              */
-            vxAddLogEntry((vx_reference)image, VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
+            vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "FourCC format is invalid!\n");
             break;
     }
 }
 
 static vx_status ownIsFreeSubimageAvailable(vx_image image)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t p;
 
     /* check if image can contain subimage */
@@ -509,7 +509,7 @@ static vx_status ownIsFreeSubimageAvailable(vx_image image)
     if(p>=TIVX_IMAGE_MAX_SUBIMAGES)
     {
         VX_PRINT(VX_ZONE_ERROR, "ownIsFreeSubimageAvailable: no subimage is available\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
     return status;
@@ -531,7 +531,7 @@ static vx_image ownCreateImageInt(vx_context context,
             if (ownIsValidDimensions(width, height, color) == (vx_bool)vx_true_e)
             {
                 image = (vx_image)ownCreateReference(context, VX_TYPE_IMAGE, VX_EXTERNAL, &context->base);
-                if ( (vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
+                if ( (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
                 {
                     /* assign refernce type specific callback's */
                     image->base.destructor_callback = &ownDestructImage;
@@ -544,8 +544,8 @@ static vx_image ownCreateImageInt(vx_context context,
                     {
                         vxReleaseImage(&image);
 
-                        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Could not allocate image object descriptor\n");
-                        image = (vx_image)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate image object descriptor\n");
+                        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
                     else
                     {
@@ -558,14 +558,14 @@ static vx_image ownCreateImageInt(vx_context context,
             }
             else
             {
-                vxAddLogEntry((vx_reference)image, VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
-                image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_DIMENSION);
+                vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
+                image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_DIMENSION);
             }
         }
         else
         {
-            vxAddLogEntry((vx_reference)context, VX_ERROR_INVALID_FORMAT, "Requested Image Format was invalid!\n");
-            image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_FORMAT);
+            vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_FORMAT, "Requested Image Format was invalid!\n");
+            image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_FORMAT);
         }
     }
 
@@ -578,7 +578,7 @@ static vx_status ownCopyAndMapCheckParams(
     vx_uint32 plane_index,
     vx_enum usage)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 start_x = rect ? rect->start_x : 0u;
     vx_uint32 start_y = rect ? rect->start_y : 0u;
     vx_uint32 end_x = rect ? rect->end_x : 0u;
@@ -589,64 +589,64 @@ static vx_status ownCopyAndMapCheckParams(
     if ( rect == NULL )
     {
         VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: rectangle parameter is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* bad references */
         if ( ownIsValidImage(image) == (vx_bool)vx_false_e )
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is not valid\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
 
     obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(obj_desc->create_type == TIVX_IMAGE_VIRTUAL)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is virtual\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* more bad parameters */
         if (plane_index >= obj_desc->planes)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: plane index is greater than the image's number of planes\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if (start_y >= end_y)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start y is greater than image end y\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if (start_x >= end_x)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start x is greater than image end x\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* allocate if not already allocated */
         status = ownAllocImageBuffer((vx_reference)image);
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image allocation failed\n");
         }
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         if ( (obj_desc->create_type == TIVX_IMAGE_UNIFORM) && ( (usage == VX_WRITE_ONLY) || (usage == VX_READ_AND_WRITE) ) )
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: Can't write to constant data, only read!\n");
         }
@@ -657,7 +657,7 @@ static vx_status ownCopyAndMapCheckParams(
         {
             /* cannot be accessed by app */
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image cannot be accessed by application\n");
-            status = VX_ERROR_OPTIMIZED_AWAY;
+            status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
     }
 
@@ -716,7 +716,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 wi
     if ((width == 0) || (height == 0) ||
         (ownIsSupportedFourcc(format) == (vx_bool)vx_false_e) || (format == VX_DF_IMAGE_VIRT))
     {
-        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
     }
     else
     {
@@ -736,13 +736,13 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
     if ((addrs[0].dim_x == 0) || (addrs[0].dim_y == 0) ||
         (ownIsSupportedFourcc(color) == (vx_bool)vx_false_e) || (color == VX_DF_IMAGE_VIRT))
     {
-        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
     }
     else
     {
         image = (vx_image)ownCreateImageInt(context, addrs[0].dim_x, addrs[0].dim_y, color, TIVX_IMAGE_FROM_HANDLE);
 
-        if ( (vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
+        if ( (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
         {
             vx_uint32 plane_idx = 0;
 
@@ -757,7 +757,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                     if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < ((((vx_int32)addrs[plane_idx].dim_x * 12)+7)/8)) )
                     {
                         vxReleaseImage(&image);
-                        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         break;
                     }
 
@@ -767,7 +767,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                     if((addrs[plane_idx].stride_x <= 0) || (addrs[plane_idx].stride_y < (addrs[plane_idx].stride_x * (vx_int32)addrs[plane_idx].dim_x) ) )
                     {
                         vxReleaseImage(&image);
-                        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         break;
                     }
                 }
@@ -801,7 +801,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_enum channel)
 {
     vx_image subimage = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t width, height;
     vx_enum format, subimage_format;
     uint16_t channel_plane;
@@ -814,7 +814,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         /* perhaps the parent hasn't been allocated yet? */
-        if(ownAllocImageBuffer((vx_reference)image)==VX_SUCCESS)
+        if(ownAllocImageBuffer((vx_reference)image)==(vx_status)VX_SUCCESS)
         {
             format = obj_desc->format;
 
@@ -828,9 +828,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         (VX_DF_IMAGE_NV12 != format) &&
                         (VX_DF_IMAGE_NV21 != format) )
                     {
-                        subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        subimage = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image format for Y channel\n");
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
                 }
@@ -841,33 +841,33 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                     if ((VX_DF_IMAGE_YUV4 != format) &&
                         (VX_DF_IMAGE_IYUV != format))
                     {
-                        subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        subimage = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                         VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image format for U/V channel\n");
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
                 }
 
                 default:
                 {
-                    subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                    subimage = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                     VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image channel\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
                 }
             }
 
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownIsFreeSubimageAvailable(image);
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: no subimage is available\n");
                     subimage = (vx_image)ownGetErrorObject(context, status);
                 }
             }
 
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 vx_imagepatch_addressing_t *imagepatch_addr;
                 tivx_shared_mem_ptr_t *mem_ptr;
@@ -927,7 +927,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
                 subimage = (vx_image)ownCreateImageInt(context, width, height, subimage_format, TIVX_IMAGE_FROM_CHANNEL);
 
-                if ((vxGetStatus((vx_reference)subimage) == VX_SUCCESS) && (subimage->base.type == VX_TYPE_IMAGE))
+                if ((vxGetStatus((vx_reference)subimage) == (vx_status)VX_SUCCESS) && (subimage->base.type == VX_TYPE_IMAGE))
                 {
                     ownLinkParentSubimage(image, subimage);
 
@@ -963,7 +963,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 {
     vx_image subimage = NULL;
     vx_context context;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t width, height, plane_idx;
     vx_enum format;
     vx_imagepatch_addressing_t *subimage_imagepatch_addr;
@@ -985,29 +985,29 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
             (rect->end_x > obj_desc->width) ||
             (rect->end_y > obj_desc->height))
         {
-            subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+            subimage = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
         else
         {
             /* perhaps the parent hasn't been allocated yet? */
-            if(ownAllocImageBuffer((vx_reference)image)==VX_SUCCESS)
+            if(ownAllocImageBuffer((vx_reference)image)==(vx_status)VX_SUCCESS)
             {
                 format = obj_desc->format;
                 width  = rect->end_x - rect->start_x;
                 height = rect->end_y - rect->start_y;
 
                 status = ownIsFreeSubimageAvailable(image);
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxCreateImageFromROI: no subimage is available\n");
                     subimage = (vx_image)ownGetErrorObject(context, status);
                 }
 
-                if(status==VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS)
                 {
                     subimage = (vx_image)ownCreateImageInt(context, width, height, format, TIVX_IMAGE_FROM_ROI);
 
-                    if ((vxGetStatus((vx_reference)subimage) == VX_SUCCESS) &&
+                    if ((vxGetStatus((vx_reference)subimage) == (vx_status)VX_SUCCESS) &&
                         (subimage->base.type == VX_TYPE_IMAGE))
                     {
                         ownLinkParentSubimage(image, subimage);
@@ -1057,7 +1057,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
         /* for now virtual image is same as normal image */
         image = (vx_image)ownCreateImageInt(graph->base.context,
             width, height, format, TIVX_IMAGE_NORMAL);
-        if ((vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE))
+        if ((vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE))
         {
             ownReferenceSetScope(&image->base, &graph->base);
             image->base.is_virtual = (vx_bool)vx_true_e;
@@ -1074,12 +1074,12 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
 
     if (value == NULL)
     {
-        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+        image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
     }
     else
     {
         image = vxCreateImage(context, width, height, format);
-        if (vxGetStatus((vx_reference)image) == VX_SUCCESS)
+        if (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS)
         {
             vx_uint32 x, y, p;
             vx_size planes = 0;
@@ -1093,7 +1093,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
             for (p = 0; p < planes; p++)
             {
                 status = vxMapImagePatch(image, &rect, p, &map_id, &addr, &base, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
-                if(status==VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS)
                 {
                     if ((format == TIVX_DF_IMAGE_P12) || (format == TIVX_DF_IMAGE_NV12_P12))
                     {
@@ -1261,11 +1261,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxCreateUniformImage: vxMapImagePatch failed\n");
                     vxReleaseImage(&image);
-                    image = (vx_image)ownGetErrorObject(context, VX_FAILURE);
+                    image = (vx_image)ownGetErrorObject(context, (vx_status)VX_FAILURE);
                     break;
                 }
             }
-            if (vxGetStatus((vx_reference)image) == VX_SUCCESS)
+            if (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS)
             {
                 /* lock the image from being modified again! */
                 ((tivx_obj_desc_image_t *)image->base.obj_desc)->create_type =
@@ -1337,12 +1337,12 @@ VX_API_ENTRY void* VX_API_CALL vxFormatImagePatchAddress2d(void *ptr, vx_uint32 
 
 VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rectangle_t *rect)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
         if (NULL != rect)
         {
@@ -1368,7 +1368,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
                 rect->end_x = obj_desc->width;
                 rect->end_y = obj_desc->height;
             }
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
@@ -1380,7 +1380,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, const vx_rectangle_t* rect)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
@@ -1400,12 +1400,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
                     obj_desc->valid_roi.start_y = rect->start_y;
                     obj_desc->valid_roi.end_x   = rect->end_x;
                     obj_desc->valid_roi.end_y   = rect->end_y;
-                    status = VX_SUCCESS;
+                    status = (vx_status)VX_SUCCESS;
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: invalid rectangle dimensions\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     if (!(rect->start_x <= rect->end_x))
                     {
                         VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: rectangle start x is greater than end x\n");
@@ -1430,7 +1430,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
                 obj_desc->valid_roi.start_y = 0;
                 obj_desc->valid_roi.end_x   = obj_desc->width;
                 obj_desc->valid_roi.end_y   = obj_desc->height;
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
             }
         }
     }
@@ -1481,12 +1481,12 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
             }
             else
             {
-                vxAddLogEntry((vx_reference)image, VX_ERROR_INVALID_PARAMETERS, "Plane index %u is out of bounds!", plane_index);
+                vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Plane index %u is out of bounds!", plane_index);
             }
         }
         else
         {
-            vxAddLogEntry((vx_reference)image, VX_ERROR_INVALID_PARAMETERS, "Input rect out of bounds!");
+            vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Input rect out of bounds!");
         }
     }
     return size;
@@ -1494,7 +1494,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
@@ -1510,7 +1510,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image format failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_WIDTH:
@@ -1521,7 +1521,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image width failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_HEIGHT:
@@ -1532,7 +1532,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image height failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_PLANES:
@@ -1543,7 +1543,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image planes failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_SPACE:
@@ -1554,7 +1554,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image space failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_RANGE:
@@ -1565,7 +1565,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image range failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_SIZE:
@@ -1582,7 +1582,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image size failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_IMAGE_MEMORY_TYPE:
@@ -1593,19 +1593,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image memory type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -1613,7 +1613,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidImage(image) == (vx_bool)vx_true_e)
     {
         switch (attribute)
@@ -1627,20 +1627,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid image space\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -1656,7 +1656,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
     vx_enum usage,
     vx_enum mem_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 start_x = rect ? rect->start_x : 0u;
     vx_uint32 start_y = rect ? rect->start_y : 0u;
     vx_uint32 end_x = rect ? rect->end_x : 0u;
@@ -1666,25 +1666,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
     if (user_ptr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User pointer is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if (user_addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User addr is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: invalid usage parameter\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(image, rect, plane_index, usage);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 x;
         vx_uint32 y;
@@ -1707,7 +1707,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         if (user_addr->stride_x < image_addr->stride_x)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User value for stride_x is smaller than minimum needed for image type\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (image_addr->stride_x == 0)
@@ -1717,7 +1717,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
             if (user_addr->stride_x == 1)
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User value for stride_x should be 0 for packed format, or >1 for unpacked format\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else
@@ -1729,7 +1729,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         map_addr = pImageLine;
         map_size = ((end_y - start_y)*image_addr->stride_y)/image_addr->step_y;
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             tivxMemBufferMap(map_addr, map_size, VX_MEMORY_TYPE_HOST, usage);
 
@@ -1900,31 +1900,31 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
     vx_enum mem_type,
     vx_uint32 flags)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (user_ptr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User pointer is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if (user_addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User addr is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if (map_id == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: Map ID is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(image, rect, plane_index, usage);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_imagepatch_addressing_t *image_addr = NULL;
         vx_uint8* map_addr = NULL, *end_addr = NULL, *host_addr = NULL;
@@ -1977,13 +1977,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: No available image maps\n");
                 VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: May need to increase the value of TIVX_IMAGE_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: could not allocate memory\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -1992,16 +1992,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 
 VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id map_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* bad references */
     if (ownIsValidImage(image) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if ((image->base.is_virtual == (vx_bool)vx_true_e)
             &&
@@ -2010,20 +2010,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
         {
             /* cannot be accessed by app */
             VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: image cannot be accessed by application\n");
-            status = VX_ERROR_OPTIMIZED_AWAY;
+            status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(map_id >= TIVX_IMAGE_MAX_MAPS)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: map ID is greater than the maximum image maps\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if( (image->maps[map_id].map_addr!=NULL)
             &&
@@ -2050,7 +2050,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if(image->maps[map_id].map_addr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: map address is null\n");
@@ -2068,7 +2068,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
 VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const new_ptrs[],
     void* prev_ptrs[], vx_size num_planes)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t image_planes;
     vx_uint32 i;
     vx_uint32 p;
@@ -2083,11 +2083,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
         if(num_planes != image_planes)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: number of planes is not equal to the number of image planes\n");
         }
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             if (new_ptrs != NULL)
             {
@@ -2095,24 +2095,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                 {
                     if (new_ptrs[p] == NULL)
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "Plane %d is NULL\n", p);
                     }
                 }
             }
         }
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             if ((prev_ptrs != NULL) && (image->parent != NULL))
             {
                 /* do not return prev pointers for subimages */
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Previous pointers are not returned for subimages\n");
             }
         }
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             if ((prev_ptrs != NULL) && (image->parent == NULL))
             {
@@ -2167,7 +2167,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                         {
                             /* Should not hit this condition */
                             VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Invalid image create type\n");
-                            status = VX_FAILURE;
+                            status = (vx_status)VX_FAILURE;
                         }
                     }
                 }
@@ -2199,7 +2199,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -2208,7 +2208,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 vx_status ownInitVirtualImage(
     vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if ((ownIsValidSpecificReference(&img->base, VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         &&
@@ -2219,7 +2219,7 @@ vx_status ownInitVirtualImage(
             (img->base.is_virtual == (vx_bool)vx_true_e))
         {
             ownInitImage(img, width, height, format);
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
 
         if (!(width > 0))

@@ -154,7 +154,7 @@ static void ownLinkParentSubimage(tivx_raw_image parent, tivx_raw_image subimage
 
 static vx_status ownIsFreeSubimageAvailable(tivx_raw_image image)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t p;
 
     /* check if image can contain subimage */
@@ -168,7 +168,7 @@ static vx_status ownIsFreeSubimageAvailable(tivx_raw_image image)
     if(p>=TIVX_RAW_IMAGE_MAX_SUBIMAGES)
     {
         VX_PRINT(VX_ZONE_ERROR, "ownIsFreeSubimageAvailable: no subimage is available\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
     return status;
@@ -204,13 +204,13 @@ static vx_status ownDestructRawImage(vx_reference ref)
             ownReleaseReferenceInt((vx_reference *)&raw_image->parent, TIVX_TYPE_RAW_IMAGE, VX_INTERNAL, NULL);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownAllocRawImageBuffer(vx_reference ref)
 {
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t exp_idx;
 
     if(ref->type == TIVX_TYPE_RAW_IMAGE)
@@ -242,7 +242,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "ownAllocRawImageBuffer: could not allocate memory\n");
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                             break;
                         }
                         else
@@ -300,13 +300,13 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "ownAllocRawImageBuffer: object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownAllocRawImageBuffer: reference type is not a raw image\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -414,7 +414,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
         {
             raw_image = (tivx_raw_image)ownCreateReference(context, TIVX_TYPE_RAW_IMAGE, VX_EXTERNAL, &context->base);
 
-            if ( (vxGetStatus((vx_reference)raw_image) == VX_SUCCESS) && (raw_image->base.type == TIVX_TYPE_RAW_IMAGE) )
+            if ( (vxGetStatus((vx_reference)raw_image) == (vx_status)VX_SUCCESS) && (raw_image->base.type == TIVX_TYPE_RAW_IMAGE) )
             {
                 /* assign refernce type specific callback's */
                 raw_image->base.destructor_callback = &ownDestructRawImage;
@@ -427,8 +427,8 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
                 {
                     tivxReleaseRawImage(&raw_image);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Could not allocate raw image object descriptor\n");
-                    raw_image = (tivx_raw_image)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate raw image object descriptor\n");
+                    raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -441,8 +441,8 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
         }
         else
         {
-            vxAddLogEntry((vx_reference)context, VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
-            raw_image = (tivx_raw_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+            vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
+            raw_image = (tivx_raw_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }
 
@@ -457,70 +457,70 @@ static vx_status ownCopyAndMapCheckParams(
     vx_enum usage,
     vx_uint32 buffer_select)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
     /* bad parameters */
     if (addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: addr is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if ( (rect == NULL) && (buffer_select == TIVX_RAW_IMAGE_PIXEL_BUFFER) )
     {
         VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: rectangle parameter is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* bad references */
         if ( ownIsValidRawImage(image) == (vx_bool)vx_false_e )
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is not valid\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
 
     obj_desc = (tivx_obj_desc_raw_image_t *)image->base.obj_desc;
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(obj_desc->create_type == TIVX_IMAGE_VIRTUAL)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is virtual\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* more bad parameters */
         if (exposure_index >= obj_desc->params.num_exposures)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: exposure index is greater than the image's number of exposures\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if (buffer_select == TIVX_RAW_IMAGE_PIXEL_BUFFER)
         {
             if (rect->start_y >= rect->end_y)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start y is greater than image end y\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (rect->start_x >= rect->end_x)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start x is greater than image end x\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (rect->end_y > obj_desc->params.height)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image end y is greater than image height\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (rect->end_x > obj_desc->params.width)
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image end x is greater than image width\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         if ( (buffer_select > TIVX_RAW_IMAGE_META_AFTER_BUFFER ) ||
@@ -529,21 +529,21 @@ static vx_status ownCopyAndMapCheckParams(
            )
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: buffer_select is invalid \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* allocate if not already allocated */
         status = ownAllocRawImageBuffer((vx_reference)image);
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image allocation failed\n");
         }
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         if ( (image->base.is_virtual == (vx_bool)vx_true_e)
             &&
@@ -552,7 +552,7 @@ static vx_status ownCopyAndMapCheckParams(
         {
             /* cannot be accessed by app */
             VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image cannot be accessed by application\n");
-            status = VX_ERROR_OPTIMIZED_AWAY;
+            status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
     }
 
@@ -601,7 +601,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image* image)
 
 VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, vx_enum attribute, volatile void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
     if (ownIsValidRawImage(raw_image) == (vx_bool)vx_true_e)
@@ -617,7 +617,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image width failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_HEIGHT:
@@ -628,7 +628,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image height failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_NUM_EXPOSURES:
@@ -639,7 +639,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image num_exposures failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_LINE_INTERLEAVED:
@@ -650,7 +650,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image line_interleaved failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_FORMAT:
@@ -663,7 +663,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image format failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_META_HEIGHT_BEFORE :
@@ -674,7 +674,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image meta height before failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_RAW_IMAGE_META_HEIGHT_AFTER :
@@ -685,19 +685,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: query raw image meta height after failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxQueryRawImage: invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -713,27 +713,27 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
     vx_enum mem_type,
     vx_enum buffer_select)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     vx_imagepatch_addressing_t *image_addr = NULL;
 
     if (user_ptr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: User pointer is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: invalid usage parameter\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(raw_image, rect, user_addr, exposure_index, usage, buffer_select);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         obj_desc = (tivx_obj_desc_raw_image_t *)raw_image->base.obj_desc;
 
@@ -744,32 +744,32 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             if ((rect->end_x - rect->start_x) > user_addr->dim_x)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: rect width is greater than image dim_x\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if ((rect->end_y - rect->start_y) > user_addr->dim_y)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: rect height is greater than image dim_y\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (user_addr->dim_x > image_addr->dim_x)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: user dim_x is greater than image dim_x\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (user_addr->dim_y > image_addr->dim_y)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: user dim_y is greater than image dim_y\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             if (user_addr->stride_x < image_addr->stride_x)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: User value for stride_x is smaller than minimum needed for image type\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 x;
         vx_uint32 y;
@@ -802,7 +802,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: invalid buffer_select\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 break;
         }
 
@@ -821,7 +821,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             if (user_addr->stride_x == 1)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: User value for stride_x should be 0 for packed format, or >1 for unpacked format\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else
@@ -843,7 +843,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             if (user_addr->dim_x > map_size)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: dim_x is greater than alloc size of buffer\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else if (buffer_select == TIVX_RAW_IMAGE_META_BEFORE_BUFFER)
@@ -851,7 +851,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             if (user_addr->dim_x > (obj_desc->params.meta_height_before * image_addr->stride_y))
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: dim_x is greater than meta buffer\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else if (buffer_select == TIVX_RAW_IMAGE_META_AFTER_BUFFER)
@@ -859,7 +859,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
             if (user_addr->dim_x > (obj_desc->params.meta_height_after * image_addr->stride_y))
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxCopyRawImagePatch: dim_x is greater than meta buffer\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else
@@ -868,7 +868,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
         }
 
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             tivxMemBufferMap(map_addr, map_size, VX_MEMORY_TYPE_HOST, usage);
 
@@ -1053,26 +1053,26 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
     vx_enum mem_type,
     vx_enum buffer_select)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
 
     if (map_id == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: Map ID is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     if (user_ptr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: ptr is null\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(raw_image, rect, (vx_imagepatch_addressing_t *)user_addr, exposure_index, usage, buffer_select);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_imagepatch_addressing_t *image_addr = NULL;
         vx_uint8* map_addr = NULL, *end_addr = NULL, *host_addr = NULL;
@@ -1100,7 +1100,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: invalid buffer_select\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 break;
         }
 
@@ -1168,13 +1168,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: No available image maps\n");
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: May need to increase the value of TIVX_RAW_IMAGE_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: could not allocate memory\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -1183,16 +1183,16 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
 
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_image, vx_map_id map_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* bad references */
     if (ownIsValidRawImage(raw_image) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxUnmapRawImagePatch: invalid image reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if ((raw_image->base.is_virtual == (vx_bool)vx_true_e)
             &&
@@ -1201,20 +1201,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
         {
             /* cannot be accessed by app */
             VX_PRINT(VX_ZONE_ERROR, "tivxUnmapRawImagePatch: image cannot be accessed by application\n");
-            status = VX_ERROR_OPTIMIZED_AWAY;
+            status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(map_id >= TIVX_RAW_IMAGE_MAX_MAPS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxUnmapRawImagePatch: map ID is greater than the maximum image maps\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if( (raw_image->maps[map_id].map_addr!=NULL)
             &&
@@ -1241,7 +1241,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if(raw_image->maps[map_id].map_addr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxUnmapRawImagePatch: map address is null\n");

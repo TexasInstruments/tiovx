@@ -108,12 +108,12 @@ static vx_status ownDestructGraph(vx_reference ref)
     ownGraphFreeObjDesc(graph);
     tivxEventDelete(&graph->all_graph_completed_event);
 
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownResetGraphPerf(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
@@ -130,14 +130,14 @@ static vx_status ownResetGraphPerf(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownResetGraphPerf: invalid graph object\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
 }
 
 vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
@@ -170,7 +170,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownUpdateGraphPerf: invalid graph object\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
 }
@@ -197,7 +197,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
 
 vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
@@ -216,13 +216,13 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
         {
             VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: invalid graph index\n");
             VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: May need to increase the value of TIVX_GRAPH_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: invalid graph object\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -230,7 +230,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
 
 vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
@@ -246,13 +246,13 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "ownGraphAddSuperNode: May need to increase the value of TIVX_GRAPH_MAX_SUPER_NODES in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownGraphAddSuperNode: invalid graph object\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -260,7 +260,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
 
 vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     uint32_t i;
 
     if ((NULL != graph) &&
@@ -300,7 +300,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->nodes[graph->num_nodes-1] = NULL;
                 graph->num_nodes--;
                 ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 ownGraphSetReverify(graph);
                 break;
             }
@@ -309,7 +309,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownGraphRemoveNode: invalid graph object\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -330,12 +330,12 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 {
     vx_graph  graph = NULL;
     uint32_t idx;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         graph = (vx_graph)ownCreateReference(context, VX_TYPE_GRAPH, VX_EXTERNAL, &context->base);
-        if ( (vxGetStatus((vx_reference)graph) == VX_SUCCESS) && (graph->base.type == VX_TYPE_GRAPH) )
+        if ( (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS) && (graph->base.type == VX_TYPE_GRAPH) )
         {
             graph->base.destructor_callback = &ownDestructGraph;
             graph->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseGraph;
@@ -386,16 +386,16 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->state = VX_GRAPH_STATE_UNVERIFIED;
 
             status = tivxEventCreate(&graph->all_graph_completed_event);
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownGraphCreateQueues(graph);
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 vxReleaseGraph(&graph);
 
                 VX_PRINT(VX_ZONE_ERROR, "vxCreateGraph: Could not create graph\n");
-                graph = (vx_graph)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                graph = (vx_graph)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
             }
 
         }
@@ -406,23 +406,23 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: not supported\n");
-        status = VX_ERROR_NOT_SUPPORTED;
+        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: invalid graph object\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidReference(&graph->base) == (vx_bool)vx_true_e)
     {
         switch (attribute)
@@ -435,7 +435,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph performance failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_GRAPH_STATE:
@@ -446,7 +446,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph state failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_GRAPH_NUMNODES:
@@ -457,7 +457,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of nodes failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_GRAPH_NUMPARAMETERS:
@@ -468,7 +468,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of parameters failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_GRAPH_STREAM_EXECUTIONS:
@@ -479,19 +479,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of streaming executions\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
@@ -503,7 +503,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseGraph(vx_graph *g)
 
 VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_parameter param)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
         (ownIsValidSpecificReference(&param->base, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
     {
@@ -519,13 +519,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].type = VX_TYPE_PARAMETER;
             graph->num_params++;
             tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     else if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
@@ -539,13 +539,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->num_params++;
             tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     else
@@ -557,7 +557,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx_uint32 index, vx_reference value)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
@@ -569,7 +569,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxSetGraphParameterByIndex: index greater than number of parameters allowed\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     return status;
@@ -606,7 +606,7 @@ VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph)
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay delay)
 {
     uint8_t i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_bool is_registered = (vx_bool)vx_false_e;
     vx_bool is_full = (vx_bool)vx_true_e;
 
@@ -645,20 +645,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: no empty slots to register delay\n");
                     VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: May need to increase the value of TIVX_GRAPH_MAX_DELAYS in tiovx/include/TI/tivx_config.h\n");
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: invalid graph reference\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: invalid delay reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -666,13 +666,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
 
 VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         status = vxScheduleGraph(graph);
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             status = vxWaitGraph(graph);
         }
@@ -681,7 +681,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
             VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: schedule graph failed\n");
         }
 
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: wait graph failed\n");
         }
@@ -689,7 +689,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -697,7 +697,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
 
 vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((vx_bool)vx_false_e == vxIsGraphVerified(graph))
     {
@@ -705,7 +705,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         status = vxVerifyGraph(graph);
     }
 
-    if ((status == VX_SUCCESS)
+    if ((status == (vx_status)VX_SUCCESS)
         && ( (graph->state == VX_GRAPH_STATE_VERIFIED) ||
              (graph->state == VX_GRAPH_STATE_COMPLETED) ||
              (graph->state == VX_GRAPH_STATE_ABANDONED)
@@ -733,7 +733,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         if( (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
             ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper: manual mode is not allowed with streaming enabled\n");
         }
         else
@@ -751,7 +751,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
 
 VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
@@ -759,13 +759,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
         if (graph->is_streaming_enabled)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph is already streaming\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
         else
         {
             if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
             {
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
             }
             else
@@ -777,7 +777,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -785,7 +785,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 
 VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL!= graph) &&
         (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH) ==
@@ -799,24 +799,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
              *
              */
             status = tivxEventWait(graph->all_graph_completed_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 if(graph->state == VX_GRAPH_STATE_ABANDONED)
                 {
-                    status = VX_ERROR_GRAPH_ABANDONED;
+                    status = (vx_status)VX_ERROR_GRAPH_ABANDONED;
                 }
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph: graph not in expected state\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -851,14 +851,14 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 
 vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR, "Cannot register event on verified graph\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
@@ -870,21 +870,21 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
 
 vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_parameter_index, vx_uint32 app_value)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR, "Cannot register event on verified graph\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
@@ -899,7 +899,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
             }
 
@@ -908,7 +908,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }

@@ -94,7 +94,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxAccumulateParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
@@ -103,7 +103,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
@@ -111,14 +111,14 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxAccumulateParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[3];
         void *src_target_ptr;
@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedCreate(
     uint16_t num_params, void *priv_arg)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxAccumulateParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_desc;
@@ -160,12 +160,12 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
@@ -206,10 +206,10 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxAccumulateParams));
@@ -230,7 +230,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxAccumulateParams *prms = NULL;
 
@@ -238,12 +238,12 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxAccumulateParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);

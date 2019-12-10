@@ -70,7 +70,7 @@
 
 vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
 
     for (i = 0; i < num_kernels; i ++)
@@ -80,7 +80,7 @@ vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_l
             status = kernel_list[i].add_kernel(context);
         }
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             break;
         }
@@ -91,7 +91,7 @@ vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_l
 
 vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
 
     for (i = 0; i < num_kernels; i ++)
@@ -101,7 +101,7 @@ vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel
             status = kernel_list[i].remove_kernel(context);
         }
 
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             break;
         }
@@ -112,7 +112,7 @@ vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel
 
 vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx_uint8 maxParams)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
 
     for (i = 0U; i < maxParams; i ++)
@@ -120,7 +120,7 @@ vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx
         /* Check for NULL */
         if (NULL == parameters[i])
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter %d is NULL\n", i);
             break;
         }
@@ -132,11 +132,11 @@ vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx
 vx_status tivxKernelValidateInputSize(vx_uint32 inputWidth0, vx_uint32 inputWidth1,
                             vx_uint32 inputHeight0, vx_uint32 inputHeight1)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((inputWidth0 != inputWidth1) || (inputHeight0 != inputHeight1))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Input image sizes do not match\n");
         VX_PRINT(VX_ZONE_ERROR, "Input0 width = %d\n", inputWidth0);
         VX_PRINT(VX_ZONE_ERROR, "Input0 height = %d\n", inputHeight0);
@@ -149,11 +149,11 @@ vx_status tivxKernelValidateInputSize(vx_uint32 inputWidth0, vx_uint32 inputWidt
 
 vx_status tivxKernelValidatePossibleFormat(vx_df_image inputFormat, vx_df_image possibleFormat)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (inputFormat != possibleFormat)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;
@@ -161,11 +161,11 @@ vx_status tivxKernelValidatePossibleFormat(vx_df_image inputFormat, vx_df_image 
 
 vx_status tivxKernelValidateScalarType(vx_enum scalarType, vx_enum expectedScalarType)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (scalarType != expectedScalarType)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Scalar types do not match\n");
     }
 
@@ -175,14 +175,14 @@ vx_status tivxKernelValidateScalarType(vx_enum scalarType, vx_enum expectedScala
 vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 outputWidth, vx_uint32 expectedHeight,
                              vx_uint32 outputHeight, vx_image outputImage)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)outputImage))
     {
         /* Check for frame sizes */
         if ((expectedWidth != outputWidth) || (expectedHeight != outputHeight))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Non-virtual output image size does not match expected image size\n");
             VX_PRINT(VX_ZONE_ERROR, "Expected width = %d\n", expectedWidth);
             VX_PRINT(VX_ZONE_ERROR, "Expected height = %d\n", expectedHeight);
@@ -192,7 +192,7 @@ vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 output
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
         /* Check for valid frame sizes */
         if ( ((expectedWidth == outputWidth) && (expectedHeight == outputHeight)) ||
@@ -200,7 +200,7 @@ vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 output
              ((expectedWidth == outputWidth) && (0 == outputHeight)) ||
              ((0 == outputWidth)             && (expectedHeight == outputHeight)) )
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
@@ -235,13 +235,13 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
 
 vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_rectangle_t out_rect, rect;
     vx_uint32 i;
 
     if (NULL == prms)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -250,14 +250,14 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
             (prms->num_output_images >
                 TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE))
         {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
         }
 
         for (i = 0; i < prms->num_input_images; i ++)
         {
             if (NULL == prms->in_img[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -265,13 +265,13 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
         {
             if (NULL == prms->out_img[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         out_rect.start_y = 0;
         out_rect.start_x = 0;
@@ -282,7 +282,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
         {
             status = vxGetValidRegionImage(prms->in_img[i], &rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
@@ -307,11 +307,11 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
                 }
             }
         }
-        for (i = 0; (i < prms->num_output_images) && (VX_SUCCESS == status); i ++)
+        for (i = 0; (i < prms->num_output_images) && ((vx_status)VX_SUCCESS == status); i ++)
         {
             status = vxGetValidRegionImage(prms->out_img[i], &rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
@@ -338,7 +338,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED == prms->border_mode)
         {
@@ -352,7 +352,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
         {
             status = vxSetImageValidRectangle(prms->out_img[i], &out_rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }

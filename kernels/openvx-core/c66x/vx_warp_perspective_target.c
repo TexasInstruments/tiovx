@@ -78,7 +78,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_matrix_t *mat;
@@ -91,7 +91,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
 
     if (num_params != TIVX_KERNEL_WARP_PERSPECTIVE_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -99,13 +99,13 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *mat_target_ptr;
@@ -158,7 +158,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
         }
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
@@ -176,14 +176,14 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelWarpPerspectiveDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelWarpPerspective(void)

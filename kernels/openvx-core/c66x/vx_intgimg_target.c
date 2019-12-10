@@ -77,7 +77,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr;
     uint32_t *dst_addr;
@@ -87,7 +87,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
@@ -118,12 +118,12 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
@@ -139,14 +139,14 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *dst;
     void *temp_ptr;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
@@ -156,7 +156,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
 
         if (NULL == temp_ptr)
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {
@@ -174,7 +174,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivx_obj_desc_image_t *dst;
     void *temp_ptr;
@@ -182,7 +182,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
@@ -191,7 +191,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
 
         if (NULL == temp_ptr)
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {

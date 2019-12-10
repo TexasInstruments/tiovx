@@ -110,13 +110,13 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
     uint32_t size;
 
     if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -124,23 +124,23 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxMeanStdDevParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         uint8_t *src_addr;
@@ -181,13 +181,13 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
 
     if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -195,16 +195,16 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
 
@@ -234,10 +234,10 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxMeanStdDevParams));
@@ -258,13 +258,13 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxMeanStdDevParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -272,16 +272,16 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMeanStdDevParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -348,14 +348,14 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxMeanStdDevParams), TIVX_MEM_EXTERNAL);
 
@@ -376,10 +376,10 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxMeanStdDevParams));
@@ -406,7 +406,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMeanStdDevParams) == size))
     {
         switch (ovx_port)
@@ -417,7 +417,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelMeanStdDevGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }
@@ -429,20 +429,20 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevPostprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
     uint32_t size;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
         (sizeof(tivxMeanStdDevParams) != size))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_scalar_t *sc[2U];
         VXLIB_F32 mean_val, stddev_val;

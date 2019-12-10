@@ -68,7 +68,7 @@
 
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hMutex;
 
     hMutex = CreateMutex(
@@ -81,7 +81,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
     if(hMutex==NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex creation failed\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
     return (status);
@@ -89,7 +89,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
 vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(mutex && *mutex)
     {
@@ -102,7 +102,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 
 vx_status tivxMutexLock(tivx_mutex mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hMutex = (HANDLE)mutex;
 
     if(hMutex)
@@ -116,12 +116,12 @@ vx_status tivxMutexLock(tivx_mutex mutex)
         if(dwWaitResult != WAIT_OBJECT_0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Wait for single object failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -129,7 +129,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
 vx_status tivxMutexUnlock(tivx_mutex mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hMutex = (HANDLE)mutex;
 
     if(hMutex)
@@ -137,13 +137,13 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
         if( !ReleaseMutex(hMutex) )
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex release failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex handle is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);

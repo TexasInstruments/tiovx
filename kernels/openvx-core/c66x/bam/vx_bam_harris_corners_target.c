@@ -134,7 +134,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivxHarrisCornersParams *prms = NULL;
     tivx_obj_desc_image_t *src;
@@ -147,7 +147,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -156,13 +156,13 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
         arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX];
@@ -174,14 +174,14 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxHarrisCornersParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -206,7 +206,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             status_vxlib = VXLIB_harrisCornersDetect_i32f(prms->hcs_score, &prms->vxlib_score,
                 prms->hcd_corners, prms->hcd_strength,
@@ -216,10 +216,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
 
             if (status_vxlib != VXLIB_SUCCESS)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(prms->rad >= 2.0f)
             {
@@ -230,7 +230,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
 
                 if (status_vxlib != VXLIB_SUCCESS)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -239,7 +239,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (NULL != sc_cnt)
             {
@@ -279,7 +279,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_image_t *img;
     tivxHarrisCornersParams *prms = NULL;
@@ -288,7 +288,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -297,23 +297,23 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details[0], 4, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
@@ -424,10 +424,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
             if (NULL == prms->hcs_score)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 /* Fill in the frame level sizes of buffers here. If the port
                  * is optionally disabled, put NULL */
@@ -442,7 +442,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                     &prms->graph_handle);
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 /* TODO: reduce size to save memory */
                 prms->hcd_sprs_size = prms->vxlib_score.stride_y *
@@ -452,12 +452,12 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                     TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_sprs)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcd_corners_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
@@ -466,11 +466,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                     TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_corners)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcd_strength_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
@@ -479,11 +479,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                     TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_strength)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 vx_float32 radius = sc_dist->data.f32;
 
@@ -501,10 +501,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                         TIVX_MEM_EXTERNAL_SCRATCH);
                     if (NULL == prms->nms_scratch)
                     {
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->nms_corners_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
@@ -513,11 +513,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                             TIVX_MEM_EXTERNAL_SCRATCH);
                         if (NULL == prms->nms_corners)
                         {
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->nms_strength_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
@@ -526,7 +526,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                             TIVX_MEM_EXTERNAL_SCRATCH);
                         if (NULL == prms->nms_strength)
                         {
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
                 }
@@ -542,10 +542,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxHarrisCornersParams));
@@ -566,14 +566,14 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivxHarrisCornersParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -582,18 +582,18 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersDelete(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxHarrisCornersParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);

@@ -68,7 +68,7 @@
 
 vx_status tivxEventCreate(tivx_event *event)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hSem;
 
     hSem = CreateSemaphore(
@@ -82,7 +82,7 @@ vx_status tivxEventCreate(tivx_event *event)
     if(hSem==NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Semaphore creation failed\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
     return (status);
@@ -90,7 +90,7 @@ vx_status tivxEventCreate(tivx_event *event)
 
 vx_status tivxEventDelete(tivx_event *event)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(event && *event)
     {
@@ -103,7 +103,7 @@ vx_status tivxEventDelete(tivx_event *event)
 
 vx_status tivxEventPost(tivx_event event)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hSem = (HANDLE)event;
 
     if(hSem)
@@ -111,13 +111,13 @@ vx_status tivxEventPost(tivx_event event)
         if( !ReleaseSemaphore(hSem, 1, NULL) )
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventPost: Release semaphore failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventPost: Semaphore handle is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);
@@ -125,7 +125,7 @@ vx_status tivxEventPost(tivx_event event)
 
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     HANDLE hSem = (HANDLE)event;
 
     if(hSem)
@@ -149,13 +149,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         if(dwWaitResult != WAIT_OBJECT_0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Wait for single object failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Semaphore handle is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return (status);

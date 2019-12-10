@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_scalar function = NULL;
     vx_enum function_scalar_type;
@@ -111,11 +111,11 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         function = (vx_scalar)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
         input = (vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
@@ -126,7 +126,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxCopyScalar(function, &function_scalar_type, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -153,25 +153,25 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_NONLINEAR_FILTER_MEDIAN != function_scalar_type) &&
             (VX_NONLINEAR_FILTER_MIN != function_scalar_type) &&
             (VX_NONLINEAR_FILTER_MAX != function_scalar_type))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'function' should be a scalar of type:\n VX_NONLINEAR_FILTER_MEDIAN or VX_NONLINEAR_FILTER_MIN or VX_NONLINEAR_FILTER_MAX \n");
         }
 
         if (VX_DF_IMAGE_U8 != input_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_TYPE_UINT8 != mask_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'mask' should be a matrix of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -179,7 +179,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -188,36 +188,36 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (input_h != output_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED != border.mode)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for nonlinear filter \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
@@ -233,7 +233,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
     vx_matrix mask;
     vx_size mask_cols;
@@ -246,22 +246,22 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
         || (NULL == parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         mask = (vx_matrix)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryMatrix(mask, VX_MATRIX_COLUMNS, &mask_cols, sizeof(mask_cols)));
         tivxCheckStatus(&status, vxQueryMatrix(mask, VX_MATRIX_ROWS, &mask_rows, sizeof(mask_rows)));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -291,12 +291,12 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -310,7 +310,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -323,7 +323,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -333,7 +333,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -343,7 +343,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -352,17 +352,17 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

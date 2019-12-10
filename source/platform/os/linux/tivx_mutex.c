@@ -71,7 +71,7 @@ typedef struct _tivx_mutex_t {
 
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     pthread_mutexattr_t mutex_attr;
     tivx_mutex tmp_mutex;
 
@@ -80,7 +80,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
     {
         *mutex = NULL;
         VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex memory allocation failed\n");
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
     else
     {
@@ -93,7 +93,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
             free(tmp_mutex);
             *mutex = NULL;
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex initialization failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {
@@ -107,14 +107,14 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
 vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if(*mutex)
     {
         pthread_mutex_destroy(&(*mutex)->lock);
         free(*mutex);
         *mutex = NULL;
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -122,7 +122,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 
 vx_status tivxMutexLock(tivx_mutex mutex)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(mutex)
     {
@@ -130,7 +130,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Mutex lock failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -139,7 +139,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
 vx_status tivxMutexUnlock(tivx_mutex mutex)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(mutex)
     {
@@ -147,7 +147,7 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex unlock failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 

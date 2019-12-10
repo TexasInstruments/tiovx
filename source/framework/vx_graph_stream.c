@@ -218,7 +218,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
 
 VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
@@ -234,19 +234,19 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: this graph is currently streaming\n");
-                status = VX_ERROR_INVALID_REFERENCE;
+                status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: streaming has not been enabled. Please enable streaming prior to verifying graph\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -254,7 +254,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
 
 VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
@@ -269,14 +269,14 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
         }
         else
         {
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             VX_PRINT(VX_ZONE_ERROR, "vxStopGraphStreaming: Streaming has not been started\n");
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxStopGraphStreaming: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -284,7 +284,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
 
 vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, void *parameter)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
 
@@ -301,7 +301,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
                     vx_graph graph, vx_event_t *event,
                     vx_bool do_not_block)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
@@ -312,7 +312,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"tivxWaitGraphEvent: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -320,14 +320,14 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
 
 vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_node)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         graph->is_streaming_enabled = (vx_bool)vx_true_e;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
 
         if((NULL != trigger_node) &&
            (ownIsValidSpecificReference((vx_reference)trigger_node, VX_TYPE_NODE)))
@@ -347,14 +347,14 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
             if ((vx_bool)vx_false_e == graph->trigger_node_set)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: trigger_node does not belong to graph\n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -362,7 +362,7 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
 
 vx_status ownGraphAllocForStreaming(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_task_create_params_t streamingTaskParams;
 
     if((NULL != graph) &&
@@ -382,7 +382,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
             status = tivxEventQueueCreate(&graph->event_queue);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
 
@@ -396,17 +396,17 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     }
                     else
                     {
-                        status = VX_ERROR_INVALID_REFERENCE;
+                        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: trigger node is not set with pipelining\n");
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         streamingTaskParams.task_main = &tivxStreamingPipeliningTask;
                     }
                     else
                     {
-                        status = VX_ERROR_INVALID_REFERENCE;
+                        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be registered\n");
                     }
                 }
@@ -415,19 +415,19 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     streamingTaskParams.task_main = &tivxStreamingNoPipeliningTask;
                 }
 
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     status = tivxEventCreate(&graph->delete_done);
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         status = tivxEventCreate(&graph->stop_done);
 
-                        if (VX_SUCCESS == status)
+                        if ((vx_status)VX_SUCCESS == status)
                         {
                             status = tivxTaskCreate(&graph->streaming_task_handle, &streamingTaskParams);
 
-                            if (VX_SUCCESS != status)
+                            if ((vx_status)VX_SUCCESS != status)
                             {
                                 VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: streaming task could not be created\n");
                             }
@@ -452,7 +452,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -460,7 +460,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
 vx_status ownGraphVerifyStreamingMode(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
@@ -470,13 +470,13 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
              (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)) )
         {
             VX_PRINT(VX_ZONE_ERROR,"ownGraphVerifyStreamingMode: streaming is not supported with manual or auto pipelining\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownGraphVerifyStreamingMode: invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;

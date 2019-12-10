@@ -69,14 +69,14 @@ static vx_bool ownIsValidBorderMode(vx_enum mode)
  */
 static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_t *kernel_info, uint32_t max_kernels)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_kernel kernel;
     uint32_t num_kernel_info = 0, idx;
 
     if( ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -94,7 +94,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
             if(num_kernel_info > max_kernels)
             {
                 VX_PRINT(VX_ZONE_ERROR,"num kernel info is greater than max kernels\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
                 break;
             }
         }
@@ -107,7 +107,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
 
 static vx_status ownContextCreateCmdObj(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     context->obj_desc_cmd = NULL;
     context->cmd_ack_event = NULL;
@@ -120,7 +120,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"context object descriptor allocation failed\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
     return status;
@@ -128,7 +128,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
 
 static vx_status ownContextDeleteCmdObj(vx_context context)
 {
-    vx_status status = VX_SUCCESS, status1 = VX_SUCCESS, status2 = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS, status1 = (vx_status)VX_SUCCESS, status2 = (vx_status)VX_SUCCESS;
 
     if(context->obj_desc_cmd != NULL)
     {
@@ -138,15 +138,15 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     {
         status2 = tivxEventDelete(&context->cmd_ack_event);
     }
-    if(status1 != VX_SUCCESS)
+    if(status1 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context memory free-ing failed\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
-    else if (status2 != VX_SUCCESS)
+    else if (status2 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context event deletion failed\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -302,18 +302,18 @@ vx_bool ownIsValidContext(vx_context context)
 
 vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -336,7 +336,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
             /* free entry not found */
             VX_PRINT(VX_ZONE_ERROR,"free entry not found\n");
             VX_PRINT(VX_ZONE_ERROR, "ownAddKernelToContext: May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
 
         ownContextUnlock(context);
@@ -347,18 +347,18 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
 
 vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -380,7 +380,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         {
             /* kernel not found */
             VX_PRINT(VX_ZONE_ERROR,"kernel not found\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
 
         ownContextUnlock(context);
@@ -391,14 +391,14 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
 
 vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx_char string[VX_MAX_KERNEL_NAME], vx_bool *is_found)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
     vx_kernel kernel;
 
     if( (ownIsValidContext(context) == (vx_bool)vx_false_e) || (is_found == NULL) )
     {
         VX_PRINT(VX_ZONE_ERROR,"invalid context\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -436,7 +436,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
     uint32_t target_id, uint32_t replicated_node_idx, uint32_t node_cmd_id,
     const uint16_t obj_desc_id[], uint32_t num_obj_desc)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_cmd_t *obj_desc_cmd;
 
@@ -475,19 +475,19 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
         status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             status = tivxEventWait(context->cmd_ack_event,
                 TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
         }
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
-            if (VX_SUCCESS != obj_desc_cmd->cmd_status)
+            if ((vx_status)VX_SUCCESS != obj_desc_cmd->cmd_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "ownContextSendControlCmd: Failed to send object desc\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
 
@@ -495,7 +495,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         if (num_obj_desc >= TIVX_CMD_MAX_OBJ_DESCS)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -513,7 +513,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
 vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     if( (ownIsValidContext(context) == (vx_bool)vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
@@ -542,16 +542,16 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         status = tivxObjDescSend(target_id, context->obj_desc_cmd->base.obj_desc_id);
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
-                if (VX_SUCCESS != context->obj_desc_cmd->cmd_status)
+                if ((vx_status)VX_SUCCESS != context->obj_desc_cmd->cmd_status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Command ack message returned failure cmd_status: %d\n", context->obj_desc_cmd->cmd_status);
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
         }
@@ -565,7 +565,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"invalid parameters\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;
@@ -574,7 +574,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 {
     vx_context context = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
     tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_CONTEXT);
@@ -612,41 +612,41 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 (tivx_reference_release_callback_f)&vxReleaseContext;
 
             status = tivxMutexCreate(&context->lock);
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = tivxMutexCreate(&context->log_lock);
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = tivxEventQueueCreate(&context->event_queue);
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
-                if(status==VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS)
                 {
                     status = ownContextCreateCmdObj(context);
-                    if(status == VX_SUCCESS)
+                    if(status == (vx_status)VX_SUCCESS)
                     {
                         ownIncrementReference(&context->base, VX_EXTERNAL);
                         ownCreateConstErrors(context);
                         g_context_handle = context;
                     }
                 }
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"context objection creation failed\n");
                     tivxMutexDelete(&context->lock);
                     tivxMutexDelete(&context->log_lock);
                 }
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 /* some error context cannot be created */
                 context = NULL;
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* set flag to disallow removal of built kernels
                  * via remove kernel API
@@ -685,7 +685,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context = (c?*c:0);
     vx_uint32 r;
     uint32_t idx;
@@ -780,7 +780,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_CONTEXT);
 
@@ -789,11 +789,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -807,7 +807,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context vendor ID failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_VERSION:
@@ -818,7 +818,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context version failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_MODULES:
@@ -829,7 +829,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context modules failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_REFERENCES:
@@ -840,7 +840,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context references failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_IMPLEMENTATION:
@@ -851,7 +851,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context implementation failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_EXTENSIONS_SIZE:
@@ -862,7 +862,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context extensions size failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_EXTENSIONS:
@@ -873,7 +873,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context extensions failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_CONVOLUTION_MAX_DIMENSION:
@@ -884,7 +884,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context max convolution dimensions failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_MAX_TENSOR_DIMS:
@@ -895,7 +895,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context max tensor dimensions failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_NONLINEAR_MAX_DIMENSION:
@@ -906,7 +906,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context max nonlinear dimensions failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION:
@@ -917,7 +917,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context max optical flow window dimensions failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_IMMEDIATE_BORDER:
@@ -928,7 +928,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context immediate border failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_IMMEDIATE_BORDER_POLICY:
@@ -939,7 +939,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context immediate border policy failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_UNIQUE_KERNELS:
@@ -950,7 +950,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context unique kernels failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_CONTEXT_UNIQUE_KERNEL_TABLE:
@@ -962,11 +962,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query context unique kernel table failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -975,11 +975,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -991,7 +991,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
                     if (ownIsValidBorderMode(config->mode) == (vx_bool)vx_false_e)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"invalid border mode\n");
-                        status = VX_ERROR_INVALID_VALUE;
+                        status = (vx_status)VX_ERROR_INVALID_VALUE;
                     }
                     else
                     {
@@ -1001,12 +1001,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"set context immediate border mode failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"unsupported attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -1015,12 +1015,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
 
 
 VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum directive) {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_context context;
     vx_enum ref_type;
 
     status = vxQueryReference(reference, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type));
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         if (ref_type == VX_TYPE_CONTEXT)
         {
@@ -1033,7 +1033,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
         if (ownIsValidContext(context) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-            status = VX_ERROR_INVALID_REFERENCE;
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
         else
         {
@@ -1053,7 +1053,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"unsupported reference type\n");
-                        status = VX_ERROR_NOT_SUPPORTED;
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                     break;
                 case VX_DIRECTIVE_ENABLE_PERFORMANCE:
@@ -1064,12 +1064,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"unsupported reference type\n");
-                        status = VX_ERROR_NOT_SUPPORTED;
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                     break;
                 default:
                     VX_PRINT(VX_ZONE_ERROR,"unsupported directive type\n");
-                    status = VX_ERROR_NOT_SUPPORTED;
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
             }
         }
@@ -1111,16 +1111,16 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
 
 VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx_enum * pKernelEnumId)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != pKernelEnumId))
     {
         ownContextLock(context);
 
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
             *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER,0) + context->next_dynamic_user_kernel_id++;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
 
         ownContextUnlock(context);
@@ -1130,18 +1130,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
 
 VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context context, vx_enum * pLibraryId)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != pLibraryId))
     {
         ownContextLock(context);
 
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
         {
             *pLibraryId = context->next_dynamic_user_library_id;
             context->next_dynamic_user_library_id =
                 context->next_dynamic_user_library_id + 1u;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
 
         ownContextUnlock(context);
@@ -1151,7 +1151,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, vx_enum target_enum, const char* target_string)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         ownContextLock(context);
@@ -1161,7 +1161,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
             case VX_TARGET_ANY:
                 context->imm_target_enum = VX_TARGET_ANY;
                 memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 break;
 
             case VX_TARGET_STRING:
@@ -1170,18 +1170,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                     context->imm_target_enum = VX_TARGET_STRING;
                     strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string));
                     context->imm_target_string[sizeof(context->imm_target_string) - 1] = '\0';
-                    status = VX_SUCCESS;
+                    status = (vx_status)VX_SUCCESS;
                 }
                 else /* target was not found */
                 {
                     VX_PRINT(VX_ZONE_ERROR,"target was not found\n");
-                    status = VX_ERROR_NOT_SUPPORTED;
+                    status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 }
                 break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR,"unsupported target_enum\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
 

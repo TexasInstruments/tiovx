@@ -117,7 +117,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxChannelCombineParams *prms = NULL;
     tivx_obj_desc_image_t *src0, *src1, *src2, *src3, *dst;
     uint8_t *src0_addr = NULL, *src1_addr = NULL, *src2_addr = NULL, *src3_addr = NULL, *dst_addr[4U] = {NULL};
@@ -129,10 +129,10 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
@@ -143,13 +143,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxChannelCombineParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[6];
         void *src0_target_ptr;
@@ -265,7 +265,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *src2, *src3, *dst;
     tivxChannelCombineParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -286,15 +286,15 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
@@ -481,7 +481,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
                 status = tivxBamInitKernelDetails(&multi_kernel_details[0], 6, kernel);
 
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
                         &multi_kernel_details[CHCOPY_NODE0].kernel_info);
@@ -574,15 +574,15 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxChannelCombineParams));
@@ -602,7 +602,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxChannelCombineParams *prms = NULL;
 
@@ -611,15 +611,15 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineDelete(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxChannelCombineParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -685,7 +685,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
     tivx_bam_kernel_details_t kernel_details[],
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *dst;
     tivxChannelCombineParams *prms = NULL;
 
@@ -695,10 +695,10 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
 
@@ -761,7 +761,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: channelCombine_yuyv_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                     }
 
                 }
@@ -868,16 +868,16 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: unsupported output format found\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: prms mem allocation failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxChannelCombineParams));
@@ -903,7 +903,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineAppendInternalEdges(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxChannelCombineParams) == size))
     {
                         BAM_EdgeParams edge_list[]= {\
@@ -947,7 +947,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxChannelCombineParams) == size))
     {
         switch (ovx_port)
@@ -1066,13 +1066,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineGetNodePort(
                         break;
                     default:
                         VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

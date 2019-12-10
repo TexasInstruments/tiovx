@@ -77,7 +77,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     tivx_obj_desc_scalar_t *sc[3U];
     uint8_t *src0_addr, *src1_addr;
@@ -87,7 +87,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
 
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_MULTIPLY_MAX_PARAMS);
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src0_target_ptr;
         void *src1_target_ptr;
@@ -172,7 +172,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         }
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src0_target_ptr, src0->mem_size[0],
@@ -190,14 +190,14 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelMultiplyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelMultiply(void)

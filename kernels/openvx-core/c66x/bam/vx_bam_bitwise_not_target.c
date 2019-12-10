@@ -110,7 +110,7 @@ static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxNotParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
@@ -119,7 +119,7 @@ static vx_status VX_CALLBACK tivxKernelNotProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NOT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_OUTPUT_IDX];
@@ -127,14 +127,14 @@ static vx_status VX_CALLBACK tivxKernelNotProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxNotParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -155,7 +155,7 @@ static vx_status VX_CALLBACK tivxKernelNotProcess(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxKernelNotCreate(
     uint16_t num_params, void *priv_arg)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxNotParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -175,12 +175,12 @@ static vx_status VX_CALLBACK tivxKernelNotCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NOT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_NOT_INPUT_IDX];
@@ -213,10 +213,10 @@ static vx_status VX_CALLBACK tivxKernelNotCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxNotParams));
@@ -237,7 +237,7 @@ static vx_status VX_CALLBACK tivxKernelNotDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxNotParams *prms = NULL;
 
@@ -245,12 +245,12 @@ static vx_status VX_CALLBACK tivxKernelNotDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NOT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxNotParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -317,14 +317,14 @@ static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxNotParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NOT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
 
@@ -345,10 +345,10 @@ static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxNotParams));
@@ -375,7 +375,7 @@ static vx_status VX_CALLBACK tivxKernelNotGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxNotParams) == size))
     {
         if(ovx_port == TIVX_KERNEL_NOT_INPUT_IDX)
@@ -390,7 +390,7 @@ static vx_status VX_CALLBACK tivxKernelNotGetNodePort(
         }
         else {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelNotGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 

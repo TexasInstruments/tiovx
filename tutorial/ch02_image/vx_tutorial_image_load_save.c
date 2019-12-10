@@ -268,7 +268,7 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
     #endif
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Create OpenVX image object.
@@ -279,14 +279,14 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
          * <b>TIP:</b> In OpenVX whenever an object is created use
          * vxGetStatus() to find if the object creation was successful.
          * The object must be typecasted to vx_reference type when calling
-         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
+         * vxGetStatus() API. If the reference is valid (vx_status)VX_SUCCESS should be
          * returned by vxGetStatus().
          * \code
          */
         image = vxCreateImage(context, width, height, df);
         status = vxGetStatus((vx_reference)image);
         /** \endcode */
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
 
             /**
@@ -371,7 +371,7 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
  * \param filename [in] BMP filename, MUST have extension of .bmp
  * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
  *
- * \return VX_SUCCESS if BMP could be created and saved with data from image object
+ * \return (vx_status)VX_SUCCESS if BMP could be created and saved with data from image object
  */
 vx_status save_image_to_file(char *filename, vx_image image)
 {
@@ -389,7 +389,7 @@ vx_status save_image_to_file(char *filename, vx_image image)
      */
     status = vxGetStatus((vx_reference)image);
     /** \endcode */
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /** - Query image attributes.
          *
@@ -430,7 +430,7 @@ vx_status save_image_to_file(char *filename, vx_image image)
             );
         /** \endcode */
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             /** - Write to BMP file using utility API
              *
@@ -476,7 +476,7 @@ vx_status save_image_to_file(char *filename, vx_image image)
  * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
  *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
- * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
+ * \return (vx_status)VX_SUCCESS if BMP file data could be loaded into the vx_image object.
  */
 vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {
@@ -506,7 +506,7 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
                 &bmp_file_context);
     #endif
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         img_width = img_height = 0;
 
@@ -559,7 +559,7 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         bmp_file_read_release(bmp_file_context);
     }
@@ -662,7 +662,7 @@ vx_matrix create_matrix_from_file(vx_context context, vx_enum data_type, int col
 }
 
 vx_status save_pyramid_to_file(char *filename, vx_pyramid pyr, vx_size levels){
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 index;
     vx_image image;
 

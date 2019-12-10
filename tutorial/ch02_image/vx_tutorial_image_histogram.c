@@ -249,14 +249,14 @@ void vx_tutorial_image_histogram()
     show_node_attributes(node0);
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" Executing graph ...\n");
 
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
          * before this function will pass.
          *
          * \code
@@ -412,7 +412,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
     image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
     /** \endcode */
 
-    if(vxGetStatus((vx_reference)image)==VX_SUCCESS)
+    if(vxGetStatus((vx_reference)image)==(vx_status)VX_SUCCESS)
     {
         vx_size num_bins;
 
@@ -425,7 +425,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
         status = vxQueryDistribution(distribution, VX_DISTRIBUTION_BINS, &num_bins, sizeof(vx_size));
         /** \endcode */
 
-        if(status == VX_SUCCESS && num_bins <=  MAX_BINS)
+        if(status == (vx_status)VX_SUCCESS && num_bins <=  MAX_BINS)
         {
             uint32_t histogram_data[MAX_BINS] = {0};
             uint32_t i, max;
@@ -479,7 +479,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
                 /** \endcode */
 
 
-                if(status==VX_SUCCESS && data_ptr!=NULL)
+                if(status==(vx_status)VX_SUCCESS && data_ptr!=NULL)
                 {
                     uint32_t i, j, k, bin_width;
                     uint8_t *addr0 = NULL, *addr1 = NULL;

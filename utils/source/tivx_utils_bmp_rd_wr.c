@@ -205,7 +205,7 @@ vx_status tivx_utils_bmp_file_read(
 
         *bmp_file_context = image;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -215,7 +215,7 @@ vx_status tivx_utils_bmp_file_read(
         *data_ptr = NULL;
 
         *bmp_file_context = NULL;
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     return status;
 }
@@ -265,7 +265,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
 
         *bmp_file_context = image;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -275,7 +275,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
         *data_ptr = NULL;
 
         *bmp_file_context = NULL;
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     return status;
 }
@@ -323,7 +323,7 @@ int32_t tivx_utils_bmp_file_write(
         bpp = 0;
     }
 
-    status = VX_FAILURE;
+    status = (vx_status)VX_FAILURE;
     if( bpp > 0)
     {
         image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
@@ -332,7 +332,7 @@ int32_t tivx_utils_bmp_file_write(
 
         CT_FreeObject(image);
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     return status;
 }
@@ -362,7 +362,7 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
                 &bmp_file_context);
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Create OpenVX image object.
@@ -373,14 +373,14 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
          * <b>TIP:</b> In OpenVX whenever an object is created use
          * vxGetStatus() to find if the object creation was successful.
          * The object must be typecasted to vx_reference type when calling
-         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
+         * vxGetStatus() API. If the reference is valid (vx_status)VX_SUCCESS should be
          * returned by vxGetStatus().
          * \code
          */
         image = vxCreateImage(context, width, height, df);
         status = vxGetStatus((vx_reference)image);
         /** \endcode */
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
 
             /**
@@ -481,7 +481,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
      */
     status = vxGetStatus((vx_reference)image);
     /** \endcode */
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /** - Query image attributes.
          *
@@ -522,7 +522,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
             );
         /** \endcode */
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             /** - Write to BMP file using utility API
              *
@@ -567,7 +567,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 &width, &height, &stride, &df, &data_ptr,
                 &bmp_file_context);
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         img_height = 0;
         img_width = 0;
@@ -617,7 +617,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, " BMP: Image data format mismatch [%s]\n", filename);
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
@@ -626,7 +626,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             src_start_x, src_start_y, dst_start_x, dst_start_y, copy_width, copy_height, enable_rgb2gray, enable_gray2rgb);
         #endif
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             vx_imagepatch_addressing_t image_addr;
             vx_rectangle_t rect;

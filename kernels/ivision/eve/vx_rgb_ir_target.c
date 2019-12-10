@@ -103,7 +103,7 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   uint32_t i;
   tivxRgbIrParams *prms = NULL;
   tivx_obj_desc_image_t *src;
@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
 
   if (num_params != TIVX_KERNEL_RGB_IR_MAX_PARAMS)
   {
-    status = VX_FAILURE;
+    status = (vx_status)VX_FAILURE;
   }
   else
   {
@@ -121,13 +121,13 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
     {
       if (NULL == obj_desc[i])
       {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         break;
       }
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_RGB_IR_IN_IMG_IDX];
     dstBayer = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX];
@@ -141,14 +141,14 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
         (sizeof(tivxRgbIrParams) != size))
     {
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     void *src_desc_target_ptr;
     void *dstBayer_desc_target_ptr, *dstIR_desc_target_ptr;
@@ -219,14 +219,14 @@ static vx_status VX_CALLBACK tivxKernelRgbIrCreate(
     uint16_t num_params, void *priv_arg)
 {
   uint32_t i;
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   tivx_obj_desc_image_t *img;
   tivxRgbIrParams *prms = NULL;
   tivx_obj_desc_scalar_t *sc_sensorPhase;
 
   if (num_params != TIVX_KERNEL_RGB_IR_MAX_PARAMS)
   {
-    status = VX_FAILURE;
+    status = (vx_status)VX_FAILURE;
   }
   else
   {
@@ -234,13 +234,13 @@ static vx_status VX_CALLBACK tivxKernelRgbIrCreate(
     {
       if (NULL == obj_desc[i])
       {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         break;
       }
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     img = (tivx_obj_desc_image_t *)obj_desc[
                                             TIVX_KERNEL_RGB_IR_IN_IMG_IDX];
@@ -254,10 +254,10 @@ static vx_status VX_CALLBACK tivxKernelRgbIrCreate(
     }
     else
     {
-      status = VX_ERROR_NO_MEMORY;
+      status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
       prms->createParams.visionParams.algParams.size =
@@ -297,11 +297,11 @@ static vx_status VX_CALLBACK tivxKernelRgbIrCreate(
 
       if (NULL == prms->algHandle)
       {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
       }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       tivxSetTargetKernelInstanceContext(kernel, prms,
           sizeof(tivxRgbIrParams));
@@ -322,14 +322,14 @@ static vx_status VX_CALLBACK tivxKernelRgbIrDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   uint32_t i;
   uint32_t size;
   tivxRgbIrParams *prms = NULL;
 
   if (num_params != TIVX_KERNEL_RGB_IR_MAX_PARAMS)
   {
-    status = VX_FAILURE;
+    status = (vx_status)VX_FAILURE;
   }
   else
   {
@@ -337,18 +337,18 @@ static vx_status VX_CALLBACK tivxKernelRgbIrDelete(
     {
       if (NULL == obj_desc[i])
       {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         break;
       }
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxRgbIrParams) == size))
     {
       if (prms->algHandle)

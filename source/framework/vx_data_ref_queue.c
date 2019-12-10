@@ -65,13 +65,13 @@
 
 vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'ref' is invalid \n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -90,7 +90,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
         tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
         status = tivxObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             blocked_nodes.num_nodes = 0;
 
@@ -101,7 +101,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
 
         tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             uint32_t node_id;
 
@@ -122,13 +122,13 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
 
 vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'ref' is invalid \n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -143,14 +143,14 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
 
         tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        if((status == VX_SUCCESS) && (ref_obj_desc_id != TIVX_OBJ_DESC_INVALID))
+        if((status == (vx_status)VX_SUCCESS) && (ref_obj_desc_id != TIVX_OBJ_DESC_INVALID))
         {
             VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d)\n",
                              queue_obj_desc_id,
                              ref_obj_desc_id
                        );
 
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
 
             *ref = ownReferenceGetHandleFromObjDescId(ref_obj_desc_id);
         }
@@ -167,13 +167,13 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
 
 vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(data_ref_q == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'queue_id' is invalid\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -185,13 +185,13 @@ vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 
 
 vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'count' is invalid or 'queue_id' is invalid\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -211,13 +211,13 @@ vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_u
 
 vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "'data_ref_q' is invalid or 'count' is invalid or 'queue_id' is invalid\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -248,7 +248,7 @@ uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline
 
 vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ref!=NULL)
     {
@@ -303,20 +303,20 @@ static vx_status tivxDataRefQueueDestruct(vx_reference ref)
             tivxObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_create_params_t *prms)
 {
     tivx_data_ref_queue ref = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((graph != NULL) && (prms != NULL))
     {
         ref = (tivx_data_ref_queue)ownCreateReference(graph->base.context,
             TIVX_TYPE_DATA_REF_Q, VX_INTERNAL, &graph->base);
 
-        if ((vxGetStatus((vx_reference)ref) == VX_SUCCESS) &&
+        if ((vxGetStatus((vx_reference)ref) == (vx_status)VX_SUCCESS) &&
             (ref->base.type == TIVX_TYPE_DATA_REF_Q))
         {
             uint32_t pipe_id;
@@ -349,9 +349,9 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                 ref->obj_desc[pipe_id] = (tivx_obj_desc_data_ref_q_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_DATA_REF_Q, (vx_reference)ref);
                 if(ref->obj_desc[pipe_id]==NULL)
                 {
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
-                if(status==VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS)
                 {
                     /* if user queueing is enabled, need to send response back to host */
                     if(prms->enable_user_queueing)
@@ -359,30 +359,30 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                         ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
                         {
-                            status = VX_ERROR_NO_RESOURCES;
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
                         }
                     }
                 }
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 if(prms->enable_user_queueing)
                 {
                     status = tivxEventCreate(&ref->wait_done_ref_available_event);
                 }
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = tivxObjDescQueueCreate(&ref->acquire_q_obj_desc_id);
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 if(prms->enable_user_queueing)
                 {
                     status = tivxObjDescQueueCreate(&ref->release_q_obj_desc_id);
                 }
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 /* all resource acquired now set the data structure fields */
                 if(prms->enable_user_queueing)
@@ -445,7 +445,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                 }
             }
 
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 ref = NULL;
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc resources for data ref queue\n");
@@ -474,7 +474,7 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
             vx_bool auto_age_delay_slot[],
             uint32_t delay_slots)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t pipe_id, i;
     tivx_data_ref_queue cur_data_ref_q, next_data_ref_q;
 

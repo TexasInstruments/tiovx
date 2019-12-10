@@ -16,7 +16,7 @@
 
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     BspOsal_SemHandle handle;
 
     if (NULL != mutex)
@@ -25,12 +25,12 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
         if (NULL == handle)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
             *mutex = (tivx_mutex)handle;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
 
@@ -39,7 +39,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
 vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     BspOsal_SemHandle handle;
 
     if ((NULL != mutex) && (*mutex != NULL))
@@ -47,7 +47,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
         handle = (tivx_mutex)*mutex;
         BspOsal_semDelete(&handle);
         *mutex = NULL;
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -55,7 +55,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 
 vx_status tivxMutexLock(tivx_mutex mutex)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     Bool retVal;
 
     if (NULL != mutex)
@@ -66,13 +66,13 @@ vx_status tivxMutexLock(tivx_mutex mutex)
         if (FALSE == retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Semaphore wait failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Mutex is NULL\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -85,7 +85,7 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
         BspOsal_semPost((BspOsal_SemHandle)mutex);
     }
 
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 

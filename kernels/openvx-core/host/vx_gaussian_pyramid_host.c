@@ -86,7 +86,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -109,11 +109,11 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_image)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
         gaussian = (vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
@@ -122,7 +122,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -147,11 +147,11 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8!= input_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != gaussian_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'gaussian' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -168,19 +168,19 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != gaussian_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input' and 'gaussian' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (input_h != gaussian_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input' and 'gaussian' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
@@ -189,28 +189,28 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_SCALE_PYRAMID_HALF != gaussian_scale) &&
             (VX_SCALE_PYRAMID_ORB != gaussian_scale))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'gaussian' should be a pyramid of scale:\n VX_SCALE_PYRAMID_HALF or VX_SCALE_PYRAMID_ORB \n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED != border.mode)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for gaussian pyramid \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_WIDTH, &input_w, sizeof(input_w));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_HEIGHT, &input_h, sizeof(input_h));
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     vx_pyramid gaussian = NULL;
@@ -243,22 +243,22 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
 
     if (num_params != TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid number of parameters\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         gaussian = (vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale)));
         tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels)));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
         tivxCheckStatus(&status, vxReleaseImage(&img));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_SCALE_PYRAMID_HALF == gaussian_scale)
         {
@@ -349,12 +349,12 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -368,7 +368,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -381,7 +381,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -390,7 +390,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
@@ -400,11 +400,11 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
 #endif
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

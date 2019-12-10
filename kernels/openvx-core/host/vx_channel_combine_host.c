@@ -84,7 +84,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image plane0 = NULL;
     vx_uint32 plane0_w;
@@ -120,11 +120,11 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         plane0 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
         plane1 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
@@ -136,7 +136,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(plane0, VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w)));
         tivxCheckStatus(&status, vxQueryImage(plane0, VX_IMAGE_HEIGHT, &plane0_h, sizeof(plane0_h)));
@@ -182,17 +182,17 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != plane0_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'plane0' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_DF_IMAGE_U8 != plane1_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'plane1' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -200,7 +200,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != plane2_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'plane2' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -209,7 +209,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != plane3_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'plane3' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             (VX_DF_IMAGE_IYUV != output_fmt) &&
             (VX_DF_IMAGE_YUV4 != output_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
         }
     }
@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         out_channel = 0U;
 
@@ -252,13 +252,13 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid output format \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (in_channel != out_channel)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid number of plane channels \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (VX_DF_IMAGE_RGBX == output_fmt)
@@ -268,7 +268,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                 ((NULL != plane3) && (plane3_w != plane0_w)))
             {
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'plane0' and secondary planes should have the same value for VX_IMAGE_WIDTH \n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 
             if ((plane1_h != plane0_h) ||
@@ -276,7 +276,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                 ((NULL != plane3) && (plane3_h != plane0_h)))
             {
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'plane0' and secondary should have the same value for VX_IMAGE_HEIGHT \n");
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
         else if ((VX_DF_IMAGE_RGB == output_fmt) ||
@@ -286,14 +286,14 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                     ((NULL != plane2) && (plane2_w != plane0_w)))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Parameters 'plane0' and secondary planes should have the same value for VX_IMAGE_WIDTH \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if ((plane1_h != plane0_h) ||
                     ((NULL != plane2) && (plane2_h != plane0_h)))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Parameters 'plane0' and secondary should have the same value for VX_IMAGE_HEIGHT \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
         }
         else if ((VX_DF_IMAGE_NV12 == output_fmt) ||
@@ -304,14 +304,14 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                     ((NULL != plane2) && (plane2_w != (plane0_w / 2U))))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Secondary planes should have half the value of 'plane0' for VX_IMAGE_WIDTH \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if ((plane1_h != (plane0_h / 2U)) ||
                     ((NULL != plane2) && (plane2_h != (plane0_h / 2U))))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Secondary planes should have half the value of 'plane0' for VX_IMAGE_HEIGHT \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
         }
         else if ((VX_DF_IMAGE_YUYV == output_fmt) ||
@@ -321,26 +321,26 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                     ((NULL != plane2) && (plane2_w != (plane0_w / 2U))))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Secondary planes should have half the value of 'plane0' for VX_IMAGE_WIDTH \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if ((plane1_h != plane0_h) ||
                     ((NULL != plane2) && (plane2_h != plane0_h)))
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Parameters 'plane0' and secondary planes should have the same value for VX_IMAGE_HEIGHT  \n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid output format \n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w));
@@ -356,7 +356,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS)
@@ -365,10 +365,10 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -411,12 +411,12 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -430,7 +430,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -443,7 +443,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -453,7 +453,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -463,7 +463,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -473,7 +473,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -482,17 +482,17 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
@@ -520,14 +520,14 @@ vx_status tivxRemoveKernelChannelCombine(vx_context context)
 
 static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectParams *prms)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_rectangle_t out_rect, rect;
     vx_uint32 i;
     vx_df_image fmt;
 
     if (NULL == prms)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -536,14 +536,14 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
             (prms->num_output_images >
                 TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE))
         {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
         }
 
         for (i = 0; i < prms->num_input_images; i ++)
         {
             if (NULL == prms->in_img[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -551,18 +551,18 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
         {
             if (NULL == prms->out_img[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxQueryImage(prms->out_img[0], VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         out_rect.start_y = 0;
         out_rect.start_x = 0;
@@ -573,7 +573,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
         {
             status = vxGetValidRegionImage(prms->in_img[i], &rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
@@ -622,11 +622,11 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
                 }
             }
         }
-        for (i = 0; (i < prms->num_output_images) && (VX_SUCCESS == status); i ++)
+        for (i = 0; (i < prms->num_output_images) && ((vx_status)VX_SUCCESS == status); i ++)
         {
             status = vxGetValidRegionImage(prms->out_img[i], &rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }
@@ -653,7 +653,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED == prms->border_mode)
         {
@@ -667,7 +667,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
         {
             status = vxSetImageValidRectangle(prms->out_img[i], &out_rect);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 break;
             }

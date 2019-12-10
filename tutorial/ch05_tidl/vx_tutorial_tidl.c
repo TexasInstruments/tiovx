@@ -187,7 +187,7 @@ void vx_tutorial_tidl()
   vx_enum targetCpuId1[MAX_NUM_THREADS];
   vx_enum targetCpuId2[MAX_NUM_THREADS];
 
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   VxTutorialTidl_CfgObj *obj = &gCfgObj;
 
@@ -220,7 +220,7 @@ void vx_tutorial_tidl()
   printf(" Reading config file %s ...\n", filePath);
 
   status= parse_cfg_file(obj, filePath);
-  if (status!=VX_SUCCESS) {
+  if (status!=(vx_status)VX_SUCCESS) {
     goto exit;
   }
 
@@ -341,7 +341,7 @@ void vx_tutorial_tidl()
   printf(" Reading network params file %s ...\n", obj->tidl_params_file_path);
 
   status= vx_tidl_utils_readParams(network, &obj->tidl_params_file_path[0]);
-  VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+  VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
 
   kernel1 = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors1);
   VX_TUTORIAL_ASSERT_VALID_REF(kernel1)
@@ -364,11 +364,11 @@ void vx_tutorial_tidl()
     /* Create array of input tensors for the first node */
 
     status= createInputTensors(context, config1, &input_tensors[threadIdx][0]);
-    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
 
     /* Create array of output tensors for the first node, which is also the input tensors for the second node */
     status= createOutputTensor(context, config1, &output_tensors1[threadIdx][0]);
-    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
 
     /*
      * TIDL maintains range statistics for previously processed frames. It quantizes the current inference activations using range statistics from history for processes (weighted average range).
@@ -416,7 +416,7 @@ void vx_tutorial_tidl()
 
       /* Create array of output tensors for the second node */
       status= createOutputTensor(context, config2, &output_tensors2[threadIdx][0]);
-      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+      VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
 
       printf("Thread #%d: Create node 2 ... \n", threadIdx+1);
 
@@ -457,18 +457,18 @@ void vx_tutorial_tidl()
      * In target execution, such display is disabled in the library.
      * */
     status = vxVerifyGraph(graph[threadIdx]);
-    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
   }
 
-  if(VX_SUCCESS == status) {
+  if((vx_status)VX_SUCCESS == status) {
 
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
       /* Read input from file and populate the input tensor #0, we assume here that only one input tensor is used */
       status= readInput(context, config1, &input_tensors[threadIdx][0], &obj->input_file_path[0], obj->operation_mode);
-      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+      VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
 
-      if (status!=VX_SUCCESS) {
+      if (status!=(vx_status)VX_SUCCESS) {
         goto exit;
       }
 
@@ -483,14 +483,14 @@ void vx_tutorial_tidl()
       printf("Thread #%d: Execute graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxProcessGraph(graph[threadIdx]);
-      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+      VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
     }
 #else
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
       printf("Thread #%d: Start graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxScheduleGraph(graph[threadIdx]);
-      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+      VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
     }
 
     /* You can do other useful things here, while the graphs execute asynchronously using resources available on other cores */
@@ -500,7 +500,7 @@ void vx_tutorial_tidl()
       printf("Thread #%d: Wait for graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxWaitGraph(graph[threadIdx]);
-      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+      VX_TUTORIAL_ASSERT(status==(vx_status)VX_SUCCESS);
     }
 #endif
 
@@ -546,79 +546,79 @@ void vx_tutorial_tidl()
 #endif
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-    if (vxGetStatus((vx_reference)node1[threadIdx]) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)node1[threadIdx]) == (vx_status)VX_SUCCESS) {
       vxReleaseNode(&node1[threadIdx]);
     }
-    if (vxGetStatus((vx_reference)createParams1[threadIdx]) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)createParams1[threadIdx]) == (vx_status)VX_SUCCESS) {
       vxReleaseUserDataObject(&createParams1[threadIdx]);
     }
-    if (vxGetStatus((vx_reference)inArgs1[threadIdx]) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)inArgs1[threadIdx]) == (vx_status)VX_SUCCESS) {
       vxReleaseUserDataObject(&inArgs1[threadIdx]);
     }
-    if (vxGetStatus((vx_reference)outArgs1[threadIdx]) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)outArgs1[threadIdx]) == (vx_status)VX_SUCCESS) {
       vxReleaseUserDataObject(&outArgs1[threadIdx]);
     }
     if (node2[threadIdx] !=0 ){
-      if (vxGetStatus((vx_reference)node2[threadIdx]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)node2[threadIdx]) == (vx_status)VX_SUCCESS) {
         vxReleaseNode(&node2[threadIdx]);
       }
-      if (vxGetStatus((vx_reference)createParams2[threadIdx]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)createParams2[threadIdx]) == (vx_status)VX_SUCCESS) {
         vxReleaseUserDataObject(&createParams2[threadIdx]);
       }
-      if (vxGetStatus((vx_reference)inArgs2[threadIdx]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)inArgs2[threadIdx]) == (vx_status)VX_SUCCESS) {
         vxReleaseUserDataObject(&inArgs2[threadIdx]);
       }
-      if (vxGetStatus((vx_reference)outArgs2[threadIdx]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)outArgs2[threadIdx]) == (vx_status)VX_SUCCESS) {
         vxReleaseUserDataObject(&outArgs2[threadIdx]);
       }
     }
   }
 
   if (config2 !=0 ){
-    if (vxGetStatus((vx_reference)config2) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)config2) == (vx_status)VX_SUCCESS) {
       vxReleaseUserDataObject(&config2);
     }
   }
 
-  if (vxGetStatus((vx_reference)config1) == VX_SUCCESS) {
+  if (vxGetStatus((vx_reference)config1) == (vx_status)VX_SUCCESS) {
     vxReleaseUserDataObject(&config1);
   }
 
-  if (vxGetStatus((vx_reference)network) == VX_SUCCESS) {
+  if (vxGetStatus((vx_reference)network) == (vx_status)VX_SUCCESS) {
     vxReleaseUserDataObject(&network);
   }
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-    if (vxGetStatus((vx_reference)graph[threadIdx]) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)graph[threadIdx]) == (vx_status)VX_SUCCESS) {
       vxReleaseGraph(&graph[threadIdx]);
     }
 
     for (i= 0; i < num_input_tensors; i++) {
-      if (vxGetStatus((vx_reference)input_tensors[threadIdx][i]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)input_tensors[threadIdx][i]) == (vx_status)VX_SUCCESS) {
         vxReleaseTensor(&input_tensors[threadIdx][i]);
       }
     }
 
     for (i= 0; i < num_output_tensors1; i++) {
-      if (vxGetStatus((vx_reference)output_tensors1[threadIdx][i]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)output_tensors1[threadIdx][i]) == (vx_status)VX_SUCCESS) {
         vxReleaseTensor(&output_tensors1[threadIdx][i]);
       }
     }
 
     for (i= 0; i < num_output_tensors2; i++) {
-      if (vxGetStatus((vx_reference)output_tensors2[threadIdx][i]) == VX_SUCCESS) {
+      if (vxGetStatus((vx_reference)output_tensors2[threadIdx][i]) == (vx_status)VX_SUCCESS) {
         vxReleaseTensor(&output_tensors2[threadIdx][i]);
       }
     }
 
   }
 
-  if (vxGetStatus((vx_reference)kernel1) == VX_SUCCESS) {
+  if (vxGetStatus((vx_reference)kernel1) == (vx_status)VX_SUCCESS) {
     vxRemoveKernel(kernel1);
   }
   if (kernel2!=0){
-    if (vxGetStatus((vx_reference)kernel2) == VX_SUCCESS) {
+    if (vxGetStatus((vx_reference)kernel2) == (vx_status)VX_SUCCESS) {
       vxRemoveKernel(kernel2);
     }
   }
@@ -627,7 +627,7 @@ void vx_tutorial_tidl()
   printf("\n vx_tutorial_tidl: Tutorial Done !!! \n");
   printf(" \n");
 
-  if (vxGetStatus((vx_reference)context) == VX_SUCCESS) {
+  if (vxGetStatus((vx_reference)context) == (vx_status)VX_SUCCESS) {
     vxReleaseContext(&context);
   }
 
@@ -640,7 +640,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
   char *token;
   size_t sizeFilePath;
   char filePath[MAXPATHLENGTH];
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   /* Set processing_core_mode to 0, which means network can be partitioned accross all cores */
   obj->processing_core_mode= 0;
@@ -652,7 +652,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
 #ifdef HOST_EMULATION
     printf("# ERROR: Please make sure that the environment variable VX_TEST_DATA_PATH is set to .../conformance_tests/test_data\n");
 #endif
-    status= VX_FAILURE;
+    status= (vx_status)VX_FAILURE;
     goto exit;
   }
 
@@ -751,7 +751,7 @@ static vx_status createInputTensors(vx_context context, vx_user_data_object conf
   vx_map_id map_id_config;
   sTIDL_IOBufDesc_t *ioBufDesc;
   uint32_t id;
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
       (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
@@ -768,7 +768,7 @@ static vx_status createInputTensors(vx_context context, vx_user_data_object conf
 
   }
   else {
-    status= VX_FAILURE;
+    status= (vx_status)VX_FAILURE;
   }
 
   vxUnmapUserDataObject(config, map_id_config);
@@ -782,7 +782,7 @@ static vx_status createOutputTensor(vx_context context, vx_user_data_object conf
   vx_map_id map_id_config;
   uint32_t id;
   sTIDL_IOBufDesc_t *ioBufDesc;
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
       (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
@@ -799,7 +799,7 @@ static vx_status createOutputTensor(vx_context context, vx_user_data_object conf
 
   }
   else {
-    status= VX_FAILURE;
+    status= (vx_status)VX_FAILURE;
   }
 
   vxUnmapUserDataObject(config, map_id_config);
@@ -813,7 +813,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
 {
   int32_t   i0, i1;
   uint32_t readSize;
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   for(i0 = 0; i0 < n; i0++)
   {
@@ -821,7 +821,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
     {
       readSize= fread(&ptr[i0*chOffset + i1*pitch], 1, width, fp);
       if (readSize != width) {
-        status= VX_FAILURE;
+        status= (vx_status)VX_FAILURE;
         goto exit;
       }
     }
@@ -835,7 +835,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
 
 static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor *input_tensors, char *input_file, uint32_t operation_mode)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   int8_t      *input_buffer = NULL;
   uint32_t   id;
@@ -856,7 +856,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
   if(fp==NULL)
   {
     printf("# ERROR: Unable to open input file [%s]\n", input_file);
-    return(VX_FAILURE);
+    return((vx_status)VX_FAILURE);
   }
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
@@ -876,7 +876,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
     status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, (void **)&input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       status= readDataS8(
           fp,
@@ -889,7 +889,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
       tivxUnmapTensorPatch(input_tensors[id], map_id_input);
 
-      if (status== VX_FAILURE) {
+      if (status== (vx_status)VX_FAILURE) {
         goto exit;
       }
     }
@@ -905,7 +905,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
 static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_ptr, vx_uint32 img_width, vx_uint32 img_height, vx_uint32 img_stride, vx_user_data_object config, vx_tensor *output_tensors, char *output_file, uint32_t operation_mode)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   vx_size output_sizes[VX_TUTORIAL_MAX_TENSOR_DIMS];
 
@@ -926,7 +926,7 @@ static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_pt
 
     status = vxGetStatus((vx_reference)output_tensors[id]);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       void *output_buffer;
 

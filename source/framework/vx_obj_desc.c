@@ -115,7 +115,7 @@ static void tivxObjDescIpcHandler(uint32_t payload)
     /* now this is local target hence call target API directly */
     status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
 
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
     }
@@ -171,7 +171,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 
 vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if((NULL != obj_desc) && (NULL != *obj_desc))
     {
@@ -182,7 +182,7 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
 
             *obj_desc = NULL;
 
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
@@ -223,7 +223,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 {
     vx_enum cpu_id;
     uint32_t ipc_payload;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *obj_desc;
 
     cpu_id = tivxTargetGetCpuId(dst_target_id);
@@ -233,7 +233,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
         /* target is on same CPU queue obj_desc using target APIs */
         status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
 
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
         }
@@ -249,14 +249,14 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
             /* target is on remote CPU, send using IPC */
             status = tivxIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id);
 
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxIpcSendMsg failed\n");
             }
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR,"tivxObjDescGet failed\n");
         }
     }

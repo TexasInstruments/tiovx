@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image in1 = NULL;
     vx_uint32 in1_w;
@@ -122,11 +122,11 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         in1 = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX];
         in2 = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN2_IDX];
@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt)));
         tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w)));
@@ -173,37 +173,37 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_DF_IMAGE_U8 != in1_fmt) &&
             (VX_DF_IMAGE_S16 != in1_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in1' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
         if ((VX_DF_IMAGE_U8 != in2_fmt) &&
             (VX_DF_IMAGE_S16 != in2_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
         if (VX_TYPE_FLOAT32 != scale_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'scale' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
         if (VX_TYPE_ENUM != overflow_policy_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'overflow_policy' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
         if (VX_TYPE_ENUM != rounding_policy_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'rounding_policy' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
@@ -212,7 +212,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
             if ((VX_DF_IMAGE_U8 != out_fmt) &&
                 (VX_DF_IMAGE_S16 != out_fmt))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'out' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
             }
         }
@@ -221,17 +221,17 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (in1_w != in2_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' should have the same value for VX_IMAGE_WIDTH \n");
         }
 
         if (in1_h != in2_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' should have the same value for VX_IMAGE_HEIGHT \n");
         }
 
@@ -241,19 +241,19 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
                 ((VX_DF_IMAGE_S16 == in1_fmt) ||
                 (VX_DF_IMAGE_S16 == in2_fmt)))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'out' must not be VX_DF_IMAGE_U8 if 'in1' or 'in2' are VX_DF_IMAGE_S16 \n");
             }
 
             if (in1_w != out_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'out' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (in1_h != out_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'out' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
@@ -262,32 +262,32 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (0.0 > scale_val)
         {
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
             VX_PRINT(VX_ZONE_ERROR, "'scale' must be greater than or equal to 0 \n");
         }
 
         if ((VX_CONVERT_POLICY_WRAP != overflow_policy_val) &&
             (VX_CONVERT_POLICY_SATURATE != overflow_policy_val))
         {
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
             VX_PRINT(VX_ZONE_ERROR, "'overflow_policy' value should be:\n VX_CONVERT_POLICY_WRAP or VX_CONVERT_POLICY_SATURATE \n");
         }
 
         if ((VX_ROUND_POLICY_TO_ZERO != rounding_policy_val) &&
             (VX_ROUND_POLICY_TO_NEAREST_EVEN != rounding_policy_val))
         {
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
             VX_PRINT(VX_ZONE_ERROR, "'rounding_policy' value should be:\n VX_ROUND_POLICY_TO_ZERO or VX_ROUND_POLICY_TO_NEAREST_EVEN \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_DF_IMAGE_S16 == in1_fmt) ||
             ((VX_DF_IMAGE_S16 == in2_fmt) ||
@@ -314,7 +314,7 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_MULTIPLY_MAX_PARAMS)
@@ -326,10 +326,10 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -360,12 +360,12 @@ vx_status tivxAddKernelMultiply(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -379,7 +379,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -392,7 +392,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -402,7 +402,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -412,7 +412,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -422,7 +422,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -432,7 +432,7 @@ vx_status tivxAddKernelMultiply(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -441,17 +441,17 @@ vx_status tivxAddKernelMultiply(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

@@ -98,7 +98,7 @@ static vx_uint32 gL2RAM_mem_offset = 0;
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     mem_ptr->mem_heap_region = mem_heap_region;
 
@@ -109,7 +109,7 @@ vx_status tivxMemBufferAlloc(
     if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Memory was not allocated\n");
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -161,7 +161,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
     {
@@ -235,12 +235,12 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 
 int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {
         /* Return success since there is not scratch mem region on PC */
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {

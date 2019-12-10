@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -113,11 +113,11 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_image)parameters[TIVX_KERNEL_FAST_CORNERS_INPUT_IDX];
         strength_thresh = (vx_scalar)parameters[TIVX_KERNEL_FAST_CORNERS_STRENGTH_THRESH_IDX];
@@ -129,7 +129,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -160,23 +160,23 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != input_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_TYPE_FLOAT32 != strength_thresh_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'strength_thresh' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
         if (VX_TYPE_BOOL != nonmax_suppression_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'nonmax_suppression' should be a scalar of type:\n VX_TYPE_BOOL \n");
         }
 
@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
         {
             if (VX_TYPE_KEYPOINT != corners_item_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'corners' should be an array of type:\n VX_TYPE_KEYPOINT \n");
             }
         }
@@ -193,7 +193,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
         {
             if (VX_TYPE_SIZE != num_corners_scalar_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'num_corners' should be a scalar of type:\n VX_TYPE_SIZE \n");
             }
         }
@@ -202,39 +202,39 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (TIVX_KERNEL_FASTC_MIN_SIZE > input_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'input' should have a value for VX_IMAGE_WIDTH greater than TIVX_KERNEL_FASTC_MIN_SIZE \n");
         }
 
         if (TIVX_KERNEL_FASTC_MIN_SIZE > input_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'input' should have a value for VX_IMAGE_HEIGHT greater than TIVX_KERNEL_FASTC_MIN_SIZE \n");
         }
 
         if (0U == corners_capacity)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'corners' should have a value for VX_ARRAY_CORNERS greater than 0 \n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED != border.mode)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for fast corners \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         corners_item_type = VX_TYPE_KEYPOINT;
 
@@ -253,17 +253,17 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_FAST_CORNERS_INPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -292,12 +292,12 @@ vx_status tivxAddKernelFastCorners(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -311,7 +311,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -324,7 +324,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -334,7 +334,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -344,7 +344,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -354,7 +354,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -363,17 +363,17 @@ vx_status tivxAddKernelFastCorners(vx_context context)
                         VX_PARAMETER_STATE_OPTIONAL
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

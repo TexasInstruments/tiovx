@@ -53,7 +53,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 {
     va_list ap;
     vx_context context = NULL;
-    vx_status ret = VX_SUCCESS;
+    vx_status ret = (vx_status)VX_SUCCESS;
     /* this is non-reentrant hence need to take lock */
     static vx_char string[VX_MAX_LOG_MESSAGE_LEN];
 
@@ -62,29 +62,29 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
         if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid reference!\n");
-            ret = VX_ERROR_INVALID_REFERENCE;
+            ret = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
 
-    if(ret==VX_SUCCESS)
+    if(ret==(vx_status)VX_SUCCESS)
     {
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid status code!\n");
-            ret = VX_ERROR_INVALID_VALUE;
+            ret = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
 
-    if(ret==VX_SUCCESS)
+    if(ret==(vx_status)VX_SUCCESS)
     {
         if (message == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid message!\n");
-            ret = VX_ERROR_INVALID_VALUE;
+            ret = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
 
-    if(ret==VX_SUCCESS)
+    if(ret==(vx_status)VX_SUCCESS)
     {
         if (ref->type == VX_TYPE_CONTEXT)
         {
@@ -97,10 +97,10 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 
         if (context->log_callback == NULL)
         {
-            ret = VX_ERROR_INVALID_VALUE;
+            ret = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
-    if(ret==VX_SUCCESS)
+    if(ret==(vx_status)VX_SUCCESS)
     {
         if (context->log_enabled == (vx_bool)vx_false_e)
         {

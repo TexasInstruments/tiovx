@@ -54,7 +54,7 @@ static vx_status ownDestructParameter(vx_reference ref)
             }
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 vx_bool ownIsValidDirection(vx_enum dir)
@@ -117,7 +117,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
         if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < kernel->signature.num_parameters))
         {
             parameter = (vx_parameter)ownCreateReference(kernel->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &kernel->base.context->base);
-            if ((vxGetStatus((vx_reference)parameter) == VX_SUCCESS) && (parameter->base.type == VX_TYPE_PARAMETER))
+            if ((vxGetStatus((vx_reference)parameter) == (vx_status)VX_SUCCESS) && (parameter->base.type == VX_TYPE_PARAMETER))
             {
                 parameter->base.destructor_callback = &ownDestructParameter;
                 parameter->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
@@ -129,9 +129,9 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
         }
         else
         {
-            vxAddLogEntry(&kernel->base, VX_ERROR_INVALID_PARAMETERS, "Index %u out of range for kernel %s (numparams = %u)!\n",
+            vxAddLogEntry(&kernel->base, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Index %u out of range for kernel %s (numparams = %u)!\n",
                     index, kernel->name, kernel->signature.num_parameters);
-            parameter = (vx_parameter)ownGetErrorObject(kernel->base.context, VX_ERROR_INVALID_PARAMETERS);
+            parameter = (vx_parameter)ownGetErrorObject(kernel->base.context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }
 
@@ -146,15 +146,15 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
         if (node->kernel == NULL)
         {
             /* this can probably never happen */
-            vxAddLogEntry(&node->base, VX_ERROR_INVALID_NODE, "Node was created without a kernel! Fatal Error!\n");
-            param = (vx_parameter)ownGetErrorObject(node->base.context, VX_ERROR_INVALID_NODE);
+            vxAddLogEntry(&node->base, (vx_status)VX_ERROR_INVALID_NODE, "Node was created without a kernel! Fatal Error!\n");
+            param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_INVALID_NODE);
         }
         else
         {
             if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < node->kernel->signature.num_parameters))
             {
                 param = (vx_parameter)ownCreateReference(node->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &node->base);
-                if ((vxGetStatus((vx_reference)param) == VX_SUCCESS) && (param->base.type == VX_TYPE_PARAMETER))
+                if ((vxGetStatus((vx_reference)param) == (vx_status)VX_SUCCESS) && (param->base.type == VX_TYPE_PARAMETER))
                 {
                     param->base.destructor_callback = &ownDestructParameter;
                     param->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
@@ -167,9 +167,9 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
             }
             else
             {
-                vxAddLogEntry(&node->base, VX_ERROR_INVALID_PARAMETERS, "Index %u out of range for node %s (numparams = %u)!\n",
+                vxAddLogEntry(&node->base, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Index %u out of range for node %s (numparams = %u)!\n",
                         index, node->kernel->name, node->kernel->signature.num_parameters);
-                param = (vx_parameter)ownGetErrorObject(node->base.context, VX_ERROR_INVALID_PARAMETERS);
+                param = (vx_parameter)ownGetErrorObject(node->base.context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
             }
         }
     }
@@ -184,17 +184,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseParameter(vx_parameter *param)
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32 index, vx_reference value)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum type = 0;
     vx_enum data_type = 0;
 
     if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Supplied node was not actually a node\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_PARAMETER, "Attempting to set parameter[%u] on %s (enum:%d) to "VX_FMT_REF"\n",
                     index,
@@ -203,22 +203,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                     value);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* is the index out of bounds? */
         if ((index >= node->kernel->signature.num_parameters) || (index >= TIVX_KERNEL_MAX_PARAMS))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid index %u\n", index);
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         /* if it's an optional parameter, it's ok to be NULL */
         if ((value == 0) && (node->kernel->signature.states[index] == VX_PARAMETER_STATE_OPTIONAL))
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else
         {
@@ -226,10 +226,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             if (ownIsValidReference(value) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Supplied value was not actually a reference\n");
-                status = VX_ERROR_INVALID_REFERENCE;
+                status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* if it was a valid reference then get the type from it */
                 vxQueryReference(value, VX_REFERENCE_TYPE, &type, sizeof(type));
@@ -244,23 +244,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                        doesn't specify that only VX_TYPE_SCALAR should be used for scalar types in
                        this function. */
                     if((type == VX_TYPE_SCALAR) &&
-                       (vxQueryScalar((vx_scalar)value, VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == VX_SUCCESS))
+                       (vxQueryScalar((vx_scalar)value, VX_SCALAR_TYPE, &data_type, sizeof(data_type)) == (vx_status)VX_SUCCESS))
                     {
                         if(data_type != node->kernel->signature.types[index])
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Invalid scalar type 0x%08x!\n", data_type);
-                            status = VX_ERROR_INVALID_TYPE;
+                            status = (vx_status)VX_ERROR_INVALID_TYPE;
                         }
                     }
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Invalid type 0x%08x!\n", type);
-                        status = VX_ERROR_INVALID_TYPE;
+                        status = (vx_status)VX_ERROR_INVALID_TYPE;
                     }
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 if (node->parameters[index])
                 {
@@ -269,25 +269,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                         vx_bool res = ownRemoveAssociationToDelay(node->parameters[index], node, index);
                         if (res == (vx_bool)vx_false_e) {
                             VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
-                            status = VX_ERROR_INVALID_REFERENCE;
+                            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         }
                     }
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 if (value->delay!=NULL) {
                     /* the new parameter is a delay element */
                     vx_bool res = ownAddAssociationToDelay(value, node, index);
                     if (res == (vx_bool)vx_false_e) {
                         VX_PRINT(VX_ZONE_ERROR, "Internal error adding delay association\n");
-                        status = VX_ERROR_INVALID_REFERENCE;
+                        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                     }
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 ownNodeSetParameter(node, index, value);
             }
@@ -296,7 +296,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
         }
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_PARAMETER, "Assigned Node[%u] %p type:%08x ref="VX_FMT_REF"\n",
                  index, node, type, value);
@@ -315,7 +315,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parameter, vx_reference value)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     if (ownIsValidSpecificReference((vx_reference)parameter, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         if (parameter->node)
@@ -328,7 +328,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parame
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidSpecificReference(&parameter->base, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         switch (attribute)
@@ -341,7 +341,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter direction failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PARAMETER_INDEX:
@@ -352,7 +352,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter index failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PARAMETER_TYPE:
@@ -363,7 +363,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PARAMETER_STATE:
@@ -374,7 +374,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter state failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PARAMETER_REF:
@@ -398,25 +398,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter reference failed\n");
-                        status = VX_ERROR_NOT_SUPPORTED;
+                        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter reference failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }

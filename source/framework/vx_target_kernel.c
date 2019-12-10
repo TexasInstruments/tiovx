@@ -110,7 +110,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
     {
         status = tivxMutexLock(g_target_kernel_lock);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -189,13 +189,13 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     tivx_target_kernel target_kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     if (NULL != target_kernel)
     {
         status = tivxMutexLock(g_target_kernel_lock);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -232,7 +232,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
 
     status = tivxMutexLock(g_target_kernel_lock);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_target_kernel tmp_knl = NULL;
 
@@ -285,7 +285,7 @@ vx_status tivxTargetKernelCreate(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_target_kernel knl = NULL;
 
     if ((NULL != target_kernel_instance) && (NULL != obj_desc))
@@ -302,7 +302,7 @@ vx_status tivxTargetKernelCreate(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelCreate: Kernel create function is NULL\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -313,7 +313,7 @@ vx_status tivxTargetKernelDelete(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_target_kernel knl = NULL;
 
     if ((NULL != target_kernel_instance) && (NULL != obj_desc))
@@ -330,7 +330,7 @@ vx_status tivxTargetKernelDelete(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelDelete: Kernel delete function is NULL\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -341,7 +341,7 @@ vx_status tivxTargetKernelExecute(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_target_kernel knl = NULL;
 
     if ((NULL != target_kernel_instance) && (NULL != obj_desc))
@@ -357,7 +357,7 @@ vx_status tivxTargetKernelExecute(
                 knl->caller_priv_arg);
             tivxPlatformDeactivate();
 
-            if(VX_SUCCESS != status)
+            if((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
             }
@@ -365,7 +365,7 @@ vx_status tivxTargetKernelExecute(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function is NULL\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -376,7 +376,7 @@ vx_status tivxTargetKernelControl(
     tivx_target_kernel_instance target_kernel_instance,
     uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_target_kernel knl = NULL;
 
     if ((NULL != target_kernel_instance) && (NULL != obj_desc))
@@ -393,7 +393,7 @@ vx_status tivxTargetKernelControl(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelControl: Kernel control function is NULL\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -420,7 +420,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
     {
         status = tivxMutexLock(g_target_kernel_lock);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -442,7 +442,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "tivxEnableKernelForSuperNode: Invalid parameters given to function\n");
     }
 

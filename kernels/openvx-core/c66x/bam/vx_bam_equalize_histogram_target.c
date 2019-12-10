@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxEqHistParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
@@ -112,7 +112,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_EQUALIZE_HISTOGRAM_INPUT_IDX];
@@ -122,14 +122,14 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxEqHistParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -173,7 +173,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxEqHistParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -185,12 +185,12 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_EQUALIZE_HISTOGRAM_INPUT_IDX];
@@ -208,7 +208,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
 
             if (NULL == prms->scratch)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
                 tivxMemFree(prms, sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
                 prms = NULL;
             }
@@ -220,10 +220,10 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxInitBufParams(src, &prms->vxlib_src);
             tivxInitBufParams(dst, &prms->vxlib_dst);
@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
             buf_params[1] = &prms->vxlib_dst;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             lut_kernel_params.lut    = (uint8_t *)prms->scratch;
             lut_kernel_params.count  = 256U;
@@ -246,12 +246,12 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
                 BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
                 buf_params, &kernel_details, &prms->lut_graph_handle);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 lut_kern_create = 1;
             }
         }
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             hist_kernel_params.dist    = prms->scratch;
             hist_kernel_params.minValue  = 0xffffffffu;
@@ -264,13 +264,13 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
             status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_HISTOGRAMSIMPLE_I8U_O32U,
                 buf_params, &kernel_details,
                 &prms->hist_graph_handle);
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 hist_kern_create = 1;
             }
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxEqHistParams));
@@ -299,19 +299,19 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxEqHistParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxEqHistParams) == size))
         {
             tivxBamDestroyHandle(prms->hist_graph_handle);

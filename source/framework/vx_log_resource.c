@@ -335,7 +335,7 @@ void tivxLogSetResourceUsedValue(const char *resource_name, uint16_t value)
 
 vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stat)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int i;
     tivxMutexLock(g_tivx_log_resource_lock);
@@ -345,7 +345,7 @@ vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_
         if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
         {
             *stat = g_tivx_resource_stats_table[i];
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
             break;
         }
     }
@@ -445,14 +445,14 @@ static char *test_file_path(void)
 
 vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexLock(g_tivx_log_resource_lock);
 
     int i;
     FILE *ofp;
     tivx_resource_stats_t stat;
-    status = VX_SUCCESS;
+    status = (vx_status)VX_SUCCESS;
 
     char outputFilename[TIVX_CONFIG_PATH_LENGTH];
 
@@ -472,7 +472,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
     if (ofp == NULL)
     {
         fprintf(stderr, "Can't open output file!\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
         return status;
     }
 

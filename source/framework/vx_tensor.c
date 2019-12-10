@@ -61,7 +61,7 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_po
 
 static vx_status ownAllocTensorBuffer(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if(ref->type == VX_TYPE_TENSOR)
@@ -81,7 +81,7 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate tensor memory\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
                 else
                 {
@@ -93,13 +93,13 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Tensor object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Reference is not an tensor type\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -123,7 +123,7 @@ static vx_status ownDestructTensor(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 
@@ -175,7 +175,7 @@ static void ownInitTensorObject(
 
 static vx_status ownTensorCheckSizes(volatile uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size i;
 
     for (i = 0; i < number_of_dimensions; i++)
@@ -183,7 +183,7 @@ static vx_status ownTensorCheckSizes(volatile uint32_t *dimensions, const vx_siz
         if ((view_end[i] <= view_start[i]) ||
             (view_end[i] > dimensions[i]))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Invalid view parameter(s) in dimension: %d\n", i);
             break;
         }
@@ -253,20 +253,20 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
         if ((number_of_dims < 1) || (number_of_dims > TIVX_CONTEXT_MAX_TENSOR_DIMS))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid dims for the tensor.\n");
-            tensor = (vx_tensor)ownGetErrorObject((vx_context)context, VX_ERROR_INVALID_DIMENSION);
+            tensor = (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_DIMENSION);
         }
 
         if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, fixed_point_position))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid data_type for the tensor.\n");
-            tensor =  (vx_tensor)ownGetErrorObject((vx_context)context, VX_ERROR_INVALID_TYPE);
+            tensor =  (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_TYPE);
         }
 
         if( NULL == tensor )
         {
             tensor = (vx_tensor)ownCreateReference(context, VX_TYPE_TENSOR, VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)tensor) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)tensor) == (vx_status)VX_SUCCESS) &&
                 (tensor->base.type == VX_TYPE_TENSOR))
             {
                 /* assign reference type specific callback's */
@@ -281,10 +281,10 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 {
                     vxReleaseTensor(&tensor);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate tensor object descriptor\n");
                     tensor = (vx_tensor)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -306,7 +306,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor)
 VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     vx_tensor tensor, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
@@ -314,7 +314,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryTensor failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -329,7 +329,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query VX_TENSOR_NUMBER_OF_DIMS failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_TENSOR_DIMS:
@@ -347,7 +347,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query VX_TENSOR_DIMS failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_TENSOR_DATA_TYPE:
@@ -358,7 +358,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query VX_TENSOR_DATA_TYPE failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_TENSOR_FIXED_POINT_POSITION:
@@ -369,7 +369,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query VX_TENSOR_FIXED_POINT_POSITION failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_TENSOR_SCALING_DIVISOR:
@@ -380,7 +380,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_SCALING_DIVISOR failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
@@ -391,12 +391,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"query tensor option not supported\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
 VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
     vx_tensor tensor, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
@@ -416,7 +416,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -431,7 +431,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set fixed point position failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_TENSOR_SCALING_DIVISOR:
@@ -442,7 +442,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set scaling divisor failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
@@ -453,12 +453,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set scaling divisor's fixed point position failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -470,7 +470,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         vx_size number_of_dimensions, const vx_size * view_start, const vx_size * view_end,
         const vx_size * user_stride, void * user_ptr, vx_enum usage, vx_enum user_memory_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
     vx_size i = 0;
 
@@ -479,7 +479,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Invalid tensor reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -488,7 +488,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         if (VX_MEMORY_TYPE_HOST != user_memory_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
@@ -496,34 +496,34 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Memory is not allocated\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if ((NULL == view_start) || (NULL == view_end) || (NULL == user_stride) || (NULL == user_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Invalid NULL pointer\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((obj_desc->number_of_dimensions < number_of_dimensions) || (number_of_dimensions < 1U))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Invalid number of patch dimensions\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if (ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dimensions) != VX_SUCCESS)
+        if (ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dimensions) != (vx_status)VX_SUCCESS)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         for (i = 1; i < number_of_dimensions; i++)
         {
             if ((user_stride[i] < (view_end[i-1] - view_start[i-1])))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid view parameter(s) in dimension: %d\n", i);
                 break;
             }
@@ -532,17 +532,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         if (user_stride[0] != obj_desc->stride[0])
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: user_stride[0] must be equal to sizeof(data_type).\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = ownAllocTensorBuffer(&tensor->base);
     }
 
     /* Maps and copies one line at at time */
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vx_uint8* user_curr_ptr = (vx_uint8*)user_ptr;
         vx_uint8* tensor_ptr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
@@ -594,7 +594,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     vx_enum usage,
     vx_enum memory_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
@@ -602,41 +602,41 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Invalid tensor reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if (ptr == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: User pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if ((view_start == NULL) || (view_end == NULL))
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: View pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if (map_id == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: Map ID is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
 
         status =  ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dims);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = ownAllocTensorBuffer(&tensor->base);
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         vx_uint8* map_addr = NULL, *end_addr = NULL, *host_addr = NULL;
         uint32_t map_size = 0;
@@ -690,13 +690,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: No available tensor maps\n");
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: May need to increase the value of TIVX_TENSOR_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: could not allocate memory\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -705,26 +705,26 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxUnmapTensorPatch: Invalid tensor reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(map_id >= TIVX_TENSOR_MAX_MAPS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxUnmapTensorPatch: map ID is greater than the maximum tensor maps\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if( (tensor->maps[map_id].map_addr!=NULL)
             &&
@@ -751,7 +751,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if(tensor->maps[map_id].map_addr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxUnmapTensorPatch: map address is null\n");

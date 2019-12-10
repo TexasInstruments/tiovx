@@ -79,7 +79,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr;
@@ -90,7 +90,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
 
     if (num_params != TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -98,13 +98,13 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
@@ -135,12 +135,12 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
@@ -156,13 +156,13 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
 
     if (num_params != TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -170,13 +170,13 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
         temp_ptr = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
 
         if (NULL == temp_ptr)
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {
@@ -202,14 +202,14 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     uint32_t temp_ptr_size;
 
     if (num_params != TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -217,20 +217,20 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
 
         status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 
         if (VXLIB_SUCCESS != status)
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {

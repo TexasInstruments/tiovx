@@ -114,7 +114,7 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
@@ -128,7 +128,7 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CANNY_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_OUTPUT_IDX];
@@ -142,14 +142,14 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxCannyParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
 
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
@@ -247,7 +247,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs;
@@ -255,12 +255,12 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CANNY_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CANNY_INPUT_IDX];
@@ -297,21 +297,21 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             if (NULL == prms->sobel_x)
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_x mem allocation failed\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->sobel_y = tivxMemAlloc(prms->sobel_size,
                     TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->sobel_y)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_y mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->vxlib_norm.dim_x = prms->vxlib_src.dim_x;
                 prms->vxlib_norm.dim_y = prms->vxlib_src.dim_y -
@@ -327,11 +327,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 if (NULL == prms->norm)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: norm mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->vxlib_edge.dim_x = prms->vxlib_src.dim_x;
                 prms->vxlib_edge.dim_y = prms->vxlib_src.dim_y -
@@ -347,11 +347,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 if (NULL == prms->nms_edge)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: nms_edge mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
@@ -360,17 +360,17 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 if (NULL == prms->edge_list)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: edge_list mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: struct mem allocation failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxCannyParams));
@@ -391,19 +391,19 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxCannyParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CANNY_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxCannyParams) == size))
         {
             tivxCannyFreeMem(prms);
@@ -488,7 +488,7 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
 static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
     const uint8_t *src_addr, int32_t gs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     int16_t *temp1_16, *temp2_16;
 
@@ -535,7 +535,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
 
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -544,7 +544,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
 static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
     int32_t gs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     uint16_t *norm;
     int16_t *sobx, *soby;
 
@@ -571,7 +571,7 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
 
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -579,7 +579,7 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
 
 static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     int16_t *sobx, *soby;
     uint16_t *norm;
     uint8_t *edge;
@@ -601,7 +601,7 @@ static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
     }
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -610,7 +610,7 @@ static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
 static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
     uint32_t *num_items, int32_t lower, int32_t upper, int32_t gs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     uint32_t start_pos;
     uint16_t *norm;
     uint8_t *edge;
@@ -635,7 +635,7 @@ static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
     }
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);

@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxBamConvolveParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
@@ -116,7 +116,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX];
@@ -124,14 +124,14 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxBamConvolveParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_convolution_t *conv;
     tivxBamConvolveParams *prms = NULL;
@@ -166,12 +166,12 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *conv_target_ptr;
 
@@ -245,10 +245,10 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxBamConvolveParams));
@@ -269,19 +269,19 @@ static vx_status VX_CALLBACK tivxKernelConvolveDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxBamConvolveParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxBamConvolveParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -349,7 +349,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *dst;
     tivx_obj_desc_convolution_t *conv;
     tivxBamConvolveParams *prms = NULL;
@@ -358,7 +358,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *conv_target_ptr;
 
@@ -402,7 +402,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -426,17 +426,17 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             prms->bam_node_num = *bam_node_cnt;
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxBamConvolveParams));
@@ -463,7 +463,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxBamConvolveParams) == size))
     {
         switch (ovx_port)
@@ -478,7 +478,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelConvolveGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

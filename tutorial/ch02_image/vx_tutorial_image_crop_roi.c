@@ -269,7 +269,7 @@ vx_image  load_image_from_handle_from_file(
                 &width, &height, &stride, &df, &data_ptr,
                 bmp_file_context);
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         vx_imagepatch_addressing_t image_addr[1];
         void *ptrs[1];

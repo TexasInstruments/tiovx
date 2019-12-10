@@ -76,7 +76,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             vx_uint32 num_params,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_uint32 i;
 
@@ -84,7 +84,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
     {
         /* Number of parameters should be a minimum of TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2 */
         /* config, network, create params, inArgs, outArgs, mininum 1-input, minimum 1-output */
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
       /* Verify that parameters[0[ and parameteres[1] and at least the first two tensors contain objects
@@ -96,12 +96,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         /* Check for NULL */
         if (NULL == parameters[i])
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
             break;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vx_user_data_object config = NULL;
         vx_char config_name[VX_MAX_REFERENCE_NAME];
@@ -115,12 +115,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         if ((config_size != sizeof(sTIDL_IOBufDesc_t)) ||
             (strncmp(config_name, "sTIDL_IOBufDesc_t", sizeof(config_name)) != 0))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'config' should be a user_data_object of type:\n sTIDL_IOBufDesc_t \n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       vx_user_data_object network = NULL;
       vx_char network_name[VX_MAX_REFERENCE_NAME];
@@ -134,12 +134,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
       if ((network_size < 1) ||
           (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
       {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "'network' should be a user_data_object of name:\n TIDL_network \n");
       }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       vx_user_data_object createParams = NULL;
       vx_char createParams_name[VX_MAX_REFERENCE_NAME];
@@ -153,12 +153,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
       if ((createParams_size != sizeof(TIDL_CreateParams)) ||
           (strncmp(createParams_name, "TIDL_CreateParams", sizeof(createParams_name)) != 0))
       {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "'createParams' should be a user_data_object of name:\n TIDL_CreateParams \n");
       }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       vx_user_data_object inArgs = NULL;
       vx_char inArgs_name[VX_MAX_REFERENCE_NAME];
@@ -172,12 +172,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
       if ((inArgs_size != sizeof(TIDL_InArgs)) ||
           (strncmp(inArgs_name, "TIDL_InArgs", sizeof(inArgs_name)) != 0))
       {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "'inArgs' should be a user_data_object of name:\n TIDL_inArgs \n");
       }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       vx_user_data_object outArgs = NULL;
       vx_char outArgs_name[VX_MAX_REFERENCE_NAME];
@@ -191,7 +191,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
       if ((outArgs_size != sizeof(TIDL_outArgs)) ||
           (strncmp(outArgs_name, "TIDL_outArgs", sizeof(outArgs_name)) != 0))
       {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "'outArgs' should be a user_data_object of name:\n TIDL_outArgs \n");
       }
     }
@@ -209,12 +209,12 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
     uint32_t i;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         /* Number of parameters are config + network + input data Q array + output data Q array
          * + 2 scalars corresponding to num_input_tensors & num_output_tensors + input tensors + output tensors */
@@ -232,11 +232,11 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if ( status == VX_SUCCESS)
+    if ( status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -246,7 +246,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
           status = vxAddParameterToKernel(kernel,
               index,
@@ -256,7 +256,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           );
           index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
           status = vxAddParameterToKernel(kernel,
               index,
@@ -266,7 +266,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           );
           index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
           status = vxAddParameterToKernel(kernel,
               index,
@@ -276,7 +276,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           );
           index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
           status = vxAddParameterToKernel(kernel,
               index,
@@ -288,7 +288,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         }
         for(i = 0; i < num_input_tensors; i++)
         {
-            if ( status == VX_SUCCESS)
+            if ( status == (vx_status)VX_SUCCESS)
             {
                 status = vxAddParameterToKernel(kernel,
                     index,
@@ -302,7 +302,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
 
         for(i = 0; i < num_output_tensors; i++)
         {
-            if ( status == VX_SUCCESS)
+            if ( status == (vx_status)VX_SUCCESS)
             {
                 status = vxAddParameterToKernel(kernel,
                     index,
@@ -314,7 +314,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             }
         }
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
@@ -327,11 +327,11 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
 #endif
         }
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if( status != VX_SUCCESS)
+        if( status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

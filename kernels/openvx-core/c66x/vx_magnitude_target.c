@@ -77,7 +77,7 @@ vx_status VX_CALLBACK tivxMagnitude(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
@@ -85,7 +85,7 @@ vx_status VX_CALLBACK tivxMagnitude(
     if ((num_params != 3U) || (NULL == obj_desc[0U]) || (NULL == obj_desc[1U]) ||
         (NULL == obj_desc[2U]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -130,7 +130,7 @@ vx_status VX_CALLBACK tivxMagnitude(
 
         if (VXLIB_SUCCESS != status)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src0_desc_target_ptr,
@@ -150,14 +150,14 @@ vx_status VX_CALLBACK tivxMagnitude(
 
 vx_status VX_CALLBACK tivxMagnitudeCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
 
 vx_status VX_CALLBACK tivxMagnitudeDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -195,11 +195,11 @@ void tivxAddTargetKernelMagnitude(void)
 
 void tivxRemoveTargetKernelMagnitude(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_magnitude_target_kernel);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vx_magnitude_target_kernel = NULL;
     }

@@ -64,31 +64,31 @@
 
 vx_status uc_superset2_create(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     memset(usecase, 0, sizeof(uc_superset2_t));
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->context = vxCreateContext();
         if (usecase->context == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->graph_0 = vxCreateGraph(usecase->context);
         if (usecase->graph_0 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_data_create(usecase);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_graph_0_create(usecase);
     }
@@ -98,9 +98,9 @@ vx_status uc_superset2_create(uc_superset2 usecase)
 
 vx_status uc_superset2_verify(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_graph_0_verify(usecase);
     }
@@ -110,9 +110,9 @@ vx_status uc_superset2_verify(uc_superset2 usecase)
 
 vx_status uc_superset2_run(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_graph_0_run(usecase);
     }
@@ -122,17 +122,17 @@ vx_status uc_superset2_run(uc_superset2 usecase)
 
 vx_status uc_superset2_delete(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_graph_0_delete(usecase);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = uc_superset2_data_delete(usecase);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseContext(&usecase->context);
     }
@@ -142,410 +142,410 @@ vx_status uc_superset2_delete(uc_superset2 usecase)
 
 vx_status uc_superset2_data_create(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_context context = usecase->context;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_15 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_15 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_15, "image_15");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_16 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_16 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_18 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_18 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_19 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_19 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_int32 value = 3;
 
         usecase->scalar_36 = vxCreateScalar(context, VX_TYPE_INT32, &value);
         if (usecase->scalar_36 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_int32 value = 5;
 
         usecase->scalar_37 = vxCreateScalar(context, VX_TYPE_INT32, &value);
         if (usecase->scalar_37 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->array_20 = vxCreateArray(context, VX_TYPE_KEYPOINT, 100);
         if (usecase->array_20 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_size value = 0;
 
         usecase->scalar_21 = vxCreateScalar(context, VX_TYPE_SIZE, &value);
         if (usecase->scalar_21 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_22 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_22 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_22, "image_22");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->pyramid_23 = vxCreatePyramid(context, 5, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->pyramid_23 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_24 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_24 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_24, "image_24");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_17 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_17 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_bool value = (vx_bool)vx_true_e;
 
         usecase->scalar_27 = vxCreateScalar(context, VX_TYPE_BOOL, &value);
         if (usecase->scalar_27 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->array_25 = vxCreateArray(context, VX_TYPE_KEYPOINT, 100);
         if (usecase->array_25 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_size value = 0;
 
         usecase->scalar_26 = vxCreateScalar(context, VX_TYPE_SIZE, &value);
         if (usecase->scalar_26 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->pyramid_28 = vxCreatePyramid(context, 5, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->pyramid_28 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->array_29 = vxCreateArray(context, VX_TYPE_KEYPOINT, 100);
         if (usecase->array_29 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_enum value = VX_TERM_CRITERIA_EPSILON;
 
         usecase->scalar_40 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_40 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 1;
 
         usecase->scalar_41 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_41 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 value = 10;
 
         usecase->scalar_42 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_42 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_bool value = (vx_bool)vx_true_e;
 
         usecase->scalar_43 = vxCreateScalar(context, VX_TYPE_BOOL, &value);
         if (usecase->scalar_43 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_size value = 9;
 
         usecase->scalar_44 = vxCreateScalar(context, VX_TYPE_SIZE, &value);
         if (usecase->scalar_44 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_13 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_RGB);
         if (usecase->image_13 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_13, "image_13");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_14 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_RGBX);
         if (usecase->image_14 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_14, "image_14");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_11 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_11 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_11, "image_11");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->distribution_12 = vxCreateDistribution(context, 10, 1, 100);
         if (usecase->distribution_12 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_1 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_1, "image_1");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_2 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_2 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_float32 value = 0;
 
         usecase->scalar_3 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_3 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_4 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_4 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_4, "image_4");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint8 value = 0;
 
         usecase->scalar_5 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_5 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint8 value = 255;
 
         usecase->scalar_6 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_6 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->array_7 = vxCreateArray(context, VX_TYPE_COORDINATES2D, 100);
         if (usecase->array_7 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->array_8 = vxCreateArray(context, VX_TYPE_COORDINATES2D, 100);
         if (usecase->array_8 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 value = 10;
 
         usecase->scalar_9 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_9 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_uint32 value = 100;
 
         usecase->scalar_10 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_10 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_31 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_31 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_31, "image_31");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->pyramid_32 = vxCreatePyramid(context, 5, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_S16);
         if (usecase->pyramid_32 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_33 = vxCreateImage(context, 20, 15, VX_DF_IMAGE_U8);
         if (usecase->image_33 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_33, "image_33");
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->image_34 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
         if (usecase->image_34 == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetReferenceName( (vx_reference)usecase->image_34, "image_34");
         }
@@ -556,165 +556,165 @@ vx_status uc_superset2_data_create(uc_superset2 usecase)
 
 vx_status uc_superset2_data_delete(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_15);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_16);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_18);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_19);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_36);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_37);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->array_20);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_21);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_22);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->pyramid_23);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_24);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_17);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_27);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->array_25);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_26);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->pyramid_28);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->array_29);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_40);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_41);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_42);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_43);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_44);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_13);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_14);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_11);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->distribution_12);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_1);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_2);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_3);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_4);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_5);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_6);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->array_7);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->array_8);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_9);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->scalar_10);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_31);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->pyramid_32);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_33);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_34);
     }
@@ -944,11 +944,11 @@ static vx_node usecase_node_create_node_51 (
 
 vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_graph graph = usecase->graph_0;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_38 = usecase_node_create_node_38 (
             graph ,
@@ -962,12 +962,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->scalar_21 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_38, "node_38");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_38, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_35 = usecase_node_create_node_35 (
             graph ,
@@ -975,12 +975,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->pyramid_23 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_35, "node_35");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_35, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_39 = usecase_node_create_node_39 (
             graph ,
@@ -991,12 +991,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->scalar_26 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_39, "node_39");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_39, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_45 = usecase_node_create_node_45 (
             graph ,
@@ -1012,12 +1012,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->scalar_44 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_45, "node_45");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_45, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_46 = usecase_node_create_node_46 (
             graph ,
@@ -1025,12 +1025,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->image_14 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_46, "node_46");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_46, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_47 = usecase_node_create_node_47 (
             graph ,
@@ -1038,12 +1038,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->distribution_12 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_47, "node_47");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_47, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_48 = usecase_node_create_node_48 (
             graph ,
@@ -1052,12 +1052,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->scalar_3 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_48, "node_48");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_48, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_49 = usecase_node_create_node_49 (
             graph ,
@@ -1070,12 +1070,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->scalar_10 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_49, "node_49");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_49, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_50 = usecase_node_create_node_50 (
             graph ,
@@ -1084,12 +1084,12 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->image_33 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_50, "node_50");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_50, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         usecase->node_51 = usecase_node_create_node_51 (
             graph ,
@@ -1098,13 +1098,13 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
             usecase->image_34 
           );
         status = vxSetReferenceName( (vx_reference)usecase->node_51, "node_51");
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxSetNodeTarget(usecase->node_51, VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxSetReferenceName( (vx_reference)usecase->graph_0, "graph_0");
     }
@@ -1114,51 +1114,51 @@ vx_status uc_superset2_graph_0_create(uc_superset2 usecase)
 
 vx_status uc_superset2_graph_0_delete(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_graph graph = usecase->graph_0;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_38 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_35 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_39 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_45 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_46 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_47 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_48 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_49 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_50 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_51 );
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxReleaseGraph(&graph);
     }
@@ -1170,11 +1170,11 @@ vx_status uc_superset2_graph_0_delete(uc_superset2 usecase)
 
 vx_status uc_superset2_graph_0_verify(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_graph graph = usecase->graph_0;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxVerifyGraph(graph);
     }
@@ -1184,11 +1184,11 @@ vx_status uc_superset2_graph_0_verify(uc_superset2 usecase)
 
 vx_status uc_superset2_graph_0_run(uc_superset2 usecase)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_graph graph = usecase->graph_0;
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         status = vxProcessGraph(graph);
     }

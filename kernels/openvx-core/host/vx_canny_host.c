@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -117,11 +117,11 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_image)parameters[TIVX_KERNEL_CANNY_INPUT_IDX];
         hyst = (vx_threshold)parameters[TIVX_KERNEL_CANNY_HYST_IDX];
@@ -133,7 +133,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
@@ -164,30 +164,30 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != input_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if ((VX_TYPE_UINT8 != hyst_type) &&
             (VX_TYPE_INT16 != hyst_type))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'hyst' should be a threshold of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
         }
 
         if (VX_TYPE_INT32 != gradient_size_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'gradient_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
         }
 
         if (VX_TYPE_ENUM != norm_type_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'norm_type' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
@@ -195,7 +195,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -204,19 +204,19 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (input_h != output_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
@@ -225,36 +225,36 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((3 != gradient_size_val) &&
             (5 != gradient_size_val) &&
             (7 != gradient_size_val))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'gradient_size' should have a value of either 3, 5, or 7 \n");
         }
 
         if ((VX_NORM_L1 != norm_type_val) &&
             (VX_NORM_L2 != norm_type_val))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'norm_type' should be either VX_NORM_L1 or VX_NORM_L2 \n");
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_BORDER_UNDEFINED != border.mode)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for canny \n");
         }
     }
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
@@ -270,7 +270,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
     vx_scalar gradient_size;
     vx_int32 gradient_size_val;
@@ -283,21 +283,21 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         gradient_size = (vx_scalar)parameters[TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -327,12 +327,12 @@ vx_status tivxAddKernelCanny(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -346,7 +346,7 @@ vx_status tivxAddKernelCanny(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -359,7 +359,7 @@ vx_status tivxAddKernelCanny(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -369,7 +369,7 @@ vx_status tivxAddKernelCanny(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -379,7 +379,7 @@ vx_status tivxAddKernelCanny(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -389,7 +389,7 @@ vx_status tivxAddKernelCanny(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -398,17 +398,17 @@ vx_status tivxAddKernelCanny(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

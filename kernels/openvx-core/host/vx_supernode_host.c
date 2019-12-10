@@ -84,7 +84,7 @@ vx_status tivxAddKernelSuperNode(vx_context context)
 
     status = vxGetStatus((vx_reference)kernel);
 
-    if ( status == VX_SUCCESS)
+    if ( status == (vx_status)VX_SUCCESS)
     {
         /* add supported target's */
         tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
@@ -92,7 +92,7 @@ vx_status tivxAddKernelSuperNode(vx_context context)
 
         status = vxFinalizeKernel(kernel);
 
-        if( status != VX_SUCCESS)
+        if( status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

@@ -286,14 +286,14 @@ void vx_tutorial_image_color_convert()
     show_node_attributes(node1);
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" Executing graph ...\n");
 
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
          * before this function will pass.
          *
          * \code
@@ -477,7 +477,7 @@ void show_graph_attributes(vx_graph graph)
 void show_node_attributes(vx_node node)
 {
     vx_uint32 num_params=0, ref_count=0;
-    vx_status status=VX_FAILURE;
+    vx_status status=(vx_status)VX_FAILURE;
     vx_perf_t perf={0};
     vx_char *ref_name=NULL;
     char ref_name_invalid[MAX_ATTRIBUTE_NAME];
@@ -499,11 +499,11 @@ void show_node_attributes(vx_node node)
 
     switch(status)
     {
-        case VX_SUCCESS:
-            strncpy(status_name, "VX_SUCCESS", MAX_ATTRIBUTE_NAME);
+        case (vx_status)VX_SUCCESS:
+            strncpy(status_name, "(vx_status)VX_SUCCESS", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_FAILURE:
-            strncpy(status_name, "VX_FAILURE", MAX_ATTRIBUTE_NAME);
+        case (vx_status)VX_FAILURE:
+            strncpy(status_name, "(vx_status)VX_FAILURE", MAX_ATTRIBUTE_NAME);
             break;
         default:
             strncpy(status_name, "VX_FAILURE_OTHER", MAX_ATTRIBUTE_NAME);

@@ -67,7 +67,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
     vx_context context, vx_size levels, vx_float32 scale, vx_uint32 width,
     vx_uint32 height, vx_df_image format)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_pyramid prmd = NULL;
     vx_uint32 i;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
@@ -77,55 +77,55 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         if (width == 0)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Width is equal to 0\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         if (height == 0)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Height is equal to 0\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         if (levels == 0)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels is equal to 0\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         if ((scale != VX_SCALE_PYRAMID_HALF) &&
             (scale != VX_SCALE_PYRAMID_ORB))
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Invalid scale value\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         if (levels > TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels greater than max allowable\n");
             VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         if ((scale == VX_SCALE_PYRAMID_ORB) &&
             (levels > TIVX_PYRAMID_MAX_LEVELS_ORB))
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Orb levels are greater than max allowable\n");
             VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB in tiovx/include/TI/tivx_config.h\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if ((VX_SUCCESS == status) &&
+        if (((vx_status)VX_SUCCESS == status) &&
             (scale == VX_SCALE_PYRAMID_ORB))
         {
             tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", levels);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", levels);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
                 VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)prmd) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)prmd) == (vx_status)VX_SUCCESS) &&
                 (prmd->base.type == VX_TYPE_PYRAMID))
             {
                 /* assign refernce type specific callback's */
@@ -140,10 +140,10 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 {
                     vxReleasePyramid(&prmd);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate prmd object descriptor\n");
                     prmd = (vx_pyramid)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -161,7 +161,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 
                     status = ownInitPyramid(prmd);
 
-                    if (VX_SUCCESS != status)
+                    if ((vx_status)VX_SUCCESS != status)
                     {
                         vxReleasePyramid(&prmd);
                     }
@@ -194,7 +194,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     else
     {
         img = (vx_image)ownGetErrorObject(prmd->base.context,
-            VX_ERROR_INVALID_PARAMETERS);
+            (vx_status)VX_ERROR_INVALID_PARAMETERS);
     }
 
     return (img);
@@ -223,7 +223,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
         prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
             VX_EXTERNAL, &context->base);
 
-        if ((vxGetStatus((vx_reference)prmd) == VX_SUCCESS) &&
+        if ((vxGetStatus((vx_reference)prmd) == (vx_status)VX_SUCCESS) &&
             (prmd->base.type == VX_TYPE_PYRAMID))
         {
             /* assign refernce type specific callback's */
@@ -238,10 +238,10 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             {
                 vxReleasePyramid(&prmd);
 
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                     "Could not allocate prmd object descriptor\n");
                 prmd = (vx_pyramid)ownGetErrorObject(
-                    context, VX_ERROR_NO_RESOURCES);
+                    context, (vx_status)VX_ERROR_NO_RESOURCES);
             }
             else
             {
@@ -281,7 +281,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 vx_status ownInitVirtualPyramid(
     vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
@@ -308,14 +308,14 @@ vx_status ownInitVirtualPyramid(
 vx_status VX_API_CALL vxQueryPyramid(
     vx_pyramid prmd, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
             || (prmd->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -330,7 +330,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid levels failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PYRAMID_SCALE:
@@ -341,7 +341,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid scale failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PYRAMID_WIDTH:
@@ -352,7 +352,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid width failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PYRAMID_HEIGHT:
@@ -363,7 +363,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid height failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_PYRAMID_FORMAT:
@@ -373,13 +373,13 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 else
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid format failed\n");
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -389,7 +389,7 @@ vx_status VX_API_CALL vxQueryPyramid(
 
 static vx_status ownAllocPyramidBuffer(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
     vx_pyramid prmd = (vx_pyramid)ref;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
@@ -408,7 +408,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                 {
                     status = img->base.mem_alloc_callback((vx_reference)img);
 
-                    if (VX_SUCCESS != status)
+                    if ((vx_status)VX_SUCCESS != status)
                     {
                         break;
                     }
@@ -416,20 +416,20 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Image level %d is NULL\n", i);
-                    status = VX_ERROR_INVALID_VALUE;
+                    status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Pyramid base object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Reference type is not pyramid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -446,7 +446,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
     for (i = 0; i < obj_desc->num_levels; i++)
     {
         if ((NULL != prmd->img[i]) &&
-            (vxGetStatus((vx_reference)prmd->img[i]) == VX_SUCCESS))
+            (vxGetStatus((vx_reference)prmd->img[i]) == (vx_status)VX_SUCCESS))
         {
             /* increment the internal counter on the image, not the
                external one */
@@ -464,12 +464,12 @@ static vx_status ownDestructPyramid(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownInitPyramid(vx_pyramid prmd)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_image img;
     vx_uint32 i, w, h, j;
     vx_float32 t1, scale;
@@ -487,7 +487,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         img = vxCreateImage(prmd->base.context, w, h,
             obj_desc->format);
 
-        if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
+        if (vxGetStatus((vx_reference)img) == (vx_status)VX_SUCCESS)
         {
             prmd->img[i] = img;
             obj_desc->obj_desc_id[i] =
@@ -519,15 +519,15 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         }
         else
         {
-            status = VX_FAILURE;
-            vxAddLogEntry(&prmd->base.context->base, VX_ERROR_NO_RESOURCES,
+            status = (vx_status)VX_FAILURE;
+            vxAddLogEntry(&prmd->base.context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                "Could not allocate image object descriptor\n");
             VX_PRINT(VX_ZONE_ERROR,"Could not allocate image object descriptor\n");
             break;
         }
     }
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         for (j = 0; j < i; j ++)
         {

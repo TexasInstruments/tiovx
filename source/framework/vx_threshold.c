@@ -56,7 +56,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
             thresh = (vx_threshold)ownCreateReference(context, VX_TYPE_THRESHOLD,
                 VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)thresh) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)thresh) == (vx_status)VX_SUCCESS) &&
                 (thresh->base.type == VX_TYPE_THRESHOLD))
             {
                 /* assign refernce type specific callback's */
@@ -71,10 +71,10 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 {
                     vxReleaseThreshold(&thresh);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate thresh object descriptor\n");
                     thresh = (vx_threshold)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -92,7 +92,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
 vx_status VX_API_CALL vxQueryThreshold(
     vx_threshold thresh, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
@@ -101,7 +101,7 @@ vx_status VX_API_CALL vxQueryThreshold(
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -116,7 +116,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_THRESHOLD_VALUE:
@@ -128,7 +128,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 }
                 else
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold value failed\n");
                 }
                 break;
@@ -141,7 +141,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold lower failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_THRESHOLD_UPPER:
@@ -153,7 +153,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold upper failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_TRUE_VALUE:
@@ -164,7 +164,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold true value failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_FALSE_VALUE:
@@ -175,7 +175,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold false value failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_DATA_TYPE:
@@ -186,7 +186,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryThreshold: Query threshold data type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
@@ -200,7 +200,7 @@ vx_status VX_API_CALL vxQueryThreshold(
 VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_threshold thresh, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
@@ -209,7 +209,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -225,7 +225,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold value failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_THRESHOLD_LOWER:
@@ -237,7 +237,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold lower failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_THRESHOLD_UPPER:
@@ -249,7 +249,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold upper failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_TRUE_VALUE:
@@ -260,7 +260,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold true value failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_FALSE_VALUE:
@@ -271,7 +271,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold false value failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_THRESHOLD_TYPE:
@@ -286,18 +286,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                     else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Invalid threshold type\n");
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Set threshold type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetThresholdAttribute: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -307,7 +307,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
 
 static vx_status ownAllocThresholdBuffer(vx_reference ref)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status ownDestructThreshold(vx_reference ref)
@@ -319,7 +319,7 @@ static vx_status ownDestructThreshold(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 

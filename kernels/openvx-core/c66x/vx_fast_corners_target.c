@@ -85,7 +85,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivxFastCornersParams *prms = NULL;
     tivx_obj_desc_image_t *src;
@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
 
     if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -107,13 +107,13 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FAST_CORNERS_INPUT_IDX];
         arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX];
@@ -127,14 +127,14 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxFastCornersParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *arr_target_ptr;
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
 
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -201,7 +201,7 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivx_obj_desc_image_t *img;
@@ -210,7 +210,7 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
 
     if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -219,13 +219,13 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_FAST_CORNERS_INPUT_IDX];
@@ -240,19 +240,19 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
             prms->corners = tivxMemAlloc(arr->capacity * 4U, TIVX_MEM_EXTERNAL);
             if (NULL == prms->corners)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->strength = tivxMemAlloc(arr->capacity, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->strength)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 if (((img->imagepatch_addr[0].dim_x*4u) + arr->capacity + 30u) >
                         512u)
@@ -270,16 +270,16 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
                 prms->scratch = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch)
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxFastCornersParams));
@@ -320,7 +320,7 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivx_obj_desc_array_t *arr;
@@ -328,7 +328,7 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
 
     if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -337,13 +337,13 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         arr = (tivx_obj_desc_array_t *)obj_desc[
             TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX];
@@ -351,7 +351,7 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxFastCornersParams) == size))
         {
             if (prms->corners)

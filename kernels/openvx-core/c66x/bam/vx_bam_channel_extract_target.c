@@ -108,7 +108,7 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
     tivx_obj_desc_scalar_t *ch)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx;
     tivx_bam_kernel_details_t kernel_details;
     VXLIB_bufParams2D_t vxlib_src[3], vxlib_dst;
@@ -135,7 +135,7 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
 
     status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
@@ -160,7 +160,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
     tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
     tivx_obj_desc_scalar_t *ch)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
     tivx_bam_kernel_details_t kernel_details;
     VXLIB_bufParams2D_t vxlib_src[2], vxlib_dst;
@@ -206,16 +206,16 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
             }
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
@@ -266,7 +266,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
     tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
     tivx_obj_desc_scalar_t *ch)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
     tivx_bam_kernel_details_t kernel_details;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
@@ -308,16 +308,16 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
             }
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
@@ -371,7 +371,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
     tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
     tivx_obj_desc_scalar_t *ch)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
     tivx_bam_kernel_details_t kernel_details;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
@@ -402,20 +402,20 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
@@ -458,7 +458,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -474,7 +474,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
     tivx_bam_kernel_details_t kernel_details[],
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
 
     if (VX_CHANNEL_Y == ch->data.enm)
@@ -490,7 +490,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
         plane_idx = 2;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
@@ -544,7 +544,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
     tivx_bam_kernel_details_t kernel_details[],
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
 
     if (VX_CHANNEL_Y == ch->data.enm)
@@ -584,11 +584,11 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
         default:
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphNv12Nv21Input: \
                                     Non existing channel selection\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if(ch->data.enm == VX_CHANNEL_Y)
         {
@@ -628,7 +628,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphNv12Nv21Input: \
                                         channelExtract_1of2_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
@@ -645,7 +645,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
     tivx_bam_kernel_details_t kernel_details[],
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
 
     switch(ch->data.enm)
@@ -683,11 +683,11 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
         default:
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
                                     Non existing channel selection\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if(ch->data.enm == VX_CHANNEL_Y)
         {
@@ -709,7 +709,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
                                         channelExtract_1of2_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
@@ -736,7 +736,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphYuyvUyvyInput: \
                                         channelExtract_1of4_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
@@ -753,7 +753,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
     tivx_bam_kernel_details_t kernel_details[],
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
 
     switch(ch->data.enm)
@@ -780,17 +780,17 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
                                         Non existing channel selection\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
                                     Non existing channel selection\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if(src->format == VX_DF_IMAGE_RGB)
         {
@@ -812,7 +812,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
                                         channelExtract_1of3_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else if(src->format == VX_DF_IMAGE_RGBX)
@@ -835,7 +835,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph.tivxBamChannelExtractInBamGraphRgbRgbxInput: \
                                         channelExtract_1of4_i8u_o8u, kernel_params is null or the size is not as expected\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
@@ -850,7 +850,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint8_t plane_idx = 0;
     tivxBamChannelExtractParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
@@ -862,7 +862,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
@@ -872,14 +872,14 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxBamChannelExtractParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
@@ -908,7 +908,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -919,7 +919,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
     uint16_t num_params, void *priv_arg)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *ch;
     tivxBamChannelExtractParams *prms = NULL;
@@ -928,7 +928,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
@@ -969,15 +969,15 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxBamChannelExtractParams));
@@ -999,7 +999,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxBamChannelExtractParams *prms = NULL;
 
@@ -1007,12 +1007,12 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxBamChannelExtractParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -1083,7 +1083,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_scalar_t *ch;
     tivxBamChannelExtractParams *prms = NULL;
@@ -1097,7 +1097,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
     ch = (tivx_obj_desc_scalar_t *)obj_desc[
         TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         prms = tivxMemAlloc(sizeof(tivxBamChannelExtractParams), TIVX_MEM_EXTERNAL);
 
@@ -1137,10 +1137,10 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph: prms mem allocation failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxBamChannelExtractParams));
@@ -1167,7 +1167,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxBamChannelExtractParams) == size))
     {
         switch (ovx_port)
@@ -1187,7 +1187,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
                         break;
                     default:
                         VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                 }
                 break;
@@ -1197,7 +1197,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

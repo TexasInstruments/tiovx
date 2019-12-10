@@ -208,13 +208,13 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
      * \code
      */
     status = phase_rgb_user_kernel_add(context, add_as_target_kernel);
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         printf(" vx_tutorial_graph_user_kernel: ERROR: unable to add user kernel !!!\n");
     }
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" Loading file %s ...\n", IN_FILE_NAME);
 
@@ -285,7 +285,7 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
          * Ouptut image is saved to specified output file.
          * \code
          */
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             printf(" Executing graph ...\n");
 

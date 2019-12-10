@@ -76,14 +76,14 @@ vx_status tivxEventCreate(tivx_event *event)
     pthread_mutexattr_t mutex_attr;
     pthread_condattr_t cond_attr;
     tivx_event tmp_event;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     tmp_event = (tivx_event)malloc(sizeof(tivx_linux_event_t));
     if(tmp_event==NULL)
     {
         *event = NULL;
         VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Memory allocation failed\n");
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
     else
     {
@@ -100,7 +100,7 @@ vx_status tivxEventCreate(tivx_event *event)
             free(tmp_event);
             *event = NULL;
             VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Mutex initialization failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
         {
@@ -116,7 +116,7 @@ vx_status tivxEventCreate(tivx_event *event)
 
 vx_status tivxEventDelete(tivx_event *event)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if(*event)
     {
@@ -124,7 +124,7 @@ vx_status tivxEventDelete(tivx_event *event)
         pthread_mutex_destroy(&(*event)->lock);
         free(*event);
         *event = NULL;
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
 
     return (status);
@@ -132,7 +132,7 @@ vx_status tivxEventDelete(tivx_event *event)
 
 vx_status tivxEventPost(tivx_event event)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(event)
     {
@@ -147,7 +147,7 @@ vx_status tivxEventPost(tivx_event event)
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventPost: Mutex post failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -156,7 +156,7 @@ vx_status tivxEventPost(tivx_event event)
 
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(event)
     {
@@ -171,14 +171,14 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 {
                     /* clear event */
                     event->is_set = 0;
-                    status = VX_SUCCESS;
+                    status = (vx_status)VX_SUCCESS;
                     done = (vx_bool)vx_true_e;
                 }
                 else
                 if(timeout==TIVX_EVENT_TIMEOUT_NO_WAIT)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     done = (vx_bool)vx_true_e;
                 }
                 else
@@ -191,7 +191,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Mutex unlock failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -200,7 +200,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
 vx_status tivxEventClear(tivx_event event)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(event)
     {
@@ -213,7 +213,7 @@ vx_status tivxEventClear(tivx_event event)
         if(status != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventClear: Mutex lock failed\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 

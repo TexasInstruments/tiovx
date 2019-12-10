@@ -551,14 +551,14 @@ void vx_tutorial_graph_image_gradients()
         }
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         printf(" Executing graph ...\n");
 
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
          * before this function will pass.
          *
          * \code

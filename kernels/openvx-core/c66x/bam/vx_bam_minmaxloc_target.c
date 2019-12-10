@@ -121,13 +121,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
     uint32_t size;
 
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -135,23 +135,23 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxMinMaxLocParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         uint8_t *src_addr;
@@ -271,13 +271,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
 
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -285,16 +285,16 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         tivx_obj_desc_scalar_t *sc[4U];
@@ -372,7 +372,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
                                                        &prms->graph_handle);
             }
 
-            if ((VX_SUCCESS == status) && (NULL != prms->graph_handle))
+            if (((vx_status)VX_SUCCESS == status) && (NULL != prms->graph_handle))
             {
                 tivxBamControlNode(prms->graph_handle, 0,
                                    VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_CNT_PTR,
@@ -386,10 +386,10 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxMinMaxLocParams));
@@ -410,13 +410,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxMinMaxLocParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -424,16 +424,16 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMinMaxLocParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -500,14 +500,14 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: Obj_desc param count doesn't match TIVX_KERNEL_MML_MAX_PARAMS\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -516,11 +516,11 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: one or more Obj_desc params are NULL\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         tivx_obj_desc_array_t *arr[2U];
@@ -538,10 +538,10 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
             (sizeof(BAM_VXLIB_minMaxLoc_i8u_params) != *size))
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: minMaxLoc_i8u, kernel_params is null or the size is not as expected or prms are NULL\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             memset(prms, 0, sizeof(tivxMinMaxLocParams));
 
@@ -582,7 +582,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
             prms->bam_node_num = *bam_node_cnt;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxMinMaxLocParams));
@@ -609,7 +609,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxMinMaxLocParams) == size))
     {
         switch (ovx_port)
@@ -620,7 +620,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }
@@ -632,20 +632,20 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
     uint32_t size;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
         (sizeof(tivxMinMaxLocParams) != size))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_scalar_t *sc[4U];
         tivx_obj_desc_array_t *arr[2U];
@@ -683,7 +683,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
             prms->pMax_cnt = &prms->max_cnt;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             status = tivxBamControlNode(*g_handle, prms->bam_node_num,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_CNT_PTR,
@@ -724,20 +724,20 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPostprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxMinMaxLocParams *prms = NULL;
     uint32_t size;
 
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
         (sizeof(tivxMinMaxLocParams) != size))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t *src;
         tivx_obj_desc_scalar_t *sc[4U];

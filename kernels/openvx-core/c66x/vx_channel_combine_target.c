@@ -79,7 +79,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc;
     tivx_obj_desc_image_t *src1_desc;
     tivx_obj_desc_image_t *src2_desc;
@@ -92,7 +92,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -318,18 +318,18 @@ vx_status VX_CALLBACK tivxChannelCombine(
                     }
                     else
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                     }
                 }
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
 
@@ -372,7 +372,7 @@ vx_status VX_CALLBACK tivxChannelCombineCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -382,14 +382,14 @@ vx_status VX_CALLBACK tivxChannelCombineDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
 
 void tivxAddTargetKernelChannelCombine(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -398,20 +398,20 @@ void tivxAddTargetKernelChannelCombine(void)
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     if ( self_cpu == TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_combine_target_kernel = tivxAddTargetKernel(
                             VX_KERNEL_CHANNEL_COMBINE,
@@ -426,10 +426,10 @@ void tivxAddTargetKernelChannelCombine(void)
 
 void tivxRemoveTargetKernelChannelCombine(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_channel_combine_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_combine_target_kernel = NULL;
     }

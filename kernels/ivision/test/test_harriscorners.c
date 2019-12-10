@@ -101,13 +101,13 @@ static void CheckOutput(vx_array arr)
     vx_int16 x, y, num_missmatch = 0;
 
     status = vxQueryArray (arr, VX_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         ASSERT(num_items == TIVX_HC_NUM_REF_KEY_POINTS);
 
         status = vxMapArrayRange(arr, 0, num_items, &map_id,
             &stride, &base, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
 
             for (cnt = 0u; cnt < num_items; cnt ++)

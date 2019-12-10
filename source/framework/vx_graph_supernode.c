@@ -79,7 +79,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
     uint32_t prm_cur_dir, prm_next_dir;
     uint32_t cnt = 0;
     vx_reference ref1, ref2;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_super_node_t *obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;;
     vx_bool found;
     vx_reference found_external_refs[TIVX_SUPER_NODE_MAX_EDGES];
@@ -161,11 +161,11 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                     /* add node_next_tmp as input node for super node if not already added */
                                                     status = ownNodeAddInNode(super_node->node, node_next_tmp);
 
-                                                    if(status == VX_SUCCESS)
+                                                    if(status == (vx_status)VX_SUCCESS)
                                                     {
                                                         /* replace super node as output node for next node and remove duplicates */
                                                         status = ownNodeReplaceOutNode(node_next, node_cur, super_node->node);
-                                                        if (status != VX_SUCCESS)
+                                                        if (status != (vx_status)VX_SUCCESS)
                                                         {
                                                             VX_PRINT(VX_ZONE_ERROR,"Replace super node as another node's output failed\n");
                                                         }
@@ -210,7 +210,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                 }
                                 else
                                 {
-                                    status = VX_ERROR_NO_RESOURCES;
+                                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
                                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                     break;
@@ -223,7 +223,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
         }
     }
 
-    if ( VX_SUCCESS == status )
+    if ( (vx_status)VX_SUCCESS == status )
     {
         num_found_external_refs = 0;
 
@@ -320,11 +320,11 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
 
                                                             status = ownNodeAddOutNode(super_node->node, node_next_tmp);
 
-                                                            if(status == VX_SUCCESS)
+                                                            if(status == (vx_status)VX_SUCCESS)
                                                             {
                                                                 /* replace super node as input node for next node and remove duplicates */
                                                                 status = ownNodeReplaceInNode(node_next, node_cur, super_node->node);
-                                                                if (status != VX_SUCCESS)
+                                                                if (status != (vx_status)VX_SUCCESS)
                                                                 {
                                                                     VX_PRINT(VX_ZONE_ERROR,"Replace super node as another node's input failed\n");
                                                                 }
@@ -337,7 +337,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                     }
                                                     else
                                                     {
-                                                        status = VX_ERROR_NO_RESOURCES;
+                                                        status = (vx_status)VX_ERROR_NO_RESOURCES;
                                                         VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
                                                         VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                                         break;
@@ -372,7 +372,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                     }
                                     else
                                     {
-                                        status = VX_ERROR_NO_RESOURCES;
+                                        status = (vx_status)VX_ERROR_NO_RESOURCES;
                                         VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
                                         VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                         break;
@@ -394,7 +394,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
 static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node)
 {
     uint32_t i, num_nodes_in_supernode, target_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     num_nodes_in_supernode =
         ((tivx_obj_desc_super_node_t *)super_node->base.obj_desc)->num_nodes;
@@ -409,7 +409,7 @@ static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node)
     {
         if(target_id != ((tivx_obj_desc_node_t *)super_node->nodes[i]->obj_desc[0])->target_id)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
@@ -419,7 +419,7 @@ static vx_status ownGraphSuperNodeCheckTarget(tivx_super_node super_node)
 vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 {
     uint32_t i, j, cnt, num_nodes_in_supernode;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_super_node super_node;
     tivx_obj_desc_super_node_t *obj_desc = NULL;
     tivx_obj_desc_node_t *node_obj_desc = NULL;
@@ -451,17 +451,17 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
         if(num_nodes_in_supernode != cnt)
         {
             VX_PRINT(VX_ZONE_ERROR,"Supernode node count not equal to number of nodes in graph associated with supernode\n");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
 
         /* Check for target mismatch error */
         status = ownGraphSuperNodeCheckTarget(super_node);
 
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have the same target of all nodes within it\n", i);
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
 
@@ -481,7 +481,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             ownContextUnlock(graph->base.context);
@@ -489,7 +489,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
             if(is_continuous == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have continuity of all nodes within it\n", i);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
@@ -500,14 +500,14 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
          * Update graph node execution dependencies to point to/from supernodes */
         status = ownGraphCalcEdgeList(graph, super_node);
 
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] failed ownGraphCalcEdgeList\n", i);
             break;
         }
     }
 
-    if((status == VX_SUCCESS) && (graph->num_supernodes > 0))
+    if((status == (vx_status)VX_SUCCESS) && (graph->num_supernodes > 0))
     {
         vx_bool has_cycle;
 
@@ -527,7 +527,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
         if(has_cycle)
         {
               VX_PRINT(VX_ZONE_ERROR,"Supernode has cycles (output of supernode has path to input of same supernode))\n");
-              status = VX_FAILURE;
+              status = (vx_status)VX_FAILURE;
         }
     }
 

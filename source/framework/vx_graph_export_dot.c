@@ -498,7 +498,7 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
 
 static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
@@ -659,7 +659,7 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to open file [%s]", filename);
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     return status;
 }
@@ -762,7 +762,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
 
 static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
     snprintf(filename, TIVX_EXPORT_MAX_FILENAME, "%s/%s_3_data_ref_q_img.txt", output_file_path, output_file_prefix);
@@ -820,14 +820,14 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to open file [%s]", filename);
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     return status;
 }
 
 static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
     snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
@@ -994,14 +994,14 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to open file [%s]", filename);
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     return status;
 }
 
 static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
 
     snprintf(filename, TIVX_EXPORT_MAX_FILENAME,
@@ -1346,14 +1346,14 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to open file [%s]", filename);
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     return status;
 }
 
 vx_status tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if (   (NULL != graph)
         && (output_file_path!=NULL)
@@ -1362,28 +1362,28 @@ vx_status tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *out
         && (graph->verified == (vx_bool)vx_true_e))
     {
         status = tivxExportGraphTopLevelToDot(graph, output_file_path, output_file_prefix);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             status = tivxExportGraphPipelineToDot(graph, output_file_path, output_file_prefix);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             status = tivxExportGraphDataRefQueuesToDot(graph, output_file_path, output_file_prefix);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             status = tivxExportGraphFirstPipelineToDot(graph, output_file_path, output_file_prefix);
         }
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Unable to export graph to dot");
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid parameters or graph node not verified");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
 }

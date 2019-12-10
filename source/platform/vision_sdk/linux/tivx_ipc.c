@@ -77,16 +77,16 @@ vx_status tivxIpcSendMsg(
             vsdk_cpu_id,
             payload);
 
-        if( status != VX_SUCCESS)
+        if( status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: Send notification failed\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: Invalid CPU ID\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;

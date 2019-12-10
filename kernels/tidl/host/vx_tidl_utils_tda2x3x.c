@@ -375,12 +375,12 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   network = vxCreateUserDataObject(context, "TIDL_network", capacity + 1 + paramsSize, NULL );
   status = vxGetStatus((vx_reference)network);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     status = vxMapUserDataObject(network, 0, capacity + 1 + paramsSize, &map_id,
         (void **)&network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       if(network_buffer)
       {
@@ -403,7 +403,7 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
 
 vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum target_cpu) {
 
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   void      *network_buffer = NULL;
   vx_map_id  map_id_network;
   sTIDL_Network_t *net;
@@ -412,7 +412,7 @@ vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum 
   status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
       (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
         {
           if(network_buffer)
           {
@@ -446,7 +446,7 @@ vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum 
 
 int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t layersGroupCount[TIVX_CPU_ID_MAX]) {
 
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   void      *network_buffer = NULL;
   vx_map_id  map_id_network;
   sTIDL_Network_t *net;
@@ -458,7 +458,7 @@ int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t lay
   status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
       (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
         {
           if(network_buffer)
           {
@@ -494,7 +494,7 @@ int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t lay
 
 vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors, vx_enum target_cpu)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   vx_map_id map_id_config;
   sTIDL_IOBufDesc_t *ioBufDesc;
   vx_user_data_object   config= NULL;
@@ -504,12 +504,12 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
 
   status = vxGetStatus((vx_reference)config);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     status = vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
         (void **)&ioBufDesc, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       void      *network_buffer = NULL;
       vx_map_id  map_id_network;
@@ -518,7 +518,7 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
       status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
           (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
 
-      if (VX_SUCCESS == status)
+      if ((vx_status)VX_SUCCESS == status)
       {
         if(network_buffer)
         {
@@ -556,7 +556,7 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
 
 vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_file)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   int32_t i;
   uint32_t dataSize, readSize;
@@ -568,7 +568,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
   status = vxMapUserDataObject(network, 0, 0, &map_id,
       (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     if(network_buffer) {
 
@@ -580,7 +580,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
       if(fp_params == NULL)
       {
         printf("Unable to open file! %s \n", params_file);
-        return VX_FAILURE;
+        return (vx_status)VX_FAILURE;
       }
 
       /* pFlagShared2Target flag is used to indicate if each pointer to different layer's parameters has already been be converted from shared to target
@@ -777,12 +777,12 @@ vx_user_data_object vx_tidl_utils_setCreateParams(vx_context context, int32_t qu
 
     status = vxGetStatus((vx_reference)createParams);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(createParams, 0, capacity, &map_id,
                         (void **)&createParams_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(createParams_buffer)
             {
@@ -820,12 +820,12 @@ vx_user_data_object vx_tidl_utils_setInArgs(vx_context context)
 
     status = vxGetStatus((vx_reference)inArgs);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(inArgs, 0, capacity, &map_id,
                         (void **)&inArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(inArgs_buffer)
             {
@@ -859,12 +859,12 @@ vx_user_data_object vx_tidl_utils_setOutArgs(vx_context context)
 
     status = vxGetStatus((vx_reference)outArgs);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(outArgs, 0, capacity, &map_id,
                         (void **)&outArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if(outArgs_buffer)
             {

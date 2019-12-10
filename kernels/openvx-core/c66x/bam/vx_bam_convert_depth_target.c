@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxConvertDepthParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
@@ -123,7 +123,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
@@ -135,14 +135,14 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxConvertDepthParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -177,7 +177,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
                 BAM_VXLIB_CONVERTDEPTH_I16S_O8U_SET_PARAMS, &prms_1);
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             img_ptrs[0] = src_addr;
             img_ptrs[1] = dst_addr;
@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return (status);
@@ -198,7 +198,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivxConvertDepthParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -208,12 +208,12 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
@@ -281,10 +281,10 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxConvertDepthParams));
@@ -305,7 +305,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxConvertDepthParams *prms = NULL;
 
@@ -313,12 +313,12 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthDelete(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxConvertDepthParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -386,7 +386,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *dst;
     tivxConvertDepthParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_desc[2];
@@ -395,7 +395,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
@@ -431,7 +431,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -462,7 +462,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
 
@@ -470,10 +470,10 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxConvertDepthParams));
@@ -500,7 +500,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxConvertDepthParams) == size))
     {
         switch (ovx_port)
@@ -515,7 +515,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelConvertDepthGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }
@@ -527,7 +527,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthPreprocessInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxConvertDepthParams *prms = NULL;
     tivx_obj_desc_image_t *dst;
     uint32_t size;
@@ -546,13 +546,13 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthPreprocessInBamGraph(
     status = tivxGetTargetKernelInstanceContext(kernel,
         (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
         (sizeof(tivxConvertDepthParams) != size))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_S16 == dst->format)
         {
@@ -579,7 +579,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthPreprocessInBamGraph(
     }
     else
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     return status;

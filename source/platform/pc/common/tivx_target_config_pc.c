@@ -80,7 +80,7 @@ static void tivxTargetCreateTargetId(vx_enum target_id)
     target_create_prms.task_priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY;
 
     status = tivxTargetCreate(target_id, &target_create_prms);
-    if ((vx_status)VX_SUCCESS != status)
+    if ((vx_status)(vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
     }
@@ -91,7 +91,7 @@ static void tivxTargetDeleteTargetId(vx_enum target_id)
     vx_status status;
 
     status = tivxTargetDelete(target_id);
-    if ((vx_status)VX_SUCCESS != status)
+    if ((vx_status)(vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }

@@ -79,7 +79,7 @@ void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 vx_status tivxIpcSendMsg(
     vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if( (cpu_id < (vx_enum)TIVX_CPU_ID_MAX) && (NULL != g_ipc_handler))
     {
@@ -88,7 +88,7 @@ vx_status tivxIpcSendMsg(
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: IPC send msg failed\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;

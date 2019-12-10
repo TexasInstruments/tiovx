@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxThresholdParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
@@ -116,7 +116,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
@@ -124,14 +124,14 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxThresholdParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
     tivxThresholdParams *prms = NULL;
@@ -166,12 +166,12 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
@@ -231,10 +231,10 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxThresholdParams));
@@ -255,19 +255,19 @@ static vx_status VX_CALLBACK tivxKernelThresholdDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxThresholdParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxThresholdParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -335,7 +335,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxThresholdParams *prms = NULL;
     tivx_obj_desc_threshold_t *thr;
 
@@ -343,7 +343,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
             TIVX_KERNEL_THRESHOLD_THRESH_IDX];
@@ -377,7 +377,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -401,17 +401,17 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             prms->bam_node_num = *bam_node_cnt;
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxThresholdParams));
@@ -438,7 +438,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxThresholdParams) == size))
     {
         switch (ovx_port)
@@ -453,7 +453,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelThresholdGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

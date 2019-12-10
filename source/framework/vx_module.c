@@ -109,7 +109,7 @@ uint32_t ownGetModuleCount(void)
 VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish)
 {
     uint32_t idx;
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     ownCheckAndInitModule();
 
@@ -126,7 +126,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
                 g_module_table[idx].publish = publish;
                 g_module_table[idx].unpublish = unpublish;
                 tivxLogResourceAlloc("TIVX_MODULE_MAX", 1);
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 break;
             }
         }
@@ -134,13 +134,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Module table is full\n");
             VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: May need to increase the value of TIVX_MODULE_MAX in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Publish and/or unpublish are NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;
@@ -148,7 +148,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
 
 VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     uint32_t idx;
 
     ownCheckAndInitModule();
@@ -164,12 +164,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
         {
             g_module_table[idx].publish = NULL;
             g_module_table[idx].unpublish = NULL;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
             break;
         }
     }
 
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxUnRegisterModule: Unable to unregister module [%s]\n", name);
     }
@@ -180,7 +180,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
 VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_char *module)
 {
     uint32_t idx, kernels_loaded = 0;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     ownCheckAndInitModule();
     for(idx=0; idx<dimof(g_module_table); idx++)
@@ -194,7 +194,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
         {
             status = g_module_table[idx].publish(context);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 g_module_table[idx].is_loaded = (vx_bool)vx_true_e;
                 kernels_loaded ++;
@@ -208,10 +208,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
     }
     if((idx>=dimof(g_module_table)) && (0 == kernels_loaded))
     {
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Kernels can not be loaded since module %s has not yet been regstered.  Call tivxRegisterModule first.\n", module);
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
@@ -221,7 +221,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
 VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_char *module)
 {
     uint32_t idx;
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     ownCheckAndInitModule();
     for(idx=0; idx<dimof(g_module_table); idx++)
@@ -237,7 +237,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
         {
             status = g_module_table[idx].unpublish(context);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unublish function for module %s failed\n", module);
             }
@@ -248,7 +248,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
     if(idx>=dimof(g_module_table))
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to unload kernels for module %s\n", module);
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;

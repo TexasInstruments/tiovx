@@ -189,7 +189,7 @@ BAM_KernelDBdef gBAM_TI_kernelDBdef =
 
 vx_status tivxRegisterOpenVXCoreBamPlugins(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
     vx_uint32 num_kernels = dimof(bamKernelDB);
     vx_uint32 num_host_kernels = dimof(bamKernelHostDB);
@@ -203,7 +203,7 @@ vx_status tivxRegisterOpenVXCoreBamPlugins(void)
     if( (num_host_kernels < num_kernels) ||
         (num_exec_kernels < num_kernels))
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = (vx_status)VX_ERROR_NO_MEMORY;
         VX_PRINT(VX_ZONE_ERROR, "BAM DB size is too small\n");
     }
     else
@@ -235,7 +235,7 @@ vx_status tivxRegisterOpenVXCoreBamPlugins(void)
 
 vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kernelId)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     BAM_KernelId local_kernel_id;
 
     *kernelId = (BAM_KernelId)BAM_TI_KERNELID_UNDEFINED;
@@ -243,14 +243,14 @@ vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kerne
     if ((NULL == plugin) ||
         (NULL == kernelId))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Parameter is NULL\n");
     }
 
     /* First, check if plugin is already in DB */
     status = tivxBamGetKernelIdFromName(plugin->name, &local_kernel_id);
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         if ((BAM_KernelId)BAM_TI_KERNELID_UNDEFINED == local_kernel_id)
         {
@@ -274,7 +274,7 @@ vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kerne
             }
             else
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
                 VX_PRINT(VX_ZONE_ERROR, "tivxBamRegisterPlugin: Not enough memory to add new plugin\n");
                 VX_PRINT(VX_ZONE_ERROR, "tivxBamRegisterPlugin: May need to increase the value of TIVX_MAX_DSP_BAM_USER_PLUGINS in tiovx/include/TI/tivx_config.h\n");
             }
@@ -290,20 +290,20 @@ vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kerne
 
 vx_status tivxBamGetKernelIdFromName(const char *name, BAM_KernelId *kernelId)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
 
     if ((NULL == name) ||
         (NULL == kernelId))
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Parameter is NULL\n");
     }
     else
     {
         *kernelId = (BAM_KernelId)BAM_TI_KERNELID_UNDEFINED;
 
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             for(i = BAM_KERNELID_EXTERNAL_START; i < gNumActivePlugins; i++)
             {

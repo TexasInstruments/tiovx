@@ -144,7 +144,7 @@ static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc
     status = tivxQueueGet(&target->job_queue_handle,
                 &value, timeout);
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         *obj_desc_id = (uint16_t)value;
     }
@@ -727,7 +727,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t i, cnt, loop_max = 1;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
@@ -755,7 +755,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         if(target_kernel_instance == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeCreate: target_kernel_instance is NULL\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
             break;
         }
         else
@@ -850,7 +850,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                 }
             }
 
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 tivxTargetKernelInstanceFree(&target_kernel_instance);
                 break;
@@ -858,7 +858,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         }
     }
 
-    if (VX_SUCCESS != status)
+    if ((vx_status)VX_SUCCESS != status)
     {
         for (i = 0; i < cnt; i ++)
         {
@@ -878,7 +878,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
 static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t i, cnt, loop_max = 1;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
 
@@ -896,7 +896,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
         if(target_kernel_instance == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeDelete: target_kernel_instance is NULL\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
         {
@@ -932,7 +932,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
 static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     int16_t i;
     tivx_target_kernel_instance target_kernel_instance;
     tivx_obj_desc_t *params[TIVX_CMD_MAX_OBJ_DESCS];
@@ -944,7 +944,7 @@ static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxTargetNodeSendCommand: target_kernel_instance is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -965,7 +965,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t cnt, loop_max = 1;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
@@ -980,7 +980,7 @@ static vx_status tivxTargetNodeDescNodeControl(
             {
                 status = tivxTargetNodeSendCommand(cmd_obj_desc, cnt,
                     node_obj_desc);
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                     "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
@@ -996,7 +996,7 @@ static vx_status tivxTargetNodeDescNodeControl(
                 status = tivxTargetNodeSendCommand(cmd_obj_desc,
                     cmd_obj_desc->replicated_node_idx,
                     node_obj_desc);
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                     "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
@@ -1006,7 +1006,7 @@ static vx_status tivxTargetNodeDescNodeControl(
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxTargetNodeDescNodeControl: Incorrect node id\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
     }
@@ -1014,7 +1014,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     {
         /* For non-replicated node, ignore node-id field */
         status = tivxTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
-        if (VX_SUCCESS != status)
+        if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
             "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
@@ -1059,7 +1059,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
     ownNodeCheckAndSendCompletionEvent(node_obj_desc, timestamp);
 
     /* if an error occurred within the node, then send an error completion event */
-    if (VX_SUCCESS != node_obj_desc->exe_status)
+    if ((vx_status)VX_SUCCESS != node_obj_desc->exe_status)
     {
         ownNodeCheckAndSendErrorEvent(node_obj_desc, timestamp, node_obj_desc->exe_status);
     }
@@ -1098,7 +1098,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
     vx_action action;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     switch(cmd_obj_desc->cmd_id)
     {
@@ -1137,7 +1137,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "tivxTargetCmdDescHandler: object descriptor type is invalid\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 tivxTargetCmdDescSendAck(cmd_obj_desc, status);
             }
@@ -1196,14 +1196,14 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
     tivx_target target = (tivx_target)app_var;
     tivx_obj_desc_t *obj_desc;
     uint16_t obj_desc_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     while(target->targetExitRequest == (vx_bool)vx_false_e)
     {
         status = tivxTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if(    (status != VX_SUCCESS)
+        if(    (status != (vx_status)VX_SUCCESS)
             || (obj_desc_id == TIVX_OBJ_DESC_INVALID) )
         {
             /* in case of error, do nothing,
@@ -1251,7 +1251,7 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
 
 vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_target target;
 
     target = tivxTargetAllocHandle(target_id);
@@ -1259,7 +1259,7 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
     if(target == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxTargetCreate: target is NULL\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
     {
@@ -1284,17 +1284,17 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
                         target->job_queue_memory,
                         TIVX_QUEUE_FLAG_BLOCK_ON_GET);
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             /* create and start target task */
             status = tivxTaskCreate(&target->task_handle, &target->task_params);
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 tivxQueueDelete(&target->job_queue_handle);
             }
         }
 
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             tivxTargetFreeHandle(&target);
         }
@@ -1304,7 +1304,7 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
 
 vx_status tivxTargetDelete(vx_enum target_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_target target;
 
     target = tivxTargetGetHandle(target_id);
@@ -1347,7 +1347,7 @@ void tivxTargetTriggerNode(uint16_t node_obj_desc_id)
 
 vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     tivx_target target = tivxTargetGetHandle(target_id);
 
     if(target!=NULL)
@@ -1355,7 +1355,7 @@ vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
         status = tivxQueuePut(&target->job_queue_handle,
                 (uintptr_t)obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-        if(VX_SUCCESS != status)
+        if((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"***************************************************************************************************\n");
             VX_PRINT(VX_ZONE_ERROR,"FATAL ERROR: tivxQueuePut failed\n");

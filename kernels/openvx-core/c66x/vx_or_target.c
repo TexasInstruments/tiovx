@@ -100,7 +100,7 @@ vx_status VX_CALLBACK tivxKernelOrProcess(
     uint16_t num_params,
     void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
@@ -109,9 +109,9 @@ vx_status VX_CALLBACK tivxKernelOrProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_OR_MAX_PARAMS);
 
-    if ((VX_FAILURE == status) || (NULL == priv_arg))
+    if (((vx_status)VX_FAILURE == status) || (NULL == priv_arg))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -160,12 +160,12 @@ vx_status VX_CALLBACK tivxKernelOrProcess(
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src0_desc_target_ptr,
@@ -186,14 +186,14 @@ static vx_status VX_CALLBACK tivxKernelOrCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelOrDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelOr(void)
@@ -235,7 +235,7 @@ void tivxRemoveTargetKernelOr(void)
     {
         status = tivxRemoveTargetKernel(gTivxOrKernelInfo.target_kernel);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             gTivxOrKernelInfo.target_kernel = NULL;
         }

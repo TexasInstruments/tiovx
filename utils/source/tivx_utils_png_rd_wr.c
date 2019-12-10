@@ -101,7 +101,7 @@ vx_status tivx_utils_png_file_read(
             void **png_file_context)
 {
     FILE *fp;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     *width = 0;
     *height = 0;
@@ -112,10 +112,10 @@ vx_status tivx_utils_png_file_read(
     fp = fopen(filename, "rb");
     if(fp==NULL)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for reading [%s]\n", filename);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         uint8_t header[8];
         png_structp png_ptr = NULL;
@@ -127,38 +127,38 @@ vx_status tivx_utils_png_file_read(
         nbytes = fread(header, 1, 8, fp);
         if ( (nbytes < 8) || (png_sig_cmp(header, 0, 8) != 0) )
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, " PNG: Invalid PNG header [%s]\n", filename);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
             if (png_ptr==NULL)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR," PNG: Unable to alloc memory for read_struct [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             info_ptr = png_create_info_struct(png_ptr);
             if (info_ptr==NULL)
             {
                 png_destroy_read_struct(&png_ptr, NULL, NULL);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for info_struct [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
 
             png_init_io(png_ptr, fp);
@@ -170,16 +170,16 @@ vx_status tivx_utils_png_file_read(
             color_type = png_get_color_type(png_ptr, info_ptr);
             bit_depth = png_get_bit_depth(png_ptr, info_ptr);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             uint32_t y;
             png_context_t *png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
@@ -204,10 +204,10 @@ vx_status tivx_utils_png_file_read(
             }
             if((png_context == NULL) || (png_context->row_pointers == NULL) || (png_context->data_ptr == NULL))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for data_ptr, row_pointers [%s]\n", filename);
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 for (y=0; y<png_height; y++)
                 {
@@ -265,15 +265,15 @@ int32_t tivx_utils_png_file_write(
             void *data_ptr)
 {
     FILE *fp;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     fp = fopen(filename, "wb");
     if(fp==NULL)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for writing [%s]\n", filename);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         png_structp png_ptr = NULL;
         png_infop info_ptr = NULL;
@@ -281,46 +281,46 @@ int32_t tivx_utils_png_file_write(
         int y;
         png_context_t *png_context = NULL;
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
             if (png_ptr==NULL)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for write_struct [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             info_ptr = png_create_info_struct(png_ptr);
             if (info_ptr==NULL)
             {
                 png_destroy_write_struct(&png_ptr, NULL);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for info_struct [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             png_init_io(png_ptr, fp);
 
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if(df==VX_DF_IMAGE_U8)
             {
@@ -345,16 +345,16 @@ int32_t tivx_utils_png_file_write(
 
             png_write_info(png_ptr, info_ptr);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
 
@@ -368,11 +368,11 @@ int32_t tivx_utils_png_file_write(
             if((png_context == NULL) || (png_context->row_pointers == NULL) || (png_context->data_ptr == NULL))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for data_ptr, row_pointers [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             for (y=0; y<height; y++)
             {
@@ -380,16 +380,16 @@ int32_t tivx_utils_png_file_write(
             }
             png_write_image(png_ptr, png_context->row_pointers);
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if (setjmp(png_jmpbuf(png_ptr)))
             {
                 png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             png_write_end(png_ptr, NULL);
             png_destroy_write_struct(&png_ptr, &info_ptr);
@@ -425,7 +425,7 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
                 &bmp_file_context);
     /** \endcode */
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /**
          * - Create OpenVX image object.
@@ -436,14 +436,14 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
          * <b>TIP:</b> In OpenVX whenever an object is created use
          * vxGetStatus() to find if the object creation was successful.
          * The object must be typecasted to vx_reference type when calling
-         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
+         * vxGetStatus() API. If the reference is valid (vx_status)VX_SUCCESS should be
          * returned by vxGetStatus().
          * \code
          */
         image = vxCreateImage(context, width, height, df);
         status = vxGetStatus((vx_reference)image);
         /** \endcode */
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
 
             /**
@@ -544,7 +544,7 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
      */
     status = vxGetStatus((vx_reference)image);
     /** \endcode */
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /** - Query image attributes.
          *
@@ -585,7 +585,7 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
             );
         /** \endcode */
 
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             /** - Write to BMP file using utility API
              *
@@ -630,7 +630,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
                 &width, &height, &stride, &df, &data_ptr,
                 &bmp_file_context);
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         img_height = 0;
         img_width = 0;
@@ -680,7 +680,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, " PNG: Image data format mismatch [%s]\n", filename);
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
@@ -689,7 +689,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             src_start_x, src_start_y, dst_start_x, dst_start_y, copy_width, copy_height, enable_rgb2gray, enable_gray2rgb);
         #endif
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             vx_imagepatch_addressing_t image_addr;
             vx_rectangle_t rect;

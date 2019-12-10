@@ -85,7 +85,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
     uint8_t *src_addr;
     uint8_t channel_offset;
     vx_rectangle_t rect;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
     in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[0]);
@@ -122,15 +122,15 @@ vx_status tivxChannelExtractRgbRgbxInput(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
            in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -147,7 +147,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
@@ -169,7 +169,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
     uint8_t channel_offset;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
     in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[0]);
@@ -211,11 +211,11 @@ vx_status tivxChannelExtractYuyvUyvyInput(
             }
             break;
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
            in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -254,7 +254,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
     uint8_t *src_addr;
     uint8_t channel_offset, plane_idx;
     vx_rectangle_t rect;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
     if( channel_value == VX_CHANNEL_Y)
@@ -273,10 +273,10 @@ vx_status tivxChannelExtractNv12Nv21Input(
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[plane_idx]);
 
@@ -320,12 +320,12 @@ vx_status tivxChannelExtractNv12Nv21Input(
                 }
                 break;
             default:
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
            in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
@@ -360,7 +360,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     uint8_t *src_addr;
     uint8_t plane_idx;
     vx_rectangle_t rect;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
     if( channel_value == VX_CHANNEL_Y)
@@ -379,10 +379,10 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         in_desc_target_ptr = tivxMemShared2TargetPtr(&in_desc->mem_ptr[plane_idx]);
 
@@ -401,7 +401,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
         vxlib_src.data_type = VXLIB_UINT8;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
            in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
@@ -422,7 +422,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *in_desc;
     tivx_obj_desc_scalar_t *channel_desc;
     tivx_obj_desc_image_t *out_desc;
@@ -431,7 +431,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vx_enum channel_value;
         void *out_desc_target_ptr;
@@ -505,12 +505,12 @@ vx_status VX_CALLBACK tivxChannelExtract(
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
         /* kernel processing function complete */
@@ -530,7 +530,7 @@ vx_status VX_CALLBACK tivxChannelExtractCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
@@ -540,14 +540,14 @@ vx_status VX_CALLBACK tivxChannelExtractDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     return status;
 }
 
 void tivxAddTargetKernelChannelExtract(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -556,20 +556,20 @@ void tivxAddTargetKernelChannelExtract(void)
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     if ( self_cpu == TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_extract_target_kernel = tivxAddTargetKernel(
                             VX_KERNEL_CHANNEL_EXTRACT,
@@ -584,10 +584,10 @@ void tivxAddTargetKernelChannelExtract(void)
 
 void tivxRemoveTargetKernelChannelExtract(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_channel_extract_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_extract_target_kernel = NULL;
     }

@@ -100,7 +100,7 @@ vx_status VX_CALLBACK tivxKernelNotProcess(
     uint16_t num_params,
     void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
@@ -108,9 +108,9 @@ vx_status VX_CALLBACK tivxKernelNotProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_NOT_MAX_PARAMS);
 
-    if ((VX_FAILURE == status) || (NULL == priv_arg))
+    if (((vx_status)VX_FAILURE == status) || (NULL == priv_arg))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -152,7 +152,7 @@ vx_status VX_CALLBACK tivxKernelNotProcess(
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
@@ -163,14 +163,14 @@ static vx_status VX_CALLBACK tivxKernelNotCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelNotDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelNot(void)
@@ -212,7 +212,7 @@ void tivxRemoveTargetKernelNot(void)
     {
         status = tivxRemoveTargetKernel(gTivxNotKernelInfo.target_kernel);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             gTivxNotKernelInfo.target_kernel = NULL;
         }

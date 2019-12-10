@@ -78,7 +78,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_scalar_t *function_desc;
     tivx_obj_desc_image_t *src_desc;
     tivx_obj_desc_matrix_t *mask_desc;
@@ -94,7 +94,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX]))
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -154,7 +154,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
                             kernel,
                             &scratch, &scratch_size);
 
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status |= VXLIB_median_MxN_i8u_i8u_o8u(
                                         src_addr, &vxlib_src,
@@ -185,7 +185,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     tivx_obj_desc_scalar_t *function_desc;
@@ -193,7 +193,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
 
     if (num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -201,13 +201,13 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
@@ -221,7 +221,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
 
             if (NULL == temp_ptr)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
@@ -240,7 +240,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     void *temp_ptr;
     tivx_obj_desc_scalar_t *function_desc;
@@ -248,7 +248,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
 
     if (num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -256,13 +256,13 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
@@ -273,7 +273,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
 
             if (VXLIB_SUCCESS != status)
             {
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
             else
             {
@@ -287,7 +287,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
 
 void tivxAddTargetKernelNonLinearFilter(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -296,20 +296,20 @@ void tivxAddTargetKernelNonLinearFilter(void)
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     if ( self_cpu == TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_non_linear_filter_target_kernel = tivxAddTargetKernel(
                             VX_KERNEL_NON_LINEAR_FILTER,
@@ -324,10 +324,10 @@ void tivxAddTargetKernelNonLinearFilter(void)
 
 void tivxRemoveTargetKernelNonLinearFilter(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_non_linear_filter_target_kernel);
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_non_linear_filter_target_kernel = NULL;
     }

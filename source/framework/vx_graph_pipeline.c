@@ -71,7 +71,7 @@ static vx_status ownGraphPipelineValidateRefsList(
     const vx_graph_parameter_queue_params_t graph_parameters_queue_param
     )
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_meta_format meta_base = NULL, meta = NULL;
     vx_uint32 i;
 
@@ -81,7 +81,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
     }
 
-    if ( (VX_SUCCESS == status) && (NULL != meta_base) )
+    if ( ((vx_status)VX_SUCCESS == status) && (NULL != meta_base) )
     {
         for (i = 1; i < graph_parameters_queue_param.refs_list_size; i++)
         {
@@ -95,18 +95,18 @@ static vx_status ownGraphPipelineValidateRefsList(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, "Meta Format is NULL\n");
                 }
 
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     if (graph_parameters_queue_param.refs_list[0]->type ==
                         graph_parameters_queue_param.refs_list[i]->type)
                     {
                         if ((vx_bool)vx_true_e != ownIsMetaFormatEqual(meta_base, meta, graph_parameters_queue_param.refs_list[0]->type))
                         {
-                            status = VX_ERROR_INVALID_PARAMETERS;
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                             VX_PRINT(VX_ZONE_ERROR, "Invalid meta data of reference list!\n");
                         }
                     }
@@ -123,7 +123,7 @@ static vx_status ownGraphPipelineValidateRefsList(
             }
             else
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid graph parameter ref list!\n");
             }
         }
@@ -144,14 +144,14 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     const vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[]
     )
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Not supported on verified graph\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
@@ -178,7 +178,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                         )
                     {
                         VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Invalid parameters\n");
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         break;
                     }
                     else
@@ -190,7 +190,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                         {
                             status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[i]);
 
-                            if (VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status)
                             {
                                 uint32_t buf_id;
 
@@ -215,14 +215,14 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                     graph_parameters_list_size,
                     graph->num_params
                     );
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -235,7 +235,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
                 vx_uint32 flags)
 {
     tivx_data_ref_queue data_ref_q = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* get data ref queue associated with a graph parameter
      * if this graph parameter is not enabled in queuing mode,
@@ -246,7 +246,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
     {
         VX_PRINT(VX_ZONE_ERROR,
             "Reference enqueue not supported at graph parameter index %d\n", graph_parameter_index);
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -256,15 +256,15 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
         for(ref_id=0; ref_id<num_refs; ref_id++)
         {
             status = ownGraphParameterCheckValidEnqueueRef(graph, graph_parameter_index, refs[ref_id]);
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "Unable to enqueue ref due to invalid ref\n");
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = tivxDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "Unable to enqueue ref\n");
@@ -274,7 +274,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
                     num_enqueue++;
                 }
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 break;
             }
@@ -328,7 +328,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             vx_uint32 *num_refs)
 {
     tivx_data_ref_queue data_ref_q = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* get data ref queue associated with a graph parameter
      * if this graph parameter is not enabled in queuing mode,
@@ -339,7 +339,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
     {
         VX_PRINT(VX_ZONE_ERROR,
             "Reference dequeue not supported at graph parameter index %d\n", graph_parameter_index);
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -356,7 +356,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             {
                 ref = NULL;
                 status = tivxDataRefQueueDequeueDoneRef(data_ref_q, &ref);
-                if((status == VX_SUCCESS) && (ref != NULL))
+                if((status == (vx_status)VX_SUCCESS) && (ref != NULL))
                 {
                     /* reference is dequeued break from do - while loop with success */
                     exit_loop = (vx_bool)vx_true_e;
@@ -366,14 +366,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                     /* wait for "ref available for dequeue" event */
                     status = tivxDataRefQueueWaitDoneRef(data_ref_q,
                             TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-                    if(status!=VX_SUCCESS)
+                    if(status!=(vx_status)VX_SUCCESS)
                     {
                         /* some error in waiting for event, break loop with error */
                         exit_loop = (vx_bool)vx_true_e;
                     }
                 }
             } while(exit_loop == (vx_bool)vx_false_e);
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 /* If the ref type matches the graph parameter type, return graph parameter */
                 if (ref->type == graph->parameters[graph_parameter_index].type)
@@ -411,7 +411,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "Returned reference does not match the expected reference at graph parameter %d\n", graph_parameter_index);
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
             }
             else
@@ -432,7 +432,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
             vx_uint32 *num_refs)
 {
     tivx_data_ref_queue data_ref_q = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* get data ref queue associated with a graph parameter
      * if this graph parameter is not enabled in queuing mode,
@@ -443,7 +443,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "Reference dequeue not supported at graph parameter index %d\n", graph_parameter_index);
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
     {
@@ -455,7 +455,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
 
 vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if((graph != NULL) && (graph_parameter_index < graph->num_params) && (ref != NULL))
     {
@@ -465,7 +465,7 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
         {
             if(ref==graph->parameters[graph_parameter_index].refs_list[buf_id])
             {
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 break;
             }
         }
@@ -480,7 +480,7 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
     uintptr_t pipeline_id;
 
     status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
-    if((status == VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
+    if((status == (vx_status)VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
     {
         obj_desc = graph->obj_desc[pipeline_id];
     }
@@ -525,7 +525,7 @@ void ownGraphDeleteQueues(vx_graph graph)
 vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
 {
     uint32_t i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<TIVX_GRAPH_MAX_PIPELINE_DEPTH; i++)
     {
@@ -534,7 +534,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
     if(graph->pipeline_depth >= TIVX_GRAPH_MAX_PIPELINE_DEPTH)
     {
         VX_PRINT(VX_ZONE_ERROR,"ownGraphAllocAndEnqueueObjDescForPipeline: Invalid graph pipeline depth\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -544,11 +544,11 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
             if(graph->obj_desc[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownGraphAllocAndEnqueueObjDescForPipeline: Unable to alloc obj desc\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
                 break;
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             for(i=0; i<graph->pipeline_depth; i++)
             {
@@ -720,7 +720,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 
 vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_graph_t *graph_obj_desc;
     uint32_t total_num_schedule, schedule_id, node_id;
 
@@ -807,7 +807,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
              * doing schedule more times than is supported
              */
             VX_PRINT(VX_ZONE_ERROR,"Free graph descriptor not available, cannot schedule graph\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     ownReferenceUnlock(&graph->base);
@@ -845,14 +845,14 @@ tivx_data_ref_queue ownGraphGetParameterDataRefQueue(vx_graph graph, vx_uint32 g
 
 vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxSetGraphPipelineDepth: Not supported on verified graph\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
@@ -865,14 +865,14 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: pipeline depth greater than max allowed pipeline depth\n");
                 VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
-                status = VX_ERROR_INVALID_VALUE;
+                status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }

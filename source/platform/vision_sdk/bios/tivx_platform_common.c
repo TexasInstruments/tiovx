@@ -47,7 +47,7 @@ tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
 vx_status tivxPlatformInit(void)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i = 0, shmSize = 0;
 
     /* Build time check to see if the structure size is 8byte aligned and size of the elements is not more than  */
@@ -63,15 +63,15 @@ vx_status tivxPlatformInit(void)
     {
         /* insufficient shared memory size */
         VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: insufficient shared memory size\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 tivxPlatformDeInit();
                 break;

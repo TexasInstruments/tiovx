@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -115,11 +115,11 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_image)parameters[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
         minval = (vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
@@ -133,7 +133,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -169,26 +169,26 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_DF_IMAGE_U8 != input_fmt) &&
             (VX_DF_IMAGE_S16 != input_fmt))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
         if ((VX_TYPE_UINT8 != minval_scalar_type) &&
             (VX_TYPE_INT16 != minval_scalar_type))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' should be a scalar of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
         }
 
         if ((VX_TYPE_UINT8 != maxval_scalar_type) &&
             (VX_TYPE_INT16 != maxval_scalar_type))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' should be a scalar of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
         }
 
@@ -196,7 +196,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         {
             if (VX_TYPE_COORDINATES2D != minloc_item_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'minloc' should be an array of type:\n VX_TYPE_COORDINATES2D \n");
             }
         }
@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         {
             if (VX_TYPE_COORDINATES2D != maxloc_item_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'maxloc' should be an array of type:\n VX_TYPE_COORDINATES2D \n");
             }
         }
@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         {
             if (VX_TYPE_UINT32 != mincount_scalar_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'mincount' should be a scalar of type:\n VX_TYPE_UINT32 \n");
             }
         }
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         {
             if (VX_TYPE_UINT32 != maxcount_scalar_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'maxcount' should be a scalar of type:\n VX_TYPE_UINT32 \n");
             }
         }
@@ -232,33 +232,33 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_DF_IMAGE_U8 == input_fmt) &&
             (minval_scalar_type != VX_TYPE_UINT8))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
         if ((VX_DF_IMAGE_S16 == input_fmt) &&
             (minval_scalar_type != VX_TYPE_INT16))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_INT16 if 'input' is type VX_DF_IMAGE_S16 \n");
         }
 
         if ((VX_DF_IMAGE_U8 == input_fmt) &&
             (maxval_scalar_type != VX_TYPE_UINT8))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
         if ((VX_DF_IMAGE_S16 == input_fmt) &&
             (maxval_scalar_type != VX_TYPE_INT16))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' must be type VX_TYPE_INT16 if 'input' is type VX_DF_IMAGE_S16 \n");
         }
     }
@@ -266,13 +266,13 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if(NULL != minloc)
         {
             if (1U > minloc_capacity)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'minloc' capacity must be 1 or more \n");
             }
         }
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
         {
             if (1U > maxloc_capacity)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'maxloc' capacity must be 1 or more \n");
             }
         }
@@ -289,7 +289,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX])
         {
@@ -333,7 +333,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
@@ -342,10 +342,10 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -374,12 +374,12 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -393,7 +393,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -406,7 +406,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -416,7 +416,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -426,7 +426,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -436,7 +436,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -446,7 +446,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -456,7 +456,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -465,17 +465,17 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
                         VX_PARAMETER_STATE_OPTIONAL
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

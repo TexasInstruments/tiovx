@@ -54,7 +54,7 @@ vx_bool ownCreateConstErrors(vx_context context)
     vx_bool ret = (vx_bool)vx_true_e;
     vx_enum e = 0;
     /* create an error object for each status enumeration */
-    for (e = VX_STATUS_MIN; (e < VX_SUCCESS) && (ret == (vx_bool)vx_true_e); e++)
+    for (e = (vx_status)VX_STATUS_MIN; (e < (vx_status)VX_SUCCESS) && (ret == (vx_bool)vx_true_e); e++)
     {
         if (ownAllocateError(context, e) == NULL)
         {

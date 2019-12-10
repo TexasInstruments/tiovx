@@ -57,7 +57,7 @@ vx_status tivxPlatformInit(void)
     if (0 == gTivxObjDescShmEntry)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: Object descriptor SHM entry is 0\n");
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -65,7 +65,7 @@ vx_status tivxPlatformInit(void)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-            if (VX_SUCCESS != status)
+            if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: Mutex creation failed\n");
                 tivxPlatformDeInit();

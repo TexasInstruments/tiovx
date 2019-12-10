@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image grad_x = NULL;
     vx_uint32 grad_x_w;
@@ -107,11 +107,11 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         grad_x = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_X_IDX];
         grad_y = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(grad_x, VX_IMAGE_WIDTH, &grad_x_w, sizeof(grad_x_w)));
         tivxCheckStatus(&status, vxQueryImage(grad_x, VX_IMAGE_HEIGHT, &grad_x_h, sizeof(grad_x_h)));
@@ -146,17 +146,17 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_S16 != grad_x_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_x' should be an image of type:\n VX_DF_IMAGE_S16 \n");
         }
 
         if (VX_DF_IMAGE_S16 != grad_y_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_y' should be an image of type:\n VX_DF_IMAGE_S16 \n");
         }
 
@@ -164,7 +164,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != orientation_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'orientation' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -173,17 +173,17 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         if (grad_x_w != grad_y_w)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_x' and 'grad_y' should have the same value for VX_IMAGE_WIDTH \n");
         }
 
         if (grad_x_h != grad_y_h)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_x' and 'grad_y' should have the same value for VX_IMAGE_WIDTH \n");
         }
 
@@ -191,13 +191,13 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
         {
             if (grad_x_w != orientation_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'grad_x' and 'orientation' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (grad_x_h != orientation_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'grad_x' and 'orientation' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
 #if 1
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         orientation_fmt = VX_DF_IMAGE_U8;
 
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_PHASE_MAX_PARAMS)
@@ -232,10 +232,10 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -266,12 +266,12 @@ vx_status tivxAddKernelPhase(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -285,7 +285,7 @@ vx_status tivxAddKernelPhase(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -298,7 +298,7 @@ vx_status tivxAddKernelPhase(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -308,7 +308,7 @@ vx_status tivxAddKernelPhase(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -317,17 +317,17 @@ vx_status tivxAddKernelPhase(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

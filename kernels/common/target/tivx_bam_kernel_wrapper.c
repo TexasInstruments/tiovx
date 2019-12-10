@@ -873,7 +873,7 @@ static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle)
 vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
                           void *wbuf_mem, uint32_t wbuf_size)
 {
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
 
     gIntMemParams.dataIoMem              = ibuf_mem;
     gIntMemParams.scratchOrConstMem      = wbuf_mem;
@@ -892,7 +892,7 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
     EDMA_UTILS_autoIncrement_updateParams  dma_update_params;
     BAM_DMA_OneShot_CtlArgs oneshotParams;
 
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
     int32_t status = BAM_S_SUCCESS;
     uint32_t i, j;
 
@@ -945,7 +945,7 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
  Exit:
     if(BAM_S_SUCCESS != status)
     {
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
     return status_v;
 }
@@ -955,7 +955,7 @@ vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
                              uint32_t cmd,
                              void  *payload)
 {
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
     BAM_Status status_b = BAM_S_SUCCESS;
     BAM_KernelCommonControlArgs packet;
     tivx_bam_graph_handle_t *p_handle = (tivx_bam_graph_handle_t *)graph_handle;
@@ -973,7 +973,7 @@ vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
 
     if(BAM_S_SUCCESS != status_b)
     {
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
 
     return status_v;
@@ -981,7 +981,7 @@ vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
 
 vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle)
 {
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
     BAM_Status status_b = BAM_S_SUCCESS;
     BAM_InArgs in_args;
     BAM_OutArgs out_args;
@@ -1000,7 +1000,7 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle)
 
     if(BAM_S_SUCCESS != status_b)
     {
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
 
     return status_v;
@@ -1015,7 +1015,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
                                         tivx_bam_kernel_details_t *kernel_details,
                                         tivx_bam_graph_handle *graph_handle)
 {
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
     BAM_Status status_b = BAM_S_SUCCESS;
     BAM_CreateGraphParams graph_create_params;
     tivx_bam_graph_args_single_t graph_args;
@@ -1042,17 +1042,17 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     if((NULL == buf_params) || (NULL == graph_handle) || (NULL == kernel_details))
     {
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
 
     if( ((kernel_details->kernel_info.numInputDataBlocks +
           (kernel_details->kernel_info.numOutputDataBlocks == 0) ? 1 : kernel_details->kernel_info.numOutputDataBlocks) + 1U) > TIVX_BAM_MAX_EDGES)
     {
         VX_PRINT(VX_ZONE_ERROR, "BAM graph overflows TIVX_BAM_MAX_EDGES.  May need to increase value of TIVX_BAM_MAX_EDGES in kernels/include/tivx_bam_kernel_wrapper.h\n");
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         /* Initialize to NULL in case there are any failures */
         *graph_handle = NULL;
@@ -1064,11 +1064,11 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(NULL == graph_args.compute_kernel_args)
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         if(NULL != kernel_details->compute_kernel_params)
         {
@@ -1148,11 +1148,11 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(NULL == p_graph_handle)
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         p_graph_handle->one_shot_flag = one_shot_flag;
         p_graph_handle->multi_flag = 0;
@@ -1165,11 +1165,11 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         p_graph_sizes->graphObjSize     = 10000;
         p_graph_sizes->graphScratchSize = 10000;
@@ -1183,11 +1183,11 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
             (NULL == p_graph_ptrs->graphScratch) ||
             (NULL == p_graph_ptrs->graphcontext))
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         block_width = VXLIB_min(kernel_details->block_width, buf_params[0]->dim_x);
         block_height = VXLIB_min(kernel_details->block_height, buf_params[0]->dim_y);
@@ -1231,7 +1231,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
 
         block_width = graph_create_params.blockDimParams.blockWidth;
@@ -1240,7 +1240,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         tivxBamFreeContextPtrs((tivx_bam_graph_handle)p_graph_handle);
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         if(graph_create_params.graphMemConsumed > 0) {
             p_graph_sizes->graphObjSize = graph_create_params.graphMemConsumed;
@@ -1250,7 +1250,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
             if(NULL == p_graph_ptrs->graphObj)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1267,7 +1267,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
             if(NULL == p_graph_ptrs->graphScratch)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1284,7 +1284,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
             if(NULL == p_graph_ptrs->graphcontext)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1294,7 +1294,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
@@ -1302,13 +1302,13 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
 
         tivxMemFree(graph_args.compute_kernel_args, kernel_details->kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         BAM_KernelCommonControlArgs cmd;
         BAM_KernelCommonControlFrameArgs ctrlArgs;
@@ -1326,7 +1326,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         /* Some kernels may not have control function, so ignore error here */
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         EDMA_UTILS_setEdma3RmHandle(NULL);
 
@@ -1348,7 +1348,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                                        tivx_bam_kernel_details_t kernel_details[],
                                        tivx_bam_graph_handle *graph_handle)
 {
-    vx_status status_v = VX_SUCCESS;
+    vx_status status_v = (vx_status)VX_SUCCESS;
     BAM_Status status_b = BAM_S_SUCCESS;
     BAM_CreateGraphParams graph_create_params;
     tivx_bam_graph_args_multi_t graph_args;
@@ -1369,10 +1369,10 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(NULL == graph_handle)
     {
-        status_v = VX_FAILURE;
+        status_v = (vx_status)VX_FAILURE;
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         /* Initialize to NULL in case there are any failures */
         *graph_handle = NULL;
@@ -1380,18 +1380,18 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         if((NULL == node_list) || (NULL == edge_list) || (NULL == buf_params) || (NULL == kernel_details))
         {
             VX_PRINT(VX_ZONE_ERROR, "NULL input parameter pointer\n");
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
 
         if ((0 == max_nodes) || (0 == max_edges) ||
             (max_nodes > TIVX_BAM_MAX_NODES) || (max_edges > TIVX_BAM_MAX_EDGES))
         {
             VX_PRINT(VX_ZONE_ERROR, "Unsupported value for either max_nodes or max_edges\n");
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         for(i = 0; i < max_nodes; i++)
         {
@@ -1402,7 +1402,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
         if ((i == TIVX_BAM_MAX_NODES) || (i == max_nodes))
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -1410,7 +1410,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         for(i = 0; i < max_edges; i++)
         {
@@ -1421,7 +1421,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
         if ((i == TIVX_BAM_MAX_EDGES) || (i == max_edges))
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -1429,7 +1429,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         /* For now keep separate ... these could potentially be an array of 2 of same structure */
         graph_args.kernel_details     = kernel_details;
@@ -1455,7 +1455,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
              */
             if(NULL == graph_args.compute_kernel_args[i])
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
                 break;
             }
         }
@@ -1476,7 +1476,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         for(i = 1; i < num_nodes-1; i++)
         {
@@ -1495,11 +1495,11 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(NULL == p_graph_handle)
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         /* TIOVX-186:
          * - May need to update this based on node_list
@@ -1515,21 +1515,21 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         edge_params = tivxMemAlloc(sizeof(tivx_edge_params_t)*num_edges, TIVX_MEM_EXTERNAL);
 
         if(NULL == edge_params)
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         num_data_blocks= 1U;
 
@@ -1553,11 +1553,11 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(NULL == data_blocks)
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         memset(data_blocks, 0, sizeof(tivx_data_block_params_t)*num_data_blocks);
 
@@ -1693,7 +1693,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         p_graph_sizes->graphObjSize     = 3000*num_nodes;
         p_graph_sizes->graphScratchSize = 3000*num_nodes;
@@ -1707,11 +1707,11 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
             (NULL == p_graph_ptrs->graphScratch) ||
             (NULL == p_graph_ptrs->graphcontext))
         {
-            status_v = VX_ERROR_NO_MEMORY;
+            status_v = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         block_width = VXLIB_min(kernel_details[0].block_width, buf_params[0]->dim_x);
         block_height = VXLIB_min(kernel_details[0].block_height, buf_params[0]->dim_y);
@@ -1755,7 +1755,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
 
         block_width = graph_create_params.blockDimParams.blockWidth;
@@ -1764,7 +1764,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         tivxBamFreeContextPtrs((tivx_bam_graph_handle)p_graph_handle);
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         if(graph_create_params.graphMemConsumed > 0) {
             p_graph_sizes->graphObjSize = graph_create_params.graphMemConsumed;
@@ -1774,7 +1774,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
             if(NULL == p_graph_ptrs->graphObj)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1791,7 +1791,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
             if(NULL == p_graph_ptrs->graphScratch)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1808,7 +1808,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
             if(NULL == p_graph_ptrs->graphcontext)
             {
-                status_v = VX_ERROR_NO_MEMORY;
+                status_v = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
         else
@@ -1818,7 +1818,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
@@ -1826,7 +1826,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(BAM_S_SUCCESS != status_b)
         {
-            status_v = VX_FAILURE;
+            status_v = (vx_status)VX_FAILURE;
         }
 
         for(i = 1; i < num_nodes-1; i++)
@@ -1835,7 +1835,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         BAM_KernelCommonControlArgs cmd;
         BAM_KernelCommonControlFrameArgs ctrlArgs;
@@ -1874,7 +1874,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         /* Some kernels may not have control function, so ignore error here */
     }
 
-    if(VX_SUCCESS == status_v)
+    if((vx_status)VX_SUCCESS == status_v)
     {
         EDMA_UTILS_setEdma3RmHandle(NULL);
 
@@ -1904,7 +1904,7 @@ vx_status tivxBamInitKernelDetails(tivx_bam_kernel_details_t *kernel_details,
                                    uint32_t num_bam_nodes,
                                    tivx_target_kernel_instance kernel)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if( kernel_details != NULL )
     {
@@ -1917,13 +1917,13 @@ vx_status tivxBamInitKernelDetails(tivx_bam_kernel_details_t *kernel_details,
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"num_bam_nodes is 0\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"kernel_details is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;

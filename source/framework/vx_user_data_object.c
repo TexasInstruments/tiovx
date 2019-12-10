@@ -74,7 +74,7 @@ static vx_status ownInitUserDataObjectObject(
 
 static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
     if(ref->type == VX_TYPE_USER_DATA_OBJECT)
@@ -94,7 +94,7 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate user data object memory\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
                 else
                 {
@@ -106,13 +106,13 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"User Data Object object descriptor is NULL\n");
-            status = VX_ERROR_INVALID_VALUE;
+            status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Reference is not a user data object type\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -136,7 +136,7 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 
@@ -145,7 +145,7 @@ static vx_status ownInitUserDataObjectObject(
 {
     vx_uint32 i;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
@@ -191,14 +191,14 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
         if (size < 1)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid size for the user data object.\n");
-            user_data_object = (vx_user_data_object)ownGetErrorObject((vx_context)context, VX_ERROR_INVALID_PARAMETERS);
+            user_data_object = (vx_user_data_object)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
 
         if( NULL == user_data_object )
         {
             user_data_object = (vx_user_data_object)ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)user_data_object) == VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
                 (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
             {
                 /* assign reference type specific callback's */
@@ -213,17 +213,17 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 {
                     vxReleaseUserDataObject(&user_data_object);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate user data object descriptor\n");
                     user_data_object = (vx_user_data_object)ownGetErrorObject(
-                        context, VX_ERROR_NO_RESOURCES);
+                        context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
                     vx_status status;
                     status = ownInitUserDataObjectObject(user_data_object, type_name, size);
 
-                    if(status == VX_SUCCESS)
+                    if(status == (vx_status)VX_SUCCESS)
                     {
                         if (NULL != ptr)
                         {
@@ -233,7 +233,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                         {
                             status = ownAllocUserDataObjectBuffer(&user_data_object->base);
 
-                            if (status == VX_SUCCESS)
+                            if (status == (vx_status)VX_SUCCESS)
                             {
                                 vx_uint8 *start_ptr;
                                 tivx_obj_desc_user_data_object_t *obj_desc = NULL;
@@ -252,10 +252,10 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                         }
                     }
 
-                    if(status != VX_SUCCESS)
+                    if(status != (vx_status)VX_SUCCESS)
                     {
                         user_data_object = (vx_user_data_object)ownGetErrorObject(
-                            context, VX_ERROR_INVALID_PARAMETERS);
+                            context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                     }
                 }
             }
@@ -274,7 +274,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseUserDataObject(vx_user_data_object *
 VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
     vx_user_data_object user_data_object, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
@@ -282,7 +282,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -297,7 +297,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryUserDataObject: VX_USER_DATA_OBJECT_NAME failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_USER_DATA_OBJECT_SIZE:
@@ -308,7 +308,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject: VX_USER_DATA_OBJECT_SIZE failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case TIVX_USER_DATA_OBJECT_VALID_SIZE:
@@ -319,12 +319,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject: VX_USER_DATA_OBJECT_VALID_SIZE failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"query user data object option not supported\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -335,7 +335,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
 VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
     vx_user_data_object user_data_object, vx_enum attribute, const void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
@@ -343,7 +343,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
     {
         VX_PRINT(VX_ZONE_ERROR,"vxSetUserDataObjectAttribute failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -358,12 +358,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetUserDataObjectAttribute: VX_USER_DATA_OBJECT_VALID_SIZE failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetUserDataObjectAttribute: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -374,7 +374,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
 VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user_data_object,
         vx_size offset, vx_size size, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint8 *start_ptr;
 
@@ -383,7 +383,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid user data object reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -392,7 +392,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
@@ -400,28 +400,28 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Memory is not allocated\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == user_ptr)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid NULL pointer\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if ((size < 1) || ((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = ownAllocUserDataObjectBuffer(&user_data_object->base);
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         /* Get the offset to the free memory */
         start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
@@ -462,7 +462,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
     vx_enum mem_type,
     vx_uint32 flags)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint32 i;
 
@@ -471,40 +471,40 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: Invalid user data object reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if (ptr == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: User pointer is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         if (map_id == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: Map ID is null\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
         if (((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = ownAllocUserDataObjectBuffer(&user_data_object->base);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i ++)
         {
@@ -540,7 +540,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
         {
             VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: No available user data object maps\n");
             VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: May need to increase the value of TIVX_USER_DATA_OBJECT_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
@@ -549,26 +549,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
 
 VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object user_data_object, vx_map_id map_id)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {
         VX_PRINT(VX_ZONE_ERROR, "vxUnmapUserDataObject: Invalid user data object reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if(map_id >= TIVX_USER_DATA_OBJECT_MAX_MAPS)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxUnmapUserDataObject: map ID is greater than the maximum user data object maps\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         if( (user_data_object->maps[map_id].map_addr!=NULL)
             &&
@@ -595,7 +595,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
         }
         else
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if(user_data_object->maps[map_id].map_addr==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxUnmapUserDataObject: map address is null\n");

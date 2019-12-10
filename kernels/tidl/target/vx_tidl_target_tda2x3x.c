@@ -259,7 +259,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     void *priv_arg
 )
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   tivxTIDLParams *prms;
   uint32_t i, size;
@@ -268,22 +268,22 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
   {
     if (NULL == obj_desc[i])
     {
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
       break;
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
 
-    if ((VX_SUCCESS != status) || (NULL == prms) ||  (sizeof(tivxTIDLParams) != size))
+    if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||  (sizeof(tivxTIDLParams) != size))
     {
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     tivx_obj_desc_tensor_t *inTensor;
     tivx_obj_desc_tensor_t *outTensor;
@@ -370,7 +370,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     void *priv_arg
 )
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   tivx_obj_desc_user_data_object_t *config;
   tivx_obj_desc_user_data_object_t *network;
@@ -388,12 +388,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
   {
     if (NULL == obj_desc[i])
     {
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
       break;
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     /* IMPORTANT! Config data is assumed to be available at index 0 */
     config    = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
@@ -411,7 +411,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     }
     else
     {
-      status = VX_ERROR_NO_MEMORY;
+      status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
     create_params_target_ptr = tivxMemShared2TargetPtr(&createParams->mem_ptr);
@@ -478,7 +478,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     prms->createParams->net.interElementSize = 4;
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       prms->algHandle = tivxAlgiVisionCreate
           (
@@ -488,7 +488,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
       if (NULL == prms->algHandle)
       {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
       }
     }
 
@@ -518,7 +518,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
       prms->outBufDescList[i]     = &prms->outBufDesc[i];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       tivxSetTargetKernelInstanceContext(kernel, prms,  sizeof(tivxTIDLParams));
     }
@@ -538,7 +538,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
   uint32_t i;
   uint32_t size;
   tivxTIDLParams *prms = NULL;
@@ -547,16 +547,16 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
   {
     if (NULL == obj_desc[i])
     {
-      status = VX_FAILURE;
+      status = (vx_status)VX_FAILURE;
       break;
     }
   }
 
-  if (VX_SUCCESS == status)
+  if ((vx_status)VX_SUCCESS == status)
   {
     status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) && (sizeof(tivxTIDLParams) == size))
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) && (sizeof(tivxTIDLParams) == size))
     {
       if (prms->algHandle)
       {

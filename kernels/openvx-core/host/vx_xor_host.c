@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image in1 = NULL;
     vx_uint32 in1_w;
@@ -107,11 +107,11 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_XOR_OUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         in1 = (vx_image)parameters[TIVX_KERNEL_XOR_IN1_IDX];
         in2 = (vx_image)parameters[TIVX_KERNEL_XOR_IN2_IDX];
@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w)));
         tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_HEIGHT, &in1_h, sizeof(in1_h)));
@@ -146,17 +146,17 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != in1_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in1' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
         if (VX_DF_IMAGE_U8 != in2_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in2' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -164,7 +164,7 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != out_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -173,27 +173,27 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if((vx_bool)vx_false_e == is_virtual)
         {
             if ((in1_w != in2_w) ||
                 (in1_w != out_w))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' and 'out' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if ((in1_h != in2_h) ||
                 (in1_h != out_h))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'in1' and 'in2' and 'out' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
          vxSetMetaFormatAttribute(metas[TIVX_KERNEL_XOR_OUT_IDX], VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt));
          vxSetMetaFormatAttribute(metas[TIVX_KERNEL_XOR_OUT_IDX], VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w));
@@ -207,7 +207,7 @@ static vx_status VX_CALLBACK tivxAddKernelXorInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_XOR_MAX_PARAMS)
@@ -216,10 +216,10 @@ static vx_status VX_CALLBACK tivxAddKernelXorInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_XOR_OUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -250,12 +250,12 @@ vx_status tivxAddKernelXor(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -269,7 +269,7 @@ vx_status tivxAddKernelXor(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -282,7 +282,7 @@ vx_status tivxAddKernelXor(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -292,7 +292,7 @@ vx_status tivxAddKernelXor(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -301,17 +301,17 @@ vx_status tivxAddKernelXor(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

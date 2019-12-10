@@ -76,7 +76,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_lut_t *lut;
     vx_uint8 *src_addr, *dst_addr;
@@ -85,7 +85,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_LUT_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
@@ -125,7 +125,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         }
         if (VXLIB_SUCCESS != status)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
@@ -136,21 +136,21 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelLutCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelLutDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelLut(void)

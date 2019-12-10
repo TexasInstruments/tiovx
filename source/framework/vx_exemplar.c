@@ -169,7 +169,7 @@ vx_reference ownCreateReferenceFromExemplar(
 static vx_reference ownCreateLutFromExemplar(
     vx_context context, vx_lut exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum data_type;
     vx_size count;
     vx_lut lut = NULL;
@@ -179,7 +179,7 @@ static vx_reference ownCreateLutFromExemplar(
     status |= vxQueryLUT(exemplar, VX_LUT_COUNT, &count,
         sizeof(count));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         lut = vxCreateLUT(context, data_type, count);
     }
@@ -190,7 +190,7 @@ static vx_reference ownCreateLutFromExemplar(
 static vx_reference ownCreateRemapFromExemplar(
     vx_context context, vx_remap exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 src_width, src_height, dst_width, dst_height;
     vx_remap rem = NULL;
 
@@ -203,7 +203,7 @@ static vx_reference ownCreateRemapFromExemplar(
     status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_HEIGHT, &dst_height,
         sizeof(dst_height));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         rem = vxCreateRemap(context, src_width, src_height, dst_width,
             dst_height);
@@ -215,7 +215,7 @@ static vx_reference ownCreateRemapFromExemplar(
 static vx_reference ownCreateMatrixFromExemplar(
     vx_context context, vx_matrix exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size rows, columns;
     vx_enum type;
     vx_matrix mat = NULL;
@@ -225,7 +225,7 @@ static vx_reference ownCreateMatrixFromExemplar(
     status |= vxQueryMatrix(exemplar, VX_MATRIX_COLUMNS, &columns,
         sizeof(columns));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         mat = vxCreateMatrix(context, type, columns, rows);
     }
@@ -236,7 +236,7 @@ static vx_reference ownCreateMatrixFromExemplar(
 static vx_reference ownCreatePyramidFromExemplar(
     vx_context context, vx_pyramid exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size levels;
     vx_float32 scale;
     vx_uint32 width, height;
@@ -249,7 +249,7 @@ static vx_reference ownCreatePyramidFromExemplar(
     status |= vxQueryPyramid(exemplar, VX_PYRAMID_HEIGHT, &height, sizeof(height));
     status |= vxQueryPyramid(exemplar, VX_PYRAMID_FORMAT, &format, sizeof(format));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         pmd = vxCreatePyramid(context, levels, scale, width, height,
             format);
@@ -261,7 +261,7 @@ static vx_reference ownCreatePyramidFromExemplar(
 static vx_reference ownCreateImageFromExemplar(
     vx_context context, vx_image exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 width, height;
     vx_df_image format;
     vx_image img = NULL;
@@ -270,7 +270,7 @@ static vx_reference ownCreateImageFromExemplar(
     status |= vxQueryImage(exemplar, VX_IMAGE_HEIGHT, &height, sizeof(height));
     status |= vxQueryImage(exemplar, VX_IMAGE_FORMAT, &format, sizeof(format));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = vxCreateImage(context, width, height, format);
     }
@@ -281,7 +281,7 @@ static vx_reference ownCreateImageFromExemplar(
 static vx_reference ownCreateArrayFromExemplar(
     vx_context context, vx_array exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum type;
     vx_size capacity;
     vx_array arr = NULL;
@@ -289,7 +289,7 @@ static vx_reference ownCreateArrayFromExemplar(
     status |= vxQueryArray(exemplar, VX_ARRAY_ITEMTYPE, &type, sizeof(type));
     status |= vxQueryArray(exemplar, VX_ARRAY_CAPACITY, &capacity, sizeof(capacity));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         arr = vxCreateArray(context, type, capacity);
     }
@@ -300,13 +300,13 @@ static vx_reference ownCreateArrayFromExemplar(
 static vx_reference ownCreateScalarFromExemplar(
     vx_context context, vx_scalar exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum type;
     vx_scalar sc = NULL;
 
     status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &type, sizeof(type));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         sc = vxCreateScalar(context, type, NULL);
     }
@@ -317,7 +317,7 @@ static vx_reference ownCreateScalarFromExemplar(
 static vx_reference ownCreateDistributionFromExemplar(
     vx_context context, vx_distribution exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size num_bins;
     vx_int32 offset;
     vx_uint32 range;
@@ -327,7 +327,7 @@ static vx_reference ownCreateDistributionFromExemplar(
     status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_RANGE, &range, sizeof(range));
     status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_BINS, &num_bins, sizeof(num_bins));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         dist = vxCreateDistribution(context, num_bins, offset, range);
     }
@@ -338,7 +338,7 @@ static vx_reference ownCreateDistributionFromExemplar(
 static vx_reference ownCreateThresholdFromExemplar(
     vx_context context, vx_threshold exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_enum thr_type;
     vx_enum data_type;
     vx_threshold thr = NULL;
@@ -348,7 +348,7 @@ static vx_reference ownCreateThresholdFromExemplar(
     status |= vxQueryThreshold(exemplar, VX_THRESHOLD_TYPE, &thr_type,
         sizeof(thr_type));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         thr = vxCreateThreshold(context, thr_type, data_type);
     }
@@ -359,7 +359,7 @@ static vx_reference ownCreateThresholdFromExemplar(
 static vx_reference ownCreateConvolutionFromExemplar(
     vx_context context, vx_convolution exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size rows, columns;
     vx_convolution conv = NULL;
 
@@ -367,7 +367,7 @@ static vx_reference ownCreateConvolutionFromExemplar(
     status |= vxQueryConvolution(exemplar, VX_CONVOLUTION_COLUMNS, &columns,
         sizeof(columns));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         conv = vxCreateConvolution(context, columns, rows);
     }
@@ -378,18 +378,18 @@ static vx_reference ownCreateConvolutionFromExemplar(
 static vx_reference ownCreateObjectArrayFromExemplar(
     vx_context context, vx_object_array exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size count;
     vx_reference objarr_item_exemplar;
     vx_object_array objarr = NULL;
 
     status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
         if(objarr_item_exemplar==NULL)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
         {
@@ -404,7 +404,7 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 static vx_reference ownCreateTensorFromExemplar(
     vx_context context, vx_tensor exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size num_dims;
     vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     vx_enum type;
@@ -416,7 +416,7 @@ static vx_reference ownCreateTensorFromExemplar(
     status |= vxQueryTensor(exemplar, VX_TENSOR_DATA_TYPE, &type, sizeof(type));
     status |= vxQueryTensor(exemplar, VX_TENSOR_FIXED_POINT_POSITION, &fixed, sizeof(fixed));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tensor = vxCreateTensor(context, num_dims, dims, type, fixed);
     }
@@ -427,7 +427,7 @@ static vx_reference ownCreateTensorFromExemplar(
 static vx_reference ownCreateUserDataObjectFromExemplar(
     vx_context context, vx_user_data_object exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_char type_name[VX_MAX_REFERENCE_NAME];
     vx_size size;
     vx_user_data_object user_data_object = NULL;
@@ -435,7 +435,7 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
     status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_NAME, &type_name, sizeof(type_name));
     status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         user_data_object = vxCreateUserDataObject(context, type_name, size, NULL);
     }
@@ -446,7 +446,7 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
 static vx_reference ownCreateRawImageFromExemplar(
     vx_context context, tivx_raw_image exemplar)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_raw_image img = NULL;
     tivx_raw_image_create_params_t params;
 
@@ -458,7 +458,7 @@ static vx_reference ownCreateRawImageFromExemplar(
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before));
     status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after));
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = tivxCreateRawImage(context, &params);
     }

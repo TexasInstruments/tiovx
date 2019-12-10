@@ -86,7 +86,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image src = NULL;
     vx_uint32 src_w;
@@ -112,11 +112,11 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
         dst = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
@@ -126,7 +126,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(src, VX_IMAGE_FORMAT, &src_fmt, sizeof(src_fmt)));
         tivxCheckStatus(&status, vxQueryImage(src, VX_IMAGE_WIDTH, &src_w, sizeof(src_w)));
@@ -152,11 +152,11 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != src_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'src' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -164,14 +164,14 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
         {
             if (VX_DF_IMAGE_U8 != dst_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'dst' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
 
         if (VX_TYPE_ENUM != type_scalar_type)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'type' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
     }
@@ -179,13 +179,13 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((VX_INTERPOLATION_NEAREST_NEIGHBOR != type_val) &&
             (VX_INTERPOLATION_BILINEAR != type_val) &&
             (VX_INTERPOLATION_AREA != type_val))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'type' value should be an enum of type:\n VX_INTERPOLATION_NEAREST_NEIGHBOR or VX_INTERPOLATION_BILINEAR or VX_INTERPOLATION_AREA \n");
         }
 
@@ -197,25 +197,25 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             {
                 if (dst_w > src_w)
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'src' width must be greater than 'dst' width \n");
                 }
 
                 if (dst_h > src_h)
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'src' height must be greater than 'dst' height \n");
                 }
 
                 if ((4U * dst_w) < src_w)
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'src' width must not be greater than 'dst' width * 4 \n");
                 }
 
                 if ((4U * dst_h) < src_h)
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'src' height must not be greater than 'dst' height * 4 \n");
                 }
             }
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SCALE_IMAGE_DST_IDX], VX_IMAGE_FORMAT, &src_fmt, sizeof(src_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SCALE_IMAGE_DST_IDX], VX_IMAGE_WIDTH, &dst_w, sizeof(dst_w));
@@ -241,7 +241,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     vx_image src = NULL;
@@ -262,17 +262,17 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
         || (NULL == parameters[TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
         dst = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(src, VX_IMAGE_WIDTH, &src_w, sizeof(src_w)));
         tivxCheckStatus(&status, vxQueryImage(src, VX_IMAGE_HEIGHT, &src_h, sizeof(src_h)));
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
         tivxCheckStatus(&status, vxQueryImage(dst, VX_IMAGE_HEIGHT, &dst_h, sizeof(dst_h)));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -300,7 +300,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (dst_w > src_w)
         {
@@ -336,12 +336,12 @@ vx_status tivxAddKernelScale(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -355,7 +355,7 @@ vx_status tivxAddKernelScale(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -368,7 +368,7 @@ vx_status tivxAddKernelScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -378,7 +378,7 @@ vx_status tivxAddKernelScale(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -387,7 +387,7 @@ vx_status tivxAddKernelScale(vx_context context)
                         VX_PARAMETER_STATE_REQUIRED
             );
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
@@ -397,11 +397,11 @@ vx_status tivxAddKernelScale(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
 #endif
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

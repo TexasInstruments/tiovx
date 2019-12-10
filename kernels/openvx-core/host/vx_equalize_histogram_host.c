@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -102,11 +102,11 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
         || (NULL == parameters[TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         input = (vx_image)parameters[TIVX_KERNEL_EQUALIZE_HISTOGRAM_INPUT_IDX];
         output = (vx_image)parameters[TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX];
@@ -115,7 +115,7 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
 
     /* PARAMETER ATTRIBUTE FETCH */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
@@ -136,11 +136,11 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
 
     /* PARAMETER CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (VX_DF_IMAGE_U8 != input_fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
@@ -148,7 +148,7 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
         {
             if (VX_DF_IMAGE_U8 != output_fmt)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
@@ -157,19 +157,19 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if ((vx_bool)vx_false_e == is_virtual)
         {
             if (input_w != output_w)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH \n");
             }
 
             if (input_h != output_h)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT \n");
             }
         }
@@ -177,7 +177,7 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramValidate(vx_node node
 
 #if 1
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
@@ -193,7 +193,7 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramInitialize(vx_node no
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
     if ( (num_params != TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS)
@@ -201,10 +201,10 @@ static vx_status VX_CALLBACK tivxAddKernelEqualizeHistogramInitialize(vx_node no
         || (NULL == parameters[TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX])
     )
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
@@ -234,12 +234,12 @@ vx_status tivxAddKernelEqualizeHistogram(vx_context context)
     vx_enum kernel_id;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != VX_SUCCESS)
+    if(status != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         kernel = vxAddUserKernel(
                     context,
@@ -253,7 +253,7 @@ vx_status tivxAddKernelEqualizeHistogram(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
@@ -266,7 +266,7 @@ vx_status tivxAddKernelEqualizeHistogram(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -276,17 +276,17 @@ vx_status tivxAddKernelEqualizeHistogram(vx_context context)
             );
             index++;
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-        if (status == VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

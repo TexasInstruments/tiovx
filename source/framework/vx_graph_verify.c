@@ -88,7 +88,7 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph);
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
 {
     uint32_t i;
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     for(i=0; i<graph->num_data_ref; i++)
     {
@@ -99,7 +99,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
             {
                 graph->data_ref_num_in_nodes[i]++;
             }
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
             break;
         }
     }
@@ -120,7 +120,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         }
         graph->num_data_ref++;
         tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", graph->num_data_ref);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
     {
@@ -145,7 +145,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
 
 static vx_status ownGraphDetectSourceSink(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint16_t cur_node_idx, out_node_idx, num_out_nodes;
     vx_node cur_node, next_node;
 
@@ -231,7 +231,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
     uint32_t prm_cur_idx;
     uint32_t prm_dir;
     vx_reference ref;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     graph->num_data_ref = 0;
 
@@ -247,7 +247,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
             if(ref!=NULL) /* ref could be NULL due to optional parameters */
             {
                 status = ownGraphAddDataReference(graph, ref, prm_dir, 1);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to add data reference to data reference list in graph\n");
                     break;
@@ -262,7 +262,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
 static vx_status ownGraphValidRectCallback(
     vx_graph graph, vx_node node, vx_meta_format meta[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 num_in_image = 0, num_params, i;
     vx_reference ref;
     vx_meta_format mf;
@@ -287,7 +287,7 @@ static vx_status ownGraphValidRectCallback(
         }
     }
 
-    if(status == VX_SUCCESS)
+    if(status == (vx_status)VX_SUCCESS)
     {
         for (i = 0; i < num_params; i ++)
         {
@@ -312,7 +312,7 @@ static vx_status ownGraphValidRectCallback(
                     tmp_status = mf->valid_rect_callback(node, i,
                                     (const vx_rectangle_t* const*)graph->in_valid_rect_ptr,
                                     graph->out_valid_rect_ptr);
-                    if(tmp_status==VX_SUCCESS)
+                    if(tmp_status==(vx_status)VX_SUCCESS)
                     {
                         status |= vxSetImageValidRectangle((vx_image)ref, &graph->out_valid_rect[0]);
                     }
@@ -325,7 +325,7 @@ static vx_status ownGraphValidRectCallback(
 
                     status |= vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
 
-                    if(status==VX_SUCCESS)
+                    if(status==(vx_status)VX_SUCCESS)
                     {
                         for(k=0; k<levels; k++)
                         {
@@ -335,7 +335,7 @@ static vx_status ownGraphValidRectCallback(
                         tmp_status = mf->valid_rect_callback(node, i,
                                         (const vx_rectangle_t* const*)graph->in_valid_rect_ptr,
                                         graph->out_valid_rect_ptr);
-                        if(tmp_status==VX_SUCCESS)
+                        if(tmp_status==(vx_status)VX_SUCCESS)
                         {
                             for(k=0; k<levels; k++)
                             {
@@ -351,7 +351,7 @@ static vx_status ownGraphValidRectCallback(
                 else
                 {
                     /* not supported for other references */
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR,"not supported for references other than image or pyramid\n");
                 }
             }
@@ -363,7 +363,7 @@ static vx_status ownGraphValidRectCallback(
 static vx_status ownGraphInitVirtualNode(
     vx_graph graph, vx_node node, vx_meta_format meta[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i, num_params;
     vx_reference ref;
     vx_meta_format mf;
@@ -384,11 +384,11 @@ static vx_status ownGraphInitVirtualNode(
             {
                 if ((ref->scope->type == VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
                 {
-                    status = VX_ERROR_INVALID_SCOPE;
+                    status = (vx_status)VX_ERROR_INVALID_SCOPE;
                     VX_PRINT(VX_ZONE_ERROR,"invalid scope\n");
                 }
 
-                if (VX_SUCCESS == status)
+                if ((vx_status)VX_SUCCESS == status)
                 {
                     switch (mf->type)
                     {
@@ -397,11 +397,11 @@ static vx_status ownGraphInitVirtualNode(
                                 VX_SCALAR_TYPE, &type, sizeof(type));
                             /* For scalar, just check if type is correct or
                                 not */
-                            if (VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status)
                             {
                                 if (type != mf->sc.type)
                                 {
-                                    status = VX_ERROR_INVALID_TYPE;
+                                    status = (vx_status)VX_ERROR_INVALID_TYPE;
                                     VX_PRINT(VX_ZONE_ERROR,"invalid scalar type\n");
                                 }
                             }
@@ -409,12 +409,12 @@ static vx_status ownGraphInitVirtualNode(
                         case VX_TYPE_IMAGE:
                             if (0 == mf->img.width)
                             {
-                                status = VX_ERROR_INVALID_VALUE;
+                                status = (vx_status)VX_ERROR_INVALID_VALUE;
                                 VX_PRINT(VX_ZONE_ERROR,"image width value equal to zero\n");
                             }
                             else if (0 == mf->img.height)
                             {
-                                status = VX_ERROR_INVALID_VALUE;
+                                status = (vx_status)VX_ERROR_INVALID_VALUE;
                                 VX_PRINT(VX_ZONE_ERROR,"image height value equal to zero\n");
                             }
                             else
@@ -436,22 +436,22 @@ static vx_status ownGraphInitVirtualNode(
                                 pmd, VX_PYRAMID_LEVELS, &levels,
                                 sizeof(levels));
 
-                            if (VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status)
                             {
                                 /* Levels must be same even in this case */
                                 if (levels != mf->pmd.levels)
                                 {
-                                    status = VX_ERROR_INVALID_VALUE;
+                                    status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid levels incorrect\n");
                                 }
                                 else if (0 == mf->pmd.width)
                                 {
-                                    status = VX_ERROR_INVALID_VALUE;
+                                    status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid width equal to zero\n");
                                 }
                                 else if (0 == mf->pmd.height)
                                 {
-                                    status = VX_ERROR_INVALID_VALUE;
+                                    status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid height equal to zero\n");
                                 }
                                 else
@@ -467,7 +467,7 @@ static vx_status ownGraphInitVirtualNode(
                     }
                 }
 
-                if (status != VX_SUCCESS)
+                if (status != (vx_status)VX_SUCCESS)
                 {
                     break;
                 }
@@ -482,7 +482,7 @@ static vx_status ownGraphNodeKernelValidate(
     vx_graph graph, vx_meta_format meta[])
 {
     vx_node node;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i, j;
 
     for(i=0; i<graph->num_nodes; i++)
@@ -490,13 +490,13 @@ static vx_status ownGraphNodeKernelValidate(
         node = graph->nodes[i];
 
         status = ownNodeKernelValidate(node, meta);
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             status = ownGraphInitVirtualNode(graph, node, meta);
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 status = ownGraphValidRectCallback(graph, node, meta);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"graph valid rectangle callback failed at index %d\n", i);
                 }
@@ -511,7 +511,7 @@ static vx_status ownGraphNodeKernelValidate(
             VX_PRINT(VX_ZONE_ERROR,"node kernel validate failed at index %d\n", i);
         }
 
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             break;
         }
@@ -528,8 +528,8 @@ static vx_status ownGraphNodeKernelValidate(
 static vx_status ownGraphNodeKernelInit(vx_graph graph)
 {
     vx_node node;
-    vx_status status = VX_SUCCESS;
-    vx_status status_name = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status_name = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     for(i=0; i<graph->num_nodes; i++)
@@ -538,7 +538,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 
         status = ownNodeKernelInitKernelName(node);
 
-        if(status != VX_SUCCESS )
+        if(status != (vx_status)VX_SUCCESS )
         {
             status_name = status;
             VX_PRINT(VX_ZONE_ERROR,"Node kernel name init for node at index %d failed\n", i);
@@ -546,7 +546,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         }
     }
 
-    if(VX_SUCCESS == status)
+    if((vx_status)VX_SUCCESS == status)
     {
         for(i=0; i<graph->num_nodes; i++)
         {
@@ -558,7 +558,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
                 VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
             }
 
-            if(status != VX_SUCCESS )
+            if(status != (vx_status)VX_SUCCESS )
             {
                 VX_PRINT(VX_ZONE_ERROR,"kernel init for node %d, kernel %s ... failed !!!\n", i, node->kernel->name);
                 break;
@@ -571,7 +571,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         }
     }
 
-    if(VX_SUCCESS == status_name)
+    if((vx_status)VX_SUCCESS == status_name)
     {
         for(i=0; i<graph->num_nodes; i++)
         {
@@ -579,7 +579,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 
             status_name = ownNodeKernelDeinitKernelName(node);
 
-            if(status_name != VX_SUCCESS )
+            if(status_name != (vx_status)VX_SUCCESS )
             {
                 VX_PRINT(VX_ZONE_ERROR,"Node kernel name deinit for node at index %d failed\n", i);
                 break;
@@ -587,7 +587,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         }
     }
 
-    if(status_name != VX_SUCCESS )
+    if(status_name != (vx_status)VX_SUCCESS )
     {
         status = status_name;
     }
@@ -598,7 +598,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
 static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
 {
     vx_node node;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     for(i=0; i<graph->num_nodes; i++)
@@ -606,7 +606,7 @@ static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
         node = graph->nodes[i];
 
         status = ownNodeKernelDeinit(node);
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Node kernel de-init for node at index %d failed\n", i);
             break;
@@ -708,7 +708,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     uint32_t prm_cur_idx, prm_next_idx;
     uint32_t prm_cur_dir, prm_next_dir;
     vx_reference ref1, ref2;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
     {
@@ -746,11 +746,11 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                     /* add node_next as output node for current node if not already added */
                                     status = ownNodeAddOutNode(node_cur, node_next);
 
-                                    if(status == VX_SUCCESS)
+                                    if(status == (vx_status)VX_SUCCESS)
                                     {
                                         /* add node_current as input node for next node if not already added */
                                         status = ownNodeAddInNode(node_next, node_cur);
-                                        if (status != VX_SUCCESS)
+                                        if (status != (vx_status)VX_SUCCESS)
                                         {
                                             VX_PRINT(VX_ZONE_ERROR,"Add in node at index %d failed\n", node_cur_idx);
                                         }
@@ -786,7 +786,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                     ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
                                     ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
                                 {
-                                    status = VX_FAILURE;
+                                    status = (vx_status)VX_FAILURE;
                                     VX_PRINT(VX_ZONE_ERROR,"Output of next node matches current node at index %d failed\n", node_cur_idx);
                                 }
                             }
@@ -807,7 +807,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_node node;
     uint32_t i;
     uint32_t num_in, num_out;
@@ -831,7 +831,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 if (graph->num_head_nodes >= TIVX_GRAPH_MAX_HEAD_NODES)
                 {
                     graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/TI/tivx_config.h\n");
                     break;
@@ -845,7 +845,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
                 {
                     graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/TI/tivx_config.h\n");
                     break;
@@ -862,7 +862,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
 
 static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx))
     {
@@ -870,7 +870,7 @@ static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, ui
          * then allocate memory for parent object
          */
         status = ownReferenceAllocMem(ref->scope);
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Memory allocation for replicated parameter parent object failed\n");
         }
@@ -882,7 +882,7 @@ static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, ui
          * delay objects
          */
         status = ownReferenceAllocMem((vx_reference)ref->delay);
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Memory allocation for delay objects failed\n");
         }
@@ -894,7 +894,7 @@ static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, ui
          * memory gets allocated only once
          */
         status = ownReferenceAllocMem(ref);
-        if (status != VX_SUCCESS)
+        if (status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Memory allocation for data reference failed\n");
         }
@@ -907,7 +907,7 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
     vx_node node_cur;
     uint32_t node_cur_idx;
     uint32_t prm_cur_idx;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref;
 
     for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
@@ -922,13 +922,13 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
             if (NULL != ref)
             {
                 status = ownGraphAllocateDataObject(graph, node_cur, prm_cur_idx, ref);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     break;
                 }
             }
         }
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             break;
         }
@@ -940,7 +940,7 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
 {
     vx_node node;
     uint32_t i, pipe_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<graph->num_nodes; i++)
     {
@@ -949,12 +949,12 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
             status = ownNodeCreateUserCallbackCommand(node, pipe_id);
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 break;
             }
         }
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Node create user callback command at index %d failed\n", i);
             break;
@@ -1079,7 +1079,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
     uint32_t i, buf_id;
     vx_reference ref;
     uint16_t ref_obj_desc_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<graph->num_data_ref_q; i++)
     {
@@ -1098,9 +1098,9 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime data ref queue\n");
                 break;
@@ -1124,9 +1124,9 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
             }
@@ -1146,9 +1146,9 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             }
             else
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
             }
@@ -1162,7 +1162,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
             uint32_t index,
             tivx_data_ref_queue data_ref_q)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref = ownNodeGetParameterRef(
                             node,
                             index);
@@ -1221,10 +1221,10 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
 
                     if(graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue == NULL)
                     {
-                        status = VX_ERROR_NO_RESOURCES;
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
                         VX_PRINT(VX_ZONE_ERROR,"Unable to allocate data ref queue for delay \n");
                     }
-                    if(status == VX_SUCCESS)
+                    if(status == (vx_status)VX_SUCCESS)
                     {
                         delay_data_ref_q_list[delay_slot_index] = graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue;
                         graph->num_delay_data_ref_q++;
@@ -1232,16 +1232,16 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
                 }
                 else
                 {
-                    status = VX_ERROR_NO_RESOURCES;
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Exceed number of data reference queue list for delays \n");
                 }
             }
-            if(status!=VX_SUCCESS)
+            if(status!=(vx_status)VX_SUCCESS)
             {
                 break;
             }
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             tivxDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
         }
@@ -1253,7 +1253,7 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
 {
     tivx_data_ref_queue_create_params_t data_ref_create_prms;
     uint32_t i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<graph->num_data_ref_q; i++)
     {
@@ -1269,10 +1269,10 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
 
         if(graph->data_ref_q_list[i].data_ref_queue == NULL)
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
         /* check for and handle delay's */
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             status = ownGraphCheckAndCreateDelayDataReferenceQueues(graph,
                 graph->data_ref_q_list[i].node,
@@ -1280,7 +1280,7 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
                 graph->data_ref_q_list[i].data_ref_queue
                 );
         }
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             uint32_t buf_id;
 
@@ -1295,17 +1295,17 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
                 }
                 else
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
                 }
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
                     break;
                 }
             }
         }
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
             break;
@@ -1319,7 +1319,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
 {
     tivx_data_ref_queue_create_params_t data_ref_create_prms;
     uint32_t i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<graph->num_params; i++)
     {
@@ -1338,10 +1338,10 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
 
             if(graph->parameters[i].data_ref_queue == NULL)
             {
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
             /* check for and handle delay's */
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 status = ownGraphCheckAndCreateDelayDataReferenceQueues(graph,
                     graph->parameters[i].node,
@@ -1349,7 +1349,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                     graph->parameters[i].data_ref_queue
                     );
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 uint32_t buf_id;
 
@@ -1364,17 +1364,17 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
                     }
                     else
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
                     }
-                    if(status != VX_SUCCESS)
+                    if(status != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
                         break;
                     }
                 }
             }
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
                 break;
@@ -1387,7 +1387,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
 
 static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image exemplar, vx_image ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if((exemplar != NULL) && (ref != NULL))
     {
@@ -1404,14 +1404,14 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image 
         }
         else
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update image meta data after kernel init\n");
     }
@@ -1420,20 +1420,20 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image 
 
 static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_graph graph, vx_pyramid exemplar, vx_pyramid ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size ref_levels, exemplar_levels, i;
 
     status |= vxQueryPyramid(exemplar, VX_PYRAMID_LEVELS, &exemplar_levels, sizeof(exemplar_levels));
     status |= vxQueryPyramid(ref, VX_PYRAMID_LEVELS, &ref_levels, sizeof(ref_levels));
 
-    if((ref_levels == exemplar_levels) && (status == VX_SUCCESS))
+    if((ref_levels == exemplar_levels) && (status == (vx_status)VX_SUCCESS))
     {
         for(i=0; i<ref_levels; i++)
         {
             status |= ownGraphUpdateImageRefAfterKernetInit(graph, exemplar->img[i], ref->img[i]);
         }
     }
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
     }
@@ -1442,13 +1442,13 @@ static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_graph graph, vx_pyra
 
 static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_object_array exemplar, vx_object_array ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_size ref_count, exemplar_count, i;
 
     status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_NUMITEMS, &exemplar_count, sizeof(exemplar_count));
     status |= vxQueryObjectArray(ref, VX_OBJECT_ARRAY_NUMITEMS, &ref_count, sizeof(ref_count));
 
-    if((ref_count == exemplar_count) && (status == VX_SUCCESS))
+    if((ref_count == exemplar_count) && (status == (vx_status)VX_SUCCESS))
     {
         for(i=0; i<ref_count; i++)
         {
@@ -1469,7 +1469,7 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_objec
             }
         }
     }
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
     }
@@ -1478,7 +1478,7 @@ static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_objec
 
 static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_reference exemplar, vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
         && (ownIsValidSpecificReference(exemplar, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e))
@@ -1518,7 +1518,7 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
     {
         /* do nothing */
     }
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Unable to update data ref queue data refs meta data after kernel init\n");
     }
@@ -1534,7 +1534,7 @@ static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_referen
 static vx_status ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(vx_graph graph)
 {
     uint32_t buf_id, i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for(i=0; i<graph->num_params; i++)
     {
@@ -1573,15 +1573,15 @@ static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
     vx_status status;
 
     status = ownGraphCreateGraphParameterDataReferenceQueues(graph);
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         status = ownGraphCreateIntermediateDataReferenceQueues(graph);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         status = ownGraphPrimeDataReferenceQueues(graph);
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         ownGraphLinkDataReferenceQueues(graph);
     }
@@ -1595,7 +1595,7 @@ static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index)
 {
     vx_bool skip_add_data_ref_q = (vx_bool)vx_false_e;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference param_ref;
 
     param_ref = ownNodeGetParameterRef(node, index);
@@ -1670,10 +1670,10 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                     ref = ownCreateReferenceFromExemplar(graph->base.context, exemplar);
                     if(ref==NULL)
                     {
-                        status = VX_ERROR_NO_RESOURCES;
+                        status = (vx_status)VX_ERROR_NO_RESOURCES;
                         VX_PRINT(VX_ZONE_ERROR,"Unable to create references\n");
                     }
-                    if(status==VX_SUCCESS)
+                    if(status==(vx_status)VX_SUCCESS)
                     {
                         if(is_replicated)
                         {
@@ -1690,23 +1690,23 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                             else
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"Invalid reference type for replicated parameter\n");
-                                status = VX_FAILURE;
+                                status = (vx_status)VX_FAILURE;
                                 ref = NULL;
                             }
                         }
                         graph->data_ref_q_list[graph->num_data_ref_q].refs_list[buf_id] = ref;
                     }
-                    if(status!=VX_SUCCESS)
+                    if(status!=(vx_status)VX_SUCCESS)
                     {
                         break;
                     }
                 }
-                if(status==VX_SUCCESS)
+                if(status==(vx_status)VX_SUCCESS)
                 {
                     graph->data_ref_q_list[graph->num_data_ref_q].num_buf = num_buf;
                 }
             }
-            if(status==VX_SUCCESS)
+            if(status==(vx_status)VX_SUCCESS)
             {
                 graph->num_data_ref_q++;
                 tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", graph->num_data_ref_q);
@@ -1714,7 +1714,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
         }
         else
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "Unable to add data ref q to graph since list is full \n");
             VX_PRINT(VX_ZONE_ERROR, "ownGraphAddDataRefQ: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF_QUEUE in tiovx/include/TI/tivx_config.h\n");
         }
@@ -1724,7 +1724,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
 
 static vx_status ownGraphNodePipeline(vx_graph graph)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t node_id;
 
     for(node_id=0; node_id<graph->num_nodes; node_id++)
@@ -1740,14 +1740,14 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         ownNodeSetObjDescParamDirection(graph->nodes[node_id]);
 
         status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
             break;
         }
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
@@ -1758,7 +1758,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         }
     }
 
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         /* make data references at graph parameter only if graph is in queuing mode */
         if((graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
@@ -1778,13 +1778,13 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
                 for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
                 {
                     status = ownGraphAddDataRefQ(graph, node, prm_id);
-                    if(status!=VX_SUCCESS)
+                    if(status!=(vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
                         break;
                     }
                 }
-                if(status!=VX_SUCCESS)
+                if(status!=(vx_status)VX_SUCCESS)
                 {
                     break;
                 }
@@ -1798,7 +1798,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
 VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 {
     uint32_t i;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS] = {NULL};
     vx_bool first_time_verify = (vx_bool)vx_true_e;
 
@@ -1810,23 +1810,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
-    for (i = 0; (i < TIVX_KERNEL_MAX_PARAMS) && (VX_SUCCESS == status); i ++)
+    for (i = 0; (i < TIVX_KERNEL_MAX_PARAMS) && ((vx_status)VX_SUCCESS == status); i ++)
     {
         meta[i] = vxCreateMetaFormat(graph->base.context);
 
         /* This should not fail at all */
-        if (vxGetStatus((vx_reference)meta[i]) != VX_SUCCESS)
+        if (vxGetStatus((vx_reference)meta[i]) != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to create meta format object\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
     if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)) &&
-        (VX_SUCCESS == status))
+        ((vx_status)VX_SUCCESS == status))
     {
         ownReferenceLock(&graph->base);
 
@@ -1841,12 +1841,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
              * No resources are allocated in this step
              */
             status = ownGraphCalcInAndOutNodes(graph);
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 vx_bool has_cycle;
 
@@ -1865,17 +1865,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 if(has_cycle)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
 
             /* Detects connection between source and sink nodes */
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 ownGraphDetectSourceSink(graph);
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Call validate function for each node
                  * If validation fails then return with error
@@ -1883,42 +1883,42 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  */
                 status = ownGraphNodeKernelValidate(graph, meta);
 
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Configure graph processing to account for any super nodes
                  */
                 status = ownGraphSuperNodeConfigure(graph);
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Find head nodes and leaf nodes
                  * in graph
                  * No resources are allocated in this step
                  */
                 status = ownGraphCalcHeadAndLeafNodes(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Find head nodes and leaf nodes failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 status = ownGraphFindAndAddDataReferences(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Allocate memory associated with data objects of this graph
                  * Memory resources are allocated in this step
@@ -1926,53 +1926,53 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * data object release
                  */
                 status = ownGraphAllocateDataObjects(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Memory alloc for data objects failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Pipeline node objects */
                 status = ownGraphNodePipeline(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
                 }
             }
 
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Set node callback commands
                  * If case of any error these command are free'ed during
                  * graph release
                  */
                 status = ownGraphCreateNodeCallbackCommands(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* link array elements to node parameters */
                 ownGraphLinkArrayElements(graph);
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* create and link data references queues to node parameters */
                 status = ownGraphCreateAndLinkDataReferenceQueues(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* Call target kernel init for each node
                  * This results in message coomunication with target kernels
@@ -1981,53 +1981,53 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * kernel deinit called during node release
                  */
                 status = ownGraphNodeKernelInit(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* update data refs within data ref queues for meta data updated during kernel init */
                 status = ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* alloc object descriptor for graph and enqueue them */
                 status = ownGraphAllocAndEnqueueObjDescForPipeline(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* alloc everything for streaming */
                 status = ownGraphAllocForStreaming(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to alloc streaming objects for graph\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* verify graph schedule mode with streaming */
                 status = ownGraphVerifyStreamingMode(graph);
-                if(status != VX_SUCCESS)
+                if(status != (vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");
                 }
             }
 
-            if(status == VX_SUCCESS)
+            if(status == (vx_status)VX_SUCCESS)
             {
                 /* everything passed, now graph is verified */
                 graph->verified = (vx_bool)vx_true_e;
@@ -2035,7 +2035,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 graph->state = VX_GRAPH_STATE_VERIFIED;
             }
 
-            if(status != VX_SUCCESS)
+            if(status != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
                 /* deinit kernel to recover resources */
@@ -2049,7 +2049,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)

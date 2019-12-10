@@ -223,7 +223,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
 
 static vx_status ownAddRefToDelay(vx_context context, vx_delay delay, vx_reference ref, uint32_t i)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     delay->refs[i] = ref;
 
@@ -282,12 +282,12 @@ static vx_status ownDestructDelay(vx_reference ref)
     {
         ownReleaseRefFromDelay(delay, delay->count);
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i=0;
     vx_delay delay = (vx_delay)delay_ref;
     vx_reference ref;
@@ -300,13 +300,13 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
 
             if (ref)
             {
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
                 if(ref->mem_alloc_callback)
                 {
                     status = ref->mem_alloc_callback(ref);
                 }
 
-                if (VX_SUCCESS != status)
+                if ((vx_status)VX_SUCCESS != status)
                 {
                     break;
                 }
@@ -314,14 +314,14 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: delay reference %d is null\n", i);
-                status = VX_ERROR_INVALID_VALUE;
+                status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: reference type is not delay\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -355,7 +355,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                               vx_reference exemplar,
                               vx_size count)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_delay delay = NULL;
     vx_reference ref;
     vx_uint32 i;
@@ -368,33 +368,33 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
             {
                 delay = (vx_delay)ownCreateReference(
                                         context, VX_TYPE_DELAY, VX_EXTERNAL, &context->base);
-                if ( (vxGetStatus((vx_reference)delay) == VX_SUCCESS) && (delay->base.type == VX_TYPE_DELAY) )
+                if ( (vxGetStatus((vx_reference)delay) == (vx_status)VX_SUCCESS) && (delay->base.type == VX_TYPE_DELAY) )
                 {
                     ownDelayInit(delay, count, exemplar->type);
 
                     for(i=0; i<count; i++)
                     {
                         ref = ownCreateReferenceFromExemplar(context, exemplar);
-                        status = VX_SUCCESS;
+                        status = (vx_status)VX_SUCCESS;
                         if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference type\n");
-                            status = VX_ERROR_INVALID_REFERENCE;
+                            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                         }
-                        if(status == VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS)
                         {
                             status = ownAddRefToDelay(context, delay, ref, i);
                         }
-                        if(status!=VX_SUCCESS)
+                        if(status!=(vx_status)VX_SUCCESS)
                         {
                             break;
                         }
                     }
-                    if(status == VX_SUCCESS)
+                    if(status == (vx_status)VX_SUCCESS)
                     {
                         tivxLogSetResourceUsedValue("TIVX_DELAY_MAX_OBJECT", count);
                     }
-                    if ( (status == VX_SUCCESS) && (exemplar->type == VX_TYPE_OBJECT_ARRAY) )
+                    if ( (status == (vx_status)VX_SUCCESS) && (exemplar->type == VX_TYPE_OBJECT_ARRAY) )
                     {
                         vx_size num_items, item_idx;
                         vx_enum item_type;
@@ -402,16 +402,16 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
                         status = vxQueryObjectArray((vx_object_array)exemplar, VX_OBJECT_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
                         delay->obj_arr_num_items = 0;
-                        if(status == VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS)
                         {
                             status = vxQueryObjectArray((vx_object_array)exemplar, VX_OBJECT_ARRAY_ITEMTYPE, &item_type, sizeof(item_type));
-                            if (VX_SUCCESS == status)
+                            if ((vx_status)VX_SUCCESS == status)
                             {
                                 for (item_idx = 0; item_idx < num_items; item_idx++)
                                 {
                                     objarrdelay = (vx_delay)ownCreateReference(context, VX_TYPE_DELAY, VX_INTERNAL, (vx_reference)delay);
                                     delay->obj_arr_delay[item_idx] = objarrdelay;
-                                    if ( (vxGetStatus((vx_reference)objarrdelay) == VX_SUCCESS) && (objarrdelay->base.type == VX_TYPE_DELAY) )
+                                    if ( (vxGetStatus((vx_reference)objarrdelay) == (vx_status)VX_SUCCESS) && (objarrdelay->base.type == VX_TYPE_DELAY) )
                                     {
                                         ownDelayInit(objarrdelay, count, item_type);
                                         for (i = 0; i < count; i++)
@@ -423,7 +423,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                                 status = ownAddRefToDelay(context, objarrdelay, ref, i);
                                             }
 
-                                            if( (NULL == ref) || (status!=VX_SUCCESS))
+                                            if( (NULL == ref) || (status!=(vx_status)VX_SUCCESS))
                                             {
                                                 VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
                                                 break;
@@ -435,20 +435,20 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                             }
                         }
                     }
-                    if ( (status == VX_SUCCESS) && (exemplar->type == VX_TYPE_PYRAMID) )
+                    if ( (status == (vx_status)VX_SUCCESS) && (exemplar->type == VX_TYPE_PYRAMID) )
                     {
                         vx_size levels, level_idx;
                         vx_delay pyrdelay;
 
                         status = vxQueryPyramid((vx_pyramid)exemplar, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
                         delay->pyr_num_levels = 0;
-                        if(status == VX_SUCCESS)
+                        if(status == (vx_status)VX_SUCCESS)
                         {
                             for (level_idx = 0; level_idx < levels; level_idx++)
                             {
                                 pyrdelay = (vx_delay)ownCreateReference(context, VX_TYPE_DELAY, VX_INTERNAL, (vx_reference)delay);
                                 delay->pyr_delay[level_idx] = pyrdelay;
-                                if ( (vxGetStatus((vx_reference)pyrdelay) == VX_SUCCESS) && (pyrdelay->base.type == VX_TYPE_DELAY) )
+                                if ( (vxGetStatus((vx_reference)pyrdelay) == (vx_status)VX_SUCCESS) && (pyrdelay->base.type == VX_TYPE_DELAY) )
                                 {
                                     ownDelayInit(pyrdelay, count, VX_TYPE_IMAGE);
                                     for (i = 0; i < count; i++)
@@ -456,7 +456,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                         ref = (vx_reference)vxGetPyramidLevel((vx_pyramid)delay->refs[i], (vx_uint32)level_idx);
 
                                         status = ownAddRefToDelay(context, pyrdelay, ref, i);
-                                        if(status!=VX_SUCCESS)
+                                        if(status!=(vx_status)VX_SUCCESS)
                                         {
                                             VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
                                             break;
@@ -467,35 +467,35 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                             }
                         }
                     }
-                    if(status!=VX_SUCCESS)
+                    if(status!=(vx_status)VX_SUCCESS)
                     {
                         ownReleaseRefFromDelay(delay, i);
                         vxReleaseDelay(&delay);
 
                         VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not allocate delay object descriptor\n");
-                        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate delay object descriptor\n");
                         delay = (vx_delay)ownGetErrorObject(
-                            context, VX_ERROR_NO_RESOURCES);
+                            context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not create delay reference\n");
-                    delay = (vx_delay)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                    delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
             }
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference or reference type\n");
-                delay = (vx_delay)ownGetErrorObject(context, VX_ERROR_INVALID_REFERENCE);
+                delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_REFERENCE);
             }
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: count > TIVX_DELAY_MAX_OBJECT\n");
             VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: May need to increase the value of TIVX_DELAY_MAX_OBJECT in tiovx/include/TI/tivx_config.h\n");
-            delay = (vx_delay)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+            delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
     }
 
@@ -515,8 +515,8 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(
         }
         else
         {
-            vxAddLogEntry(&delay->base, VX_ERROR_INVALID_PARAMETERS, "Failed to retrieve reference from delay by index %d\n", index);
-            ref = (vx_reference)ownGetErrorObject(delay->base.context, VX_ERROR_INVALID_PARAMETERS);
+            vxAddLogEntry(&delay->base, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to retrieve reference from delay by index %d\n", index);
+            ref = (vx_reference)ownGetErrorObject(delay->base.context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }
     return ref;
@@ -525,7 +525,7 @@ VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(
 VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
     vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
     {
@@ -539,7 +539,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay type query failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_DELAY_SLOTS:
@@ -550,19 +550,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay slots query failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -575,7 +575,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseDelay(vx_delay *d)
 
 VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (tivxIsValidDelay(delay) == (vx_bool)vx_true_e)
     {
@@ -627,7 +627,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }

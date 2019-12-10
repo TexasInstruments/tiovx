@@ -66,28 +66,28 @@
 
 vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     event_q->enable = (vx_bool)vx_true_e;
 
     status = tivxQueueCreate(&event_q->free_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->free_queue_memory, 0 /* non-blocking */
         );
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         status = tivxQueueCreate(&event_q->ready_queue,
                 TIVX_EVENT_QUEUE_MAX_SIZE, event_q->ready_queue_memory,
                 TIVX_QUEUE_FLAG_BLOCK_ON_GET);
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             tivxQueueDelete(&event_q->free_queue);
         }
     }
-    if(status!=VX_SUCCESS)
+    if(status!=(vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxEventQueueCreate: Unable to create queues\n");
     }
-    if(status==VX_SUCCESS)
+    if(status==(vx_status)VX_SUCCESS)
     {
         uint32_t i;
 
@@ -121,14 +121,14 @@ void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
 vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
         vx_enum event_id, uint64_t timestamp, uint32_t app_value, uintptr_t param1, uintptr_t param2, uintptr_t param3)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if((event_q != NULL) && (event_q->enable == (vx_bool)vx_true_e))
     {
         uintptr_t index;
 
         status = tivxQueueGet(&event_q->free_queue, &index, TIVX_EVENT_TIMEOUT_NO_WAIT);
-        if((status == VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
+        if((status == (vx_status)VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
         {
             tivx_event_queue_elem_t *elem;
 
@@ -143,12 +143,12 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             status = tivxQueuePut(&event_q->ready_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", index+1);
             }
         }
-        if(status != VX_SUCCESS)
+        if(status != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventQueueAddEvent: Unable to add event, dropping it\n");
         }
@@ -163,29 +163,29 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableEvents(vx_context context)
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_true_e);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_false_e);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     return status;
 }
@@ -197,7 +197,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -216,12 +216,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
                     vx_context context, vx_event_t *event,
                     vx_bool do_not_block)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -236,7 +236,7 @@ vx_status vxWaitEventQueue(
                     tivx_event_queue_t *event_q, vx_event_t *event,
                     vx_bool do_not_block)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uintptr_t index;
     uint32_t timeout;
 
@@ -251,7 +251,7 @@ vx_status vxWaitEventQueue(
 
     status = tivxQueueGet(&event_q->ready_queue, &index, timeout);
 
-    if((status == VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
+    if((status == (vx_status)VX_SUCCESS) && (index < TIVX_EVENT_QUEUE_MAX_SIZE))
     {
         tivx_event_queue_elem_t *elem;
         elem = &event_q->event_list[index];
@@ -309,7 +309,7 @@ vx_status vxWaitEventQueue(
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
                 enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value)
 {
-    vx_status status = VX_ERROR_NOT_SUPPORTED;
+    vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     status = tivxRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value);
 
@@ -320,7 +320,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
                 vx_uint32 param, vx_uint32 app_value)
 {
-    vx_status status = VX_ERROR_NOT_SUPPORTED;
+    vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
     if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
@@ -332,20 +332,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
             if (TIVX_EVENT_GRAPH_QUEUE == queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
             }
             else if (TIVX_EVENT_CONTEXT_QUEUE == queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
-                status = VX_SUCCESS;
+                status = (vx_status)VX_SUCCESS;
             }
             else
             {
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "vxRegisterEvent: Invalid queue type given\n");
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 status = ownNodeRegisterEvent((vx_node)ref, type, app_value);
             }

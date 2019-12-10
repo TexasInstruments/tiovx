@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxNonLinearFiltParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
@@ -115,7 +115,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
@@ -123,14 +123,14 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxNonLinearFiltParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *img_ptrs[2];
         void *src_target_ptr;
@@ -156,7 +156,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_matrix_t *mask;
     tivx_obj_desc_scalar_t *function_desc;
@@ -166,12 +166,12 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxBamInitKernelDetails(&kernel_details, 1, kernel);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *mask_target_ptr;
 
@@ -271,10 +271,10 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxNonLinearFiltParams));
@@ -295,19 +295,19 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t size;
     tivxNonLinearFiltParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxNonLinearFiltParams) == size))
         {
             if(NULL != prms->graph_handle)
@@ -376,7 +376,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivxNonLinearFiltParams *prms = NULL;
     tivx_obj_desc_matrix_t *mask;
     tivx_obj_desc_scalar_t *function_desc;
@@ -385,7 +385,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *mask_target_ptr;
 
@@ -432,7 +432,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
@@ -457,7 +457,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -484,17 +484,17 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                 }
                 else
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             prms->bam_node_num = *bam_node_cnt;
         }
         else
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxNonLinearFiltParams));
@@ -521,7 +521,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
     vx_status status = tivxGetTargetKernelInstanceContext(kernel,
                         (void **)&prms, &size);
 
-    if ((VX_SUCCESS == status) && (NULL != prms) &&
+    if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxNonLinearFiltParams) == size))
     {
         switch (ovx_port)
@@ -536,7 +536,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelNonLinearFilterGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
         }
     }

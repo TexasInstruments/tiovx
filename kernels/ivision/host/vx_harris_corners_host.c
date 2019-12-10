@@ -73,7 +73,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_image img;
     vx_uint32 w, h, i;
     vx_df_image fmt;
@@ -89,11 +89,11 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         /* Check for NULL */
         if (NULL == parameters[i])
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
             break;
         }
     }
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (vx_image)parameters[TIVX_KERNEL_HARRISC_IN_IMG_IDX];
 
@@ -105,130 +105,130 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         status |= vxQueryImage(img, VX_IMAGE_HEIGHT, &h, sizeof(h));
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
         if (VX_DF_IMAGE_U8 != fmt)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_HARRISC_IN_SC_WIN_SIZE_IDX];
 
         status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
             sizeof(stype));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (stype != VX_TYPE_UINT8)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
                     VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
-                if (status == VX_SUCCESS)
+                if (status == (vx_status)VX_SUCCESS)
                 {
                     if ((3 != value) && (5 != value) &&
                         (7 != value))
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         scalar = (vx_scalar)parameters[
             TIVX_KERNEL_HARRISC_IN_SC_SCORE_METHOD_IDX];
 
         status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
             sizeof(stype));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (stype != VX_TYPE_UINT8)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
                     VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
-                if (status == VX_SUCCESS)
+                if (status == (vx_status)VX_SUCCESS)
                 {
                     if ((0 != value) && (1 != value))
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         scalar = (vx_scalar)parameters[
             TIVX_KERNEL_HARRISC_IN_SC_SUPPR_METHOD_IDX];
 
         status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
             sizeof(stype));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (stype != VX_TYPE_UINT8)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
                     VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
-                if (status == VX_SUCCESS)
+                if (status == (vx_status)VX_SUCCESS)
                 {
                     if ((3 != value) && (5 != value) &&
                         (7 != value))
                     {
-                        status = VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX];
 
         status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
             sizeof(stype));
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (stype != VX_TYPE_SIZE)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &arr_capacity,
                     VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
-                if ((status == VX_SUCCESS) &&
+                if ((status == (vx_status)VX_SUCCESS) &&
                     ((arr_capacity > 1023) || (arr_capacity == 0)))
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
             }
         }
     }
 
-    if ((VX_SUCCESS == status) &&
+    if (((vx_status)VX_SUCCESS == status) &&
         ((vx_bool)vx_false_e == tivxIsReferenceVirtual(
             (vx_reference)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])))
     {
@@ -237,27 +237,27 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         status = vxQueryArray(arr, VX_ARRAY_ITEMTYPE, &arr_type,
             sizeof(arr_type));
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if (VX_TYPE_KEYPOINT != arr_type)
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
         status = vxQueryArray(arr, VX_ARRAY_CAPACITY, &arr_capacity,
             sizeof(arr_capacity));
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             if ((arr_capacity > 1023) || (arr_capacity == 0))
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         arr_type = VX_TYPE_KEYPOINT;
 
@@ -290,11 +290,11 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
 
     status = vxGetStatus((vx_reference)kernel);
 
-    if ( status == VX_SUCCESS)
+    if ( status == (vx_status)VX_SUCCESS)
     {
         index = 0;
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -304,7 +304,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -314,7 +314,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -324,7 +324,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -334,7 +334,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -344,7 +344,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -354,7 +354,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -364,7 +364,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -374,7 +374,7 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
@@ -384,17 +384,17 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_EVE1);
         }
 
-        if ( status == VX_SUCCESS)
+        if ( status == (vx_status)VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if( status != VX_SUCCESS)
+        if( status != (vx_status)VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

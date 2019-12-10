@@ -80,13 +80,13 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
 static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t *heap_id)
 {
-    int32_t status = VX_SUCCESS;
+    int32_t status = (vx_status)VX_SUCCESS;
 
     *heap_id = TIVX_MEM_EXTERNAL;
     switch(space)
     {
         default:
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         case IALG_EPROG:
         case IALG_IPROG:
@@ -153,14 +153,14 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
  * \param  numMemRec         [IN] Number of objects
  * \param  memRec            [IN] pointer to the memory records
  *
- * \return  VX_SUCCESS on success
+ * \return  (vx_status)VX_SUCCESS on success
  *
  *******************************************************************************
  */
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 {
     vx_uint32 memRecId, heap_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
@@ -168,7 +168,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
                  memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
 
         status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size, heap_id);
         }
@@ -180,7 +180,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n",
                      memRecId, memRec[memRecId].space, memRec[memRecId].size);
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             break;
         }
     }
@@ -189,7 +189,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
     for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
         status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             if ((heap_id== TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
             {
@@ -211,19 +211,19 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
  * \param  numMemRec         [IN] Number of objects
  * \param  memRec            [IN] pointer to the memory records
  *
- * \return  VX_SUCCESS on success
+ * \return  (vx_status)VX_SUCCESS on success
  *
  *******************************************************************************
  */
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
 {
     vx_uint32 memRecId, heap_id;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     for (memRecId = 0; memRecId < numMemRec; memRecId++)
     {
         status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
 #ifndef HOST_EMULATION
             if ((heap_id!= TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
@@ -274,7 +274,7 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
     vx_uint32 numMemRec;
     IALG_MemRec *memRec;
     IM_Fxns *algHandle = NULL;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
 
@@ -358,7 +358,7 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IVISION_OutArgs *outArgs)
 {
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
 
@@ -380,7 +380,7 @@ vx_int32 tivxAlgiVisionControl(void *algHandle,
     IALG_Params *outParams)
 {
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     status = ivision->fxns->algControl((IVISION_Handle)ivision,
                                        cmd,

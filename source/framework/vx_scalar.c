@@ -46,18 +46,18 @@ static vx_status ownDestructScalar(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
 
-    if (VX_SUCCESS != ownReferenceLock(&scalar->base))
+    if ((vx_status)VX_SUCCESS != ownReferenceLock(&scalar->base))
     {
         VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: could not lock reference\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
     {
@@ -85,13 +85,13 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: data type is not supported\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
-        if (VX_SUCCESS != ownReferenceUnlock(&scalar->base))
+        if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
         {
             VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: reference could not be unlocked\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
@@ -100,13 +100,13 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 
 static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_scalar_t *obj_desc = NULL;
 
-    if (VX_SUCCESS != ownReferenceLock(&scalar->base))
+    if ((vx_status)VX_SUCCESS != ownReferenceLock(&scalar->base))
     {
         VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: could not lock reference\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
     {
@@ -134,13 +134,13 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: data type is not supported\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
-        if (VX_SUCCESS != ownReferenceUnlock(&scalar->base))
+        if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
         {
             VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: reference could not be unlocked\n");
-            status = VX_ERROR_NO_RESOURCES;
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
 
@@ -218,13 +218,13 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
     {
         if (!TIVX_TYPE_IS_SCALAR(data_type))
         {
-            vxAddLogEntry(&context->base, VX_ERROR_INVALID_TYPE, "Invalid type to scalar\n");
-            scalar = (vx_scalar)ownGetErrorObject(context, VX_ERROR_INVALID_TYPE);
+            vxAddLogEntry(&context->base, (vx_status)VX_ERROR_INVALID_TYPE, "Invalid type to scalar\n");
+            scalar = (vx_scalar)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_TYPE);
         }
         else
         {
             scalar = (vx_scalar)ownCreateReference(context, VX_TYPE_SCALAR, VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)scalar) == VX_SUCCESS) && (scalar->base.type == VX_TYPE_SCALAR))
+            if ((vxGetStatus((vx_reference)scalar) == (vx_status)VX_SUCCESS) && (scalar->base.type == VX_TYPE_SCALAR))
             {
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = &ownDestructScalar;
@@ -235,8 +235,8 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 {
                     vxReleaseScalar(&scalar);
 
-                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Could not allocate scalar object descriptor\n");
-                    scalar = (vx_scalar)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                    vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate scalar object descriptor\n");
+                    scalar = (vx_scalar)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -261,13 +261,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseScalar(vx_scalar *s)
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attribute, void* ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar pscalar = (vx_scalar)scalar;
 
     if (ownIsValidSpecificReference(&pscalar->base,VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -282,13 +282,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: query scalar type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -298,19 +298,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
 
 VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((vx_bool)vx_false_e == ownIsValidSpecificReference(&scalar->base, VX_TYPE_SCALAR))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         if ((NULL == user_ptr) || (VX_MEMORY_TYPE_HOST != user_mem_type))
         {
 
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if (NULL == user_ptr)
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user ptr is NULL\n");
@@ -332,7 +332,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
                     status = ownHostMemToScalar(scalar, user_ptr);
                     break;
                 default:
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: usage value is invalid\n");
                     break;
             }

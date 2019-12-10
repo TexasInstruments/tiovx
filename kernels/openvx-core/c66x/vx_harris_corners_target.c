@@ -125,7 +125,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     tivxHarrisCornersParams *prms = NULL;
     tivx_obj_desc_image_t *src;
@@ -138,7 +138,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -147,13 +147,13 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
         arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX];
@@ -171,14 +171,14 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
+        if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
             (sizeof(tivxHarrisCornersParams) != size))
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *arr_target_ptr;
@@ -227,7 +227,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
 
         if (status != VXLIB_SUCCESS)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
         else
         {
@@ -272,7 +272,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t strideshift;
     tivx_obj_desc_image_t *img;
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -290,18 +290,18 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
@@ -352,21 +352,21 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             if (NULL == prms->sobel_x)
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_x mem allocation failed\n");
-                status = VX_ERROR_NO_MEMORY;
+                status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->sobel_y = tivxMemAlloc(prms->sobel_size,
                     TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->sobel_y)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_y mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->vxlib_score.dim_x = img->imagepatch_addr[0].dim_x;
                 prms->vxlib_score.dim_y = img->imagepatch_addr[0].dim_y -
@@ -382,11 +382,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 if (NULL == prms->hcs_score)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_score mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcs_scratch_size = 12u * prms->vxlib_sobx.dim_x *
                     (1 + sc_bs->data.s32);
@@ -396,11 +396,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 if (NULL == prms->hcs_scratch)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_scratch mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcd_sprs_size = prms->vxlib_score.stride_y *
                     img->imagepatch_addr[0].dim_y;
@@ -410,11 +410,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 if (NULL == prms->hcd_sprs)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_sprs mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcd_corners_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
@@ -424,11 +424,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 if (NULL == prms->hcd_corners)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_corners mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hcd_strength_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
@@ -438,11 +438,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 if (NULL == prms->hcd_strength)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_strength mem allocation failed\n");
-                    status = VX_ERROR_NO_MEMORY;
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 vx_float32 radius = sc_dist->data.f32;
 
@@ -461,10 +461,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     if (NULL == prms->nms_scratch)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_scratch mem allocation failed\n");
-                        status = VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->nms_corners_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
@@ -474,11 +474,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         if (NULL == prms->nms_corners)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_corners mem allocation failed\n");
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
 
-                    if (VX_SUCCESS == status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         prms->nms_strength_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
@@ -488,7 +488,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         if (NULL == prms->nms_strength)
                         {
                             VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
-                            status = VX_ERROR_NO_MEMORY;
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
                 }
@@ -505,10 +505,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
                 sizeof(tivxHarrisCornersParams));
@@ -529,14 +529,14 @@ static vx_status VX_CALLBACK tivxKernelHarrisCDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
     uint32_t size;
     tivxHarrisCornersParams *prms = NULL;
 
     if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -545,18 +545,18 @@ static vx_status VX_CALLBACK tivxKernelHarrisCDelete(
             if ((NULL == obj_desc[i]) &&
                 (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
+        if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxHarrisCornersParams) == size))
         {
             tivxHarrisCFreeMem(prms);
@@ -675,7 +675,7 @@ static void tivxHarrisCFreeMem(tivxHarrisCornersParams *prms)
 static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
     const uint8_t *src_addr, int32_t gs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     int16_t *temp1_16, *temp2_16;
     int32_t *temp1_32, *temp2_32;
@@ -722,7 +722,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
 
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -731,7 +731,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
 static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
     vx_float32 sensitivity, int32_t gs, int32_t bs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     vx_float32 *score;
     int32_t *sobx_32, *soby_32;
     int16_t *sobx_16, *soby_16;
@@ -772,7 +772,7 @@ static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
     }
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);
@@ -781,7 +781,7 @@ static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
 static vx_status tivxHarrisCCalcDetect(tivxHarrisCornersParams *prms,
     uint32_t *num_corners, vx_float32 threshold, int32_t gs, int32_t bs)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     VXLIB_F32 *score_out;
     VXLIB_bufParams2D_t score_prms;
 
@@ -803,7 +803,7 @@ static vx_status tivxHarrisCCalcDetect(tivxHarrisCornersParams *prms,
     }
     if (status != VXLIB_SUCCESS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
     return (status);

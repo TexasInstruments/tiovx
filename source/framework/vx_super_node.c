@@ -143,7 +143,7 @@ static vx_status ownDestructSuperNode(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }
 
 static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32_t num_nodes)
@@ -181,7 +181,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
         {
             super_node = (tivx_super_node)ownCreateReference(context, TIVX_TYPE_SUPER_NODE, VX_EXTERNAL, &graph->base);
 
-            if ( (vxGetStatus((vx_reference)super_node) == VX_SUCCESS) && (super_node->base.type == TIVX_TYPE_SUPER_NODE) )
+            if ( (vxGetStatus((vx_reference)super_node) == (vx_status)VX_SUCCESS) && (super_node->base.type == TIVX_TYPE_SUPER_NODE) )
             {
                 /* assign refernce type specific callback's */
                 super_node->base.destructor_callback = &ownDestructSuperNode;
@@ -194,8 +194,8 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                 {
                     tivxReleaseSuperNode(&super_node);
 
-                    vxAddLogEntry(&graph->base, VX_ERROR_NO_RESOURCES, "Could not allocate super node object descriptor\n");
-                    super_node = (tivx_super_node)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+                    vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate super node object descriptor\n");
+                    super_node = (tivx_super_node)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
@@ -208,7 +208,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                         super_node->node = vxCreateGenericNode(graph, kernel);
                         vxReleaseKernel(&kernel);
 
-                        if (vxGetStatus((vx_reference)super_node->node) == VX_SUCCESS)
+                        if (vxGetStatus((vx_reference)super_node->node) == (vx_status)VX_SUCCESS)
                         {
                             vx_status status;
                             super_node->node->super_node = super_node;
@@ -217,36 +217,36 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                             super_node->node->obj_desc[0]->base.scope_obj_desc_id = obj_desc->base.obj_desc_id;
                             status = ownGraphAddSuperNode(graph, super_node);
 
-                            if (VX_SUCCESS != status)
+                            if ((vx_status)VX_SUCCESS != status)
                             {
-                                vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to add supernode to graph\n");
+                                vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to add supernode to graph\n");
                                 vxReleaseNode(&super_node->node);
                                 tivxReleaseSuperNode(&super_node);
                             }
                         }
                         else
                         {
-                            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
+                            vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
                             VX_PRINT(VX_ZONE_ERROR,"tivxCreateSuperNode: Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
                         }
                     }
                     else
                     {
-                        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to retrieve kernel enum TIVX_KERNEL_SUPERNODE\n");
-                        super_node = (tivx_super_node)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to retrieve kernel enum TIVX_KERNEL_SUPERNODE\n");
+                        super_node = (tivx_super_node)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
                     }
                 }
             }
         }
         else
         {
-            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
-            super_node = (tivx_super_node)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+            vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Requested create parameters was invalid!\n");
+            super_node = (tivx_super_node)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
         }
     }
     else
     {
-        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
+        vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
         VX_PRINT(VX_ZONE_ERROR, "tivxCreateSuperNode: graph is invalid\n");
     }
 
@@ -260,7 +260,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseSuperNode(tivx_super_node *super_n
 
 VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     tivx_obj_desc_super_node_t *obj_desc = NULL;
 
@@ -278,7 +278,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node target failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
@@ -290,7 +290,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node performance failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
@@ -306,7 +306,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node status failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
@@ -318,20 +318,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node num nodes failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "tivxQuerySuperNode: invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxQuerySuperNode: invalid super node reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -341,7 +341,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
                                                           vx_enum target_enum,
                                                           const char* target_string)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     uint32_t i, num_nodes;
 
     if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
@@ -354,13 +354,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
 
         status = vxSetNodeTarget(super_node->node, target_enum, target_string);
 
-        if(VX_SUCCESS == status)
+        if((vx_status)VX_SUCCESS == status)
         {
             for(i=0; i < num_nodes; i++)
             {
                 status = vxSetNodeTarget(super_node->nodes[i], target_enum, target_string);
 
-                if(VX_SUCCESS != status)
+                if((vx_status)VX_SUCCESS != status)
                 {
                     break;
                 }
@@ -373,7 +373,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
 
 VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node super_node, vx_uint32 block_width, vx_uint32 block_height)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_node_t *node_obj_desc;
 
     if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
@@ -385,14 +385,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node supe
         if (super_node->node->graph->verified == (vx_bool)vx_true_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxSetSuperNodeTileSize: Graph has been verified\n");
-            status = VX_ERROR_NOT_SUPPORTED;
+            status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
             node_obj_desc = (tivx_obj_desc_node_t *)super_node->node->obj_desc[0];
             node_obj_desc->block_width = block_width;
             node_obj_desc->block_height = block_height;
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
     return status;

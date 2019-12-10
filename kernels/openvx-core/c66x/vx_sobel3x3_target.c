@@ -77,7 +77,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst0, *dst1;
     uint8_t *src_addr;
     int16_t *dst_addr;
@@ -85,7 +85,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
     if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -94,11 +94,11 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
              (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst0_target_ptr;
@@ -138,14 +138,14 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
             if (status != VXLIB_SUCCESS)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             tivxMemBufferUnmap(dst0_target_ptr, dst0->mem_size[0],
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
 
-        if ((VX_SUCCESS == status) && (NULL != dst1))
+        if (((vx_status)VX_SUCCESS == status) && (NULL != dst1))
         {
             dst1_target_ptr = tivxMemShared2TargetPtr(&dst1->mem_ptr[0]);
 
@@ -161,7 +161,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
             if (status != VXLIB_SUCCESS)
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
 
             tivxMemBufferUnmap(dst1_target_ptr, dst1->mem_size[0],
@@ -179,14 +179,14 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelSobelDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    return (VX_SUCCESS);
+    return ((vx_status)VX_SUCCESS);
 }
 
 void tivxAddTargetKernelSobel3x3(void)

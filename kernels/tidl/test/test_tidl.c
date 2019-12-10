@@ -307,7 +307,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
 {
   int32_t   i0, i1;
   uint32_t readSize;
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   for(i0 = 0; i0 < n; i0++)
   {
@@ -315,7 +315,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
     {
       readSize= fread(&ptr[i0*chOffset + i1*pitch], 1, width, fp);
       if (readSize != width) {
-        status= VX_FAILURE;
+        status= (vx_status)VX_FAILURE;
         goto exit;
       }
     }
@@ -329,7 +329,7 @@ static vx_status readDataS8(FILE *fp, int8_t *ptr, int32_t n,
 
 static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor *input_tensors, char *input_file)
 {
-  vx_status status = VX_SUCCESS;
+  vx_status status = (vx_status)VX_SUCCESS;
 
   int8_t      *input_buffer = NULL;
   uint32_t   id;
@@ -350,7 +350,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
   if(fp==NULL)
   {
     printf("# ERROR: Unable to open input file [%s]\n", input_file);
-    return(VX_FAILURE);
+    return((vx_status)VX_FAILURE);
   }
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
@@ -370,7 +370,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
     status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, (void **)&input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
-    if (VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
       status= readDataS8(
           fp,
@@ -383,7 +383,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
       tivxUnmapTensorPatch(input_tensors[id], map_id_input);
 
-      if (status== VX_FAILURE) {
+      if (status== (vx_status)VX_FAILURE) {
         goto exit;
       }
     }
@@ -400,7 +400,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 
 static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_tensors, vx_int32 refid, vx_uint8 refscore)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_uint8 score[5];
     vx_uint32 classid[5];
 
@@ -423,7 +423,7 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 
         status = vxGetStatus((vx_reference)output_tensors[id]);
 
-        if (VX_SUCCESS == status)
+        if ((vx_status)VX_SUCCESS == status)
         {
             void *output_buffer;
 
@@ -479,8 +479,8 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
     #if 1
     /* only checking classid */
     if(refid != classid[0])
-        return VX_FAILURE;
+        return (vx_status)VX_FAILURE;
     #endif
 
-    return VX_SUCCESS;
+    return (vx_status)VX_SUCCESS;
 }

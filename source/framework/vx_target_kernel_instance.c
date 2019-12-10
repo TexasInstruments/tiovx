@@ -111,7 +111,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
     {
         status = tivxMutexLock(g_target_kernel_instance_lock);
 
-        if(status == VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
             for(i=0; i<dimof(g_target_kernel_instance_table); i++)
             {
@@ -154,7 +154,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 
 vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel_instance)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if((NULL != target_kernel_instance) && (NULL != *target_kernel_instance))
     {
@@ -163,7 +163,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
 
         tivxLogResourceFree("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -220,14 +220,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
             tivx_target_kernel_instance target_kernel_instance,
             void *kernel_context, uint32_t kernel_context_size)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(NULL != target_kernel_instance)
     {
         target_kernel_instance->kernel_context = kernel_context;
         target_kernel_instance->kernel_context_size = kernel_context_size;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -240,13 +240,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
             tivx_target_kernel_instance target_kernel_instance,
             vx_enum *state)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(NULL != target_kernel_instance)
     {
         *state = target_kernel_instance->state;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -260,14 +260,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
             void **kernel_context,
             uint32_t *kernel_context_size)
 {
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if(NULL != target_kernel_instance)
     {
         *kernel_context = target_kernel_instance->kernel_context;
         *kernel_context_size = target_kernel_instance->kernel_context_size;
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {

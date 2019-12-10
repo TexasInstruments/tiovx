@@ -135,7 +135,7 @@ vx_bool ownIsValidReference(vx_reference ref)
 
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if (ref)
     {
@@ -156,7 +156,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 
         ownReferenceSetScope(ref, scope);
 
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
 
         if((ref->type==VX_TYPE_CONTEXT) || (ref->type==VX_TYPE_GRAPH))
         {
@@ -247,7 +247,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                         vx_enum reftype,
                         tivx_reference_callback_f special_destructor)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     vx_reference ref = (pref ? *pref : NULL);
     if ((NULL != ref) &&
         (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e))
@@ -259,7 +259,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
             if (ownRemoveReferenceFromContext(ref->context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt: Invalid reference\n");
-                status = VX_ERROR_INVALID_REFERENCE;
+                status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
             else
             {
@@ -287,7 +287,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         *pref = NULL;
     } else {
         VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
 }
@@ -295,34 +295,34 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftype, vx_reference scope)
 {
     vx_reference ref = (vx_reference)tivxObjectAlloc(type);
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ref)
     {
         status = ownInitReference(ref, context, type, scope);
-        if(status==VX_SUCCESS)
+        if(status==(vx_status)VX_SUCCESS)
         {
             ownIncrementReference(ref, reftype);
             if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Add reference to context failed\n");
-                status = VX_ERROR_NO_RESOURCES;
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
 
-        if(status!=VX_SUCCESS)
+        if(status!=(vx_status)VX_SUCCESS)
         {
             tivxObjectFree(ref);
-            vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
+            vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Failed to add to resources table\n");
-            ref = (vx_reference)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+            ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
     }
     else
     {
-        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Failed to allocate reference object\n");
+        vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to allocate reference object\n");
         VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Failed to allocate reference object\n");
-        ref = (vx_reference)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
+        ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
     }
     return ref;
 }
@@ -388,7 +388,7 @@ vx_bool ownIsValidType(vx_enum type)
 
 vx_status ownReferenceLock(vx_reference ref)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if(ref)
     {
@@ -410,7 +410,7 @@ vx_status ownReferenceLock(vx_reference ref)
 
 vx_status ownReferenceUnlock(vx_reference ref)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if(ref)
     {
@@ -437,7 +437,7 @@ void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 slot_index)
 
 vx_status ownReferenceAllocMem(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
@@ -449,7 +449,7 @@ vx_status ownReferenceAllocMem(vx_reference ref)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"ownReferenceAllocMem: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -493,13 +493,13 @@ vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* if it is not a reference and not a context */
     if ((ownIsValidReference(ref) == (vx_bool)vx_false_e) &&
         (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)) {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
@@ -513,7 +513,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference count failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_REFERENCE_TYPE:
@@ -524,7 +524,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference type failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case VX_REFERENCE_NAME:
@@ -535,12 +535,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference name failed\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid attribute\n");
-                status = VX_ERROR_NOT_SUPPORTED;
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -549,11 +549,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx_char *name)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidReference(ref))
     {
         snprintf(ref->name, VX_MAX_REFERENCE_NAME, name);
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -564,7 +564,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseReference(vx_reference* ref_ptr)
 {
-    vx_status status = VX_ERROR_INVALID_REFERENCE;
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     vx_reference ref = (ref_ptr ? *ref_ptr : NULL);
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
@@ -580,7 +580,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseReference(vx_reference* ref_ptr)
 
 VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
@@ -589,7 +589,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"vxRetainReference: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
     return status;
@@ -597,13 +597,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
 
 VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
 
     if (ref == NULL)
     {
         /*! \internal probably ran out of handles or memory */
         VX_PRINT(VX_ZONE_ERROR,"vxGetStatus: Reference is NULL\n");
-        status = VX_ERROR_NO_RESOURCES;
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
@@ -614,12 +614,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
         }
         else
         {
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
     else if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_true_e)
     {
-        status = VX_SUCCESS;
+        status = (vx_status)VX_SUCCESS;
     }
     else
     {
@@ -631,18 +631,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
 
 VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, const void* data, vx_size data_size)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     /* reference param should be a valid OpenVX reference*/
     if ((ownIsValidContext((vx_context)reference) == (vx_bool)vx_false_e) && (ownIsValidReference(reference) == (vx_bool)vx_false_e))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxHint: Invalid reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"vxHint: Hint not supported\n");
-        status = VX_ERROR_NOT_SUPPORTED;
+        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
 
     return status;
