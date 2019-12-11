@@ -128,7 +128,7 @@ static vx_status tivxKernelAccumulateWeighted(
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        status = VXLIB_accumulateWeightedImage_i8u_io8u((uint8_t *)src_addr,
+        status = (vx_status)VXLIB_accumulateWeightedImage_i8u_io8u((uint8_t *)src_addr,
                     &vxlib_src, (uint8_t *)dst_addr, &vxlib_dst, sc_desc->data.f32);
 
         if (VXLIB_SUCCESS != status)

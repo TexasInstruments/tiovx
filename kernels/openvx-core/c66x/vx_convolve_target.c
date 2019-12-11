@@ -130,13 +130,13 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
 
         if (vxlib_dst.data_type == VXLIB_UINT8)
         {
-            status = VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, conv_target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }
         else
         {
-            status = VXLIB_convolve_i8u_c16s_o16s(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_convolve_i8u_c16s_o16s(src_addr, &vxlib_src,
                 (int16_t*)dst_addr, &vxlib_dst, conv_target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }

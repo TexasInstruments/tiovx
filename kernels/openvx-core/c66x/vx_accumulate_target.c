@@ -125,7 +125,7 @@ static vx_status tivxKernelAccumulate(
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        status = VXLIB_accumulateImage_i8u_io16s((uint8_t *)src_addr,
+        status = (vx_status)VXLIB_accumulateImage_i8u_io16s((uint8_t *)src_addr,
                     &vxlib_src, (int16_t *)dst_addr, &vxlib_dst);
 
         if (VXLIB_SUCCESS != status)

@@ -140,14 +140,14 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
 
         if ((vx_enum)VX_INTERPOLATION_BILINEAR == sc->data.enm)
         {
-            status = VXLIB_remapBilinear_bc_i8u_i32f_o8u(
+            status = (vx_status)VXLIB_remapBilinear_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
                 remap_target_ptr, &vxlib_remap,
                 border.constant_value.U8);
         }
         else if ((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm)
         {
-            status = VXLIB_remapNearest_bc_i8u_i32f_o8u(
+            status = (vx_status)VXLIB_remapNearest_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
                 remap_target_ptr, &vxlib_remap,
                 border.constant_value.U8);

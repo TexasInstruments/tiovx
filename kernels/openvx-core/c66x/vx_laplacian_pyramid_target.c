@@ -219,7 +219,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             prms->vxlib_dst.data_type = VXLIB_INT16;
 
             /* First do half scale gaussian filter with included upsampled result */
-            status = VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(
+            status = (vx_status)VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(
                 src_addr, &prms->vxlib_src,
                 out_addr, &prms->vxlib_gauss0,
                 prms->upsample_output, &prms->vxlib_gauss1, 0, 0);
@@ -227,7 +227,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             if (VXLIB_SUCCESS == status)
             {
                 /* Then do gaussian filter with * 4 multiply on upsampled result */
-                status = VXLIB_gaussian_5x5_br_i8u_o8u(
+                status = (vx_status)VXLIB_gaussian_5x5_br_i8u_o8u(
                     prms->upsample_output, &prms->vxlib_gauss1,
                     prms->gauss_output, &prms->vxlib_gauss1, 6, 0, 0);
             }
@@ -235,7 +235,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             if (VXLIB_SUCCESS == status)
             {
                 /* Then subtract gaussian filtered upsample from original of this level */
-                status = VXLIB_subtract_i8u_i8u_o16s(
+                status = (vx_status)VXLIB_subtract_i8u_i8u_o16s(
                     src_addr, &prms->vxlib_src,
                     prms->gauss_output, &prms->vxlib_gauss1,
                     dst_addr, &prms->vxlib_dst);

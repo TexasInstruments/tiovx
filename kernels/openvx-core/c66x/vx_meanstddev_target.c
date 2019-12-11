@@ -122,7 +122,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
 
-        status = VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
+        status = (vx_status)VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
             (float*)&sc[0U]->data.f32, (float*)&sc[1U]->data.f32, &pixelsProcessed,
             &currentSum, &currentSqSum);
 

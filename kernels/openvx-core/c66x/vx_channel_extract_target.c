@@ -138,12 +138,12 @@ vx_status tivxChannelExtractRgbRgbxInput(
 
         if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
-            status = VXLIB_channelExtract_1of3_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
+            status = (vx_status)VXLIB_channelExtract_1of3_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
         else
         if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
         {
-            status = VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
+            status = (vx_status)VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
         else
         {
@@ -223,7 +223,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
 
         if(channel_value == (vx_enum)VX_CHANNEL_Y)
         {
-            status = VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
+            status = (vx_status)VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
         else
         { /* channel_value is (vx_enum)VX_CHANNEL_U or (vx_enum)VX_CHANNEL_V
@@ -231,7 +231,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
            */
             vxlib_src.dim_x = vxlib_src.dim_x/2;
 
-            status = VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
+            status = (vx_status)VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
@@ -333,11 +333,11 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
         if(channel_value == (vx_enum)VX_CHANNEL_Y)
         {
-            status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
+            status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
         }
         else
         {
-            status = VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
+            status = (vx_status)VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
@@ -407,7 +407,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
            in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_READ_ONLY);
 
-        status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
+        status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
 
         tivxMemBufferUnmap(in_desc_target_ptr,
            in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,

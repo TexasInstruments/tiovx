@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
 
         if (NULL != prev_row)
         {
-            status = VXLIB_integralImage_i8u_o32u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_integralImage_i8u_o32u(src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst, prev_row, NULL, 0);
         }
         else

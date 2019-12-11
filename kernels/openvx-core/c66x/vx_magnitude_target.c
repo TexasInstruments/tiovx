@@ -124,7 +124,7 @@ vx_status VX_CALLBACK tivxMagnitude(
         tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        status = VXLIB_magnitude_i16s_i16s_o16s(
+        status = (vx_status)VXLIB_magnitude_i16s_i16s_o16s(
                 (int16_t *)src0_addr, &vxlib_src0, (int16_t *)src1_addr,
                 &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst);
 

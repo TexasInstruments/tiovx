@@ -131,7 +131,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         {
             if ((vx_enum)VX_BORDER_REPLICATE == border.mode)
             {
-                status = VXLIB_scaleImageBilinear_br_i8u_o8u(
+                status = (vx_status)VXLIB_scaleImageBilinear_br_i8u_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
                     vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
@@ -140,7 +140,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
             }
             else /* For both constant and undefined mode, this api is used */
             {
-                status = VXLIB_scaleImageBilinear_bc_i8u_o8u(
+                status = (vx_status)VXLIB_scaleImageBilinear_bc_i8u_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
                     vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
@@ -152,7 +152,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         else if (((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm) ||
                  ((vx_enum)VX_INTERPOLATION_AREA == sc->data.enm))
         {
-            status = VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst,
                 vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
                 vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y, 0, 0, 0, 0);

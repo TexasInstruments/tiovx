@@ -169,7 +169,7 @@ static vx_status tivxKernelAddSub(
                U8 format */
             if (VXLIB_UINT8 == vxlib_dst.data_type)
             {
-                status = VXLIB_add_i8u_i8u_o8u((uint8_t *)src0_addr,
+                status = (vx_status)VXLIB_add_i8u_i8u_o8u((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
                     (uint8_t *)dst_addr, &vxlib_dst, overflow_policy);
             }
@@ -177,7 +177,7 @@ static vx_status tivxKernelAddSub(
             else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
                      (VXLIB_UINT8 == vxlib_src0.data_type))
             {
-                status = VXLIB_add_i8u_i8u_o16s((uint8_t *)src0_addr,
+                status = (vx_status)VXLIB_add_i8u_i8u_o16s((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
                     (int16_t *)dst_addr, &vxlib_dst);
             }
@@ -186,7 +186,7 @@ static vx_status tivxKernelAddSub(
             else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
                      (VXLIB_INT16 == vxlib_src0.data_type))
             {
-                status = VXLIB_add_i16s_i16s_o16s((int16_t *)src0_addr,
+                status = (vx_status)VXLIB_add_i16s_i16s_o16s((int16_t *)src0_addr,
                     &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                     (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
             }
@@ -195,13 +195,13 @@ static vx_status tivxKernelAddSub(
 
                 if (VXLIB_UINT8 == vxlib_src0.data_type)
                 {
-                    status = VXLIB_add_i8u_i16s_o16s((uint8_t *)src0_addr,
+                    status = (vx_status)VXLIB_add_i8u_i16s_o16s((uint8_t *)src0_addr,
                         &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                         (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
                 }
                 else
                 {
-                    status = VXLIB_add_i8u_i16s_o16s((uint8_t *)src1_addr,
+                    status = (vx_status)VXLIB_add_i8u_i16s_o16s((uint8_t *)src1_addr,
                         &vxlib_src1, (int16_t *)src0_addr, &vxlib_src0,
                         (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
                 }
@@ -213,7 +213,7 @@ static vx_status tivxKernelAddSub(
                U8 format */
             if (VXLIB_UINT8 == vxlib_dst.data_type)
             {
-                status = VXLIB_subtract_i8u_i8u_o8u((uint8_t *)src0_addr,
+                status = (vx_status)VXLIB_subtract_i8u_i8u_o8u((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
                     (uint8_t *)dst_addr, &vxlib_dst, overflow_policy);
             }
@@ -221,7 +221,7 @@ static vx_status tivxKernelAddSub(
             else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
                      (VXLIB_UINT8 == vxlib_src0.data_type))
             {
-                status = VXLIB_subtract_i8u_i8u_o16s((uint8_t *)src0_addr,
+                status = (vx_status)VXLIB_subtract_i8u_i8u_o16s((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
                     (int16_t *)dst_addr, &vxlib_dst);
             }
@@ -230,7 +230,7 @@ static vx_status tivxKernelAddSub(
             else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
                      (VXLIB_INT16 == vxlib_src0.data_type))
             {
-                status = VXLIB_subtract_i16s_i16s_o16s((int16_t *)src0_addr,
+                status = (vx_status)VXLIB_subtract_i16s_i16s_o16s((int16_t *)src0_addr,
                     &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                     (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
             }
@@ -238,14 +238,14 @@ static vx_status tivxKernelAddSub(
             {
                 if (VXLIB_UINT8 != vxlib_src0.data_type)
                 {
-                    status = VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src1_addr,
+                    status = (vx_status)VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src1_addr,
                         &vxlib_src1, (int16_t *)src0_addr, &vxlib_src0,
                         (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
                         1);
                 }
                 else
                 {
-                    status = VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src0_addr,
+                    status = (vx_status)VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src0_addr,
                         &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                         (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
                         0);

@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         {
             if(prms->rad >= 2.0f)
             {
-                status = VXLIB_harrisCornersNMS_i32f(prms->hcd_corners,
+                status = (vx_status)VXLIB_harrisCornersNMS_i32f(prms->hcd_corners,
                     prms->hcd_strength, num_corners_hcd, prms->nms_corners,
                     prms->nms_strength, num_corners_hcd, &num_corners,
                     prms->nms_scratch, prms->nms_scratch_size, prms->rad, NULL);
@@ -691,7 +691,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
                 temp2_16 = (int16_t *)(prms->sobel_y +
                     prms->vxlib_soby.stride_y + 2u);
 
-                status = VXLIB_sobel_3x3_i8u_o16s_o16s(src_addr,
+                status = (vx_status)VXLIB_sobel_3x3_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
                     temp2_16, &prms->vxlib_soby);
                 break;
@@ -702,7 +702,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
                 temp2_16 = (int16_t *)(prms->sobel_y +
                     (prms->vxlib_soby.stride_y*2u) + 4u);
 
-                status = VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
+                status = (vx_status)VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
                     temp2_16, &prms->vxlib_soby);
                 break;
@@ -713,7 +713,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
                 temp2_32 = (int32_t *)(prms->sobel_y +
                     (prms->vxlib_soby.stride_y*3u) + 12u);
 
-                status = VXLIB_sobel_7x7_i8u_o32s_o32s(src_addr,
+                status = (vx_status)VXLIB_sobel_7x7_i8u_o32s_o32s(src_addr,
                     &prms->vxlib_src, temp1_32, &prms->vxlib_sobx,
                     temp2_32, &prms->vxlib_soby);
                 break;
@@ -748,7 +748,7 @@ static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
                 ((prms->vxlib_score.stride_y / 4) * ((gs / 2) + (bs / 2))) +
                 ((gs / 2) + (bs / 2)));
 
-            status = VXLIB_harrisCornersScore_i32s_i32s_o32f(
+            status = (vx_status)VXLIB_harrisCornersScore_i32s_i32s_o32f(
                 sobx_32, &prms->vxlib_sobx, soby_32, &prms->vxlib_soby,
                 score, &prms->vxlib_score,
                 prms->hcs_scratch, sensitivity, gs, bs);
@@ -765,7 +765,7 @@ static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
                 ((prms->vxlib_score.stride_y / 4) * ((gs / 2) + (bs / 2))) +
                 ((gs / 2) + (bs / 2)));
 
-            status = VXLIB_harrisCornersScore_i16s_i16s_o32f(
+            status = (vx_status)VXLIB_harrisCornersScore_i16s_i16s_o32f(
                 sobx_16, &prms->vxlib_sobx, soby_16, &prms->vxlib_soby,
                 score, &prms->vxlib_score, prms->hcs_scratch, sensitivity, gs, bs);
         }
@@ -796,7 +796,7 @@ static vx_status tivxHarrisCCalcDetect(tivxHarrisCornersParams *prms,
             ((score_prms.stride_y / 4) * ((gs / 2) + (bs / 2))) +
             ((gs / 2) + (bs / 2)));
 
-        status = VXLIB_harrisCornersDetect_i32f(score_out, &score_prms,
+        status = (vx_status)VXLIB_harrisCornersDetect_i32f(score_out, &score_prms,
             prms->hcd_corners, prms->hcd_strength,
             prms->vxlib_src.dim_x * prms->vxlib_src.dim_y,
             num_corners, threshold, (gs/2) + (bs/2), (gs/2) + (bs/2));

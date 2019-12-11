@@ -211,7 +211,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
                 tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
                 tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
-                status = VXLIB_channelCopy_1to1_i8u_o8u(
+                status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(
                     src_addr, &vxlib_src, dst_addr, &vxlib_dst);
             }
             else
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                     tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
                     tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
-                    status = VXLIB_halfScaleGaussian_5x5_i8u_o8u(
+                    status = (vx_status)VXLIB_halfScaleGaussian_5x5_i8u_o8u(
                         (uint8_t*)src_addr, &vxlib_src, dst_addr, &vxlib_dst);
                 }
                 else
@@ -237,7 +237,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                     temp_buf = (uint8_t*)(prms->interm_output +
                         (2U*vxlib_gauss.stride_y) + 2U);
 
-                    status = VXLIB_gaussian_5x5_i8u_o8u(
+                    status = (vx_status)VXLIB_gaussian_5x5_i8u_o8u(
                         src_addr, &vxlib_src, temp_buf, &vxlib_gauss, 8);
 
                     vxlib_gauss.dim_y = vxlib_src.dim_y;

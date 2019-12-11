@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
         tivxInitBufParams(src, &vxlib_src);
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
-        status = VXLIB_fastCorners_i8u(
+        status = (vx_status)VXLIB_fastCorners_i8u(
             src_addr, &vxlib_src, prms->corners, prms->strength,
             arr->capacity, (uint8_t)sc_thr->data.f32, &num_corners,
             sc_nms->data.boolean, prms->scratch, prms->scratch_size);

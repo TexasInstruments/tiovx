@@ -141,7 +141,7 @@ static vx_status VX_CALLBACK tivxKernelWarpAffineProcess(
         /* If interpolation is nearest neighbor */
         if ((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm)
         {
-            status = VXLIB_warpAffineNearest_bc_i8u_c32f_o8u(
+            status = (vx_status)VXLIB_warpAffineNearest_bc_i8u_c32f_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
                     mat_addr, border.constant_value.U8,
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelWarpAffineProcess(
         /* If interpolation is Bilinear */
         else
         {
-            status = VXLIB_warpAffineBilinear_bc_i8u_c32f_o8u(
+            status = (vx_status)VXLIB_warpAffineBilinear_bc_i8u_c32f_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
                     mat_addr, border.constant_value.U8,

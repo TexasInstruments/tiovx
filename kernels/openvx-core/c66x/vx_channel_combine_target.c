@@ -203,7 +203,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 {
                     vxlib_dst.data_type = VXLIB_UINT24;
 
-                    status = VXLIB_channelCombine_3to1_i8u_o8u(
+                    status = (vx_status)VXLIB_channelCombine_3to1_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
                         src2_addr, &vxlib_src2,
@@ -215,7 +215,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 {
                     vxlib_dst.data_type = VXLIB_UINT32;
 
-                    status = VXLIB_channelCombine_4to1_i8u_o8u(
+                    status = (vx_status)VXLIB_channelCombine_4to1_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
                         src2_addr, &vxlib_src2,
@@ -228,7 +228,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 {
                     vxlib_dst.data_type = VXLIB_UINT16;
 
-                    status = VXLIB_channelCombine_yuyv_i8u_o8u(
+                    status = (vx_status)VXLIB_channelCombine_yuyv_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
                         src2_addr, &vxlib_src2,
@@ -240,7 +240,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 {
                     vxlib_dst.data_type = VXLIB_UINT16;
 
-                    status = VXLIB_channelCombine_yuyv_i8u_o8u(
+                    status = (vx_status)VXLIB_channelCombine_yuyv_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
                         src2_addr, &vxlib_src2,
@@ -266,7 +266,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         dst_desc->imagepatch_addr[plane_idx].stride_y;
                     vxlib_dst.data_type = VXLIB_UINT8;
 
-                    status = VXLIB_channelCopy_1to1_i8u_o8u(
+                    status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(
                         src_addr[plane_idx], vxlib_src[plane_idx],
                         dst_addr[plane_idx], &vxlib_dst
                         );
@@ -291,7 +291,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
 
                     if(plane_idx==0)
                     {
-                        status = VXLIB_channelCopy_1to1_i8u_o8u(
+                        status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(
                             src0_addr, &vxlib_src0,
                             dst_addr[plane_idx], &vxlib_dst
                             );
@@ -301,7 +301,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                     {
                         if(dst_desc->format == (vx_df_image)VX_DF_IMAGE_NV21)
                         {
-                            status = VXLIB_channelCombine_2to1_i8u_o8u(
+                            status = (vx_status)VXLIB_channelCombine_2to1_i8u_o8u(
                                 src2_addr, &vxlib_src2,
                                 src1_addr, &vxlib_src1,
                                 dst_addr[plane_idx], &vxlib_dst
@@ -309,7 +309,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         }
                         else
                         {
-                            status = VXLIB_channelCombine_2to1_i8u_o8u(
+                            status = (vx_status)VXLIB_channelCombine_2to1_i8u_o8u(
                                 src1_addr, &vxlib_src1,
                                 src2_addr, &vxlib_src2,
                                 dst_addr[plane_idx], &vxlib_dst

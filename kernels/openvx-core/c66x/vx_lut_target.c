@@ -114,12 +114,12 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
 
         if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
         {
-            status = VXLIB_tableLookup_i8u_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_tableLookup_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, lut_target_ptr, lut->num_items);
         }
         else
         {
-            status = VXLIB_tableLookup_i16s_o16s((int16_t *)src_addr,
+            status = (vx_status)VXLIB_tableLookup_i16s_o16s((int16_t *)src_addr,
                 &vxlib_src, (int16_t *)dst_addr, &vxlib_dst,
                 lut_target_ptr, lut->num_items, 32768U);
         }

@@ -112,13 +112,13 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
 
         if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
         {
-            status = VXLIB_thresholdBinary_i8u_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, thr->value, thr->true_value,
                 thr->false_value);
         }
         else
         {
-            status = VXLIB_thresholdRange_i8u_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_thresholdRange_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, thr->upper, thr->lower, thr->true_value,
                 thr->false_value);
         }

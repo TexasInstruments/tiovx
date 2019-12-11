@@ -219,13 +219,13 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
 
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_edgeTracing_i8u(prms->nms_edge, &prms->vxlib_edge,
+            status = (vx_status)VXLIB_edgeTracing_i8u(prms->nms_edge, &prms->vxlib_edge,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_thresholdBinary_i8u_o8u(prms->nms_edge,
+            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(prms->nms_edge,
                 &prms->vxlib_edge, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
@@ -503,7 +503,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
                     prms->vxlib_soby.stride_y + 2u);
 
-                status = VXLIB_sobel_3x3_i8u_o16s_o16s(src_addr,
+                status = (vx_status)VXLIB_sobel_3x3_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
                     temp2_16, &prms->vxlib_soby);
                 break;
@@ -514,7 +514,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
                     (prms->vxlib_soby.stride_y*2u) + 4u);
 
-                status = VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
+                status = (vx_status)VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
                     temp2_16, &prms->vxlib_soby);
                 break;
@@ -526,7 +526,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
                     (prms->vxlib_soby.stride_y*3u) + 6u);
 
-                status = VXLIB_sobel_7x7_i8u_o16s_o16s(src_addr,
+                status = (vx_status)VXLIB_sobel_7x7_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
                     temp2_16, &prms->vxlib_soby);
                 break;
@@ -559,12 +559,12 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
 
         if ((vx_enum)VX_NORM_L1 == norm_enm)
         {
-            status = VXLIB_normL1_i16s_i16s_o16u(sobx, &prms->vxlib_sobx,
+            status = (vx_status)VXLIB_normL1_i16s_i16s_o16u(sobx, &prms->vxlib_sobx,
                 soby, &prms->vxlib_soby, norm, &prms->vxlib_norm);
         }
         else
         {
-            status = VXLIB_normL2_i16s_i16s_o16u(sobx, &prms->vxlib_sobx,
+            status = (vx_status)VXLIB_normL2_i16s_i16s_o16u(sobx, &prms->vxlib_sobx,
                 soby, &prms->vxlib_soby, norm, &prms->vxlib_norm);
         }
     }
@@ -595,7 +595,7 @@ static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
         edge = (uint8_t *) ((uintptr_t)prms->nms_edge + (prms->vxlib_edge.stride_y *
             ((gs / 2u) + 1u)) + (gs / 2u) + 1u);
 
-        status = VXLIB_cannyNMS_i16s_i16s_i16u_o8u(sobx, &prms->vxlib_sobx,
+        status = (vx_status)VXLIB_cannyNMS_i16s_i16s_i16u_o8u(sobx, &prms->vxlib_sobx,
                 soby, &prms->vxlib_soby, norm, &prms->vxlib_norm, edge,
                 &prms->vxlib_edge);
     }
@@ -629,7 +629,7 @@ static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
         vxlib_prms.stride_y = prms->vxlib_edge.stride_y;
         vxlib_prms.data_type = prms->vxlib_edge.data_type;
 
-        status = VXLIB_doubleThreshold_i16u_i8u(norm, &prms->vxlib_norm,
+        status = (vx_status)VXLIB_doubleThreshold_i16u_i8u(norm, &prms->vxlib_norm,
             edge, &vxlib_prms, prms->vxlib_edge.stride_y, prms->edge_list,
             prms->edge_list_size, num_items, start_pos, lower, upper);
     }

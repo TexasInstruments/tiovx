@@ -130,7 +130,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
 
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_equalizeHist_i8u_o8u(src_addr, &vxlib_src,
+            status = (vx_status)VXLIB_equalizeHist_i8u_o8u(src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst, (uint32_t*)scratch);
         }
         else

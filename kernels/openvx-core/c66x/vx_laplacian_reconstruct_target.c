@@ -175,7 +175,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         src_addr = (uint8_t *)prms->add_output;
         tivxSetPointerLocation(out_img, &out_img_target_ptr, &dst_addr);
 
-        status = VXLIB_convertDepth_i8u_o16s(
+        status = (vx_status)VXLIB_convertDepth_i8u_o16s(
             (uint8_t *)low_img_target_ptr, &prms->vxlib_scratch,
             (int16_t *)src_addr, &prms->vxlib_src, 0);
 
@@ -213,7 +213,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             prms->vxlib_add.data_type = VXLIB_INT16;
 
             /* First upsample previous stage result */
-            status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &prms->vxlib_src,
+            status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &prms->vxlib_src,
                 prms->upsample_output, &prms->vxlib_scratch);
 
             prms->vxlib_scratch.dim_y = rect.end_y - rect.start_y;
@@ -222,7 +222,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             if (VXLIB_SUCCESS == status)
             {
                 /* Then do gaussian filter with * 4 multiply on upsampled result */
-                status = VXLIB_gaussian_5x5_br_i8u_o8u(
+                status = (vx_status)VXLIB_gaussian_5x5_br_i8u_o8u(
                     prms->upsample_output, &prms->vxlib_scratch,
                     prms->gauss_output, &prms->vxlib_scratch, 6u, 0, 0);
             }
@@ -230,7 +230,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             if (VXLIB_SUCCESS == status)
             {
                 /* Then add gaussian filtered upsample to laplacian of this level */
-                status = VXLIB_add_i8u_i16s_o16s(
+                status = (vx_status)VXLIB_add_i8u_i16s_o16s(
                     prms->gauss_output, &prms->vxlib_scratch,
                     laplac_addr, &prms->vxlib_laplac,
                     prms->add_output, &prms->vxlib_add, VXLIB_CONVERT_POLICY_SATURATE);
@@ -242,7 +242,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 {
                     tivxInitBufParams(out_img, &prms->vxlib_dst);
 
-                    status = VXLIB_convertDepth_i16s_o8u(
+                    status = (vx_status)VXLIB_convertDepth_i16s_o8u(
                         prms->add_output, &prms->vxlib_add,
                         dst_addr, &prms->vxlib_dst, 0, VXLIB_CONVERT_POLICY_SATURATE);
                 }

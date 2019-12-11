@@ -213,13 +213,13 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
 
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
+            status = (vx_status)VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_thresholdBinary_i8u_o8u(dst_addr,
+            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(dst_addr,
                 &prms->vxlib_dst, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
@@ -816,13 +816,13 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
 
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
+            status = (vx_status)VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_thresholdBinary_i8u_o8u(dst_addr,
+            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(dst_addr,
                 &prms->vxlib_dst, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 

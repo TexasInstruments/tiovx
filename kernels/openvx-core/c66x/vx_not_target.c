@@ -142,7 +142,7 @@ vx_status VX_CALLBACK tivxKernelNotProcess(
         tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
         tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
-        status = VXLIB_not_i8u_o8u(src_addr, &vxlib_src, dst_addr, &vxlib_dst);
+        status = (vx_status)VXLIB_not_i8u_o8u(src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 
         if (VXLIB_SUCCESS == status)
         {

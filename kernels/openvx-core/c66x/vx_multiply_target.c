@@ -131,7 +131,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
            U8 format */
         if (VXLIB_UINT8 == vxlib_dst.data_type)
         {
-            status = VXLIB_multiply_i8u_i8u_o8u(src0_addr, &vxlib_src0,
+            status = (vx_status)VXLIB_multiply_i8u_i8u_o8u(src0_addr, &vxlib_src0,
                 src1_addr, &vxlib_src1, dst_addr, &vxlib_dst, overflow_policy,
                 sc[0]->data.f32);
         }
@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
                  (VXLIB_UINT8 == vxlib_src0.data_type))
         {
-            status = VXLIB_multiply_i8u_i8u_o16s(src0_addr, &vxlib_src0,
+            status = (vx_status)VXLIB_multiply_i8u_i8u_o16s(src0_addr, &vxlib_src0,
                 src1_addr, &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst,
                 overflow_policy, sc[0]->data.f32);
         }
@@ -148,7 +148,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
                  (VXLIB_INT16 == vxlib_src0.data_type))
         {
-            status = VXLIB_multiply_i16s_i16s_o16s((int16_t *)src0_addr,
+            status = (vx_status)VXLIB_multiply_i16s_i16s_o16s((int16_t *)src0_addr,
                 &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                 (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
                 sc[0]->data.f32);
@@ -157,14 +157,14 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         {
             if (VXLIB_UINT8 == vxlib_src0.data_type)
             {
-                status = VXLIB_multiply_i8u_i16s_o16s(src0_addr,
+                status = (vx_status)VXLIB_multiply_i8u_i16s_o16s(src0_addr,
                     &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
                     (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
                     sc[0]->data.f32);
             }
             else
             {
-                status = VXLIB_multiply_i8u_i16s_o16s(src1_addr,
+                status = (vx_status)VXLIB_multiply_i8u_i16s_o16s(src1_addr,
                     &vxlib_src1, (int16_t *)src0_addr, &vxlib_src0,
                     (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
                     sc[0]->data.f32);

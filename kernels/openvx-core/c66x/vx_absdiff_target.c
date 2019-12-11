@@ -125,12 +125,12 @@ vx_status VX_CALLBACK tivxAbsDiff(
 
         if (VXLIB_UINT8 == vxlib_dst.data_type)
         {
-            status = VXLIB_absDiff_i8u_i8u_o8u(src0_addr, &vxlib_src0, src1_addr,
+            status = (vx_status)VXLIB_absDiff_i8u_i8u_o8u(src0_addr, &vxlib_src0, src1_addr,
                 &vxlib_src1, dst_addr, &vxlib_dst);
         }
         else
         {
-            status = VXLIB_absDiff_i16s_i16s_o16s(
+            status = (vx_status)VXLIB_absDiff_i16s_i16s_o16s(
                 (int16_t *)src0_addr, &vxlib_src0, (int16_t *)src1_addr,
                 &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst);
         }

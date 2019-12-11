@@ -158,7 +158,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
                            VXLIB_HISTOGRAMSIMPLE_I8U_O32U_CMD_GET_PARAMS,
                            &hist_params);
 
-        status = VXLIB_histogramCdfLut_i32u_o8u(prms->scratch, NULL,
+        status = (vx_status)VXLIB_histogramCdfLut_i32u_o8u(prms->scratch, NULL,
             (uint8_t*)prms->scratch,
             prms->vxlib_src.dim_x * prms->vxlib_src.dim_y,
             hist_params.minValue);

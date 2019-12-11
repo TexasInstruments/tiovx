@@ -127,7 +127,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseProcess(
         tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
         tivxInitBufParams(dst, &vxlib_dst);
 
-        status = VXLIB_phase_i16s_i16s_o8u(src0_addr, &vxlib_src0,
+        status = (vx_status)VXLIB_phase_i16s_i16s_o8u(src0_addr, &vxlib_src0,
             src1_addr, &vxlib_src1, dst_addr, &vxlib_dst);
 
         if (status != VXLIB_SUCCESS)
