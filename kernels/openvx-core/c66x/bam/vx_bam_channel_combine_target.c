@@ -342,7 +342,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_RGB)
                 {
-                    vxlib_dst[0].data_type = VXLIB_UINT24;
+                    vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT24;
                     buf_params[3] = &vxlib_dst[0];
 
                     BAM_VXLIB_channelCombine_3to1_i8u_o8u_getKernelInfo(NULL,
@@ -355,7 +355,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                 else
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_RGBX)
                 {
-                    vxlib_dst[0].data_type = VXLIB_UINT32;
+                    vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT32;
                     buf_params[4] = &vxlib_dst[0];
 
                     BAM_VXLIB_channelCombine_4to1_i8u_o8u_getKernelInfo(NULL,
@@ -368,7 +368,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                 else
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_YUYV)
                 {
-                    vxlib_dst[0].data_type = VXLIB_UINT16;
+                    vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT16;
 
                     BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params kernel_params;
 
@@ -387,7 +387,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                 }
                 else /* format is (vx_df_image)VX_DF_IMAGE_UYVY */
                 {
-                    vxlib_dst[0].data_type = VXLIB_UINT16;
+                    vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT16;
 
                     BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params kernel_params;
 
@@ -431,7 +431,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                         /dst->imagepatch_addr[plane_idx].step_y;
                     vxlib_dst[0].stride_y =
                         dst->imagepatch_addr[plane_idx].stride_y;
-                    vxlib_dst[0].data_type = VXLIB_UINT8;
+                    vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
 
                     buf_params[1] = &vxlib_dst[0];
 
@@ -548,7 +548,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                     (dst->valid_roi.end_y - dst->valid_roi.start_y)/2;
                 vxlib_dst1.stride_y =
                     dst->imagepatch_addr[1].stride_y;
-                vxlib_dst1.data_type = VXLIB_UINT8;
+                vxlib_dst1.data_type = (uint32_t)VXLIB_UINT8;
 
                 if(dst->format == (vx_df_image)VX_DF_IMAGE_NV21)
                 {
@@ -852,7 +852,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     vertSamplingFactor[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
                                           + BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 0.5f;
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                    typeOutputElmt[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = VXLIB_UINT8;
+                    typeOutputElmt[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = (uint32_t)VXLIB_UINT8;
 
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {

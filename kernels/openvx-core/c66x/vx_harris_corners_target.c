@@ -329,21 +329,21 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             prms->vxlib_src.dim_x = img->imagepatch_addr[0].dim_x;
             prms->vxlib_src.dim_y = img->imagepatch_addr[0].dim_y;
             prms->vxlib_src.stride_y = img->imagepatch_addr[0].stride_y;
-            prms->vxlib_src.data_type = VXLIB_UINT8;
+            prms->vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->vxlib_sobx.dim_x = img->imagepatch_addr[0].dim_x;
             prms->vxlib_sobx.dim_y = img->imagepatch_addr[0].dim_y -
                 (sc_gs->data.s32 - 1u);
             prms->vxlib_sobx.stride_y =
                 (img->imagepatch_addr[0].stride_y * 2u) * strideshift;
-            prms->vxlib_sobx.data_type = VXLIB_UINT8;
+            prms->vxlib_sobx.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->vxlib_soby.dim_x = img->imagepatch_addr[0].dim_x;
             prms->vxlib_soby.dim_y = img->imagepatch_addr[0].dim_y -
                 (sc_gs->data.s32 - 1u);
             prms->vxlib_soby.stride_y =
                 (img->imagepatch_addr[0].stride_y * 2u) * strideshift;
-            prms->vxlib_soby.data_type = VXLIB_UINT8;
+            prms->vxlib_soby.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->sobel_size = prms->vxlib_sobx.stride_y *
                 img->imagepatch_addr[0].dim_y;
@@ -790,7 +790,7 @@ static vx_status tivxHarrisCCalcDetect(tivxHarrisCornersParams *prms,
         score_prms.dim_x = prms->vxlib_score.dim_x - (gs - 1) - (bs - 1);
         score_prms.dim_y = prms->vxlib_score.dim_y;
         score_prms.stride_y = prms->vxlib_score.stride_y;
-        score_prms.data_type = VXLIB_FLOAT32;
+        score_prms.data_type = (uint32_t)VXLIB_FLOAT32;
 
         score_out = (VXLIB_F32*)(prms->hcs_score +
             ((score_prms.stride_y / 4) * ((gs / 2) + (bs / 2))) +

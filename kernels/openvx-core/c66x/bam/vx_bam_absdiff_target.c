@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
             buf_params[1] = &vxlib_src1;
             buf_params[2] = &vxlib_dst;
 
-            if (VXLIB_UINT8 == vxlib_dst.data_type)
+            if ((uint32_t)VXLIB_UINT8 == vxlib_dst.data_type)
             {
                 BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo( NULL,
                                                              &kernel_details.kernel_info);

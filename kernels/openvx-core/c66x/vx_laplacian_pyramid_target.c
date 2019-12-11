@@ -172,9 +172,9 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &prms->vxlib_src);
 
-        prms->vxlib_gauss0.data_type = VXLIB_UINT8;
-        prms->vxlib_gauss1.data_type = VXLIB_UINT8;
-        prms->vxlib_dst.data_type = VXLIB_INT16;
+        prms->vxlib_gauss0.data_type = (uint32_t)VXLIB_UINT8;
+        prms->vxlib_gauss1.data_type = (uint32_t)VXLIB_UINT8;
+        prms->vxlib_dst.data_type = (uint32_t)VXLIB_INT16;
 
         for (levels = 0; (levels < pmd->num_levels) && ((vx_status)VX_SUCCESS == status);
                 levels ++)
@@ -194,7 +194,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             if(levels == (pmd->num_levels - 1u))
             {
                 tivxInitBufParams(low_img, &prms->vxlib_gauss0);
-                prms->vxlib_gauss0.data_type = VXLIB_UINT8;
+                prms->vxlib_gauss0.data_type = (uint32_t)VXLIB_UINT8;
 
                 tivxSetPointerLocation(low_img, &low_img_target_ptr, &out_addr);
             }
@@ -213,10 +213,10 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             tivxInitBufParams(dst, &prms->vxlib_gauss1);
             rect = dst->valid_roi;
             prms->vxlib_gauss1.stride_y = rect.end_x - rect.start_x;
-            prms->vxlib_gauss1.data_type = VXLIB_UINT8;
+            prms->vxlib_gauss1.data_type = (uint32_t)VXLIB_UINT8;
 
             tivxInitBufParams(dst, &prms->vxlib_dst);
-            prms->vxlib_dst.data_type = VXLIB_INT16;
+            prms->vxlib_dst.data_type = (uint32_t)VXLIB_INT16;
 
             /* First do half scale gaussian filter with included upsampled result */
             status = (vx_status)VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(

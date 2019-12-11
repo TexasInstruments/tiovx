@@ -292,7 +292,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
         vxlib_src.dim_x = (in_desc->valid_roi.end_x - in_desc->valid_roi.start_x)/in_desc->imagepatch_addr[plane_idx].step_x;
         vxlib_src.dim_y = (in_desc->valid_roi.end_y - in_desc->valid_roi.start_y)/in_desc->imagepatch_addr[plane_idx].step_y;
         vxlib_src.stride_y = in_desc->imagepatch_addr[plane_idx].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
         switch(channel_value)
         {
@@ -398,7 +398,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
         vxlib_src.dim_x = (in_desc->valid_roi.end_x - in_desc->valid_roi.start_x)/in_desc->imagepatch_addr[plane_idx].step_x;
         vxlib_src.dim_y = (in_desc->valid_roi.end_y - in_desc->valid_roi.start_y)/in_desc->imagepatch_addr[plane_idx].step_y;
         vxlib_src.stride_y = in_desc->imagepatch_addr[plane_idx].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
     }
 
     if(status == (vx_status)VX_SUCCESS)

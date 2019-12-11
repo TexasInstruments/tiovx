@@ -355,10 +355,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             if (((vx_df_image)VX_DF_IMAGE_RGB == src->format) &&
                 ((vx_df_image)VX_DF_IMAGE_YUV4 == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT24;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
-                vxlib_dst[2].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT24;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[2].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -375,9 +375,9 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGB == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT24;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT24;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -393,10 +393,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGB == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT24;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
-                vxlib_dst[2].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT24;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[2].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -413,8 +413,8 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGB == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_RGBX == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT24;
-                vxlib_dst[0].data_type = VXLIB_UINT32;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT24;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT32;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -429,8 +429,8 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_RGB == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT32;
-                vxlib_dst[0].data_type = VXLIB_UINT24;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT32;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT24;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -445,10 +445,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_YUV4 == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT32;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
-                vxlib_dst[2].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT32;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[2].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -465,9 +465,9 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT32;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT32;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -483,10 +483,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             else if (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) &&
                      ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format))
             {
-                vxlib_src[0].data_type = VXLIB_UINT32;
-                vxlib_dst[0].data_type = VXLIB_UINT8;
-                vxlib_dst[1].data_type = VXLIB_UINT8;
-                vxlib_dst[2].data_type = VXLIB_UINT8;
+                vxlib_src[0].data_type = (uint32_t)VXLIB_UINT32;
+                vxlib_dst[0].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[1].data_type = (uint32_t)VXLIB_UINT8;
+                vxlib_dst[2].data_type = (uint32_t)VXLIB_UINT8;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];

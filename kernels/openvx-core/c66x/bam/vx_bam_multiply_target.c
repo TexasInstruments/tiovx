@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
 
             /* If output is in U8 format, both the input must be in
                U8 format */
-            if (VXLIB_UINT8 == vxlib_dst.data_type)
+            if ((uint32_t)VXLIB_UINT8 == vxlib_dst.data_type)
             {
                 BAM_VXLIB_multiply_i8u_i8u_o8u_params kernel_params;
 
@@ -249,8 +249,8 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
                     &kernel_details, &prms->graph_handle);
             }
             /* Now if the both inputs are U8, output will be in S16 format */
-            else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
-                     (VXLIB_UINT8 == vxlib_src0.data_type))
+            else if (((uint32_t)VXLIB_UINT8 == vxlib_src1.data_type) &&
+                     ((uint32_t)VXLIB_UINT8 == vxlib_src0.data_type))
             {
                 BAM_VXLIB_multiply_i8u_i8u_o16s_params kernel_params;
 
@@ -274,8 +274,8 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
             }
             /* If both the input are in S16 format, output will be in
                S16 format */
-            else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
-                     (VXLIB_INT16 == vxlib_src0.data_type))
+            else if (((uint32_t)VXLIB_INT16 == vxlib_src1.data_type) &&
+                     ((uint32_t)VXLIB_INT16 == vxlib_src0.data_type))
             {
                 BAM_VXLIB_multiply_i16s_i16s_o16s_params kernel_params;
 
@@ -312,7 +312,7 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
                 kernel_params.scale_factor = sc[0]->data.f32;
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
-                if (VXLIB_UINT8 == vxlib_src0.data_type)
+                if ((uint32_t)VXLIB_UINT8 == vxlib_src0.data_type)
                 {
                     /* Fill in the frame level sizes of buffers here. If the port
                      * is optionally disabled, put NULL */

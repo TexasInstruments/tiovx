@@ -282,13 +282,13 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->vxlib_sobx.dim_y = prms->vxlib_src.dim_y -
                 (sc_gs->data.s32 - 1u);
             prms->vxlib_sobx.stride_y = (prms->vxlib_src.stride_y * 2u);
-            prms->vxlib_sobx.data_type = VXLIB_UINT16;
+            prms->vxlib_sobx.data_type = (uint32_t)VXLIB_UINT16;
 
             prms->vxlib_soby.dim_x = prms->vxlib_src.dim_x;
             prms->vxlib_soby.dim_y = prms->vxlib_src.dim_y -
                 (sc_gs->data.s32 - 1u);
             prms->vxlib_soby.stride_y = (prms->vxlib_src.stride_y * 2u);
-            prms->vxlib_soby.data_type = VXLIB_UINT16;
+            prms->vxlib_soby.data_type = (uint32_t)VXLIB_UINT16;
 
             prms->sobel_size = prms->vxlib_sobx.stride_y *
                 prms->vxlib_src.dim_y;
@@ -318,7 +318,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     (sc_gs->data.s32 - 1u);
                 prms->vxlib_norm.stride_y = (prms->vxlib_src.stride_y *
                     2u);
-                prms->vxlib_norm.data_type = VXLIB_UINT16;
+                prms->vxlib_norm.data_type = (uint32_t)VXLIB_UINT16;
 
                 prms->norm_size = prms->vxlib_norm.stride_y *
                     prms->vxlib_src.dim_y;
@@ -337,7 +337,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->vxlib_edge.dim_y = prms->vxlib_src.dim_y -
                     (sc_gs->data.s32 - 1u) - 2u;
                 prms->vxlib_edge.stride_y = prms->vxlib_src.stride_y;
-                prms->vxlib_edge.data_type = VXLIB_UINT8;
+                prms->vxlib_edge.data_type = (uint32_t)VXLIB_UINT8;
 
                 prms->nms_edge_size = prms->vxlib_edge.stride_y *
                     prms->vxlib_src.dim_y;

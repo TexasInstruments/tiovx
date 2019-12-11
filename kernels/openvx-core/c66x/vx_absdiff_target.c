@@ -123,7 +123,7 @@ vx_status VX_CALLBACK tivxAbsDiff(
         tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        if (VXLIB_UINT8 == vxlib_dst.data_type)
+        if ((uint32_t)VXLIB_UINT8 == vxlib_dst.data_type)
         {
             status = (vx_status)VXLIB_absDiff_i8u_i8u_o8u(src0_addr, &vxlib_src0, src1_addr,
                 &vxlib_src1, dst_addr, &vxlib_dst);

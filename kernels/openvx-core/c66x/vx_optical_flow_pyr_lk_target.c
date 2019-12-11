@@ -297,12 +297,12 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->old_params.dim_x     = width;
             prms->old_params.dim_y     = height;
             prms->old_params.stride_y  = old_image->imagepatch_addr[0U].stride_y;
-            prms->old_params.data_type = VXLIB_UINT8;
+            prms->old_params.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->scharrGrad_params.dim_x = width;
             prms->scharrGrad_params.dim_y = height - 2;
             prms->scharrGrad_params.stride_y = width*2;
-            prms->scharrGrad_params.data_type = VXLIB_INT16;
+            prms->scharrGrad_params.data_type = (uint32_t)VXLIB_INT16;
 
             status |= VXLIB_scharr_3x3_i8u_o16s_o16s(old_image_addr, &prms->old_params,
                                                      &prms->pSchX[width+1], &prms->scharrGrad_params,
@@ -315,7 +315,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->new_params.dim_x      = width;
             prms->new_params.dim_y      = height;
             prms->new_params.stride_y  = new_image->imagepatch_addr[0U].stride_y;
-            prms->new_params.data_type = VXLIB_UINT8;
+            prms->new_params.data_type = (uint32_t)VXLIB_UINT8;
 
             /* Adjust scale for all but smallest resoltion */
             if (level != ((vx_int32)num_levels-1)) {

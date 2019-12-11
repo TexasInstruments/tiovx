@@ -204,7 +204,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            if (vxlib_dst.data_type == VXLIB_UINT8)
+            if (vxlib_dst.data_type == (uint32_t)VXLIB_UINT8)
             {
                 BAM_VXLIB_convolve_i8u_c16s_o8u_params kernel_params;
 

@@ -241,7 +241,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            if (VXLIB_INT16 == vxlib_dst.data_type)
+            if ((uint32_t)VXLIB_INT16 == vxlib_dst.data_type)
             {
                 BAM_VXLIB_convertDepth_i8u_o16s_params params;
                 params.shift = sc_desc[1]->data.s32;

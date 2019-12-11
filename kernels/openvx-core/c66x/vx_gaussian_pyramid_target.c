@@ -185,17 +185,17 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
             vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
             vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
+            vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
             vxlib_gauss.dim_x = src->imagepatch_addr[0].dim_x;
             vxlib_gauss.dim_y = src->imagepatch_addr[0].dim_y;
             vxlib_gauss.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_gauss.data_type = VXLIB_UINT8;
+            vxlib_gauss.data_type = (uint32_t)VXLIB_UINT8;
 
             vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
             vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
             vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            vxlib_dst.data_type = VXLIB_UINT8;
+            vxlib_dst.data_type = (uint32_t)VXLIB_UINT8;
 
             if (0u == levels)
             {

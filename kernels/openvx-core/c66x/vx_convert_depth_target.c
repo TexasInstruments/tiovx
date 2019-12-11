@@ -140,7 +140,7 @@ static vx_status tivxKernelConvertDepth(
             overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
         }
 
-        if (VXLIB_INT16 == vxlib_dst.data_type)
+        if ((uint32_t)VXLIB_INT16 == vxlib_dst.data_type)
         {
             status = (vx_status)VXLIB_convertDepth_i8u_o16s((uint8_t *)src_addr,
                         &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, sc_desc[1]->data.s32);

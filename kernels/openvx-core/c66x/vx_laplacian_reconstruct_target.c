@@ -170,7 +170,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x;
         prms->vxlib_src.dim_y = prms->vxlib_scratch.dim_y;
         prms->vxlib_src.stride_y = prms->vxlib_scratch.dim_x*2u;
-        prms->vxlib_src.data_type = VXLIB_INT16;
+        prms->vxlib_src.data_type = (uint32_t)VXLIB_INT16;
 
         src_addr = (uint8_t *)prms->add_output;
         tivxSetPointerLocation(out_img, &out_img_target_ptr, &dst_addr);
@@ -181,7 +181,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
 
         /* Reinterpret 16-bit version of low_img as an 8 bit image, where every other byte is 0 */
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x*2u;
-        prms->vxlib_src.data_type = VXLIB_UINT8;
+        prms->vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
         for (level = pmd->num_levels-1; (level >= 0) && ((vx_status)VX_SUCCESS == status);
                 level --)
@@ -200,17 +200,17 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             prms->vxlib_scratch.dim_x = rect.end_x - rect.start_x;
             prms->vxlib_scratch.dim_y = (rect.end_y - rect.start_y)/2u;
             prms->vxlib_scratch.stride_y = (rect.end_x - rect.start_x)*2;
-            prms->vxlib_scratch.data_type = VXLIB_UINT8;
+            prms->vxlib_scratch.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->vxlib_laplac.dim_x = rect.end_x - rect.start_x;
             prms->vxlib_laplac.dim_y = rect.end_y - rect.start_y;
             prms->vxlib_laplac.stride_y = pyd_level->imagepatch_addr[0].stride_y;
-            prms->vxlib_laplac.data_type = VXLIB_INT16;
+            prms->vxlib_laplac.data_type = (uint32_t)VXLIB_INT16;
 
             prms->vxlib_add.dim_x = rect.end_x - rect.start_x;;
             prms->vxlib_add.dim_y = rect.end_y - rect.start_y;
             prms->vxlib_add.stride_y = (rect.end_x - rect.start_x)*2;
-            prms->vxlib_add.data_type = VXLIB_INT16;
+            prms->vxlib_add.data_type = (uint32_t)VXLIB_INT16;
 
             /* First upsample previous stage result */
             status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &prms->vxlib_src,

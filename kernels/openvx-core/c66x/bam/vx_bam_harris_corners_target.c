@@ -413,8 +413,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             prms->vxlib_score.dim_y = img->imagepatch_addr[0].dim_y -
                 (prms->gs - 1) - (prms->bs - 1);
             prms->vxlib_score.stride_y =
-                img->imagepatch_addr[0].dim_x * sizeof(VXLIB_FLOAT32);
-            prms->vxlib_score.data_type = VXLIB_FLOAT32;
+                img->imagepatch_addr[0].dim_x * sizeof((uint32_t)VXLIB_FLOAT32);
+            prms->vxlib_score.data_type = (uint32_t)VXLIB_FLOAT32;
 
             prms->hcs_score_size = prms->vxlib_score.stride_y *
                 prms->vxlib_score.dim_y;

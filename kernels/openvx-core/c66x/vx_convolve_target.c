@@ -128,7 +128,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
 
-        if (vxlib_dst.data_type == VXLIB_UINT8)
+        if (vxlib_dst.data_type == (uint32_t)VXLIB_UINT8)
         {
             status = (vx_status)VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, conv_target_ptr,

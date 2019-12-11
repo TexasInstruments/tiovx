@@ -120,7 +120,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
         vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
         vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
         if (NULL != dst0)
         {

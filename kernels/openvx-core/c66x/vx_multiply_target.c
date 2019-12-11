@@ -129,15 +129,15 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
 
         /* If output is in U8 format, both the input must be in
            U8 format */
-        if (VXLIB_UINT8 == vxlib_dst.data_type)
+        if ((uint32_t)VXLIB_UINT8 == vxlib_dst.data_type)
         {
             status = (vx_status)VXLIB_multiply_i8u_i8u_o8u(src0_addr, &vxlib_src0,
                 src1_addr, &vxlib_src1, dst_addr, &vxlib_dst, overflow_policy,
                 sc[0]->data.f32);
         }
         /* Now if the both inputs are U8, output will be in S16 format */
-        else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
-                 (VXLIB_UINT8 == vxlib_src0.data_type))
+        else if (((uint32_t)VXLIB_UINT8 == vxlib_src1.data_type) &&
+                 ((uint32_t)VXLIB_UINT8 == vxlib_src0.data_type))
         {
             status = (vx_status)VXLIB_multiply_i8u_i8u_o16s(src0_addr, &vxlib_src0,
                 src1_addr, &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst,
@@ -145,8 +145,8 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         }
         /* If both the input are in S16 format, output will be in
            S16 format */
-        else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
-                 (VXLIB_INT16 == vxlib_src0.data_type))
+        else if (((uint32_t)VXLIB_INT16 == vxlib_src1.data_type) &&
+                 ((uint32_t)VXLIB_INT16 == vxlib_src0.data_type))
         {
             status = (vx_status)VXLIB_multiply_i16s_i16s_o16s((int16_t *)src0_addr,
                 &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
@@ -155,7 +155,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         }
         else /* One input is in S16 format and other is in U8 format */
         {
-            if (VXLIB_UINT8 == vxlib_src0.data_type)
+            if ((uint32_t)VXLIB_UINT8 == vxlib_src0.data_type)
             {
                 status = (vx_status)VXLIB_multiply_i8u_i16s_o16s(src0_addr,
                     &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,

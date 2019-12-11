@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;
-                kernel_params.mask.data_type = VXLIB_UINT8;
+                kernel_params.mask.data_type = (uint32_t)VXLIB_UINT8;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;
-                kernel_params.mask.data_type = VXLIB_UINT8;
+                kernel_params.mask.data_type = (uint32_t)VXLIB_UINT8;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -254,7 +254,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;
-                kernel_params.mask.data_type = VXLIB_UINT8;
+                kernel_params.mask.data_type = (uint32_t)VXLIB_UINT8;
                 kernel_params.scratch_size  = mask->columns * mask->rows *
                     2 * sizeof(int64_t);
 
@@ -423,7 +423,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                     kernel_params->mask.dim_x    = mask->columns;
                     kernel_params->mask.dim_y    = mask->rows;
                     kernel_params->mask.stride_y = mask->columns;
-                    kernel_params->mask.data_type = VXLIB_UINT8;
+                    kernel_params->mask.data_type = (uint32_t)VXLIB_UINT8;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -448,7 +448,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                     kernel_params->mask.dim_x    = mask->columns;
                     kernel_params->mask.dim_y    = mask->rows;
                     kernel_params->mask.stride_y = mask->columns;
-                    kernel_params->mask.data_type = VXLIB_UINT8;
+                    kernel_params->mask.data_type = (uint32_t)VXLIB_UINT8;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -473,7 +473,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                     kernel_params->mask.dim_x    = mask->columns;
                     kernel_params->mask.dim_y    = mask->rows;
                     kernel_params->mask.stride_y = mask->columns;
-                    kernel_params->mask.data_type = VXLIB_UINT8;
+                    kernel_params->mask.data_type = (uint32_t)VXLIB_UINT8;
                     kernel_params->scratch_size  = mask->columns * mask->rows *
                         2 * sizeof(int64_t);
 

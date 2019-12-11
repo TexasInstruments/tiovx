@@ -424,7 +424,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
 
         if(src->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
-            vxlib_src.data_type = VXLIB_UINT24;
+            vxlib_src.data_type = (uint32_t)VXLIB_UINT24;
 
             BAM_VXLIB_channelExtract_1of3_i8u_o8u_params params;
 
@@ -441,7 +441,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
         }
         else if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
         {
-            vxlib_src.data_type = VXLIB_UINT32;
+            vxlib_src.data_type = (uint32_t)VXLIB_UINT32;
 
             BAM_VXLIB_channelExtract_1of4_i8u_o8u_params params;
 

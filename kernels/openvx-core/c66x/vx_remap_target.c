@@ -131,7 +131,7 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         vxlib_remap.dim_x = dst->imagepatch_addr[0].dim_x * 2U;
         vxlib_remap.dim_y = dst->imagepatch_addr[0].dim_y;
         vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
-        vxlib_remap.data_type = VXLIB_FLOAT32;
+        vxlib_remap.data_type = (uint32_t)VXLIB_FLOAT32;
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
