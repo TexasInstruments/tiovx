@@ -35,7 +35,7 @@ vx_status tivxQueueCreate(
 
         queue->queue = queue_memory;
 
-        if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
         {
             /*
              * user requested block on que get
@@ -47,7 +47,7 @@ vx_status tivxQueueCreate(
             status = tivxEventCreate(&queue->block_rd);
         }
 
-        if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
+        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
         {
             /*
              * user requested block on que put
@@ -126,7 +126,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             /* mark status as success */
             status = (vx_status)VX_SUCCESS;
 
-            if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
             {
                 /* blocking on que get enabled */
 
@@ -149,7 +149,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             {
                 do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
             }
-            else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+            else if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
             {
                 vx_status wait_status;
 
@@ -185,7 +185,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
             break;
         }
     }
-    while (1);
+    while (1 == 1);
 
     return (status);
 }
@@ -218,7 +218,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             /* set status as success */
             status = (vx_status)VX_SUCCESS;
 
-            if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
+            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) != 0U)
             {
                 /* blocking on que put enabled,
                  * post semaphore to unblock, blocked tasks
@@ -241,7 +241,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                 do_break = (vx_bool)vx_true_e; /* non-blocking, exit with error */
             }
             else
-            if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+            if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) != 0U)
             {
                 vx_status wait_status;
 
@@ -278,7 +278,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
             break;
         }
     }
-    while (1);
+    while (1 == 1);
 
     return (status);
 }
