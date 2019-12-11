@@ -183,7 +183,7 @@ static inline void tivxKernelValidRectParams_init(
  */
 static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
 {
-    if(VX_SUCCESS != status_temp) {
+    if((vx_status)VX_SUCCESS != status_temp) {
         *status = status_temp;
     }
 }

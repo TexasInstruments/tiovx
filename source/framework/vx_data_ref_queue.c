@@ -143,7 +143,7 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
 
         tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        if((status == (vx_status)VX_SUCCESS) && (ref_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
+        if((status == (vx_status)VX_SUCCESS) && ((vx_enum)ref_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
         {
             VX_PRINT(VX_ZONE_INFO,"DQ (queue=%d, ref=%d)\n",
                              queue_obj_desc_id,
