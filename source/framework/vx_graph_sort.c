@@ -95,9 +95,9 @@ static inline vx_bool tivxGraphSortStackPop(tivx_graph_sort_context *context, vx
 {
     vx_bool status = (vx_bool)vx_false_e;
 
-    if ((context->stack_top > 0) && (context->stack_top < TIVX_GRAPH_MAX_NODES))
+    if ((context->stack_top > 0U) && (context->stack_top < TIVX_GRAPH_MAX_NODES))
     {
-        *elem = context->stack[context->stack_top-1];
+        *elem = context->stack[context->stack_top-1U];
         context->stack_top--;
         status = (vx_bool)vx_true_e;
     }
@@ -119,13 +119,13 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             cur_node = nodes[cur_node_idx];
 
             cur_node->incounter = ownNodeGetNumInNodes(cur_node);
-            if((cur_node->incounter==0) && (cur_node->is_super_node == (vx_bool)vx_false_e))
+            if((cur_node->incounter==0U) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {
                 tivxGraphSortStackPush(context, cur_node);
             }
         }
         cur_node_idx = 0;
-        while( tivxGraphSortStackPop(context, &cur_node) )
+        while( tivxGraphSortStackPop(context, &cur_node) != 0 )
         {
             context->sorted_nodes[cur_node_idx] = cur_node;
             cur_node_idx++;
@@ -133,10 +133,10 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
             {
                 next_node = ownNodeGetNextNode(cur_node, out_node_idx);
-                if(next_node)
+                if(next_node != NULL)
                 {
                     next_node->incounter--;
-                    if(next_node->incounter==0)
+                    if(next_node->incounter==0U)
                     {
                         tivxGraphSortStackPush(context, next_node);
                     }
@@ -198,7 +198,7 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
         nodes[0]->incounter = 1;
 
         cur_node_idx = 1;
-        while( tivxGraphSortStackPop(context, &cur_node) )
+        while( tivxGraphSortStackPop(context, &cur_node) != 0 )
         {
             num_in_nodes = ownNodeGetNumInNodes(cur_node);
             num_out_nodes = ownNodeGetNumOutNodes(cur_node);
@@ -264,24 +264,24 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
             else
             {
                 cur_node->incounter = ownNodeGetNumInNodes(cur_node);
-                if((cur_node->incounter==0))
+                if((cur_node->incounter==0U))
                 {
                     tivxGraphSortStackPush(context, cur_node);
                 }
             }
         }
         cur_node_idx = i;
-        while( tivxGraphSortStackPop(context, &cur_node) )
+        while( tivxGraphSortStackPop(context, &cur_node) != 0 )
         {
             cur_node_idx++;
             num_out_nodes = ownNodeGetNumOutNodes(cur_node);
             for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
             {
                 next_node = ownNodeGetNextNode(cur_node, out_node_idx);
-                if(next_node)
+                if(next_node != NULL)
                 {
                     next_node->incounter--;
-                    if(next_node->incounter==0)
+                    if(next_node->incounter==0U)
                     {
                         tivxGraphSortStackPush(context, next_node);
                     }

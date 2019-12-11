@@ -153,7 +153,7 @@ enum tivx_type_e {
 /*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils
  */
-#define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0))
+#define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0U))
 
 static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
 static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val);

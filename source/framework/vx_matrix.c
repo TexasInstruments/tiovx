@@ -343,7 +343,7 @@ vx_status VX_API_CALL vxQueryMatrix(
         switch (attribute)
         {
             case (vx_enum)VX_MATRIX_TYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->data_type;
                 }
@@ -354,7 +354,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 break;
             case (vx_enum)VX_MATRIX_COLUMNS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->columns;
                 }

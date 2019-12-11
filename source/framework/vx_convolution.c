@@ -43,10 +43,10 @@ vx_convolution VX_API_CALL vxCreateConvolution(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((isodd(columns) == 1) && (columns >= 3) &&
-            (columns < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
-            (isodd(rows) == 1) && (rows >= 3) &&
-            (rows < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION))
+        if ((isodd(columns) == 1) && (columns >= 3U) &&
+            ((vx_enum)columns < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
+            (isodd(rows) == 1) && (rows >= 3U) &&
+            ((vx_enum)rows < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION))
         {
             cnvl = (vx_convolution)ownCreateReference(context,
                 (vx_enum)VX_TYPE_CONVOLUTION, (vx_enum)VX_EXTERNAL, &context->base);
@@ -73,10 +73,10 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                 }
                 else
                 {
-                    obj_desc->columns = columns;
-                    obj_desc->rows = rows;
+                    obj_desc->columns = (uint32_t)columns;
+                    obj_desc->rows = (uint32_t)rows;
                     obj_desc->scale = 1;
-                    obj_desc->mem_size = columns*rows*sizeof(vx_int16);
+                    obj_desc->mem_size = (uint32_t)columns*(uint32_t)rows*(uint32_t)sizeof(vx_int16);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
@@ -101,7 +101,7 @@ vx_status VX_API_CALL vxQueryConvolution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -188,7 +188,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -244,7 +244,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     vx_uint32 size;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -390,11 +390,11 @@ static vx_status ownDestructConvolution(vx_reference ref)
 static vx_bool vxIsPowerOfTwo(vx_uint32 a)
 {
     vx_bool isPowTwo;
-    if (a == 0)
+    if (a == 0U)
     {
         isPowTwo =(vx_bool)vx_false_e;
     }
-    else if ((a & ((a) - 1)) == 0)
+    else if ((a & ((a) - 1U)) == 0U)
     {
         isPowTwo = (vx_bool)vx_true_e;
     }

@@ -150,7 +150,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
             {
                 ptr = &((*ptr)->next);
             }
-        } while (1);
+        } while (1 == 1);
     }
 
     if(status == (vx_bool)vx_true_e)
@@ -209,7 +209,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
             {
                 break;
             }
-        } while (1);
+        } while (1 == 1);
     }
 
 
@@ -298,10 +298,10 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
         {
             ref = delay->refs[i];
 
-            if (ref)
+            if (ref != NULL)
             {
                 status = (vx_status)VX_SUCCESS;
-                if(ref->mem_alloc_callback)
+                if(ref->mem_alloc_callback != NULL)
                 {
                     status = ref->mem_alloc_callback(ref);
                 }
@@ -360,7 +360,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
     vx_reference ref;
     vx_uint32 i;
 
-    if ( ownIsValidContext(context) )
+    if ( ownIsValidContext(context) != 0 )
     {
         if (count <= TIVX_DELAY_MAX_OBJECT)
         {

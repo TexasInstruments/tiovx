@@ -282,7 +282,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
 
 void tivx_utils_bmp_file_read_release(void *bmp_file_context)
 {
-    if(bmp_file_context)
+    if(bmp_file_context != NULL)
     {
         CT_FreeObject(bmp_file_context);
     }
@@ -681,7 +681,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 }
             }
             else
-            if(enable_rgb2gray)
+            if(enable_rgb2gray != 0)
             {
                 uint32_t x, y, r, g, b;
 
@@ -700,7 +700,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 }
             }
             else
-            if(enable_gray2rgb)
+            if(enable_gray2rgb != 0)
             {
                 uint32_t x, y, g;
 

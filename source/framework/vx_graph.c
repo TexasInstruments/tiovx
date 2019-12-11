@@ -66,7 +66,7 @@ static vx_status ownDestructGraph(vx_reference ref)
                 {
                     vx_reference data_ref = graph->data_ref_q_list[i].refs_list[buf_id];
 
-                    if(is_replicated)
+                    if(is_replicated != 0)
                     {
                         data_ref = data_ref->scope;
                     }
@@ -97,7 +97,7 @@ static vx_status ownDestructGraph(vx_reference ref)
         graph->num_supernodes = 0;
     }
 
-    while (graph->num_nodes)
+    while (graph->num_nodes != 0U)
     {
         vx_node node = graph->nodes[0];
 
@@ -756,7 +756,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
-        if (graph->is_streaming_enabled)
+        if (graph->is_streaming_enabled != 0)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph is already streaming\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -824,7 +824,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
 
 void ownGraphSetReverify(vx_graph graph)
 {
-    if(graph)
+    if(graph != NULL)
     {
         graph->reverify = graph->verified;
         graph->verified = (vx_bool)vx_false_e;
@@ -836,7 +836,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 {
     if((graph != NULL) && (graph->base.context != NULL))
     {
-        if(graph->is_enable_send_complete_event)
+        if(graph->is_enable_send_complete_event != 0)
         {
             uint64_t timestamp;
 
@@ -933,7 +933,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
-        if(vxIsGraphVerified(graph))
+        if(vxIsGraphVerified(graph) != 0)
         {
             if( (index < TIVX_GRAPH_MAX_NODES) && (index < graph->num_nodes) )
             {

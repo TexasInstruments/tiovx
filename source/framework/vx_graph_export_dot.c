@@ -76,7 +76,7 @@
 #define TIVX_EXPORT_WRITELN(fp, message, ...) do { \
     snprintf(line, TIVX_EXPORT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
     fwrite(line, 1, strlen(line), fp); \
-    } while (0)
+    } while (1 == 0)
 
 
 static void getNodeColor(vx_node node, char *node_color_name)
@@ -85,7 +85,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
 
     snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "white");
 
-    if(node->obj_desc[0])
+    if(node->obj_desc[0] != NULL)
     {
         tivxPlatformGetTargetName(node->obj_desc[0]->target_id, target_name);
     }
@@ -94,7 +94,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
         VX_PRINT(VX_ZONE_ERROR,"node obj desc is NULL\n");
     }
 
-    if(node->obj_desc[0])
+    if(node->obj_desc[0] != NULL)
     {
         if(strncmp(target_name, "DSP-1", TIVX_TARGET_MAX_NAME) == 0)
         {
@@ -264,7 +264,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
     {
         new_target = (vx_bool)vx_true_e;
 
-        if(graph->nodes[node_id]->obj_desc[0])
+        if(graph->nodes[node_id]->obj_desc[0] != NULL)
         {
             tivxPlatformGetTargetName(graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
             for (target_id = 0; target_id < num_targets; target_id++)
@@ -298,14 +298,14 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
 
 static void exportDataRef(FILE *fp, vx_reference ref)
 {
-    if(ref)
+    if(ref != NULL)
     {
         char is_virtual[64]="";
         char is_virtual_label[64]="";
         char is_replicated_label[80]="";
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
-        if(ref->is_virtual)
+        if(ref->is_virtual != 0)
         {
             snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
             snprintf(is_virtual_label, 64, "| virtual");
@@ -343,11 +343,11 @@ static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const ch
     char node_color_name[TIVX_EXPORT_MAX_NODE_COLOR_NAME];
     char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
-    if(node)
+    if(node != NULL)
     {
         getNodeColor(node, node_color_name);
         node_desc = node->obj_desc[pipe_id];
-        if(node_desc)
+        if(node_desc != NULL)
         {
             TIVX_EXPORT_WRITELN(fp, "%s%d [shape=record, label=\"{%s|pipe %d|desc %d}\", style=filled, fillcolor=%s]",
                 prefix,
@@ -362,14 +362,14 @@ static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const ch
 
 static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 {
-    if(ref)
+    if(ref != NULL)
     {
         char is_virtual[64]="";
         char is_virtual_label[64]="";
         char is_replicated_label[80]="";
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
-        if(ref->is_virtual)
+        if(ref->is_virtual != 0)
         {
             snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
             snprintf(is_virtual_label, 64, "| virtual");
@@ -381,7 +381,7 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
         {
             snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
         }
-        if(ref->obj_desc)
+        if(ref->obj_desc != NULL)
         {
             TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record %s, label=\"{%s %s %s | desc %d}\"]",
                 ref->obj_desc->obj_desc_id,
@@ -405,13 +405,13 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
             uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links, uint32_t pipeline_depth)
 {
-    if(ref)
+    if(ref != NULL)
     {
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
         char graph_parameter_label[64]="";
         uint32_t pipe_id;
 
-        if(is_graph_parameter)
+        if(is_graph_parameter != 0)
         {
             snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
         }
@@ -422,16 +422,16 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
 
         for(pipe_id=0; pipe_id<pipeline_depth; pipe_id++)
         {
-            if(ref->obj_desc[pipe_id])
+            if(ref->obj_desc[pipe_id] != NULL)
             {
                 char auto_age_delay_string[64]="";
                 uint32_t flags;
 
                 flags = ref->obj_desc[pipe_id]->flags;
 
-                if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+                if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY) != 0)
                 {
-                    if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
+                    if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE) != 0)
                     {
                         snprintf(auto_age_delay_string, 64, "|delay_slot_auto_age");
                     }
@@ -447,16 +447,16 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
                     auto_age_delay_string
                     );
 
-                if(show_delay_links)
+                if(show_delay_links != 0)
                 {
-                    if(tivxFlagIsBitSet(ref->obj_desc[pipe_id]->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+                    if(tivxFlagIsBitSet(ref->obj_desc[pipe_id]->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY) != 0)
                     {
                         tivx_obj_desc_data_ref_q_t *next_obj_desc;
 
                         next_obj_desc = (tivx_obj_desc_data_ref_q_t *)
                                             tivxObjDescGet(ref->obj_desc[pipe_id]->next_obj_desc_id_in_delay);
 
-                        if(next_obj_desc)
+                        if(next_obj_desc != NULL)
                         {
                             TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%d [label = %d, style=dashed, color=gray]",
                                 ref->obj_desc[pipe_id]->base.obj_desc_id,
@@ -473,12 +473,12 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
 
 static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_buf, vx_bool is_graph_parameter)
 {
-    if(ref)
+    if(ref != NULL)
     {
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
         char graph_parameter_label[64]="";
 
-        if(is_graph_parameter)
+        if(is_graph_parameter != 0)
         {
             snprintf(graph_parameter_label, 64, ", fillcolor=yellow");
         }
@@ -584,7 +584,7 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
             node = graph->nodes[node_id];
-            if(node)
+            if(node != NULL)
             {
                 for(data_id=0; data_id<ownNodeGetNumParameters(node); data_id++)
                 {
@@ -593,15 +593,15 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
 
                     dir = ownNodeGetParameterDir(node, data_id);
                     is_replicated = ownNodeIsPrmReplicated(node, data_id);
-                    if(is_replicated)
+                    if(is_replicated != 0)
                     {
                         snprintf(replicated_label, 32, "[label=\" replicated\"]");
                     }
 
                     ref = ownNodeGetParameterRef(node, data_id);
-                    if(ref)
+                    if(ref != NULL)
                     {
-                        if(is_replicated)
+                        if(is_replicated != 0)
                         {
                             ref = ref->scope;
                             exportDataRef(fp, ref);
@@ -670,7 +670,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
     uint32_t pipe_id;
     char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
-    if(data_ref_q)
+    if(data_ref_q  != NULL)
     {
         for(pipe_id=0; pipe_id<data_ref_q->pipeline_depth; pipe_id++)
         {
@@ -779,9 +779,9 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
 
         for(i=0; i<graph->num_params; i++)
         {
-            if(graph->parameters[i].queue_enable)
+            if(graph->parameters[i].queue_enable != 0)
             {
-                if (graph->parameters[i].data_ref_queue)
+                if (graph->parameters[i].data_ref_queue != NULL)
                 {
                     exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, 
                         (vx_bool)vx_true_e, (vx_bool)vx_false_e, graph->parameters[i].data_ref_queue->pipeline_depth);
@@ -791,7 +791,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
-            if (graph->data_ref_q_list[i].data_ref_queue)
+            if (graph->data_ref_q_list[i].data_ref_queue != NULL)
             {
                 exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf,
                     (vx_bool)vx_false_e, vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
@@ -801,7 +801,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
         }
         for(i=0; i<graph->num_delay_data_ref_q; i++)
         {
-            if (graph->delay_data_ref_q_list[i].data_ref_queue)
+            if (graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
             {
                 exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1,
                     (vx_bool)vx_false_e, vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
@@ -867,10 +867,10 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
             node = graph->nodes[node_id];
-            if(node)
+            if(node != NULL)
             {
                 node_desc = node->obj_desc[pipe_id];
-                if(node_desc)
+                if(node_desc != NULL)
                 {
                     #if 1
                     for(linked_node_idx=0; linked_node_idx<node_desc->num_in_nodes; linked_node_idx++)
@@ -895,7 +895,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
         TIVX_EXPORT_WRITELN(fp, "/* List of data reference queues */");
         for(data_id=0; data_id<graph->num_params; data_id++)
         {
-            if(graph->parameters[data_id].queue_enable)
+            if(graph->parameters[data_id].queue_enable != 0)
             {
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
@@ -927,10 +927,10 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
         for(node_id=0; node_id<graph->num_nodes; node_id++)
         {
             node = graph->nodes[node_id];
-            if(node)
+            if(node != NULL)
             {
                 node_desc = node->obj_desc[pipe_id];
-                if(node_desc)
+                if(node_desc != NULL)
                 {
                     for(data_id=0; data_id<node_desc->num_params; data_id++)
                     {
@@ -938,14 +938,14 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                         vx_bool is_replicated;
 
                         is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, (1<<data_id));
-                        if(is_replicated)
+                        if(is_replicated != 0)
                         {
                             snprintf(replicated_label, 32, "[label=\" replicated\"]");
                         }
 
-                        if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)))
+                        if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)) != 0)
                         {
-                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
                             {
                                 if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
@@ -962,7 +962,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                         }
                         else
                         {
-                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
                             {
                                 if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
@@ -1046,10 +1046,10 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
                 node = graph->nodes[node_id];
-                if(node)
+                if(node != NULL)
                 {
                     node_desc = node->obj_desc[pipe_id];
-                    if(node_desc)
+                    if(node_desc != NULL)
                     {
                         #if 1
                         for(linked_node_idx=0; linked_node_idx<node_desc->num_in_nodes; linked_node_idx++)
@@ -1091,10 +1091,10 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
                 node = graph->nodes[node_id];
-                if(node)
+                if(node != NULL)
                 {
                     node_desc = node->obj_desc[pipe_id];
-                    if(node_desc)
+                    if(node_desc != NULL)
                     {
                         if(node_desc->prev_pipe_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                         {
@@ -1156,7 +1156,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
         for(prm_id=0; prm_id<graph->num_data_ref_q; prm_id++)
         {
-            if(graph->data_ref_q_list[prm_id].data_ref_queue)
+            if(graph->data_ref_q_list[prm_id].data_ref_queue != NULL)
             {
                 exportDataRefQueue(fp,
                     graph->data_ref_q_list[prm_id].data_ref_queue,
@@ -1189,14 +1189,14 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
         for(prm_id=0; prm_id<graph->num_delay_data_ref_q; prm_id++)
         {
-            if(graph->delay_data_ref_q_list[prm_id].data_ref_queue)
+            if(graph->delay_data_ref_q_list[prm_id].data_ref_queue != NULL)
             {
                 exportDataRefQueue(fp,
                     graph->delay_data_ref_q_list[prm_id].data_ref_queue,
                     1,
                     (vx_bool)vx_false_e);
 
-                if(graph->delay_data_ref_q_list[prm_id].node)
+                if(graph->delay_data_ref_q_list[prm_id].node != NULL)
                 {
                     ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[prm_id].node,
                             graph->delay_data_ref_q_list[prm_id].index);
@@ -1214,13 +1214,13 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                     vx_delay delay = graph->delay_data_ref_q_list[prm_id].delay_ref;
                     uint32_t delay_slot_index = graph->delay_data_ref_q_list[prm_id].delay_slot_index;
 
-                    if(delay)
+                    if(delay != NULL)
                     {
                         ref = delay->refs[delay_slot_index];
-                        if(ref)
+                        if(ref != NULL)
                         {
                             exportDataRefObjDesc(fp, ref);
-                            if(ref->obj_desc)
+                            if(ref->obj_desc != NULL)
                             {
                                 TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
                                     ref->obj_desc->obj_desc_id,
@@ -1236,12 +1236,12 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
         TIVX_EXPORT_WRITELN(fp, "/* List of data reference queues */");
         for(data_id=0; data_id<graph->num_params; data_id++)
         {
-            if(graph->parameters[data_id].queue_enable)
+            if(graph->parameters[data_id].queue_enable != 0)
             {
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
 
-                if (ref)
+                if (ref != NULL)
                 {
                     exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, vx_true_e, ref->pipeline_depth);
                 }
@@ -1253,7 +1253,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             uint32_t num_buf = graph->data_ref_q_list[data_id].num_buf;
             tivx_data_ref_queue ref = graph->data_ref_q_list[data_id].data_ref_queue;
 
-            if (ref)
+            if (ref != NULL)
             {
                 exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_false_e, (vx_bool)vx_true_e, ref->pipeline_depth);
             }
@@ -1263,7 +1263,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
         {
             tivx_data_ref_queue ref = graph->delay_data_ref_q_list[data_id].data_ref_queue;
 
-            if (ref)
+            if (ref != NULL)
             {
                 exportDataRefQueueObjDesc(fp, ref, 1, (vx_bool)vx_false_e, (vx_bool)vx_true_e, ref->pipeline_depth);
             }
@@ -1278,10 +1278,10 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {
                 node = graph->nodes[node_id];
-                if(node)
+                if(node != NULL)
                 {
                     node_desc = node->obj_desc[pipe_id];
-                    if(node_desc)
+                    if(node_desc != NULL)
                     {
                         for(data_id=0; data_id<node_desc->num_params; data_id++)
                         {
@@ -1289,14 +1289,14 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                             vx_bool is_replicated;
 
                             is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, (1<<data_id));
-                            if(is_replicated)
+                            if(is_replicated != 0)
                             {
                                 snprintf(replicated_label, 32, "[label=\" replicated\"]");
                             }
 
-                            if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)))
+                            if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)) != 0)
                             {
-                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
                                 {
                                     if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
@@ -1313,7 +1313,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                             }
                             else
                             {
-                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
+                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
                                 {
                                     if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {

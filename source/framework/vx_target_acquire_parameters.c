@@ -74,18 +74,17 @@ static void tivxTargetObjDescSendRefConsumed(
 {
     uint16_t cmd_obj_desc_id;
 
-    if( (tivxFlagIsBitSet(obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT))
-        )
+    if(0 != tivxFlagIsBitSet(obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT))
     {
         cmd_obj_desc_id = obj_desc->ref_consumed_cmd_obj_desc_id;
 
-        if( cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)tivxObjDescGet(cmd_obj_desc_id);
 
-            if( tivxObjDescIsValidType( (tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD) )
+            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD))
             {
-                uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+                uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
                 tivx_uint64_to_uint32(
                     timestamp,
@@ -130,8 +129,7 @@ static void tivxTargetNodeDescAcquireParameter(
             &ref_obj_desc_id
             );
 
-        if(ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID /* did not get a ref */
-            )
+        if((vx_enum)ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID) /* did not get a ref */
         {
             /* add node to list of blocked nodes */
             tivxObjDescQueueAddBlockedNode(
@@ -161,7 +159,7 @@ static void tivxTargetNodeDescAcquireParameter(
             data_ref_q_obj_desc->flags = flags;
 
             obj_desc = tivxObjDescGet(ref_obj_desc_id);
-            if(obj_desc)
+            if(obj_desc != NULL)
             {
                 obj_desc->in_node_done_cnt = 0;
             }
@@ -217,8 +215,7 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
             &ref_obj_desc_id
             );
 
-        if(ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID /* did not get a ref */
-            )
+        if((vx_enum)ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID) /* did not get a ref */
         {
             VX_PRINT(VX_ZONE_INFO,"Parameter acquire for pipe up failed ... (node=%d, pipe=%d, data_ref_q=%d, queue=%d)\n",
                              node_obj_desc->base.obj_desc_id,
@@ -233,7 +230,7 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
 
             /* dont set acquired flag, since this is pipe up phase, just extract the data obj desc */
             obj_desc = tivxObjDescGet(ref_obj_desc_id);
-            if(obj_desc)
+            if(obj_desc != NULL)
             {
                 obj_desc->in_node_done_cnt = 0;
             }
@@ -276,13 +273,13 @@ static void tivxTargetNodeDescReleaseParameterInDelay(
 
     cur_data_ref_q = data_ref_q_obj_desc;
 
-    for(i=0; i<(delay_slots-1); i++)
+    for(i=0; i<(delay_slots-1U); i++)
     {
         next_data_ref_q = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(cur_data_ref_q->next_obj_desc_id_in_delay);
 
         if(next_data_ref_q!=NULL)
         {
-            if(tivxFlagIsBitSet(next_data_ref_q->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
+            if(0 != tivxFlagIsBitSet(next_data_ref_q->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
             {
                 /* acquire a ref and release it immediately to rotate the ref at this slot */
                 obj_desc_q_id = next_data_ref_q->acquire_q_obj_desc_id;
@@ -292,7 +289,7 @@ static void tivxTargetNodeDescReleaseParameterInDelay(
                     &ref_obj_desc_id
                     );
 
-                if(ref_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                if((vx_enum)ref_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
 
@@ -367,7 +364,7 @@ static void tivxTargetNodeDescReleaseParameter(
     }
     else
     if( (is_prm_input == (vx_bool)vx_false_e)
-        && (data_ref_q_obj_desc->num_in_nodes == 0) /* i.e this node is not consumed by the graph */
+        && (data_ref_q_obj_desc->num_in_nodes == 0U) /* i.e this node is not consumed by the graph */
         )
     {
         do_release_ref = (vx_bool)vx_true_e;
@@ -383,7 +380,7 @@ static void tivxTargetNodeDescReleaseParameter(
     }
     if(do_release_ref || do_release_ref_to_queue)
     {
-        if(do_release_ref_to_queue)
+        if(do_release_ref_to_queue != (vx_bool)vx_false_e)
         {
             uint16_t obj_desc_q_id;
 
@@ -411,7 +408,7 @@ static void tivxTargetNodeDescReleaseParameter(
              * However if a delay slot is not connected to any node then
              * ageing must be done explicitly here.
              */
-            if(tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+            if(0 != tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
             {
                 tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
             }
@@ -424,7 +421,7 @@ static void tivxTargetNodeDescReleaseParameter(
                                  ref_obj_desc_id
                            );
         }
-        if(do_release_ref)
+        if(do_release_ref != (vx_bool)vx_false_e)
         {
             tivxFlagBitClear(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
             data_ref_q_obj_desc->flags = flags;
@@ -487,7 +484,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
             data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 tivxTargetNodeDescAcquireParameter(
                     node_obj_desc,
@@ -502,7 +499,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             }
         }
         #if 1
-        if(*is_node_blocked)
+        if(0 != *is_node_blocked)
         {
             /* node is blocked on some resource, dont acquire more resources */
             VX_PRINT(VX_ZONE_INFO,"Parameter acquire ... ABORTING (node=%d, pipe=%d)\n",
@@ -536,7 +533,7 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
 
             data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 tivxTargetNodeDescAcquireParameterForPipeup(
                     node_obj_desc,
@@ -572,7 +569,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
             data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 is_prm_input = tivxFlagIsBitSet(is_prm_input_flag, (1<<prm_id));
 
@@ -586,7 +583,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
                     &is_prm_released
                     );
 
-                if(is_prm_released)
+                if(0 != is_prm_released)
                 {
                     tivxTargetObjDescSendRefConsumed(data_ref_q_obj_desc);
                 }

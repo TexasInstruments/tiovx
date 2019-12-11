@@ -68,7 +68,7 @@
 #define TIVX_UTILS_EXPORT_WRITELN(fp, message, ...) do { \
     snprintf(line, TIVX_UTILS_POINT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
     fwrite(line, 1, strlen(line), fp); \
-    } while (0)
+    } while (1 == 0)
 
 vx_status tivx_utils_node_perf_print(vx_node node)
 {

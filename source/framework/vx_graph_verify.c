@@ -191,7 +191,7 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
     {
         for(i=0; i<graph->num_data_ref; i++)
         {
-            if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref))
+            if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
             {
                 num_in_nodes = graph->data_ref_num_in_nodes[i];
                 break;
@@ -735,13 +735,13 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
                         ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
 
-                        if(ref2)
+                        if(ref2 != NULL)
                         {
                             if( (prm_next_dir == (vx_enum)VX_INPUT) || (prm_next_dir == (vx_enum)VX_BIDIRECTIONAL) )
                             {
                                 /* check if input data reference of next node is equal to
                                    output data reference of current */
-                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
+                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) != 0 )
                                 {
                                     /* add node_next as output node for current node if not already added */
                                     status = ownNodeAddOutNode(node_cur, node_next);
@@ -864,7 +864,7 @@ static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, ui
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx))
+    if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx) != 0)
     {
         /* if this is a replicated node, replicated parameter
          * then allocate memory for parent object
@@ -1045,7 +1045,7 @@ static void ownGraphLinkDataReferenceQueues(vx_graph graph)
 
     for(i=0; i<graph->num_params; i++)
     {
-        if(graph->parameters[i].queue_enable)
+        if(graph->parameters[i].queue_enable != 0)
         {
             ownGraphLinkDataReferenceQueuesToNodeIndex(graph,
                         graph->parameters[i].data_ref_queue,
@@ -1113,7 +1113,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
 
         data_ref_q = graph->delay_data_ref_q_list[i].data_ref_queue;
 
-        if(graph->delay_data_ref_q_list[i].node)
+        if(graph->delay_data_ref_q_list[i].node != NULL)
         {
             ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[i].node, graph->delay_data_ref_q_list[i].index);
             if(ref && ref->obj_desc)
@@ -1323,7 +1323,7 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
 
     for(i=0; i<graph->num_params; i++)
     {
-        if(graph->parameters[i].queue_enable)
+        if(graph->parameters[i].queue_enable != 0)
         {
             data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
             data_ref_create_prms.enable_user_queueing = (vx_bool)vx_true_e;
@@ -1538,7 +1538,7 @@ static vx_status ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(vx_graph gr
 
     for(i=0; i<graph->num_params; i++)
     {
-        if(graph->parameters[i].queue_enable)
+        if(graph->parameters[i].queue_enable != 0)
         {
             for(buf_id=1; buf_id<graph->parameters[i].num_buf; buf_id++)
             {
@@ -1660,7 +1660,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                 is_replicated = ownNodeIsPrmReplicated(node, index);
 
                 exemplar = graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0];
-                if(is_replicated)
+                if(is_replicated != 0)
                 {
                     exemplar = exemplar->scope;
                 }
@@ -1675,7 +1675,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                     }
                     if(status==(vx_status)VX_SUCCESS)
                     {
-                        if(is_replicated)
+                        if(is_replicated != 0)
                         {
                             if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                             {
@@ -1862,7 +1862,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                 ownContextUnlock(graph->base.context);
 
-                if(has_cycle)
+                if(has_cycle != 0)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
                     status = (vx_status)VX_FAILURE;
