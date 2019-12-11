@@ -136,14 +136,14 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_S16 != accum_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_S16 != accum_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'accum' should be an image of type:\n VX_DF_IMAGE_S16 \n");
@@ -176,7 +176,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        accum_fmt = VX_DF_IMAGE_S16;
+        accum_fmt = (vx_df_image)VX_DF_IMAGE_S16;
 
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));

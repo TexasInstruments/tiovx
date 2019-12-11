@@ -183,12 +183,12 @@ vx_status tivx_utils_bmp_file_read(
 
     if(image != NULL)
     {
-        if( image->format == VX_DF_IMAGE_U8 )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_U8 )
         {
             bpp = 1;
         }
         else
-        if( image->format == VX_DF_IMAGE_RGB )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_RGB )
         {
             bpp = 3;
         }
@@ -243,12 +243,12 @@ vx_status tivx_utils_bmp_file_read_from_memory(
 
     if(image != NULL)
     {
-        if( image->format == VX_DF_IMAGE_U8 )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_U8 )
         {
             bpp = 1;
         }
         else
-        if( image->format == VX_DF_IMAGE_RGB )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_RGB )
         {
             bpp = 3;
         }
@@ -304,17 +304,17 @@ int32_t tivx_utils_bmp_file_write(
     uint32_t bpp;
     vx_status status;
 
-    if( df == VX_DF_IMAGE_U8 )
+    if( df == (vx_df_image)VX_DF_IMAGE_U8 )
     {
         bpp = 1;
     }
     else
-    if( df == VX_DF_IMAGE_RGB )
+    if( df == (vx_df_image)VX_DF_IMAGE_RGB )
     {
         bpp = 3;
     }
     else
-    if( df == VX_DF_IMAGE_RGBX )
+    if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
     {
         bpp = 4;
     }
@@ -408,17 +408,17 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
             {
                 bpp = 1;
             }
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
             {
                 bpp = 3;
             }
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
             {
                 bpp = 4;
             }
@@ -605,12 +605,12 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
 
         if(df!=img_df)
         {
-            if((df==VX_DF_IMAGE_RGB) && (img_df==VX_DF_IMAGE_U8) && convert_to_gray_scale)
+            if((df==(vx_df_image)VX_DF_IMAGE_RGB) && (img_df==(vx_df_image)VX_DF_IMAGE_U8) && convert_to_gray_scale)
             {
                 enable_rgb2gray = (vx_bool)vx_true_e;
             }
             else
-            if((df==VX_DF_IMAGE_U8) && (img_df==VX_DF_IMAGE_RGB))
+            if((df==(vx_df_image)VX_DF_IMAGE_U8) && (img_df==(vx_df_image)VX_DF_IMAGE_RGB))
             {
                 enable_gray2rgb = (vx_bool)vx_true_e;
             }
@@ -632,17 +632,17 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
             {
                 bpp = 1;
             }
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
             {
                 bpp = 3;
             }
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
             {
                 bpp = 4;
             }

@@ -171,8 +171,8 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_U8 != input_fmt) &&
-            (VX_DF_IMAGE_S16 != input_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_U8 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_S16 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
@@ -234,28 +234,28 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_U8 == input_fmt) &&
+        if (((vx_df_image)VX_DF_IMAGE_U8 == input_fmt) &&
             (minval_scalar_type != VX_TYPE_UINT8))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
-        if ((VX_DF_IMAGE_S16 == input_fmt) &&
+        if (((vx_df_image)VX_DF_IMAGE_S16 == input_fmt) &&
             (minval_scalar_type != VX_TYPE_INT16))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_INT16 if 'input' is type VX_DF_IMAGE_S16 \n");
         }
 
-        if ((VX_DF_IMAGE_U8 == input_fmt) &&
+        if (((vx_df_image)VX_DF_IMAGE_U8 == input_fmt) &&
             (maxval_scalar_type != VX_TYPE_UINT8))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
-        if ((VX_DF_IMAGE_S16 == input_fmt) &&
+        if (((vx_df_image)VX_DF_IMAGE_S16 == input_fmt) &&
             (maxval_scalar_type != VX_TYPE_INT16))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

@@ -148,13 +148,13 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_S16 != grad_x_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_S16 != grad_x_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_x' should be an image of type:\n VX_DF_IMAGE_S16 \n");
         }
 
-        if (VX_DF_IMAGE_S16 != grad_y_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_S16 != grad_y_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'grad_y' should be an image of type:\n VX_DF_IMAGE_S16 \n");
@@ -162,7 +162,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_U8 != orientation_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != orientation_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'orientation' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -207,7 +207,7 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     if((vx_status)VX_SUCCESS == status)
     {
-        orientation_fmt = VX_DF_IMAGE_U8;
+        orientation_fmt = (vx_df_image)VX_DF_IMAGE_U8;
 
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_PHASE_ORIENTATION_IDX], VX_IMAGE_FORMAT, &orientation_fmt, sizeof(orientation_fmt));
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_PHASE_ORIENTATION_IDX], VX_IMAGE_WIDTH, &grad_x_w, sizeof(grad_x_w));

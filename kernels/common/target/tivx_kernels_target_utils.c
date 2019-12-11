@@ -111,7 +111,7 @@ void tivxInitBufParams(
         {
             buf_params[i].dim_y = buf_params[i].dim_y / 2;
 
-            if (VX_DF_IMAGE_IYUV == obj_desc->format)
+            if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc->format)
             {
                 buf_params[i].dim_x = buf_params[i].dim_x / 2;
             }
@@ -119,31 +119,31 @@ void tivxInitBufParams(
 
         switch(obj_desc->format)
         {
-            case VX_DF_IMAGE_NV12:
-            case VX_DF_IMAGE_NV21:
-            case VX_DF_IMAGE_IYUV:
-            case VX_DF_IMAGE_YUV4:
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_NV12:
+            case (vx_df_image)VX_DF_IMAGE_NV21:
+            case (vx_df_image)VX_DF_IMAGE_IYUV:
+            case (vx_df_image)VX_DF_IMAGE_YUV4:
+            case (vx_df_image)VX_DF_IMAGE_U8:
                 buf_params[i].data_type = VXLIB_UINT8;
                 break;
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
                 buf_params[i].data_type = VXLIB_UINT16;
                 break;
-            case VX_DF_IMAGE_S16:
+            case (vx_df_image)VX_DF_IMAGE_S16:
                 buf_params[i].data_type = VXLIB_INT16;
                 break;
-            case VX_DF_IMAGE_RGBX:
-            case VX_DF_IMAGE_U32:
+            case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params[i].data_type = VXLIB_UINT32;
                 break;
-            case VX_DF_IMAGE_S32:
+            case (vx_df_image)VX_DF_IMAGE_S32:
                 buf_params[i].data_type = VXLIB_INT32;
                 break;
-            case VX_DF_IMAGE_RGB:
+            case (vx_df_image)VX_DF_IMAGE_RGB:
                 buf_params[i].data_type = VXLIB_UINT24;
                 break;
-            case VX_DF_IMAGE_YUYV:
-            case VX_DF_IMAGE_UYVY:
+            case (vx_df_image)VX_DF_IMAGE_YUYV:
+            case (vx_df_image)VX_DF_IMAGE_UYVY:
                 buf_params[i].data_type = VXLIB_UINT16;
                 break;
             default:
@@ -196,7 +196,7 @@ void tivxInitTwoBufParams(
         {
             buf_params0[i].dim_y = buf_params0[i].dim_y / 2;
 
-            if (VX_DF_IMAGE_IYUV == obj_desc0->format)
+            if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc0->format)
             {
                 buf_params0[i].dim_x = buf_params0[i].dim_x / 2;
             }
@@ -206,7 +206,7 @@ void tivxInitTwoBufParams(
         {
             buf_params1[i].dim_y = buf_params1[i].dim_y / 2;
 
-            if (VX_DF_IMAGE_IYUV == obj_desc1->format)
+            if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc1->format)
             {
                 buf_params1[i].dim_x = buf_params1[i].dim_x / 2;
             }
@@ -214,31 +214,31 @@ void tivxInitTwoBufParams(
 
         switch(obj_desc0->format)
         {
-            case VX_DF_IMAGE_NV12:
-            case VX_DF_IMAGE_NV21:
-            case VX_DF_IMAGE_IYUV:
-            case VX_DF_IMAGE_YUV4:
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_NV12:
+            case (vx_df_image)VX_DF_IMAGE_NV21:
+            case (vx_df_image)VX_DF_IMAGE_IYUV:
+            case (vx_df_image)VX_DF_IMAGE_YUV4:
+            case (vx_df_image)VX_DF_IMAGE_U8:
                 buf_params0[i].data_type = VXLIB_UINT8;
                 break;
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
                 buf_params0[i].data_type = VXLIB_UINT16;
                 break;
-            case VX_DF_IMAGE_S16:
+            case (vx_df_image)VX_DF_IMAGE_S16:
                 buf_params0[i].data_type = VXLIB_INT16;
                 break;
-            case VX_DF_IMAGE_RGBX:
-            case VX_DF_IMAGE_U32:
+            case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params0[i].data_type = VXLIB_UINT32;
                 break;
-            case VX_DF_IMAGE_S32:
+            case (vx_df_image)VX_DF_IMAGE_S32:
                 buf_params0[i].data_type = VXLIB_INT32;
                 break;
-            case VX_DF_IMAGE_RGB:
+            case (vx_df_image)VX_DF_IMAGE_RGB:
                 buf_params0[i].data_type = VXLIB_UINT24;
                 break;
-            case VX_DF_IMAGE_YUYV:
-            case VX_DF_IMAGE_UYVY:
+            case (vx_df_image)VX_DF_IMAGE_YUYV:
+            case (vx_df_image)VX_DF_IMAGE_UYVY:
                 buf_params0[i].data_type = VXLIB_UINT16;
                 break;
             default:
@@ -248,31 +248,31 @@ void tivxInitTwoBufParams(
 
         switch(obj_desc1->format)
         {
-            case VX_DF_IMAGE_NV12:
-            case VX_DF_IMAGE_NV21:
-            case VX_DF_IMAGE_IYUV:
-            case VX_DF_IMAGE_YUV4:
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_NV12:
+            case (vx_df_image)VX_DF_IMAGE_NV21:
+            case (vx_df_image)VX_DF_IMAGE_IYUV:
+            case (vx_df_image)VX_DF_IMAGE_YUV4:
+            case (vx_df_image)VX_DF_IMAGE_U8:
                 buf_params1[i].data_type = VXLIB_UINT8;
                 break;
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
                 buf_params1[i].data_type = VXLIB_UINT16;
                 break;
-            case VX_DF_IMAGE_S16:
+            case (vx_df_image)VX_DF_IMAGE_S16:
                 buf_params1[i].data_type = VXLIB_INT16;
                 break;
-            case VX_DF_IMAGE_RGBX:
-            case VX_DF_IMAGE_U32:
+            case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params1[i].data_type = VXLIB_UINT32;
                 break;
-            case VX_DF_IMAGE_S32:
+            case (vx_df_image)VX_DF_IMAGE_S32:
                 buf_params1[i].data_type = VXLIB_INT32;
                 break;
-            case VX_DF_IMAGE_RGB:
+            case (vx_df_image)VX_DF_IMAGE_RGB:
                 buf_params1[i].data_type = VXLIB_UINT24;
                 break;
-            case VX_DF_IMAGE_YUYV:
-            case VX_DF_IMAGE_UYVY:
+            case (vx_df_image)VX_DF_IMAGE_YUYV:
+            case (vx_df_image)VX_DF_IMAGE_UYVY:
                 buf_params1[i].data_type = VXLIB_UINT16;
                 break;
             default:

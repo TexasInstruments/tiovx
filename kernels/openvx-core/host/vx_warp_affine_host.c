@@ -152,7 +152,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -170,7 +170,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'type' should be a scalar of type:\n VX_TYPE_ENUM \n");
         }
 
-        if (VX_DF_IMAGE_U8 != output_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != output_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");

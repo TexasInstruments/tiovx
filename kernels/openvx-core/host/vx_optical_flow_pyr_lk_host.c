@@ -211,13 +211,13 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != old_images_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != old_images_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_DF_IMAGE_U8 != new_images_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != new_images_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'new_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");

@@ -100,7 +100,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     vx_uint32 output_w_meta;
     vx_uint32 output_h_meta;
-    vx_df_image output_fmt_meta = VX_DF_IMAGE_U8;
+    vx_df_image output_fmt_meta = (vx_df_image)VX_DF_IMAGE_U8;
 
     vx_bool is_virtual = (vx_bool)vx_false_e;
 
@@ -150,14 +150,14 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_RGBX != input_fmt) &&
-            (VX_DF_IMAGE_RGB != input_fmt) &&
-            (VX_DF_IMAGE_NV12 != input_fmt) &&
-            (VX_DF_IMAGE_NV21 != input_fmt) &&
-            (VX_DF_IMAGE_YUYV != input_fmt) &&
-            (VX_DF_IMAGE_UYVY != input_fmt) &&
-            (VX_DF_IMAGE_IYUV != input_fmt) &&
-            (VX_DF_IMAGE_YUV4 != input_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_RGBX != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV21 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_UYVY != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_IYUV != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUV4 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
@@ -171,7 +171,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_U8 != output_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != output_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -184,9 +184,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (((VX_DF_IMAGE_NV12 == input_fmt) ||
-            (VX_DF_IMAGE_NV21 == input_fmt) ||
-            (VX_DF_IMAGE_IYUV == input_fmt)) &&
+        if ((((vx_df_image)VX_DF_IMAGE_NV12 == input_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_NV21 == input_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_IYUV == input_fmt)) &&
             ((VX_CHANNEL_U == channel_val) ||
             (VX_CHANNEL_V == channel_val)))
         {
@@ -208,8 +208,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
             output_w_meta = input_w / 2U;
             output_h_meta = input_h / 2U;
         }
-        else if ( ((VX_DF_IMAGE_UYVY == input_fmt) ||
-            (VX_DF_IMAGE_YUYV == input_fmt)) &&
+        else if ( (((vx_df_image)VX_DF_IMAGE_UYVY == input_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_YUYV == input_fmt)) &&
             ((VX_CHANNEL_U == channel_val) ||
             (VX_CHANNEL_V == channel_val)))
         {

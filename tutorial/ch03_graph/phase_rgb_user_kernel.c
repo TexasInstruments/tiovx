@@ -484,8 +484,8 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_U8 != fmt[PHASE_RGB_IN0_IMG_IDX] &&
-            VX_DF_IMAGE_RGB != fmt[PHASE_RGB_OUT0_IMG_IDX]
+        if ((vx_df_image)VX_DF_IMAGE_U8 != fmt[PHASE_RGB_IN0_IMG_IDX] &&
+            (vx_df_image)VX_DF_IMAGE_RGB != fmt[PHASE_RGB_OUT0_IMG_IDX]
             )
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -509,7 +509,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        out_fmt = VX_DF_IMAGE_RGB;
+        out_fmt = (vx_df_image)VX_DF_IMAGE_RGB;
         out_w = w[PHASE_RGB_OUT0_IMG_IDX];
         out_h = h[PHASE_RGB_OUT0_IMG_IDX];
 

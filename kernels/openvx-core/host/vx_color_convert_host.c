@@ -141,27 +141,27 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if( (VX_DF_IMAGE_RGB != input_fmt) &&
-            (VX_DF_IMAGE_RGBX != input_fmt) &&
-            (VX_DF_IMAGE_NV12 != input_fmt) &&
-            (VX_DF_IMAGE_NV21 != input_fmt) &&
-            (VX_DF_IMAGE_UYVY != input_fmt) &&
-            (VX_DF_IMAGE_YUYV != input_fmt) &&
-            (VX_DF_IMAGE_IYUV != input_fmt) &&
-            (VX_DF_IMAGE_YUV4 != input_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_RGBX != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV21 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_UYVY != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_IYUV != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUV4 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
         }
 
-        if( (VX_DF_IMAGE_RGB != output_fmt) &&
-            (VX_DF_IMAGE_RGBX != output_fmt) &&
-            (VX_DF_IMAGE_NV12 != output_fmt) &&
-            (VX_DF_IMAGE_NV21 != output_fmt) &&
-            (VX_DF_IMAGE_UYVY != output_fmt) &&
-            (VX_DF_IMAGE_YUYV != output_fmt) &&
-            (VX_DF_IMAGE_IYUV != output_fmt) &&
-            (VX_DF_IMAGE_YUV4 != output_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_RGB != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_RGBX != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV21 != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_UYVY != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_IYUV != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUV4 != output_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
@@ -202,10 +202,10 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
     {
         if (1U == input_planes)
         {
-            if ((VX_DF_IMAGE_RGB != input_fmt) &&
-                (VX_DF_IMAGE_RGBX != input_fmt) &&
-                (VX_DF_IMAGE_UYVY != input_fmt) &&
-                (VX_DF_IMAGE_YUYV != input_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_RGBX != input_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_UYVY != input_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUYV != input_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 1 plane \n");
@@ -213,8 +213,8 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         }
         else if (2U == input_planes)
         {
-            if ((VX_DF_IMAGE_NV12 != input_fmt) &&
-                (VX_DF_IMAGE_NV21 != input_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 != input_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_NV21 != input_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 2 planes \n");
@@ -222,8 +222,8 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         }
         else if (3U == input_planes)
         {
-            if ((VX_DF_IMAGE_IYUV != input_fmt) &&
-                (VX_DF_IMAGE_YUV4 != input_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_IYUV != input_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUV4 != input_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 3 planes \n");
@@ -237,10 +237,10 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
 
         if (1U == output_planes)
         {
-            if ((VX_DF_IMAGE_RGB != output_fmt) &&
-                (VX_DF_IMAGE_RGBX != output_fmt) &&
-                (VX_DF_IMAGE_UYVY != output_fmt) &&
-                (VX_DF_IMAGE_YUYV != output_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_RGB != output_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_RGBX != output_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_UYVY != output_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUYV != output_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 1 plane \n");
@@ -248,8 +248,8 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         }
         else if (2U == output_planes)
         {
-            if ((VX_DF_IMAGE_NV12 != output_fmt) &&
-                (VX_DF_IMAGE_NV21 != output_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 != output_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_NV21 != output_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 2 planes \n");
@@ -257,8 +257,8 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         }
         else if (3U == output_planes)
         {
-            if ((VX_DF_IMAGE_IYUV != output_fmt) &&
-                (VX_DF_IMAGE_YUV4 != output_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_IYUV != output_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUV4 != output_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 3 planes \n");

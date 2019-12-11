@@ -127,7 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelMeanStdDevValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");

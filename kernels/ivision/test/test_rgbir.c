@@ -211,17 +211,17 @@ TEST_WITH_ARG(tivxIVisionRgbIr, testRgbIrOnEve, Arg,
     addrs.step_x = 1;
     addrs.step_y = 1;
     ASSERT_VX_OBJECT(input_image = vxCreateImageFromHandle(context,
-        VX_DF_IMAGE_U16, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+        (vx_df_image)VX_DF_IMAGE_U16, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
     ASSERT_VX_OBJECT(output_bayer = vxCreateImageFromHandle(context,
-        VX_DF_IMAGE_U16, &addrs, &bayerOut, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+        (vx_df_image)VX_DF_IMAGE_U16, &addrs, &bayerOut, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
     addrs.dim_x = IMG_WIDTH/2;
     addrs.dim_y = IMG_HEIGHT/2;
     addrs.stride_x = 2;
     addrs.stride_y = IMG_WIDTH;
     ASSERT_VX_OBJECT(output_ir = vxCreateImageFromHandle(context,
-        VX_DF_IMAGE_U16, &addrs, &irOut, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+        (vx_df_image)VX_DF_IMAGE_U16, &addrs, &irOut, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 

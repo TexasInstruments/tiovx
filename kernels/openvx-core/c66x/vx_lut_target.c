@@ -112,7 +112,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
 
-        if (src->format == VX_DF_IMAGE_U8)
+        if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
         {
             status = VXLIB_tableLookup_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, lut_target_ptr, lut->num_items);

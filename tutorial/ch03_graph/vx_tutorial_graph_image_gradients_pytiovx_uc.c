@@ -140,7 +140,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->input = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->input = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->input == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -149,7 +149,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_x = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->grad_x = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->grad_x == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -158,7 +158,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_y = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->grad_y = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->grad_y == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -167,7 +167,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->magnitude = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->magnitude = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->magnitude == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -176,7 +176,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->phase = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->phase = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->phase == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -185,7 +185,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->magnitude_img = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->magnitude_img = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->magnitude_img == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -214,7 +214,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_x_img = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->grad_x_img = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->grad_x_img == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -233,7 +233,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_y_img = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->grad_y_img = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->grad_y_img == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;

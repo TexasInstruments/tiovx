@@ -241,7 +241,7 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
          * Output image dimensions as same as input image.
          * \code
          */
-        out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
+        out_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_RGB);
         vxSetReferenceName((vx_reference)out_image, "OUTPUT");
         show_image_attributes(out_image);
         /** \endcode */

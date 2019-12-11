@@ -199,7 +199,7 @@ void vx_tutorial_image_color_convert()
      *
      * \code
      */
-    nv12_image = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_NV12);
+    nv12_image = vxCreateVirtualImage(graph, 0, 0, (vx_df_image)VX_DF_IMAGE_NV12);
     /** \endcode */
     vxSetReferenceName((vx_reference)nv12_image, "NV12_IMAGE");
     /**
@@ -219,7 +219,7 @@ void vx_tutorial_image_color_convert()
      * data format 'df'.
      * \code
      */
-    y_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    y_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
     vxSetReferenceName((vx_reference)y_image, "Y_IMAGE");
     show_image_attributes(y_image);

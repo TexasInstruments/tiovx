@@ -390,7 +390,7 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (dst->format == VX_DF_IMAGE_U8)
+            if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U;
                 BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo(NULL,

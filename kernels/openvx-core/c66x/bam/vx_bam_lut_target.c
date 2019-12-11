@@ -204,7 +204,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            if (src->format == VX_DF_IMAGE_U8)
+            if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 BAM_VXLIB_tableLookup_i8u_o8u_params kernel_params;
                 kernel_params.lut    = lut_target_ptr;
@@ -374,7 +374,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (src->format == VX_DF_IMAGE_U8)
+            if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 BAM_VXLIB_tableLookup_i8u_o8u_params *kernel_params = (BAM_VXLIB_tableLookup_i8u_o8u_params*)scratch;
 

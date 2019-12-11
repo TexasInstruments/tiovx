@@ -155,8 +155,8 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_U8 != input_fmt) &&
-           (VX_DF_IMAGE_S16 != input_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_U8 != input_fmt) &&
+           ((vx_df_image)VX_DF_IMAGE_S16 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
@@ -164,8 +164,8 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if ((VX_DF_IMAGE_U8 != output_fmt) &&
-               (VX_DF_IMAGE_S16 != output_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_U8 != output_fmt) &&
+               ((vx_df_image)VX_DF_IMAGE_S16 != output_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
@@ -235,13 +235,13 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 == input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 == input_fmt)
         {
-            output_fmt = VX_DF_IMAGE_S16;
+            output_fmt = (vx_df_image)VX_DF_IMAGE_S16;
         }
         else
         {
-            output_fmt = VX_DF_IMAGE_U8;
+            output_fmt = (vx_df_image)VX_DF_IMAGE_U8;
         }
 
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));

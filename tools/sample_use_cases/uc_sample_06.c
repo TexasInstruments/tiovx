@@ -254,7 +254,7 @@ vx_status uc_sample_06_data_create(uc_sample_06 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_df_image value = VX_DF_IMAGE_NV12;
+        vx_df_image value = (vx_df_image)VX_DF_IMAGE_NV12;
         
         usecase->scalar_13 = vxCreateScalar(context, VX_TYPE_DF_IMAGE, &value);
         if (usecase->scalar_13 == NULL)

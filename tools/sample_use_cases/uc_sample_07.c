@@ -140,7 +140,7 @@ vx_status uc_sample_07_data_create(uc_sample_07 usecase)
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_1 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_1 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -159,7 +159,7 @@ vx_status uc_sample_07_data_create(uc_sample_07 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_2 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_2 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_2 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -176,7 +176,7 @@ vx_status uc_sample_07_data_create(uc_sample_07 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_5 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_5 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_5 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;

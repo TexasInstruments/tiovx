@@ -168,7 +168,7 @@ void vx_tutorial_image_extract_channel()
      * data format 'df'.
      * \code
      */
-    r_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    r_channel = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)r_channel, "R_CHANNEL");
@@ -190,7 +190,7 @@ void vx_tutorial_image_extract_channel()
      * data format 'df'.
      * \code
      */
-    g_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    g_channel = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)g_channel, "G_CHANNEL");
@@ -203,7 +203,7 @@ void vx_tutorial_image_extract_channel()
      * data format 'df'.
      * \code
      */
-    b_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    b_channel = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)b_channel, "B_CHANNEL");
@@ -225,7 +225,7 @@ void vx_tutorial_image_extract_channel()
      * data format 'df'.
      * \code
      */
-    out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
+    out_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_RGB);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)out_image, "OUTPUT");

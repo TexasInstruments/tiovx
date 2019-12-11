@@ -149,9 +149,9 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
-        if ((VX_DF_IMAGE_S16 == src0->format) &&
-            (VX_DF_IMAGE_U8 == src1->format) &&
-            (VX_DF_IMAGE_S16 == dst->format))
+        if (((vx_df_image)VX_DF_IMAGE_S16 == src0->format) &&
+            ((vx_df_image)VX_DF_IMAGE_U8 == src1->format) &&
+            ((vx_df_image)VX_DF_IMAGE_S16 == dst->format))
         {
             img_ptrs[0] = src1_addr;
             img_ptrs[1] = src0_addr;
@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (dst->format == VX_DF_IMAGE_U8)
+            if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 BAM_VXLIB_add_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_add_i8u_i8u_o8u_params*)scratch;
 
@@ -487,8 +487,8 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            else if (src0->format == VX_DF_IMAGE_U8 &&
-                     src1->format == VX_DF_IMAGE_U8)
+            else if (src0->format == (vx_df_image)VX_DF_IMAGE_U8 &&
+                     src1->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ADD_I8U_I8U_O16S;
 
@@ -497,8 +497,8 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 BAM_VXLIB_add_i8u_i8u_o16s_getKernelInfo(NULL,
                 &kernel_details[*bam_node_cnt].kernel_info);
             }
-            else if (src0->format == VX_DF_IMAGE_S16 &&
-                     src1->format == VX_DF_IMAGE_S16)
+            else if (src0->format == (vx_df_image)VX_DF_IMAGE_S16 &&
+                     src1->format == (vx_df_image)VX_DF_IMAGE_S16)
             {
                 BAM_VXLIB_add_i16s_i16s_o16s_params *kernel_params = (BAM_VXLIB_add_i16s_i16s_o16s_params*)scratch;
                 if ((NULL != kernel_params) &&
@@ -543,8 +543,8 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                     }
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                    if (src0->format == VX_DF_IMAGE_S16 &&
-                        src1->format == VX_DF_IMAGE_U8)
+                    if (src0->format == (vx_df_image)VX_DF_IMAGE_S16 &&
+                        src1->format == (vx_df_image)VX_DF_IMAGE_U8)
                     {
                         prms->switch_buffers = 1;
                     }

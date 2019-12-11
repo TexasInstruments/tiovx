@@ -141,7 +141,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
 
-        if (VX_DF_IMAGE_U8 == src->format)
+        if ((vx_df_image)VX_DF_IMAGE_U8 == src->format)
         {
             sc[0U]->data.u08 = 0xFF;
             sc[1U]->data.u08 = 0;

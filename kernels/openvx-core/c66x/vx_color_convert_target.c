@@ -131,12 +131,12 @@ static vx_status tivxKernelColorConvert(
 
         tivxInitBufParams(dst_desc, (VXLIB_bufParams2D_t*)&vxlib_dst);
 
-        if ((VX_DF_IMAGE_RGB == src_desc->format) && (VX_DF_IMAGE_RGBX == dst_desc->format))
+        if (((vx_df_image)VX_DF_IMAGE_RGB == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_RGBtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0]);
         }
-        else if ((VX_DF_IMAGE_RGB == src_desc->format) && (VX_DF_IMAGE_NV12 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGB == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
@@ -147,13 +147,13 @@ static vx_status tivxKernelColorConvert(
                     scratch, scratch_size);
             }
         }
-        else if ((VX_DF_IMAGE_RGB == src_desc->format) && (VX_DF_IMAGE_YUV4 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGB == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
             status = VXLIB_colorConvert_RGBtoYUV4_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1], &vxlib_dst[1],
                 (uint8_t *)dst_addr[2], &vxlib_dst[2]);
         }
-        else if ((VX_DF_IMAGE_RGB == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGB == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst_desc->format))
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
@@ -164,12 +164,12 @@ static vx_status tivxKernelColorConvert(
                     &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2], scratch, scratch_size);
             }
         }
-        else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_RGB == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGBX == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGB == dst_desc->format))
         {
             status = VXLIB_colorConvert_RGBXtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0]);
         }
-        else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_NV12 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGBX == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
@@ -180,13 +180,13 @@ static vx_status tivxKernelColorConvert(
                     &vxlib_dst[1], scratch, scratch_size);
             }
         }
-        else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_YUV4 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGBX == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
             status = VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2]);
         }
-        else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_RGBX == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst_desc->format))
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
@@ -197,111 +197,111 @@ static vx_status tivxKernelColorConvert(
                     &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2], scratch, scratch_size);
             }
         }
-        else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
-                 (VX_DF_IMAGE_RGB == dst_desc->format))
+        else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
+                 ((vx_df_image)VX_DF_IMAGE_RGB == dst_desc->format))
         {
-            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == (vx_df_image)VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoRGB_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], u_pix,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
-                 (VX_DF_IMAGE_RGBX == dst_desc->format))
+        else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
+                 ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
-            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == (vx_df_image)VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0],
                 &vxlib_dst[0], u_pix, src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
-                 (VX_DF_IMAGE_YUV4 == dst_desc->format))
+        else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
+                 ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
-            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == (vx_df_image)VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2], u_pix);
         }
-        else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
-                 (VX_DF_IMAGE_IYUV == dst_desc->format))
+        else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
+                 ((vx_df_image)VX_DF_IMAGE_IYUV == dst_desc->format))
         {
-            uint8_t u_pix = (src_desc->format == VX_DF_IMAGE_NV12) ? 0 : 1;
+            uint8_t u_pix = (src_desc->format == (vx_df_image)VX_DF_IMAGE_NV12) ? 0 : 1;
 
             status = VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2], u_pix);
         }
-        else if ((VX_DF_IMAGE_YUYV == src_desc->format) && (VX_DF_IMAGE_RGB == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGB == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 0,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_YUYV == src_desc->format) && (VX_DF_IMAGE_RGBX == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 0,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_YUYV == src_desc->format) && (VX_DF_IMAGE_NV12 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoNV12_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], 0);
         }
-        else if ((VX_DF_IMAGE_YUYV == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1], &vxlib_dst[1],
                 (uint8_t *)dst_addr[2], &vxlib_dst[2], 0);
         }
-        else if ((VX_DF_IMAGE_UYVY == src_desc->format) && (VX_DF_IMAGE_RGB == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGB == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 1,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_UYVY == src_desc->format) && (VX_DF_IMAGE_RGBX == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 1,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_UYVY == src_desc->format) && (VX_DF_IMAGE_NV12 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoNV12_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], 1);
         }
-        else if ((VX_DF_IMAGE_UYVY == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1],
                 &vxlib_dst[1], (uint8_t *)dst_addr[2], &vxlib_dst[2], 1);
         }
-        else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_RGB == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGB == dst_desc->format))
         {
             status = VXLIB_colorConvert_IYUVtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2],
                 &vxlib_src[2], (uint8_t *)dst_addr[0], &vxlib_dst[0],
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_RGBX == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                  &vxlib_src[0], (uint8_t *)src_addr[1],  &vxlib_src[1], (uint8_t *)src_addr[2],
                  &vxlib_src[2], (uint8_t *)dst_addr[0], &vxlib_dst[0],
                  src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
         }
-        else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_NV12 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
             status = VXLIB_colorConvert_IYUVtoNV12_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2], &vxlib_src[2],
                 (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1], &vxlib_dst[1]);
         }
-        else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_YUV4 == dst_desc->format))
+        else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
             status = VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2], &vxlib_src[2],
@@ -369,10 +369,10 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         /* scenarios where scratch memory is needed */
-        if ( ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
-             ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_IYUV == dst->format)) ||
-             ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
-             ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_IYUV == dst->format)) )
+        if ( (((vx_df_image)VX_DF_IMAGE_RGB == src->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGB == src->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format)) )
         {
             uint32_t temp_ptr_size;
 
@@ -429,10 +429,10 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         /* scenarios where scratch memory is needed */
-        if ( ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
-             ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_IYUV == dst->format)) ||
-             ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
-             ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_IYUV == dst->format)) )
+        if ( (((vx_df_image)VX_DF_IMAGE_RGB == src->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGB == src->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format)) ||
+             (((vx_df_image)VX_DF_IMAGE_RGBX == src->format) && ((vx_df_image)VX_DF_IMAGE_IYUV == dst->format)) )
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 

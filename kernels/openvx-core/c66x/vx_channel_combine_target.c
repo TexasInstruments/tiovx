@@ -191,15 +191,15 @@ vx_status VX_CALLBACK tivxChannelCombine(
 
             tivxSetPointerLocation(dst_desc, dst_desc_target_ptr, (uint8_t**)&dst_addr);
 
-            if (   (dst_desc->format == VX_DF_IMAGE_RGB)
-                || (dst_desc->format == VX_DF_IMAGE_RGBX)
-                || (dst_desc->format == VX_DF_IMAGE_YUYV)
-                || (dst_desc->format == VX_DF_IMAGE_UYVY)
+            if (   (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_UYVY)
                 )
             {
                 tivxInitBufParams(dst_desc, &vxlib_dst);
 
-                if( dst_desc->format == VX_DF_IMAGE_RGB)
+                if( dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
                 {
                     vxlib_dst.data_type = VXLIB_UINT24;
 
@@ -211,7 +211,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         );
                 }
                 else
-                if( dst_desc->format == VX_DF_IMAGE_RGBX)
+                if( dst_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
                 {
                     vxlib_dst.data_type = VXLIB_UINT32;
 
@@ -224,7 +224,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         );
                 }
                 else
-                if( dst_desc->format == VX_DF_IMAGE_YUYV)
+                if( dst_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
                 {
                     vxlib_dst.data_type = VXLIB_UINT16;
 
@@ -236,7 +236,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         0
                         );
                 }
-                else /* format is VX_DF_IMAGE_UYVY */
+                else /* format is (vx_df_image)VX_DF_IMAGE_UYVY */
                 {
                     vxlib_dst.data_type = VXLIB_UINT16;
 
@@ -250,8 +250,8 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
             }
             else
-            if ((dst_desc->format == VX_DF_IMAGE_IYUV)
-                || (dst_desc->format == VX_DF_IMAGE_YUV4)
+            if ((dst_desc->format == (vx_df_image)VX_DF_IMAGE_IYUV)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_YUV4)
                 )
             {
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
@@ -273,8 +273,8 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
             }
             else
-            if ((dst_desc->format == VX_DF_IMAGE_NV12)
-                || (dst_desc->format == VX_DF_IMAGE_NV21)
+            if ((dst_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
+                || (dst_desc->format == (vx_df_image)VX_DF_IMAGE_NV21)
                 )
             {
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
@@ -299,7 +299,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                     else
                     if(plane_idx==1)
                     {
-                        if(dst_desc->format == VX_DF_IMAGE_NV21)
+                        if(dst_desc->format == (vx_df_image)VX_DF_IMAGE_NV21)
                         {
                             status = VXLIB_channelCombine_2to1_i8u_o8u(
                                 src2_addr, &vxlib_src2,

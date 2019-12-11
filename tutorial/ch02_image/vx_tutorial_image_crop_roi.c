@@ -275,13 +275,13 @@ vx_image  load_image_from_handle_from_file(
         void *ptrs[1];
         uint32_t bpp;
 
-        if( df == VX_DF_IMAGE_U8 )
+        if( df == (vx_df_image)VX_DF_IMAGE_U8 )
             bpp = 1;
         else
-        if( df == VX_DF_IMAGE_RGB )
+        if( df == (vx_df_image)VX_DF_IMAGE_RGB )
             bpp = 3;
         else
-        if( df == VX_DF_IMAGE_RGBX )
+        if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
             bpp = 4;
         else
             bpp = 1; /* it should not reach here for BMP files */

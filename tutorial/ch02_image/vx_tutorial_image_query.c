@@ -227,46 +227,46 @@ void show_image_attributes(vx_image image)
 
     switch(df)
     {
-        case VX_DF_IMAGE_VIRT:
+        case (vx_df_image)VX_DF_IMAGE_VIRT:
             strncpy(df_name, "VX_DF_IMAGE_VIRT", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_RGB:
+        case (vx_df_image)VX_DF_IMAGE_RGB:
             strncpy(df_name, "VX_DF_IMAGE_RGB", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_RGBX:
+        case (vx_df_image)VX_DF_IMAGE_RGBX:
             strncpy(df_name, "VX_DF_IMAGE_RGBX", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_NV12:
+        case (vx_df_image)VX_DF_IMAGE_NV12:
             strncpy(df_name, "VX_DF_IMAGE_NV12", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_NV21:
+        case (vx_df_image)VX_DF_IMAGE_NV21:
             strncpy(df_name, "VX_DF_IMAGE_NV21", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_UYVY:
+        case (vx_df_image)VX_DF_IMAGE_UYVY:
             strncpy(df_name, "VX_DF_IMAGE_UYVY", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_YUYV:
+        case (vx_df_image)VX_DF_IMAGE_YUYV:
             strncpy(df_name, "VX_DF_IMAGE_YUYV", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_IYUV:
+        case (vx_df_image)VX_DF_IMAGE_IYUV:
             strncpy(df_name, "VX_DF_IMAGE_IYUV", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_YUV4:
+        case (vx_df_image)VX_DF_IMAGE_YUV4:
             strncpy(df_name, "VX_DF_IMAGE_YUV4", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_U8:
+        case (vx_df_image)VX_DF_IMAGE_U8:
             strncpy(df_name, "VX_DF_IMAGE_U8", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_U16:
+        case (vx_df_image)VX_DF_IMAGE_U16:
             strncpy(df_name, "VX_DF_IMAGE_U16", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_S16:
+        case (vx_df_image)VX_DF_IMAGE_S16:
             strncpy(df_name, "VX_DF_IMAGE_S16", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_U32:
+        case (vx_df_image)VX_DF_IMAGE_U32:
             strncpy(df_name, "VX_DF_IMAGE_U32", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_DF_IMAGE_S32:
+        case (vx_df_image)VX_DF_IMAGE_S32:
             strncpy(df_name, "VX_DF_IMAGE_S32", MAX_ATTRIBUTE_NAME);
             break;
         default:

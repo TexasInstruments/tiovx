@@ -140,7 +140,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_data_create(vx_tutorial_graph
     
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->input = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->input = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->input == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -149,7 +149,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_data_create(vx_tutorial_graph
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_x = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->grad_x = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->grad_x == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -158,7 +158,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_data_create(vx_tutorial_graph
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->grad_y = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->grad_y = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->grad_y == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -167,7 +167,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_data_create(vx_tutorial_graph
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->phase = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->phase = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->phase == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -176,7 +176,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_data_create(vx_tutorial_graph
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->phase_rgb = vxCreateImage(context, 640, 480, VX_DF_IMAGE_RGB);
+        usecase->phase_rgb = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_RGB);
         if (usecase->phase_rgb == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;

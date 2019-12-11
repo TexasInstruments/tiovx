@@ -88,10 +88,10 @@ vx_status bmp_file_read(
 
     if(image != NULL)
     {
-        if( image->format == VX_DF_IMAGE_U8 )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_U8 )
             bpp = 1;
         else
-        if( image->format == VX_DF_IMAGE_RGB )
+        if( image->format == (vx_df_image)VX_DF_IMAGE_RGB )
             bpp = 3;
         else
             bpp = 4; /* RGBX */
@@ -139,13 +139,13 @@ int32_t bmp_file_write(
     uint32_t bpp;
     vx_status status;
 
-    if( df == VX_DF_IMAGE_U8 )
+    if( df == (vx_df_image)VX_DF_IMAGE_U8 )
         bpp = 1;
     else
-    if( df == VX_DF_IMAGE_RGB )
+    if( df == (vx_df_image)VX_DF_IMAGE_RGB )
         bpp = 3;
     else
-    if( df == VX_DF_IMAGE_RGBX )
+    if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
         bpp = 4;
     else
         bpp = 0;

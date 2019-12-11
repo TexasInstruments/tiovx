@@ -185,10 +185,10 @@ void vx_tutorial_graph_pipeline_two_nodes()
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        in_img[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
-        out_img[buf_id]   = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+        in_img[buf_id]    = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
+        out_img[buf_id]   = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     }
-    tmp    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    tmp    = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     /**

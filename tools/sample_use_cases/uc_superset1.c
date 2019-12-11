@@ -148,7 +148,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_1 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_1 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -160,7 +160,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_2 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_2 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_2 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -172,7 +172,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_3 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_3 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_3 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -184,7 +184,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_4 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_4 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_4 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -206,7 +206,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_5 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_5 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_5 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -218,7 +218,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_6 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_6 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_6 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -240,7 +240,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_7 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_7 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_7 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -252,7 +252,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_8 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_8 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_8 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -264,7 +264,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_9 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_9 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_9 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -276,7 +276,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_10 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_10 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_10 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -288,7 +288,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_11 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_11 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_11 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -300,7 +300,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_12 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_12 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_12 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -312,7 +312,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_13 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_13 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_13 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -324,7 +324,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_14 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_14 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_14 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -336,7 +336,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_15 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_15 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_15 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -356,7 +356,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_17 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_17 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_17 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -368,7 +368,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_18 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_18 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_18 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -380,7 +380,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_19 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_19 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_19 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -410,7 +410,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_21 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_21 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_21 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -422,7 +422,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_22 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_22 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_22 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -464,7 +464,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_24 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_24 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_24 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -476,7 +476,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_25 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_25 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_25 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -508,7 +508,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_26 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_26 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_26 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -520,7 +520,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_27 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_27 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_27 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -532,7 +532,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_29 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_29 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_29 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -544,7 +544,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_30 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_30 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_30 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -556,7 +556,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_31 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_31 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_31 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -568,7 +568,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_32 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_32 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_32 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -580,7 +580,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_33 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_33 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_33 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -592,7 +592,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_34 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_RGBX);
+        usecase->image_34 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_RGBX);
         if (usecase->image_34 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -614,7 +614,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_35 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_35 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_35 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -626,7 +626,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_36 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_36 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_36 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -646,7 +646,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_38 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_38 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_38 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -658,7 +658,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_39 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_39 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_39 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -670,7 +670,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_40 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_40 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_40 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -682,7 +682,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_41 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        usecase->image_41 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->image_41 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -694,7 +694,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_42 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_42 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_42 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -734,7 +734,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_43 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_43 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_43 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -764,7 +764,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_45 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_45 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_45 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -784,7 +784,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_48 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_48 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_48 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -814,7 +814,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_50 = vxCreateImage(context, 1280, 720, VX_DF_IMAGE_U8);
+        usecase->image_50 = vxCreateImage(context, 1280, 720, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_50 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -826,7 +826,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_51 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_51 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_51 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -876,7 +876,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_53 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_53 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_53 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -888,7 +888,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_54 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U32);
+        usecase->image_54 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U32);
         if (usecase->image_54 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -900,7 +900,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->pyramid_55 = vxCreatePyramid(context, 5, VX_SCALE_PYRAMID_HALF, 640, 480, VX_DF_IMAGE_S16);
+        usecase->pyramid_55 = vxCreatePyramid(context, 5, VX_SCALE_PYRAMID_HALF, 640, 480, (vx_df_image)VX_DF_IMAGE_S16);
         if (usecase->pyramid_55 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -908,7 +908,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_56 = vxCreateImage(context, 20, 15, VX_DF_IMAGE_U8);
+        usecase->image_56 = vxCreateImage(context, 20, 15, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_56 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -920,7 +920,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->image_57 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
+        usecase->image_57 = vxCreateImage(context, 640, 480, (vx_df_image)VX_DF_IMAGE_U8);
         if (usecase->image_57 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;

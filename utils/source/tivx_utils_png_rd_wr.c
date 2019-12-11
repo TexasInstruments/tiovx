@@ -106,7 +106,7 @@ vx_status tivx_utils_png_file_read(
     *width = 0;
     *height = 0;
     *stride = 0;
-    *df = VX_DF_IMAGE_U8;
+    *df = (vx_df_image)VX_DF_IMAGE_U8;
     *png_file_context = NULL;
 
     fp = fopen(filename, "rb");
@@ -221,11 +221,11 @@ vx_status tivx_utils_png_file_read(
                 *data_ptr = png_context->data_ptr;
                 if((color_type == PNG_COLOR_TYPE_GRAY) && (bit_depth == 8))
                 {
-                    *df = VX_DF_IMAGE_U8;
+                    *df = (vx_df_image)VX_DF_IMAGE_U8;
                 }
                 if(color_type == PNG_COLOR_TYPE_RGB)
                 {
-                    *df = VX_DF_IMAGE_RGB;
+                    *df = (vx_df_image)VX_DF_IMAGE_RGB;
                 }
                 *png_file_context = png_context;
 
@@ -322,13 +322,13 @@ int32_t tivx_utils_png_file_write(
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            if(df==VX_DF_IMAGE_U8)
+            if(df==(vx_df_image)VX_DF_IMAGE_U8)
             {
                 bit_depth = 8;
                 color_type = PNG_COLOR_TYPE_GRAY;
             }
             else
-            if(df==VX_DF_IMAGE_RGB)
+            if(df==(vx_df_image)VX_DF_IMAGE_RGB)
             {
                 bit_depth = 8;
                 color_type = PNG_COLOR_TYPE_RGB;
@@ -471,17 +471,17 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
             {
                 bpp = 1;
             }
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
             {
                 bpp = 3;
             }
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
             {
                 bpp = 4;
             }
@@ -668,12 +668,12 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 
         if(df!=img_df)
         {
-            if((df==VX_DF_IMAGE_RGB) && (img_df==VX_DF_IMAGE_U8) && convert_to_gray_scale)
+            if((df==(vx_df_image)VX_DF_IMAGE_RGB) && (img_df==(vx_df_image)VX_DF_IMAGE_U8) && convert_to_gray_scale)
             {
                 enable_rgb2gray = (vx_bool)vx_true_e;
             }
             else
-            if((df==VX_DF_IMAGE_U8) && (img_df==VX_DF_IMAGE_RGB))
+            if((df==(vx_df_image)VX_DF_IMAGE_U8) && (img_df==(vx_df_image)VX_DF_IMAGE_RGB))
             {
                 enable_gray2rgb = (vx_bool)vx_true_e;
             }
@@ -695,17 +695,17 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
             {
                 bpp = 1;
             }
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
             {
                 bpp = 3;
             }
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
             {
                 bpp = 4;
             }

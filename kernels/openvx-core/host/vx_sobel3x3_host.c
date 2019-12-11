@@ -158,7 +158,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -168,7 +168,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
         {
             if ((vx_bool)vx_false_e == is_output_x_virtual)
             {
-                if (VX_DF_IMAGE_S16 != output_x_fmt)
+                if ((vx_df_image)VX_DF_IMAGE_S16 != output_x_fmt)
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'output_x' should be an image of type:\n VX_DF_IMAGE_S16 \n");
@@ -180,7 +180,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
         {
             if ((vx_bool)vx_false_e == is_output_y_virtual)
             {
-                if (VX_DF_IMAGE_S16 != output_y_fmt)
+                if ((vx_df_image)VX_DF_IMAGE_S16 != output_y_fmt)
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "'output_y' should be an image of type:\n VX_DF_IMAGE_S16 \n");
@@ -244,7 +244,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        output_x_fmt = VX_DF_IMAGE_S16;
+        output_x_fmt = (vx_df_image)VX_DF_IMAGE_S16;
 
         if (NULL != output_x)
         {

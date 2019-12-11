@@ -195,7 +195,7 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
         addrs.step_x = 1;
         addrs.step_y = 1;
         ASSERT_VX_OBJECT(input_image = vxCreateImageFromHandle(context,
-            VX_DF_IMAGE_U8, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+            (vx_df_image)VX_DF_IMAGE_U8, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
         num_corners = MAX_CORNERS;
 

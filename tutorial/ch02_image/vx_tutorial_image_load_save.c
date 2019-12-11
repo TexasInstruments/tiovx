@@ -254,9 +254,9 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
     height = 480;
     stride = 640;
     if(convert_to_gray_scale)        
-        df = VX_DF_IMAGE_U8;
+        df = (vx_df_image)VX_DF_IMAGE_U8;
     else
-        df = VX_DF_IMAGE_RGB;
+        df = (vx_df_image)VX_DF_IMAGE_RGB;
     data_ptr = NULL;
     bmp_file_context = NULL;
     #else
@@ -314,13 +314,13 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
                 bpp = 1;
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
                 bpp = 3;
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
                 bpp = 4;
             else
                 bpp = 1; /* it should not reach here for BMP files */
@@ -493,9 +493,9 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
     height = 480;
     stride = 640;
     if(convert_to_gray_scale)        
-        df = VX_DF_IMAGE_U8;
+        df = (vx_df_image)VX_DF_IMAGE_U8;
     else
-        df = VX_DF_IMAGE_RGB;
+        df = (vx_df_image)VX_DF_IMAGE_RGB;
     data_ptr = NULL;
     bmp_file_context = NULL;
     #else
@@ -520,13 +520,13 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
             vx_rectangle_t rect;
             uint32_t bpp;
 
-            if( df == VX_DF_IMAGE_U8 )
+            if( df == (vx_df_image)VX_DF_IMAGE_U8 )
                 bpp = 1;
             else
-            if( df == VX_DF_IMAGE_RGB )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGB )
                 bpp = 3;
             else
-            if( df == VX_DF_IMAGE_RGBX )
+            if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
                 bpp = 4;
             else
                 bpp = 1; /* it should not reach here for BMP files */

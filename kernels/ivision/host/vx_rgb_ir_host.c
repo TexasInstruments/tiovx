@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_U16 != fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U16 != fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
@@ -287,7 +287,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_U16 != fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U16 != fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
@@ -310,7 +310,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_U16 != fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U16 != fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }

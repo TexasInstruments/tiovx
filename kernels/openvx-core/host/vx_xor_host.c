@@ -148,13 +148,13 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != in1_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != in1_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in1' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_DF_IMAGE_U8 != in2_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != in2_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in2' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -162,7 +162,7 @@ static vx_status VX_CALLBACK tivxAddKernelXorValidate(vx_node node,
 
         if((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_U8 != out_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != out_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");

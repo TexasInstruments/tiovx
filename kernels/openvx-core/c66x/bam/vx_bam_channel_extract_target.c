@@ -186,7 +186,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
             channel_offset = 0;
             break;
         case VX_CHANNEL_U:
-            if(src->format == VX_DF_IMAGE_NV12)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 0;
             }
@@ -196,7 +196,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
             }
             break;
         case VX_CHANNEL_V:
-            if(src->format == VX_DF_IMAGE_NV12)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 1;
             }
@@ -278,7 +278,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
     switch(ch->data.enm)
     {
         case VX_CHANNEL_Y:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
             }
@@ -288,7 +288,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_U:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
             }
@@ -298,7 +298,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_V:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
             }
@@ -396,7 +396,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
             break;
         case VX_CHANNEL_3:
         case VX_CHANNEL_A:
-            if(src->format == VX_DF_IMAGE_RGBX)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
             }
@@ -422,7 +422,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
         buf_params[0] = &vxlib_src;
         buf_params[1] = &vxlib_dst;
 
-        if(src->format == VX_DF_IMAGE_RGB)
+        if(src->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
             vxlib_src.data_type = VXLIB_UINT24;
 
@@ -439,7 +439,7 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
                 BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U, buf_params,
                 &kernel_details, &prms->graph_handle);
         }
-        else if(src->format == VX_DF_IMAGE_RGBX)
+        else if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
         {
             vxlib_src.data_type = VXLIB_UINT32;
 
@@ -501,7 +501,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
 
         /*IYUV's 3 output plains are scaled 1.0, 0.5, 0.5
           if you select plane_idx 1 or 2, the input and output images needs to be scaled*/
-        if (src->format == VX_DF_IMAGE_IYUV)
+        if (src->format == (vx_df_image)VX_DF_IMAGE_IYUV)
         {
             if (VX_CHANNEL_U == ch->data.enm)
             {
@@ -562,7 +562,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
             channel_offset = 0;
             break;
         case VX_CHANNEL_U:
-            if(src->format == VX_DF_IMAGE_NV12)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 0;
             }
@@ -572,7 +572,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
             }
             break;
         case VX_CHANNEL_V:
-            if(src->format == VX_DF_IMAGE_NV12)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 1;
             }
@@ -651,7 +651,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
     switch(ch->data.enm)
     {
         case VX_CHANNEL_Y:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
             }
@@ -661,7 +661,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_U:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
             }
@@ -671,7 +671,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_V:
-            if(src->format == VX_DF_IMAGE_YUYV)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
             }
@@ -772,7 +772,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
             break;
         case VX_CHANNEL_3:
         case VX_CHANNEL_A:
-            if(src->format == VX_DF_IMAGE_RGBX)
+            if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
             }
@@ -792,7 +792,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if(src->format == VX_DF_IMAGE_RGB)
+        if(src->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
             BAM_VXLIB_channelExtract_1of3_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of3_i8u_o8u_params*)scratch;
 
@@ -815,7 +815,7 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
                 status = (vx_status)VX_FAILURE;
             }
         }
-        else if(src->format == VX_DF_IMAGE_RGBX)
+        else if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
         {
             BAM_VXLIB_channelExtract_1of4_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of4_i8u_o8u_params*)scratch;
 
@@ -944,26 +944,26 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
         {
             memset(prms, 0, sizeof(tivxBamChannelExtractParams));
 
-            if ((src->format == VX_DF_IMAGE_RGB) ||
-                (src->format == VX_DF_IMAGE_RGBX))
+            if ((src->format == (vx_df_image)VX_DF_IMAGE_RGB) ||
+                (src->format == (vx_df_image)VX_DF_IMAGE_RGBX))
             {
                 status = tivxBamChannelExtractRgbRgbxInput(kernel, prms, src, dst, ch);
             }
             else
-            if((src->format == VX_DF_IMAGE_YUYV)||
-               (src->format == VX_DF_IMAGE_UYVY))
+            if((src->format == (vx_df_image)VX_DF_IMAGE_YUYV)||
+               (src->format == (vx_df_image)VX_DF_IMAGE_UYVY))
             {
                 status = tivxBamChannelExtractYuyvUyvyInput(kernel, prms, src, dst, ch);
             }
             else
-            if ((src->format == VX_DF_IMAGE_NV12) ||
-                (src->format == VX_DF_IMAGE_NV21))
+            if ((src->format == (vx_df_image)VX_DF_IMAGE_NV12) ||
+                (src->format == (vx_df_image)VX_DF_IMAGE_NV21))
             {
                 status = tivxBamChannelExtractNv12Nv21Input(kernel, prms, src, dst, ch);
             }
             else
-            if ((src->format == VX_DF_IMAGE_IYUV) ||
-                (src->format == VX_DF_IMAGE_YUV4))
+            if ((src->format == (vx_df_image)VX_DF_IMAGE_IYUV) ||
+                (src->format == (vx_df_image)VX_DF_IMAGE_YUV4))
             {
                 status = tivxBamChannelExtractIyuvYuv4Input(kernel, prms, src, dst, ch);
             }
@@ -1108,26 +1108,26 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if ((src->format == VX_DF_IMAGE_RGB) ||
-                (src->format == VX_DF_IMAGE_RGBX))
+            if ((src->format == (vx_df_image)VX_DF_IMAGE_RGB) ||
+                (src->format == (vx_df_image)VX_DF_IMAGE_RGBX))
             {
                 status = tivxBamChannelExtractInBamGraphRgbRgbxInput(prms, src, ch,
                             node_list, kernel_details, bam_node_cnt, scratch, size);
             }
-            else if ((src->format == VX_DF_IMAGE_YUYV)||
-                    (src->format == VX_DF_IMAGE_UYVY))
+            else if ((src->format == (vx_df_image)VX_DF_IMAGE_YUYV)||
+                    (src->format == (vx_df_image)VX_DF_IMAGE_UYVY))
             {
                 status = tivxBamChannelExtractInBamGraphYuyvUyvyInput(prms, src, ch,
                             node_list, kernel_details, bam_node_cnt, scratch, size);
             }
-            else if ((src->format == VX_DF_IMAGE_NV12) ||
-                    (src->format == VX_DF_IMAGE_NV21))
+            else if ((src->format == (vx_df_image)VX_DF_IMAGE_NV12) ||
+                    (src->format == (vx_df_image)VX_DF_IMAGE_NV21))
             {
                 status = tivxBamChannelExtractInBamGraphNv12Nv21Input(prms, src, ch,
                             node_list, kernel_details, bam_node_cnt, scratch, size);
             }
-            else if ((src->format == VX_DF_IMAGE_IYUV) ||
-                    (src->format == VX_DF_IMAGE_YUV4))
+            else if ((src->format == (vx_df_image)VX_DF_IMAGE_IYUV) ||
+                    (src->format == (vx_df_image)VX_DF_IMAGE_YUV4))
             {
                 status = tivxBamChannelExtractInBamGraphIyuvYuv4Input(prms, src, ch,
                             node_list, kernel_details, bam_node_cnt, scratch, size);

@@ -175,15 +175,15 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_U8 != in1_fmt) &&
-            (VX_DF_IMAGE_S16 != in1_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_U8 != in1_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_S16 != in1_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in1' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
-        if ((VX_DF_IMAGE_U8 != in2_fmt) &&
-            (VX_DF_IMAGE_S16 != in2_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_U8 != in2_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_S16 != in2_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'in2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
@@ -209,8 +209,8 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if ((VX_DF_IMAGE_U8 != out_fmt) &&
-                (VX_DF_IMAGE_S16 != out_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_U8 != out_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_S16 != out_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'out' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
@@ -237,9 +237,9 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if ((VX_DF_IMAGE_U8 == out_fmt) &&
-                ((VX_DF_IMAGE_S16 == in1_fmt) ||
-                (VX_DF_IMAGE_S16 == in2_fmt)))
+            if (((vx_df_image)VX_DF_IMAGE_U8 == out_fmt) &&
+                (((vx_df_image)VX_DF_IMAGE_S16 == in1_fmt) ||
+                ((vx_df_image)VX_DF_IMAGE_S16 == in2_fmt)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'out' must not be VX_DF_IMAGE_U8 if 'in1' or 'in2' are VX_DF_IMAGE_S16 \n");
@@ -289,15 +289,15 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_S16 == in1_fmt) ||
-            ((VX_DF_IMAGE_S16 == in2_fmt) ||
-            (VX_DF_IMAGE_U8 != out_fmt)))
+        if (((vx_df_image)VX_DF_IMAGE_S16 == in1_fmt) ||
+            (((vx_df_image)VX_DF_IMAGE_S16 == in2_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_U8 != out_fmt)))
         {
-            out_fmt = VX_DF_IMAGE_S16;
+            out_fmt = (vx_df_image)VX_DF_IMAGE_S16;
         }
         else
         {
-            out_fmt = VX_DF_IMAGE_U8;
+            out_fmt = (vx_df_image)VX_DF_IMAGE_U8;
         }
 
         vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MULTIPLY_OUT_IDX], VX_IMAGE_FORMAT, &out_fmt, sizeof(out_fmt));

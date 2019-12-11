@@ -409,7 +409,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
      * data format 'df'.
      * \code
      */
-    image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     if(vxGetStatus((vx_reference)image)==(vx_status)VX_SUCCESS)

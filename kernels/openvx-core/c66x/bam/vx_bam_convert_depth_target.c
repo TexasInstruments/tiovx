@@ -154,7 +154,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
-        if (VX_DF_IMAGE_S16 == dst->format)
+        if ((vx_df_image)VX_DF_IMAGE_S16 == dst->format)
         {
             prms_2.shift = sc_desc[1]->data.s32;
 
@@ -413,7 +413,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (dst->format == VX_DF_IMAGE_S16)
+            if (dst->format == (vx_df_image)VX_DF_IMAGE_S16)
             {
                 BAM_VXLIB_convertDepth_i8u_o16s_params *kernel_params = (BAM_VXLIB_convertDepth_i8u_o16s_params*)scratch;
 
@@ -554,7 +554,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthPreprocessInBamGraph(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_S16 == dst->format)
+        if ((vx_df_image)VX_DF_IMAGE_S16 == dst->format)
         {
             prms_2.shift = sc_desc[1]->data.s32;
 

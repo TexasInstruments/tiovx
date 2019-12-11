@@ -381,7 +381,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (dst->format == VX_DF_IMAGE_U8)
+            if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
                 BAM_VXLIB_convolve_i8u_c16s_o8u_params *kernel_params = (BAM_VXLIB_convolve_i8u_c16s_o8u_params*)scratch;
 

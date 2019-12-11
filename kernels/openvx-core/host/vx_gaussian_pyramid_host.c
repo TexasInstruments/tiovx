@@ -149,7 +149,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8!= input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8!= input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_U8 != gaussian_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != gaussian_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'gaussian' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");

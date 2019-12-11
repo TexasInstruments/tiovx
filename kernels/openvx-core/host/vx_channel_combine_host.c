@@ -184,13 +184,13 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U8 != plane0_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != plane0_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'plane0' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_DF_IMAGE_U8 != plane1_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != plane1_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'plane1' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -198,7 +198,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
         if (NULL != plane2)
         {
-            if (VX_DF_IMAGE_U8 != plane2_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != plane2_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'plane2' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -207,21 +207,21 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
         if (NULL != plane3)
         {
-            if (VX_DF_IMAGE_U8 != plane3_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != plane3_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'plane3' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
 
-        if ((VX_DF_IMAGE_RGBX != output_fmt) &&
-            (VX_DF_IMAGE_RGB != output_fmt) &&
-            (VX_DF_IMAGE_NV12 != output_fmt) &&
-            (VX_DF_IMAGE_NV21 != output_fmt) &&
-            (VX_DF_IMAGE_YUYV != output_fmt) &&
-            (VX_DF_IMAGE_UYVY != output_fmt) &&
-            (VX_DF_IMAGE_IYUV != output_fmt) &&
-            (VX_DF_IMAGE_YUV4 != output_fmt))
+        if (((vx_df_image)VX_DF_IMAGE_RGBX != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_RGB != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV21 != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_UYVY != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_IYUV != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUV4 != output_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
@@ -235,17 +235,17 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
     {
         out_channel = 0U;
 
-        if (VX_DF_IMAGE_RGBX == output_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt)
         {
             out_channel = 4U;
         }
-        else if ((VX_DF_IMAGE_RGB == output_fmt) ||
-            (VX_DF_IMAGE_NV12 == output_fmt) ||
-            (VX_DF_IMAGE_NV21 == output_fmt) ||
-            (VX_DF_IMAGE_YUYV == output_fmt) ||
-            (VX_DF_IMAGE_UYVY == output_fmt) ||
-            (VX_DF_IMAGE_IYUV == output_fmt) ||
-            (VX_DF_IMAGE_YUV4 == output_fmt))
+        else if (((vx_df_image)VX_DF_IMAGE_RGB == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_NV12 == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_NV21 == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_YUYV == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_UYVY == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_IYUV == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_YUV4 == output_fmt))
         {
             out_channel = 3U;
         }
@@ -261,7 +261,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if (VX_DF_IMAGE_RGBX == output_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_RGBX == output_fmt)
         {
             if ((plane1_w != plane0_w) ||
                 ((NULL != plane2) && (plane2_w != plane0_w)) ||
@@ -279,8 +279,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
-        else if ((VX_DF_IMAGE_RGB == output_fmt) ||
-            (VX_DF_IMAGE_YUV4 == output_fmt))
+        else if (((vx_df_image)VX_DF_IMAGE_RGB == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_YUV4 == output_fmt))
         {
                 if ((plane1_w != plane0_w) ||
                     ((NULL != plane2) && (plane2_w != plane0_w)))
@@ -296,9 +296,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
         }
-        else if ((VX_DF_IMAGE_NV12 == output_fmt) ||
-            (VX_DF_IMAGE_NV21 == output_fmt) ||
-            (VX_DF_IMAGE_IYUV == output_fmt))
+        else if (((vx_df_image)VX_DF_IMAGE_NV12 == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_NV21 == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_IYUV == output_fmt))
         {
                 if ((plane1_w != (plane0_w / 2U)) ||
                     ((NULL != plane2) && (plane2_w != (plane0_w / 2U))))
@@ -314,8 +314,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
         }
-        else if ((VX_DF_IMAGE_YUYV == output_fmt) ||
-            (VX_DF_IMAGE_UYVY == output_fmt))
+        else if (((vx_df_image)VX_DF_IMAGE_YUYV == output_fmt) ||
+            ((vx_df_image)VX_DF_IMAGE_UYVY == output_fmt))
         {
                 if ((plane1_w != (plane0_w / 2U)) ||
                     ((NULL != plane2) && (plane2_w != (plane0_w / 2U))))
@@ -580,8 +580,8 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
             else
             {
                 if ((i == 0) ||
-                    ((fmt != VX_DF_IMAGE_IYUV) && (fmt != VX_DF_IMAGE_NV12) &&
-                     (fmt != VX_DF_IMAGE_NV21) && (fmt != VX_DF_IMAGE_YUYV) && (fmt != VX_DF_IMAGE_UYVY)))
+                    ((fmt != (vx_df_image)VX_DF_IMAGE_IYUV) && (fmt != (vx_df_image)VX_DF_IMAGE_NV12) &&
+                     (fmt != (vx_df_image)VX_DF_IMAGE_NV21) && (fmt != (vx_df_image)VX_DF_IMAGE_YUYV) && (fmt != (vx_df_image)VX_DF_IMAGE_UYVY)))
                 {
                     if (rect.start_x > out_rect.start_x)
                     {

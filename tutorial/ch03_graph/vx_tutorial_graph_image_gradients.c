@@ -188,7 +188,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    grad_x = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
+    grad_x = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_S16);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)grad_x, "GRAD_X");
@@ -210,7 +210,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    grad_y = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
+    grad_y = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_S16);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)grad_y, "GRAD_Y");
@@ -232,7 +232,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    magnitude = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
+    magnitude = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_S16);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)magnitude, "MAGNITUDE");
@@ -254,7 +254,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    magnitude_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    magnitude_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)magnitude_image, "MAGNITUDE_IMAGE");
@@ -276,7 +276,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    grad_x_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    grad_x_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)grad_x_image, "GRAD_X_IMAGE");
@@ -298,7 +298,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    grad_y_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    grad_y_image = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)grad_y_image, "GRAD_Y_IMAGE");
@@ -322,7 +322,7 @@ void vx_tutorial_graph_image_gradients()
      * data format 'df'.
      * \code
      */
-    phase = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+    phase = vxCreateImage(context, width, height, (vx_df_image)VX_DF_IMAGE_U8);
     /** \endcode */
     vxSetReferenceName((vx_reference)phase, "PHASE");
 

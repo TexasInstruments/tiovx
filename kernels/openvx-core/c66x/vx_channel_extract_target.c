@@ -116,7 +116,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
             break;
         case VX_CHANNEL_3:
         case VX_CHANNEL_A:
-            if(in_desc->format == VX_DF_IMAGE_RGBX)
+            if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
             }
@@ -136,12 +136,12 @@ vx_status tivxChannelExtractRgbRgbxInput(
            in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        if(in_desc->format == VX_DF_IMAGE_RGB)
+        if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
             status = VXLIB_channelExtract_1of3_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
         else
-        if(in_desc->format == VX_DF_IMAGE_RGBX)
+        if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
         {
             status = VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
@@ -181,7 +181,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     switch(channel_value)
     {
         case VX_CHANNEL_Y:
-            if(in_desc->format == VX_DF_IMAGE_YUYV)
+            if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
             }
@@ -191,7 +191,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_U:
-            if(in_desc->format == VX_DF_IMAGE_YUYV)
+            if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
             }
@@ -201,7 +201,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
             }
             break;
         case VX_CHANNEL_V:
-            if(in_desc->format == VX_DF_IMAGE_YUYV)
+            if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
             }
@@ -300,7 +300,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
                 channel_offset = 0;
                 break;
             case VX_CHANNEL_U:
-                if(in_desc->format == VX_DF_IMAGE_NV12)
+                if(in_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
                     channel_offset = 0;
                 }
@@ -310,7 +310,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
                 }
                 break;
             case VX_CHANNEL_V:
-                if(in_desc->format == VX_DF_IMAGE_NV12)
+                if(in_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
                     channel_offset = 1;
                 }
@@ -464,8 +464,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
 
             tivxInitBufParams(out_desc, &vxlib_dst);
 
-            if (   (in_desc->format == VX_DF_IMAGE_RGB)
-                || (in_desc->format == VX_DF_IMAGE_RGBX)
+            if (   (in_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
+                || (in_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
                 )
             {
                 status = tivxChannelExtractRgbRgbxInput(
@@ -474,8 +474,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    (in_desc->format == VX_DF_IMAGE_YUYV)
-                || (in_desc->format == VX_DF_IMAGE_UYVY)
+            if(    (in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
+                || (in_desc->format == (vx_df_image)VX_DF_IMAGE_UYVY)
                 )
             {
                 status = tivxChannelExtractYuyvUyvyInput(
@@ -484,8 +484,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    (in_desc->format == VX_DF_IMAGE_NV12)
-                || (in_desc->format == VX_DF_IMAGE_NV21)
+            if(    (in_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
+                || (in_desc->format == (vx_df_image)VX_DF_IMAGE_NV21)
                 )
             {
                 status = tivxChannelExtractNv12Nv21Input(
@@ -494,8 +494,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    (in_desc->format == VX_DF_IMAGE_IYUV)
-                || (in_desc->format == VX_DF_IMAGE_YUV4)
+            if(    (in_desc->format == (vx_df_image)VX_DF_IMAGE_IYUV)
+                || (in_desc->format == (vx_df_image)VX_DF_IMAGE_YUV4)
                 )
             {
                 status = tivxChannelExtractIyuvYuv4Input(

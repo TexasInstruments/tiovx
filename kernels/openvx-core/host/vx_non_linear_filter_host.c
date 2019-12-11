@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'function' should be a scalar of type:\n VX_NONLINEAR_FILTER_MEDIAN or VX_NONLINEAR_FILTER_MIN or VX_NONLINEAR_FILTER_MAX \n");
         }
 
-        if (VX_DF_IMAGE_U8 != input_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
@@ -177,7 +177,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_DF_IMAGE_U8 != output_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != output_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
