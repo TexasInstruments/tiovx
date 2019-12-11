@@ -564,7 +564,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
         tivxVpacMscScaleSetFmt(&msc_prms->inFmt, in_img_desc);
 
-        if (VX_DF_IMAGE_NV12 != out_img_desc->format)
+        if ((vx_df_image)VX_DF_IMAGE_NV12 != out_img_desc->format)
         {
             /* Only luma only mode, if the output is not NV12,
              * even if the input format is NV12. */
@@ -923,25 +923,25 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     {
         switch (img_desc->format)
         {
-            case VX_DF_IMAGE_NV12:
+            case (vx_df_image)VX_DF_IMAGE_NV12:
             {
                 fmt->dataFormat = FVID2_DF_YUV420SP_UV;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_U8:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
                 break;
             }
-            case TIVX_DF_IMAGE_P12:
+            case (vx_df_image)TIVX_DF_IMAGE_P12:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;

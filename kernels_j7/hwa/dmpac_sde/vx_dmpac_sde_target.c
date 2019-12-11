@@ -798,25 +798,25 @@ static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
     {
         switch (img_desc->format)
         {
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_U8:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
                 break;
             }
-            case VX_DF_IMAGE_S16:
+            case (vx_df_image)VX_DF_IMAGE_S16:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
                 break;
             }
-            case TIVX_DF_IMAGE_P12:
+            case (vx_df_image)TIVX_DF_IMAGE_P12:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;

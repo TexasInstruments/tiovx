@@ -1001,19 +1001,19 @@ static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
     {
         switch (img_desc->format)
         {
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_U8:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
                 break;
             }
-            case TIVX_DF_IMAGE_P12:
+            case (vx_df_image)TIVX_DF_IMAGE_P12:
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
@@ -1113,7 +1113,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     dofPrms->coreCfg.motionSmoothnessFactor = dofAppPrms->motion_smoothness_factor;
     dofPrms->coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
 
-    dofPrms->coreCfg.lkConfidanceScore = (fv_out_desc->format == VX_DF_IMAGE_U16) ? 0 : 1;
+    dofPrms->coreCfg.lkConfidanceScore = (fv_out_desc->format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
 
     if((NULL != obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX]) &&
        (NULL != sofAppPrms))
@@ -1277,7 +1277,7 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
                                     dofAppPrms->motion_smoothness_factor;
         dof_obj->dofPrms.coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
         dof_obj->dofPrms.coreCfg.lkConfidanceScore =
-                    (output_format == VX_DF_IMAGE_U16) ? 0 : 1;
+                    (output_format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
 
         fvid2_status = Fvid2_control(dof_obj->handle,
                     VHWA_M2M_IOCTL_DOF_SET_PARAMS, &dof_obj->dofPrms, NULL);

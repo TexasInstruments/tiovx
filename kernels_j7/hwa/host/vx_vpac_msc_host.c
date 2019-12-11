@@ -472,10 +472,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
 
     if (NULL != in_img)
     {
-        if( (VX_DF_IMAGE_NV12 != in_img_fmt) &&
-            (VX_DF_IMAGE_U8 != in_img_fmt) &&
-            (VX_DF_IMAGE_U16 != in_img_fmt) &&
-            (TIVX_DF_IMAGE_P12 != in_img_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_NV12 != in_img_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U8 != in_img_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != in_img_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != in_img_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
@@ -493,10 +493,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
                 break;
             }
 
-            if ((VX_DF_IMAGE_NV12 != out_img_fmt[cnt]) &&
-                (VX_DF_IMAGE_U8 != out_img_fmt[cnt]) &&
-                (VX_DF_IMAGE_U16 != out_img_fmt[cnt]) &&
-                (TIVX_DF_IMAGE_P12 != out_img_fmt[cnt]))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 != out_img_fmt[cnt]) &&
+                ((vx_df_image)VX_DF_IMAGE_U8 != out_img_fmt[cnt]) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != out_img_fmt[cnt]) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != out_img_fmt[cnt]))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
@@ -504,8 +504,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
                 break;
             }
 
-            if ((VX_DF_IMAGE_NV12 == out_img_fmt[cnt]) &&
-                (VX_DF_IMAGE_NV12 != in_img_fmt))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 == out_img_fmt[cnt]) &&
+                ((vx_df_image)VX_DF_IMAGE_NV12 != in_img_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
@@ -655,10 +655,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if( (VX_DF_IMAGE_NV12 != fmt) &&
-            (VX_DF_IMAGE_U8 != fmt) &&
-            (VX_DF_IMAGE_U16 != fmt) &&
-            (TIVX_DF_IMAGE_P12 != fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_NV12 != fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U8 != fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
@@ -681,18 +681,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         }
 
         /* Check for validity of data format */
-        if( (VX_DF_IMAGE_NV12 != p_fmt) &&
-            (VX_DF_IMAGE_U8 != p_fmt) &&
-            (VX_DF_IMAGE_U16 != p_fmt) &&
-            (TIVX_DF_IMAGE_P12 != p_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_NV12 != p_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U8 != p_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != p_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != p_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddKernelVpacMscPyramidValidate: Incorrect Pyramid Format\n");
         }
 
-        if ((VX_DF_IMAGE_NV12 == p_fmt) &&
-            (VX_DF_IMAGE_NV12 != fmt))
+        if (((vx_df_image)VX_DF_IMAGE_NV12 == p_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,

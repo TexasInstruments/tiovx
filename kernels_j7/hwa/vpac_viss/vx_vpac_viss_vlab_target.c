@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y12_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
-            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
                 uv12_c1_target_ptr = tivxMemShared2TargetPtr(&y12_desc->mem_ptr[1]);
                 tivxMemBufferMap(uv12_c1_target_ptr,
@@ -249,7 +249,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y8_r8_c2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
-            if (VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
+            if ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
             {
                 uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(&y8_r8_c2_desc->mem_ptr[1]);
                 tivxMemBufferMap(uv8_g8_c3_target_ptr,
@@ -449,7 +449,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( y12_desc != NULL)
         {
-            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
                 lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->config.buffer[3*2], prms->config.buffer[4*2], 12);
             }
@@ -469,9 +469,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 out_y8_r8_c2_bit_align = 12;
             }
-            if ((VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
-                (VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
-                (VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
+                ((vx_df_image)VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
+                ((vx_df_image)VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
             {
                 lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->config.buffer[5*2], prms->config.buffer[6*2], out_y8_r8_c2_bit_align);
             }
@@ -531,7 +531,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y12_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
-            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
                 tivxMemBufferUnmap(uv12_c1_target_ptr,
                    y12_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
@@ -552,7 +552,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y8_r8_c2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
 
-            if (VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
+            if ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
             {
                 tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
                    y8_r8_c2_desc->mem_size[1], VX_MEMORY_TYPE_HOST,

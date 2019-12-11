@@ -145,7 +145,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_DF_IMAGE_U32 != flow_vector_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U32 != flow_vector_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector' should be an image of type:\n VX_DF_IMAGE_U32 \n");
@@ -160,16 +160,16 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
             }
         }
 
-        if (VX_DF_IMAGE_RGB != flow_vector_image_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_RGB != flow_vector_image_fmt)
         {
-          if(VX_DF_IMAGE_NV12 != flow_vector_image_fmt)
+          if((vx_df_image)VX_DF_IMAGE_NV12 != flow_vector_image_fmt)
           {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector_image' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 \n");
           }
         }
 
-        if (VX_DF_IMAGE_U8 != confidence_image_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_U8 != confidence_image_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'confidence_image' should be an image of type:\n VX_DF_IMAGE_U8 \n");

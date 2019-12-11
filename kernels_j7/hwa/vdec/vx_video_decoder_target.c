@@ -517,7 +517,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
             status = (vx_status)VX_FAILURE;
         }
         
-        if (VX_DF_IMAGE_NV12 == output_image_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_NV12 == output_image_fmt)
         {
             vdec_params.out_pixelformat = MM_PIX_FMT_NV12;
         }

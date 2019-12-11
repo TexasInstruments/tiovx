@@ -1203,15 +1203,15 @@ static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (VX_DF_IMAGE_U16 == vxFmt)
+    if ((vx_df_image)VX_DF_IMAGE_U16 == vxFmt)
     {
         *ccsFmt = FVID2_CCSF_BITS12_UNPACKED16;
     }
-    else if (TIVX_DF_IMAGE_P12 == vxFmt)
+    else if ((vx_df_image)TIVX_DF_IMAGE_P12 == vxFmt)
     {
         *ccsFmt = FVID2_CCSF_BITS12_PACKED;
     }
-    else if (VX_DF_IMAGE_U8 == vxFmt)
+    else if ((vx_df_image)VX_DF_IMAGE_U8 == vxFmt)
     {
         *ccsFmt = FVID2_CCSF_BITS8_PACKED;
     }
@@ -1348,11 +1348,11 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
         }
         case 4U:
         {
-            if (VX_DF_IMAGE_NV12 == vxFmt)
+            if ((vx_df_image)VX_DF_IMAGE_NV12 == vxFmt)
             {
                 *ccsFmt = FVID2_CCSF_BITS8_PACKED;
             }
-            else if (TIVX_DF_IMAGE_NV12_P12 == vxFmt)
+            else if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == vxFmt)
             {
                 *ccsFmt = FVID2_CCSF_BITS12_PACKED;
             }
@@ -1385,11 +1385,11 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
 
             if (TIVX_KERNEL_VPAC_VISS_OUT2_IDX == out_id)
             {
-                if (VX_DF_IMAGE_UYVY == vxFmt)
+                if ((vx_df_image)VX_DF_IMAGE_UYVY == vxFmt)
                 {
                     *fmt = FVID2_DF_YUV422I_UYVY;
                 }
-                else if (VX_DF_IMAGE_YUYV == vxFmt)
+                else if ((vx_df_image)VX_DF_IMAGE_YUYV == vxFmt)
                 {
                     *fmt = FVID2_DF_YUV422I_YUYV;
                 }

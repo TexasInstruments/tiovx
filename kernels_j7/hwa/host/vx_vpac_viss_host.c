@@ -259,9 +259,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != output0)
         {
-            if( (VX_DF_IMAGE_U16 != output0_fmt) &&
-                (TIVX_DF_IMAGE_P12 != output0_fmt) &&
-                (TIVX_DF_IMAGE_NV12_P12 != output0_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U16 != output0_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output0_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output0_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12\n");
@@ -270,8 +270,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != output1)
         {
-            if( (VX_DF_IMAGE_U16 != output1_fmt) &&
-                (TIVX_DF_IMAGE_P12 != output1_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U16 != output1_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output1_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -280,12 +280,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != output2)
         {
-            if( (VX_DF_IMAGE_U8 != output2_fmt) &&
-                (VX_DF_IMAGE_U16 != output2_fmt) &&
-                (TIVX_DF_IMAGE_P12 != output2_fmt) &&
-                (VX_DF_IMAGE_NV12 != output2_fmt) &&
-                (VX_DF_IMAGE_YUYV != output2_fmt) &&
-                (VX_DF_IMAGE_UYVY != output2_fmt) )
+            if( ((vx_df_image)VX_DF_IMAGE_U8 != output2_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != output2_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output2_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_NV12 != output2_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUYV != output2_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_UYVY != output2_fmt) )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
@@ -294,9 +294,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != output3)
         {
-            if( (VX_DF_IMAGE_U8 != output3_fmt) &&
-                (VX_DF_IMAGE_U16 != output3_fmt) &&
-                (TIVX_DF_IMAGE_P12 != output3_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U8 != output3_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != output3_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output3_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output3' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -305,9 +305,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != output4)
         {
-            if( (VX_DF_IMAGE_U8 != output4_fmt) &&
-                (VX_DF_IMAGE_U16 != output4_fmt) &&
-                (TIVX_DF_IMAGE_P12 != output4_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U8 != output4_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != output4_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output4_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'output4' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -382,7 +382,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             }
         }
 
-        if ((NULL != output0) && (TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+        if ((NULL != output0) && ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
             (4u != params.mux_output0))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -390,21 +390,21 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
         if (NULL != output2)
         {
-            if ((VX_DF_IMAGE_NV12 == output2_fmt) && (4u != params.mux_output2))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 == output2_fmt) && (4u != params.mux_output2))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 4 for NV12 output\n");
             }
-            if (((VX_DF_IMAGE_YUYV == output2_fmt) || (VX_DF_IMAGE_UYVY == output2_fmt)) &&
+            if ((((vx_df_image)VX_DF_IMAGE_YUYV == output2_fmt) || ((vx_df_image)VX_DF_IMAGE_UYVY == output2_fmt)) &&
                  (5u != params.mux_output2))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 5 for YUYV or UYVY output\n");
             }
         }
-        if ((NULL != output0) && (TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+        if ((NULL != output0) && ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
             ((NULL != output2) &&
-                ((VX_DF_IMAGE_UYVY == output2_fmt) || (VX_DF_IMAGE_YUYV == output2_fmt))))
+                (((vx_df_image)VX_DF_IMAGE_UYVY == output2_fmt) || ((vx_df_image)VX_DF_IMAGE_YUYV == output2_fmt))))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
@@ -428,7 +428,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'output0' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
             }
 
-            if ((TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+            if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
                 (output1 != NULL))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -450,7 +450,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'output2' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
             }
 
-            if ((VX_DF_IMAGE_NV12 == output2_fmt) &&
+            if (((vx_df_image)VX_DF_IMAGE_NV12 == output2_fmt) &&
                 (output3 != NULL))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;

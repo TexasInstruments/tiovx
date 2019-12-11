@@ -227,7 +227,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if(((vx_status)VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+            if(((vx_status)VX_SUCCESS == status) && (imgIn->format == (vx_df_image)VX_DF_IMAGE_NV12))
             {
                 prms->buffer_size_in_cbcr = imgIn->imagepatch_addr[1].dim_x *
                                             (imgIn->imagepatch_addr[1].dim_y / imgIn->imagepatch_addr[1].step_y) * 2;
@@ -265,7 +265,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                         status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
-                    if(((vx_status)VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+                    if(((vx_status)VX_SUCCESS == status) && (imgIn->format == (vx_df_image)VX_DF_IMAGE_NV12))
                     {
                         prms->buffer_size_out_cbcr[cnt] =
                             imgOut->imagepatch_addr[1].dim_x *
@@ -359,7 +359,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        if(src->format == VX_DF_IMAGE_NV12)
+        if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[1]);
             tivxMemBufferMap(src_target_ptr, src->mem_size[1],
@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 #endif
     }
 
-    if (((vx_status)VX_SUCCESS == status) && (src->format == VX_DF_IMAGE_NV12))
+    if (((vx_status)VX_SUCCESS == status) && (src->format == (vx_df_image)VX_DF_IMAGE_NV12))
     {
         uint32_t iw = src->imagepatch_addr[1].dim_x;
         uint32_t ih = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
@@ -564,7 +564,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
                 tivxMemBufferUnmap(dst_target_ptr, dst[cnt]->mem_size[0],
                     VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-                if(dst[cnt]->format == VX_DF_IMAGE_NV12)
+                if(dst[cnt]->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
                     dst_target_ptr = tivxMemShared2TargetPtr(&dst[cnt]->mem_ptr[1]);
                     tivxMemBufferMap(dst_target_ptr, dst[cnt]->mem_size[1],

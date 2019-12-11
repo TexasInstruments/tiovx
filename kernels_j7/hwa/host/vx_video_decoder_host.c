@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input_bitstream_name' should be a user_data_object named 'video_bitstream' of type:\n uint8_t[1] \n");
         }
 
-        if (VX_DF_IMAGE_NV12 != output_image_fmt)
+        if ((vx_df_image)VX_DF_IMAGE_NV12 != output_image_fmt)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output_image' should be an image of type:\n VX_DF_IMAGE_NV12 \n");
@@ -172,7 +172,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_NV12 == output_image_fmt) && ((output_image_w * output_image_h * 3 / 2) > input_bitstream_size))
+        if (((vx_df_image)VX_DF_IMAGE_NV12 == output_image_fmt) && ((output_image_w * output_image_h * 3 / 2) > input_bitstream_size))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Decoder param 'input stream' should be at least:\n output_width * output_height * 3 / 2 \n");

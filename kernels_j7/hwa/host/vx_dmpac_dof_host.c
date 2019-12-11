@@ -243,9 +243,9 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != input_current_base)
         {
-            if( (VX_DF_IMAGE_U8 != input_current_base_fmt) &&
-                (VX_DF_IMAGE_U16 != input_current_base_fmt) &&
-                (TIVX_DF_IMAGE_P12 != input_current_base_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U8 != input_current_base_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != input_current_base_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != input_current_base_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_current_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -254,26 +254,26 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != input_reference_base)
         {
-            if( (VX_DF_IMAGE_U8 != input_reference_base_fmt) &&
-                (VX_DF_IMAGE_U16 != input_reference_base_fmt) &&
-                (TIVX_DF_IMAGE_P12 != input_reference_base_fmt))
+            if( ((vx_df_image)VX_DF_IMAGE_U8 != input_reference_base_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_U16 != input_reference_base_fmt) &&
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != input_reference_base_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'input_reference_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
 
-        if( (VX_DF_IMAGE_U8 != input_current_fmt) &&
-            (VX_DF_IMAGE_U16 != input_current_fmt) &&
-            (TIVX_DF_IMAGE_P12 != input_current_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_U8 != input_current_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != input_current_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != input_current_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input_current' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
-        if( (VX_DF_IMAGE_U8 != input_reference_fmt) &&
-            (VX_DF_IMAGE_U16 != input_reference_fmt) &&
-            (TIVX_DF_IMAGE_P12 != input_reference_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_U8 != input_reference_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != input_reference_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != input_reference_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input_reference' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != flow_vector_in)
         {
-            if( VX_DF_IMAGE_U32 != flow_vector_in_fmt)
+            if( (vx_df_image)VX_DF_IMAGE_U32 != flow_vector_in_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U32 \n");
@@ -300,15 +300,15 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != sparse_of_map)
         {
-            if (VX_DF_IMAGE_U8 != sparse_of_map_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U8 != sparse_of_map_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' should be an image of type:\n VX_DF_IMAGE_U8 \n");
             }
         }
 
-        if( (VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
-            (VX_DF_IMAGE_U32 != flow_vector_out_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_U16 != flow_vector_out_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U32 != flow_vector_out_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'flow_vector_out' should be an image of type:\n VX_DF_IMAGE_U16 or VX_DF_IMAGE_U32 \n");
@@ -532,7 +532,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         if((confidence_histogram != NULL) &&
-           (VX_DF_IMAGE_U16 == flow_vector_out_fmt))
+           ((vx_df_image)VX_DF_IMAGE_U16 == flow_vector_out_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'confidence_histogram' should be NULL when the flow vector output is set to VX_DF_IMAGE_U16 type\n");
@@ -569,7 +569,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "   Sparse optical flow is not supported when temporal prediction is enabled\n");
             }
 
-            if (VX_DF_IMAGE_U16 == flow_vector_out_fmt)
+            if ((vx_df_image)VX_DF_IMAGE_U16 == flow_vector_out_fmt)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_out_fmt' is VX_DF_IMAGE_U16\n");

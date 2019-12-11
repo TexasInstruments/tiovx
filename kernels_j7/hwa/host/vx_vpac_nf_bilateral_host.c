@@ -155,9 +155,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_nf_bilateral_params_t \n");
         }
 
-        if( (VX_DF_IMAGE_U8 != input_fmt) &&
-            (VX_DF_IMAGE_U16 != input_fmt) &&
-            (TIVX_DF_IMAGE_P12 != input_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_U8 != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != input_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -170,9 +170,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'sigmas' should be a user_data_object of type:\n tivx_vpac_nf_bilateral_sigmas_t \n");
         }
 
-        if( (VX_DF_IMAGE_U8 != output_fmt) &&
-            (VX_DF_IMAGE_U16 != output_fmt) &&
-            (TIVX_DF_IMAGE_P12 != output_fmt))
+        if( ((vx_df_image)VX_DF_IMAGE_U8 != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_U16 != output_fmt) &&
+            ((vx_df_image)TIVX_DF_IMAGE_P12 != output_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");

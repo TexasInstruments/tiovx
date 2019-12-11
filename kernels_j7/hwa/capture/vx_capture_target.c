@@ -248,18 +248,18 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
 
     switch (format)
     {
-        case VX_DF_IMAGE_RGB:
+        case (vx_df_image)VX_DF_IMAGE_RGB:
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
-        case VX_DF_IMAGE_RGBX:
+        case (vx_df_image)VX_DF_IMAGE_RGBX:
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
-        case VX_DF_IMAGE_U16:
+        case (vx_df_image)VX_DF_IMAGE_U16:
         case TIVX_RAW_IMAGE_P12_BIT:
             inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
-        case VX_DF_IMAGE_UYVY:
-        case VX_DF_IMAGE_YUYV:
+        case (vx_df_image)VX_DF_IMAGE_UYVY:
+        case (vx_df_image)VX_DF_IMAGE_YUYV:
             inCsiDataType = FVID2_CSI2_DF_YUV422_8B;
             break;
         default:
@@ -280,9 +280,9 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
             ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
         case TIVX_RAW_IMAGE_16_BIT:
-        case VX_DF_IMAGE_U16:
-        case VX_DF_IMAGE_UYVY:
-        case VX_DF_IMAGE_YUYV:
+        case (vx_df_image)VX_DF_IMAGE_U16:
+        case (vx_df_image)VX_DF_IMAGE_UYVY:
+        case (vx_df_image)VX_DF_IMAGE_YUYV:
             ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
         default:

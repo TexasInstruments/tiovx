@@ -76,7 +76,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     uint32_t h = src->imagepatch_addr[ch].dim_y / src->imagepatch_addr[ch].step_y;
     uint32_t stride = src->imagepatch_addr[ch].stride_y;
 
-    if ((VX_DF_IMAGE_U8 == src->format) || (VX_DF_IMAGE_NV12 == src->format))
+    if (((vx_df_image)VX_DF_IMAGE_U8 == src->format) || ((vx_df_image)VX_DF_IMAGE_NV12 == src->format))
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -100,7 +100,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
             }
         }
     }
-    else if((VX_DF_IMAGE_U16 == src->format) || (VX_DF_IMAGE_S16 == src->format))
+    else if(((vx_df_image)VX_DF_IMAGE_U16 == src->format) || ((vx_df_image)VX_DF_IMAGE_S16 == src->format))
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -116,7 +116,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
             }
         }
     }
-    else /* TIVX_DF_IMAGE_P12*/
+    else /* (vx_df_image)TIVX_DF_IMAGE_P12*/
     {
         uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -156,7 +156,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     uint16_t downshift = input_bits-8;
     uint16_t upshift = 12-input_bits;
 
-    if ((VX_DF_IMAGE_U8 == dst->format) || (VX_DF_IMAGE_NV12 == dst->format))
+    if (((vx_df_image)VX_DF_IMAGE_U8 == dst->format) || ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format))
     {
         uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -171,7 +171,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
             }
         }
     }
-    else if((VX_DF_IMAGE_U16 == dst->format) || (VX_DF_IMAGE_S16 == dst->format))
+    else if(((vx_df_image)VX_DF_IMAGE_U16 == dst->format) || ((vx_df_image)VX_DF_IMAGE_S16 == dst->format))
     {
         uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -187,7 +187,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
             }
         }
     }
-    else /* TIVX_DF_IMAGE_P12*/
+    else /* (vx_df_image)TIVX_DF_IMAGE_P12*/
     {
         uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -233,7 +233,7 @@ void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, 
         tivxComputePatchOffset(rect.start_x, rect.start_y,
         &dst->imagepatch_addr[0]));
 
-    if (VX_DF_IMAGE_YUYV == dst->format)
+    if ((vx_df_image)VX_DF_IMAGE_YUYV == dst->format)
     {
         y=0;
         u=1;
@@ -269,7 +269,7 @@ void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint
         tivxComputePatchOffset(rect.start_x, rect.start_y,
         &src->imagepatch_addr[0]));
 
-    if (VX_DF_IMAGE_YUYV == src->format)
+    if ((vx_df_image)VX_DF_IMAGE_YUYV == src->format)
     {
         y=0;
         u=1;
@@ -301,7 +301,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
     uint32_t h = src->imagepatch_addr[0].dim_y;
     uint32_t stride = src->imagepatch_addr[0].stride_y;
 
-    if (VX_DF_IMAGE_U8 == src->format)
+    if ((vx_df_image)VX_DF_IMAGE_U8 == src->format)
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -316,7 +316,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             }
         }
     }
-    else if((VX_DF_IMAGE_U16 == src->format) || (VX_DF_IMAGE_S16 == src->format))
+    else if(((vx_df_image)VX_DF_IMAGE_U16 == src->format) || ((vx_df_image)VX_DF_IMAGE_S16 == src->format))
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -332,7 +332,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             }
         }
     }
-    else if((VX_DF_IMAGE_U32 == src->format) || (VX_DF_IMAGE_S32 == src->format))
+    else if(((vx_df_image)VX_DF_IMAGE_U32 == src->format) || ((vx_df_image)VX_DF_IMAGE_S32 == src->format))
     {
         uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -348,7 +348,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             }
         }
     }
-    else /* TIVX_DF_IMAGE_P12*/
+    else /* (vx_df_image)TIVX_DF_IMAGE_P12*/
     {
         uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -386,7 +386,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
     uint32_t h = dst->imagepatch_addr[0].dim_y;
     uint32_t stride = dst->imagepatch_addr[0].stride_y;
 
-    if((VX_DF_IMAGE_U32 == dst->format) || (VX_DF_IMAGE_S32 == dst->format))
+    if(((vx_df_image)VX_DF_IMAGE_U32 == dst->format) || ((vx_df_image)VX_DF_IMAGE_S32 == dst->format))
     {
         uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -402,7 +402,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
             }
         }
     }
-    else if((VX_DF_IMAGE_U16 == dst->format) || (VX_DF_IMAGE_S16 == dst->format))
+    else if(((vx_df_image)VX_DF_IMAGE_U16 == dst->format) || ((vx_df_image)VX_DF_IMAGE_S16 == dst->format))
     {
         uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -506,18 +506,18 @@ void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t
 
     memcpy(&tmp.valid_roi, &src->valid_roi, sizeof(src->valid_roi));
 
-    if ((TIVX_DF_IMAGE_NV12_P12 == dst->format) ||
-        (VX_DF_IMAGE_NV12 == dst->format))
+    if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == dst->format) ||
+        ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format))
     {
         format = dst->format;
 
-        if (TIVX_DF_IMAGE_NV12_P12 == dst->format)
+        if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == dst->format)
         {
-            dst->format = TIVX_DF_IMAGE_P12;
+            dst->format = (vx_df_image)TIVX_DF_IMAGE_P12;
         }
         else
         {
-            dst->format = VX_DF_IMAGE_U8;
+            dst->format = (vx_df_image)VX_DF_IMAGE_U8;
         }
 
         lse_reformat_out(&tmp, dst, dst0_target_ptr, dst16_0, input_bits, 0);
@@ -525,8 +525,8 @@ void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t
 
         dst->format = format;
     }
-    else if ((VX_DF_IMAGE_YUYV == dst->format) ||
-             (VX_DF_IMAGE_UYVY == dst->format))
+    else if (((vx_df_image)VX_DF_IMAGE_YUYV == dst->format) ||
+             ((vx_df_image)VX_DF_IMAGE_UYVY == dst->format))
     {
         lse_interleave_422(&tmp, dst, dst0_target_ptr, dst16_0, dst16_1, input_bits);
     }

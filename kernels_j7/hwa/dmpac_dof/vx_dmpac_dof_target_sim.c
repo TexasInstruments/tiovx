@@ -703,7 +703,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.horizontalSearchRange = params->horizontal_search_range ;
             prms->dofParams.confidenceFeatureIIRFilterCoeffQ8 = params->iir_filter_alpha ;
             prms->dofParams.baseLevelConfidenceScorePacked =
-                                (flow_vector_out_desc->format == VX_DF_IMAGE_U16) ? 0 : 1;
+                                (flow_vector_out_desc->format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
             prms->dofParams.model[0] = '\0';
             prms->firstFrame = 1;
 

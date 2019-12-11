@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
 
         flow_vector_target_ptr = tivxMemShared2TargetPtr(&flow_vector_desc->mem_ptr[0]);
         flow_vector_image1_target_ptr = tivxMemShared2TargetPtr(&flow_vector_image_desc->mem_ptr[0]);
-        if(flow_vector_image_desc->format == VX_DF_IMAGE_NV12)
+        if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             flow_vector_image2_target_ptr = tivxMemShared2TargetPtr(&flow_vector_image_desc->mem_ptr[1]);
         }
@@ -151,7 +151,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         tivxMemBufferMap(flow_vector_image1_target_ptr,
            flow_vector_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
-        if(flow_vector_image_desc->format == VX_DF_IMAGE_NV12)
+        if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             tivxMemBufferMap(flow_vector_image2_target_ptr,
                flow_vector_image_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
@@ -202,7 +202,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
            flow_vector_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
-        if(flow_vector_image_desc->format == VX_DF_IMAGE_NV12)
+        if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             tivxMemBufferUnmap(flow_vector_image2_target_ptr,
                flow_vector_image_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
@@ -341,7 +341,7 @@ static void visualizeFlowAndConfidance3(
     uint8_t *restrict luma_lut_ptr = (uint8_t*)g_vx_dof_visualise_lut_128x128_nv12_0;
     uint8_t *restrict cbcr_lut_ptr = (uint8_t*)g_vx_dof_visualise_lut_128x128_nv12_1;
 
-    if(flow_image_format == VX_DF_IMAGE_RGB)
+    if(flow_image_format == (vx_df_image)VX_DF_IMAGE_RGB)
     {
         for(y = 0; y < flow_height; y++)
         {
@@ -392,7 +392,7 @@ static void visualizeFlowAndConfidance3(
             }
         }
     }
-    else if(flow_image_format == VX_DF_IMAGE_NV12)
+    else if(flow_image_format == (vx_df_image)VX_DF_IMAGE_NV12)
     {
         for(y = 0; y < flow_height; y++)
         {

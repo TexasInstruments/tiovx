@@ -211,14 +211,14 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
             num_planes = 1U;
 
-            if ((VX_DF_IMAGE_NV12 == in_img->format) ||
-                (TIVX_DF_IMAGE_NV12_P12 == in_img->format))
+            if (((vx_df_image)VX_DF_IMAGE_NV12 == in_img->format) ||
+                ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == in_img->format))
             {
                 num_planes = 2U;
             }
 
             /* Cmodel doesn't support UYVY on same plane, first separate */
-            if (VX_DF_IMAGE_UYVY == in_img->format)
+            if ((vx_df_image)VX_DF_IMAGE_UYVY == in_img->format)
             {
                 target_ptr = tivxMemShared2TargetPtr(&in_img->mem_ptr[0]);
                 tivxMemBufferMap(target_ptr,
@@ -251,7 +251,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 }
             }
 
-            if (VX_DF_IMAGE_U16 == in_img->format)
+            if ((vx_df_image)VX_DF_IMAGE_U16 == in_img->format)
             {
                 if(0 == prms->input_align_12bit)
                 {
@@ -301,15 +301,15 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 {
                     num_planes = 1U;
 
-                    if ((VX_DF_IMAGE_NV12 == out_img[j]->format) ||
-                        (TIVX_DF_IMAGE_NV12_P12 == out_img[j]->format))
+                    if (((vx_df_image)VX_DF_IMAGE_NV12 == out_img[j]->format) ||
+                        ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == out_img[j]->format))
                     {
                         num_planes = 2U;
                     }
 
                     /* Cmodel doesn't support UYVY on same plane, first separate */
-                    if ((VX_DF_IMAGE_UYVY == out_img[j]->format) ||
-                        (VX_DF_IMAGE_YUYV == out_img[j]->format))
+                    if (((vx_df_image)VX_DF_IMAGE_UYVY == out_img[j]->format) ||
+                        ((vx_df_image)VX_DF_IMAGE_YUYV == out_img[j]->format))
                     {
                         target_ptr = tivxMemShared2TargetPtr(&out_img[j]->mem_ptr[0]);
                         tivxMemBufferMap(target_ptr,
@@ -409,9 +409,9 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 }
 
                 if (((vx_status)VX_SUCCESS == status) &&
-                    ((VX_DF_IMAGE_NV12 == in_img_desc->format) ||
-                     (TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format) ||
-                     (VX_DF_IMAGE_UYVY == in_img_desc->format)))
+                    (((vx_df_image)VX_DF_IMAGE_NV12 == in_img_desc->format) ||
+                     ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_UYVY == in_img_desc->format)))
                 {
                     prms->inC_buffer_size = in_img_desc->imagepatch_addr[0].dim_x *
                                             in_img_desc->imagepatch_addr[0].dim_y * 2;
@@ -434,9 +434,9 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 }
 
                 if (((vx_status)VX_SUCCESS == status) &&
-                    ((VX_DF_IMAGE_NV12 == out0_img_desc->format) ||
-                     (TIVX_DF_IMAGE_NV12_P12 == out0_img_desc->format) ||
-                     (VX_DF_IMAGE_UYVY == in_img_desc->format)))
+                    (((vx_df_image)VX_DF_IMAGE_NV12 == out0_img_desc->format) ||
+                     ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == out0_img_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_UYVY == in_img_desc->format)))
                 {
                     prms->outC1_buffer_size = out0_img_desc->imagepatch_addr[0].dim_x *
                                               out0_img_desc->imagepatch_addr[0].dim_y * 2;
@@ -459,9 +459,9 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 }
 
                 if (((vx_status)VX_SUCCESS == status) &&
-                    ((VX_DF_IMAGE_NV12 == out1_img_desc->format) ||
-                     (TIVX_DF_IMAGE_NV12_P12 == out1_img_desc->format) ||
-                     (VX_DF_IMAGE_UYVY == in_img_desc->format)))
+                    (((vx_df_image)VX_DF_IMAGE_NV12 == out1_img_desc->format) ||
+                     ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == out1_img_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_UYVY == in_img_desc->format)))
                 {
                     prms->outC3_buffer_size = out1_img_desc->imagepatch_addr[0].dim_x *
                                               out1_img_desc->imagepatch_addr[0].dim_y * 2;
@@ -508,12 +508,12 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
 
                 /* Configure input format */
-                if (VX_DF_IMAGE_U16 == in_img_desc->format)
+                if ((vx_df_image)VX_DF_IMAGE_U16 == in_img_desc->format)
                 {
                     ip_dfmt = IP_DFMT_12b_UNPACK;
                 }
-                else if ((TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format) ||
-                         (TIVX_DF_IMAGE_P12 == in_img_desc->format))
+                else if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format) ||
+                         ((vx_df_image)TIVX_DF_IMAGE_P12 == in_img_desc->format))
                 {
                     ip_dfmt = IP_DFMT_12b_PACK;
                 }
@@ -525,12 +525,12 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 prms->config.settings.ip_dfmt = ip_dfmt;                  // LD input pixel format
 
                 /* Configure data mode and input resolution */
-                if (VX_DF_IMAGE_UYVY == in_img_desc->format)
+                if ((vx_df_image)VX_DF_IMAGE_UYVY == in_img_desc->format)
                 {
                     data_mode = DATA_MODE_422;
                 }
-                else if ((VX_DF_IMAGE_NV12 == in_img_desc->format) ||
-                         (TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format))
+                else if (((vx_df_image)VX_DF_IMAGE_NV12 == in_img_desc->format) ||
+                         ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == in_img_desc->format))
                 {
                     data_mode = DATA_MODE_420;
                 }
@@ -556,8 +556,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     prms->config.settings.compute_sizew = out0_img_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
                     prms->config.settings.compute_sizeh = out0_img_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
 
-                    if((VX_DF_IMAGE_UYVY == out0_img_desc->format) ||
-                        (VX_DF_IMAGE_YUYV == out0_img_desc->format))
+                    if(((vx_df_image)VX_DF_IMAGE_UYVY == out0_img_desc->format) ||
+                        ((vx_df_image)VX_DF_IMAGE_YUYV == out0_img_desc->format))
                     {
                         prms->config.settings.out_in_420 = 0;      // LD 422 to 420 conversion
                     }
@@ -572,8 +572,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     prms->config.settings.compute_sizew = out1_img_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
                     prms->config.settings.compute_sizeh = out1_img_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
 
-                    if((VX_DF_IMAGE_UYVY == out1_img_desc->format) ||
-                        (VX_DF_IMAGE_YUYV == out1_img_desc->format))
+                    if(((vx_df_image)VX_DF_IMAGE_UYVY == out1_img_desc->format) ||
+                        ((vx_df_image)VX_DF_IMAGE_YUYV == out1_img_desc->format))
                     {
                         prms->config.settings.out_in_420 = 0;      // LD 422 to 420 conversion
                     }

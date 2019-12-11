@@ -519,7 +519,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_DF_IMAGE_U16 == in_img_desc->format) &&
+        if (((vx_df_image)VX_DF_IMAGE_U16 == in_img_desc->format) &&
             (1u == ldc_prms->input_align_12bit))
         {
             ldc_cfg->inFmt.ccsFormat = FVID2_CCSF_BITS12_UNPACKED16_MSB_ALIGNED;
@@ -876,25 +876,25 @@ static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
     {
         switch (img_desc->format)
         {
-            case VX_DF_IMAGE_UYVY:
+            case (vx_df_image)VX_DF_IMAGE_UYVY:
             {
                 fmt->dataFormat = FVID2_DF_YUV422I_UYVY;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_YUYV:
+            case (vx_df_image)VX_DF_IMAGE_YUYV:
             {
                 fmt->dataFormat = FVID2_DF_YUV422I_YUYV;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_NV12:
+            case (vx_df_image)VX_DF_IMAGE_NV12:
             {
                 fmt->dataFormat = FVID2_DF_YUV420SP_UV;
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U8:
+            case (vx_df_image)VX_DF_IMAGE_U8:
             {
                 if (0u == ldc_prms->yc_mode)
                 {
@@ -907,7 +907,7 @@ static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
                 fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
                 break;
             }
-            case VX_DF_IMAGE_U16:
+            case (vx_df_image)VX_DF_IMAGE_U16:
             {
                 if (0u == ldc_prms->yc_mode)
                 {
@@ -920,7 +920,7 @@ static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
                 break;
             }
-            case TIVX_DF_IMAGE_P12:
+            case (vx_df_image)TIVX_DF_IMAGE_P12:
             {
                 if (0u == ldc_prms->yc_mode)
                 {
@@ -933,7 +933,7 @@ static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
                 break;
             }
-            case TIVX_DF_IMAGE_NV12_P12:
+            case (vx_df_image)TIVX_DF_IMAGE_NV12_P12:
             {
                 fmt->dataFormat = FVID2_DF_YUV420SP_UV;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
