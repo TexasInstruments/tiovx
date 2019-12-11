@@ -65,7 +65,7 @@ vx_status tivxIpcSendMsg(
     uint32_t vsdk_cpu_id;
     vx_status status;
 
-    if( cpu_id < TIVX_CPU_ID_MAX)
+    if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
@@ -108,7 +108,7 @@ vx_status tivxIpcSendMsg(
 
 vx_enum tivxGetSelfCpuId(void)
 {
-    vx_enum cpu_id = TIVX_CPU_ID_INVALID;
+    vx_enum cpu_id = (vx_enum)TIVX_CPU_ID_INVALID;
     uint32_t i, vsdk_cpu_id;
 
     vsdk_cpu_id =  appIpcGetSelfCpuId();
@@ -157,7 +157,7 @@ vx_bool tivxIsTargetEnabled(char target_name[])
         if (target_id != TIVX_TARGET_ID_INVALID)
         {
             cpu_id = tivxTargetGetCpuId(target_id);
-            if( cpu_id < TIVX_CPU_ID_MAX)
+            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
             {
                 vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 

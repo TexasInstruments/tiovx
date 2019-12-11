@@ -184,17 +184,17 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
 
             tivxMemBufferMap(configuration_target_ptr,
-               configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferMap(input_target_ptr,
-               input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferMap(sigmas_target_ptr,
-               sigmas_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferMap(output_target_ptr,
-               output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
@@ -220,17 +220,17 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             lse_reformat_out(input_desc, output_desc, output_target_ptr, prms->dst16, 12, 0);
 
             tivxMemBufferUnmap(configuration_target_ptr,
-               configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferUnmap(input_target_ptr,
-               input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferUnmap(sigmas_target_ptr,
-               sigmas_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
             tivxMemBufferUnmap(output_target_ptr,
-               output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
     }
 
@@ -255,7 +255,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxVpacNfBilateralParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxVpacNfBilateralParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxVpacNfBilateralParams));
@@ -263,7 +263,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             prms->buffer_size = src->imagepatch_addr[0].dim_x *
                                 src->imagepatch_addr[0].dim_y * 2;
 
-            prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+            prms->src16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -271,7 +271,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->dst16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+                prms->dst16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -296,9 +296,9 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 sigmas_array_target_ptr = tivxMemShared2TargetPtr(&sigmas_array->mem_ptr);
 
                 tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                 tivxMemBufferMap(sigmas_array_target_ptr, sigmas_array->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 params = (tivx_vpac_nf_bilateral_params_t *)params_array_target_ptr;
                 sigmas = (tivx_vpac_nf_bilateral_sigmas_t *)sigmas_array_target_ptr;
@@ -332,7 +332,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                              (uint16_t*)&prms->lut, &prms->mmr.centerPixelWeight);
 
                 tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             }
         }
         else
@@ -393,7 +393,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -433,16 +433,16 @@ static void tivxVpacNfBilateralFreeMem(tivxVpacNfBilateralParams *prms)
     {
         if (NULL != prms->src16)
         {
-            tivxMemFree(prms->src16, prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->src16, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->src16 = NULL;
         }
         if (NULL != prms->dst16)
         {
-            tivxMemFree(prms->dst16, prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->dst16, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->dst16 = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxVpacNfBilateralParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxVpacNfBilateralParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 

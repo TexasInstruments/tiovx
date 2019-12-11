@@ -170,7 +170,7 @@ void tivxAddTargetKernelDmpacDof(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -361,7 +361,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             target_ptr = tivxMemShared2TargetPtr(&sparse_of_config_desc->mem_ptr);
 
             tivxMemBufferMap(target_ptr, sparse_of_config_desc->mem_size,
-                                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             sofAppPrms = (tivx_dmpac_dof_sof_params_t *)target_ptr;
 
@@ -373,7 +373,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             }
 
             tivxMemBufferUnmap(target_ptr, sparse_of_config_desc->mem_size,
-                                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
     }
     else
@@ -532,7 +532,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
 
                 tivxMemBufferMap(target_ptr, confidence_histogram_desc->mem_size,
-                                VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
                 fvid2_status = Fvid2_control(dofObj->handle,
                                        VHWA_M2M_IOCTL_DOF_GET_HISTOGRAM,
@@ -545,7 +545,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 }
 
                 tivxMemBufferUnmap(target_ptr, confidence_histogram_desc->mem_size,
-                                VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
             }
 
         }
@@ -565,7 +565,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
-                            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         dofAppPrms = (tivx_dmpac_dof_params_t *)target_ptr;
 
@@ -582,7 +582,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
-                                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     return (status);
@@ -706,7 +706,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         dofAppPrms = (tivx_dmpac_dof_params_t *)target_ptr;
 
@@ -715,7 +715,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             sof_target_ptr = tivxMemShared2TargetPtr(&sof_config_desc->mem_ptr);
 
             tivxMemBufferMap(sof_target_ptr, sof_config_desc->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             sofAppPrms = (tivx_dmpac_dof_sof_params_t *)sof_target_ptr;
 
@@ -727,7 +727,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         if(NULL != sof_config_desc)
         {
             tivxMemBufferUnmap(sof_target_ptr, config_desc->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
 
         /* Save the parameters in the object variable,
@@ -744,7 +744,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     /* Initialize and set the Confidence score parameters to default value */
@@ -769,14 +769,14 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         dofObj->inter_buff_size = (dofObj->dofPrms.coreCfg.width *
                                    dofObj->dofPrms.coreCfg.height) / 2;
 
-        status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+        status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
         if ((vx_status)VX_SUCCESS == status)
         {
             dofObj->inter_buff1 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
                                                 tBuffPtr.mem_heap_region);
 
-            status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+            status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
         else
         {
@@ -862,13 +862,13 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
 
             if (NULL != dofObj->inter_buff1)
             {
-                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff1), dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff1), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff1 = NULL;
             }
 
             if (NULL != dofObj->inter_buff2)
             {
-                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff2), dofObj->inter_buff_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff2), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff2 = NULL;
             }
 
@@ -1363,7 +1363,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_dmpac_dof_cs_tree_params_t) ==
                 usr_data_obj->mem_size)
@@ -1404,7 +1404,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -1455,7 +1455,7 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_dmpac_dof_hts_bw_limit_params_t) ==
                 usr_data_obj->mem_size)
@@ -1482,7 +1482,7 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

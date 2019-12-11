@@ -123,22 +123,22 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(flow_vector, VX_IMAGE_FORMAT, &flow_vector_fmt, sizeof(flow_vector_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector, VX_IMAGE_WIDTH, &flow_vector_w, sizeof(flow_vector_w)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector, VX_IMAGE_HEIGHT, &flow_vector_h, sizeof(flow_vector_h)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector, (vx_enum)VX_IMAGE_FORMAT, &flow_vector_fmt, sizeof(flow_vector_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector, (vx_enum)VX_IMAGE_WIDTH, &flow_vector_w, sizeof(flow_vector_w)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector, (vx_enum)VX_IMAGE_HEIGHT, &flow_vector_h, sizeof(flow_vector_h)));
 
         if (NULL != confidence_threshold)
         {
-            tivxCheckStatus(&status, vxQueryScalar(confidence_threshold, VX_SCALAR_TYPE, &confidence_threshold_scalar_type, sizeof(confidence_threshold_scalar_type)));
+            tivxCheckStatus(&status, vxQueryScalar(confidence_threshold, (vx_enum)VX_SCALAR_TYPE, &confidence_threshold_scalar_type, sizeof(confidence_threshold_scalar_type)));
         }
 
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_FORMAT, &flow_vector_image_fmt, sizeof(flow_vector_image_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_WIDTH, &flow_vector_image_w, sizeof(flow_vector_image_w)));
-        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, VX_IMAGE_HEIGHT, &flow_vector_image_h, sizeof(flow_vector_image_h)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, (vx_enum)VX_IMAGE_FORMAT, &flow_vector_image_fmt, sizeof(flow_vector_image_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, (vx_enum)VX_IMAGE_WIDTH, &flow_vector_image_w, sizeof(flow_vector_image_w)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_image, (vx_enum)VX_IMAGE_HEIGHT, &flow_vector_image_h, sizeof(flow_vector_image_h)));
 
-        tivxCheckStatus(&status, vxQueryImage(confidence_image, VX_IMAGE_FORMAT, &confidence_image_fmt, sizeof(confidence_image_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(confidence_image, VX_IMAGE_WIDTH, &confidence_image_w, sizeof(confidence_image_w)));
-        tivxCheckStatus(&status, vxQueryImage(confidence_image, VX_IMAGE_HEIGHT, &confidence_image_h, sizeof(confidence_image_h)));
+        tivxCheckStatus(&status, vxQueryImage(confidence_image, (vx_enum)VX_IMAGE_FORMAT, &confidence_image_fmt, sizeof(confidence_image_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(confidence_image, (vx_enum)VX_IMAGE_WIDTH, &confidence_image_w, sizeof(confidence_image_w)));
+        tivxCheckStatus(&status, vxQueryImage(confidence_image, (vx_enum)VX_IMAGE_HEIGHT, &confidence_image_h, sizeof(confidence_image_h)));
     }
 
     /* PARAMETER CHECKING */
@@ -153,7 +153,7 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
         if (NULL != confidence_threshold)
         {
-            if (VX_TYPE_UINT32 != confidence_threshold_scalar_type)
+            if ((vx_enum)VX_TYPE_UINT32 != confidence_threshold_scalar_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'confidence_threshold' should be a scalar of type:\n VX_TYPE_UINT32 \n");
@@ -255,9 +255,9 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -265,9 +265,9 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -275,9 +275,9 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -285,9 +285,9 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }

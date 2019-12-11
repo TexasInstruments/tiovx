@@ -121,16 +121,16 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
-        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_video_decoder_params_t), &configuration_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_video_decoder_params_t), &configuration_value, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryUserDataObject(input_bitstream, VX_USER_DATA_OBJECT_NAME, &input_bitstream_name, sizeof(input_bitstream_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(input_bitstream, VX_USER_DATA_OBJECT_SIZE, &input_bitstream_size, sizeof(input_bitstream_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(input_bitstream, (vx_enum)VX_USER_DATA_OBJECT_NAME, &input_bitstream_name, sizeof(input_bitstream_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(input_bitstream, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &input_bitstream_size, sizeof(input_bitstream_size)));
 
-        tivxCheckStatus(&status, vxQueryImage(output_image, VX_IMAGE_FORMAT, &output_image_fmt, sizeof(output_image_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(output_image, VX_IMAGE_WIDTH, &output_image_w, sizeof(output_image_w)));
-        tivxCheckStatus(&status, vxQueryImage(output_image, VX_IMAGE_HEIGHT, &output_image_h, sizeof(output_image_h)));
+        tivxCheckStatus(&status, vxQueryImage(output_image, (vx_enum)VX_IMAGE_FORMAT, &output_image_fmt, sizeof(output_image_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output_image, (vx_enum)VX_IMAGE_WIDTH, &output_image_w, sizeof(output_image_w)));
+        tivxCheckStatus(&status, vxQueryImage(output_image, (vx_enum)VX_IMAGE_HEIGHT, &output_image_h, sizeof(output_image_h)));
     }
 
     /* PARAMETER CHECKING */
@@ -211,7 +211,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderInitialize(vx_node node,
         prms.bot_pad = 0;
         prms.left_pad = 0;
         prms.right_pad = 0;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         status = tivxKernelConfigValidRect(&prms);
     }
@@ -253,9 +253,9 @@ vx_status tivxAddKernelVideoDecoder(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -263,9 +263,9 @@ vx_status tivxAddKernelVideoDecoder(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -273,9 +273,9 @@ vx_status tivxAddKernelVideoDecoder(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

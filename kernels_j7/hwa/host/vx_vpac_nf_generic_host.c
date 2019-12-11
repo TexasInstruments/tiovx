@@ -125,20 +125,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
-        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_common_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_common_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_COLUMNS, &conv_col, sizeof(conv_col)));
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_ROWS, &conv_row, sizeof(conv_row)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_COLUMNS, &conv_col, sizeof(conv_col)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_ROWS, &conv_row, sizeof(conv_row)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
     }
 
     /* PARAMETER CHECKING */
@@ -205,11 +205,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
 		vx_border_t border;
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        status = vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if ((border.mode != VX_BORDER_UNDEFINED) &&
-                (border.mode != VX_BORDER_REPLICATE))
+            if ((border.mode != (vx_enum)VX_BORDER_UNDEFINED) &&
+                (border.mode != (vx_enum)VX_BORDER_REPLICATE))
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
@@ -287,11 +287,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 		vx_border_t border;
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        status = vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if ((border.mode != VX_BORDER_UNDEFINED) &&
-                (border.mode != VX_BORDER_REPLICATE))
+            if ((border.mode != (vx_enum)VX_BORDER_UNDEFINED) &&
+                (border.mode != (vx_enum)VX_BORDER_REPLICATE))
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
@@ -350,9 +350,9 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -360,9 +360,9 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -370,9 +370,9 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_CONVOLUTION,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_CONVOLUTION,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -380,9 +380,9 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }

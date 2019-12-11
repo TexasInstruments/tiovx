@@ -181,8 +181,8 @@ void tivxAddTargetKernelVpacLdc(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
             TIVX_TARGET_MAX_NAME);
@@ -505,7 +505,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, config_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         ldc_prms = (tivx_vpac_ldc_params_t *)target_ptr;
 
@@ -567,7 +567,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
         if (NULL != dcc_buf_desc)
         {
-            dcc_parser_output_params_t *pout = tivxMemAlloc(sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+            dcc_parser_output_params_t *pout = tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == pout)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -581,7 +581,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                 void *target_ptr_dcc;
                 target_ptr_dcc = tivxMemShared2TargetPtr(&dcc_buf_desc->mem_ptr);
-                tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 uint8_t * dcc_ldc_buf = (uint8_t *)target_ptr_dcc;
                 int dcc_buf_size = dcc_buf_desc->mem_size;
@@ -657,9 +657,9 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     }
                 }
 
-                tivxMemBufferUnmap(target_ptr_dcc, dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                tivxMemBufferUnmap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-                tivxMemFree(pout, sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+                tivxMemFree(pout, sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
         else
@@ -682,7 +682,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         }
 
         tivxMemBufferUnmap(target_ptr, config_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -979,10 +979,10 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
         warp_matrix_target_ptr = tivxMemShared2TargetPtr(&warp_matrix_desc->mem_ptr);
 
         tivxMemBufferMap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         /* Direct pass to HW registers */
-        if (VX_TYPE_INT16 == warp_matrix_desc->data_type)
+        if ((vx_enum)VX_TYPE_INT16 == warp_matrix_desc->data_type)
         {
             int16_t *mat_addr;
 
@@ -1057,7 +1057,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
             }
         }
         tivxMemBufferUnmap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     }
     else
@@ -1088,7 +1088,7 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
         target_ptr = tivxMemShared2TargetPtr(&mesh_prms_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, mesh_prms_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_ldc_mesh_params_t) == mesh_prms_desc->mem_size)
         {
@@ -1113,7 +1113,7 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, mesh_prms_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -1138,7 +1138,7 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
         target_ptr = tivxMemShared2TargetPtr(&reg_prms_desc->mem_ptr);
 
         tivxMemBufferMap(target_ptr, reg_prms_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_ldc_region_params_t) ==
                 reg_prms_desc->mem_size)
@@ -1209,7 +1209,7 @@ static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_ldc_bandwidth_params_t) ==
                 usr_data_obj->mem_size)
@@ -1242,7 +1242,7 @@ static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

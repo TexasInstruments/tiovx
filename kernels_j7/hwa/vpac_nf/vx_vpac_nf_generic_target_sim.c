@@ -160,11 +160,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
             tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
@@ -229,11 +229,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             lse_reformat_out(src, dst, dst_target_ptr, prms->dst16, 12, 0);
 
             tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
     }
 
@@ -258,7 +258,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxVpacNfGenericParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxVpacNfGenericParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxVpacNfGenericParams));
@@ -266,7 +266,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             prms->buffer_size = src->imagepatch_addr[0].dim_x *
                                 src->imagepatch_addr[0].dim_y * 2;
 
-            prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+            prms->src16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -274,7 +274,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->dst16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+                prms->dst16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -292,7 +292,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
                 tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 params = (tivx_vpac_nf_common_params_t *)params_array_target_ptr;
 
@@ -321,7 +321,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 prms->debug.replicateV_off = 0;
 
                 tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             }
         }
         else
@@ -382,7 +382,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -422,15 +422,15 @@ static void tivxVpacNfGenericFreeMem(tivxVpacNfGenericParams *prms)
     {
         if (NULL != prms->src16)
         {
-            tivxMemFree(prms->src16, prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->src16, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->src16 = NULL;
         }
         if (NULL != prms->dst16)
         {
-            tivxMemFree(prms->dst16, prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->dst16, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->dst16 = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxVpacNfGenericParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxVpacNfGenericParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }

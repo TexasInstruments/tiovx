@@ -25,7 +25,7 @@ void tivxHostInit(void)
     tivxObjectInit();
     tivxRegisterOpenVXCoreKernels();
 
-    if(tivxGetSelfCpuId()==TIVX_CPU_ID_IPU1_0)
+    if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_IPU1_0)
     {
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
     }

@@ -110,14 +110,14 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
         if (NULL != in_image)
         {
-            tivxCheckStatus(&status, vxQueryImage(in_image, VX_IMAGE_FORMAT, &in_image_fmt, sizeof(in_image_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(in_image, VX_IMAGE_WIDTH, &in_image_w, sizeof(in_image_w)));
-            tivxCheckStatus(&status, vxQueryImage(in_image, VX_IMAGE_HEIGHT, &in_image_h, sizeof(in_image_h)));
+            tivxCheckStatus(&status, vxQueryImage(in_image, (vx_enum)VX_IMAGE_FORMAT, &in_image_fmt, sizeof(in_image_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(in_image, (vx_enum)VX_IMAGE_WIDTH, &in_image_w, sizeof(in_image_w)));
+            tivxCheckStatus(&status, vxQueryImage(in_image, (vx_enum)VX_IMAGE_HEIGHT, &in_image_h, sizeof(in_image_h)));
         }
     }
 
@@ -220,9 +220,9 @@ vx_status tivxAddKernelDisplay(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -230,9 +230,9 @@ vx_status tivxAddKernelDisplay(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }

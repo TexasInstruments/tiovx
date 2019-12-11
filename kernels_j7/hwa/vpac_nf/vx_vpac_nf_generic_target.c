@@ -169,7 +169,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -301,11 +301,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         pConv = conv_target_ptr;
 
@@ -428,11 +428,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;
@@ -541,7 +541,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         params = (tivx_vpac_nf_common_params_t *)params_array_target_ptr;
 
@@ -551,7 +551,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
         conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         pConv = conv_target_ptr;
 
         /* Centers the given matrix in the 5x5 */
@@ -627,7 +627,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         }
 
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
         
     if ((vx_status)VX_SUCCESS == status)
@@ -891,7 +891,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_nf_hts_bw_limit_params_t) ==
                 usr_data_obj->mem_size)
@@ -918,7 +918,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -942,7 +942,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(Nf_WgtTableConfig) ==
                 usr_data_obj->mem_size)
@@ -965,7 +965,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

@@ -160,7 +160,7 @@ void tivxAddTargetKernelVideoDecoder(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VDEC1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -284,9 +284,9 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         output_image_target_ptr = tivxMemShared2TargetPtr(&output_image_desc->mem_ptr[0]);
 
         tivxMemBufferMap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(output_image_target_ptr, output_image_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         bitstream = (uint8_t*) input_bitstream_target_ptr;
     }
@@ -395,9 +395,9 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         tivxMemBufferUnmap(output_image_target_ptr, output_image_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;

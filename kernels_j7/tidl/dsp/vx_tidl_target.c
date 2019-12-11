@@ -313,7 +313,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         network   = (tivx_obj_desc_user_data_object_t *)obj_desc[1];
 
         network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
-        tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if(tidlObj->tidlParams.compute_network_checksum == 1)
         {
@@ -340,7 +340,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         inArgs   = (tivx_obj_desc_user_data_object_t *)obj_desc[3];
 
         in_args_target_ptr = tivxMemShared2TargetPtr(&inArgs->mem_ptr);
-        tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         tidlObj->inArgs = in_args_target_ptr;
 
@@ -348,7 +348,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         outArgs  = (tivx_obj_desc_user_data_object_t *)obj_desc[4];
 
         out_args_target_ptr = tivxMemShared2TargetPtr(&outArgs->mem_ptr);
-        tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tidlObj->outArgs = out_args_target_ptr;
 
@@ -367,14 +367,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         for(id = 0; id < tidlObj->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
             in_tensor_target_ptr  = tivxMemShared2TargetPtr(&inTensor->mem_ptr);
-            tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             tidlObj->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
         }
 
         for(id = 0; id < tidlObj->outBufs.numBufs; id++) {
             outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
             out_tensor_target_ptr = tivxMemShared2TargetPtr(&outTensor->mem_ptr);
-            tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             tidlObj->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
         }
 
@@ -391,19 +391,19 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
                     (IVISION_OutArgs *)tidlObj->outArgs
                  );
 
-        tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-        tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         for(id = 0; id < tidlObj->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
             in_tensor_target_ptr  = tivxMemShared2TargetPtr(&inTensor->mem_ptr);
-            tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
 
         for(id = 0; id < tidlObj->outBufs.numBufs; id++) {
             outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
             out_tensor_target_ptr = tivxMemShared2TargetPtr(&outTensor->mem_ptr);
-            tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
     }
 
@@ -490,7 +490,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     }
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+        status = tivxMemResetScratchHeap((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
     }
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -503,7 +503,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         /* IMPORTANT! Create params is assumed to be available at index 2 */
         createParams   = (tivx_obj_desc_user_data_object_t *)obj_desc[2];
 
-        tidlObj = tivxMemAlloc(sizeof(tivxTIDLObj), TIVX_MEM_EXTERNAL);
+        tidlObj = tivxMemAlloc(sizeof(tivxTIDLObj), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != tidlObj)
         {
@@ -517,7 +517,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         if ((vx_status)VX_SUCCESS == status)
         {
           config_target_ptr = tivxMemShared2TargetPtr(&config->mem_ptr);
-          tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+          tivxMemBufferMap(config_target_ptr, config->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
           memcpy(&tidlObj->tidlParams, config_target_ptr, sizeof(tivxTIDLJ7Params));
 
@@ -528,7 +528,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         }
 
         #ifdef TIDL_COPY_NETWORK_BUF
-        tidlObj->tidlNet = tivxMemAlloc(network->mem_size, TIVX_MEM_EXTERNAL);
+        tidlObj->tidlNet = tivxMemAlloc(network->mem_size, (vx_enum)TIVX_MEM_EXTERNAL);
         tidlObj->netSize = network->mem_size;
         if (NULL == tidlObj->tidlNet)
         {
@@ -542,7 +542,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         if ((vx_status)VX_SUCCESS == status)
         {
           network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
-          tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+          tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
           #ifdef TIDL_COPY_NETWORK_BUF
           memcpy(tidlObj->tidlNet, network_target_ptr, network->mem_size);
@@ -563,7 +563,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         if ((vx_status)VX_SUCCESS == status)
         {
           create_params_target_ptr = tivxMemShared2TargetPtr(&createParams->mem_ptr);
-          tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+          tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
           memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
         }
@@ -571,13 +571,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         if ((vx_status)VX_SUCCESS == status)
         {
             /* reset scratch heap offset to zero by doing a dummy free */
-            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L1);
-            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L2);
-            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L3);
+            tivxMemFree(NULL, 0, (vx_enum)TIVX_MEM_INTERNAL_L1);
+            tivxMemFree(NULL, 0, (vx_enum)TIVX_MEM_INTERNAL_L2);
+            tivxMemFree(NULL, 0, (vx_enum)TIVX_MEM_INTERNAL_L3);
 
-            tivxMemStats(&l1_stats, TIVX_MEM_INTERNAL_L1);
-            tivxMemStats(&l2_stats, TIVX_MEM_INTERNAL_L2);
-            tivxMemStats(&l3_stats, TIVX_MEM_INTERNAL_L3);
+            tivxMemStats(&l1_stats, (vx_enum)TIVX_MEM_INTERNAL_L1);
+            tivxMemStats(&l2_stats, (vx_enum)TIVX_MEM_INTERNAL_L2);
+            tivxMemStats(&l3_stats, (vx_enum)TIVX_MEM_INTERNAL_L3);
 
             tidlObj->createParams.l1MemSize = l1_stats.free_size;
             tidlObj->createParams.l2MemSize = l2_stats.free_size;
@@ -632,11 +632,11 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             }
         }
 
-        tivxMemBufferUnmap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(config_target_ptr, config->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        tivxMemBufferUnmap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+        tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -647,7 +647,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             #ifdef TIDL_COPY_NETWORK_BUF
             if (NULL != tidlObj->tidlNet)
             {
-                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, TIVX_MEM_EXTERNAL);
+                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, (vx_enum)TIVX_MEM_EXTERNAL);
             }
             #endif
             if (NULL != tidlObj)
@@ -701,7 +701,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
             #ifdef TIDL_COPY_NETWORK_BUF
             if (NULL != tidlObj->tidlNet)
             {
-                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, TIVX_MEM_EXTERNAL);
+                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, (vx_enum)TIVX_MEM_EXTERNAL);
             }
             #endif
             tivxTIDLFreeMem(tidlObj);
@@ -757,7 +757,7 @@ static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj)
 {
     if (NULL != tidlObj)
     {
-        tivxMemFree(tidlObj, sizeof(tivxTIDLObj), TIVX_MEM_EXTERNAL);
+        tivxMemFree(tidlObj, sizeof(tivxTIDLObj), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 

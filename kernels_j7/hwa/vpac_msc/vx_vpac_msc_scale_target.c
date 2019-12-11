@@ -202,8 +202,8 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
     inst_start = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if ((TIVX_CPU_ID_IPU1_0 == self_cpu) ||
-        (TIVX_CPU_ID_IPU1_1 == self_cpu))
+    if (((vx_enum)TIVX_CPU_ID_IPU1_0 == self_cpu) ||
+        ((vx_enum)TIVX_CPU_ID_IPU1_1 == self_cpu))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -225,7 +225,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
             }
 
             inst_obj->target_kernel = tivxAddTargetKernel(
-                                VX_KERNEL_HALFSCALE_GAUSSIAN,
+                                (vx_enum)VX_KERNEL_HALFSCALE_GAUSSIAN,
                                 target_name,
                                 tivxVpacMscScaleProcess,
                                 tivxVpacMscScaleCreate,
@@ -333,8 +333,8 @@ void tivxAddTargetKernelVpacMscScale(void)
     inst_start = TIVX_VPAC_MSC_SCALE_IMAGE_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -356,7 +356,7 @@ void tivxAddTargetKernelVpacMscScale(void)
             }
 
             inst_obj->target_kernel = tivxAddTargetKernel(
-                                VX_KERNEL_SCALE_IMAGE,
+                                (vx_enum)VX_KERNEL_SCALE_IMAGE,
                                 target_name,
                                 tivxVpacMscScaleProcess,
                                 tivxVpacMscScaleCreate,
@@ -775,7 +775,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             interp_type = gsize_desc->data.enm;
 
-            if (VX_INTERPOLATION_BILINEAR == interp_type)
+            if ((vx_enum)VX_INTERPOLATION_BILINEAR == interp_type)
             {
                 coeffCfg->mpCoeffSet[0U] = gVpacMscScaleMpCoeff[0U];
             }

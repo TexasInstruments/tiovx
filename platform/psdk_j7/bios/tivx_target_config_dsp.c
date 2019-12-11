@@ -50,10 +50,10 @@ void tivxPlatformCreateTargets(void)
 
     switch (self_cpu)
     {
-        case TIVX_CPU_ID_DSP1:
+        case (vx_enum)TIVX_CPU_ID_DSP1:
             target_id = TIVX_TARGET_ID_DSP1;
             break;
-        case TIVX_CPU_ID_DSP2:
+        case (vx_enum)TIVX_CPU_ID_DSP2:
             target_id = TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */
@@ -85,10 +85,10 @@ void tivxPlatformDeleteTargets(void)
 
     switch (self_cpu)
     {
-        case TIVX_CPU_ID_DSP1:
+        case (vx_enum)TIVX_CPU_ID_DSP1:
             target_id = TIVX_TARGET_ID_DSP1;
             break;
-        case TIVX_CPU_ID_DSP2:
+        case (vx_enum)TIVX_CPU_ID_DSP2:
             target_id = TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */

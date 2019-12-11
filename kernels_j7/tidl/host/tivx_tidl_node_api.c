@@ -93,7 +93,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
     config= (vx_user_data_object)appParams[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
     vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
-        (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        (void **)&tidlParams, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
     ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
 
@@ -131,7 +131,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
         if(vxGetStatus((vx_reference)(node))==(vx_status)VX_SUCCESS)
         {
-            vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1);
+            vxSetNodeTarget(node, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1);
         }
     }
 

@@ -146,20 +146,20 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         confidence_image_target_ptr = tivxMemShared2TargetPtr(&confidence_image_desc->mem_ptr[0]);
 
         tivxMemBufferMap(flow_vector_target_ptr,
-           flow_vector_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           flow_vector_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(flow_vector_image1_target_ptr,
-           flow_vector_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           flow_vector_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
         if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             tivxMemBufferMap(flow_vector_image2_target_ptr,
-               flow_vector_image_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               flow_vector_image_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
         tivxMemBufferMap(confidence_image_target_ptr,
-           confidence_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           confidence_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         /* if not specified by user or value out of valid range use default value */
         if(confidence_threshold_desc != NULL)
@@ -196,22 +196,22 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         /* kernel processing function complete */
 
         tivxMemBufferUnmap(flow_vector_target_ptr,
-           flow_vector_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           flow_vector_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(flow_vector_image1_target_ptr,
-           flow_vector_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           flow_vector_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
             tivxMemBufferUnmap(flow_vector_image2_target_ptr,
-               flow_vector_image_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               flow_vector_image_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
 
         tivxMemBufferUnmap(confidence_image_target_ptr,
-           confidence_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           confidence_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
     }
 
@@ -247,19 +247,19 @@ void tivxAddTargetKernelDofVisualize(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;

@@ -190,8 +190,8 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         /* Reset all values to 0 */
         memset(gTivxVpacMscMScaleInstObj, 0x0,
@@ -1059,7 +1059,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_msc_coefficients_t) ==
                 usr_data_obj->mem_size)
@@ -1087,7 +1087,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -1127,7 +1127,7 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj
             target_ptr = tivxMemShared2TargetPtr(&usr_data_obj[cnt]->mem_ptr);
 
             tivxMemBufferMap(target_ptr, usr_data_obj[cnt]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             if (sizeof(tivx_vpac_msc_output_params_t) ==
                     usr_data_obj[cnt]->mem_size)
@@ -1147,7 +1147,7 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj
             }
 
             tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
 
         if ((vx_status)VX_SUCCESS != status)
@@ -1183,7 +1183,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_msc_input_params_t) ==
                 usr_data_obj->mem_size)
@@ -1219,7 +1219,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

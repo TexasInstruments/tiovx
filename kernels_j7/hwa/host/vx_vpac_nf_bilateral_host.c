@@ -127,21 +127,21 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
-        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &bilateral_prms, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &bilateral_prms, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, VX_USER_DATA_OBJECT_NAME, &sigmas_name, sizeof(sigmas_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, VX_USER_DATA_OBJECT_SIZE, &sigmas_size, sizeof(sigmas_size)));
-        tivxCheckStatus(&status, vxCopyUserDataObject(sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &bilateral_sigmas, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, (vx_enum)VX_USER_DATA_OBJECT_NAME, &sigmas_name, sizeof(sigmas_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(sigmas, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &sigmas_size, sizeof(sigmas_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &bilateral_sigmas, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
     }
 
     /* PARAMETER CHECKING */
@@ -336,9 +336,9 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -346,9 +346,9 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -356,9 +356,9 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -366,9 +366,9 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }

@@ -195,7 +195,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 
     /* Allocate DCC output buffer */
     vissObj->dcc_out_buf = (uint8_t *)tivxMemAlloc(
-        vissObj->dcc_out_numbytes, TIVX_MEM_EXTERNAL);
+        vissObj->dcc_out_numbytes, (vx_enum)TIVX_MEM_EXTERNAL);
 
     if (NULL == vissObj->dcc_out_buf)
     {
@@ -212,7 +212,7 @@ void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj)
     if (NULL != vissObj->dcc_out_buf)
     {
         tivxMemFree(vissObj->dcc_out_buf, vissObj->dcc_out_numbytes,
-            TIVX_MEM_EXTERNAL);
+            (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 
@@ -237,7 +237,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         if(NULL != dcc_in_prms->dcc_buf)
         {
             tivxMemBufferMap(dcc_in_prms->dcc_buf,
-                dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             dcc_status = Dcc_Create(dcc_out_prms, vissObj->dcc_out_buf);
             dcc_out_prms->useAwbCalbCfg = 0U;
@@ -267,7 +267,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             }
 
             tivxMemBufferUnmap(dcc_in_prms->dcc_buf,
-                dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else
         {

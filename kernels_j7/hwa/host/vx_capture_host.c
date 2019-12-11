@@ -113,10 +113,10 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_NAME, &input_name, sizeof(input_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_SIZE, &input_size, sizeof(input_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(input, (vx_enum)VX_USER_DATA_OBJECT_NAME, &input_name, sizeof(input_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(input, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &input_size, sizeof(input_size)));
 
-        tivxCheckStatus(&status, vxQueryObjectArray(output, VX_OBJECT_ARRAY_NUMITEMS, &output_num_items, sizeof(output_num_items)));
+        tivxCheckStatus(&status, vxQueryObjectArray(output, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &output_num_items, sizeof(output_num_items)));
 
     }
 
@@ -139,19 +139,19 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
         if (NULL != obj_arr_element)
         {
-            tivxCheckStatus(&status, vxQueryReference(obj_arr_element, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
+            tivxCheckStatus(&status, vxQueryReference(obj_arr_element, (vx_enum)VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
 
             if ((vx_status)VX_SUCCESS == status)
             {
                 if ( (TIVX_TYPE_RAW_IMAGE != ref_type) &&
-                     (VX_TYPE_IMAGE != ref_type) )
+                     ((vx_enum)VX_TYPE_IMAGE != ref_type) )
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "output object array must contain either TIVX_TYPE_RAW_IMAGE or VX_TYPE_IMAGE \n");
                 }
-                else if (VX_TYPE_IMAGE == ref_type)
+                else if ((vx_enum)VX_TYPE_IMAGE == ref_type)
                 {
-                    tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
+                    tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, (vx_enum)VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
 
                     if (((vx_df_image)VX_DF_IMAGE_RGBX != img_fmt) &&
                         ((vx_df_image)VX_DF_IMAGE_U16 != img_fmt) &&
@@ -232,7 +232,7 @@ vx_status tivxAddKernelCapture(vx_context context)
     {
         vx_uint32 num_bufs = TIVX_CAPTURE_MIN_PIPEUP_BUFS;
 
-        vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &num_bufs, sizeof(num_bufs));
+        vxSetKernelAttribute(kernel, (vx_enum)VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &num_bufs, sizeof(num_bufs));
 
         status = vxGetStatus((vx_reference)kernel);
     }
@@ -243,9 +243,9 @@ vx_status tivxAddKernelCapture(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -253,9 +253,9 @@ vx_status tivxAddKernelCapture(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_OBJECT_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_OBJECT_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }

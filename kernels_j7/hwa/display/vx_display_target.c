@@ -153,7 +153,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_display_select_channel_params_t) ==
                 usr_data_obj->mem_size)
@@ -169,7 +169,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -249,7 +249,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
         dispPrms->chromaBufSize =
             (fmt->pitch[1] * fmt->height) / 2u;
         status = tivxMemBufferAlloc(&dispPrms->chroma_mem_ptr,
-            dispPrms->chromaBufSize, TIVX_MEM_EXTERNAL);
+            dispPrms->chromaBufSize, (vx_enum)TIVX_MEM_EXTERNAL);
         if ((vx_status)VX_SUCCESS == status)
         {
             dispPrms->chromaBufAddr =
@@ -259,7 +259,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             chroma_target_ptr = tivxMemShared2TargetPtr(&dispPrms->chroma_mem_ptr);
 
             tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
-                             VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
             if ((vx_df_image)VX_DF_IMAGE_U16 == obj_desc_img->format)
             {
@@ -285,7 +285,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             }
 
             tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
-                             VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);            
+                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);            
         }
     }
     else
@@ -377,7 +377,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         obj_desc_configuration = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX];
         obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
 
-        displayParams = tivxMemAlloc(sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
+        displayParams = tivxMemAlloc(sizeof(tivxDisplayParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if(NULL != displayParams)
         {
             memset(displayParams, 0, sizeof(tivxDisplayParams));
@@ -399,8 +399,8 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
 
             tivxMemBufferMap(display_config_target_ptr,
                              obj_desc_configuration->mem_size,
-                             VX_MEMORY_TYPE_HOST,
-                             VX_READ_ONLY);
+                             (vx_enum)VX_MEMORY_TYPE_HOST,
+                             (vx_enum)VX_READ_ONLY);
 
             params = (tivx_display_params_t *)display_config_target_ptr;
 
@@ -478,13 +478,13 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                 {
                     if(displayParams->copyImageSize[0] != 0)
                     {
-                        displayParams->copyImagePtr[0][0] = tivxMemAlloc(displayParams->copyImageSize[0], TIVX_MEM_EXTERNAL);
-                        displayParams->copyImagePtr[1][0] = tivxMemAlloc(displayParams->copyImageSize[0], TIVX_MEM_EXTERNAL);
+                        displayParams->copyImagePtr[0][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                        displayParams->copyImagePtr[1][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
                     if((displayParams->copyImageSize[1] != 0) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                     {
-                        displayParams->copyImagePtr[0][1] = tivxMemAlloc(displayParams->copyImageSize[1], TIVX_MEM_EXTERNAL);
-                        displayParams->copyImagePtr[1][1] = tivxMemAlloc(displayParams->copyImageSize[1], TIVX_MEM_EXTERNAL);
+                        displayParams->copyImagePtr[0][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                        displayParams->copyImagePtr[1][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
                 }
                 displayParams->currIdx = 0;
@@ -522,8 +522,8 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         {
             tivxMemBufferUnmap(display_config_target_ptr,
                                obj_desc_configuration->mem_size,
-                               VX_MEMORY_TYPE_HOST,
-                               VX_READ_ONLY);
+                               (vx_enum)VX_MEMORY_TYPE_HOST,
+                               (vx_enum)VX_READ_ONLY);
             tivxSetTargetKernelInstanceContext(kernel,
                                                displayParams,
                                                sizeof(tivxDisplayParams));
@@ -532,7 +532,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         {
             if(NULL != displayParams)
             {
-                tivxMemFree(displayParams, sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(displayParams, sizeof(tivxDisplayParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -633,19 +633,19 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
             {
                 if(displayParams->copyImageSize[0] != 0)
                 {
-                    tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], TIVX_MEM_EXTERNAL);
-                    tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], TIVX_MEM_EXTERNAL);
+                    tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                    tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                 }
                 if((displayParams->copyImageSize[1] != 0) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                 {
-                    tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], TIVX_MEM_EXTERNAL);
-                    tivxMemFree(displayParams->copyImagePtr[1][1], displayParams->copyImageSize[1], TIVX_MEM_EXTERNAL);
+                    tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                    tivxMemFree(displayParams->copyImagePtr[1][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
             if(sizeof(tivxDisplayParams) == size)
             {
-                tivxMemFree(displayParams, sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(displayParams, sizeof(tivxDisplayParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -746,7 +746,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     if((vx_status)VX_SUCCESS == status)
     {
         active_channel = displayParams->active_channel;
-        if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
+        if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
         {
             tivx_obj_desc_object_array_t *obj_desc_obj_array;
 
@@ -756,7 +756,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
         }
         else
         {
-            if (TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
+            if ((vx_enum)TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
             {
                 tivxGetObjDescList(
                     &obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id,
@@ -860,13 +860,13 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             tivxMemBufferMap(
                 displayParams->copyImagePtr[displayParams->currIdx][0],
                 displayParams->copyImageSize[0],
-                VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
             tivxMemBufferMap(
                 image_target_ptr1,
                 displayParams->copyImageSize[0],
-                VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
 
             /* Copy  and assign buffers */
             memcpy(displayParams->copyImagePtr[displayParams->currIdx][0], image_target_ptr1, displayParams->copyImageSize[0]);
@@ -874,13 +874,13 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             tivxMemBufferUnmap(
                 displayParams->copyImagePtr[displayParams->currIdx][0],
                 displayParams->copyImageSize[0],
-                VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
             tivxMemBufferUnmap(
                 image_target_ptr1,
                 displayParams->copyImageSize[0],
-                VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
 
             displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][0];
             if((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format)
@@ -888,13 +888,13 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 tivxMemBufferMap(
                     displayParams->copyImagePtr[displayParams->currIdx][1],
                     displayParams->copyImageSize[1],
-                    VX_MEMORY_TYPE_HOST,
-                    VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST,
+                    (vx_enum)VX_WRITE_ONLY);
                 tivxMemBufferMap(
                     image_target_ptr2,
                     displayParams->copyImageSize[1],
-                    VX_MEMORY_TYPE_HOST,
-                    VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST,
+                    (vx_enum)VX_WRITE_ONLY);
 
                 if (NULL != image_target_ptr2)
                 {
@@ -904,13 +904,13 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 tivxMemBufferUnmap(
                     displayParams->copyImagePtr[displayParams->currIdx][1],
                     displayParams->copyImageSize[1],
-                    VX_MEMORY_TYPE_HOST,
-                    VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST,
+                    (vx_enum)VX_WRITE_ONLY);
                 tivxMemBufferUnmap(
                     image_target_ptr2,
                     displayParams->copyImageSize[1],
-                    VX_MEMORY_TYPE_HOST,
-                    VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST,
+                    (vx_enum)VX_WRITE_ONLY);
 
                 displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][1];
             }
@@ -984,7 +984,7 @@ void tivxAddTargetKernelDisplay(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_DISPLAY1,
             TIVX_TARGET_MAX_NAME);

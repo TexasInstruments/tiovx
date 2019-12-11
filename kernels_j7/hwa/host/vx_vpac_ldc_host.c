@@ -152,53 +152,53 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
-        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_ldc_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
         if (NULL != warp_matrix)
         {
-            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_TYPE, &warp_matrix_type, sizeof(warp_matrix_type)));
-            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_COLUMNS, &warp_matrix_w, sizeof(warp_matrix_w)));
-            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_ROWS, &warp_matrix_h, sizeof(warp_matrix_h)));
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, (vx_enum)VX_MATRIX_TYPE, &warp_matrix_type, sizeof(warp_matrix_type)));
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, (vx_enum)VX_MATRIX_COLUMNS, &warp_matrix_w, sizeof(warp_matrix_w)));
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &warp_matrix_h, sizeof(warp_matrix_h)));
         }
 
         if (NULL != region_prms)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_NAME, &region_prms_name, sizeof(region_prms_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_SIZE, &region_prms_size, sizeof(region_prms_size)));
-            tivxCheckStatus(&status, vxCopyUserDataObject(region_prms, 0, sizeof(tivx_vpac_ldc_region_params_t), &ldc_region_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, (vx_enum)VX_USER_DATA_OBJECT_NAME, &region_prms_name, sizeof(region_prms_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &region_prms_size, sizeof(region_prms_size)));
+            tivxCheckStatus(&status, vxCopyUserDataObject(region_prms, 0, sizeof(tivx_vpac_ldc_region_params_t), &ldc_region_params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
         }
 
         if (NULL != mesh_prms)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_NAME, &mesh_prms_name, sizeof(mesh_prms_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_SIZE, &mesh_prms_size, sizeof(mesh_prms_size)));
-            tivxCheckStatus(&status, vxCopyUserDataObject(mesh_prms, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &ldc_mesh_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, (vx_enum)VX_USER_DATA_OBJECT_NAME, &mesh_prms_name, sizeof(mesh_prms_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &mesh_prms_size, sizeof(mesh_prms_size)));
+            tivxCheckStatus(&status, vxCopyUserDataObject(mesh_prms, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &ldc_mesh_params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
         }
 
         if (NULL != mesh_img)
         {
-            tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_FORMAT, &mesh_img_fmt, sizeof(mesh_img_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(mesh_img, (vx_enum)VX_IMAGE_FORMAT, &mesh_img_fmt, sizeof(mesh_img_fmt)));
         }
 
         if (NULL != dcc_db)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, VX_USER_DATA_OBJECT_NAME, &dcc_db_name, sizeof(dcc_db_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, VX_USER_DATA_OBJECT_SIZE, &dcc_db_size, sizeof(dcc_db_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, (vx_enum)VX_USER_DATA_OBJECT_NAME, &dcc_db_name, sizeof(dcc_db_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &dcc_db_size, sizeof(dcc_db_size)));
         }
 
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT, &in_img_fmt, sizeof(in_img_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(in_img, (vx_enum)VX_IMAGE_FORMAT, &in_img_fmt, sizeof(in_img_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_WIDTH, &out0_img_w, sizeof(out0_img_w)));
-        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_HEIGHT, &out0_img_h, sizeof(out0_img_h)));
-        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_FORMAT, &out0_img_fmt, sizeof(out0_img_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(out0_img, (vx_enum)VX_IMAGE_WIDTH, &out0_img_w, sizeof(out0_img_w)));
+        tivxCheckStatus(&status, vxQueryImage(out0_img, (vx_enum)VX_IMAGE_HEIGHT, &out0_img_h, sizeof(out0_img_h)));
+        tivxCheckStatus(&status, vxQueryImage(out0_img, (vx_enum)VX_IMAGE_FORMAT, &out0_img_fmt, sizeof(out0_img_fmt)));
 
         if (NULL != out1_img)
         {
-            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_WIDTH, &out1_img_w, sizeof(out1_img_w)));
-            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_HEIGHT, &out1_img_h, sizeof(out1_img_h)));
-            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_FORMAT, &out1_img_fmt, sizeof(out1_img_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(out1_img, (vx_enum)VX_IMAGE_WIDTH, &out1_img_w, sizeof(out1_img_w)));
+            tivxCheckStatus(&status, vxQueryImage(out1_img, (vx_enum)VX_IMAGE_HEIGHT, &out1_img_h, sizeof(out1_img_h)));
+            tivxCheckStatus(&status, vxQueryImage(out1_img, (vx_enum)VX_IMAGE_FORMAT, &out1_img_fmt, sizeof(out1_img_fmt)));
         }
     }
 
@@ -215,8 +215,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
         if (NULL != warp_matrix)
         {
-            if( (VX_TYPE_INT16 != warp_matrix_type) &&
-                (VX_TYPE_FLOAT32 != warp_matrix_type))
+            if( ((vx_enum)VX_TYPE_INT16 != warp_matrix_type) &&
+                ((vx_enum)VX_TYPE_FLOAT32 != warp_matrix_type))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 or VX_TYPE_FLOAT32 \n");
@@ -647,9 +647,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -657,9 +657,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_MATRIX,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_MATRIX,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -667,9 +667,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -677,9 +677,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -687,9 +687,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -697,9 +697,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -707,9 +707,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -717,9 +717,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -727,9 +727,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }

@@ -143,7 +143,7 @@ void tivxAddTargetKernelVpacViss(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -1165,10 +1165,10 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
 
     switch (raw_img_desc->params.format[0U].pixel_container)
     {
-        case TIVX_RAW_IMAGE_8_BIT:
+        case (vx_enum)TIVX_RAW_IMAGE_8_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
             break;
-        case TIVX_RAW_IMAGE_16_BIT:
+        case (vx_enum)TIVX_RAW_IMAGE_16_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
         case TIVX_RAW_IMAGE_P12_BIT:
@@ -1430,7 +1430,7 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
         *target_ptr = tivxMemShared2TargetPtr(&desc->mem_ptr);
 
         tivxMemBufferMap(*target_ptr, desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -1445,8 +1445,8 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
 static void tivxVpacVissUnmapUserDesc(void **target_ptr,
     tivx_obj_desc_user_data_object_t *desc)
 {
-    tivxMemBufferUnmap(*target_ptr, desc->mem_size, VX_MEMORY_TYPE_HOST,
-        VX_READ_ONLY);
+    tivxMemBufferUnmap(*target_ptr, desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+        (vx_enum)VX_READ_ONLY);
     *target_ptr = NULL;
 }
 
@@ -1529,7 +1529,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             else
             {
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
-                    vissObj->glbceStatInfo.size, TIVX_MEM_EXTERNAL);
+                    vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == vissObj->ctx_mem_ptr.host_ptr)
                 {
                     vissObj->ctx_mem_phys_ptr = 0u;

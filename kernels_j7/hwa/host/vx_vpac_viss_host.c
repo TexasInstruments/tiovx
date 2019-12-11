@@ -161,70 +161,70 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
         if (NULL != ae_awb_result)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_NAME, &ae_awb_result_name, sizeof(ae_awb_result_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_SIZE, &ae_awb_result_size, sizeof(ae_awb_result_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, (vx_enum)VX_USER_DATA_OBJECT_NAME, &ae_awb_result_name, sizeof(ae_awb_result_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &ae_awb_result_size, sizeof(ae_awb_result_size)));
         }
 
-        tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &raw_w, sizeof(raw_w)));
-        tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &raw_h, sizeof(raw_h)));
+        tivxCheckStatus(&status, tivxQueryRawImage(raw, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &raw_w, sizeof(raw_w)));
+        tivxCheckStatus(&status, tivxQueryRawImage(raw, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &raw_h, sizeof(raw_h)));
 
         if (NULL != output0)
         {
-            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_FORMAT, &output0_fmt, sizeof(output0_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_WIDTH, &output0_w, sizeof(output0_w)));
-            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_HEIGHT, &output0_h, sizeof(output0_h)));
+            tivxCheckStatus(&status, vxQueryImage(output0, (vx_enum)VX_IMAGE_FORMAT, &output0_fmt, sizeof(output0_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output0, (vx_enum)VX_IMAGE_WIDTH, &output0_w, sizeof(output0_w)));
+            tivxCheckStatus(&status, vxQueryImage(output0, (vx_enum)VX_IMAGE_HEIGHT, &output0_h, sizeof(output0_h)));
         }
 
         if (NULL != output1)
         {
-            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_FORMAT, &output1_fmt, sizeof(output1_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_WIDTH, &output1_w, sizeof(output1_w)));
-            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_HEIGHT, &output1_h, sizeof(output1_h)));
+            tivxCheckStatus(&status, vxQueryImage(output1, (vx_enum)VX_IMAGE_FORMAT, &output1_fmt, sizeof(output1_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output1, (vx_enum)VX_IMAGE_WIDTH, &output1_w, sizeof(output1_w)));
+            tivxCheckStatus(&status, vxQueryImage(output1, (vx_enum)VX_IMAGE_HEIGHT, &output1_h, sizeof(output1_h)));
         }
 
         if (NULL != output2)
         {
-            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_FORMAT, &output2_fmt, sizeof(output2_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_WIDTH, &output2_w, sizeof(output2_w)));
-            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_HEIGHT, &output2_h, sizeof(output2_h)));
+            tivxCheckStatus(&status, vxQueryImage(output2, (vx_enum)VX_IMAGE_FORMAT, &output2_fmt, sizeof(output2_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output2, (vx_enum)VX_IMAGE_WIDTH, &output2_w, sizeof(output2_w)));
+            tivxCheckStatus(&status, vxQueryImage(output2, (vx_enum)VX_IMAGE_HEIGHT, &output2_h, sizeof(output2_h)));
         }
 
         if (NULL != output3)
         {
-            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_FORMAT, &output3_fmt, sizeof(output3_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_WIDTH, &output3_w, sizeof(output3_w)));
-            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_HEIGHT, &output3_h, sizeof(output3_h)));
+            tivxCheckStatus(&status, vxQueryImage(output3, (vx_enum)VX_IMAGE_FORMAT, &output3_fmt, sizeof(output3_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output3, (vx_enum)VX_IMAGE_WIDTH, &output3_w, sizeof(output3_w)));
+            tivxCheckStatus(&status, vxQueryImage(output3, (vx_enum)VX_IMAGE_HEIGHT, &output3_h, sizeof(output3_h)));
         }
 
         if (NULL != output4)
         {
-            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_FORMAT, &output4_fmt, sizeof(output4_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_WIDTH, &output4_w, sizeof(output4_w)));
-            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_HEIGHT, &output4_h, sizeof(output4_h)));
+            tivxCheckStatus(&status, vxQueryImage(output4, (vx_enum)VX_IMAGE_FORMAT, &output4_fmt, sizeof(output4_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output4, (vx_enum)VX_IMAGE_WIDTH, &output4_w, sizeof(output4_w)));
+            tivxCheckStatus(&status, vxQueryImage(output4, (vx_enum)VX_IMAGE_HEIGHT, &output4_h, sizeof(output4_h)));
         }
 
         if (NULL != histogram)
         {
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, VX_DISTRIBUTION_BINS, &histogram_numBins, sizeof(histogram_numBins)));
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, VX_DISTRIBUTION_RANGE, &histogram_range, sizeof(histogram_range)));
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, VX_DISTRIBUTION_OFFSET, &histogram_offset, sizeof(histogram_offset)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_BINS, &histogram_numBins, sizeof(histogram_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_RANGE, &histogram_range, sizeof(histogram_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_OFFSET, &histogram_offset, sizeof(histogram_offset)));
         }
 
         if (NULL != h3a_aew_af)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, VX_USER_DATA_OBJECT_NAME, &h3a_aew_af_name, sizeof(h3a_aew_af_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, VX_USER_DATA_OBJECT_SIZE, &h3a_aew_af_size, sizeof(h3a_aew_af_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, (vx_enum)VX_USER_DATA_OBJECT_NAME, &h3a_aew_af_name, sizeof(h3a_aew_af_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &h3a_aew_af_size, sizeof(h3a_aew_af_size)));
         }
 
         if (NULL != dcc_param)
         {
-            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, VX_USER_DATA_OBJECT_NAME, &dcc_param_name, sizeof(dcc_param_name)));
-            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, VX_USER_DATA_OBJECT_SIZE, &dcc_param_size, sizeof(dcc_param_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, (vx_enum)VX_USER_DATA_OBJECT_NAME, &dcc_param_name, sizeof(dcc_param_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &dcc_param_size, sizeof(dcc_param_size)));
         }
     }
 
@@ -240,7 +240,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
         else
         {
-            vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+            vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
         }
 
         if (NULL != ae_awb_result)
@@ -253,7 +253,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             }
             else
             {
-                vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
             }
         }
 
@@ -669,9 +669,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* Configuration */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -680,9 +680,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* AE/AEWB Result */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -691,9 +691,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* DCC Buffer */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -702,9 +702,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* Input RAW Images */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
+                        (vx_enum)VX_INPUT,
                         TIVX_TYPE_RAW_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -712,9 +712,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -722,9 +722,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -732,9 +732,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -742,9 +742,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -752,9 +752,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -763,9 +763,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* H3A Output */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
+                        (vx_enum)VX_OUTPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -774,9 +774,9 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             /* Histogram Output */
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_DISTRIBUTION,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_DISTRIBUTION,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }

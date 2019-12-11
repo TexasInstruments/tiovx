@@ -177,7 +177,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -309,15 +309,15 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(configuration_target_ptr,
-            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(sigmas_target_ptr,
-            sigmas_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         /* Initialize NF Input Frame List */
         inFrmList->frames[0U] =
@@ -373,15 +373,15 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(configuration_target_ptr,
-            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(sigmas_target_ptr,
-            sigmas_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;
@@ -490,9 +490,9 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         sigmas_array_target_ptr = tivxMemShared2TargetPtr(&sigmas_array->mem_ptr);
 
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(sigmas_array_target_ptr, sigmas_array->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         params = (tivx_vpac_nf_bilateral_params_t *)params_array_target_ptr;
         sigmas = (tivx_vpac_nf_bilateral_sigmas_t *)sigmas_array_target_ptr;
@@ -544,7 +544,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         }
 
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
         
     if ((vx_status)VX_SUCCESS == status)
@@ -1035,7 +1035,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_vpac_nf_hts_bw_limit_params_t) ==
                 usr_data_obj->mem_size)
@@ -1066,7 +1066,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {
@@ -1091,7 +1091,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(Nf_WgtTableConfig) ==
                 usr_data_obj->mem_size)
@@ -1114,7 +1114,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

@@ -167,7 +167,7 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
 
         if(status==(vx_status)VX_SUCCESS)
         {
-            prms->input_current[i] = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
+            prms->input_current[i] = tivxMemAlloc( size, (vx_enum)TIVX_MEM_EXTERNAL);
             if(prms->input_current[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
@@ -176,7 +176,7 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            prms->input_reference[i] = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
+            prms->input_reference[i] = tivxMemAlloc( size, (vx_enum)TIVX_MEM_EXTERNAL);
             if(prms->input_reference[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
@@ -187,7 +187,7 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
     size = prms->pyramid_size[0][0]*prms->pyramid_size[0][1]*sizeof(int);
     if(status==(vx_status)VX_SUCCESS)
     {
-        prms->current_prediction = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
+        prms->current_prediction = tivxMemAlloc( size, (vx_enum)TIVX_MEM_EXTERNAL);
         if(prms->current_prediction==NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
@@ -196,7 +196,7 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
     }
     if(status==(vx_status)VX_SUCCESS)
     {
-        prms->past_prediction = tivxMemAlloc( size, TIVX_MEM_EXTERNAL);
+        prms->past_prediction = tivxMemAlloc( size, (vx_enum)TIVX_MEM_EXTERNAL);
         if(prms->past_prediction==NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to allocate memory\n");
@@ -217,24 +217,24 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms)
 
         if(prms->input_current[i] != NULL)
         {
-            tivxMemFree( prms->input_current[i], size, TIVX_MEM_EXTERNAL);
+            tivxMemFree( prms->input_current[i], size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->input_current[i] = NULL;
         }
         if(prms->input_reference[i] != NULL)
         {
-            tivxMemFree( prms->input_reference[i], size, TIVX_MEM_EXTERNAL);
+            tivxMemFree( prms->input_reference[i], size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->input_reference[i] = NULL;
         }
     }
     size = prms->pyramid_size[0][0]*prms->pyramid_size[0][1]*sizeof(int);
     if(prms->current_prediction!=NULL)
     {
-        tivxMemFree( prms->current_prediction, size, TIVX_MEM_EXTERNAL);
+        tivxMemFree( prms->current_prediction, size, (vx_enum)TIVX_MEM_EXTERNAL);
         prms->current_prediction = NULL;
     }
     if(prms->past_prediction!=NULL)
     {
-        tivxMemFree( prms->past_prediction, size, TIVX_MEM_EXTERNAL);
+        tivxMemFree( prms->past_prediction, size, (vx_enum)TIVX_MEM_EXTERNAL);
         prms->past_prediction = NULL;
     }
 
@@ -243,7 +243,7 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms)
         remove(prms->dofParams.model);
     }
 
-    tivxMemFree(prms, sizeof(tivxDmpacDofParams), TIVX_MEM_EXTERNAL);
+    tivxMemFree(prms, sizeof(tivxDmpacDofParams), (vx_enum)TIVX_MEM_EXTERNAL);
 }
 
 static vx_status VX_CALLBACK tivxDmpacDofProcess(
@@ -368,21 +368,21 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         /* map buffers */
 
         tivxMemBufferMap(configuration_target_ptr,
-           configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         if(flow_vector_in_desc != NULL)
         {
             tivxMemBufferMap(flow_vector_in_target_ptr,
-                flow_vector_in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+                flow_vector_in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         if( sparse_of_config_desc != NULL)
         {
             tivx_dmpac_dof_sof_params_t *sof_params;
 
             tivxMemBufferMap(sparse_of_config_target_ptr,
-               sparse_of_config_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               sparse_of_config_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
 
             sof_params = (tivx_dmpac_dof_sof_params_t*)sparse_of_config_target_ptr;
             prms->sof_max_pix_in_row = sof_params->sof_max_pix_in_row;
@@ -391,39 +391,39 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         if( sparse_of_map_desc != NULL)
         {
             tivxMemBufferMap(sparse_of_map_target_ptr,
-               sparse_of_map_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               sparse_of_map_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         tivxMemBufferMap(flow_vector_out_target_ptr,
-           flow_vector_out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           flow_vector_out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
         if( confidence_histogram_desc != NULL)
         {
             tivxMemBufferMap(confidence_histogram_target_ptr,
-               confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
 
         if(NULL != input_current_base_desc)
         {
             tivxMemBufferMap(img_curr_base_target_ptr,
-               input_current_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_current_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
 
             tivxMemBufferMap(img_ref_base_target_ptr,
-               input_reference_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_reference_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
 
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
             tivxMemBufferMap(img_current_target_ptr[i],
-               img_current_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               img_current_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
 
             tivxMemBufferMap(img_reference_target_ptr[i],
-               img_reference_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               img_reference_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
 
         /* copy input */
@@ -570,48 +570,48 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         /* unmap buffers */
 
         tivxMemBufferUnmap(configuration_target_ptr,
-           configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         if(flow_vector_in_desc != NULL)
         {
             tivxMemBufferUnmap(flow_vector_in_target_ptr,
-               flow_vector_in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               flow_vector_in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         if( sparse_of_map_desc != NULL)
         {
             tivxMemBufferUnmap(sparse_of_map_target_ptr,
-               sparse_of_map_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               sparse_of_map_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         tivxMemBufferUnmap(flow_vector_out_target_ptr,
-           flow_vector_out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           flow_vector_out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
         if( confidence_histogram_desc != NULL)
         {
             tivxMemBufferUnmap(confidence_histogram_target_ptr,
-               confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
             tivxMemBufferUnmap(img_current_target_ptr[i],
-               img_current_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               img_current_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
 
             tivxMemBufferUnmap(img_reference_target_ptr[i],
-               img_reference_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               img_reference_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         if(NULL != input_current_base_desc)
         {
             tivxMemBufferUnmap(img_curr_base_target_ptr,
-               input_current_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_current_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
 
             tivxMemBufferUnmap(img_ref_base_target_ptr,
-               input_reference_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               input_reference_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
     }
 
@@ -639,7 +639,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     {
         tivxDmpacDofParams *prms = NULL;
 
-        prms = tivxMemAlloc(sizeof(tivxDmpacDofParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxDmpacDofParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             tivx_obj_desc_pyramid_t *pyr1 = (tivx_obj_desc_pyramid_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
@@ -689,7 +689,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
             tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             params = (tivx_dmpac_dof_params_t *)params_array_target_ptr;
 
@@ -715,7 +715,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 0;
 
             tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             status = tivxDmpacDofAllocMem(prms);
         }
@@ -822,7 +822,7 @@ void tivxAddTargetKernelDmpacDof(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -901,7 +901,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if (sizeof(tivx_dmpac_dof_cs_tree_params_t) ==
                 usr_data_obj->mem_size)
@@ -989,7 +989,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
     else
     {

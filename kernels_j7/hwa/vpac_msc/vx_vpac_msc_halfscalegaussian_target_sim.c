@@ -134,7 +134,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         lse_reformat_in(src, src_target_ptr, prms->src16, 0, 0);
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -225,12 +225,12 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         /* Reformat output */
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16, 12, 0);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;
@@ -252,7 +252,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianCreate(
         imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
         imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxHalfScaleGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -261,7 +261,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianCreate(
             prms->buffer_size_in = imgIn->imagepatch_addr[0].dim_x *
                                    imgIn->imagepatch_addr[0].dim_y * 2;
 
-            prms->src16 = tivxMemAlloc(prms->buffer_size_in, TIVX_MEM_EXTERNAL);
+            prms->src16 = tivxMemAlloc(prms->buffer_size_in, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -272,7 +272,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianCreate(
                 prms->buffer_size_out = imgOut->imagepatch_addr[0].dim_x *
                                         imgOut->imagepatch_addr[0].dim_y * 2;
 
-                prms->dst16 = tivxMemAlloc(prms->buffer_size_out, TIVX_MEM_EXTERNAL);
+                prms->dst16 = tivxMemAlloc(prms->buffer_size_out, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -325,13 +325,13 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
             TIVX_TARGET_MAX_NAME);
 
         vx_halfscale_gaussian_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_HALFSCALE_GAUSSIAN,
+            (vx_enum)VX_KERNEL_HALFSCALE_GAUSSIAN,
             target_name,
             tivxKernelHalfScaleGaussianProcess,
             tivxKernelHalfScaleGaussianCreate,
@@ -354,15 +354,15 @@ static void tivxKernelHalfScaleGaussianFreeMem(tivxHalfScaleGaussianParams *prms
     {
         if (NULL != prms->src16)
         {
-            tivxMemFree(prms->src16, prms->buffer_size_in, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->src16, prms->buffer_size_in, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->src16 = NULL;
         }
         if (NULL != prms->dst16)
         {
-            tivxMemFree(prms->dst16, prms->buffer_size_out, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->dst16, prms->buffer_size_out, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->dst16 = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }

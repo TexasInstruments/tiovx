@@ -147,9 +147,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -157,9 +157,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -167,9 +167,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -177,9 +177,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -187,9 +187,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -197,9 +197,9 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -274,9 +274,9 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -284,9 +284,9 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_PYRAMID,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_PYRAMID,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -441,11 +441,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
     /* PARAMETER ATTRIBUTE FETCH */
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT,
+        tivxCheckStatus(&status, vxQueryImage(in_img, (vx_enum)VX_IMAGE_FORMAT,
             &in_img_fmt, sizeof(in_img_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_WIDTH,
+        tivxCheckStatus(&status, vxQueryImage(in_img, (vx_enum)VX_IMAGE_WIDTH,
             &in_img_w, sizeof(in_img_w)));
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_HEIGHT,
+        tivxCheckStatus(&status, vxQueryImage(in_img, (vx_enum)VX_IMAGE_HEIGHT,
             &in_img_h, sizeof(in_img_h)));
     }
 
@@ -456,12 +456,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             if (NULL != out_img[cnt])
             {
                 tivxCheckStatus(&status, vxQueryImage(out_img[cnt],
-                    VX_IMAGE_FORMAT, &out_img_fmt[cnt],
+                    (vx_enum)VX_IMAGE_FORMAT, &out_img_fmt[cnt],
                     sizeof(out_img_fmt[cnt])));
                 tivxCheckStatus(&status, vxQueryImage(out_img[cnt],
-                    VX_IMAGE_WIDTH, &out_img_w[cnt], sizeof(out_img_w[cnt])));
+                    (vx_enum)VX_IMAGE_WIDTH, &out_img_w[cnt], sizeof(out_img_w[cnt])));
                 tivxCheckStatus(&status, vxQueryImage(out_img[cnt],
-                    VX_IMAGE_HEIGHT, &out_img_h[cnt], sizeof(out_img_h[cnt])));
+                    (vx_enum)VX_IMAGE_HEIGHT, &out_img_h[cnt], sizeof(out_img_h[cnt])));
             }
             if ((vx_status)VX_SUCCESS != status)
             {
@@ -644,11 +644,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         pmd = (vx_pyramid)parameters[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX];
 
         /* Get the image width/heigh and format */
-        tivxCheckStatus(&status, vxQueryImage(img, VX_IMAGE_FORMAT,
+        tivxCheckStatus(&status, vxQueryImage(img, (vx_enum)VX_IMAGE_FORMAT,
             &fmt, sizeof(fmt)));
-        tivxCheckStatus(&status, vxQueryImage(img, VX_IMAGE_WIDTH,
+        tivxCheckStatus(&status, vxQueryImage(img, (vx_enum)VX_IMAGE_WIDTH,
             &w, sizeof(w)));
-        tivxCheckStatus(&status, vxQueryImage(img, VX_IMAGE_HEIGHT,
+        tivxCheckStatus(&status, vxQueryImage(img, (vx_enum)VX_IMAGE_HEIGHT,
             &h, sizeof(h)));
     }
 
@@ -669,9 +669,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     if (((vx_status)VX_SUCCESS == status) &&
         ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
     {
-        status = vxQueryPyramid(pmd, VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
-        status |= vxQueryPyramid(pmd, VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
-        status |= vxQueryPyramid(pmd, VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
+        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
+        status |= vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
+        status |= vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
 
         /* Check for frame sizes */
         if (((w / TIVX_VPAC_MSC_MAX_DS_FACTOR) > p_w) ||
@@ -702,23 +702,23 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = vxQueryPyramid(pmd, VX_PYRAMID_SCALE, &scale,
+        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_SCALE, &scale,
             sizeof(scale));
     }
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = vxQueryPyramid(pmd, VX_PYRAMID_LEVELS, &num_levels,
+        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_LEVELS, &num_levels,
             sizeof(num_levels));
     }
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        status = vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if ((border.mode != VX_BORDER_REPLICATE) &&
-                (border.mode != VX_BORDER_UNDEFINED))
+            if ((border.mode != (vx_enum)VX_BORDER_REPLICATE) &&
+                (border.mode != (vx_enum)VX_BORDER_UNDEFINED))
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR,
@@ -732,15 +732,15 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
         if (NULL != metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])
         {
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX],
-                VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
+                (vx_enum)VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX],
-                VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
+                (vx_enum)VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX],
-                VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
+                (vx_enum)VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX],
-                VX_PYRAMID_LEVELS, &num_levels, sizeof(num_levels));
+                (vx_enum)VX_PYRAMID_LEVELS, &num_levels, sizeof(num_levels));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX],
-                VX_PYRAMID_SCALE, &scale, sizeof(scale));
+                (vx_enum)VX_PYRAMID_SCALE, &scale, sizeof(scale));
         }
     }
 

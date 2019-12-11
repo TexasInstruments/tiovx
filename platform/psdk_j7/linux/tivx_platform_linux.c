@@ -32,7 +32,7 @@ typedef struct tivx_platform_info
 
     /*! \brief Platform locks to protect access to the descriptor id
      */
-    tivx_mutex g_platform_lock[TIVX_PLATFORM_LOCK_MAX];
+    tivx_mutex g_platform_lock[(vx_enum)TIVX_PLATFORM_LOCK_MAX];
 
     /*! \brief POSIX semaphore to protect memory
      */
@@ -75,7 +75,7 @@ vx_status tivxPlatformInit(void)
     }
     if(status==(vx_status)VX_SUCCESS)
     {
-        for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+        for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
@@ -113,7 +113,7 @@ void tivxPlatformDeInit(void)
 
     tivxIpcDeInit();
 
-    for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+    for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
@@ -124,11 +124,11 @@ void tivxPlatformDeInit(void)
 
 void tivxPlatformSystemLock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
-        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* for data ref queue lock, need to take a multi processor lock,
              * since multiple CPUs could be trying to queue/dequeue from the same
@@ -137,7 +137,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
              */
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
-        else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             sem_wait(g_tivx_platform_info.semaphore);
         }
@@ -150,14 +150,14 @@ void tivxPlatformSystemLock(vx_enum lock_id)
 
 void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
         }
-        else if (TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             sem_post(g_tivx_platform_info.semaphore);
         }
@@ -229,7 +229,7 @@ void tivxPlatformResetObjDescTableInfo(void)
     for(i=0; i<TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST; i++)
     {
         tmp_obj_desc = (tivx_obj_desc_t*)&gTivxObjDescShmEntry[i];
-        tmp_obj_desc->type = TIVX_OBJ_DESC_INVALID;
+        tmp_obj_desc->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
     }
 }
 

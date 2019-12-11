@@ -192,7 +192,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
     for (chId = 0; chId < prms->numCh; chId++)
     {
-        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
         {
             tivx_obj_desc_raw_image_t *raw_image;
 
@@ -279,7 +279,7 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
         case TIVX_RAW_IMAGE_P12_BIT:
             ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
-        case TIVX_RAW_IMAGE_16_BIT:
+        case (vx_enum)TIVX_RAW_IMAGE_16_BIT:
         case (vx_df_image)VX_DF_IMAGE_U16:
         case (vx_df_image)VX_DF_IMAGE_UYVY:
         case (vx_df_image)VX_DF_IMAGE_YUYV:
@@ -331,14 +331,14 @@ static void tivxCaptureSetCreateParams(
     capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
     tivxMemBufferMap(capture_config_target_ptr, obj_desc->mem_size,
-        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     params = (tivx_capture_params_t *)capture_config_target_ptr;
 
     /* set instance configuration parameters */
     Csirx_createParamsInit(&prms->createPrms);
 
-    if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+    if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
     {
         tivx_obj_desc_raw_image_t *raw_image;
         raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
@@ -375,7 +375,7 @@ static void tivxCaptureSetCreateParams(
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
         prms->createPrms.chCfg[loopCnt].vcNum = params->vcNum[loopCnt];
 
-        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
         {
             prms->createPrms.chCfg[loopCnt].inCsiDataType =
                 FVID2_CSI2_DF_RAW12;
@@ -413,14 +413,14 @@ static void tivxCaptureSetCreateParams(
     /* set frame drop buffer parameters */
     prms->createPrms.frameDropBufLen =
         CAPTURE_FRAME_DROP_LEN;
-    prms->createPrms.frameDropBuf = (uint64_t)tivxMemAlloc(prms->createPrms.frameDropBufLen, TIVX_MEM_EXTERNAL);
+    prms->createPrms.frameDropBuf = (uint64_t)tivxMemAlloc(prms->createPrms.frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
 
     /* set instance to be used for capture */
     prms->instId = tivxCaptureMapInstId(params->instId);
 
     tivxMemBufferUnmap(capture_config_target_ptr,
-       obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-       VX_READ_ONLY);
+       obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+       (vx_enum)VX_READ_ONLY);
 }
 
 static vx_status VX_CALLBACK tivxCaptureProcess(
@@ -467,7 +467,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
     if((vx_status)VX_SUCCESS == status)
     {
         /* Steady state: receives a buffer and returns a buffer */
-        if (VX_NODE_STATE_STEADY == state)
+        if ((vx_enum)VX_NODE_STATE_STEADY == state)
         {
             /* Providing buffers to capture source */
             status = tivxCaptureEnqueueFrameToDriver(output_desc, prms);
@@ -596,7 +596,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
         input_obj_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX];
         output_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxCaptureParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -734,7 +734,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                 tivxEventDelete(&prms->frame_available);
             }
 
-            tivxMemFree(prms, sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxCaptureParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
         else
         {
@@ -901,7 +901,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
 
             if (sizeof(tivxCaptureParams) == size)
             {
-                tivxMemFree(prms, sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxCaptureParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -937,7 +937,7 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
         tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         if (sizeof(tivx_capture_status_t) ==
                 usr_data_obj->mem_size)
@@ -954,7 +954,7 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
         }
 
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
     else
     {
@@ -1052,7 +1052,7 @@ void tivxAddTargetKernelCapture(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_CAPTURE1, TIVX_TARGET_MAX_NAME);
 

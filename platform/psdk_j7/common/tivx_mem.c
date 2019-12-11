@@ -39,19 +39,19 @@ vx_status tivxMemBufferAlloc(
     {
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 heap_id = APP_MEM_HEAP_L3;
                 break;
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = APP_MEM_HEAP_L2;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
                 break;
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
             /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
@@ -94,19 +94,19 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
     switch (mem_heap_region)
     {
-        case TIVX_MEM_EXTERNAL:
+        case (vx_enum)TIVX_MEM_EXTERNAL:
             heap_id = APP_MEM_HEAP_DDR;
             break;
-        case TIVX_MEM_INTERNAL_L3:
+        case (vx_enum)TIVX_MEM_INTERNAL_L3:
             heap_id = APP_MEM_HEAP_L3;
             break;
-        case TIVX_MEM_INTERNAL_L2:
+        case (vx_enum)TIVX_MEM_INTERNAL_L2:
             heap_id = APP_MEM_HEAP_L2;
             break;
-        case TIVX_MEM_INTERNAL_L1:
+        case (vx_enum)TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
             break;
-        case TIVX_MEM_EXTERNAL_SCRATCH:
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
         default:
@@ -130,19 +130,19 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 
     switch (mem_heap_region)
     {
-        case TIVX_MEM_EXTERNAL:
+        case (vx_enum)TIVX_MEM_EXTERNAL:
             heap_id = APP_MEM_HEAP_DDR;
             break;
-        case TIVX_MEM_INTERNAL_L3:
+        case (vx_enum)TIVX_MEM_INTERNAL_L3:
             heap_id = APP_MEM_HEAP_L3;
             break;
-        case TIVX_MEM_INTERNAL_L2:
+        case (vx_enum)TIVX_MEM_INTERNAL_L2:
             heap_id = APP_MEM_HEAP_L2;
             break;
-        case TIVX_MEM_INTERNAL_L1:
+        case (vx_enum)TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
             break;
-        case TIVX_MEM_EXTERNAL_SCRATCH:
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
         default:
@@ -179,19 +179,19 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         switch (mem_ptr->mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 heap_id = APP_MEM_HEAP_L3;
                 break;
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = APP_MEM_HEAP_L2;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
                 break;
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
             default:
@@ -242,19 +242,19 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 heap_id = APP_MEM_HEAP_L3;
                 break;
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = APP_MEM_HEAP_L2;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
                 break;
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
             default:
@@ -286,7 +286,7 @@ void tivxMemBufferMap(
      * to be safe, we still perform invalidate even in WRITE only mode. */
     if ((NULL != host_ptr) && (0U != size))
     {
-        if (TIVX_MEMORY_TYPE_DMA != mem_type)
+        if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
             appMemCacheInv(
                 host_ptr,
@@ -304,8 +304,8 @@ void tivxMemBufferUnmap(
 {
     if ((NULL != host_ptr) && (0U != size))
     {
-        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
-            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+        if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
             appMemCacheWb(
                 host_ptr,
@@ -326,19 +326,19 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 
     switch (mem_heap_region)
     {
-        case TIVX_MEM_EXTERNAL:
+        case (vx_enum)TIVX_MEM_EXTERNAL:
             heap_id = APP_MEM_HEAP_DDR;
             break;
-        case TIVX_MEM_INTERNAL_L3:
+        case (vx_enum)TIVX_MEM_INTERNAL_L3:
             heap_id = APP_MEM_HEAP_L3;
             break;
-        case TIVX_MEM_INTERNAL_L2:
+        case (vx_enum)TIVX_MEM_INTERNAL_L2:
             heap_id = APP_MEM_HEAP_L2;
             break;
-        case TIVX_MEM_INTERNAL_L1:
+        case (vx_enum)TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
             break;
-        case TIVX_MEM_EXTERNAL_SCRATCH:
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
         default:
@@ -372,7 +372,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
+    if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {
         status = appMemResetScratchHeap(APP_MEM_HEAP_DDR_SCRATCH);
     }

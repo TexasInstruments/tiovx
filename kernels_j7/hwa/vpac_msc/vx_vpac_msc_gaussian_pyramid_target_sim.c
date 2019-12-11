@@ -149,7 +149,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
@@ -157,7 +157,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         lse_reformat_in(src, src_target_ptr, prms->src16, 0, 0);
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -272,22 +272,22 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         dst = prms->img_obj_desc[0];
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[0], 12, 0);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         dst = prms->img_obj_desc[1];
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[1], 12, 0);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         imgOutput[0] = NULL;
 
@@ -322,12 +322,12 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 #endif
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
             tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[bufCnt^1], 12, 0);
 
             tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             bufCnt ^= 1;
         }
@@ -352,7 +352,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
         img = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxGassPyrmdParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxGassPyrmdParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -361,7 +361,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
             prms->buffer_size = img->imagepatch_addr[0].dim_x *
                                 img->imagepatch_addr[0].dim_y * 2;
 
-            prms->src16 = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+            prms->src16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -369,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->dst16[0] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+                prms->dst16[0] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16[0])
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -378,7 +378,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->dst16[1] = tivxMemAlloc(prms->buffer_size, TIVX_MEM_EXTERNAL);
+                prms->dst16[1] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16[1])
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -431,13 +431,13 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
             TIVX_TARGET_MAX_NAME);
 
         vx_gaussian_pyramid_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_GAUSSIAN_PYRAMID,
+            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
             target_name,
             tivxKernelGsnPmdProcess,
             tivxKernelGsnPmdCreate,
@@ -460,20 +460,20 @@ static void tivxKernelGsnPmdFreeMem(tivxGassPyrmdParams *prms)
     {
         if (NULL != prms->src16)
         {
-            tivxMemFree(prms->src16, prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->src16, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->src16 = NULL;
         }
         if (NULL != prms->dst16[0])
         {
-            tivxMemFree(prms->dst16[0], prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->dst16[0], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->dst16[0] = NULL;
         }
         if (NULL != prms->dst16[1])
         {
-            tivxMemFree(prms->dst16[1], prms->buffer_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->dst16[1], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->dst16[1] = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxGassPyrmdParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxGassPyrmdParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }

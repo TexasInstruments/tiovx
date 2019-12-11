@@ -79,7 +79,7 @@ void tivxTIDLLoadKernels(vx_context context)
 
         tivxRegisterTIDLTargetKernels();
 
-        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         #endif
 
         gIsTIDLKernelsLoad = 1U;

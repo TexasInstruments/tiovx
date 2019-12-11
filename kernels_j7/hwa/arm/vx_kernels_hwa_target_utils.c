@@ -440,7 +440,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
         idx = 0;
     }
 
-    if (TIVX_RAW_IMAGE_8_BIT == src->params.format[idx].pixel_container)
+    if ((vx_enum)TIVX_RAW_IMAGE_8_BIT == src->params.format[idx].pixel_container)
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -455,7 +455,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
             }
         }
     }
-    else if(TIVX_RAW_IMAGE_16_BIT == src->params.format[idx].pixel_container)
+    else if((vx_enum)TIVX_RAW_IMAGE_16_BIT == src->params.format[idx].pixel_container)
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
