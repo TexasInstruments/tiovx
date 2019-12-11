@@ -144,7 +144,7 @@ vx_status VX_CALLBACK tivxKernelNotProcess(
 
         status = (vx_status)VXLIB_not_i8u_o8u(src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             tivxMemBufferUnmap(dst_desc_target_ptr,
                 dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,

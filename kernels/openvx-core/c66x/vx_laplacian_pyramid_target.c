@@ -224,7 +224,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 out_addr, &prms->vxlib_gauss0,
                 prms->upsample_output, &prms->vxlib_gauss1, 0, 0);
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 /* Then do gaussian filter with * 4 multiply on upsampled result */
                 status = (vx_status)VXLIB_gaussian_5x5_br_i8u_o8u(
@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                     prms->gauss_output, &prms->vxlib_gauss1, 6, 0, 0);
             }
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 /* Then subtract gaussian filtered upsample from original of this level */
                 status = (vx_status)VXLIB_subtract_i8u_i8u_o16s(
@@ -241,7 +241,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                     dst_addr, &prms->vxlib_dst);
             }
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 if(levels < (pmd->num_levels - 1u))
                 {
@@ -259,7 +259,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
-            if (status != VXLIB_SUCCESS)
+            if (status != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
                 break;

@@ -136,7 +136,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             status = (vx_status)VXLIB_sobelX_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 
-            if (status != VXLIB_SUCCESS)
+            if (status != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
             }
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             status = (vx_status)VXLIB_sobelY_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 
-            if (status != VXLIB_SUCCESS)
+            if (status != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
             }

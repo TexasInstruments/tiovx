@@ -211,19 +211,19 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
         }
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(dst_addr,
                 &prms->vxlib_dst, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -814,19 +814,19 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
             border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
         }
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_edgeTracing_i8u(dst_addr, &prms->vxlib_dst,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(dst_addr,
                 &prms->vxlib_dst, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

@@ -128,7 +128,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
 
         status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_equalizeHist_i8u_o8u(src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst, (uint32_t*)scratch);
@@ -138,7 +138,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
             status = (vx_status)VX_FAILURE;
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
 
         status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }

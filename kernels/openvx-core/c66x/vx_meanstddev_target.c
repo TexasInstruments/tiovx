@@ -126,7 +126,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
             (float*)&sc[0U]->data.f32, (float*)&sc[1U]->data.f32, &pixelsProcessed,
             &currentSum, &currentSqSum);
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

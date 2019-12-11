@@ -186,7 +186,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         void *img_ptrs[2];
         void *src_target_ptr;
         void *arr_target_ptr;
-        VXLIB_STATUS status_vxlib = VXLIB_SUCCESS;
+        VXLIB_STATUS status_vxlib = (vx_status)VXLIB_SUCCESS;
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         arr_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);
@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                 &num_corners_hcd, sc_thr->data.f32,
                 (prms->gs/2) + (prms->bs/2), (prms->gs/2) + (prms->bs/2));
 
-            if (status_vxlib != VXLIB_SUCCESS)
+            if (status_vxlib != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
             }
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                     prms->nms_strength, num_corners_hcd, &num_corners,
                     prms->nms_scratch, prms->nms_scratch_size, prms->rad, NULL);
 
-                if (status_vxlib != VXLIB_SUCCESS)
+                if (status_vxlib != (vx_status)VXLIB_SUCCESS)
                 {
                     status = (vx_status)VX_FAILURE;
                 }

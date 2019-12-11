@@ -155,7 +155,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             arr->capacity, (uint8_t)sc_thr->data.f32, &num_corners,
             sc_nms->data.boolean, prms->scratch, prms->scratch_size);
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

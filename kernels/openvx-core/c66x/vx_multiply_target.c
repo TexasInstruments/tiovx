@@ -170,7 +170,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
                     sc[0]->data.f32);
             }
         }
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

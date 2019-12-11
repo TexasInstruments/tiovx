@@ -131,7 +131,7 @@ static vx_status tivxKernelAccumulateSquare(
         status = (vx_status)VXLIB_accumulateSquareImage_i8u_io16s((uint8_t *)src_addr,
                     &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, sc_desc->data.u32);
 
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

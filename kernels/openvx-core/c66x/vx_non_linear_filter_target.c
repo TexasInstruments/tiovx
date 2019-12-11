@@ -271,7 +271,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 
-            if (VXLIB_SUCCESS != status)
+            if ((vx_status)VXLIB_SUCCESS != status)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }

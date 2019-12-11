@@ -156,7 +156,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
                     mat_addr, border.constant_value.U8,
                     0, 0, 0, 0);
         }
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

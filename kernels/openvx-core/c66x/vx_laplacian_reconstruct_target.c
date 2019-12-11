@@ -219,7 +219,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             prms->vxlib_scratch.dim_y = rect.end_y - rect.start_y;
             prms->vxlib_scratch.stride_y = rect.end_x - rect.start_x;
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 /* Then do gaussian filter with * 4 multiply on upsampled result */
                 status = (vx_status)VXLIB_gaussian_5x5_br_i8u_o8u(
@@ -227,7 +227,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                     prms->gauss_output, &prms->vxlib_scratch, 6u, 0, 0);
             }
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 /* Then add gaussian filtered upsample to laplacian of this level */
                 status = (vx_status)VXLIB_add_i8u_i16s_o16s(
@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                     prms->add_output, &prms->vxlib_add, VXLIB_CONVERT_POLICY_SATURATE);
             }
 
-            if (VXLIB_SUCCESS == status)
+            if ((vx_status)VXLIB_SUCCESS == status)
             {
                 if(level == 0)
                 {
@@ -261,7 +261,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 pyd_level->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_READ_ONLY);
 
-            if (status != VXLIB_SUCCESS)
+            if (status != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
                 break;

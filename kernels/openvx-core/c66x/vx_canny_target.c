@@ -193,16 +193,16 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
 
         status = tivxCannyCalcSobel(prms, src_addr, sc_gs->data.s32);
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = tivxCannyCalcNorm(prms, sc_norm->data.enm,
                 sc_gs->data.s32);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = tivxCannyCalcNms(prms, sc_gs->data.s32);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = tivxCannyCalcDblThr(prms, &num_dbl_thr_items, thr->lower,
                 thr->upper, sc_gs->data.s32);
@@ -217,19 +217,19 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
         }
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_edgeTracing_i8u(prms->nms_edge, &prms->vxlib_edge,
                 prms->edge_list, prms->edge_list_size, num_dbl_thr_items,
                 &num_edge_trace_out);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(prms->nms_edge,
                 &prms->vxlib_edge, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -533,7 +533,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
         }
     }
 
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }
@@ -569,7 +569,7 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
         }
     }
 
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }
@@ -599,7 +599,7 @@ static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
                 soby, &prms->vxlib_soby, norm, &prms->vxlib_norm, edge,
                 &prms->vxlib_edge);
     }
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }
@@ -633,7 +633,7 @@ static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
             edge, &vxlib_prms, prms->vxlib_edge.stride_y, prms->edge_list,
             prms->edge_list_size, num_items, start_pos, lower, upper);
     }
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }

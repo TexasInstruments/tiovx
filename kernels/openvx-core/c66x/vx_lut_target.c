@@ -123,7 +123,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
                 &vxlib_src, (int16_t *)dst_addr, &vxlib_dst,
                 lut_target_ptr, lut->num_items, 32768U);
         }
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

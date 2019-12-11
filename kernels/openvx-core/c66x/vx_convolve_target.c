@@ -140,7 +140,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
                 (int16_t*)dst_addr, &vxlib_dst, conv_target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

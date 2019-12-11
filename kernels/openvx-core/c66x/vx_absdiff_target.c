@@ -134,7 +134,7 @@ vx_status VX_CALLBACK tivxAbsDiff(
                 (int16_t *)src0_addr, &vxlib_src0, (int16_t *)src1_addr,
                 &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst);
         }
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

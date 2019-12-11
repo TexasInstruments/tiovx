@@ -122,7 +122,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
                 dst_addr, &vxlib_dst, thr->upper, thr->lower, thr->true_value,
                 thr->false_value);
         }
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }

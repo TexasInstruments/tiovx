@@ -175,7 +175,7 @@ vx_status VX_CALLBACK tivxProcessDilate3X3(
             status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
                 &vxlib_dst);
         }
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

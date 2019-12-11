@@ -200,17 +200,17 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
 
         status = tivxHarrisCCalcSobel(prms, src_addr, sc_gs->data.s32);
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = tivxHarrisCCalcScore(prms, sc_sens->data.f32,
                 sc_gs->data.s32, sc_bs->data.s32);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             status = tivxHarrisCCalcDetect(prms, &num_corners_hcd,
                 sc_thr->data.f32, sc_gs->data.s32, sc_bs->data.s32);
         }
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             if(prms->rad >= 2.0f)
             {
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
             }
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -720,7 +720,7 @@ static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
         }
     }
 
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }
@@ -770,7 +770,7 @@ static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
                 score, &prms->vxlib_score, prms->hcs_scratch, sensitivity, gs, bs);
         }
     }
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }
@@ -801,7 +801,7 @@ static vx_status tivxHarrisCCalcDetect(tivxHarrisCornersParams *prms,
             prms->vxlib_src.dim_x * prms->vxlib_src.dim_y,
             num_corners, threshold, (gs/2) + (bs/2), (gs/2) + (bs/2));
     }
-    if (status != VXLIB_SUCCESS)
+    if (status != (vx_status)VXLIB_SUCCESS)
     {
         status = (vx_status)VX_FAILURE;
     }

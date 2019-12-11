@@ -162,7 +162,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
             status = (vx_status)VX_FAILURE;
         }
 
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

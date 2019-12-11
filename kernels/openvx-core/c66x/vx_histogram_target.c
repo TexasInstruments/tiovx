@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
         status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
-        if (VXLIB_SUCCESS == status)
+        if ((vx_status)VXLIB_SUCCESS == status)
         {
             memset(dst_target_ptr, 0, dst->mem_size);
 
@@ -123,7 +123,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
             status = (vx_status)VX_FAILURE;
         }
 
-        if (status != VXLIB_SUCCESS)
+        if (status != (vx_status)VXLIB_SUCCESS)
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -185,7 +185,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
 
         status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }

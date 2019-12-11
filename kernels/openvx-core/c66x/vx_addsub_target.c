@@ -252,7 +252,7 @@ static vx_status tivxKernelAddSub(
                 }
             }
         }
-        if (VXLIB_SUCCESS != status)
+        if ((vx_status)VXLIB_SUCCESS != status)
         {
             status = (vx_status)VX_FAILURE;
         }

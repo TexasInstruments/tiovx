@@ -255,7 +255,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
-            if (status != VXLIB_SUCCESS)
+            if (status != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
                 break;
