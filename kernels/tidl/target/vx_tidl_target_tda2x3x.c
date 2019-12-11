@@ -301,7 +301,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     inArgs   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
     in_args_target_ptr = tivxMemShared2TargetPtr(&inArgs->mem_ptr);
-    tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     prms->inArgs = in_args_target_ptr;
     prms->inArgs->iVisionInArgs.size         = sizeof(TIDL_InArgs);
@@ -309,7 +309,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     outArgs  = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
     out_args_target_ptr = tivxMemShared2TargetPtr(&outArgs->mem_ptr);
-    tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+    tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
     prms->outArgs = out_args_target_ptr;
     prms->outArgs->iVisionOutArgs.size       = sizeof(TIDL_outArgs);
@@ -319,7 +319,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     for(id = 0; id < prms->inBufs.numBufs; id++) {
       inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
       in_tensor_target_ptr  = tivxMemShared2TargetPtr(&inTensor->mem_ptr);
-      tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+      tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
       prms->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
       prms->inArgs->dataQ[id]= inTensor->scaling_divisor;
     }
@@ -327,7 +327,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     for(id = 0; id < prms->outBufs.numBufs; id++) {
       outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
       out_tensor_target_ptr = tivxMemShared2TargetPtr(&outTensor->mem_ptr);
-      tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+      tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
       prms->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
     }
 
@@ -340,19 +340,19 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
             (IVISION_OutArgs *)prms->outArgs
         );
 
-    tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-    tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+    tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
     for(id = 0; id < prms->inBufs.numBufs; id++) {
       inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
       in_tensor_target_ptr  = tivxMemShared2TargetPtr(&inTensor->mem_ptr);
-      tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+      tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     for(id = 0; id < prms->outBufs.numBufs; id++) {
       outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
       out_tensor_target_ptr = tivxMemShared2TargetPtr(&outTensor->mem_ptr);
-      tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+      tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
       outTensor->scaling_divisor= prms->outArgs->dataQ[id];
       outTensor->scaling_divisor_fixed_point_position= 8;
     }
@@ -403,7 +403,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     createParams   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
 
-    prms = tivxMemAlloc(sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
+    prms = tivxMemAlloc(sizeof(tivxTIDLParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
     if (NULL != prms)
     {
@@ -415,7 +415,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     }
 
     create_params_target_ptr = tivxMemShared2TargetPtr(&createParams->mem_ptr);
-    tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+    tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
     prms->createParams = create_params_target_ptr;
     TIDL_createParamsInit(prms->createParams);
@@ -432,23 +432,23 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     tivxSetSelfCpuId(gTidlNodeCpuId[index]);
     /*
     if (index==0) {
-      tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
+      tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE1);
     }
     else {
-      tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+      tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     }
     */
 #endif
 
     tivx_cpu_id_e cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
-    if ((cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2) ) {
+    if ((cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || (cpuId== (vx_enum)TIVX_CPU_ID_DSP2) ) {
       prms->createParams->currLayersGroupId=2 ;
 #ifndef HOST_EMULATION
       prms->createParams->l1MemSize = TIDL_LINK_MIN_DSPL1_SIZE;
       prms->createParams->l2MemSize = UTILS_MEM_HEAP_L2_SIZE - (64 * 1024);
       prms->createParams->l3MemSize = TIDL_LINK_MIN_L3_SIZE;
 #endif
-    } else if ((cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4)) {
+    } else if ((cpuId== (vx_enum)TIVX_CPU_ID_EVE1) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE2) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE3) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE4)) {
       prms->createParams->currLayersGroupId=1 ;
 #ifndef HOST_EMULATION
       prms->createParams->l1MemSize = (UTILS_MEM_HEAP_L2_SIZE - (1 * 1024));
@@ -460,7 +460,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     prms->createParams->optimiseExtMem         = TIDL_optimiseExtMemL1;
 
     network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
-    tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     prms->createParams->net = *((sTIDL_Network_t *)network_target_ptr);
 
@@ -492,8 +492,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
       }
     }
 
-    tivxMemBufferUnmap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-    tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+    tivxMemBufferUnmap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
 
     prms->inBufs.size     = sizeof(prms->inBufs);
     prms->outBufs.size    = sizeof(prms->outBufs);
@@ -502,12 +502,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     prms->outBufs.bufDesc = prms->outBufDescList;
 
     config_target_ptr = tivxMemShared2TargetPtr(&config->mem_ptr);
-    tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    tivxMemBufferMap(config_target_ptr, config->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     prms->inBufs.numBufs  = tidl_AllocNetInputMem(prms->inBufDesc, (sTIDL_IOBufDesc_t *)config_target_ptr);
     prms->outBufs.numBufs = tidl_AllocNetOutputMem(prms->outBufDesc, (sTIDL_IOBufDesc_t *)config_target_ptr);
 
-    tivxMemBufferUnmap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    tivxMemBufferUnmap(config_target_ptr, config->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     for(i = 0; i < prms->inBufs.numBufs; i++)
     {
@@ -576,29 +576,29 @@ void tivxAddTargetKernelTIDL()
 
   self_cpu = tivxGetSelfCpuId();
 
-  if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2) || (self_cpu == TIVX_CPU_ID_EVE1) || (self_cpu == TIVX_CPU_ID_EVE2) || (self_cpu == TIVX_CPU_ID_EVE3) || (self_cpu == TIVX_CPU_ID_EVE4))
+  if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE1) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE4))
   {
-    if (self_cpu == TIVX_CPU_ID_DSP1)
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
     {
       strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_DSP2)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2)
     {
       strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE1)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE1)
     {
       strncpy(target_name, TIVX_TARGET_EVE1, TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE2)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2)
     {
       strncpy(target_name, TIVX_TARGET_EVE2, TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE3)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3)
     {
       strncpy(target_name, TIVX_TARGET_EVE3, TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE4)
     {
       strncpy(target_name, TIVX_TARGET_EVE4, TIVX_TARGET_MAX_NAME);
     }
@@ -626,6 +626,6 @@ static void tivxTIDLFreeMem(tivxTIDLParams *prms)
 {
   if (NULL != prms)
   {
-    tivxMemFree(prms, sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
+    tivxMemFree(prms, sizeof(tivxTIDLParams), (vx_enum)TIVX_MEM_EXTERNAL);
   }
 }

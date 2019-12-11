@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -229,7 +229,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
             {
                 BAM_VXLIB_subtract_i8u_i8u_o8u_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -265,7 +265,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
             {
                 BAM_VXLIB_subtract_i16s_i16s_o16s_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -287,7 +287,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
             {
                 BAM_VXLIB_subtract_i8u_i16s_o16s_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -337,7 +337,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -369,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -383,9 +383,9 @@ void tivxAddTargetKernelBamSubtract(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -397,7 +397,7 @@ void tivxAddTargetKernelBamSubtract(void)
         }
 
         vx_subtract_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_SUBTRACT,
+            (vx_enum)VX_KERNEL_SUBTRACT,
             target_name,
             tivxKernelSubtractProcess,
             tivxKernelSubtractCreate,
@@ -451,7 +451,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -470,7 +470,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O8U;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -509,7 +509,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I16S_I16S_O16S;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -537,7 +537,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I16S_O16S;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -583,7 +583,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

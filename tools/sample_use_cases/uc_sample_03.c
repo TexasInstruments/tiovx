@@ -203,7 +203,7 @@ static vx_node usecase_node_create_node_4 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ABSDIFF, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_ABSDIFF, params, 3);
     
     return node;
 }
@@ -232,7 +232,7 @@ vx_status uc_sample_03_graph_0_create(uc_sample_03 usecase)
             usecase->image_3 
           );
         vxSetReferenceName( (vx_reference)usecase->node_4, "node_4");
-        vxSetNodeTarget(usecase->node_4, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_4, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     
     usecase->graph_0 = graph;

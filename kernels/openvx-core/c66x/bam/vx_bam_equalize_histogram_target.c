@@ -197,19 +197,19 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxEqHistParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxEqHistParams));
 
             prms->scratch = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
-                sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+                sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->scratch)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
-                tivxMemFree(prms, sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxEqHistParams), (vx_enum)TIVX_MEM_EXTERNAL);
                 prms = NULL;
             }
             else
@@ -287,7 +287,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
             }
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxEqHistParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -317,8 +317,8 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
             tivxBamDestroyHandle(prms->hist_graph_handle);
             tivxBamDestroyHandle(prms->lut_graph_handle);
             tivxMemFree(prms->scratch, SCRATCH_BUFFER_SIZE *
-                    sizeof(uint32_t), TIVX_MEM_EXTERNAL);
-            tivxMemFree(prms, sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
+                    sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxEqHistParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -332,9 +332,9 @@ void tivxAddTargetKernelBamEqHist(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -346,7 +346,7 @@ void tivxAddTargetKernelBamEqHist(void)
         }
 
         vx_eq_hist_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_EQUALIZE_HISTOGRAM,
+            (vx_enum)VX_KERNEL_EQUALIZE_HISTOGRAM,
             target_name,
             tivxBamKernelEqHistProcess,
             tivxBamKernelEqHistCreate,

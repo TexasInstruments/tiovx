@@ -42,24 +42,24 @@ vx_matrix VX_API_CALL vxCreateMatrix(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8))
+        if ((data_type == (vx_enum)VX_TYPE_INT8) || (data_type == (vx_enum)VX_TYPE_UINT8))
         {
             dim = sizeof(vx_uint8);
         }
-        else if ((data_type == VX_TYPE_INT16) ||
-                 (data_type == VX_TYPE_UINT16))
+        else if ((data_type == (vx_enum)VX_TYPE_INT16) ||
+                 (data_type == (vx_enum)VX_TYPE_UINT16))
         {
             dim = sizeof(vx_uint16);
         }
-        else if ((data_type == VX_TYPE_INT32) ||
-                 (data_type == VX_TYPE_UINT32) ||
-                 (data_type == VX_TYPE_FLOAT32))
+        else if ((data_type == (vx_enum)VX_TYPE_INT32) ||
+                 (data_type == (vx_enum)VX_TYPE_UINT32) ||
+                 (data_type == (vx_enum)VX_TYPE_FLOAT32))
         {
             dim = sizeof(vx_uint32);
         }
-        else if ((data_type == VX_TYPE_INT64) ||
-                 (data_type == VX_TYPE_UINT64) ||
-                 (data_type == VX_TYPE_FLOAT64))
+        else if ((data_type == (vx_enum)VX_TYPE_INT64) ||
+                 (data_type == (vx_enum)VX_TYPE_UINT64) ||
+                 (data_type == (vx_enum)VX_TYPE_FLOAT64))
         {
             dim = sizeof(vx_uint64);
         }
@@ -70,11 +70,11 @@ vx_matrix VX_API_CALL vxCreateMatrix(
 
         if ((rows != 0) && (columns != 0) && (dim != 0UL))
         {
-            matrix = (vx_matrix)ownCreateReference(context, VX_TYPE_MATRIX,
-                VX_EXTERNAL, &context->base);
+            matrix = (vx_matrix)ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
+                (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)matrix) == (vx_status)VX_SUCCESS) &&
-                (matrix->base.type == VX_TYPE_MATRIX))
+                (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
             {
                 /* assign refernce type specific callback's */
                 matrix->base.destructor_callback = &ownDestructMatrix;
@@ -83,7 +83,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
                 obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
+                    (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
                 if(obj_desc==NULL)
                 {
                     vxReleaseMatrix(&matrix);
@@ -100,11 +100,11 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     obj_desc->rows = rows;
                     obj_desc->origin_x = columns/2;
                     obj_desc->origin_y = rows/2;
-                    obj_desc->pattern = VX_PATTERN_OTHER;
+                    obj_desc->pattern = (vx_enum)VX_PATTERN_OTHER;
                     obj_desc->mem_size = columns*rows*dim;
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -142,22 +142,22 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         status = (vx_status)VX_FAILURE;
     }
 
-    if ((VX_PATTERN_BOX != pattern) && (VX_PATTERN_CROSS != pattern) &&
-             (VX_PATTERN_OTHER != pattern) && (VX_PATTERN_DISK != pattern))
+    if (((vx_enum)VX_PATTERN_BOX != pattern) && ((vx_enum)VX_PATTERN_CROSS != pattern) &&
+             ((vx_enum)VX_PATTERN_OTHER != pattern) && ((vx_enum)VX_PATTERN_DISK != pattern))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: invalid pattern value\n");
         status = (vx_status)VX_FAILURE;
     }
 
     /* For Cross pattern, rows and columns must be odd */
-    if ((VX_PATTERN_CROSS == pattern) && (((rows%2) == 0) || ((columns%2) == 0)))
+    if (((vx_enum)VX_PATTERN_CROSS == pattern) && (((rows%2) == 0) || ((columns%2) == 0)))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: cross pattern rows and columns are not odd\n");
         status = (vx_status)VX_FAILURE;
     }
 
     /* For Disk pattern, rows and columns must be equal */
-    if ((VX_PATTERN_DISK == pattern) && ( rows != columns ))
+    if (((vx_enum)VX_PATTERN_DISK == pattern) && ( rows != columns ))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: disk pattern rows and columns are not equal\n");
         status = (vx_status)VX_FAILURE;
@@ -167,11 +167,11 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     {
         dim = sizeof(vx_uint8);
 
-        matrix = (vx_matrix)ownCreateReference(context, VX_TYPE_MATRIX,
-            VX_EXTERNAL, &context->base);
+        matrix = (vx_matrix)ownCreateReference(context, (vx_enum)VX_TYPE_MATRIX,
+            (vx_enum)VX_EXTERNAL, &context->base);
 
         if ((vxGetStatus((vx_reference)matrix) == (vx_status)VX_SUCCESS) &&
-            (matrix->base.type == VX_TYPE_MATRIX))
+            (matrix->base.type == (vx_enum)VX_TYPE_MATRIX))
         {
             /* assign refernce type specific callback's */
             matrix->base.destructor_callback = &ownDestructMatrix;
@@ -180,7 +180,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
             obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
+                (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
             if(obj_desc==NULL)
             {
                 vxReleaseMatrix(&matrix);
@@ -195,14 +195,14 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             else
             {
                 /* Initialize descriptor object */
-                obj_desc->data_type = VX_TYPE_UINT8;
+                obj_desc->data_type = (vx_enum)VX_TYPE_UINT8;
                 obj_desc->columns = columns;
                 obj_desc->rows = rows;
                 obj_desc->origin_x = columns/2;
                 obj_desc->origin_y = rows/2;
                 obj_desc->pattern = pattern;
                 obj_desc->mem_size = columns*rows*dim;
-                obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+                obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
                 obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
@@ -231,7 +231,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                     obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
                             obj_desc->mem_ptr.host_ptr,
-                            TIVX_MEM_EXTERNAL);
+                            (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -245,11 +245,11 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     if (((vx_status)VX_SUCCESS == status) && ((uint64_t)(uintptr_t)NULL != obj_desc->mem_ptr.host_ptr))
     {
         tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         pTempDataPtr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
-        if (VX_PATTERN_BOX == pattern)
+        if ((vx_enum)VX_PATTERN_BOX == pattern)
         {
             for (i = 0U; i < rows; i ++)
             {
@@ -260,7 +260,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 }
             }
         }
-        else if (VX_PATTERN_CROSS == pattern)
+        else if ((vx_enum)VX_PATTERN_CROSS == pattern)
         {
             for (i = 0U; i < rows; i ++)
             {
@@ -286,7 +286,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 pTempDataPtr += columns;
             }
         }
-        else if (VX_PATTERN_DISK == pattern)
+        else if ((vx_enum)VX_PATTERN_DISK == pattern)
         {
             vx_uint8* mask = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
             vx_uint8 ref;
@@ -316,8 +316,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
 
         tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
     }
 
     return (matrix);
@@ -329,7 +329,7 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&matrix->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )
@@ -342,7 +342,7 @@ vx_status VX_API_CALL vxQueryMatrix(
         obj_desc = (tivx_obj_desc_matrix_t *)matrix->base.obj_desc;
         switch (attribute)
         {
-            case VX_MATRIX_TYPE:
+            case (vx_enum)VX_MATRIX_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
                     *(vx_enum *)ptr = obj_desc->data_type;
@@ -353,7 +353,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_MATRIX_COLUMNS:
+            case (vx_enum)VX_MATRIX_COLUMNS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
                     *(vx_size *)ptr = obj_desc->columns;
@@ -364,7 +364,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_MATRIX_ROWS:
+            case (vx_enum)(vx_enum)VX_MATRIX_ROWS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
                     *(vx_size *)ptr = obj_desc->rows;
@@ -375,7 +375,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_MATRIX_SIZE:
+            case (vx_enum)VX_MATRIX_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
                     *(vx_size *)ptr =
@@ -387,7 +387,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_MATRIX_ORIGIN:
+            case (vx_enum)VX_MATRIX_ORIGIN:
                 if (VX_CHECK_PARAM(ptr, size, vx_coordinates2d_t, 0x3))
                 {
                     vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
@@ -401,7 +401,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_MATRIX_PATTERN:
+            case (vx_enum)VX_MATRIX_PATTERN:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
                     *(vx_enum *)ptr = obj_desc->pattern;
@@ -425,7 +425,7 @@ vx_status VX_API_CALL vxQueryMatrix(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseMatrix(vx_matrix *matrix)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)matrix, VX_TYPE_MATRIX, VX_EXTERNAL, NULL));
+        (vx_reference*)matrix, (vx_enum)VX_TYPE_MATRIX, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_status VX_API_CALL vxCopyMatrix(
@@ -435,7 +435,7 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&matrix->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )
@@ -446,14 +446,14 @@ vx_status VX_API_CALL vxCopyMatrix(
     else
     {
         obj_desc = (tivx_obj_desc_matrix_t *)matrix->base.obj_desc;
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: Memory is not allocated\n");
@@ -472,15 +472,15 @@ vx_status VX_API_CALL vxCopyMatrix(
         size = obj_desc->mem_size;
 
         /* Copy from matrix object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to matrix object */
         {
@@ -489,12 +489,12 @@ vx_status VX_API_CALL vxCopyMatrix(
             if ((vx_status)VX_SUCCESS == status)
             {
                 tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                 memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             }
         }
     }
@@ -507,7 +507,7 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_MATRIX)
+    if(ref->type == (vx_enum)VX_TYPE_MATRIX)
     {
         obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
         if(obj_desc != NULL)
@@ -517,7 +517,7 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
             {
                 status = tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (((vx_status)VX_SUCCESS != status) ||
                     (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
@@ -547,7 +547,7 @@ static vx_status ownDestructMatrix(vx_reference ref)
 {
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_MATRIX)
+    if(ref->type == (vx_enum)VX_TYPE_MATRIX)
     {
         obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
         if(obj_desc!=NULL)

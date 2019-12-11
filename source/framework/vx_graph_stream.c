@@ -146,7 +146,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                     state = RUNNING;
                     /* Execute graph then trigger another graph execution */
-                    if (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
+                    if ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
                     {
                         graph->streaming_executions++;
                         ownGraphScheduleGraphWrapper(graph);
@@ -221,7 +221,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         if ((vx_bool)vx_true_e == graph->is_streaming_enabled)
         {
@@ -257,7 +257,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         if ((vx_bool)vx_true_e == graph->is_streaming)
         {
@@ -290,7 +290,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value
 
     status = tivxEventQueueAddEvent(
                 &graph->event_queue,
-                VX_EVENT_USER,
+                (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
                 (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
 
@@ -304,7 +304,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         /* Call general wait function */
         status = vxWaitEventQueue(&graph->event_queue, event, do_not_block);
@@ -323,14 +323,14 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         graph->is_streaming_enabled = (vx_bool)vx_true_e;
 
         status = (vx_status)VX_SUCCESS;
 
         if((NULL != trigger_node) &&
-           (ownIsValidSpecificReference((vx_reference)trigger_node, VX_TYPE_NODE)))
+           (ownIsValidSpecificReference((vx_reference)trigger_node, (vx_enum)VX_TYPE_NODE)))
         {
             int i;
 
@@ -366,7 +366,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
     tivx_task_create_params_t streamingTaskParams;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         if ((vx_bool)vx_true_e == graph->is_streaming_enabled)
         {
@@ -389,7 +389,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                 if (graph->pipeline_depth > 1)
                 {
                     /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
-                    if ( (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
+                    if ( ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
                          ((vx_bool)vx_true_e == graph->trigger_node_set) )
                     {
                         status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
@@ -463,11 +463,11 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         if ( ((vx_bool)vx_true_e == graph->is_streaming_enabled) &&
-             ((graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO) ||
-             (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)) )
+             ((graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO) ||
+             (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)) )
         {
             VX_PRINT(VX_ZONE_ERROR,"ownGraphVerifyStreamingMode: streaming is not supported with manual or auto pipelining\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;

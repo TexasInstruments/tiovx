@@ -231,8 +231,8 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
         vxSetReferenceName((vx_reference)in_image, "INPUT");
         show_image_attributes(in_image);
 
-        vxQueryImage(in_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-        vxQueryImage(in_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+        vxQueryImage(in_image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+        vxQueryImage(in_image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
         /** \endcode */
 
         /**

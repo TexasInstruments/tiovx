@@ -132,21 +132,21 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_FORMAT, &laplacian_fmt, sizeof(laplacian_fmt)));
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_WIDTH, &laplacian_w, sizeof(laplacian_w)));
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_HEIGHT, &laplacian_h, sizeof(laplacian_h)));
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_SCALE, &laplacian_scale, sizeof(laplacian_scale)));
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_LEVELS, &laplacian_levels, sizeof(laplacian_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_FORMAT, &laplacian_fmt, sizeof(laplacian_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_WIDTH, &laplacian_w, sizeof(laplacian_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_HEIGHT, &laplacian_h, sizeof(laplacian_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_SCALE, &laplacian_scale, sizeof(laplacian_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_LEVELS, &laplacian_levels, sizeof(laplacian_levels)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -239,7 +239,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_BORDER_UNDEFINED != border.mode) && (VX_BORDER_REPLICATE != border.mode))
+        if (((vx_enum)VX_BORDER_UNDEFINED != border.mode) && ((vx_enum)VX_BORDER_REPLICATE != border.mode))
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined and replicate border mode is supported for laplacian reconstruct \n");
@@ -252,9 +252,9 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     {
         output_fmt = (vx_df_image)VX_DF_IMAGE_U8;
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], VX_IMAGE_WIDTH, &laplacian_w, sizeof(laplacian_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], VX_IMAGE_HEIGHT, &laplacian_h, sizeof(laplacian_h));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &laplacian_w, sizeof(laplacian_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &laplacian_h, sizeof(laplacian_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
     }
 
 #endif
@@ -292,7 +292,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryPyramid(laplacian, VX_PYRAMID_LEVELS, &laplacian_levels, sizeof(laplacian_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(laplacian, (vx_enum)VX_PYRAMID_LEVELS, &laplacian_levels, sizeof(laplacian_levels)));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -311,7 +311,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
         prms.left_pad = 0U;
         prms.right_pad = 0U;
 
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
         tivxCheckStatus(&status, vxReleaseImage(&img));
@@ -332,7 +332,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
             prms.left_pad = 0U;
             prms.right_pad = 0U;
 
-            prms.border_mode = VX_BORDER_UNDEFINED;
+            prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
         tivxCheckStatus(&status, vxReleaseImage(&img));
@@ -360,7 +360,7 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.laplacian_reconstruct",
-                    VX_KERNEL_LAPLACIAN_RECONSTRUCT,
+                    (vx_enum)VX_KERNEL_LAPLACIAN_RECONSTRUCT,
                     NULL,
                     TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS,
                     tivxAddKernelLaplacianReconstructValidate,
@@ -376,9 +376,9 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_PYRAMID,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_PYRAMID,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -386,9 +386,9 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -396,9 +396,9 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

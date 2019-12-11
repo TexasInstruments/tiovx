@@ -51,9 +51,9 @@ static vx_bool ownIsValidBorderMode(vx_enum mode)
     vx_bool ret = (vx_bool)vx_true_e;
     switch (mode)
     {
-        case VX_BORDER_UNDEFINED:
-        case VX_BORDER_CONSTANT:
-        case VX_BORDER_REPLICATE:
+        case (vx_enum)VX_BORDER_UNDEFINED:
+        case (vx_enum)VX_BORDER_CONSTANT:
+        case (vx_enum)VX_BORDER_REPLICATE:
             break;
         default:
             ret = (vx_bool)vx_false_e;
@@ -85,7 +85,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if(ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+            if(ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 kernel_info[num_kernel_info].enumeration = kernel->enumeration;
                 strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
@@ -112,7 +112,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
     context->obj_desc_cmd = NULL;
     context->cmd_ack_event = NULL;
 
-    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
+    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
     if(context->obj_desc_cmd != NULL)
     {
         status = tivxEventCreate(&context->cmd_ack_event);
@@ -189,52 +189,52 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
 
                 switch(ref->type)
                 {
-                    case VX_TYPE_DELAY:
+                    case (vx_enum)VX_TYPE_DELAY:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
                         break;
-                    case VX_TYPE_LUT:
+                    case (vx_enum)VX_TYPE_LUT:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
                         break;
-                    case VX_TYPE_DISTRIBUTION:
+                    case (vx_enum)VX_TYPE_DISTRIBUTION:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
                         break;
-                    case VX_TYPE_PYRAMID:
+                    case (vx_enum)VX_TYPE_PYRAMID:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
                         break;
-                    case VX_TYPE_THRESHOLD:
+                    case (vx_enum)VX_TYPE_THRESHOLD:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
                         break;
-                    case VX_TYPE_MATRIX:
+                    case (vx_enum)VX_TYPE_MATRIX:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
                         break;
-                    case VX_TYPE_CONVOLUTION:
+                    case (vx_enum)VX_TYPE_CONVOLUTION:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
                         break;
-                    case VX_TYPE_SCALAR:
+                    case (vx_enum)VX_TYPE_SCALAR:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
                         break;
-                    case VX_TYPE_ARRAY:
+                    case (vx_enum)VX_TYPE_ARRAY:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
                         break;
-                    case VX_TYPE_IMAGE:
+                    case (vx_enum)VX_TYPE_IMAGE:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
                         break;
-                    case VX_TYPE_REMAP:
+                    case (vx_enum)VX_TYPE_REMAP:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
                         break;
-                    case VX_TYPE_OBJECT_ARRAY:
+                    case (vx_enum)VX_TYPE_OBJECT_ARRAY:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
                         break;
-                    case VX_TYPE_NODE:
+                    case (vx_enum)VX_TYPE_NODE:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
                         break;
-                    case VX_TYPE_GRAPH:
+                    case (vx_enum)VX_TYPE_GRAPH:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
                         break;
-                    case TIVX_TYPE_DATA_REF_Q:
+                    case (vx_enum)TIVX_TYPE_DATA_REF_Q:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
                         break;
-                    case VX_TYPE_TENSOR:
+                    case (vx_enum)VX_TYPE_TENSOR:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
                         break;
                     case VX_TYPE_USER_DATA_OBJECT:
@@ -292,7 +292,7 @@ vx_bool ownIsValidContext(vx_context context)
     vx_bool ret = (vx_bool)vx_false_e;
     if ((context != NULL) &&
         (context->base.magic == TIVX_MAGIC) &&
-        (context->base.type == VX_TYPE_CONTEXT) &&
+        (context->base.type == (vx_enum)VX_TYPE_CONTEXT) &&
         (context->base.context == NULL))
     {
         ret = (vx_bool)vx_true_e; /* this is the top level context */
@@ -310,7 +310,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
+    else if (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -326,7 +326,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 /* found free entry */
                 context->kerneltable[idx] = kernel;
                 context->num_unique_kernels++;
-                ownIncrementReference(&kernel->base, VX_INTERNAL);
+                ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
                 tivxLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
                 break;
             }
@@ -355,7 +355,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
+    else if (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -371,7 +371,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                 /* found free entry */
                 context->kerneltable[idx] = NULL;
                 context->num_unique_kernels--;
-                ownDecrementReference(&kernel->base, VX_INTERNAL);
+                ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
                 tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                 break;
             }
@@ -410,7 +410,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         {
             kernel = context->kerneltable[idx];
             if((NULL != kernel) &&
-                (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL) ==
+                (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) ==
                     (vx_bool)vx_true_e)
                 &&
                 ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
@@ -456,7 +456,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         /* alloc obj desc for kernel name */
         obj_desc_cmd = context->obj_desc_cmd;
 
-        obj_desc_cmd->cmd_id = TIVX_CMD_NODE_CONTROL;
+        obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
         obj_desc_cmd->dst_target_id = target_id;
         obj_desc_cmd->src_target_id =
             tivxPlatformGetTargetId(TIVX_TARGET_HOST);
@@ -577,7 +577,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_CONTEXT);
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     {
         if (g_context_handle == NULL)
@@ -586,12 +586,12 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
             memset(context, 0, sizeof(tivx_context_t));
 
-            context->imm_border.mode = VX_BORDER_UNDEFINED;
-            context->imm_border_policy = VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
+            context->imm_border.mode = (vx_enum)VX_BORDER_UNDEFINED;
+            context->imm_border_policy = (vx_enum)VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
             context->next_dynamic_user_kernel_id = 0;
             context->next_dynamic_user_library_id = 1;
             context->perf_enabled = (vx_bool)vx_false_e;
-            context->imm_target_enum = VX_TARGET_ANY;
+            context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
             memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
             context->num_references = 0;
             for(idx=0; idx<dimof(context->reftable); idx++)
@@ -600,7 +600,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             }
             for(idx=0; idx<dimof(context->user_structs); idx++)
             {
-                context->user_structs[idx].type = VX_TYPE_INVALID;
+                context->user_structs[idx].type = (vx_enum)VX_TYPE_INVALID;
             }
             for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
@@ -622,13 +622,13 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
+                status = ownInitReference(&context->base, NULL, (vx_enum)VX_TYPE_CONTEXT, NULL);
                 if(status==(vx_status)VX_SUCCESS)
                 {
                     status = ownContextCreateCmdObj(context);
                     if(status == (vx_status)VX_SUCCESS)
                     {
-                        ownIncrementReference(&context->base, VX_EXTERNAL);
+                        ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
                         ownCreateConstErrors(context);
                         g_context_handle = context;
                     }
@@ -675,10 +675,10 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
         else
         {
             context = g_context_handle;
-            ownIncrementReference(&context->base, VX_EXTERNAL);
+            ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
         }
     }
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_CONTEXT);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     return context;
 }
@@ -694,10 +694,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         *c = 0;
     }
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_CONTEXT);
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (ownDecrementReference(&context->base, VX_EXTERNAL) == 0)
+        if (ownDecrementReference(&context->base, (vx_enum)VX_EXTERNAL) == 0)
         {
             ownContextSetKernelRemoveLock(context, (vx_bool)vx_true_e);
 
@@ -739,16 +739,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 }
 
                 /* These were internally opened during creation, so should internally close ERRORs */
-                if((NULL != ref) && (ref->type == VX_TYPE_ERROR) ) {
-                    ownReleaseReferenceInt(&ref, ref->type, VX_INTERNAL, NULL);
+                if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_ERROR) ) {
+                    ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
                 }
 
                 /* Warning above so user can fix release external objects, but close here anyway */
                 while ((NULL != ref)&& (ref->external_count > 1) ) {
-                    ownDecrementReference(ref, VX_EXTERNAL);
+                    ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
                 }
                 if ((NULL != ref) && (ref->external_count > 0) ) {
-                    ownReleaseReferenceInt(&ref, ref->type, VX_EXTERNAL, NULL);
+                    ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
                 }
             }
 
@@ -782,7 +782,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_CONTEXT);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     return status;
 }
@@ -799,10 +799,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
     {
         switch (attribute)
         {
-            case VX_CONTEXT_VENDOR_ID:
+            case (vx_enum)VX_CONTEXT_VENDOR_ID:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1U))
                 {
-                    *(vx_uint16 *)ptr = VX_ID_TI;
+                    *(vx_uint16 *)ptr = (vx_enum)VX_ID_TI;
                 }
                 else
                 {
@@ -810,7 +810,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_VERSION:
+            case (vx_enum)VX_CONTEXT_VERSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1U))
                 {
                     *(vx_uint16 *)ptr = (vx_uint16)VX_VERSION;
@@ -821,7 +821,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_MODULES:
+            case (vx_enum)VX_CONTEXT_MODULES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = ownGetModuleCount();
@@ -832,7 +832,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_REFERENCES:
+            case (vx_enum)VX_CONTEXT_REFERENCES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = context->num_references;
@@ -843,7 +843,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_IMPLEMENTATION:
+            case (vx_enum)VX_CONTEXT_IMPLEMENTATION:
                 if ((size <= VX_MAX_IMPLEMENTATION_NAME) && (NULL != ptr))
                 {
                     strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
@@ -854,7 +854,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_EXTENSIONS_SIZE:
+            case (vx_enum)VX_CONTEXT_EXTENSIONS_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = sizeof(g_context_extensions);
@@ -865,7 +865,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_EXTENSIONS:
+            case (vx_enum)VX_CONTEXT_EXTENSIONS:
                 if ( (size <= sizeof(g_context_extensions) ) && ptr)
                 {
                     strncpy(ptr, g_context_extensions, sizeof(g_context_extensions));
@@ -876,7 +876,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_CONVOLUTION_MAX_DIMENSION:
+            case (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_CONVOLUTION_DIM;
@@ -887,7 +887,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_MAX_TENSOR_DIMS:
+            case (vx_enum)VX_CONTEXT_MAX_TENSOR_DIMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_TENSOR_DIMS;
@@ -898,7 +898,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_NONLINEAR_MAX_DIMENSION:
+            case (vx_enum)VX_CONTEXT_NONLINEAR_MAX_DIMENSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_NONLINEAR_DIM;
@@ -909,7 +909,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION:
+            case (vx_enum)VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM;
@@ -920,7 +920,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_IMMEDIATE_BORDER:
+            case (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER:
                 if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
                     *(vx_border_t *)ptr = context->imm_border;
@@ -931,7 +931,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_IMMEDIATE_BORDER_POLICY:
+            case (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER_POLICY:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = context->imm_border_policy;
@@ -942,7 +942,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_UNIQUE_KERNELS:
+            case (vx_enum)VX_CONTEXT_UNIQUE_KERNELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = context->num_unique_kernels;
@@ -953,7 +953,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONTEXT_UNIQUE_KERNEL_TABLE:
+            case (vx_enum)VX_CONTEXT_UNIQUE_KERNEL_TABLE:
                 if ((size == (context->num_unique_kernels * sizeof(vx_kernel_info_t))) &&
                     (ptr != NULL))
                 {
@@ -984,7 +984,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
     else
     {
         switch (attribute) {
-            case VX_CONTEXT_IMMEDIATE_BORDER:
+            case (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER:
                 if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
                     vx_border_t *config = (vx_border_t *)ptr;
@@ -1019,10 +1019,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
     vx_context context;
     vx_enum ref_type;
 
-    status = vxQueryReference(reference, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type));
+    status = vxQueryReference(reference, (vx_enum)VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type));
     if (status == (vx_status)VX_SUCCESS)
     {
-        if (ref_type == VX_TYPE_CONTEXT)
+        if (ref_type == (vx_enum)VX_TYPE_CONTEXT)
         {
             context = (vx_context)reference;
         }
@@ -1039,14 +1039,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
         {
             switch (directive)
             {
-                case VX_DIRECTIVE_DISABLE_LOGGING:
+                case (vx_enum)VX_DIRECTIVE_DISABLE_LOGGING:
                     context->log_enabled = (vx_bool)vx_false_e;
                     break;
-                case VX_DIRECTIVE_ENABLE_LOGGING:
+                case (vx_enum)VX_DIRECTIVE_ENABLE_LOGGING:
                     context->log_enabled = (vx_bool)vx_true_e;
                     break;
-                case VX_DIRECTIVE_DISABLE_PERFORMANCE:
-                    if (ref_type == VX_TYPE_CONTEXT)
+                case (vx_enum)VX_DIRECTIVE_DISABLE_PERFORMANCE:
+                    if (ref_type == (vx_enum)VX_TYPE_CONTEXT)
                     {
                         context->perf_enabled = (vx_bool)vx_false_e;
                     }
@@ -1056,8 +1056,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
                         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                     break;
-                case VX_DIRECTIVE_ENABLE_PERFORMANCE:
-                    if (ref_type == VX_TYPE_CONTEXT)
+                case (vx_enum)VX_DIRECTIVE_ENABLE_PERFORMANCE:
+                    if (ref_type == (vx_enum)VX_TYPE_CONTEXT)
                     {
                         context->perf_enabled = (vx_bool)vx_true_e;
                     }
@@ -1079,7 +1079,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
 
 VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_size size)
 {
-    vx_enum type = VX_TYPE_INVALID;
+    vx_enum type = (vx_enum)VX_TYPE_INVALID;
     vx_uint32 i = 0;
 
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
@@ -1089,9 +1089,9 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
 
         for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
         {
-            if (context->user_structs[i].type == VX_TYPE_INVALID)
+            if (context->user_structs[i].type == (vx_enum)VX_TYPE_INVALID)
             {
-                context->user_structs[i].type = VX_TYPE_USER_STRUCT_START + i;
+                context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + i;
                 context->user_structs[i].size = size;
                 type = context->user_structs[i].type;
                 tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (i+1));
@@ -1099,7 +1099,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
             }
         }
 
-        if (type == VX_TYPE_INVALID)
+        if (type == (vx_enum)VX_TYPE_INVALID)
         {
             VX_PRINT(VX_ZONE_WARNING, "vxRegisterUserStruct: May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
         }
@@ -1119,7 +1119,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
         status = (vx_status)VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
-            *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER,0) + context->next_dynamic_user_kernel_id++;
+            *pKernelEnumId = VX_KERNEL_BASE((vx_enum)VX_ID_USER,0) + context->next_dynamic_user_kernel_id++;
             status = (vx_status)VX_SUCCESS;
         }
 
@@ -1158,16 +1158,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
 
         switch (target_enum)
         {
-            case VX_TARGET_ANY:
-                context->imm_target_enum = VX_TARGET_ANY;
+            case (vx_enum)VX_TARGET_ANY:
+                context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
                 memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
                 status = (vx_status)VX_SUCCESS;
                 break;
 
-            case VX_TARGET_STRING:
+            case (vx_enum)VX_TARGET_STRING:
                 if (target_string != NULL)
                 {
-                    context->imm_target_enum = VX_TARGET_STRING;
+                    context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
                     strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string));
                     context->imm_target_string[sizeof(context->imm_target_string) - 1] = '\0';
                     status = (vx_status)VX_SUCCESS;
@@ -1206,13 +1206,13 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
+            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL))
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
                 )
             {
                 /* found match */
-                ownIncrementReference(&kernel->base, VX_EXTERNAL);
+                ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
                 break;
             }
         }
@@ -1245,13 +1245,13 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
         {
             kernel = context->kerneltable[idx];
             if((NULL != kernel) &&
-               (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
+               (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL))
                 &&
                 ( kernel->enumeration == kernelenum )
                 )
             {
                 /* found match */
-                ownIncrementReference(&kernel->base, VX_EXTERNAL);
+                ownIncrementReference(&kernel->base, (vx_enum)VX_EXTERNAL);
                 break;
             }
         }

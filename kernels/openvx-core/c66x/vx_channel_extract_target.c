@@ -102,20 +102,20 @@ vx_status tivxChannelExtractRgbRgbxInput(
 
     switch(channel_value)
     {
-        case VX_CHANNEL_0:
-        case VX_CHANNEL_R:
+        case (vx_enum)VX_CHANNEL_0:
+        case (vx_enum)VX_CHANNEL_R:
             channel_offset = 0;
             break;
-        case VX_CHANNEL_1:
-        case VX_CHANNEL_G:
+        case (vx_enum)VX_CHANNEL_1:
+        case (vx_enum)VX_CHANNEL_G:
             channel_offset = 1;
             break;
-        case VX_CHANNEL_2:
-        case VX_CHANNEL_B:
+        case (vx_enum)VX_CHANNEL_2:
+        case (vx_enum)VX_CHANNEL_B:
             channel_offset = 2;
             break;
-        case VX_CHANNEL_3:
-        case VX_CHANNEL_A:
+        case (vx_enum)VX_CHANNEL_3:
+        case (vx_enum)VX_CHANNEL_A:
             if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
@@ -133,8 +133,8 @@ vx_status tivxChannelExtractRgbRgbxInput(
     if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
-           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
 
         if(in_desc->format == (vx_df_image)VX_DF_IMAGE_RGB)
         {
@@ -151,8 +151,8 @@ vx_status tivxChannelExtractRgbRgbxInput(
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
-           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
     }
 
     return status;
@@ -180,7 +180,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
 
     switch(channel_value)
     {
-        case VX_CHANNEL_Y:
+        case (vx_enum)VX_CHANNEL_Y:
             if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
@@ -190,7 +190,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
                 channel_offset = 1;
             }
             break;
-        case VX_CHANNEL_U:
+        case (vx_enum)VX_CHANNEL_U:
             if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
@@ -200,7 +200,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
                 channel_offset = 0;
             }
             break;
-        case VX_CHANNEL_V:
+        case (vx_enum)VX_CHANNEL_V:
             if(in_desc->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
@@ -218,15 +218,15 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
-           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
 
-        if(channel_value == VX_CHANNEL_Y)
+        if(channel_value == (vx_enum)VX_CHANNEL_Y)
         {
             status = VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
         else
-        { /* channel_value is VX_CHANNEL_U or VX_CHANNEL_V
+        { /* channel_value is (vx_enum)VX_CHANNEL_U or (vx_enum)VX_CHANNEL_V
            * consider plane to be 4 bytes per pixel, i.e half the width
            */
             vxlib_src.dim_x = vxlib_src.dim_x/2;
@@ -235,8 +235,8 @@ vx_status tivxChannelExtractYuyvUyvyInput(
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
-           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
     }
 
     return status;
@@ -257,17 +257,17 @@ vx_status tivxChannelExtractNv12Nv21Input(
     vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
-    if( channel_value == VX_CHANNEL_Y)
+    if( channel_value == (vx_enum)VX_CHANNEL_Y)
     {
         plane_idx = 0;
     }
     else
-    if( channel_value == VX_CHANNEL_U)
+    if( channel_value == (vx_enum)VX_CHANNEL_U)
     {
         plane_idx = 1;
     }
     else
-    if( channel_value == VX_CHANNEL_V)
+    if( channel_value == (vx_enum)VX_CHANNEL_V)
     {
         plane_idx = 1;
     }
@@ -296,10 +296,10 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
         switch(channel_value)
         {
-            case VX_CHANNEL_Y:
+            case (vx_enum)VX_CHANNEL_Y:
                 channel_offset = 0;
                 break;
-            case VX_CHANNEL_U:
+            case (vx_enum)VX_CHANNEL_U:
                 if(in_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
                     channel_offset = 0;
@@ -309,7 +309,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
                     channel_offset = 1;
                 }
                 break;
-            case VX_CHANNEL_V:
+            case (vx_enum)VX_CHANNEL_V:
                 if(in_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
                     channel_offset = 1;
@@ -328,10 +328,10 @@ vx_status tivxChannelExtractNv12Nv21Input(
     if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
-           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
 
-        if(channel_value == VX_CHANNEL_Y)
+        if(channel_value == (vx_enum)VX_CHANNEL_Y)
         {
             status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
         }
@@ -341,8 +341,8 @@ vx_status tivxChannelExtractNv12Nv21Input(
         }
 
         tivxMemBufferUnmap(in_desc_target_ptr,
-           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
     }
 
     return status;
@@ -363,17 +363,17 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     vx_status status = (vx_status)VX_SUCCESS;
     void *in_desc_target_ptr;
 
-    if( channel_value == VX_CHANNEL_Y)
+    if( channel_value == (vx_enum)VX_CHANNEL_Y)
     {
         plane_idx = 0;
     }
     else
-    if( channel_value == VX_CHANNEL_U)
+    if( channel_value == (vx_enum)VX_CHANNEL_U)
     {
         plane_idx = 1;
     }
     else
-    if( channel_value == VX_CHANNEL_V)
+    if( channel_value == (vx_enum)VX_CHANNEL_V)
     {
         plane_idx = 2;
     }
@@ -404,14 +404,14 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     if(status == (vx_status)VX_SUCCESS)
     {
         tivxMemBufferMap(in_desc_target_ptr,
-           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
 
         status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
 
         tivxMemBufferUnmap(in_desc_target_ptr,
-           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           in_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
     }
 
     return status;
@@ -443,8 +443,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
         out_desc_target_ptr = tivxMemShared2TargetPtr(&out_desc->mem_ptr[0]);
 
         tivxMemBufferMap(out_desc_target_ptr,
-           out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         channel_value = channel_desc->data.enm;
 
@@ -516,8 +516,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
         /* kernel processing function complete */
 
         tivxMemBufferUnmap(out_desc_target_ptr,
-           out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
 
     }
@@ -553,13 +553,13 @@ void tivxAddTargetKernelChannelExtract(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -572,7 +572,7 @@ void tivxAddTargetKernelChannelExtract(void)
     if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_extract_target_kernel = tivxAddTargetKernel(
-                            VX_KERNEL_CHANNEL_EXTRACT,
+                            (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
                             target_name,
                             tivxChannelExtract,
                             tivxChannelExtractCreate,

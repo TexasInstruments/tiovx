@@ -44,10 +44,10 @@ vx_distribution VX_API_CALL vxCreateDistribution(
         if ((0 != num_bins) && (0 != range))
         {
             dist = (vx_distribution)ownCreateReference(context,
-                VX_TYPE_DISTRIBUTION, VX_EXTERNAL, &context->base);
+                (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)dist) == (vx_status)VX_SUCCESS) &&
-                (dist->base.type == VX_TYPE_DISTRIBUTION))
+                (dist->base.type == (vx_enum)VX_TYPE_DISTRIBUTION))
             {
                 /* assign refernce type specific callback's */
                 dist->base.destructor_callback = &ownDestructDistribution;
@@ -56,7 +56,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     (tivx_reference_release_callback_f)&vxReleaseDistribution;
 
                 obj_desc = (tivx_obj_desc_distribution_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
+                    (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
                 if(obj_desc==NULL)
                 {
                     vxReleaseDistribution(&dist);
@@ -75,7 +75,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     obj_desc->mem_size = num_bins * sizeof(vx_int32);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     dist->base.obj_desc = (tivx_obj_desc_t*)obj_desc;
                 }
             }
@@ -88,7 +88,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseDistribution(vx_distribution *dist)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)dist, VX_TYPE_DISTRIBUTION, VX_EXTERNAL, NULL));
+        (vx_reference*)dist, (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_status VX_API_CALL vxQueryDistribution(
@@ -97,7 +97,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -111,7 +111,7 @@ vx_status VX_API_CALL vxQueryDistribution(
     {
         switch (attribute)
         {
-            case VX_DISTRIBUTION_DIMENSIONS:
+            case (vx_enum)VX_DISTRIBUTION_DIMENSIONS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     /* Only 1D is supported */
@@ -123,7 +123,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_DISTRIBUTION_OFFSET:
+            case (vx_enum)VX_DISTRIBUTION_OFFSET:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
                     *(vx_int32 *)ptr = obj_desc->offset;
@@ -134,7 +134,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_DISTRIBUTION_RANGE:
+            case (vx_enum)VX_DISTRIBUTION_RANGE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->range;
@@ -145,7 +145,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_DISTRIBUTION_BINS:
+            case (vx_enum)VX_DISTRIBUTION_BINS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_bins;
@@ -156,7 +156,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_DISTRIBUTION_WINDOW:
+            case (vx_enum)VX_DISTRIBUTION_WINDOW:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->num_win;
@@ -167,7 +167,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_DISTRIBUTION_SIZE:
+            case (vx_enum)VX_DISTRIBUTION_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->mem_size;
@@ -195,7 +195,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     vx_uint32 size;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -207,14 +207,14 @@ vx_status VX_API_CALL vxCopyDistribution(
     }
     else
     {
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: user_mem_type is not VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: Memory still allocated\n");
@@ -233,15 +233,15 @@ vx_status VX_API_CALL vxCopyDistribution(
         size = obj_desc->mem_size;
 
         /* Copy from dist object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to dist object */
         {
@@ -250,12 +250,12 @@ vx_status VX_API_CALL vxCopyDistribution(
             if ((vx_status)VX_SUCCESS == status)
             {
                 tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                 memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             }
         }
     }
@@ -270,7 +270,7 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -285,8 +285,8 @@ vx_status VX_API_CALL vxMapDistribution(
         if (NULL != ptr)
         {
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-                obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_AND_WRITE);
+                obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_AND_WRITE);
 
             *ptr = (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         }
@@ -300,7 +300,7 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
@@ -313,8 +313,8 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     else
     {
         tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_AND_WRITE);
+            obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_AND_WRITE);
     }
 
     return (status);
@@ -325,7 +325,7 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_DISTRIBUTION)
+    if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
         if(obj_desc != NULL)
@@ -335,7 +335,7 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -348,7 +348,7 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
                     obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
                             obj_desc->mem_ptr.host_ptr,
-                            TIVX_MEM_EXTERNAL);
+                            (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -371,7 +371,7 @@ static vx_status ownDestructDistribution(vx_reference ref)
 {
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_DISTRIBUTION)
+    if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
     {
         obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
         if(obj_desc!=NULL)

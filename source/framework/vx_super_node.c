@@ -84,7 +84,7 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
 
         for(i=0; i < num_nodes; i++)
         {
-            if ((ownIsValidSpecificReference(&nodes[i]->base, VX_TYPE_NODE) == (vx_bool)vx_false_e))
+            if ((ownIsValidSpecificReference(&nodes[i]->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e))
             {
                 is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not a valid node\n", i);
@@ -175,11 +175,11 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
 
     vx_context context = vxGetContext((vx_reference)graph);
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (ownIsValidCreateParams(graph, nodes, num_nodes) == (vx_bool)vx_true_e)
         {
-            super_node = (tivx_super_node)ownCreateReference(context, TIVX_TYPE_SUPER_NODE, VX_EXTERNAL, &graph->base);
+            super_node = (tivx_super_node)ownCreateReference(context, TIVX_TYPE_SUPER_NODE, (vx_enum)VX_EXTERNAL, &graph->base);
 
             if ( (vxGetStatus((vx_reference)super_node) == (vx_status)VX_SUCCESS) && (super_node->base.type == TIVX_TYPE_SUPER_NODE) )
             {
@@ -188,7 +188,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                 super_node->base.mem_alloc_callback = NULL;
                 super_node->base.release_callback = (tivx_reference_release_callback_f)&tivxReleaseSuperNode;
 
-                obj_desc = (tivx_obj_desc_super_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_SUPER_NODE, (vx_reference)super_node);
+                obj_desc = (tivx_obj_desc_super_node_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SUPER_NODE, (vx_reference)super_node);
 
                 if(obj_desc == NULL)
                 {
@@ -255,7 +255,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
 
 VX_API_ENTRY vx_status VX_API_CALL tivxReleaseSuperNode(tivx_super_node *super_node)
 {
-    return ownReleaseReferenceInt((vx_reference *)super_node, TIVX_TYPE_SUPER_NODE, VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt((vx_reference *)super_node, TIVX_TYPE_SUPER_NODE, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node, vx_enum attribute, void *ptr, vx_size size)
@@ -270,7 +270,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
     {
         switch (attribute)
         {
-            case TIVX_SUPER_NODE_TARGET_STRING:
+            case (vx_enum)TIVX_SUPER_NODE_TARGET_STRING:
                 if ((ptr != NULL) && (size >= TIVX_TARGET_MAX_NAME))
                 {
                     tivxPlatformGetTargetName(super_node->node->obj_desc[0]->target_id, ptr);
@@ -282,7 +282,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 break;
 
-            case TIVX_SUPER_NODE_PERFORMANCE:
+            case (vx_enum)TIVX_SUPER_NODE_PERFORMANCE:
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &super_node->node->perf, size);
@@ -294,7 +294,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 break;
 
-            case TIVX_SUPER_NODE_STATUS:
+            case (vx_enum)TIVX_SUPER_NODE_STATUS:
                 if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
                 {
                     /* returns  status for pipeline index 0,
@@ -310,7 +310,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 break;
 
-            case TIVX_SUPER_NODE_NUM_NODES:
+            case (vx_enum)TIVX_SUPER_NODE_NUM_NODES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->num_nodes;

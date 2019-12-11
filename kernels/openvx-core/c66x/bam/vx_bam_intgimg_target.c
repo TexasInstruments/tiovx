@@ -179,7 +179,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxIntgImgParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxIntgImgParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -254,7 +254,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxIntgImgParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -268,9 +268,9 @@ void tivxAddTargetKernelBamIntegralImage(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -282,7 +282,7 @@ void tivxAddTargetKernelBamIntegralImage(void)
         }
 
         vx_intgimg_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_INTEGRAL_IMAGE,
+            (vx_enum)VX_KERNEL_INTEGRAL_IMAGE,
             target_name,
             tivxKernelIntgImgProcess,
             tivxKernelIntgImgCreate,
@@ -327,7 +327,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxIntgImgParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         BAM_VXLIB_integralImage_i8u_o32u_params *kernel_params = (BAM_VXLIB_integralImage_i8u_o32u_params*)scratch;
 
@@ -369,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxIntgImgParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

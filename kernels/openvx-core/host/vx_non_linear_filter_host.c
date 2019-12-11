@@ -128,19 +128,19 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxCopyScalar(function, &function_scalar_type, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxCopyScalar(function, &function_scalar_type, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryMatrix(mask, VX_MATRIX_TYPE, &mask_type, sizeof(mask_type)));
+        tivxCheckStatus(&status, vxQueryMatrix(mask, (vx_enum)VX_MATRIX_TYPE, &mask_type, sizeof(mask_type)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -155,9 +155,9 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_NONLINEAR_FILTER_MEDIAN != function_scalar_type) &&
-            (VX_NONLINEAR_FILTER_MIN != function_scalar_type) &&
-            (VX_NONLINEAR_FILTER_MAX != function_scalar_type))
+        if (((vx_enum)VX_NONLINEAR_FILTER_MEDIAN != function_scalar_type) &&
+            ((vx_enum)VX_NONLINEAR_FILTER_MIN != function_scalar_type) &&
+            ((vx_enum)VX_NONLINEAR_FILTER_MAX != function_scalar_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'function' should be a scalar of type:\n VX_NONLINEAR_FILTER_MEDIAN or VX_NONLINEAR_FILTER_MIN or VX_NONLINEAR_FILTER_MAX \n");
@@ -169,7 +169,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_UINT8 != mask_type)
+        if ((vx_enum)VX_TYPE_UINT8 != mask_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'mask' should be a matrix of type:\n VX_DF_IMAGE_U8 \n");
@@ -208,7 +208,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for nonlinear filter \n");
@@ -219,9 +219,9 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -257,8 +257,8 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryMatrix(mask, VX_MATRIX_COLUMNS, &mask_cols, sizeof(mask_cols)));
-        tivxCheckStatus(&status, vxQueryMatrix(mask, VX_MATRIX_ROWS, &mask_rows, sizeof(mask_rows)));
+        tivxCheckStatus(&status, vxQueryMatrix(mask, (vx_enum)VX_MATRIX_COLUMNS, &mask_cols, sizeof(mask_cols)));
+        tivxCheckStatus(&status, vxQueryMatrix(mask, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &mask_rows, sizeof(mask_rows)));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
         prms.bot_pad = (mask_rows - 1U) / 2U;
         prms.left_pad = (mask_cols - 1U) / 2U;
         prms.right_pad = (mask_cols - 1U) / 2U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -301,7 +301,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.non_linear_filter",
-                    VX_KERNEL_NON_LINEAR_FILTER,
+                    (vx_enum)VX_KERNEL_NON_LINEAR_FILTER,
                     NULL,
                     TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS,
                     tivxAddKernelNonLinearFilterValidate,
@@ -317,9 +317,9 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_ENUM,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_ENUM,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -327,9 +327,9 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -337,9 +337,9 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_MATRIX,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_MATRIX,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -347,9 +347,9 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

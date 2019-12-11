@@ -115,13 +115,13 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_WIDTH, &accum_w, sizeof(accum_w)));
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_HEIGHT, &accum_h, sizeof(accum_h)));
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_WIDTH, &accum_w, sizeof(accum_w)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_HEIGHT, &accum_h, sizeof(accum_h)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt)));
 
 #if 1
 
@@ -178,9 +178,9 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateValidate(vx_node node,
     {
         accum_fmt = (vx_df_image)VX_DF_IMAGE_S16;
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], (vx_enum)VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -217,7 +217,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -234,7 +234,7 @@ vx_status tivxAddKernelAccumulate(vx_context context)
     kernel = vxAddUserKernel(
                 context,
                 "org.khronos.openvx.accumulate",
-                VX_KERNEL_ACCUMULATE,
+                (vx_enum)VX_KERNEL_ACCUMULATE,
                 NULL,
                 TIVX_KERNEL_ACCUMULATE_MAX_PARAMS,
                 tivxAddKernelAccumulateValidate,
@@ -249,9 +249,9 @@ vx_status tivxAddKernelAccumulate(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -259,9 +259,9 @@ vx_status tivxAddKernelAccumulate(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

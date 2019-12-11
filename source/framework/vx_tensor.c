@@ -45,13 +45,13 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_po
     vx_bool res = (vx_bool)vx_false_e;
 
     if(
-        (data_type == VX_TYPE_FLOAT32) ||
-        (data_type == VX_TYPE_INT32)   ||
-        (data_type == VX_TYPE_UINT32)  ||
-        (data_type == VX_TYPE_INT16)   ||
-        (data_type == VX_TYPE_UINT16)  ||
-        (data_type == VX_TYPE_INT8)    ||
-        (data_type == VX_TYPE_UINT8) )
+        (data_type == (vx_enum)VX_TYPE_FLOAT32) ||
+        (data_type == (vx_enum)VX_TYPE_INT32)   ||
+        (data_type == (vx_enum)VX_TYPE_UINT32)  ||
+        (data_type == (vx_enum)VX_TYPE_INT16)   ||
+        (data_type == (vx_enum)VX_TYPE_UINT16)  ||
+        (data_type == (vx_enum)VX_TYPE_INT8)    ||
+        (data_type == (vx_enum)VX_TYPE_UINT8) )
     {
         res = (vx_bool)vx_true_e;
     }
@@ -64,7 +64,7 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_TENSOR)
+    if(ref->type == (vx_enum)VX_TYPE_TENSOR)
     {
         obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
 
@@ -75,7 +75,7 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -86,7 +86,7 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
                 else
                 {
                     obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
+                        obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -109,7 +109,7 @@ static vx_status ownDestructTensor(vx_reference ref)
 {
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_TENSOR)
+    if(ref->type == (vx_enum)VX_TYPE_TENSOR)
     {
         obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
         if(obj_desc != NULL)
@@ -164,7 +164,7 @@ static void ownInitTensorObject(
 
     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i ++)
     {
@@ -264,10 +264,10 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 
         if( NULL == tensor )
         {
-            tensor = (vx_tensor)ownCreateReference(context, VX_TYPE_TENSOR, VX_EXTERNAL, &context->base);
+            tensor = (vx_tensor)ownCreateReference(context, (vx_enum)VX_TYPE_TENSOR, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)tensor) == (vx_status)VX_SUCCESS) &&
-                (tensor->base.type == VX_TYPE_TENSOR))
+                (tensor->base.type == (vx_enum)VX_TYPE_TENSOR))
             {
                 /* assign reference type specific callback's */
                 tensor->base.destructor_callback = &ownDestructTensor;
@@ -276,7 +276,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                     (tivx_reference_release_callback_f)&vxReleaseTensor;
 
                 tensor->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_TENSOR, (vx_reference)tensor);
+                    (vx_enum)TIVX_OBJ_DESC_TENSOR, (vx_reference)tensor);
                 if(tensor->base.obj_desc==NULL)
                 {
                     vxReleaseTensor(&tensor);
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)tensor, VX_TYPE_TENSOR, VX_EXTERNAL, NULL));
+        (vx_reference*)tensor, (vx_enum)VX_TYPE_TENSOR, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
@@ -309,7 +309,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
             || (tensor->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryTensor failed\n");
@@ -321,7 +321,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
         obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
         switch (attribute)
         {
-            case VX_TENSOR_NUMBER_OF_DIMS:
+            case (vx_enum)VX_TENSOR_NUMBER_OF_DIMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->number_of_dimensions;
@@ -332,7 +332,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_TENSOR_DIMS:
+            case (vx_enum)VX_TENSOR_DIMS:
                 if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3) == 0))
                 {
                     int i;
@@ -350,7 +350,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_TENSOR_DATA_TYPE:
+            case (vx_enum)VX_TENSOR_DATA_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->data_type;
@@ -361,7 +361,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_TENSOR_FIXED_POINT_POSITION:
+            case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
                     *(vx_int8 *)ptr = obj_desc->fixed_point_position;
@@ -372,7 +372,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_TENSOR_SCALING_DIVISOR:
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
                     *(vx_uint8 *)ptr = obj_desc->scaling_divisor;
@@ -383,7 +383,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
                     *(vx_uint8 *)ptr = obj_desc->scaling_divisor_fixed_point_position;
@@ -410,7 +410,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
         ||
         (tensor->base.obj_desc == NULL)
         )
@@ -423,7 +423,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
         obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
         switch (attribute)
         {
-            case VX_TENSOR_FIXED_POINT_POSITION:
+            case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
                     obj_desc->fixed_point_position = *(vx_int8 *)ptr;
@@ -434,7 +434,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_TENSOR_SCALING_DIVISOR:
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
                     obj_desc->scaling_divisor = *(vx_uint8 *)ptr;
@@ -445,7 +445,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+            case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
                     obj_desc->scaling_divisor_fixed_point_position = *(vx_uint8 *)ptr;
@@ -474,7 +474,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
     tivx_obj_desc_tensor_t *obj_desc = NULL;
     vx_size i = 0;
 
-    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {
@@ -485,14 +485,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
     {
         obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
 
-        if (VX_MEMORY_TYPE_HOST != user_memory_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_memory_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Memory is not allocated\n");
@@ -557,25 +557,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             ownComputePositionsFromIndex(i,view_start, view_end, obj_desc->stride, user_stride, number_of_dimensions, &tensor_pos, &patch_pos);
 
             /* Copy from tensor object to user memory */
-            if (VX_READ_ONLY == usage)
+            if ((vx_enum)VX_READ_ONLY == usage)
             {
                 tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 memcpy (user_curr_ptr + patch_pos, tensor_ptr + tensor_pos, bytes_per_line);
 
                 tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
             }
             else /* Copy from user memory to tensor object */
             {
                 tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                 memcpy (tensor_ptr + tensor_pos, user_curr_ptr + patch_pos, bytes_per_line);
 
                 tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             }
         }
     }
@@ -597,7 +597,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {
@@ -707,7 +707,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {

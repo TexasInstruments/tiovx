@@ -115,11 +115,11 @@ static vx_status VX_CALLBACK tivxAddKernelMeanStdDevValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryScalar(mean, VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(mean, (vx_enum)VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(stddev, VX_SCALAR_TYPE, &stddev_scalar_type, sizeof(stddev_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(stddev, (vx_enum)VX_SCALAR_TYPE, &stddev_scalar_type, sizeof(stddev_scalar_type)));
     }
 
 
@@ -133,13 +133,13 @@ static vx_status VX_CALLBACK tivxAddKernelMeanStdDevValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != mean_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != mean_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'mean' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != stddev_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != stddev_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'stddev' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
@@ -150,8 +150,8 @@ static vx_status VX_CALLBACK tivxAddKernelMeanStdDevValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX], VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX], VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX], (vx_enum)VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX], (vx_enum)VX_SCALAR_TYPE, &mean_scalar_type, sizeof(mean_scalar_type));
     }
 
 #endif
@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxAddKernelMeanStdDevInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -214,7 +214,7 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.mean_stddev",
-                    VX_KERNEL_MEAN_STDDEV,
+                    (vx_enum)VX_KERNEL_MEAN_STDDEV,
                     NULL,
                     TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS,
                     tivxAddKernelMeanStdDevValidate,
@@ -230,9 +230,9 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -240,9 +240,9 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -250,9 +250,9 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

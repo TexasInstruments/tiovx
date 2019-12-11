@@ -229,7 +229,7 @@ static vx_node usecase_node_create_node_1 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_SOBEL_3x3, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_SOBEL_3x3, params, 3);
     
     return node;
 }
@@ -248,7 +248,7 @@ static vx_node usecase_node_create_node_2 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_PHASE, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_PHASE, params, 3);
     
     return node;
 }
@@ -302,7 +302,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_gr
             usecase->grad_y 
           );
         vxSetReferenceName( (vx_reference)usecase->node_1, "node_1");
-        vxSetNodeTarget(usecase->node_1, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_1, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -313,7 +313,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_gr
             usecase->phase 
           );
         vxSetReferenceName( (vx_reference)usecase->node_2, "node_2");
-        vxSetNodeTarget(usecase->node_2, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_2, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -323,7 +323,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_gr
             usecase->phase_rgb 
           );
         vxSetReferenceName( (vx_reference)usecase->node_3, "node_3");
-        vxSetNodeTarget(usecase->node_3, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_3, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     
     usecase->graph_0 = graph;

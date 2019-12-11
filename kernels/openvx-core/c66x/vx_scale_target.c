@@ -115,9 +115,9 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -127,9 +127,9 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 
-        if (VX_INTERPOLATION_BILINEAR == sc->data.enm)
+        if ((vx_enum)VX_INTERPOLATION_BILINEAR == sc->data.enm)
         {
-            if (VX_BORDER_REPLICATE == border.mode)
+            if ((vx_enum)VX_BORDER_REPLICATE == border.mode)
             {
                 status = VXLIB_scaleImageBilinear_br_i8u_o8u(
                     src_addr, &vxlib_src,
@@ -149,8 +149,8 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
                     0, 0, 0, 0);
             }
         }
-        else if ((VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm) ||
-                 (VX_INTERPOLATION_AREA == sc->data.enm))
+        else if (((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm) ||
+                 ((vx_enum)VX_INTERPOLATION_AREA == sc->data.enm))
         {
             status = VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst,
@@ -168,9 +168,9 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -197,9 +197,9 @@ void tivxAddTargetKernelScale(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -211,7 +211,7 @@ void tivxAddTargetKernelScale(void)
         }
 
         vx_scale_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_SCALE_IMAGE,
+            (vx_enum)VX_KERNEL_SCALE_IMAGE,
             target_name,
             tivxKernelScaleProcess,
             tivxKernelScaleCreate,

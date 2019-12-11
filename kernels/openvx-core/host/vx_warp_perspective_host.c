@@ -129,22 +129,22 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryMatrix(matrix, VX_MATRIX_TYPE, &matrix_type, sizeof(matrix_type)));
-        tivxCheckStatus(&status, vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &matrix_cols, sizeof(matrix_cols)));
-        tivxCheckStatus(&status, vxQueryMatrix(matrix, VX_MATRIX_ROWS, &matrix_rows, sizeof(matrix_rows)));
+        tivxCheckStatus(&status, vxQueryMatrix(matrix, (vx_enum)VX_MATRIX_TYPE, &matrix_type, sizeof(matrix_type)));
+        tivxCheckStatus(&status, vxQueryMatrix(matrix, (vx_enum)VX_MATRIX_COLUMNS, &matrix_cols, sizeof(matrix_cols)));
+        tivxCheckStatus(&status, vxQueryMatrix(matrix, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &matrix_rows, sizeof(matrix_rows)));
 
-        tivxCheckStatus(&status, vxQueryScalar(type, VX_SCALAR_TYPE, &type_scalar_type, sizeof(type_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(type, &type_scalar_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(type, (vx_enum)VX_SCALAR_TYPE, &type_scalar_type, sizeof(type_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(type, &type_scalar_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
     }
 
 
@@ -158,13 +158,13 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != matrix_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != matrix_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'matrix' should be a matrix of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_ENUM != type_scalar_type)
+        if ((vx_enum)VX_TYPE_ENUM != type_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'type' should be a scalar of type:\n VX_TYPE_ENUM \n");
@@ -194,8 +194,8 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'matrix' should have a value of 3 for VX_MATRIX_ROWS \n");
         }
 
-        if ((VX_INTERPOLATION_NEAREST_NEIGHBOR != type_scalar_val) &&
-            (VX_INTERPOLATION_BILINEAR != type_scalar_val))
+        if (((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR != type_scalar_val) &&
+            ((vx_enum)VX_INTERPOLATION_BILINEAR != type_scalar_val))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'type' value should be an enum of type:\n VX_INTERPOLATION_NEAREST_NEIGHBOR or VX_INTERPOLATION_BILINEAR \n");
@@ -216,8 +216,8 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((VX_BORDER_UNDEFINED != border.mode) &&
-            (VX_BORDER_CONSTANT != border.mode))
+        if (((vx_enum)VX_BORDER_UNDEFINED != border.mode) &&
+            ((vx_enum)VX_BORDER_CONSTANT != border.mode))
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined and constant border mode are supported for warp perspective \n");
@@ -228,9 +228,9 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], VX_IMAGE_WIDTH, &output_w, sizeof(output_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], VX_IMAGE_HEIGHT, &output_h, sizeof(output_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h));
     }
 
 #endif
@@ -267,8 +267,8 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveInitialize(vx_node node
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -302,7 +302,7 @@ vx_status tivxAddKernelWarpPerspective(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.warp_perspective",
-                    VX_KERNEL_WARP_PERSPECTIVE,
+                    (vx_enum)VX_KERNEL_WARP_PERSPECTIVE,
                     NULL,
                     TIVX_KERNEL_WARP_PERSPECTIVE_MAX_PARAMS,
                     tivxAddKernelWarpPerspectiveValidate,
@@ -318,9 +318,9 @@ vx_status tivxAddKernelWarpPerspective(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -328,9 +328,9 @@ vx_status tivxAddKernelWarpPerspective(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_MATRIX,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_MATRIX,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -338,9 +338,9 @@ vx_status tivxAddKernelWarpPerspective(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -348,9 +348,9 @@ vx_status tivxAddKernelWarpPerspective(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

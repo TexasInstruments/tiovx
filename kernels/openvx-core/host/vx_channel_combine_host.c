@@ -138,21 +138,21 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(plane0, VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w)));
-        tivxCheckStatus(&status, vxQueryImage(plane0, VX_IMAGE_HEIGHT, &plane0_h, sizeof(plane0_h)));
-        tivxCheckStatus(&status, vxQueryImage(plane0, VX_IMAGE_FORMAT, &plane0_fmt, sizeof(plane0_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(plane0, (vx_enum)VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w)));
+        tivxCheckStatus(&status, vxQueryImage(plane0, (vx_enum)VX_IMAGE_HEIGHT, &plane0_h, sizeof(plane0_h)));
+        tivxCheckStatus(&status, vxQueryImage(plane0, (vx_enum)VX_IMAGE_FORMAT, &plane0_fmt, sizeof(plane0_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(plane1, VX_IMAGE_WIDTH, &plane1_w, sizeof(plane1_w)));
-        tivxCheckStatus(&status, vxQueryImage(plane1, VX_IMAGE_HEIGHT, &plane1_h, sizeof(plane1_h)));
-        tivxCheckStatus(&status, vxQueryImage(plane1, VX_IMAGE_FORMAT, &plane1_fmt, sizeof(plane1_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(plane1, (vx_enum)VX_IMAGE_WIDTH, &plane1_w, sizeof(plane1_w)));
+        tivxCheckStatus(&status, vxQueryImage(plane1, (vx_enum)VX_IMAGE_HEIGHT, &plane1_h, sizeof(plane1_h)));
+        tivxCheckStatus(&status, vxQueryImage(plane1, (vx_enum)VX_IMAGE_FORMAT, &plane1_fmt, sizeof(plane1_fmt)));
 
         if (NULL != plane2)
         {
             in_channel++;
 
-            tivxCheckStatus(&status, vxQueryImage(plane2, VX_IMAGE_WIDTH, &plane2_w, sizeof(plane2_w)));
-            tivxCheckStatus(&status, vxQueryImage(plane2, VX_IMAGE_HEIGHT, &plane2_h, sizeof(plane2_h)));
-            tivxCheckStatus(&status, vxQueryImage(plane2, VX_IMAGE_FORMAT, &plane2_fmt, sizeof(plane2_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(plane2, (vx_enum)VX_IMAGE_WIDTH, &plane2_w, sizeof(plane2_w)));
+            tivxCheckStatus(&status, vxQueryImage(plane2, (vx_enum)VX_IMAGE_HEIGHT, &plane2_h, sizeof(plane2_h)));
+            tivxCheckStatus(&status, vxQueryImage(plane2, (vx_enum)VX_IMAGE_FORMAT, &plane2_fmt, sizeof(plane2_fmt)));
         }
         else
         {
@@ -164,9 +164,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         {
             in_channel++;
 
-            tivxCheckStatus(&status, vxQueryImage(plane3, VX_IMAGE_WIDTH, &plane3_w, sizeof(plane3_w)));
-            tivxCheckStatus(&status, vxQueryImage(plane3, VX_IMAGE_HEIGHT, &plane3_h, sizeof(plane3_h)));
-            tivxCheckStatus(&status, vxQueryImage(plane3, VX_IMAGE_FORMAT, &plane3_fmt, sizeof(plane3_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(plane3, (vx_enum)VX_IMAGE_WIDTH, &plane3_w, sizeof(plane3_w)));
+            tivxCheckStatus(&status, vxQueryImage(plane3, (vx_enum)VX_IMAGE_HEIGHT, &plane3_h, sizeof(plane3_h)));
+            tivxCheckStatus(&status, vxQueryImage(plane3, (vx_enum)VX_IMAGE_FORMAT, &plane3_fmt, sizeof(plane3_fmt)));
         }
         else
         {
@@ -174,9 +174,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             plane3_h = 0U;
         }
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
     }
 
 
@@ -342,9 +342,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], VX_IMAGE_HEIGHT, &plane0_h, sizeof(plane0_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &plane0_w, sizeof(plane0_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &plane0_h, sizeof(plane0_h));
     }
 
 #endif
@@ -395,7 +395,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigChannelCombineValidRect(&prms));
     }
@@ -421,7 +421,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.channel_combine",
-                    VX_KERNEL_CHANNEL_COMBINE,
+                    (vx_enum)VX_KERNEL_CHANNEL_COMBINE,
                     NULL,
                     TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS,
                     tivxAddKernelChannelCombineValidate,
@@ -437,9 +437,9 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -447,9 +447,9 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -457,9 +457,9 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -467,9 +467,9 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -477,9 +477,9 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)
@@ -559,7 +559,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = vxQueryImage(prms->out_img[0], VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
+        status = vxQueryImage(prms->out_img[0], (vx_enum)VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -655,7 +655,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED == prms->border_mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED == prms->border_mode)
         {
             out_rect.start_x += prms->left_pad;
             out_rect.start_y += prms->top_pad;

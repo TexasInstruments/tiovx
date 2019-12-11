@@ -117,13 +117,13 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
 #if 1
 
@@ -180,9 +180,9 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -220,7 +220,7 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -246,7 +246,7 @@ vx_status tivxAddKernelThreshold(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.threshold",
-                    VX_KERNEL_THRESHOLD,
+                    (vx_enum)VX_KERNEL_THRESHOLD,
                     NULL,
                     TIVX_KERNEL_THRESHOLD_MAX_PARAMS,
                     tivxAddKernelThresholdValidate,
@@ -262,9 +262,9 @@ vx_status tivxAddKernelThreshold(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -272,9 +272,9 @@ vx_status tivxAddKernelThreshold(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_THRESHOLD,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_THRESHOLD,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -282,9 +282,9 @@ vx_status tivxAddKernelThreshold(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

@@ -187,9 +187,9 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
         tivxMemBufferMap(mask_target_ptr, mask->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -206,7 +206,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
+            if ((vx_enum)VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
             {
                 BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params kernel_params;
 
@@ -226,7 +226,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
                     buf_params, &kernel_details,
                     &prms->graph_handle);
             }
-            else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
+            else if ((vx_enum)VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
             {
                 BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params kernel_params;
 
@@ -283,7 +283,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -314,7 +314,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -328,9 +328,9 @@ void tivxAddTargetKernelBamNonLinearFilter(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -342,7 +342,7 @@ void tivxAddTargetKernelBamNonLinearFilter(void)
         }
 
         vx_lut_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_NON_LINEAR_FILTER,
+            (vx_enum)VX_KERNEL_NON_LINEAR_FILTER,
             target_name,
             tivxBamKernelNonLinearFilterProcess,
             tivxBamKernelNonLinearFilterCreate,
@@ -397,9 +397,9 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
         mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
         tivxMemBufferMap(mask_target_ptr, mask->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -410,7 +410,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
 
-            if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
+            if ((vx_enum)VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
             {
                 BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params*)scratch;
 
@@ -435,7 +435,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
+            else if ((vx_enum)VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
             {
                 BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params*)scratch;
 
@@ -503,7 +503,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

@@ -83,7 +83,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
     config= (vx_user_data_object)appParams[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-        (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        (void **)&ioBufDesc, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
     num_input_tensors= ioBufDesc->numInputBuf;
     num_output_tensors= ioBufDesc->numOutputBuf;
@@ -92,7 +92,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
     vxUnmapUserDataObject(config, map_id_config);
 
-    params= tivxMemAlloc(sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
+    params= tivxMemAlloc(sizeof(vx_reference)*num_params, (vx_enum)TIVX_MEM_EXTERNAL);
 
     params[0]=  (vx_reference)config;
     params[1]=  appParams[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
@@ -113,7 +113,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                              params,
                                              num_params);
 
-    tivxMemFree(params, sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
+    tivxMemFree(params, sizeof(vx_reference)*num_params, (vx_enum)TIVX_MEM_EXTERNAL);
 
     return node;
 }

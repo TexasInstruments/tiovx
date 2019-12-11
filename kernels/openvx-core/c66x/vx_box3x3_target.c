@@ -88,7 +88,7 @@ typedef struct
 
 static tivxBox3X3KernelInfo gTivxBox3X3KernelInfo =
 {
-    VX_KERNEL_BOX_3x3,
+    (vx_enum)VX_KERNEL_BOX_3x3,
     NULL,
     VXLIB_box_3x3_i8u_o8u
 
@@ -154,11 +154,11 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
     {
         /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_desc_target_ptr,
-            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
@@ -181,11 +181,11 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc_target_ptr,
-            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -216,9 +216,9 @@ void tivxAddTargetKernelBox3X3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);

@@ -115,7 +115,7 @@ static vx_status tivxKernelColorConvert(
         {
             src_desc_target_ptr[i] = tivxMemShared2TargetPtr(&src_desc->mem_ptr[i]);
             tivxMemBufferMap(src_desc_target_ptr[i], src_desc->mem_size[i],
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         tivxSetPointerLocation(src_desc, src_desc_target_ptr, (uint8_t**)&src_addr);
 
@@ -123,7 +123,7 @@ static vx_status tivxKernelColorConvert(
         {
             dst_desc_target_ptr[i] = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[i]);
             tivxMemBufferMap(dst_desc_target_ptr[i], dst_desc->mem_size[i],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
         tivxSetPointerLocation(dst_desc, dst_desc_target_ptr, (uint8_t**)&dst_addr);
 
@@ -204,7 +204,7 @@ static vx_status tivxKernelColorConvert(
 
             status = VXLIB_colorConvert_NVXXtoRGB_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0], &vxlib_dst[0], u_pix,
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
@@ -213,7 +213,7 @@ static vx_status tivxKernelColorConvert(
 
             status = VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)dst_addr[0],
-                &vxlib_dst[0], u_pix, src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                &vxlib_dst[0], u_pix, src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if ( ( ((vx_df_image)VX_DF_IMAGE_NV12 == src_desc->format) || ((vx_df_image)VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
@@ -237,13 +237,13 @@ static vx_status tivxKernelColorConvert(
         {
             status = VXLIB_colorConvert_YUVXtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 0,
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 0,
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_YUYV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
@@ -261,13 +261,13 @@ static vx_status tivxKernelColorConvert(
         {
             status = VXLIB_colorConvert_YUVXtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 1,
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)dst_addr[0], &vxlib_dst[0], 1,
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_UYVY == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
@@ -286,14 +286,14 @@ static vx_status tivxKernelColorConvert(
             status = VXLIB_colorConvert_IYUVtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src[0], (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2],
                 &vxlib_src[2], (uint8_t *)dst_addr[0], &vxlib_dst[0],
-                src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_RGBX == dst_desc->format))
         {
             status = VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u((uint8_t *)src_addr[0],
                  &vxlib_src[0], (uint8_t *)src_addr[1],  &vxlib_src[1], (uint8_t *)src_addr[2],
                  &vxlib_src[2], (uint8_t *)dst_addr[0], &vxlib_dst[0],
-                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
+                 src_desc->color_space - VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE));
         }
         else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_NV12 == dst_desc->format))
         {
@@ -321,15 +321,15 @@ static vx_status tivxKernelColorConvert(
         for (i = 0; i < src_desc->planes; i++)
         {
             tivxMemBufferUnmap(src_desc_target_ptr[i],
-                src_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+                src_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
 
         for (i = 0; i < dst_desc->planes; i++)
         {
             tivxMemBufferUnmap(dst_desc_target_ptr[i],
-                dst_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                dst_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
     }
 
@@ -378,7 +378,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
 
             temp_ptr_size = 4 * dst->imagepatch_addr[0].dim_x * sizeof(uint8_t);
 
-            temp_ptr = tivxMemAlloc(temp_ptr_size, TIVX_MEM_EXTERNAL);
+            temp_ptr = tivxMemAlloc(temp_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
             {
@@ -442,7 +442,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
             }
             else
             {
-                tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree(temp_ptr, temp_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -456,7 +456,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertProcess(
 {
     vx_status status;
 
-    status = tivxKernelColorConvert(kernel, obj_desc, num_params, VX_KERNEL_COLOR_CONVERT);
+    status = tivxKernelColorConvert(kernel, obj_desc, num_params, (vx_enum)VX_KERNEL_COLOR_CONVERT);
 
     return (status);
 }
@@ -469,9 +469,9 @@ void tivxAddTargetKernelColorConvert(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -483,7 +483,7 @@ void tivxAddTargetKernelColorConvert(void)
         }
 
         vx_color_convert_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_COLOR_CONVERT,
+            (vx_enum)VX_KERNEL_COLOR_CONVERT,
             target_name,
             tivxKernelColorConvertProcess,
             tivxKernelColorConvertCreate,

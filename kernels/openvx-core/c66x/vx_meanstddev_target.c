@@ -117,7 +117,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
@@ -132,7 +132,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     return (status);
@@ -159,9 +159,9 @@ void tivxAddTargetKernelMeanStdDev(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -173,7 +173,7 @@ void tivxAddTargetKernelMeanStdDev(void)
         }
 
         vx_msd_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_MEAN_STDDEV,
+            (vx_enum)VX_KERNEL_MEAN_STDDEV,
             target_name,
             tivxKernelMsdProcess,
             tivxKernelMsdCreate,

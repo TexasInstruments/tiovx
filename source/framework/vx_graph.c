@@ -90,7 +90,7 @@ static vx_status ownDestructGraph(vx_reference ref)
 
         for(i=0; i<graph->num_supernodes; i++)
         {
-            ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, VX_INTERNAL, NULL);
+            ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
 
             graph->supernodes[i] = NULL;
         }
@@ -116,7 +116,7 @@ static vx_status ownResetGraphPerf(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -140,7 +140,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
             (pipeline_id < graph->pipeline_depth))
     {
@@ -180,7 +180,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
     int32_t free_index = -(int32_t)1;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if(graph->num_nodes < TIVX_GRAPH_MAX_NODES)
         {
@@ -200,13 +200,13 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if( (index < TIVX_GRAPH_MAX_NODES) && (index == graph->num_nodes) )
         {
             /* index MUST be graph->num_nodes, since that is what is returned via
                 ownGraphGetFreeNodeIndex() */
-            ownIncrementReference(&node->base, VX_INTERNAL);
+            ownIncrementReference(&node->base, (vx_enum)VX_INTERNAL);
             graph->nodes[graph->num_nodes] = node;
             graph->num_nodes++;
             ownGraphSetReverify(graph);
@@ -233,11 +233,11 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if( (graph->num_supernodes < TIVX_GRAPH_MAX_SUPER_NODES) )
         {
-            ownIncrementReference(&super_node->base, VX_INTERNAL);
+            ownIncrementReference(&super_node->base, (vx_enum)VX_INTERNAL);
             graph->supernodes[graph->num_supernodes] = super_node;
             graph->num_supernodes++;
             ownGraphSetReverify(graph);
@@ -264,7 +264,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     uint32_t i;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         /* remove node from head nodes and leaf nodes if found */
         for(i=0; i < graph->num_head_nodes; i++)
@@ -299,7 +299,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->nodes[i] = graph->nodes[graph->num_nodes-1];
                 graph->nodes[graph->num_nodes-1] = NULL;
                 graph->num_nodes--;
-                ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
+                ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
                 status = (vx_status)VX_SUCCESS;
                 ownGraphSetReverify(graph);
                 break;
@@ -334,8 +334,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        graph = (vx_graph)ownCreateReference(context, VX_TYPE_GRAPH, VX_EXTERNAL, &context->base);
-        if ( (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS) && (graph->base.type == VX_TYPE_GRAPH) )
+        graph = (vx_graph)ownCreateReference(context, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, &context->base);
+        if ( (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS) && (graph->base.type == (vx_enum)VX_TYPE_GRAPH) )
         {
             graph->base.destructor_callback = &ownDestructGraph;
             graph->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseGraph;
@@ -353,7 +353,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->is_enable_send_complete_event = (vx_bool)vx_false_e;
             graph->stop_done = NULL;
             graph->delete_done = NULL;
-            graph->schedule_mode = VX_GRAPH_SCHEDULE_MODE_NORMAL;
+            graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
             graph->schedule_pending_count = 0;
             graph->submitted_count = 0;
             graph->num_data_ref = 0;
@@ -383,7 +383,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 
             graph->verified = (vx_bool)vx_false_e;
             graph->reverify = (vx_bool)vx_false_e;
-            graph->state = VX_GRAPH_STATE_UNVERIFIED;
+            graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
 
             status = tivxEventCreate(&graph->all_graph_completed_event);
             if(status==(vx_status)VX_SUCCESS)
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: not supported\n");
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
@@ -427,7 +427,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
     {
         switch (attribute)
         {
-            case VX_GRAPH_PERFORMANCE:
+            case (vx_enum)VX_GRAPH_PERFORMANCE:
                 if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &graph->perf, size);
@@ -438,7 +438,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_GRAPH_STATE:
+            case (vx_enum)VX_GRAPH_STATE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_status *)ptr = graph->state;
@@ -449,7 +449,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_GRAPH_NUMNODES:
+            case (vx_enum)VX_GRAPH_NUMNODES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->num_nodes - graph->num_supernodes;
@@ -460,7 +460,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_GRAPH_NUMPARAMETERS:
+            case (vx_enum)VX_GRAPH_NUMPARAMETERS:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->num_params;
@@ -471,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_GRAPH_STREAM_EXECUTIONS:
+            case (vx_enum)TIVX_GRAPH_STREAM_EXECUTIONS:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->streaming_executions;
@@ -498,14 +498,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseGraph(vx_graph *g)
 {
-    return ownReleaseReferenceInt((vx_reference *)g, VX_TYPE_GRAPH, VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt((vx_reference *)g, (vx_enum)VX_TYPE_GRAPH, (vx_enum)VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_parameter param)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-        (ownIsValidSpecificReference(&param->base, VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
+    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+        (ownIsValidSpecificReference(&param->base, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -516,7 +516,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].graph_consumed_app_value = 0U;
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
-            graph->parameters[graph->num_params].type = VX_TYPE_PARAMETER;
+            graph->parameters[graph->num_params].type = (vx_enum)VX_TYPE_PARAMETER;
             graph->num_params++;
             tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
             status = (vx_status)VX_SUCCESS;
@@ -528,8 +528,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    else if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-              (ownIsValidSpecificReference(&param->base, VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
+    else if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+              (ownIsValidSpecificReference(&param->base, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -558,7 +558,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx_uint32 index, vx_reference value)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -578,7 +578,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph, vx_uint32 index)
 {
     vx_parameter parameter = NULL;
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -596,7 +596,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph,
 VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph)
 {
     vx_bool verified = (vx_bool)vx_false_e;
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         verified = graph->verified;
     }
@@ -611,10 +611,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
     vx_bool is_full = (vx_bool)vx_true_e;
 
     if((NULL != delay) &&
-       (ownIsValidSpecificReference((vx_reference)delay, VX_TYPE_DELAY)))
+       (ownIsValidSpecificReference((vx_reference)delay, (vx_enum)VX_TYPE_DELAY)))
     {
         if((NULL != graph) &&
-           (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+           (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
         {
             /* check if this particular delay is already registered in the graph */
             for (i = 0; i < TIVX_GRAPH_MAX_DELAYS; i++)
@@ -669,7 +669,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         status = vxScheduleGraph(graph);
         if(status == (vx_status)VX_SUCCESS)
@@ -706,19 +706,19 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
     }
 
     if ((status == (vx_status)VX_SUCCESS)
-        && ( (graph->state == VX_GRAPH_STATE_VERIFIED) ||
-             (graph->state == VX_GRAPH_STATE_COMPLETED) ||
-             (graph->state == VX_GRAPH_STATE_ABANDONED)
+        && ( (graph->state == (vx_enum)VX_GRAPH_STATE_VERIFIED) ||
+             (graph->state == (vx_enum)VX_GRAPH_STATE_COMPLETED) ||
+             (graph->state == (vx_enum)VX_GRAPH_STATE_ABANDONED)
             ))
     {
         /* If streaming and pipelining are enabled, AUTO scheduling will schedule one at a time */
-        if( graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_NORMAL )
+        if( graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL )
         {
             /* schedule graph one time */
             ownGraphScheduleGraph(graph, 1);
         }
         else
-        if( (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
             ((vx_bool)vx_false_e == graph->is_streaming_enabled) )
         {
             uint32_t num_schedule = ownGraphGetNumSchedule(graph);
@@ -730,7 +730,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
             }
         }
         else
-        if( (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+        if( (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
             ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -754,7 +754,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
     {
         if (graph->is_streaming_enabled)
         {
@@ -763,7 +763,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
         }
         else
         {
-            if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+            if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
@@ -788,12 +788,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL!= graph) &&
-        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH) ==
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e))
     {
-        if ((graph->state == VX_GRAPH_STATE_RUNNING)
-           || (graph->state == VX_GRAPH_STATE_COMPLETED)
-           || (graph->state == VX_GRAPH_STATE_ABANDONED))
+        if ((graph->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
+           || (graph->state == (vx_enum)VX_GRAPH_STATE_COMPLETED)
+           || (graph->state == (vx_enum)VX_GRAPH_STATE_ABANDONED))
         {
             /* wait for all previous graph executions to finish
              *
@@ -801,7 +801,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             status = tivxEventWait(graph->all_graph_completed_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
             if(status == (vx_status)VX_SUCCESS)
             {
-                if(graph->state == VX_GRAPH_STATE_ABANDONED)
+                if(graph->state == (vx_enum)VX_GRAPH_STATE_ABANDONED)
                 {
                     status = (vx_status)VX_ERROR_GRAPH_ABANDONED;
                 }
@@ -828,7 +828,7 @@ void ownGraphSetReverify(vx_graph graph)
     {
         graph->reverify = graph->verified;
         graph->verified = (vx_bool)vx_false_e;
-        graph->state = VX_GRAPH_STATE_UNVERIFIED;
+        graph->state = (vx_enum)VX_GRAPH_STATE_UNVERIFIED;
     }
 }
 
@@ -843,7 +843,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
             timestamp = tivxPlatformGetTimeInUsecs()*1000; /* in nano-secs */
 
             tivxEventQueueAddEvent(&graph->base.context->event_queue,
-                        VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
+                        (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
                         (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
         }
     }
@@ -853,7 +853,7 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -879,7 +879,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -931,7 +931,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
     vx_node node = NULL;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if(vxIsGraphVerified(graph))
         {
@@ -939,7 +939,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
             {
                 node = graph->nodes[index];
 
-                if(ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == (vx_bool)vx_true_e)
+                if(ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
                 {
                     /* valid node return it */
                 }

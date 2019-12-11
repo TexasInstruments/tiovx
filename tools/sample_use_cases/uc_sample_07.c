@@ -151,7 +151,7 @@ vx_status uc_sample_07_data_create(uc_sample_07 usecase)
     {
         vx_uint8 value = 0;
 
-        usecase->scalar_3 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
+        usecase->scalar_3 = vxCreateScalar(context, (vx_enum)VX_TYPE_UINT8, &value);
         if (usecase->scalar_3 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -231,7 +231,7 @@ static vx_node usecase_node_create_node_4 (
           (vx_reference)image_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ACCUMULATE_WEIGHTED, params, 4);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_ACCUMULATE_WEIGHTED, params, 4);
 
     return node;
 }
@@ -250,7 +250,7 @@ static vx_node usecase_node_create_node_7 (
           (vx_reference)convolution_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CUSTOM_CONVOLUTION, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_CUSTOM_CONVOLUTION, params, 3);
 
     return node;
 }
@@ -280,7 +280,7 @@ vx_status uc_sample_07_graph_0_create(uc_sample_07 usecase)
             usecase->image_2 
           );
         vxSetReferenceName( (vx_reference)usecase->node_4, "node_4");
-        vxSetNodeTarget(usecase->node_4, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_4, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -291,7 +291,7 @@ vx_status uc_sample_07_graph_0_create(uc_sample_07 usecase)
             usecase->image_5 
           );
         vxSetReferenceName( (vx_reference)usecase->node_7, "node_7");
-        vxSetNodeTarget(usecase->node_7, VX_TARGET_STRING, TIVX_TARGET_EVE2);
+        vxSetNodeTarget(usecase->node_7, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_EVE2);
     }
 
     usecase->graph_0 = graph;

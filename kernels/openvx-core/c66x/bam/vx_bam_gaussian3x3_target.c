@@ -187,7 +187,7 @@ static vx_status VX_CALLBACK tivxKernelGaussian3X3Create(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_GAUSSIAN3X3_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxGaussianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxKernelGaussian3X3Create(
             if (NULL != prms)
             {
                 tivxMemFree(prms, sizeof(tivxGaussianParams),
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -262,7 +262,7 @@ static vx_status VX_CALLBACK tivxKernelGaussian3X3Delete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxGaussianParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -276,9 +276,9 @@ void tivxAddTargetKernelBamGaussian3X3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -290,7 +290,7 @@ void tivxAddTargetKernelBamGaussian3X3(void)
         }
 
         vx_gaussian_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_GAUSSIAN_3x3,
+            (vx_enum)VX_KERNEL_GAUSSIAN_3x3,
             target_name,
             tivxKernelGaussian3X3Process,
             tivxKernelGaussian3X3Create,
@@ -331,7 +331,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreateInBamGraph(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        prms = tivxMemAlloc(sizeof(tivxGaussianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -362,7 +362,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxGaussianParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

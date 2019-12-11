@@ -110,7 +110,7 @@ void tivxMemBufferMap(
 
     if ((NULL != host_ptr) && (0U != size))
     {
-        if (TIVX_MEMORY_TYPE_DMA != mem_type)
+        if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
             System_ovxCacheInv((unsigned int)host_ptr, size);
         }
@@ -142,8 +142,8 @@ void tivxMemBufferUnmap(
 {
     if ((NULL != host_ptr) && (0U != size))
     {
-        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
-            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+        if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
             System_ovxCacheWb((unsigned int)host_ptr, size);
         }

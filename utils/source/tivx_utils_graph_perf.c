@@ -79,13 +79,13 @@ vx_status tivx_utils_node_perf_print(vx_node node)
 
     if(node!=NULL)
     {
-        status = vxQueryReference((vx_reference)node, VX_REFERENCE_NAME, &node_name, sizeof(vx_char*));
+        status = vxQueryReference((vx_reference)node, (vx_enum)VX_REFERENCE_NAME, &node_name, sizeof(vx_char*));
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = vxQueryNode(node, TIVX_NODE_TARGET_STRING, target_name, TIVX_TARGET_MAX_NAME);
+            status = vxQueryNode(node, (vx_enum)TIVX_NODE_TARGET_STRING, target_name, TIVX_TARGET_MAX_NAME);
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = vxQueryNode(node, VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
+                status = vxQueryNode(node, (vx_enum)VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
                 if(status==(vx_status)VX_SUCCESS)
                 {
                     printf(" NODE: %10s: %24s: avg = %6"PRIu64" usecs, min/max = %6"PRIu64" / %6"PRIu64" usecs, #executions = %10"PRIu64"\n",
@@ -119,13 +119,13 @@ vx_status tivx_utils_node_perf_export(FILE *fp, vx_node node)
 
     if(node!=NULL)
     {
-        status = vxQueryReference((vx_reference)node, VX_REFERENCE_NAME, &node_name, sizeof(vx_char*));
+        status = vxQueryReference((vx_reference)node, (vx_enum)VX_REFERENCE_NAME, &node_name, sizeof(vx_char*));
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = vxQueryNode(node, TIVX_NODE_TARGET_STRING, target_name, TIVX_TARGET_MAX_NAME);
+            status = vxQueryNode(node, (vx_enum)TIVX_NODE_TARGET_STRING, target_name, TIVX_TARGET_MAX_NAME);
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = vxQueryNode(node, VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
+                status = vxQueryNode(node, (vx_enum)VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
                 if(status==(vx_status)VX_SUCCESS)
                 {
                     TIVX_UTILS_EXPORT_WRITELN(fp, " %24s (%10s)    | %6"PRIu64"    | %6"PRIu64" / %6"PRIu64"   | %10"PRIu64"",
@@ -156,13 +156,13 @@ vx_status tivx_utils_graph_perf_print(vx_graph graph)
     vx_perf_t graph_perf;
     vx_char *graph_name;
 
-    status = vxQueryReference((vx_reference)graph, VX_REFERENCE_NAME, &graph_name, sizeof(vx_char*));
+    status = vxQueryReference((vx_reference)graph, (vx_enum)VX_REFERENCE_NAME, &graph_name, sizeof(vx_char*));
     if(status==(vx_status)VX_SUCCESS)
     {
-        status = vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &graph_perf, sizeof(vx_perf_t));
+        status = vxQueryGraph(graph, (vx_enum)VX_GRAPH_PERFORMANCE, &graph_perf, sizeof(vx_perf_t));
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = vxQueryGraph(graph, VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
+            status = vxQueryGraph(graph, (vx_enum)VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
             if(status==(vx_status)VX_SUCCESS)
             {
                 printf("GRAPH: %16s (#nodes = %3d, #executions = %6d)\n", graph_name, num_nodes, (uint32_t)graph_perf.num);
@@ -191,14 +191,14 @@ vx_status tivx_utils_graph_perf_export(FILE *fp, vx_graph graph)
 
     if (NULL != fp)
     {
-        status = vxQueryReference((vx_reference)graph, VX_REFERENCE_NAME, &graph_name, sizeof(vx_char*));
+        status = vxQueryReference((vx_reference)graph, (vx_enum)VX_REFERENCE_NAME, &graph_name, sizeof(vx_char*));
 
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &graph_perf, sizeof(vx_perf_t));
+            status = vxQueryGraph(graph, (vx_enum)VX_GRAPH_PERFORMANCE, &graph_perf, sizeof(vx_perf_t));
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = vxQueryGraph(graph, VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
+                status = vxQueryGraph(graph, (vx_enum)VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
                 if(status==(vx_status)VX_SUCCESS)
                 {
                     TIVX_UTILS_EXPORT_WRITELN(fp, "\n# GRAPH: Detailed Statistics\n");

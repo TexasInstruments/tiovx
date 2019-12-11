@@ -44,18 +44,18 @@ static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = (vx_bool)vx_false_e;
 
-    if ((VX_TYPE_IMAGE == type) ||
-        (VX_TYPE_TENSOR == type) ||
-        (VX_TYPE_ARRAY == type) ||
+    if (((vx_enum)VX_TYPE_IMAGE == type) ||
+        ((vx_enum)VX_TYPE_TENSOR == type) ||
+        ((vx_enum)VX_TYPE_ARRAY == type) ||
         (VX_TYPE_USER_DATA_OBJECT == type) ||
         (TIVX_TYPE_RAW_IMAGE == type) ||
-        (VX_TYPE_SCALAR == type) ||
-        (VX_TYPE_DISTRIBUTION == type) ||
-        (VX_TYPE_THRESHOLD == type) ||
-        (VX_TYPE_PYRAMID == type) ||
-        (VX_TYPE_MATRIX == type) ||
-        (VX_TYPE_REMAP == type)  ||
-        (VX_TYPE_LUT == type))
+        ((vx_enum)VX_TYPE_SCALAR == type) ||
+        ((vx_enum)VX_TYPE_DISTRIBUTION == type) ||
+        ((vx_enum)VX_TYPE_THRESHOLD == type) ||
+        ((vx_enum)VX_TYPE_PYRAMID == type) ||
+        ((vx_enum)VX_TYPE_MATRIX == type) ||
+        ((vx_enum)VX_TYPE_REMAP == type)  ||
+        ((vx_enum)VX_TYPE_LUT == type))
     {
         status = (vx_bool)vx_true_e;
     }
@@ -67,7 +67,7 @@ static vx_bool ownIsValidObject(vx_enum type)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)arr, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, NULL));
+        (vx_reference*)arr, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_object_array VX_API_CALL vxCreateObjectArray(
@@ -83,10 +83,10 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
-                context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);
+                context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
-                (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
+                (objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
@@ -95,7 +95,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                     (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
                 objarr->base.obj_desc = tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
+                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
                     vxReleaseObjectArray(&objarr);
@@ -142,7 +142,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_object_array objarr = NULL;
     vx_context context;
 
-    if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
                 (vx_bool)vx_true_e) &&
         (NULL != exemplar))
     {
@@ -152,10 +152,10 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
             (count <= TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
-                context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);
+                context, (vx_enum)VX_TYPE_OBJECT_ARRAY, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)objarr) == (vx_status)VX_SUCCESS) &&
-                (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
+                (objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = &ownDestructObjArray;
@@ -164,7 +164,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
                 objarr->base.obj_desc = tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
+                    (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
                     vxReleaseObjectArray(&objarr);
@@ -204,13 +204,13 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     tivx_obj_desc_object_array_t *obj_desc =
         (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-    if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) ==
+    if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
             (vx_bool)vx_true_e) && (obj_desc != NULL) &&
         (index < obj_desc->num_items) &&
         (objarr->base.is_virtual == (vx_bool)vx_false_e))
     {
         ref = objarr->ref[index];
-        ownIncrementReference(ref, VX_EXTERNAL);
+        ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
         /* set is_array_element flag */
         ref->is_array_element = (vx_bool)vx_true_e;
     }
@@ -223,7 +223,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         ||
         (objarr->base.obj_desc == NULL)
         )
@@ -235,7 +235,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
     {
         switch (attribute)
         {
-            case VX_OBJECT_ARRAY_ITEMTYPE:
+            case (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     tivx_obj_desc_object_array_t *obj_desc =
@@ -249,7 +249,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_OBJECT_ARRAY_NUMITEMS:
+            case (vx_enum)VX_OBJECT_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     tivx_obj_desc_object_array_t *obj_desc =
@@ -329,7 +329,7 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
 
         /* increment the internal counter on the image, not the
            external one */
-        ownIncrementReference(ref, VX_INTERNAL);
+        ownIncrementReference(ref, (vx_enum)VX_INTERNAL);
 
         ownReferenceSetScope(ref, &objarr->base);
     }
@@ -354,7 +354,7 @@ static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items
         {
             /* increment the internal counter on the image, not the
                external one */
-            ownDecrementReference(objarr->ref[i], VX_INTERNAL);
+            ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
 
             vxReleaseReference(&objarr->ref[i]);
         }
@@ -365,7 +365,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
 {
     vx_object_array objarr = (vx_object_array)ref;
 
-    if(objarr->base.type == VX_TYPE_OBJECT_ARRAY)
+    if(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
     {
         if(objarr->base.obj_desc!=NULL)
         {
@@ -388,7 +388,7 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
     tivx_obj_desc_object_array_t *obj_desc = NULL;
     vx_reference ref;
 
-    if(objarr->base.type == VX_TYPE_OBJECT_ARRAY)
+    if(objarr->base.type == (vx_enum)VX_TYPE_OBJECT_ARRAY)
     {
         if(objarr->base.obj_desc != NULL)
         {

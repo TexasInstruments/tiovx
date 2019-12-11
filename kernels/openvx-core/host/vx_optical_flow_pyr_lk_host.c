@@ -165,38 +165,38 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_WIDTH, &old_images_w, sizeof(old_images_w)));
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_HEIGHT, &old_images_h, sizeof(old_images_h)));
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_FORMAT, &old_images_fmt, sizeof(old_images_fmt)));
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_SCALE, &old_images_scale, sizeof(old_images_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_WIDTH, &old_images_w, sizeof(old_images_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_HEIGHT, &old_images_h, sizeof(old_images_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_FORMAT, &old_images_fmt, sizeof(old_images_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_SCALE, &old_images_scale, sizeof(old_images_scale)));
 
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_WIDTH, &new_images_w, sizeof(new_images_w)));
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_HEIGHT, &new_images_h, sizeof(new_images_h)));
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_FORMAT, &new_images_fmt, sizeof(new_images_fmt)));
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_SCALE, &new_images_scale, sizeof(new_images_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_WIDTH, &new_images_w, sizeof(new_images_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_HEIGHT, &new_images_h, sizeof(new_images_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_FORMAT, &new_images_fmt, sizeof(new_images_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_SCALE, &new_images_scale, sizeof(new_images_scale)));
 
-        tivxCheckStatus(&status, vxQueryArray(old_points, VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(old_points, VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(old_points, (vx_enum)VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(old_points, (vx_enum)VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity)));
 
-        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, VX_ARRAY_ITEMTYPE, &new_points_estimates_item_type, sizeof(new_points_estimates_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, VX_ARRAY_CAPACITY, &new_points_estimates_capacity, sizeof(new_points_estimates_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, (vx_enum)VX_ARRAY_ITEMTYPE, &new_points_estimates_item_type, sizeof(new_points_estimates_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, (vx_enum)VX_ARRAY_CAPACITY, &new_points_estimates_capacity, sizeof(new_points_estimates_capacity)));
 
-        tivxCheckStatus(&status, vxQueryArray(new_points, VX_ARRAY_ITEMTYPE, &new_points_item_type, sizeof(new_points_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(new_points, VX_ARRAY_CAPACITY, &new_points_capacity, sizeof(new_points_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(new_points, (vx_enum)VX_ARRAY_ITEMTYPE, &new_points_item_type, sizeof(new_points_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(new_points, (vx_enum)VX_ARRAY_CAPACITY, &new_points_capacity, sizeof(new_points_capacity)));
 
-        tivxCheckStatus(&status, vxCopyScalar(termination, &termination_scalar_type, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxCopyScalar(termination, &termination_scalar_type, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryScalar(epsilon, VX_SCALAR_TYPE, &epsilon_scalar_type, sizeof(epsilon_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(epsilon, (vx_enum)VX_SCALAR_TYPE, &epsilon_scalar_type, sizeof(epsilon_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(num_iterations, VX_SCALAR_TYPE, &num_iterations_scalar_type, sizeof(num_iterations_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(num_iterations, (vx_enum)VX_SCALAR_TYPE, &num_iterations_scalar_type, sizeof(num_iterations_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(use_initial_estimate, VX_SCALAR_TYPE, &use_initial_estimate_scalar_type, sizeof(use_initial_estimate_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(use_initial_estimate, (vx_enum)VX_SCALAR_TYPE, &use_initial_estimate_scalar_type, sizeof(use_initial_estimate_scalar_type)));
 
-        tivxCheckStatus(&status, vxCopyScalar(window_dimension, &window_dimension_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxCopyScalar(window_dimension, &window_dimension_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -223,13 +223,13 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'new_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_KEYPOINT != old_points_item_type)
+        if ((vx_enum)VX_TYPE_KEYPOINT != old_points_item_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'old_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
         }
 
-        if (VX_TYPE_KEYPOINT != new_points_estimates_item_type)
+        if ((vx_enum)VX_TYPE_KEYPOINT != new_points_estimates_item_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'new_points_estimates' should be an array of type:\n VX_TYPE_KEYPOINT \n");
@@ -237,34 +237,34 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_TYPE_KEYPOINT != new_points_item_type)
+            if ((vx_enum)VX_TYPE_KEYPOINT != new_points_item_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'new_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
             }
         }
 
-        if ((VX_TERM_CRITERIA_ITERATIONS != termination_scalar_type) &&
-            (VX_TERM_CRITERIA_EPSILON != termination_scalar_type) &&
-            (VX_TERM_CRITERIA_BOTH != termination_scalar_type))
+        if (((vx_enum)VX_TERM_CRITERIA_ITERATIONS != termination_scalar_type) &&
+            ((vx_enum)VX_TERM_CRITERIA_EPSILON != termination_scalar_type) &&
+            ((vx_enum)VX_TERM_CRITERIA_BOTH != termination_scalar_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'termination' should be a scalar of type:\n VX_TERM_CRITERIA_ITERATIONS or VX_TERM_CRITERIA_EPSILON or VX_TERM_CRITERIA_BOTH \n");
         }
 
-        if (VX_TYPE_FLOAT32 != epsilon_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != epsilon_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'epsilon' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_UINT32 != num_iterations_scalar_type)
+        if ((vx_enum)VX_TYPE_UINT32 != num_iterations_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'num_iterations' should be a scalar of type:\n VX_TYPE_UINT32 \n");
         }
 
-        if (VX_TYPE_BOOL != use_initial_estimate_scalar_type)
+        if ((vx_enum)VX_TYPE_BOOL != use_initial_estimate_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'use_initial_estimate' should be a scalar of type:\n VX_TYPE_BOOL \n");
@@ -332,7 +332,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for optical flow \n");
@@ -343,8 +343,8 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], (vx_enum)VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity));
     }
 
 #endif
@@ -395,9 +395,9 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, (vx_enum)VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
 
-        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, (vx_enum)VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
 
 #if 1
 
@@ -437,7 +437,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
                 prms.bot_pad = 0U;
                 prms.left_pad = 0U;
                 prms.right_pad = 0U;
-                prms.border_mode = VX_BORDER_UNDEFINED;
+                prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
                 tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
 
@@ -468,7 +468,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.optical_flow_pyr_lk",
-                    VX_KERNEL_OPTICAL_FLOW_PYR_LK,
+                    (vx_enum)VX_KERNEL_OPTICAL_FLOW_PYR_LK,
                     NULL,
                     TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS,
                     tivxAddKernelOpticalFlowPyrLkValidate,
@@ -484,9 +484,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_PYRAMID,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_PYRAMID,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -494,9 +494,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_PYRAMID,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_PYRAMID,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -504,9 +504,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -514,9 +514,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -524,9 +524,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -534,9 +534,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -544,9 +544,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -554,9 +554,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -564,9 +564,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -574,9 +574,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SIZE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SIZE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

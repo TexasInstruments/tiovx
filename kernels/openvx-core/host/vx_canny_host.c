@@ -135,23 +135,23 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryThreshold(hyst, VX_THRESHOLD_DATA_TYPE, &hyst_type, sizeof(hyst_type)));
+        tivxCheckStatus(&status, vxQueryThreshold(hyst, (vx_enum)VX_THRESHOLD_DATA_TYPE, &hyst_type, sizeof(hyst_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(gradient_size, VX_SCALAR_TYPE, &gradient_size_scalar_type, sizeof(gradient_size_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(gradient_size, (vx_enum)VX_SCALAR_TYPE, &gradient_size_scalar_type, sizeof(gradient_size_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryScalar(norm_type, VX_SCALAR_TYPE, &norm_type_scalar_type, sizeof(norm_type_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(norm_type, &norm_type_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(norm_type, (vx_enum)VX_SCALAR_TYPE, &norm_type_scalar_type, sizeof(norm_type_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(norm_type, &norm_type_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -172,20 +172,20 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if ((VX_TYPE_UINT8 != hyst_type) &&
-            (VX_TYPE_INT16 != hyst_type))
+        if (((vx_enum)VX_TYPE_UINT8 != hyst_type) &&
+            ((vx_enum)VX_TYPE_INT16 != hyst_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'hyst' should be a threshold of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
         }
 
-        if (VX_TYPE_INT32 != gradient_size_scalar_type)
+        if ((vx_enum)VX_TYPE_INT32 != gradient_size_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'gradient_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
         }
 
-        if (VX_TYPE_ENUM != norm_type_scalar_type)
+        if ((vx_enum)VX_TYPE_ENUM != norm_type_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'norm_type' should be a scalar of type:\n VX_TYPE_ENUM \n");
@@ -235,8 +235,8 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'gradient_size' should have a value of either 3, 5, or 7 \n");
         }
 
-        if ((VX_NORM_L1 != norm_type_val) &&
-            (VX_NORM_L2 != norm_type_val))
+        if (((vx_enum)VX_NORM_L1 != norm_type_val) &&
+            ((vx_enum)VX_NORM_L2 != norm_type_val))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter 'norm_type' should be either VX_NORM_L1 or VX_NORM_L2 \n");
@@ -245,7 +245,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for canny \n");
@@ -256,9 +256,9 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CANNY_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -294,7 +294,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -311,7 +311,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
         prms.bot_pad = ((gradient_size_val - 1U) / 2U) + 1U;
         prms.left_pad = ((gradient_size_val - 1U) / 2U) + 1U;
         prms.right_pad = ((gradient_size_val - 1U) / 2U) + 1U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -337,7 +337,7 @@ vx_status tivxAddKernelCanny(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.canny_edge_detector",
-                    VX_KERNEL_CANNY_EDGE_DETECTOR,
+                    (vx_enum)VX_KERNEL_CANNY_EDGE_DETECTOR,
                     NULL,
                     TIVX_KERNEL_CANNY_MAX_PARAMS,
                     tivxAddKernelCannyValidate,
@@ -353,9 +353,9 @@ vx_status tivxAddKernelCanny(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -363,9 +363,9 @@ vx_status tivxAddKernelCanny(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_THRESHOLD,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_THRESHOLD,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -373,9 +373,9 @@ vx_status tivxAddKernelCanny(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -383,9 +383,9 @@ vx_status tivxAddKernelCanny(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -393,9 +393,9 @@ vx_status tivxAddKernelCanny(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

@@ -223,11 +223,11 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
     {
         if (NULL != metas[i])
         {
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt,
+            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_FORMAT, &fmt,
                 sizeof(fmt));
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &width,
+            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_WIDTH, &width,
                 sizeof(width));
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &height,
+            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_HEIGHT, &height,
                 sizeof(height));
         }
     }
@@ -340,7 +340,7 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED == prms->border_mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED == prms->border_mode)
         {
             out_rect.start_x += prms->left_pad;
             out_rect.start_y += prms->top_pad;

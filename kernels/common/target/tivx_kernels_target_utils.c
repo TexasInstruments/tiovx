@@ -354,7 +354,7 @@ void tivxReserveC66xL2MEM(void)
     vx_uint32 buf_align = 4*1024;
 
     /* find L2MEM size */
-    tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
+    tivxMemStats(&mem_stats, (vx_enum)TIVX_MEM_INTERNAL_L2);
 
     /* reserve L2MEM to BAM */
     #if 1
@@ -367,8 +367,8 @@ void tivxReserveC66xL2MEM(void)
     wbuf_size = (wbuf_size/buf_align)*buf_align;
     ibuf_size = wbuf_size * 4;
 
-    ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
-    wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
+    ibuf_ptr = tivxMemAlloc(ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+    wbuf_ptr = tivxMemAlloc(wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
 
     VX_PRINT(VX_ZONE_INIT,
         "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
@@ -380,8 +380,8 @@ void tivxReserveC66xL2MEM(void)
      * this L2 memory is used as scratch, hence we free immediately afterwards
      * so that some other algorithm can reuse the memory as scratch
      */
-    tivxMemFree(ibuf_ptr, ibuf_size, TIVX_MEM_INTERNAL_L2);
-    tivxMemFree(wbuf_ptr, wbuf_size, TIVX_MEM_INTERNAL_L2);
+    tivxMemFree(ibuf_ptr, ibuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
+    tivxMemFree(wbuf_ptr, wbuf_size, (vx_enum)TIVX_MEM_INTERNAL_L2);
 #endif
 
 }

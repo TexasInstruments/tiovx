@@ -117,7 +117,7 @@ static void print_graph_pipeline_performance(vx_graph graph,
 
     for(i=0; i<num_nodes; i++)
     {
-         vxQueryNode(nodes[i], VX_NODE_PERFORMANCE, &perf_ref, sizeof(perf_ref));
+         vxQueryNode(nodes[i], (vx_enum)VX_NODE_PERFORMANCE, &perf_ref, sizeof(perf_ref));
          snprintf(ref_name, 8, "N%d ", i);
          print_performance(perf_ref, numPixels, ref_name);
     }
@@ -199,8 +199,8 @@ void vx_tutorial_graph_pipeline_two_nodes()
     n0    = vxNotNode(graph, in_img[0], tmp);
     n1    = vxNotNode(graph, tmp, out_img[0]);
 
-    vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1);
-    vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    vxSetNodeTarget(n0, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    vxSetNodeTarget(n1, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     /** \endcode */
 
     /**
@@ -238,7 +238,7 @@ void vx_tutorial_graph_pipeline_two_nodes()
      * Graph gets scheduled automatically as refs are enqueued to it
      */
     vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
             2,
             graph_parameters_queue_params_list
             );

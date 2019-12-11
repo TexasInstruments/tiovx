@@ -158,8 +158,8 @@ void vx_tutorial_image_extract_channel()
     show_image_attributes(in_image);
     /** \endcode */
 
-    vxQueryImage(in_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(in_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(in_image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(in_image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
 
     /**
      * - Create OpenVX image object.
@@ -248,9 +248,9 @@ void vx_tutorial_image_extract_channel()
      *
      * \code
      */
-    vxuChannelExtract(context, in_image, VX_CHANNEL_R, r_channel);
-    vxuChannelExtract(context, in_image, VX_CHANNEL_G, g_channel);
-    vxuChannelExtract(context, in_image, VX_CHANNEL_B, b_channel);
+    vxuChannelExtract(context, in_image, (vx_enum)VX_CHANNEL_R, r_channel);
+    vxuChannelExtract(context, in_image, (vx_enum)VX_CHANNEL_G, g_channel);
+    vxuChannelExtract(context, in_image, (vx_enum)VX_CHANNEL_B, b_channel);
     /** \endcode */
     /**
      * - Performs immediate mode channel combine.

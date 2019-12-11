@@ -144,11 +144,11 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
 
         /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_desc_target_ptr,
-            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         /* Run function for complete image, ROI is ignored in this example */
         {
@@ -204,11 +204,11 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc_target_ptr,
-            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
     }
 
@@ -280,14 +280,14 @@ void vxTutorialAddTargetKernelPhaseRgb(void)
     self_cpu = tivxGetSelfCpuId();
     /** \endcode */
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
         /**
          * - Find target name based on currently running CPU
          *
          * \code
          */
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);

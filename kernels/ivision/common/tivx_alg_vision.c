@@ -82,7 +82,7 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
 {
     int32_t status = (vx_status)VX_SUCCESS;
 
-    *heap_id = TIVX_MEM_EXTERNAL;
+    *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
     switch(space)
     {
         default:
@@ -94,11 +94,11 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
         case IALG_EXTERNAL:
             if(attrs==IALG_SCRATCH)
             {
-               *heap_id = TIVX_MEM_EXTERNAL_SCRATCH;
+               *heap_id = (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH;
             }
             else
             {
-               *heap_id = TIVX_MEM_EXTERNAL;
+               *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
             }
             break;
         case IALG_DARAM0:
@@ -111,7 +111,7 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
             {
                 if(space==IALG_DARAM0)
                 {
-                  *heap_id = TIVX_MEM_INTERNAL_L1;
+                  *heap_id = (vx_enum)TIVX_MEM_INTERNAL_L1;
                 }
                 else
                 if(space==IALG_DARAM1)
@@ -120,26 +120,26 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
                     tivx_cpu_id_e cpuId;
                     /* EVE does not have any L2 memory so DARAM1 space must be mapped to external memory instead */
                     cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
-                    if ( (cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4) )
+                    if ( (cpuId== (vx_enum)TIVX_CPU_ID_EVE1) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE2) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE3) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE4) )
                     {
-                        *heap_id = TIVX_MEM_EXTERNAL;
+                        *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
                     }
                     else
                     {
-                        *heap_id = TIVX_MEM_INTERNAL_L2;
+                        *heap_id = (vx_enum)TIVX_MEM_INTERNAL_L2;
                     }
 #else
-                    *heap_id = TIVX_MEM_INTERNAL_L2;
+                    *heap_id = (vx_enum)TIVX_MEM_INTERNAL_L2;
 #endif
                 }
                 else
                 {
-                  *heap_id = TIVX_MEM_INTERNAL_L3;
+                  *heap_id = (vx_enum)TIVX_MEM_INTERNAL_L3;
                 }
             }
             else
             {
-                *heap_id = TIVX_MEM_EXTERNAL;
+                *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
             }
             break;
     }
@@ -191,7 +191,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
         status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
         if(status==(vx_status)VX_SUCCESS)
         {
-            if ((heap_id== TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
+            if ((heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
             {
                 tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
             }
@@ -226,7 +226,7 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
         if(status==(vx_status)VX_SUCCESS)
         {
 #ifndef HOST_EMULATION
-            if ((heap_id!= TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
+            if ((heap_id!= (vx_enum)TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
             {
                 tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
             }
@@ -252,7 +252,7 @@ vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
      * Allocate memory for the records. These are NOT the actual memory of
      * tha algorithm
      */
-    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), (vx_enum)TIVX_MEM_EXTERNAL);
 
     if(memRec != NULL)
     {
@@ -263,7 +263,7 @@ vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
             status = tivxAlgiVisionFreeMem(numMemRec, memRec);
         }
 
-        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     return status;
@@ -286,7 +286,7 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
      * Allocate memory for the records. These are NOT the actual memory of
      * tha algorithm
      */
-    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), (vx_enum)TIVX_MEM_EXTERNAL);
 
     if(NULL != memRec)
     {
@@ -315,10 +315,10 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
                     tivxAlgiVisionDeleteAlg(algHandle);
                     algHandle = NULL;
                 }
-                else if ( (cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+                else if ( (cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || (cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
                 {
                     /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
-                    tivxMemBufferUnmap(memRec[0].base, memRec[0].size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+                    tivxMemBufferUnmap(memRec[0].base, memRec[0].size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
                 }
                 else
                 {
@@ -331,7 +331,7 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
           VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algAlloc failed with status = %d\n", status);
         }
 
-        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), (vx_enum)TIVX_MEM_EXTERNAL);
     }
     else
     {

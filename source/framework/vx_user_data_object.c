@@ -88,7 +88,7 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -99,7 +99,7 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
                 else
                 {
                     obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
+                        obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -162,7 +162,7 @@ static vx_status ownInitUserDataObjectObject(
 
     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i ++)
     {
@@ -196,7 +196,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 
         if( NULL == user_data_object )
         {
-            user_data_object = (vx_user_data_object)ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, VX_EXTERNAL, &context->base);
+            user_data_object = (vx_user_data_object)ownCreateReference(context, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)user_data_object) == (vx_status)VX_SUCCESS) &&
                 (user_data_object->base.type == VX_TYPE_USER_DATA_OBJECT))
@@ -208,7 +208,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                     (tivx_reference_release_callback_f)&vxReleaseUserDataObject;
 
                 user_data_object->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
+                    (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)
                 {
                     vxReleaseUserDataObject(&user_data_object);
@@ -227,7 +227,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                     {
                         if (NULL != ptr)
                         {
-                            status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+                            status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
                         }
                         else
                         {
@@ -242,12 +242,12 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                                 start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
 
                                 tivxMemBufferMap(start_ptr, (uint32_t)size,
-                                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                                 memset(start_ptr, 0, size);
 
                                 tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                             }
                         }
                     }
@@ -268,7 +268,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseUserDataObject(vx_user_data_object *user_data_object)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)user_data_object, VX_TYPE_USER_DATA_OBJECT, VX_EXTERNAL, NULL));
+        (vx_reference*)user_data_object, VX_TYPE_USER_DATA_OBJECT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
@@ -289,7 +289,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
         switch (attribute)
         {
-            case VX_USER_DATA_OBJECT_NAME:
+            case (vx_enum)VX_USER_DATA_OBJECT_NAME:
                 if ((ptr != NULL) && (size >= VX_MAX_REFERENCE_NAME))
                 {
                     tivx_obj_desc_strncpy(ptr, obj_desc->type_name, VX_MAX_REFERENCE_NAME);
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_USER_DATA_OBJECT_SIZE:
+            case (vx_enum)VX_USER_DATA_OBJECT_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->mem_size;
@@ -311,7 +311,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case TIVX_USER_DATA_OBJECT_VALID_SIZE:
+            case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->valid_mem_size;
@@ -350,7 +350,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
         switch (attribute)
         {
-            case TIVX_USER_DATA_OBJECT_VALID_SIZE:
+            case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     obj_desc->valid_mem_size = *(vx_size *)ptr;
@@ -389,14 +389,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
     {
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Memory is not allocated\n");
@@ -427,25 +427,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
         start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
 
         /* Copy from internal object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap(start_ptr, (uint32_t)size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             memcpy(user_ptr, start_ptr, size);
 
             tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to internal object */
         {
             tivxMemBufferMap(start_ptr, (uint32_t)size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             memcpy(start_ptr, user_ptr, size);
 
             tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
     }
 

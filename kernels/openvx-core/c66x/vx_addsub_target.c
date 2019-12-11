@@ -142,11 +142,11 @@ static vx_status tivxKernelAddSub(
         #endif
 
         tivxMemBufferMap(src0_target_ptr, src0_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(src1_target_ptr, src1_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxSetTwoPointerLocation(src0_desc, src1_desc, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
         tivxSetPointerLocation(dst_desc, &dst_target_ptr, &dst_addr);
@@ -154,7 +154,7 @@ static vx_status tivxKernelAddSub(
         tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+        if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
         {
             overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
         }
@@ -163,7 +163,7 @@ static vx_status tivxKernelAddSub(
             overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
         }
 
-        if (VX_KERNEL_ADD == kern_type)
+        if ((vx_enum)VX_KERNEL_ADD == kern_type)
         {
             /* If output is in U8 format, both the input must be in
                U8 format */
@@ -258,14 +258,14 @@ static vx_status tivxKernelAddSub(
         }
 
         tivxMemBufferUnmap(src0_target_ptr,
-            src0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(src1_target_ptr,
-            src1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr,
-            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -291,7 +291,7 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
 {
     vx_status status;
 
-    status = tivxKernelAddSub(kernel, obj_desc, num_params, VX_KERNEL_ADD);
+    status = tivxKernelAddSub(kernel, obj_desc, num_params, (vx_enum)VX_KERNEL_ADD);
 
     return (status);
 }
@@ -304,9 +304,9 @@ void tivxAddTargetKernelAdd(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -318,7 +318,7 @@ void tivxAddTargetKernelAdd(void)
         }
 
         vx_add_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_ADD,
+            (vx_enum)VX_KERNEL_ADD,
             target_name,
             tivxKernelAddProcess,
             tivxKernelAddCreate,
@@ -354,7 +354,7 @@ static vx_status VX_CALLBACK tivxKernelSubProcess(
 {
     vx_status status;
 
-    status = tivxKernelAddSub(kernel, obj_desc, num_params, VX_KERNEL_SUBTRACT);
+    status = tivxKernelAddSub(kernel, obj_desc, num_params, (vx_enum)VX_KERNEL_SUBTRACT);
 
     return (status);
 }
@@ -367,9 +367,9 @@ void tivxAddTargetKernelSub(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -381,7 +381,7 @@ void tivxAddTargetKernelSub(void)
         }
 
         vx_sub_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_SUBTRACT,
+            (vx_enum)VX_KERNEL_SUBTRACT,
             target_name,
             tivxKernelSubProcess,
             tivxKernelSubCreate,

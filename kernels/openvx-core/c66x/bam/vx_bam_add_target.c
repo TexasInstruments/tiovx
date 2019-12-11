@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -229,7 +229,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
             {
                 BAM_VXLIB_add_i8u_i8u_o8u_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -266,7 +266,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
             {
                 BAM_VXLIB_add_i16s_i16s_o16s_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -288,7 +288,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
             {
                 BAM_VXLIB_add_i8u_i16s_o16s_params kernel_params;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                 {
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -334,7 +334,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -366,7 +366,7 @@ static vx_status VX_CALLBACK tivxKernelAddDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -380,9 +380,9 @@ void tivxAddTargetKernelBamAdd(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -394,7 +394,7 @@ void tivxAddTargetKernelBamAdd(void)
         }
 
         vx_add_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_ADD,
+            (vx_enum)VX_KERNEL_ADD,
             target_name,
             tivxKernelAddProcess,
             tivxKernelAddCreate,
@@ -448,7 +448,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -467,7 +467,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ADD_I8U_I8U_O8U;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -506,7 +506,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ADD_I16S_I16S_O16S;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -533,7 +533,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 {
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ADD_I8U_I16S_O16S;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -574,7 +574,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAddParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

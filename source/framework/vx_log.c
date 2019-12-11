@@ -86,7 +86,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 
     if(ret==(vx_status)VX_SUCCESS)
     {
-        if (ref->type == VX_TYPE_CONTEXT)
+        if (ref->type == (vx_enum)VX_TYPE_CONTEXT)
         {
             context = (vx_context)ref;
         }

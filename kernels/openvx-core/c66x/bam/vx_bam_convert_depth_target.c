@@ -164,7 +164,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
         else
         {
             prms_1.shift = sc_desc[1]->data.s32;
-            if (VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
+            if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
             {
                 prms_1.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
             }
@@ -224,7 +224,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -260,7 +260,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
                 BAM_VXLIB_convertDepth_i16s_o8u_params params;
                 params.shift = sc_desc[1]->data.s32;
 
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
+                if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
                 {
                     params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                 }
@@ -293,7 +293,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxConvertDepthParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -325,7 +325,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxConvertDepthParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -339,9 +339,9 @@ void tivxAddTargetKernelBamConvertDepth(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -353,7 +353,7 @@ void tivxAddTargetKernelBamConvertDepth(void)
         }
 
         vx_convert_depth_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_CONVERTDEPTH,
+            (vx_enum)VX_KERNEL_CONVERTDEPTH,
             target_name,
             tivxKernelBamConvertDepthProcess,
             tivxKernelBamConvertDepthCreate,
@@ -404,7 +404,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -446,7 +446,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
 
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVERTDEPTH_I16S_O8U;
 
-                    if (VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
+                    if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
                     {
                         kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
                     }
@@ -482,7 +482,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxConvertDepthParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -564,7 +564,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthPreprocessInBamGraph(
         else
         {
             prms_1.shift = sc_desc[1]->data.s32;
-            if (VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
+            if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
             {
                 prms_1.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
             }

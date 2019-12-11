@@ -248,7 +248,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+        status = tivxMemResetScratchHeap((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -269,7 +269,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
         sc_norm = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxCannyParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -311,7 +311,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             }
 
             /* Update the Norm type accordingly */
-            if(VX_NORM_L1 == sc_norm->data.enm)
+            if((vx_enum)VX_NORM_L1 == sc_norm->data.enm)
             {
                 node_list[NORM_NODE].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
                 BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
@@ -361,7 +361,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
             prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u,
-                TIVX_MEM_EXTERNAL_SCRATCH);
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
             if (NULL == prms->edge_list)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -459,11 +459,11 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
         if (NULL != prms->edge_list)
         {
             tivxMemFree(prms->edge_list, prms->edge_list_size * 4u,
-                TIVX_MEM_EXTERNAL_SCRATCH);
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
             prms->edge_list = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxCannyParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 
@@ -474,9 +474,9 @@ void tivxAddTargetKernelBamCannyEd(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -488,7 +488,7 @@ void tivxAddTargetKernelBamCannyEd(void)
         }
 
         vx_canny_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_CANNY_EDGE_DETECTOR,
+            (vx_enum)VX_KERNEL_CANNY_EDGE_DETECTOR,
             target_name,
             tivxKernelCannyProcess,
             tivxKernelCannyCreate,
@@ -539,7 +539,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
         sc_norm = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxCannyParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -575,7 +575,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if(VX_NORM_L1 == sc_norm->data.enm)
+            if((vx_enum)VX_NORM_L1 == sc_norm->data.enm)
             {
                 node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
                 BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
@@ -599,7 +599,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
             *bam_node_cnt = *bam_node_cnt + 1;
 
             prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
-            prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u, TIVX_MEM_EXTERNAL);
+            prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u, (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->edge_list)
             {
@@ -650,7 +650,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxCannyParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

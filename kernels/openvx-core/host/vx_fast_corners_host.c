@@ -131,23 +131,23 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryScalar(strength_thresh, VX_SCALAR_TYPE, &strength_thresh_scalar_type, sizeof(strength_thresh_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(strength_thresh, (vx_enum)VX_SCALAR_TYPE, &strength_thresh_scalar_type, sizeof(strength_thresh_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(nonmax_suppression, VX_SCALAR_TYPE, &nonmax_suppression_scalar_type, sizeof(nonmax_suppression_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(nonmax_suppression, (vx_enum)VX_SCALAR_TYPE, &nonmax_suppression_scalar_type, sizeof(nonmax_suppression_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryArray(corners, VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(corners, VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(corners, (vx_enum)VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(corners, (vx_enum)VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity)));
 
         if(NULL != num_corners)
         {
-                tivxCheckStatus(&status, vxQueryScalar(num_corners, VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type)));
+                tivxCheckStatus(&status, vxQueryScalar(num_corners, (vx_enum)VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type)));
         }
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -168,13 +168,13 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != strength_thresh_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != strength_thresh_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'strength_thresh' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_BOOL != nonmax_suppression_scalar_type)
+        if ((vx_enum)VX_TYPE_BOOL != nonmax_suppression_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'nonmax_suppression' should be a scalar of type:\n VX_TYPE_BOOL \n");
@@ -182,7 +182,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_TYPE_KEYPOINT != corners_item_type)
+            if ((vx_enum)VX_TYPE_KEYPOINT != corners_item_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'corners' should be an array of type:\n VX_TYPE_KEYPOINT \n");
@@ -191,7 +191,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
         if (NULL != num_corners)
         {
-            if (VX_TYPE_SIZE != num_corners_scalar_type)
+            if ((vx_enum)VX_TYPE_SIZE != num_corners_scalar_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'num_corners' should be a scalar of type:\n VX_TYPE_SIZE \n");
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for fast corners \n");
@@ -236,11 +236,11 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        corners_item_type = VX_TYPE_KEYPOINT;
+        corners_item_type = (vx_enum)VX_TYPE_KEYPOINT;
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX], VX_ARRAY_ITEMTYPE, &corners_item_type,
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &corners_item_type,
             sizeof(corners_item_type));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX], VX_ARRAY_CAPACITY, &corners_capacity,
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX], (vx_enum)VX_ARRAY_CAPACITY, &corners_capacity,
             sizeof(corners_capacity));
     }
 
@@ -276,7 +276,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -302,7 +302,7 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.fast_corners",
-                    VX_KERNEL_FAST_CORNERS,
+                    (vx_enum)VX_KERNEL_FAST_CORNERS,
                     NULL,
                     TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS,
                     tivxAddKernelFastCornersValidate,
@@ -318,9 +318,9 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -328,9 +328,9 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -338,9 +338,9 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -348,9 +348,9 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -358,9 +358,9 @@ vx_status tivxAddKernelFastCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
         }
         if (status == (vx_status)VX_SUCCESS)

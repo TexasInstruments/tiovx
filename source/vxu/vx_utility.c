@@ -123,15 +123,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxuChannelCombine(vx_context context,
 
 static const vx_enum border_modes_2[] =
 {
-    VX_BORDER_UNDEFINED,
-    VX_BORDER_CONSTANT
+    (vx_enum)VX_BORDER_UNDEFINED,
+    (vx_enum)VX_BORDER_CONSTANT
 };
 
 static const vx_enum border_modes_3[] =
 {
-    VX_BORDER_UNDEFINED,
-    VX_BORDER_CONSTANT,
-    VX_BORDER_REPLICATE
+    (vx_enum)VX_BORDER_UNDEFINED,
+    (vx_enum)VX_BORDER_CONSTANT,
+    (vx_enum)VX_BORDER_REPLICATE
 };
 
 static vx_status vx_isBorderModeSupported(vx_enum mode_to_check, const vx_enum supported_modes[], vx_size num_modes)
@@ -152,23 +152,23 @@ static vx_status vx_isBorderModeSupported(vx_enum mode_to_check, const vx_enum s
 static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, const vx_enum supported_modes[], vx_size num_modes)
 {
     vx_border_t border;
-    vx_status status = vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border));
+    vx_status status = vxQueryContext(context, (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border));
     if (status == (vx_status)VX_SUCCESS)
     {
         status = vx_isBorderModeSupported(border.mode, supported_modes, num_modes);
         if (status == (vx_status)VX_ERROR_NOT_SUPPORTED)
         {
             vx_enum policy;
-            status = vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER_POLICY, &policy, sizeof(policy));
+            status = vxQueryContext(context, (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER_POLICY, &policy, sizeof(policy));
             if (status == (vx_status)VX_SUCCESS)
             {
                 switch (policy)
                 {
-                    case VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED:
-                        border.mode = VX_BORDER_UNDEFINED;
+                    case (vx_enum)VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED:
+                        border.mode = (vx_enum)VX_BORDER_UNDEFINED;
                         status = (vx_status)VX_SUCCESS;
                         break;
-                    case VX_BORDER_POLICY_RETURN_ERROR:
+                    case (vx_enum)VX_BORDER_POLICY_RETURN_ERROR:
                         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                         break;
                     default:
@@ -180,7 +180,7 @@ static vx_status vx_useImmediateBorderMode(vx_context context, vx_node node, con
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        status = vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border));
+        status = vxSetNodeAttribute(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
     }
     return status;
 }
@@ -399,8 +399,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMeanStdDev(vx_context context, vx_image in
     vx_graph graph = vxCreateGraph(context);
     if (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS)
     {
-        vx_scalar s_mean = vxCreateScalar(context, VX_TYPE_FLOAT32, NULL);
-        vx_scalar s_stddev = vxCreateScalar(context, VX_TYPE_FLOAT32, NULL);
+        vx_scalar s_mean = vxCreateScalar(context, (vx_enum)VX_TYPE_FLOAT32, NULL);
+        vx_scalar s_stddev = vxCreateScalar(context, (vx_enum)VX_TYPE_FLOAT32, NULL);
         vx_node node = vxMeanStdDevNode(graph, input, s_mean, s_stddev);
         if (vxGetStatus((vx_reference)node)==(vx_status)VX_SUCCESS)
         {
@@ -412,8 +412,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMeanStdDev(vx_context context, vx_image in
             if (status == (vx_status)VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
-                vxCopyScalar(s_mean, mean, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-                vxCopyScalar(s_stddev, stddev, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                vxCopyScalar(s_mean, mean, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+                vxCopyScalar(s_stddev, stddev, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
             }
             vxReleaseNode(&node);
         }
@@ -874,7 +874,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxuConvertDepth(vx_context context, vx_image 
 
     if (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS)
     {
-        vx_scalar shift = vxCreateScalar(context, VX_TYPE_INT32, &shift_val);
+        vx_scalar shift = vxCreateScalar(context, (vx_enum)VX_TYPE_INT32, &shift_val);
         vx_node node = vxConvertDepthNode(graph, input, output, policy, shift);
         if ( ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)node)) &&
              ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)shift)) )
@@ -1060,7 +1060,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMultiply(vx_context context, vx_image in1,
 
     if (vxGetStatus((vx_reference)graph) == (vx_status)VX_SUCCESS)
     {
-        vx_scalar scale = vxCreateScalar(context, VX_TYPE_FLOAT32, &scale_val);
+        vx_scalar scale = vxCreateScalar(context, (vx_enum)VX_TYPE_FLOAT32, &scale_val);
         vx_node node = vxMultiplyNode(graph, in1, in2, scale, overflow_policy, rounding_policy, out);
         if ( ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)node)) &&
              ((vx_status)VX_SUCCESS == vxGetStatus((vx_reference)scale)) )

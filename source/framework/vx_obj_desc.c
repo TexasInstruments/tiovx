@@ -132,7 +132,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
     uint32_t i, idx;
 
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     idx = g_obj_desc_table.last_alloc_index;
 
@@ -140,13 +140,13 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
     {
         tmp_obj_desc = (tivx_obj_desc_t*)&g_obj_desc_table.table_base[idx];
 
-        if(tmp_obj_desc->type==TIVX_OBJ_DESC_INVALID)
+        if(tmp_obj_desc->type==(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
 
             /* init entry that is found */
             tmp_obj_desc->obj_desc_id = idx;
-            tmp_obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+            tmp_obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
             tmp_obj_desc->element_idx = 0;
             tmp_obj_desc->type = type;
@@ -164,7 +164,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
         idx = (idx+1)%g_obj_desc_table.num_entries;
     }
 
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return obj_desc;
 }
@@ -178,7 +178,7 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
         {
             /* valid object descriptor, free it */
-            (*obj_desc)->type = TIVX_OBJ_DESC_INVALID;
+            (*obj_desc)->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
             *obj_desc = NULL;
 
@@ -266,7 +266,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
 uint16_t tivxReferenceGetObjDescId(vx_reference ref)
 {
-    uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;
+    uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
     if (NULL != ref)
     {

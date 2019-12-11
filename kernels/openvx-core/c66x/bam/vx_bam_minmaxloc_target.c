@@ -182,7 +182,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         {
             arr0_target_ptr = tivxMemShared2TargetPtr(&arr[0U]->mem_ptr);
             tivxMemBufferMap(arr0_target_ptr, arr[0U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxBamControlNode(prms->graph_handle, 0,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_LOC_PTR,
@@ -193,7 +193,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         {
             arr1_target_ptr = tivxMemShared2TargetPtr(&arr[1U]->mem_ptr);
             tivxMemBufferMap(arr1_target_ptr, arr[1U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxBamControlNode(prms->graph_handle, 0,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_LOC_PTR,
@@ -255,12 +255,12 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         if (NULL != arr[0u])
         {
             tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
         if (NULL != arr[1u])
         {
             tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
     }
 
@@ -307,7 +307,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
         arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
         arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -398,7 +398,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxMinMaxLocParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -440,7 +440,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxMinMaxLocParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -454,9 +454,9 @@ void tivxAddTargetKernelBamMinMaxLoc(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -468,7 +468,7 @@ void tivxAddTargetKernelBamMinMaxLoc(void)
         }
 
         vx_minmaxloc_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_MINMAXLOC,
+            (vx_enum)VX_KERNEL_MINMAXLOC,
             target_name,
             tivxKernelMinMaxLocProcess,
             tivxKernelMinMaxLocCreate,
@@ -530,7 +530,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
         arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
         arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         BAM_VXLIB_minMaxLoc_i8u_params *kernel_params = (BAM_VXLIB_minMaxLoc_i8u_params*)scratch;
 
@@ -591,7 +591,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxMinMaxLocParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -698,7 +698,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
         {
             arr0_target_ptr = tivxMemShared2TargetPtr(&arr[0U]->mem_ptr);
             tivxMemBufferMap(arr0_target_ptr, arr[0U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxBamControlNode(*g_handle, prms->bam_node_num,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_LOC_PTR,
@@ -709,7 +709,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
         {
             arr1_target_ptr = tivxMemShared2TargetPtr(&arr[1U]->mem_ptr);
             tivxMemBufferMap(arr1_target_ptr, arr[1U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxBamControlNode(*g_handle, prms->bam_node_num,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_LOC_PTR,
@@ -808,13 +808,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocPostprocessInBamGraph(
         {
             arr0_target_ptr = tivxMemShared2TargetPtr(&arr[0U]->mem_ptr);
             tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
         if (NULL != arr[1u])
         {
             arr1_target_ptr = tivxMemShared2TargetPtr(&arr[1U]->mem_ptr);
             tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
     }
 

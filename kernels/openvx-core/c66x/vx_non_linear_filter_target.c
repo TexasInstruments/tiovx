@@ -112,14 +112,14 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         tivxMemBufferMap(src_desc_target_ptr,
-           src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(mask_desc_target_ptr,
-           mask_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           mask_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_desc_target_ptr,
-           dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
         mask_addr = (uint8_t *)((uintptr_t)mask_desc_target_ptr);
 
@@ -134,13 +134,13 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         mask_params.stride_y = mask_desc->columns;
         mask_params.data_type = VXLIB_UINT8;
 
-        if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
+        if ((vx_enum)VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
         {
             status |= VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                   dst_addr, &vxlib_dst,
                                                   mask_addr, &mask_params);
         }
-        else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
+        else if ((vx_enum)VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
         {
             status |= VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                    dst_addr, &vxlib_dst,
@@ -165,14 +165,14 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr,
-           src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(mask_desc_target_ptr,
-           mask_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           mask_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc_target_ptr,
-           dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+           dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_WRITE_ONLY);
 
 
     }
@@ -211,13 +211,13 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
     {
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
-        if ( (VX_NONLINEAR_FILTER_MIN != function_desc->data.enm) &&
-             (VX_NONLINEAR_FILTER_MAX != function_desc->data.enm) )
+        if ( ((vx_enum)VX_NONLINEAR_FILTER_MIN != function_desc->data.enm) &&
+             ((vx_enum)VX_NONLINEAR_FILTER_MAX != function_desc->data.enm) )
         {
             mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
 
             temp_ptr = tivxMemAlloc(mask_desc->columns*mask_desc->rows*2*
-                sizeof(int64_t), TIVX_MEM_EXTERNAL);
+                sizeof(int64_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
             {
@@ -266,8 +266,8 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
     {
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
-        if ( (VX_NONLINEAR_FILTER_MIN != function_desc->data.enm) &&
-             (VX_NONLINEAR_FILTER_MAX != function_desc->data.enm) )
+        if ( ((vx_enum)VX_NONLINEAR_FILTER_MIN != function_desc->data.enm) &&
+             ((vx_enum)VX_NONLINEAR_FILTER_MAX != function_desc->data.enm) )
         {
             status = tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &temp_ptr_size);
 
@@ -277,7 +277,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
             }
             else
             {
-                tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
+                tivxMemFree(temp_ptr, temp_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -293,13 +293,13 @@ void tivxAddTargetKernelNonLinearFilter(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -312,7 +312,7 @@ void tivxAddTargetKernelNonLinearFilter(void)
     if (status == (vx_status)VX_SUCCESS)
     {
         vx_non_linear_filter_target_kernel = tivxAddTargetKernel(
-                            VX_KERNEL_NON_LINEAR_FILTER,
+                            (vx_enum)VX_KERNEL_NON_LINEAR_FILTER,
                             target_name,
                             tivxNonLinearFilter,
                             tivxNonLinearFilterCreate,

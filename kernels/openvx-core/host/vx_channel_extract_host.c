@@ -126,16 +126,16 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryScalar(channel, VX_SCALAR_TYPE, &channel_scalar_type, sizeof(channel_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(channel, &channel_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(channel, (vx_enum)VX_SCALAR_TYPE, &channel_scalar_type, sizeof(channel_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(channel, &channel_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
 #if 1
 
@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGB or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
         }
 
-        if (VX_TYPE_ENUM != channel_scalar_type)
+        if ((vx_enum)VX_TYPE_ENUM != channel_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'channel' should be a scalar of type:\n VX_TYPE_ENUM \n");
@@ -187,8 +187,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         if ((((vx_df_image)VX_DF_IMAGE_NV12 == input_fmt) ||
             ((vx_df_image)VX_DF_IMAGE_NV21 == input_fmt) ||
             ((vx_df_image)VX_DF_IMAGE_IYUV == input_fmt)) &&
-            ((VX_CHANNEL_U == channel_val) ||
-            (VX_CHANNEL_V == channel_val)))
+            (((vx_enum)VX_CHANNEL_U == channel_val) ||
+            ((vx_enum)VX_CHANNEL_V == channel_val)))
         {
             if ((vx_bool)vx_false_e == is_virtual)
             {
@@ -210,8 +210,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         }
         else if ( (((vx_df_image)VX_DF_IMAGE_UYVY == input_fmt) ||
             ((vx_df_image)VX_DF_IMAGE_YUYV == input_fmt)) &&
-            ((VX_CHANNEL_U == channel_val) ||
-            (VX_CHANNEL_V == channel_val)))
+            (((vx_enum)VX_CHANNEL_U == channel_val) ||
+            ((vx_enum)VX_CHANNEL_V == channel_val)))
         {
             if ((vx_bool)vx_false_e == is_virtual)
             {
@@ -258,9 +258,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt_meta, sizeof(output_fmt_meta));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], VX_IMAGE_WIDTH, &output_w_meta, sizeof(output_w_meta));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], VX_IMAGE_HEIGHT, &output_h_meta, sizeof(output_h_meta));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &output_fmt_meta, sizeof(output_fmt_meta));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &output_w_meta, sizeof(output_w_meta));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &output_h_meta, sizeof(output_h_meta));
     }
 
 #endif
@@ -298,7 +298,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         status = tivxKernelConfigValidRect(&prms);
     }
@@ -324,7 +324,7 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.channel_extract",
-                    VX_KERNEL_CHANNEL_EXTRACT,
+                    (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
                     NULL,
                     TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS,
                     tivxAddKernelChannelExtractValidate,
@@ -340,9 +340,9 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -350,9 +350,9 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -360,9 +360,9 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if ((vx_status)VX_SUCCESS == status)

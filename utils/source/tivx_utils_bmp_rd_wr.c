@@ -446,8 +446,8 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
                 0,
                 &image_addr,
                 data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST
+                (vx_enum)VX_WRITE_ONLY,
+                (vx_enum)VX_MEMORY_TYPE_HOST
                 );
 
             /** \endcode */
@@ -490,9 +490,9 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
          * \code
          */
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
         /** \endcode */
 
         /** - Map image data to user accessible memory space
@@ -516,9 +516,9 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
             &map_id,
             &image_addr,
             &data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
+            (vx_enum)VX_READ_ONLY,
+            (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_NOGAP_X
             );
         /** \endcode */
 
@@ -572,9 +572,9 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
         img_height = 0;
         img_width = 0;
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
 
         if(img_width>width)
         {
@@ -664,9 +664,9 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 &map_id,
                 &image_addr,
                 &dst_data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST,
-                VX_NOGAP_X
+                (vx_enum)VX_WRITE_ONLY,
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_NOGAP_X
                 );
 
             if((enable_rgb2gray == (vx_bool)(vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)(vx_bool)vx_false_e))

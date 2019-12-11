@@ -119,11 +119,11 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         remap_target_ptr = tivxMemShared2TargetPtr(&remap->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         tivxMemBufferMap(remap_target_ptr, remap->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -138,14 +138,14 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 
-        if (VX_INTERPOLATION_BILINEAR == sc->data.enm)
+        if ((vx_enum)VX_INTERPOLATION_BILINEAR == sc->data.enm)
         {
             status = VXLIB_remapBilinear_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
                 remap_target_ptr, &vxlib_remap,
                 border.constant_value.U8);
         }
-        else if (VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm)
+        else if ((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm)
         {
             status = VXLIB_remapNearest_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
@@ -163,11 +163,11 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         tivxMemBufferUnmap(remap_target_ptr, remap->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     return (status);
@@ -194,9 +194,9 @@ void tivxAddTargetKernelRemap(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -208,7 +208,7 @@ void tivxAddTargetKernelRemap(void)
         }
 
         vx_remap_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_REMAP,
+            (vx_enum)VX_KERNEL_REMAP,
             target_name,
             tivxKernelRemapProcess,
             tivxKernelRemapCreate,

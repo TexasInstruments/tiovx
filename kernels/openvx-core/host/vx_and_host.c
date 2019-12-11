@@ -123,17 +123,17 @@ static vx_status VX_CALLBACK tivxAddKernelAndValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w)));
-        tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_HEIGHT, &in1_h, sizeof(in1_h)));
-        tivxCheckStatus(&status, vxQueryImage(in1, VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(in1, (vx_enum)VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w)));
+        tivxCheckStatus(&status, vxQueryImage(in1, (vx_enum)VX_IMAGE_HEIGHT, &in1_h, sizeof(in1_h)));
+        tivxCheckStatus(&status, vxQueryImage(in1, (vx_enum)VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(in2, VX_IMAGE_WIDTH, &in2_w, sizeof(in2_w)));
-        tivxCheckStatus(&status, vxQueryImage(in2, VX_IMAGE_HEIGHT, &in2_h, sizeof(in2_h)));
-        tivxCheckStatus(&status, vxQueryImage(in2, VX_IMAGE_FORMAT, &in2_fmt, sizeof(in2_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(in2, (vx_enum)VX_IMAGE_WIDTH, &in2_w, sizeof(in2_w)));
+        tivxCheckStatus(&status, vxQueryImage(in2, (vx_enum)VX_IMAGE_HEIGHT, &in2_h, sizeof(in2_h)));
+        tivxCheckStatus(&status, vxQueryImage(in2, (vx_enum)VX_IMAGE_FORMAT, &in2_fmt, sizeof(in2_fmt)));
 
-        tivxCheckStatus(&status, vxQueryImage(out, VX_IMAGE_WIDTH, &out_w, sizeof(out_w)));
-        tivxCheckStatus(&status, vxQueryImage(out, VX_IMAGE_HEIGHT, &out_h, sizeof(out_h)));
-        tivxCheckStatus(&status, vxQueryImage(out, VX_IMAGE_FORMAT, &out_fmt, sizeof(out_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(out, (vx_enum)VX_IMAGE_WIDTH, &out_w, sizeof(out_w)));
+        tivxCheckStatus(&status, vxQueryImage(out, (vx_enum)VX_IMAGE_HEIGHT, &out_h, sizeof(out_h)));
+        tivxCheckStatus(&status, vxQueryImage(out, (vx_enum)VX_IMAGE_FORMAT, &out_fmt, sizeof(out_fmt)));
 
 #if 1
 
@@ -196,9 +196,9 @@ static vx_status VX_CALLBACK tivxAddKernelAndValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], VX_IMAGE_HEIGHT, &in1_h, sizeof(in1_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &in1_fmt, sizeof(in1_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &in1_w, sizeof(in1_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_AND_OUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &in1_h, sizeof(in1_h));
     }
 
 #endif
@@ -237,7 +237,7 @@ static vx_status VX_CALLBACK tivxAddKernelAndInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -263,7 +263,7 @@ vx_status tivxAddKernelAnd(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.and",
-                    VX_KERNEL_AND,
+                    (vx_enum)VX_KERNEL_AND,
                     NULL,
                     TIVX_KERNEL_AND_MAX_PARAMS,
                     tivxAddKernelAndValidate,
@@ -279,9 +279,9 @@ vx_status tivxAddKernelAnd(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -289,9 +289,9 @@ vx_status tivxAddKernelAnd(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -299,9 +299,9 @@ vx_status tivxAddKernelAnd(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
@@ -127,7 +127,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             dst0_target_ptr = tivxMemShared2TargetPtr(&dst0->mem_ptr[0]);
 
             tivxMemBufferMap(dst0_target_ptr, dst0->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxSetPointerLocation(dst0, &dst0_target_ptr, (uint8_t **)&dst_addr);
 
@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             }
 
             tivxMemBufferUnmap(dst0_target_ptr, dst0->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
 
         if (((vx_status)VX_SUCCESS == status) && (NULL != dst1))
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             dst1_target_ptr = tivxMemShared2TargetPtr(&dst1->mem_ptr[0]);
 
             tivxMemBufferMap(dst1_target_ptr, dst1->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxSetPointerLocation(dst1, &dst1_target_ptr, (uint8_t **)&dst_addr);
 
@@ -165,11 +165,11 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             }
 
             tivxMemBufferUnmap(dst1_target_ptr, dst1->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     return (status);
@@ -196,9 +196,9 @@ void tivxAddTargetKernelSobel3x3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -210,7 +210,7 @@ void tivxAddTargetKernelSobel3x3(void)
         }
 
         vx_sobel_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_SOBEL_3x3,
+            (vx_enum)VX_KERNEL_SOBEL_3x3,
             target_name,
             tivxKernelSobelProcess,
             tivxKernelSobelCreate,

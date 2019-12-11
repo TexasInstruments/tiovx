@@ -354,7 +354,7 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
     return NULL;
   }
 
-  tmpNetBuf= tivxMemAlloc(capacity, TIVX_MEM_EXTERNAL);
+  tmpNetBuf= tivxMemAlloc(capacity, (vx_enum)TIVX_MEM_EXTERNAL);
 
   if(tmpNetBuf)
   {
@@ -378,7 +378,7 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   if ((vx_status)VX_SUCCESS == status)
   {
     status = vxMapUserDataObject(network, 0, capacity + 1 + paramsSize, &map_id,
-        (void **)&network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        (void **)&network_buffer, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -392,7 +392,7 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
       }
 
       vxUnmapUserDataObject(network, map_id);
-      tivxMemFree(tmpNetBuf, capacity, TIVX_MEM_EXTERNAL);
+      tivxMemFree(tmpNetBuf, capacity, (vx_enum)TIVX_MEM_EXTERNAL);
     }
   }
 
@@ -410,7 +410,7 @@ vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum 
   int32_t i;
 
   status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
-      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&network_buffer, (vx_enum)VX_READ_AND_WRITE, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   if ((vx_status)VX_SUCCESS == status)
         {
@@ -419,10 +419,10 @@ vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum 
             net= (sTIDL_Network_t *)network_buffer;
             uint32_t layersGroupId;
 
-            if ((target_cpu == TIVX_CPU_ID_DSP1) || (target_cpu == TIVX_CPU_ID_DSP2)) {
+            if ((target_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (target_cpu == (vx_enum)TIVX_CPU_ID_DSP2)) {
               layersGroupId= 2;
             }
-            else if ((target_cpu == TIVX_CPU_ID_EVE1) || (target_cpu == TIVX_CPU_ID_EVE2) || (target_cpu == TIVX_CPU_ID_EVE3) || (target_cpu == TIVX_CPU_ID_EVE4)) {
+            else if ((target_cpu == (vx_enum)TIVX_CPU_ID_EVE1) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE2) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE3) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE4)) {
               layersGroupId= 1;
             }
             else {
@@ -444,7 +444,7 @@ vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum 
   return status;
 }
 
-int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t layersGroupCount[TIVX_CPU_ID_MAX]) {
+int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t layersGroupCount[(vx_enum)TIVX_CPU_ID_MAX]) {
 
   vx_status status = (vx_status)VX_SUCCESS;
   void      *network_buffer = NULL;
@@ -456,7 +456,7 @@ int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t lay
   numLayersGroup= 0;
 
   status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
-      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&network_buffer, (vx_enum)VX_READ_AND_WRITE, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   if ((vx_status)VX_SUCCESS == status)
         {
@@ -464,7 +464,7 @@ int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t lay
           {
             net= (sTIDL_Network_t *)network_buffer;
 
-            for (i=0; i < TIVX_CPU_ID_MAX; i++) {
+            for (i=0; i < (vx_enum)TIVX_CPU_ID_MAX; i++) {
               layersGroupCount[i]= 0;
             }
 
@@ -472,13 +472,13 @@ int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t lay
             {
               if (net->TIDLLayers[i].layerType != TIDL_DataLayer)
               {
-                if (net->TIDLLayers[i].layersGroupId < TIVX_CPU_ID_MAX) {
+                if (net->TIDLLayers[i].layersGroupId < (vx_enum)TIVX_CPU_ID_MAX) {
                   layersGroupCount[net->TIDLLayers[i].layersGroupId]++;
                 }
               }
             }
 
-            for (i=0; i < TIVX_CPU_ID_MAX; i++) {
+            for (i=0; i < (vx_enum)TIVX_CPU_ID_MAX; i++) {
               if (layersGroupCount[i]!= 0) {
                 numLayersGroup++;
               }
@@ -507,7 +507,7 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
   if ((vx_status)VX_SUCCESS == status)
   {
     status = vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-        (void **)&ioBufDesc, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        (void **)&ioBufDesc, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -516,7 +516,7 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
       sTIDL_Network_t *net;
 
       status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
-          (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+          (void **)&network_buffer, (vx_enum)VX_READ_AND_WRITE, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
       if ((vx_status)VX_SUCCESS == status)
       {
@@ -525,10 +525,10 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
           net= (sTIDL_Network_t *)network_buffer;
           uint32_t currLayersGroupId;
 
-          if ((target_cpu == TIVX_CPU_ID_DSP1) || (target_cpu == TIVX_CPU_ID_DSP2)) {
+          if ((target_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (target_cpu == (vx_enum)TIVX_CPU_ID_DSP2)) {
             currLayersGroupId= 2;
           }
-          else if ((target_cpu == TIVX_CPU_ID_EVE1) || (target_cpu == TIVX_CPU_ID_EVE2) || (target_cpu == TIVX_CPU_ID_EVE3) || (target_cpu == TIVX_CPU_ID_EVE4)) {
+          else if ((target_cpu == (vx_enum)TIVX_CPU_ID_EVE1) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE2) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE3) || (target_cpu == (vx_enum)TIVX_CPU_ID_EVE4)) {
             currLayersGroupId= 1;
           }
           else {
@@ -566,7 +566,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
   uint8_t *pParams, *pFlagShared2Target;
 
   status = vxMapUserDataObject(network, 0, 0, &map_id,
-      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&network_buffer, (vx_enum)VX_READ_AND_WRITE, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   if ((vx_status)VX_SUCCESS == status)
   {
@@ -640,8 +640,8 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
             }
           }
 
-          conv2dPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->weights.ptr, TIVX_MEM_EXTERNAL);
-          conv2dPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+          conv2dPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->weights.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+          conv2dPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->bias.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
         {
@@ -657,7 +657,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * 2));
 
-          biasPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)biasPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+          biasPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)biasPrms->bias.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
         {
@@ -674,7 +674,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * net->weightsElementSize));
 
-          bNPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+          bNPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->weights.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
 
           pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
           bNPrms->bias.ptr= (void*)pParams;
@@ -686,7 +686,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * 2));
 
-          bNPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+          bNPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->bias.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
 
           if(TIDL_PRelU == bNPrms->reluParams.reluType)
           {
@@ -700,7 +700,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
                 fp_params);
             assert(readSize == (dataSize * net->slopeElementSize));
 
-            bNPrms->reluParams.slope.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->reluParams.slope.ptr, TIVX_MEM_EXTERNAL);
+            bNPrms->reluParams.slope.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->reluParams.slope.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
           }
         }
         else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
@@ -720,7 +720,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * net->weightsElementSize));
 
-          ipPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+          ipPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->weights.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
           pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
           ipPrms->bias.ptr= (void*)pParams;
           pParams+= ipPrms->bias.bufSize;
@@ -732,7 +732,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * 2));
 
-          ipPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+          ipPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->bias.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
         {
@@ -749,7 +749,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
               fp_params);
           assert(readSize == (dataSize * 4));
 
-          detectPrms->priorBox.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)detectPrms->priorBox.ptr, TIVX_MEM_EXTERNAL);
+          detectPrms->priorBox.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)detectPrms->priorBox.ptr, (vx_enum)TIVX_MEM_EXTERNAL);
         }
       }
 
@@ -780,7 +780,7 @@ vx_user_data_object vx_tidl_utils_setCreateParams(vx_context context, int32_t qu
     if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(createParams, 0, capacity, &map_id,
-                        (void **)&createParams_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+                        (void **)&createParams_buffer, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -823,7 +823,7 @@ vx_user_data_object vx_tidl_utils_setInArgs(vx_context context)
     if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(inArgs, 0, capacity, &map_id,
-                        (void **)&inArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+                        (void **)&inArgs_buffer, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -862,7 +862,7 @@ vx_user_data_object vx_tidl_utils_setOutArgs(vx_context context)
     if ((vx_status)VX_SUCCESS == status)
     {
         status = vxMapUserDataObject(outArgs, 0, capacity, &map_id,
-                        (void **)&outArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+                        (void **)&outArgs_buffer, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
         if ((vx_status)VX_SUCCESS == status)
         {

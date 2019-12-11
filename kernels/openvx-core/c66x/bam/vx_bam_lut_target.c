@@ -185,9 +185,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
         lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(lut_target_ptr, lut->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -250,7 +250,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -281,7 +281,7 @@ static vx_status VX_CALLBACK tivxKernelLutDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -295,9 +295,9 @@ void tivxAddTargetKernelBamLut(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -309,7 +309,7 @@ void tivxAddTargetKernelBamLut(void)
         }
 
         vx_lut_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_TABLE_LOOKUP,
+            (vx_enum)VX_KERNEL_TABLE_LOOKUP,
             target_name,
             tivxKernelLutProcess,
             tivxKernelLutCreate,
@@ -363,9 +363,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
         lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(lut_target_ptr, lut->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -434,7 +434,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

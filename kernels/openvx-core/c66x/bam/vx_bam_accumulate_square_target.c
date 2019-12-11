@@ -173,7 +173,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
         sc_desc = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_SHIFT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAccumulateSquareParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAccumulateSquareParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -217,7 +217,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAccumulateSquareParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAccumulateSquareParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -246,7 +246,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareDelete(
             (sizeof(tivxAccumulateSquareParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);
-            tivxMemFree(prms, sizeof(tivxAccumulateSquareParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxAccumulateSquareParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -260,9 +260,9 @@ void tivxAddTargetKernelBamAccumulateSquare(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -274,7 +274,7 @@ void tivxAddTargetKernelBamAccumulateSquare(void)
         }
 
         vx_accumulatesquare_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_ACCUMULATE_SQUARE,
+            (vx_enum)VX_KERNEL_ACCUMULATE_SQUARE,
             target_name,
             tivxKernelAccumulateSquareProcess,
             tivxKernelAccumulateSquareCreate,

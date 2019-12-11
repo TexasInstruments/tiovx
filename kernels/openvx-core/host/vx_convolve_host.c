@@ -124,18 +124,18 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_COLUMNS, &conv_cols, sizeof(conv_cols)));
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_ROWS, &conv_rows, sizeof(conv_rows)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_COLUMNS, &conv_cols, sizeof(conv_cols)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_ROWS, &conv_rows, sizeof(conv_rows)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -220,7 +220,7 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for convolve \n");
@@ -232,9 +232,9 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
 
     }
 
@@ -270,8 +270,8 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_COLUMNS, &cols, sizeof(cols)));
-        tivxCheckStatus(&status, vxQueryConvolution(conv, VX_CONVOLUTION_ROWS, &rows, sizeof(rows)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_COLUMNS, &cols, sizeof(cols)));
+        tivxCheckStatus(&status, vxQueryConvolution(conv, (vx_enum)VX_CONVOLUTION_ROWS, &rows, sizeof(rows)));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -288,7 +288,7 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
         prms.bot_pad = (rows - 1U) / 2U;
         prms.left_pad = (cols - 1U) / 2U;
         prms.right_pad = (cols - 1U) / 2U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -314,7 +314,7 @@ vx_status tivxAddKernelConvolve(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.custom_convolution",
-                    VX_KERNEL_CUSTOM_CONVOLUTION,
+                    (vx_enum)VX_KERNEL_CUSTOM_CONVOLUTION,
                     NULL,
                     TIVX_KERNEL_CONVOLVE_MAX_PARAMS,
                     tivxAddKernelConvolveValidate,
@@ -330,9 +330,9 @@ vx_status tivxAddKernelConvolve(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -340,9 +340,9 @@ vx_status tivxAddKernelConvolve(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_CONVOLUTION,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_CONVOLUTION,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -350,9 +350,9 @@ vx_status tivxAddKernelConvolve(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

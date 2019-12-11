@@ -73,14 +73,14 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
         &&
         (arr->base.obj_desc != NULL))
     {
         if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
                 (vx_bool)vx_true_e) &&
             (capacity > 0U) &&
-            ((vx_enum)VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
+            ((vx_enum)(vx_enum)VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
             ((vx_bool)vx_true_e == arr->base.is_virtual))
         {
             ownInitArrayObject(arr, item_type, capacity, (vx_bool)vx_true_e);
@@ -101,7 +101,7 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
                 VX_PRINT(VX_ZONE_ERROR,"Array capacity is not greater than 0\n");
             }
 
-            if ((vx_enum)VX_TYPE_INVALID == item_type)
+            if ((vx_enum)(vx_enum)VX_TYPE_INVALID == item_type)
             {
                 VX_PRINT(VX_ZONE_ERROR,"array item type is invalid\n");
             }
@@ -124,7 +124,7 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)arr, VX_TYPE_ARRAY, VX_EXTERNAL, NULL));
+        (vx_reference*)arr, (vx_enum)VX_TYPE_ARRAY, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_array VX_API_CALL vxCreateArray(
@@ -137,11 +137,11 @@ vx_array VX_API_CALL vxCreateArray(
         if ((capacity > 0U) &&
             ((vx_bool)vx_true_e == ownIsValidArrayItemType(context, item_type)))
         {
-            arr = (vx_array)ownCreateReference(context, VX_TYPE_ARRAY,
-                VX_EXTERNAL, &context->base);
+            arr = (vx_array)ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
+                (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)arr) == (vx_status)(vx_status)VX_SUCCESS) &&
-                (arr->base.type == VX_TYPE_ARRAY))
+                (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
             {
                 /* assign refernce type specific callback's */
                 arr->base.destructor_callback = &ownDestructArray;
@@ -150,7 +150,7 @@ vx_array VX_API_CALL vxCreateArray(
                     (tivx_reference_release_callback_f)&vxReleaseArray;
 
                 arr->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
+                    (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
                 if(arr->base.obj_desc==NULL)
                 {
                     vxReleaseArray(&arr);
@@ -177,18 +177,18 @@ vx_array VX_API_CALL vxCreateVirtualArray(
     vx_array arr = NULL;
     vx_context context;
 
-    if(ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if(ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         context = graph->base.context;
 
         /* capacity can be zero and item_type can be invalid for
            virtual array */
 
-        arr = (vx_array)ownCreateReference(context, VX_TYPE_ARRAY,
-            VX_EXTERNAL, &context->base);
+        arr = (vx_array)ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
+            (vx_enum)VX_EXTERNAL, &context->base);
 
         if ((vxGetStatus((vx_reference)arr) == (vx_status)VX_SUCCESS) &&
-            (arr->base.type == VX_TYPE_ARRAY))
+            (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
         {
             /* assign refernce type specific callback's */
             arr->base.destructor_callback = &ownDestructArray;
@@ -197,7 +197,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
                 (tivx_reference_release_callback_f)&vxReleaseArray;
 
             arr->base.obj_desc = (tivx_obj_desc_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
+                (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
             if(arr->base.obj_desc==NULL)
             {
                 vxReleaseArray(&arr);
@@ -225,7 +225,7 @@ vx_status VX_API_CALL vxQueryArray(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_false_e)
             || (arr->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryArray failed\n");
@@ -237,7 +237,7 @@ vx_status VX_API_CALL vxQueryArray(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
         switch (attribute)
         {
-            case VX_ARRAY_ITEMTYPE:
+            case (vx_enum)VX_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->item_type;
@@ -248,7 +248,7 @@ vx_status VX_API_CALL vxQueryArray(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_ARRAY_NUMITEMS:
+            case (vx_enum)VX_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_items;
@@ -259,7 +259,7 @@ vx_status VX_API_CALL vxQueryArray(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_ARRAY_CAPACITY:
+            case (vx_enum)VX_ARRAY_CAPACITY:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->capacity;
@@ -270,7 +270,7 @@ vx_status VX_API_CALL vxQueryArray(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_ARRAY_ITEMSIZE:
+            case (vx_enum)VX_ARRAY_ITEMSIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->item_size;
@@ -300,7 +300,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     vx_uint8 *user_ptr = (vx_uint8 *)ptr;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
@@ -350,7 +350,7 @@ vx_status VX_API_CALL vxAddArrayItems(
 
         tivxMemBufferMap(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         for (i = 0; i < count; i ++)
         {
@@ -362,7 +362,7 @@ vx_status VX_API_CALL vxAddArrayItems(
 
         tivxMemBufferUnmap(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         obj_desc->num_items += count;
     }
@@ -375,7 +375,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
@@ -420,7 +420,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
     vx_uint8 *user_ptr = (vx_uint8 *)ptr;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
@@ -472,7 +472,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
 
-        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)(vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR,"Invalid user_mem_type; must be VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -487,10 +487,10 @@ vx_status VX_API_CALL vxCopyArrayRange(
         inst = range_end - range_start;
 
         /* Copy from arr object to user memory */
-        if ((vx_enum)VX_READ_ONLY == usage)
+        if ((vx_enum)(vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
@@ -502,12 +502,12 @@ vx_status VX_API_CALL vxCopyArrayRange(
             }
 
             tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to arr object */
         {
             tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
@@ -519,7 +519,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             }
 
             tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
 
         obj_desc->num_items += inst;
@@ -538,7 +538,7 @@ vx_status VX_API_CALL vxMapArrayRange(
     vx_uint8 *start_offset;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
@@ -628,7 +628,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)
     {
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
@@ -676,7 +676,7 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_ARRAY)
+    if(ref->type == (vx_enum)VX_TYPE_ARRAY)
     {
         obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
 
@@ -687,7 +687,7 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -698,7 +698,7 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
                 else
                 {
                     obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
+                        obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -721,7 +721,7 @@ static vx_status ownDestructArray(vx_reference ref)
 {
     tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_ARRAY)
+    if(ref->type == (vx_enum)VX_TYPE_ARRAY)
     {
         obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
         if(obj_desc != NULL)
@@ -757,7 +757,7 @@ static void ownInitArrayObject(
         obj_desc->item_size * capacity;
     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
 
     arr->base.is_virtual = is_virtual;
 

@@ -79,7 +79,7 @@ static void tivxTargetObjDescSendRefConsumed(
     {
         cmd_obj_desc_id = obj_desc->ref_consumed_cmd_obj_desc_id;
 
-        if( cmd_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+        if( cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)tivxObjDescGet(cmd_obj_desc_id);
 
@@ -113,9 +113,9 @@ static void tivxTargetNodeDescAcquireParameter(
 {
     uint32_t flags;
 
-    *prm_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+    *prm_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     flags = data_ref_q_obj_desc->flags;
 
@@ -130,7 +130,7 @@ static void tivxTargetNodeDescAcquireParameter(
             &ref_obj_desc_id
             );
 
-        if(ref_obj_desc_id==TIVX_OBJ_DESC_INVALID /* did not get a ref */
+        if(ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID /* did not get a ref */
             )
         {
             /* add node to list of blocked nodes */
@@ -159,7 +159,7 @@ static void tivxTargetNodeDescAcquireParameter(
             data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
             data_ref_q_obj_desc->in_node_done_cnt = 0;
             data_ref_q_obj_desc->flags = flags;
-            
+
             obj_desc = tivxObjDescGet(ref_obj_desc_id);
             if(obj_desc)
             {
@@ -189,7 +189,7 @@ static void tivxTargetNodeDescAcquireParameter(
         *prm_obj_desc_id = data_ref_q_obj_desc->ref_obj_desc_id;
     }
 
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
 static void tivxTargetNodeDescAcquireParameterForPipeup(
@@ -200,9 +200,9 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
 {
     uint32_t flags;
 
-    *prm_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+    *prm_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     flags = data_ref_q_obj_desc->flags;
 
@@ -217,7 +217,7 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
             &ref_obj_desc_id
             );
 
-        if(ref_obj_desc_id==TIVX_OBJ_DESC_INVALID /* did not get a ref */
+        if(ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID /* did not get a ref */
             )
         {
             VX_PRINT(VX_ZONE_INFO,"Parameter acquire for pipe up failed ... (node=%d, pipe=%d, data_ref_q=%d, queue=%d)\n",
@@ -261,7 +261,7 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
         *prm_obj_desc_id = data_ref_q_obj_desc->ref_obj_desc_id;
     }
 
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
 static void tivxTargetNodeDescReleaseParameterInDelay(
@@ -292,7 +292,7 @@ static void tivxTargetNodeDescReleaseParameterInDelay(
                     &ref_obj_desc_id
                     );
 
-                if(ref_obj_desc_id!=TIVX_OBJ_DESC_INVALID)
+                if(ref_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
 
@@ -340,9 +340,9 @@ static void tivxTargetNodeDescReleaseParameter(
     do_release_ref = (vx_bool)vx_false_e;
     do_release_ref_to_queue = (vx_bool)vx_false_e;
     obj_desc = tivxObjDescGet(ref_obj_desc_id);
-	
-    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-    
+
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+
     flags = data_ref_q_obj_desc->flags;
 
     if(is_prm_input == (vx_bool)vx_true_e)
@@ -390,7 +390,7 @@ static void tivxTargetNodeDescReleaseParameter(
             /* all input nodes have released this input
              */
             obj_desc_q_id = data_ref_q_obj_desc->release_q_obj_desc_id;
-    
+
             tivxObjDescQueueEnqueue(
                 obj_desc_q_id,
                 ref_obj_desc_id
@@ -402,9 +402,9 @@ static void tivxTargetNodeDescReleaseParameter(
                 obj_desc_q_id,
                 &blocked_nodes
                 );
-    
+
             *is_prm_released = (vx_bool)vx_true_e;
-            
+
             /* handle ref auto age for delay
              * if delay is connected to some input node then acquire/release
              * at the node takes care of ref ageing at the delay slot
@@ -415,7 +415,7 @@ static void tivxTargetNodeDescReleaseParameter(
             {
                 tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
             }
-    
+
             VX_PRINT(VX_ZONE_INFO,"Parameter released (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
@@ -453,7 +453,7 @@ static void tivxTargetNodeDescReleaseParameter(
                        );
         }
     }
-    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     for(node_id=0; node_id<blocked_nodes.num_nodes; node_id++)
     {
@@ -498,7 +498,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             }
             else
             {
-                prm_obj_desc_id[prm_id] = TIVX_OBJ_DESC_INVALID;
+                prm_obj_desc_id[prm_id] = (vx_enum)TIVX_OBJ_DESC_INVALID;
             }
         }
         #if 1
@@ -546,7 +546,7 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
             }
             else
             {
-                prm_obj_desc_id[prm_id] = TIVX_OBJ_DESC_INVALID;
+                prm_obj_desc_id[prm_id] = (vx_enum)TIVX_OBJ_DESC_INVALID;
             }
         }
     }

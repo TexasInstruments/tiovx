@@ -100,9 +100,9 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -110,7 +110,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
 
-        if (VX_THRESHOLD_TYPE_BINARY == thr->type)
+        if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
         {
             status = VXLIB_thresholdBinary_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, thr->value, thr->true_value,
@@ -128,9 +128,9 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -157,9 +157,9 @@ void tivxAddTargetKernelThreshold(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -171,7 +171,7 @@ void tivxAddTargetKernelThreshold(void)
         }
 
         vx_threshold_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_THRESHOLD,
+            (vx_enum)VX_KERNEL_THRESHOLD,
             target_name,
             tivxKernelThresholdProcess,
             tivxKernelThresholdCreate,

@@ -187,9 +187,9 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_IMAGE,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -197,9 +197,9 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_OUTPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_OUTPUT,
+                (vx_enum)VX_TYPE_IMAGE,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -446,13 +446,13 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[PHASE_RGB_IN0_IMG_IDX],
-            VX_IMAGE_FORMAT, &fmt[PHASE_RGB_IN0_IMG_IDX],
+            (vx_enum)VX_IMAGE_FORMAT, &fmt[PHASE_RGB_IN0_IMG_IDX],
             sizeof(vx_df_image));
         status |= vxQueryImage(img[PHASE_RGB_IN0_IMG_IDX],
-            VX_IMAGE_WIDTH, &w[PHASE_RGB_IN0_IMG_IDX],
+            (vx_enum)VX_IMAGE_WIDTH, &w[PHASE_RGB_IN0_IMG_IDX],
             sizeof(vx_uint32));
         status |= vxQueryImage(img[PHASE_RGB_IN0_IMG_IDX],
-            VX_IMAGE_HEIGHT, &h[PHASE_RGB_IN0_IMG_IDX],
+            (vx_enum)VX_IMAGE_HEIGHT, &h[PHASE_RGB_IN0_IMG_IDX],
             sizeof(vx_uint32));
 
         if(status!=(vx_status)VX_SUCCESS)
@@ -466,13 +466,13 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[PHASE_RGB_OUT0_IMG_IDX],
-            VX_IMAGE_FORMAT, &fmt[PHASE_RGB_OUT0_IMG_IDX],
+            (vx_enum)VX_IMAGE_FORMAT, &fmt[PHASE_RGB_OUT0_IMG_IDX],
             sizeof(vx_df_image));
         status |= vxQueryImage(img[PHASE_RGB_OUT0_IMG_IDX],
-            VX_IMAGE_WIDTH, &w[PHASE_RGB_OUT0_IMG_IDX],
+            (vx_enum)VX_IMAGE_WIDTH, &w[PHASE_RGB_OUT0_IMG_IDX],
             sizeof(vx_uint32));
         status |= vxQueryImage(img[PHASE_RGB_OUT0_IMG_IDX],
-            VX_IMAGE_HEIGHT, &h[PHASE_RGB_OUT0_IMG_IDX],
+            (vx_enum)VX_IMAGE_HEIGHT, &h[PHASE_RGB_OUT0_IMG_IDX],
             sizeof(vx_uint32));
 
         if(status!=(vx_status)VX_SUCCESS)
@@ -513,11 +513,11 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
         out_w = w[PHASE_RGB_OUT0_IMG_IDX];
         out_h = h[PHASE_RGB_OUT0_IMG_IDX];
 
-        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], VX_IMAGE_FORMAT, &out_fmt,
+        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], (vx_enum)VX_IMAGE_FORMAT, &out_fmt,
             sizeof(out_fmt));
-        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], VX_IMAGE_WIDTH, &out_w,
+        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], (vx_enum)VX_IMAGE_WIDTH, &out_w,
             sizeof(out_w));
-        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], VX_IMAGE_HEIGHT, &out_h,
+        vxSetMetaFormatAttribute(metas[PHASE_RGB_OUT0_IMG_IDX], (vx_enum)VX_IMAGE_HEIGHT, &out_h,
             sizeof(out_h));
     }
 
@@ -577,10 +577,10 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     void *in_data_ptr, *out_data_ptr;
 
     status |= vxQueryImage(out_image,
-        VX_IMAGE_WIDTH, &out_w,
+        (vx_enum)VX_IMAGE_WIDTH, &out_w,
         sizeof(vx_uint32));
     status |= vxQueryImage(out_image,
-        VX_IMAGE_HEIGHT, &out_h,
+        (vx_enum)VX_IMAGE_HEIGHT, &out_h,
         sizeof(vx_uint32));
 
     rect.start_x = 0;
@@ -596,7 +596,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
                 &in_map_id,
                 &in_image_addr,
                 (void**)&in_data_ptr,
-                VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
+                (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_NOGAP_X);
     }
 
     if(status==(vx_status)VX_SUCCESS)
@@ -607,7 +607,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
                 &out_map_id,
                 &out_image_addr,
                 (void**)&out_data_ptr,
-                VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
+                (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_NOGAP_X);
     }
     if(status==(vx_status)VX_SUCCESS)
     {

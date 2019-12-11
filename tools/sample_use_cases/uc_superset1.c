@@ -196,9 +196,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_WRAP;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_WRAP;
 
-        usecase->scalar_59 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_59 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_59 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -230,9 +230,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_WRAP;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_WRAP;
 
-        usecase->scalar_61 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_61 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_61 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -392,9 +392,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_NONLINEAR_FILTER_MIN;
+        vx_enum value = (vx_enum)VX_NONLINEAR_FILTER_MIN;
 
-        usecase->scalar_71 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_71 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_71 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -402,7 +402,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->matrix_20 = vxCreateMatrix(context, VX_TYPE_UINT8, 3, 3);
+        usecase->matrix_20 = vxCreateMatrix(context, (vx_enum)VX_TYPE_UINT8, 3, 3);
         if (usecase->matrix_20 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -436,7 +436,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     {
         vx_float32 value = 1;
 
-        usecase->scalar_23 = vxCreateScalar(context, VX_TYPE_FLOAT32, &value);
+        usecase->scalar_23 = vxCreateScalar(context, (vx_enum)VX_TYPE_FLOAT32, &value);
         if (usecase->scalar_23 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -444,9 +444,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_WRAP;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_WRAP;
 
-        usecase->scalar_73 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_73 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_73 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -454,9 +454,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_ROUND_POLICY_TO_ZERO;
+        vx_enum value = (vx_enum)VX_ROUND_POLICY_TO_ZERO;
 
-        usecase->scalar_74 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_74 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_74 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -488,9 +488,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_WRAP;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_WRAP;
 
-        usecase->scalar_76 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_76 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_76 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -500,7 +500,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     {
         vx_int32 value = 0;
 
-        usecase->scalar_28 = vxCreateScalar(context, VX_TYPE_INT32, &value);
+        usecase->scalar_28 = vxCreateScalar(context, (vx_enum)VX_TYPE_INT32, &value);
         if (usecase->scalar_28 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -604,9 +604,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CHANNEL_R;
+        vx_enum value = (vx_enum)VX_CHANNEL_R;
 
-        usecase->scalar_81 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_81 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_81 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -638,7 +638,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->lut_37 = vxCreateLUT(context, VX_TYPE_UINT8, 255);
+        usecase->lut_37 = vxCreateLUT(context, (vx_enum)VX_TYPE_UINT8, 255);
         if (usecase->lut_37 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -706,9 +706,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_WRAP;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_WRAP;
 
-        usecase->scalar_87 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_87 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_87 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -716,7 +716,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->matrix_44 = vxCreateMatrix(context, VX_TYPE_FLOAT32, 2, 3);
+        usecase->matrix_44 = vxCreateMatrix(context, (vx_enum)VX_TYPE_FLOAT32, 2, 3);
         if (usecase->matrix_44 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -724,9 +724,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_INTERPOLATION_BILINEAR;
+        vx_enum value = (vx_enum)VX_INTERPOLATION_BILINEAR;
 
-        usecase->scalar_89 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_89 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_89 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -746,7 +746,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->matrix_46 = vxCreateMatrix(context, VX_TYPE_FLOAT32, 3, 3);
+        usecase->matrix_46 = vxCreateMatrix(context, (vx_enum)VX_TYPE_FLOAT32, 3, 3);
         if (usecase->matrix_46 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -754,9 +754,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_INTERPOLATION_BILINEAR;
+        vx_enum value = (vx_enum)VX_INTERPOLATION_BILINEAR;
 
-        usecase->scalar_91 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_91 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_91 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -776,7 +776,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->threshold_47 = vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+        usecase->threshold_47 = vxCreateThreshold(context, (vx_enum)VX_THRESHOLD_TYPE_BINARY, (vx_enum)VX_TYPE_UINT8);
         if (usecase->threshold_47 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -804,9 +804,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_INTERPOLATION_BILINEAR;
+        vx_enum value = (vx_enum)VX_INTERPOLATION_BILINEAR;
 
-        usecase->scalar_94 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_94 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_94 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -838,9 +838,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_INTERPOLATION_BILINEAR;
+        vx_enum value = (vx_enum)VX_INTERPOLATION_BILINEAR;
 
-        usecase->scalar_96 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_96 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_96 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -848,7 +848,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        usecase->threshold_52 = vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8);
+        usecase->threshold_52 = vxCreateThreshold(context, (vx_enum)VX_THRESHOLD_TYPE_BINARY, (vx_enum)VX_TYPE_UINT8);
         if (usecase->threshold_52 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -858,7 +858,7 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     {
         vx_int32 value = 3;
 
-        usecase->scalar_98 = vxCreateScalar(context, VX_TYPE_INT32, &value);
+        usecase->scalar_98 = vxCreateScalar(context, (vx_enum)VX_TYPE_INT32, &value);
         if (usecase->scalar_98 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -866,9 +866,9 @@ vx_status uc_superset1_data_create(uc_superset1 usecase)
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_NORM_L1;
+        vx_enum value = (vx_enum)VX_NORM_L1;
 
-        usecase->scalar_99 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_99 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_99 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -2096,7 +2096,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_58, "node_58");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_58, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_58, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2111,7 +2111,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_60, "node_60");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_60, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_60, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2126,7 +2126,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_62, "node_62");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_62, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_62, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2140,7 +2140,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_63, "node_63");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_63, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_63, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2154,7 +2154,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_64, "node_64");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_64, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_64, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2168,7 +2168,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_65, "node_65");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_65, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_65, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2181,7 +2181,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_66, "node_66");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_66, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_66, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2194,7 +2194,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_67, "node_67");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_67, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_67, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2208,7 +2208,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_68, "node_68");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_68, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_68, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2221,7 +2221,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_69, "node_69");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_69, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_69, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2234,7 +2234,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_70, "node_70");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_70, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_70, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2249,7 +2249,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_72, "node_72");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_72, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_72, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2266,7 +2266,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_75, "node_75");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_75, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_75, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2281,7 +2281,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_77, "node_77");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_77, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_77, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2295,7 +2295,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_78, "node_78");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_78, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_78, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2309,7 +2309,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_79, "node_79");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_79, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_79, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2325,7 +2325,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_80, "node_80");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_80, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_80, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2339,7 +2339,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_82, "node_82");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_82, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_82, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2352,7 +2352,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_83, "node_83");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_83, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_83, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2366,7 +2366,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_84, "node_84");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_84, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_84, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2379,7 +2379,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_85, "node_85");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_85, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_85, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2393,7 +2393,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_86, "node_86");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_86, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_86, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2408,7 +2408,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_88, "node_88");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_88, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_88, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2423,7 +2423,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_90, "node_90");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_90, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_90, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2438,7 +2438,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_92, "node_92");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_92, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_92, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2452,7 +2452,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_93, "node_93");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_93, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_93, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2467,7 +2467,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_95, "node_95");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_95, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_95, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2481,7 +2481,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_97, "node_97");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_97, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_97, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2497,7 +2497,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_100, "node_100");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_100, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_100, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2510,7 +2510,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_101, "node_101");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_101, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_101, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
     if (status == (vx_status)VX_SUCCESS)
@@ -2524,7 +2524,7 @@ vx_status uc_superset1_graph_0_create(uc_superset1 usecase)
         status = vxSetReferenceName( (vx_reference)usecase->node_102, "node_102");
         if (status == (vx_status)VX_SUCCESS)
         {
-            status = vxSetNodeTarget(usecase->node_102, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+            status = vxSetNodeTarget(usecase->node_102, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
         }
     }
 

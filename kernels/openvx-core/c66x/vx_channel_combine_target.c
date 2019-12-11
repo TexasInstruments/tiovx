@@ -124,28 +124,28 @@ vx_status VX_CALLBACK tivxChannelCombine(
         }
 
         tivxMemBufferMap(src0_desc_target_ptr,
-           src0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(src1_desc_target_ptr,
-           src1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         if( src2_desc != NULL)
         {
             tivxMemBufferMap(src2_desc_target_ptr,
-               src2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               src2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         if( src3_desc != NULL)
         {
             tivxMemBufferMap(src3_desc_target_ptr,
-               src3_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               src3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
         {
             tivxMemBufferMap(dst_desc_target_ptr[plane_idx],
-               dst_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               dst_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
 
 
@@ -337,28 +337,28 @@ vx_status VX_CALLBACK tivxChannelCombine(
         /* kernel processing function complete */
 
         tivxMemBufferUnmap(src0_desc_target_ptr,
-           src0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(src1_desc_target_ptr,
-           src1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+           src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_ONLY);
         if( src2_desc != NULL)
         {
             tivxMemBufferUnmap(src2_desc_target_ptr,
-               src2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               src2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         if( src3_desc != NULL)
         {
             tivxMemBufferUnmap(src3_desc_target_ptr,
-               src3_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+               src3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY);
         }
         for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
         {
             tivxMemBufferUnmap(dst_desc_target_ptr[plane_idx],
-               dst_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+               dst_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
         }
 
 
@@ -395,13 +395,13 @@ void tivxAddTargetKernelChannelCombine(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP2 )
     {
         strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -414,7 +414,7 @@ void tivxAddTargetKernelChannelCombine(void)
     if (status == (vx_status)VX_SUCCESS)
     {
         vx_channel_combine_target_kernel = tivxAddTargetKernel(
-                            VX_KERNEL_CHANNEL_COMBINE,
+                            (vx_enum)VX_KERNEL_CHANNEL_COMBINE,
                             target_name,
                             tivxChannelCombine,
                             tivxChannelCombineCreate,

@@ -253,7 +253,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
         dsty = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxSobelParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -327,7 +327,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxSobelParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -370,7 +370,7 @@ static vx_status VX_CALLBACK tivxKernelSobelDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxSobelParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -384,9 +384,9 @@ void tivxAddTargetKernelBamSobel3x3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -398,7 +398,7 @@ void tivxAddTargetKernelBamSobel3x3(void)
         }
 
         vx_sobel_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_SOBEL_3x3,
+            (vx_enum)VX_KERNEL_SOBEL_3x3,
             target_name,
             tivxKernelSobelProcess,
             tivxKernelSobelCreate,
@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
         dsty = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxSobelParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -509,7 +509,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxSobelParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

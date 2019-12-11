@@ -178,8 +178,8 @@ void vx_tutorial_graph_image_gradients()
     show_image_attributes(in_image);
     /** \endcode */
 
-    vxQueryImage(in_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(in_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(in_image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(in_image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
 
     /**
      * - Create OpenVX image object.
@@ -313,7 +313,7 @@ void vx_tutorial_graph_image_gradients()
     show_image_attributes(grad_y_image);
     /** \endcode */
 
-    shift = vxCreateScalar(context, VX_TYPE_INT32, &shift_value);
+    shift = vxCreateScalar(context, (vx_enum)VX_TYPE_INT32, &shift_value);
 
     /**
      * - Create OpenVX image object.
@@ -364,7 +364,7 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP1
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     /** \endcode */
     i++;
 
@@ -387,7 +387,7 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP1
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     /** \endcode */
     i++;
 
@@ -411,11 +411,11 @@ void vx_tutorial_graph_image_gradients()
      */
     if ((vx_bool)vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     }
     else /* DSP2 is not present on some platforms, so changing target to DSP1 */
     {
-        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     /** \endcode */
     i++;
@@ -431,7 +431,7 @@ void vx_tutorial_graph_image_gradients()
      */
     node[i] = vxConvertDepthNode(graph,
                     magnitude, magnitude_image,
-                    VX_CONVERT_POLICY_SATURATE,
+                    (vx_enum)VX_CONVERT_POLICY_SATURATE,
                     shift);
     /** \endcode */
 
@@ -443,7 +443,7 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP1
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     /** \endcode */
 
     i++;
@@ -459,7 +459,7 @@ void vx_tutorial_graph_image_gradients()
      */
     node[i] = vxConvertDepthNode(graph,
                     grad_x, grad_x_image,
-                    VX_CONVERT_POLICY_SATURATE,
+                    (vx_enum)VX_CONVERT_POLICY_SATURATE,
                     shift);
     /** \endcode */
 
@@ -471,7 +471,7 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP1
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     /** \endcode */
 
     i++;
@@ -487,7 +487,7 @@ void vx_tutorial_graph_image_gradients()
      */
     node[i] = vxConvertDepthNode(graph,
                     grad_y, grad_y_image,
-                    VX_CONVERT_POLICY_SATURATE,
+                    (vx_enum)VX_CONVERT_POLICY_SATURATE,
                     shift);
     vxSetReferenceName((vx_reference)node[i], "GRAD_Y_IMAGE");
 
@@ -499,11 +499,11 @@ void vx_tutorial_graph_image_gradients()
      */
     if ((vx_bool)vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     }
     else /* DSP2 is not present on some platforms, so changing target to DSP1 */
     {
-        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(node[i], (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     /** \endcode */
 

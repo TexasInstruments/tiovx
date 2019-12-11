@@ -171,7 +171,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateCreate(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_ACCUMULATE_ACCUM_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxAccumulateParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxAccumulateParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -215,7 +215,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxAccumulateParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxAccumulateParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -244,7 +244,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateDelete(
             (sizeof(tivxAccumulateParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);
-            tivxMemFree(prms, sizeof(tivxAccumulateParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxAccumulateParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -258,9 +258,9 @@ void tivxAddTargetKernelBamAccumulate(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -272,7 +272,7 @@ void tivxAddTargetKernelBamAccumulate(void)
         }
 
         vx_accumulate_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_ACCUMULATE,
+            (vx_enum)VX_KERNEL_ACCUMULATE,
             target_name,
             tivxKernelAccumulateProcess,
             tivxKernelAccumulateCreate,

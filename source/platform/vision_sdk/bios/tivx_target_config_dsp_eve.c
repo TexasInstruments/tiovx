@@ -41,32 +41,32 @@ void tivxPlatformCreateTargets(void)
 
     switch (self_cpu)
     {
-        case TIVX_CPU_ID_DSP1:
+        case (vx_enum)TIVX_CPU_ID_DSP1:
             target_id = TIVX_TARGET_ID_DSP1;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_DSP_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_dspTskStack;
             break;
-        case TIVX_CPU_ID_DSP2:
+        case (vx_enum)TIVX_CPU_ID_DSP2:
             target_id = TIVX_TARGET_ID_DSP2;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_DSP_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_dspTskStack;
             break;
-        case TIVX_CPU_ID_EVE1:
+        case (vx_enum)TIVX_CPU_ID_EVE1:
             target_id = TIVX_TARGET_ID_EVE1;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_EVE_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_eveTskStack;
             break;
-        case TIVX_CPU_ID_EVE2:
+        case (vx_enum)TIVX_CPU_ID_EVE2:
             target_id = TIVX_TARGET_ID_EVE2;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_EVE_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_eveTskStack;
             break;
-        case TIVX_CPU_ID_EVE3:
+        case (vx_enum)TIVX_CPU_ID_EVE3:
             target_id = TIVX_TARGET_ID_EVE3;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_EVE_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_eveTskStack;
             break;
-        case TIVX_CPU_ID_EVE4:
+        case (vx_enum)TIVX_CPU_ID_EVE4:
             target_id = TIVX_TARGET_ID_EVE4;
             target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_EVE_STACK_SIZE;
             target_create_prms.task_stack_ptr = gTarget_eveTskStack;
@@ -96,22 +96,22 @@ void tivxPlatformDeleteTargets(void)
 
     switch (self_cpu)
     {
-        case TIVX_CPU_ID_DSP1:
+        case (vx_enum)TIVX_CPU_ID_DSP1:
             target_id = TIVX_TARGET_ID_DSP1;
             break;
-        case TIVX_CPU_ID_DSP2:
+        case (vx_enum)TIVX_CPU_ID_DSP2:
             target_id = TIVX_TARGET_ID_DSP2;
             break;
-        case TIVX_CPU_ID_EVE1:
+        case (vx_enum)TIVX_CPU_ID_EVE1:
             target_id = TIVX_TARGET_ID_EVE1;
             break;
-        case TIVX_CPU_ID_EVE2:
+        case (vx_enum)TIVX_CPU_ID_EVE2:
             target_id = TIVX_TARGET_ID_EVE2;
             break;
-        case TIVX_CPU_ID_EVE3:
+        case (vx_enum)TIVX_CPU_ID_EVE3:
             target_id = TIVX_TARGET_ID_EVE3;
             break;
-        case TIVX_CPU_ID_EVE4:
+        case (vx_enum)TIVX_CPU_ID_EVE4:
             target_id = TIVX_TARGET_ID_EVE4;
             break;
         default:

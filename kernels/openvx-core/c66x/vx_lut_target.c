@@ -100,11 +100,11 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(lut_target_ptr, lut->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr,  &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -129,11 +129,11 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(lut_target_ptr, lut->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return ((vx_status)VX_SUCCESS);
@@ -160,9 +160,9 @@ void tivxAddTargetKernelLut(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -174,7 +174,7 @@ void tivxAddTargetKernelLut(void)
         }
 
         vx_lut_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_TABLE_LOOKUP,
+            (vx_enum)VX_KERNEL_TABLE_LOOKUP,
             target_name,
             tivxKernelLutProcess,
             tivxKernelLutCreate,

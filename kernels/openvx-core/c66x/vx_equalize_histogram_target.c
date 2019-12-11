@@ -116,9 +116,9 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
@@ -144,9 +144,9 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -180,7 +180,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
     {
 
         temp_ptr = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
-            sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+            sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL == temp_ptr)
         {
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
         }
         else
         {
-            tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(temp_ptr, temp_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -248,9 +248,9 @@ void tivxAddTargetKernelEqualizeHistogram(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -262,7 +262,7 @@ void tivxAddTargetKernelEqualizeHistogram(void)
         }
 
         vx_equalize_histogram_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_EQUALIZE_HISTOGRAM,
+            (vx_enum)VX_KERNEL_EQUALIZE_HISTOGRAM,
             target_name,
             tivxKernelEqualizeHistogramProcess,
             tivxKernelEqualizeHistogramCreate,

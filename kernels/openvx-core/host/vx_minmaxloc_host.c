@@ -135,34 +135,34 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryScalar(minval, VX_SCALAR_TYPE, &minval_scalar_type, sizeof(minval_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(minval, (vx_enum)VX_SCALAR_TYPE, &minval_scalar_type, sizeof(minval_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(maxval, VX_SCALAR_TYPE, &maxval_scalar_type, sizeof(maxval_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(maxval, (vx_enum)VX_SCALAR_TYPE, &maxval_scalar_type, sizeof(maxval_scalar_type)));
 
         if (NULL != minloc)
         {
-            tivxCheckStatus(&status, vxQueryArray(minloc, VX_ARRAY_ITEMTYPE, &minloc_item_type, sizeof(minloc_item_type)));
-            tivxCheckStatus(&status, vxQueryArray(minloc, VX_ARRAY_CAPACITY, &minloc_capacity, sizeof(minloc_capacity)));
+            tivxCheckStatus(&status, vxQueryArray(minloc, (vx_enum)VX_ARRAY_ITEMTYPE, &minloc_item_type, sizeof(minloc_item_type)));
+            tivxCheckStatus(&status, vxQueryArray(minloc, (vx_enum)VX_ARRAY_CAPACITY, &minloc_capacity, sizeof(minloc_capacity)));
         }
 
         if (NULL != maxloc)
         {
-            tivxCheckStatus(&status, vxQueryArray(maxloc, VX_ARRAY_ITEMTYPE, &maxloc_item_type, sizeof(maxloc_item_type)));
-            tivxCheckStatus(&status, vxQueryArray(maxloc, VX_ARRAY_CAPACITY, &maxloc_capacity, sizeof(maxloc_capacity)));
+            tivxCheckStatus(&status, vxQueryArray(maxloc, (vx_enum)VX_ARRAY_ITEMTYPE, &maxloc_item_type, sizeof(maxloc_item_type)));
+            tivxCheckStatus(&status, vxQueryArray(maxloc, (vx_enum)VX_ARRAY_CAPACITY, &maxloc_capacity, sizeof(maxloc_capacity)));
         }
 
         if (NULL != mincount)
         {
-            tivxCheckStatus(&status, vxQueryScalar(mincount, VX_SCALAR_TYPE, &mincount_scalar_type, sizeof(mincount_scalar_type)));
+            tivxCheckStatus(&status, vxQueryScalar(mincount, (vx_enum)VX_SCALAR_TYPE, &mincount_scalar_type, sizeof(mincount_scalar_type)));
         }
 
         if (NULL != maxcount)
         {
-            tivxCheckStatus(&status, vxQueryScalar(maxcount, VX_SCALAR_TYPE, &maxcount_scalar_type, sizeof(maxcount_scalar_type)));
+            tivxCheckStatus(&status, vxQueryScalar(maxcount, (vx_enum)VX_SCALAR_TYPE, &maxcount_scalar_type, sizeof(maxcount_scalar_type)));
         }
     }
 
@@ -178,15 +178,15 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
-        if ((VX_TYPE_UINT8 != minval_scalar_type) &&
-            (VX_TYPE_INT16 != minval_scalar_type))
+        if (((vx_enum)VX_TYPE_UINT8 != minval_scalar_type) &&
+            ((vx_enum)VX_TYPE_INT16 != minval_scalar_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' should be a scalar of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
         }
 
-        if ((VX_TYPE_UINT8 != maxval_scalar_type) &&
-            (VX_TYPE_INT16 != maxval_scalar_type))
+        if (((vx_enum)VX_TYPE_UINT8 != maxval_scalar_type) &&
+            ((vx_enum)VX_TYPE_INT16 != maxval_scalar_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' should be a scalar of type:\n VX_TYPE_UINT8 or VX_TYPE_INT16 \n");
@@ -194,7 +194,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
         if (NULL != minloc)
         {
-            if (VX_TYPE_COORDINATES2D != minloc_item_type)
+            if ((vx_enum)VX_TYPE_COORDINATES2D != minloc_item_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'minloc' should be an array of type:\n VX_TYPE_COORDINATES2D \n");
@@ -203,7 +203,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
         if (NULL != maxloc)
         {
-            if (VX_TYPE_COORDINATES2D != maxloc_item_type)
+            if ((vx_enum)VX_TYPE_COORDINATES2D != maxloc_item_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'maxloc' should be an array of type:\n VX_TYPE_COORDINATES2D \n");
@@ -212,7 +212,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
         if (NULL != mincount)
         {
-            if (VX_TYPE_UINT32 != mincount_scalar_type)
+            if ((vx_enum)VX_TYPE_UINT32 != mincount_scalar_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'mincount' should be a scalar of type:\n VX_TYPE_UINT32 \n");
@@ -221,7 +221,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
         if (NULL != maxcount)
         {
-            if (VX_TYPE_UINT32 != maxcount_scalar_type)
+            if ((vx_enum)VX_TYPE_UINT32 != maxcount_scalar_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'maxcount' should be a scalar of type:\n VX_TYPE_UINT32 \n");
@@ -235,28 +235,28 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         if (((vx_df_image)VX_DF_IMAGE_U8 == input_fmt) &&
-            (minval_scalar_type != VX_TYPE_UINT8))
+            (minval_scalar_type != (vx_enum)VX_TYPE_UINT8))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
         if (((vx_df_image)VX_DF_IMAGE_S16 == input_fmt) &&
-            (minval_scalar_type != VX_TYPE_INT16))
+            (minval_scalar_type != (vx_enum)VX_TYPE_INT16))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'minval' must be type VX_TYPE_INT16 if 'input' is type VX_DF_IMAGE_S16 \n");
         }
 
         if (((vx_df_image)VX_DF_IMAGE_U8 == input_fmt) &&
-            (maxval_scalar_type != VX_TYPE_UINT8))
+            (maxval_scalar_type != (vx_enum)VX_TYPE_UINT8))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' must be type VX_TYPE_UINT8 if 'input' is type VX_DF_IMAGE_U8 \n");
         }
 
         if (((vx_df_image)VX_DF_IMAGE_S16 == input_fmt) &&
-            (maxval_scalar_type != VX_TYPE_INT16))
+            (maxval_scalar_type != (vx_enum)VX_TYPE_INT16))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'maxval' must be type VX_TYPE_INT16 if 'input' is type VX_DF_IMAGE_S16 \n");
@@ -293,34 +293,34 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
     {
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX], VX_SCALAR_TYPE, &minval_scalar_type, sizeof(minval_scalar_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX], (vx_enum)VX_SCALAR_TYPE, &minval_scalar_type, sizeof(minval_scalar_type));
         }
 
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX], VX_SCALAR_TYPE, &maxval_scalar_type, sizeof(maxval_scalar_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX], (vx_enum)VX_SCALAR_TYPE, &maxval_scalar_type, sizeof(maxval_scalar_type));
         }
 
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX], VX_ARRAY_ITEMTYPE, &minloc_item_type, sizeof(minloc_item_type));
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX], VX_ARRAY_CAPACITY, &minloc_capacity, sizeof(minloc_capacity));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &minloc_item_type, sizeof(minloc_item_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX], (vx_enum)VX_ARRAY_CAPACITY, &minloc_capacity, sizeof(minloc_capacity));
         }
 
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX], VX_ARRAY_ITEMTYPE, &maxloc_item_type, sizeof(maxloc_item_type));
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX], VX_ARRAY_CAPACITY, &maxloc_capacity, sizeof(maxloc_capacity));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &maxloc_item_type, sizeof(maxloc_item_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX], (vx_enum)VX_ARRAY_CAPACITY, &maxloc_capacity, sizeof(maxloc_capacity));
         }
 
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX], VX_SCALAR_TYPE, &mincount_scalar_type, sizeof(mincount_scalar_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX], (vx_enum)VX_SCALAR_TYPE, &mincount_scalar_type, sizeof(mincount_scalar_type));
         }
 
         if (NULL != metas[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX], VX_SCALAR_TYPE, &maxcount_scalar_type, sizeof(maxcount_scalar_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX], (vx_enum)VX_SCALAR_TYPE, &maxcount_scalar_type, sizeof(maxcount_scalar_type));
         }
     }
 
@@ -358,7 +358,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -384,7 +384,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.minmaxloc",
-                    VX_KERNEL_MINMAXLOC,
+                    (vx_enum)VX_KERNEL_MINMAXLOC,
                     NULL,
                     TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS,
                     tivxAddKernelMinMaxLocValidate,
@@ -400,9 +400,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -410,9 +410,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -420,9 +420,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -430,9 +430,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -440,9 +440,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -450,9 +450,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -460,9 +460,9 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
         }
         if (status == (vx_status)VX_SUCCESS)

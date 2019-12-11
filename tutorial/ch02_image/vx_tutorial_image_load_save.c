@@ -175,8 +175,8 @@ void vx_tutorial_image_load_save()
      * Here we print the image dimensions.
      * \code
      */
-    vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
     /** \endcode */
 
     printf(" Loaded image of dimensions %d x %d\n", width, height);
@@ -346,8 +346,8 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
                     0,
                     &image_addr,
                     data_ptr,
-                    VX_WRITE_ONLY,
-                    VX_MEMORY_TYPE_HOST
+                    (vx_enum)VX_WRITE_ONLY,
+                    (vx_enum)VX_MEMORY_TYPE_HOST
                     );
             }
             /** \endcode */
@@ -398,9 +398,9 @@ vx_status save_image_to_file(char *filename, vx_image image)
          * \code
          */
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
         /** \endcode */
 
         /** - Map image data to user accessible memory space
@@ -424,9 +424,9 @@ vx_status save_image_to_file(char *filename, vx_image image)
             &map_id,
             &image_addr,
             &data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
+            (vx_enum)VX_READ_ONLY,
+            (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_NOGAP_X
             );
         /** \endcode */
 
@@ -510,9 +510,9 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
     {
         img_width = img_height = 0;
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
 
         if(width==img_width && height==img_height && df==img_df)
         {
@@ -552,8 +552,8 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
                     0,
                     &image_addr,
                     data_ptr,
-                    VX_WRITE_ONLY,
-                    VX_MEMORY_TYPE_HOST
+                    (vx_enum)VX_WRITE_ONLY,
+                    (vx_enum)VX_MEMORY_TYPE_HOST
                     );
             }
         }
@@ -608,18 +608,18 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
             val = strtod(token, NULL);
 
             switch(data_type){
-                case VX_TYPE_FLOAT32:
+                case (vx_enum)VX_TYPE_FLOAT32:
                     f32 = buffer;
                     f32[i] = val;
                     break;
 
-                case VX_TYPE_UINT8:
+                case (vx_enum)VX_TYPE_UINT8:
                     u8 = buffer;
                     val_u8 = val;
                     u8[i] = val_u8;
                     break;
 
-                case VX_TYPE_INT32:
+                case (vx_enum)VX_TYPE_INT32:
                     i32 = buffer;
                     val_int32 = val;
                     i32[i] = val_int32;
@@ -656,7 +656,7 @@ vx_matrix create_matrix_from_file(vx_context context, vx_enum data_type, int col
     vx_matrix matrix = vxCreateMatrix(context, data_type, cols, rows);
 
     // Set pointer reference between vx_float32 data object and
-    vxCopyMatrix(matrix, mat, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+    vxCopyMatrix(matrix, mat, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
     return matrix;
 }

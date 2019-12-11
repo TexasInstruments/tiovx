@@ -144,7 +144,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxColorConvertNode(vx_graph graph, vx_image inp
         (vx_reference)input,
         (vx_reference)output,
     };
-    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_COLOR_CONVERT, params, dimof(params));
+    return tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_COLOR_CONVERT, params, dimof(params));
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxChannelExtractNode(vx_graph graph,
@@ -153,14 +153,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxChannelExtractNode(vx_graph graph,
                              vx_image output)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar scalar = vxCreateScalar(context, VX_TYPE_ENUM, &channelNum);
+    vx_scalar scalar = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &channelNum);
     vx_reference params[] = {
         (vx_reference)input,
         (vx_reference)scalar,
         (vx_reference)output,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_CHANNEL_EXTRACT,
+                                           (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&scalar); /* node hold reference */
@@ -182,7 +182,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxChannelCombineNode(vx_graph graph,
        (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_CHANNEL_COMBINE,
+                                   (vx_enum)VX_KERNEL_CHANNEL_COMBINE,
                                    params,
                                    dimof(params));
 }
@@ -195,7 +195,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxSobel3x3Node(vx_graph graph, vx_image input, 
        (vx_reference)output_y,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_SOBEL_3x3,
+                                   (vx_enum)VX_KERNEL_SOBEL_3x3,
                                    params,
                                    dimof(params));
 }
@@ -208,7 +208,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMagnitudeNode(vx_graph graph, vx_image grad_x
        (vx_reference)mag,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_MAGNITUDE,
+                                   (vx_enum)VX_KERNEL_MAGNITUDE,
                                    params,
                                    dimof(params));
 }
@@ -221,7 +221,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxPhaseNode(vx_graph graph, vx_image grad_x, vx
        (vx_reference)orientation,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_PHASE,
+                                   (vx_enum)VX_KERNEL_PHASE,
                                    params,
                                    dimof(params));
 }
@@ -229,14 +229,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxPhaseNode(vx_graph graph, vx_image grad_x, vx
 VX_API_ENTRY vx_node VX_API_CALL vxScaleImageNode(vx_graph graph, vx_image src, vx_image dst, vx_enum type)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar stype = vxCreateScalar(context, VX_TYPE_ENUM, &type);
+    vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
         (vx_reference)src,
         (vx_reference)dst,
         (vx_reference)stype,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_SCALE_IMAGE,
+                                           (vx_enum)VX_KERNEL_SCALE_IMAGE,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&stype);
@@ -251,7 +251,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxTableLookupNode(vx_graph graph, vx_image inpu
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_TABLE_LOOKUP,
+                                   (vx_enum)VX_KERNEL_TABLE_LOOKUP,
                                    params,
                                    dimof(params));
 }
@@ -263,7 +263,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxHistogramNode(vx_graph graph, vx_image input,
         (vx_reference)distribution,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_HISTOGRAM,
+                                   (vx_enum)VX_KERNEL_HISTOGRAM,
                                    params,
                                    dimof(params));
 }
@@ -275,7 +275,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxEqualizeHistNode(vx_graph graph, vx_image inp
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_EQUALIZE_HISTOGRAM,
+                                   (vx_enum)VX_KERNEL_EQUALIZE_HISTOGRAM,
                                    params,
                                    dimof(params));
 }
@@ -288,7 +288,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAbsDiffNode(vx_graph graph, vx_image in1, vx_
        (vx_reference)out,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_ABSDIFF,
+                                   (vx_enum)VX_KERNEL_ABSDIFF,
                                    params,
                                    dimof(params));
 }
@@ -301,7 +301,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMeanStdDevNode(vx_graph graph, vx_image input
        (vx_reference)stddev,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_MEAN_STDDEV,
+                                   (vx_enum)VX_KERNEL_MEAN_STDDEV,
                                    params,
                                    dimof(params));
 }
@@ -314,7 +314,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxThresholdNode(vx_graph graph, vx_image input,
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_THRESHOLD,
+                                   (vx_enum)VX_KERNEL_THRESHOLD,
                                    params,
                                    dimof(params));
 }
@@ -326,7 +326,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxIntegralImageNode(vx_graph graph, vx_image in
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_INTEGRAL_IMAGE,
+                                   (vx_enum)VX_KERNEL_INTEGRAL_IMAGE,
                                    params,
                                    dimof(params));
 }
@@ -338,7 +338,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxErode3x3Node(vx_graph graph, vx_image input, 
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_ERODE_3x3,
+                                   (vx_enum)VX_KERNEL_ERODE_3x3,
                                    params,
                                    dimof(params));
 }
@@ -350,7 +350,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxDilate3x3Node(vx_graph graph, vx_image input,
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_DILATE_3x3,
+                                   (vx_enum)VX_KERNEL_DILATE_3x3,
                                    params,
                                    dimof(params));
 }
@@ -362,7 +362,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMedian3x3Node(vx_graph graph, vx_image input,
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_MEDIAN_3x3,
+                                   (vx_enum)VX_KERNEL_MEDIAN_3x3,
                                    params,
                                    dimof(params));
 }
@@ -374,7 +374,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxBox3x3Node(vx_graph graph, vx_image input, vx
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_BOX_3x3,
+                                   (vx_enum)VX_KERNEL_BOX_3x3,
                                    params,
                                    dimof(params));
 }
@@ -386,14 +386,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxGaussian3x3Node(vx_graph graph, vx_image inpu
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_GAUSSIAN_3x3,
+                                   (vx_enum)VX_KERNEL_GAUSSIAN_3x3,
                                    params,
                                    dimof(params));
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxNonLinearFilterNode(vx_graph graph, vx_enum function, vx_image input, vx_matrix mask, vx_image output)
 {
-    vx_scalar func = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_ENUM, &function);
+    vx_scalar func = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_ENUM, &function);
 
     vx_reference params[] = {
         (vx_reference)func,
@@ -403,7 +403,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxNonLinearFilterNode(vx_graph graph, vx_enum f
     };
 
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-        VX_KERNEL_NON_LINEAR_FILTER,
+        (vx_enum)VX_KERNEL_NON_LINEAR_FILTER,
         params,
         dimof(params));
 
@@ -419,7 +419,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxConvolveNode(vx_graph graph, vx_image input, 
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_CUSTOM_CONVOLUTION,
+                                   (vx_enum)VX_KERNEL_CUSTOM_CONVOLUTION,
                                    params,
                                    dimof(params));
 }
@@ -431,7 +431,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxGaussianPyramidNode(vx_graph graph, vx_image 
         (vx_reference)gaussian,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_GAUSSIAN_PYRAMID,
+                                   (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
                                    params,
                                    dimof(params));
 }
@@ -444,7 +444,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxLaplacianPyramidNode(vx_graph graph, vx_image
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_LAPLACIAN_PYRAMID,
+                                   (vx_enum)VX_KERNEL_LAPLACIAN_PYRAMID,
                                    params,
                                    dimof(params));
 }
@@ -458,7 +458,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxLaplacianReconstructNode(vx_graph graph, vx_p
         (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_LAPLACIAN_RECONSTRUCT,
+                                   (vx_enum)VX_KERNEL_LAPLACIAN_RECONSTRUCT,
                                    params,
                                    dimof(params));
 }
@@ -470,7 +470,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateImageNode(vx_graph graph, vx_image 
         (vx_reference)accum,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_ACCUMULATE,
+                                   (vx_enum)VX_KERNEL_ACCUMULATE,
                                    params,
                                    dimof(params));
 }
@@ -483,7 +483,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateWeightedImageNode(vx_graph graph, v
         (vx_reference)accum,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_ACCUMULATE_WEIGHTED,
+                                   (vx_enum)VX_KERNEL_ACCUMULATE_WEIGHTED,
                                    params,
                                    dimof(params));
 }
@@ -496,7 +496,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAccumulateSquareImageNode(vx_graph graph, vx_
         (vx_reference)accum,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_ACCUMULATE_SQUARE,
+                                   (vx_enum)VX_KERNEL_ACCUMULATE_SQUARE,
                                    params,
                                    dimof(params));
 }
@@ -517,14 +517,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxMinMaxLocNode(vx_graph graph,
         (vx_reference)maxCount,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_MINMAXLOC,
+                                   (vx_enum)VX_KERNEL_MINMAXLOC,
                                    params,
                                    dimof(params));
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxConvertDepthNode(vx_graph graph, vx_image input, vx_image output, vx_enum policy, vx_scalar shift)
 {
-    vx_scalar pol = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_ENUM, &policy);
+    vx_scalar pol = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
         (vx_reference)input,
         (vx_reference)output,
@@ -532,7 +532,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxConvertDepthNode(vx_graph graph, vx_image inp
         (vx_reference)shift,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_CONVERTDEPTH,
+                                   (vx_enum)VX_KERNEL_CONVERTDEPTH,
                                    params,
                                    dimof(params));
     vxReleaseScalar(&pol);
@@ -543,8 +543,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCannyEdgeDetectorNode(vx_graph graph, vx_imag
                                 vx_int32 gradient_size, vx_enum norm_type,
                                 vx_image output)
 {
-    vx_scalar gs = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_INT32, &gradient_size);
-    vx_scalar nt = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_ENUM, &norm_type);
+    vx_scalar gs = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_INT32, &gradient_size);
+    vx_scalar nt = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_ENUM, &norm_type);
     vx_reference params[] = {
         (vx_reference)input,
         (vx_reference)hyst,
@@ -553,7 +553,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCannyEdgeDetectorNode(vx_graph graph, vx_imag
         (vx_reference)output,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_CANNY_EDGE_DETECTOR,
+                                           (vx_enum)VX_KERNEL_CANNY_EDGE_DETECTOR,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&gs);
@@ -569,7 +569,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAndNode(vx_graph graph, vx_image in1, vx_imag
        (vx_reference)out,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_AND,
+                                   (vx_enum)VX_KERNEL_AND,
                                    params,
                                    dimof(params));
 }
@@ -582,7 +582,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxOrNode(vx_graph graph, vx_image in1, vx_image
        (vx_reference)out,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_OR,
+                                   (vx_enum)VX_KERNEL_OR,
                                    params,
                                    dimof(params));
 }
@@ -595,7 +595,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxXorNode(vx_graph graph, vx_image in1, vx_imag
        (vx_reference)out,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_XOR,
+                                   (vx_enum)VX_KERNEL_XOR,
                                    params,
                                    dimof(params));
 }
@@ -607,7 +607,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxNotNode(vx_graph graph, vx_image input, vx_im
        (vx_reference)output,
     };
     return tivxCreateNodeByKernelEnum(graph,
-                                   VX_KERNEL_NOT,
+                                   (vx_enum)VX_KERNEL_NOT,
                                    params,
                                    dimof(params));
 }
@@ -615,8 +615,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxNotNode(vx_graph graph, vx_image input, vx_im
 VX_API_ENTRY vx_node VX_API_CALL vxMultiplyNode(vx_graph graph, vx_image in1, vx_image in2, vx_scalar scale, vx_enum overflow_policy, vx_enum rounding_policy, vx_image out)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar spolicy = vxCreateScalar(context, VX_TYPE_ENUM, &overflow_policy);
-    vx_scalar rpolicy = vxCreateScalar(context, VX_TYPE_ENUM, &rounding_policy);
+    vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &overflow_policy);
+    vx_scalar rpolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &rounding_policy);
     vx_reference params[] = {
        (vx_reference)in1,
        (vx_reference)in2,
@@ -626,7 +626,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMultiplyNode(vx_graph graph, vx_image in1, vx
        (vx_reference)out,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_MULTIPLY,
+                                           (vx_enum)VX_KERNEL_MULTIPLY,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&spolicy);
@@ -637,7 +637,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxMultiplyNode(vx_graph graph, vx_image in1, vx
 VX_API_ENTRY vx_node VX_API_CALL vxAddNode(vx_graph graph, vx_image in1, vx_image in2, vx_enum policy, vx_image out)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar spolicy = vxCreateScalar(context, VX_TYPE_ENUM, &policy);
+    vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
        (vx_reference)in1,
        (vx_reference)in2,
@@ -645,7 +645,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAddNode(vx_graph graph, vx_image in1, vx_imag
        (vx_reference)out,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_ADD,
+                                           (vx_enum)VX_KERNEL_ADD,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&spolicy);
@@ -655,7 +655,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxAddNode(vx_graph graph, vx_image in1, vx_imag
 VX_API_ENTRY vx_node VX_API_CALL vxSubtractNode(vx_graph graph, vx_image in1, vx_image in2, vx_enum policy, vx_image out)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar spolicy = vxCreateScalar(context, VX_TYPE_ENUM, &policy);
+    vx_scalar spolicy = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
        (vx_reference)in1,
        (vx_reference)in2,
@@ -663,7 +663,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxSubtractNode(vx_graph graph, vx_image in1, vx
        (vx_reference)out,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_SUBTRACT,
+                                           (vx_enum)VX_KERNEL_SUBTRACT,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&spolicy);
@@ -673,7 +673,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxSubtractNode(vx_graph graph, vx_image in1, vx
 VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input, vx_matrix matrix, vx_enum type, vx_image output)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar stype = vxCreateScalar(context, VX_TYPE_ENUM, &type);
+    vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)matrix,
@@ -681,7 +681,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
             (vx_reference)output,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_WARP_AFFINE,
+                                           (vx_enum)VX_KERNEL_WARP_AFFINE,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&stype);
@@ -700,7 +700,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpAffineNode(vx_graph graph, vx_image input
 VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image input, vx_matrix matrix, vx_enum type, vx_image output)
 {
     vx_context context = vxGetContext((vx_reference)graph);
-    vx_scalar stype = vxCreateScalar(context, VX_TYPE_ENUM, &type);
+    vx_scalar stype = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &type);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)matrix,
@@ -708,7 +708,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxWarpPerspectiveNode(vx_graph graph, vx_image 
             (vx_reference)output,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_WARP_PERSPECTIVE,
+                                           (vx_enum)VX_KERNEL_WARP_PERSPECTIVE,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&stype);
@@ -734,8 +734,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxHarrisCornersNode(vx_graph graph,
                             vx_array corners,
                             vx_scalar num_corners)
 {
-    vx_scalar win = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_INT32, &gradient_size);
-    vx_scalar blk = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_INT32, &block_size);
+    vx_scalar win = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_INT32, &gradient_size);
+    vx_scalar blk = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_INT32, &block_size);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)strength_thresh,
@@ -747,7 +747,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxHarrisCornersNode(vx_graph graph,
             (vx_reference)num_corners,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_HARRIS_CORNERS,
+                                           (vx_enum)VX_KERNEL_HARRIS_CORNERS,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&win);
@@ -757,7 +757,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxHarrisCornersNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL vxFastCornersNode(vx_graph graph, vx_image input, vx_scalar strength_thresh, vx_bool nonmax_suppression, vx_array corners, vx_scalar num_corners)
 {
-    vx_scalar nonmax = vxCreateScalar(vxGetContext((vx_reference)graph),VX_TYPE_BOOL, &nonmax_suppression);
+    vx_scalar nonmax = vxCreateScalar(vxGetContext((vx_reference)graph),(vx_enum)VX_TYPE_BOOL, &nonmax_suppression);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)strength_thresh,
@@ -766,7 +766,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxFastCornersNode(vx_graph graph, vx_image inpu
             (vx_reference)num_corners,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_FAST_CORNERS,
+                                           (vx_enum)VX_KERNEL_FAST_CORNERS,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&nonmax);
@@ -785,8 +785,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxOpticalFlowPyrLKNode(vx_graph graph,
                                vx_scalar use_initial_estimate,
                                vx_size window_dimension)
 {
-    vx_scalar term = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_ENUM, &termination);
-    vx_scalar winsize = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_SIZE, &window_dimension);
+    vx_scalar term = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_ENUM, &termination);
+    vx_scalar winsize = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_SIZE, &window_dimension);
     vx_reference params[] = {
             (vx_reference)old_images,
             (vx_reference)new_images,
@@ -800,7 +800,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxOpticalFlowPyrLKNode(vx_graph graph,
             (vx_reference)winsize,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_OPTICAL_FLOW_PYR_LK,
+                                           (vx_enum)VX_KERNEL_OPTICAL_FLOW_PYR_LK,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&term);
@@ -814,7 +814,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
                     vx_enum policy,
                     vx_image output)
 {
-    vx_scalar spolicy = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_ENUM, &policy);
+    vx_scalar spolicy = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_ENUM, &policy);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)table,
@@ -822,7 +822,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
             (vx_reference)output,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_REMAP,
+                                           (vx_enum)VX_KERNEL_REMAP,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&spolicy);
@@ -840,14 +840,14 @@ VX_API_ENTRY vx_node VX_API_CALL vxRemapNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL vxHalfScaleGaussianNode(vx_graph graph, vx_image input, vx_image output, vx_int32 kernel_size)
 {
-    vx_scalar ksize = vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_INT32, &kernel_size);
+    vx_scalar ksize = vxCreateScalar(vxGetContext((vx_reference)graph), (vx_enum)VX_TYPE_INT32, &kernel_size);
     vx_reference params[] = {
             (vx_reference)input,
             (vx_reference)output,
             (vx_reference)ksize,
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           VX_KERNEL_HALFSCALE_GAUSSIAN,
+                                           (vx_enum)VX_KERNEL_HALFSCALE_GAUSSIAN,
                                            params,
                                            dimof(params));
     vxReleaseScalar(&ksize);

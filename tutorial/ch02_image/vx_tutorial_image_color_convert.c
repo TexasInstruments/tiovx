@@ -187,8 +187,8 @@ void vx_tutorial_image_color_convert()
     show_image_attributes(rgb_image);
     /** \endcode */
 
-    vxQueryImage(rgb_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(rgb_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(rgb_image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(rgb_image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
 
     /**
      * - Create OpenVX virtual image object.
@@ -245,7 +245,7 @@ void vx_tutorial_image_color_convert()
      *
      * \code
      */
-    node1 = vxChannelExtractNode(graph, nv12_image, VX_CHANNEL_Y, y_image);
+    node1 = vxChannelExtractNode(graph, nv12_image, (vx_enum)VX_CHANNEL_Y, y_image);
     /** \endcode */
     vxSetReferenceName((vx_reference)node1, "CHANNEL_EXTRACT");
 
@@ -418,30 +418,30 @@ void show_graph_attributes(vx_graph graph)
      *
      * \code
      */
-    vxQueryGraph(graph, VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
-    vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &num_params, sizeof(vx_uint32));
-    vxQueryGraph(graph, VX_GRAPH_STATE, &state, sizeof(vx_enum));
-    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf, sizeof(vx_perf_t));
+    vxQueryGraph(graph, (vx_enum)VX_GRAPH_NUMNODES, &num_nodes, sizeof(vx_uint32));
+    vxQueryGraph(graph, (vx_enum)VX_GRAPH_NUMPARAMETERS, &num_params, sizeof(vx_uint32));
+    vxQueryGraph(graph, (vx_enum)VX_GRAPH_STATE, &state, sizeof(vx_enum));
+    vxQueryGraph(graph, (vx_enum)VX_GRAPH_PERFORMANCE, &perf, sizeof(vx_perf_t));
     /** \endcode */
 
-    vxQueryReference((vx_reference)graph, VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
-    vxQueryReference((vx_reference)graph, VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
+    vxQueryReference((vx_reference)graph, (vx_enum)VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
+    vxQueryReference((vx_reference)graph, (vx_enum)VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
 
     switch(state)
     {
-        case VX_GRAPH_STATE_UNVERIFIED:
+        case (vx_enum)VX_GRAPH_STATE_UNVERIFIED:
             strncpy(state_name, "VX_GRAPH_STATE_UNVERIFIED", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_GRAPH_STATE_VERIFIED:
+        case (vx_enum)VX_GRAPH_STATE_VERIFIED:
             strncpy(state_name, "VX_GRAPH_STATE_VERIFIED", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_GRAPH_STATE_RUNNING:
+        case (vx_enum)VX_GRAPH_STATE_RUNNING:
             strncpy(state_name, "VX_GRAPH_STATE_RUNNING", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_GRAPH_STATE_ABANDONED:
+        case (vx_enum)VX_GRAPH_STATE_ABANDONED:
             strncpy(state_name, "VX_GRAPH_STATE_ABANDONED", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_GRAPH_STATE_COMPLETED:
+        case (vx_enum)VX_GRAPH_STATE_COMPLETED:
             strncpy(state_name, "VX_GRAPH_STATE_COMPLETED", MAX_ATTRIBUTE_NAME);
             break;
         default:
@@ -489,13 +489,13 @@ void show_node_attributes(vx_node node)
      *
      * \code
      */
-    vxQueryNode(node, VX_NODE_STATUS, &status, sizeof(vx_status));
-    vxQueryNode(node, VX_NODE_PARAMETERS, &num_params, sizeof(vx_uint32));
-    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf, sizeof(vx_perf_t));
+    vxQueryNode(node, (vx_enum)VX_NODE_STATUS, &status, sizeof(vx_status));
+    vxQueryNode(node, (vx_enum)VX_NODE_PARAMETERS, &num_params, sizeof(vx_uint32));
+    vxQueryNode(node, (vx_enum)VX_NODE_PERFORMANCE, &perf, sizeof(vx_perf_t));
     /** \endcode */
 
-    vxQueryReference((vx_reference)node, VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
-    vxQueryReference((vx_reference)node, VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
+    vxQueryReference((vx_reference)node, (vx_enum)VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
+    vxQueryReference((vx_reference)node, (vx_enum)VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
 
     switch(status)
     {

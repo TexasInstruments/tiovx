@@ -161,9 +161,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         arr_desc_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);
 
         tivxMemBufferMap(src_desc_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(arr_desc_target_ptr, arr->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
@@ -227,9 +227,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         }
 
         tivxMemBufferUnmap(src_desc_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(arr_desc_target_ptr, arr->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -282,13 +282,13 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
         sc_scr_meth = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_HARRISC_IN_SC_SCORE_METHOD_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHarrisCornersParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxHarrisCornersParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxHarrisCornersParams));
 
             prms->output_size = 2u * arr->capacity * sizeof(uint16_t);
-            prms->output = tivxMemAlloc(prms->output_size, TIVX_MEM_EXTERNAL);
+            prms->output = tivxMemAlloc(prms->output_size, (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->output)
             {
@@ -507,20 +507,20 @@ void tivxAddTargetKernelHarrisCorners()
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_EVE1) || (self_cpu == TIVX_CPU_ID_EVE2) ||
-        (self_cpu == TIVX_CPU_ID_EVE3) || (self_cpu == TIVX_CPU_ID_EVE4))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_EVE1) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE4))
     {
-        if (self_cpu == TIVX_CPU_ID_EVE1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE1)
         {
             strncpy(target_name, TIVX_TARGET_EVE1,
                 TIVX_TARGET_MAX_NAME);
         }
-        else if (self_cpu == TIVX_CPU_ID_EVE2)
+        else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2)
         {
             strncpy(target_name, TIVX_TARGET_EVE2,
                 TIVX_TARGET_MAX_NAME);
         }
-        else if (self_cpu == TIVX_CPU_ID_EVE3)
+        else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3)
         {
             strncpy(target_name, TIVX_TARGET_EVE3,
                 TIVX_TARGET_MAX_NAME);
@@ -554,11 +554,11 @@ static void tivxHarrisCFreeMem(tivxHarrisCornersParams *prms)
     {
         if (prms->output)
         {
-            tivxMemFree(prms->output, prms->output_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->output, prms->output_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->output = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxHarrisCornersParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxHarrisCornersParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 

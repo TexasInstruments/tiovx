@@ -116,7 +116,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                     break;
                 }
 
-                if (ownIsValidSpecificReference(&meta->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+                if (ownIsValidSpecificReference(&meta->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
                     vxReleaseMetaFormat(&meta);
                 }
@@ -129,7 +129,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
-    if (ownIsValidSpecificReference(&meta_base->base, VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&meta_base->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
         vxReleaseMetaFormat(&meta_base);
     }
@@ -146,7 +146,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -155,13 +155,13 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
         }
         else
         {
-            if(graph_schedule_mode==VX_GRAPH_SCHEDULE_MODE_NORMAL)
+            if(graph_schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
             {
                 graph->schedule_mode = graph_schedule_mode;
             }
             else
-            if( (   (graph_schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
-                 || (graph_schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
+            if( (   (graph_schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+                 || (graph_schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
                 )
               && (graph_parameters_list_size <= graph->num_params)
               )
@@ -382,7 +382,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 }
                 /* If the ref type is an object array that didn't match the graph parameter type, return ref[0] of obj array */
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==VX_TYPE_OBJECT_ARRAY)
+                else if(ref->type==(vx_enum)VX_TYPE_OBJECT_ARRAY)
                 {
                     vx_object_array obj_arr = (vx_object_array)ref;
 
@@ -390,7 +390,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 }
                 /* If the ref type is a pyramid that didn't match the graph parameter type, return img[0] of pyramid */
                 /* Note: this assumes it is replicated.  In the future, this assumption could be removed */
-                else if(ref->type==VX_TYPE_PYRAMID)
+                else if(ref->type==(vx_enum)VX_TYPE_PYRAMID)
                 {
                     vx_pyramid pyr = (vx_pyramid)ref;
 
@@ -540,7 +540,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
     {
         for(i=0; i<graph->pipeline_depth; i++)
         {
-            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
+            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
             if(graph->obj_desc[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR,"ownGraphAllocAndEnqueueObjDescForPipeline: Unable to alloc obj desc\n");
@@ -554,7 +554,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
             {
                 graph->obj_desc[i]->pipeline_id = i;
                 /* initial state of graph descriptor is verified since, this function is called during verify graph */
-                graph->obj_desc[i]->state = VX_GRAPH_STATE_VERIFIED;
+                graph->obj_desc[i]->state = (vx_enum)VX_GRAPH_STATE_VERIFIED;
                 graph->obj_desc[i]->complete_leaf_nodes = 0;
                 graph->obj_desc[i]->exe_time_beg_h = 0;
                 graph->obj_desc[i]->exe_time_beg_l = 0;
@@ -626,7 +626,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                 ownUpdateNodePerf(graph->nodes[i], graph_obj_desc->pipeline_id);
             }
 
-            if(graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_NORMAL)
+            if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
             {
                 uint32_t i;
 
@@ -644,9 +644,9 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                     }
                 }
             }
-            if (graph_obj_desc->state == VX_GRAPH_STATE_RUNNING)
+            if (graph_obj_desc->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
             {
-                graph_obj_desc->state = VX_GRAPH_STATE_COMPLETED;
+                graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_COMPLETED;
             }
 
             end_time = tivxPlatformGetTimeInUsecs();
@@ -750,8 +750,8 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 
             ownGraphClearState(graph, graph_obj_desc->pipeline_id);
 
-            graph_obj_desc->state = VX_GRAPH_STATE_RUNNING;
-            graph->state = VX_GRAPH_STATE_RUNNING;
+            graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
+            graph->state = (vx_enum)VX_GRAPH_STATE_RUNNING;
 
             /* a graph is about to be submitted, clear all_graph_completed_event if not already cleared */
             tivxEventClear(graph->all_graph_completed_event);
@@ -791,7 +791,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
         }
     }
 
-    if( (graph->schedule_mode!=VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
+    if( (graph->schedule_mode!=(vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
         ((vx_bool)vx_true_e == graph->is_streaming_enabled) )
     {
         /* Below logic updates the pending graph schedule
@@ -821,7 +821,7 @@ vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_param
 
     if(graph != NULL)
     {
-        if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+        if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
         {
             if(graph_parameter_index == 0)
             {
@@ -847,7 +847,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -883,7 +883,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
 
     if(graph != NULL)
     {
-        if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
+        if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
         {
             uint32_t min_count = (uint32_t)-1;
             uint32_t count, i;

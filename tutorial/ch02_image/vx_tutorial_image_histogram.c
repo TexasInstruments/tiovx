@@ -207,7 +207,7 @@ void vx_tutorial_image_histogram()
          * \code
          */
         node0 = tivxCreateNodeByKernelEnum(graph,
-                    VX_KERNEL_HISTOGRAM,
+                    (vx_enum)VX_KERNEL_HISTOGRAM,
                     refs, sizeof(refs)/sizeof(refs[0])
                     );
         /** \endcode */
@@ -422,7 +422,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
          *
          * \code
          */
-        status = vxQueryDistribution(distribution, VX_DISTRIBUTION_BINS, &num_bins, sizeof(vx_size));
+        status = vxQueryDistribution(distribution, (vx_enum)VX_DISTRIBUTION_BINS, &num_bins, sizeof(vx_size));
         /** \endcode */
 
         if(status == (vx_status)VX_SUCCESS && num_bins <=  MAX_BINS)
@@ -438,8 +438,8 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
              */
             vxCopyDistribution(distribution,
                 (void**)&histogram_data[0],
-                VX_READ_ONLY,
-                VX_MEMORY_TYPE_HOST);
+                (vx_enum)VX_READ_ONLY,
+                (vx_enum)VX_MEMORY_TYPE_HOST);
             /** \endcode */
 
             /* normalize bins */
@@ -475,7 +475,7 @@ vx_image convert_distribution_to_image(vx_distribution distribution,
                             &map_id,
                             &image_addr,
                             (void**)&data_ptr,
-                            VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
+                            (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_NOGAP_X);
                 /** \endcode */
 
 

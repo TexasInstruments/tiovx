@@ -212,18 +212,18 @@ void show_image_attributes(vx_image image)
      *
      * \code
      */
-    vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
-    vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
-    vxQueryImage(image, VX_IMAGE_PLANES, &num_planes, sizeof(vx_size));
-    vxQueryImage(image, VX_IMAGE_SIZE, &size, sizeof(vx_size));
-    vxQueryImage(image, VX_IMAGE_SPACE, &color_space, sizeof(vx_enum));
-    vxQueryImage(image, VX_IMAGE_RANGE, &channel_range, sizeof(vx_enum));
-    vxQueryImage(image, VX_IMAGE_MEMORY_TYPE, &memory_type, sizeof(vx_enum));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_PLANES, &num_planes, sizeof(vx_size));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_SIZE, &size, sizeof(vx_size));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_SPACE, &color_space, sizeof(vx_enum));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_RANGE, &channel_range, sizeof(vx_enum));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_MEMORY_TYPE, &memory_type, sizeof(vx_enum));
     /** \endcode */
 
-    vxQueryReference((vx_reference)image, VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
-    vxQueryReference((vx_reference)image, VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
+    vxQueryReference((vx_reference)image, (vx_enum)VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
+    vxQueryReference((vx_reference)image, (vx_enum)VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));
 
     switch(df)
     {
@@ -276,16 +276,16 @@ void show_image_attributes(vx_image image)
 
     switch(color_space)
     {
-        case VX_COLOR_SPACE_NONE:
+        case (vx_enum)VX_COLOR_SPACE_NONE:
             strncpy(color_space_name, "VX_COLOR_SPACE_NONE", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_COLOR_SPACE_BT601_525:
+        case (vx_enum)VX_COLOR_SPACE_BT601_525:
             strncpy(color_space_name, "VX_COLOR_SPACE_BT601_525", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_COLOR_SPACE_BT601_625:
+        case (vx_enum)VX_COLOR_SPACE_BT601_625:
             strncpy(color_space_name, "VX_COLOR_SPACE_BT601_625", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_COLOR_SPACE_BT709:
+        case (vx_enum)VX_COLOR_SPACE_BT709:
             strncpy(color_space_name, "VX_COLOR_SPACE_BT709", MAX_ATTRIBUTE_NAME);
             break;
         default:
@@ -295,10 +295,10 @@ void show_image_attributes(vx_image image)
 
     switch(channel_range)
     {
-        case VX_CHANNEL_RANGE_FULL:
+        case (vx_enum)VX_CHANNEL_RANGE_FULL:
             strncpy(channel_range_name, "VX_CHANNEL_RANGE_FULL", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_CHANNEL_RANGE_RESTRICTED:
+        case (vx_enum)VX_CHANNEL_RANGE_RESTRICTED:
             strncpy(channel_range_name, "VX_CHANNEL_RANGE_RESTRICTED", MAX_ATTRIBUTE_NAME);
             break;
         default:
@@ -308,10 +308,10 @@ void show_image_attributes(vx_image image)
 
     switch(memory_type)
     {
-        case VX_MEMORY_TYPE_NONE:
+        case (vx_enum)(vx_enum)VX_MEMORY_TYPE_NONE:
             strncpy(memory_type_name, "VX_MEMORY_TYPE_NONE", MAX_ATTRIBUTE_NAME);
             break;
-        case VX_MEMORY_TYPE_HOST:
+        case (vx_enum)VX_MEMORY_TYPE_HOST:
             strncpy(memory_type_name, "VX_MEMORY_TYPE_HOST", MAX_ATTRIBUTE_NAME);
             break;
         default:

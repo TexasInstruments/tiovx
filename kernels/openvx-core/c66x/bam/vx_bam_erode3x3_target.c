@@ -186,7 +186,7 @@ static vx_status VX_CALLBACK tivxKernelErode3X3Create(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_ERODE3X3_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxErodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -229,7 +229,7 @@ static vx_status VX_CALLBACK tivxKernelErode3X3Create(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxErodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -260,7 +260,7 @@ static vx_status VX_CALLBACK tivxKernelErode3X3Delete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxErodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -274,9 +274,9 @@ void tivxAddTargetKernelBamErode3X3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -288,7 +288,7 @@ void tivxAddTargetKernelBamErode3X3(void)
         }
 
         vx_erode_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_ERODE_3x3,
+            (vx_enum)VX_KERNEL_ERODE_3x3,
             target_name,
             tivxKernelErode3X3Process,
             tivxKernelErode3X3Create,
@@ -329,7 +329,7 @@ static vx_status VX_CALLBACK tivxKernelErodeCreateInBamGraph(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        prms = tivxMemAlloc(sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxErodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -360,7 +360,7 @@ static vx_status VX_CALLBACK tivxKernelErodeCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxErodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

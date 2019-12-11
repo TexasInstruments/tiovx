@@ -205,7 +205,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
 
         status = tivxEventQueueAddEvent(
                 &context->event_queue,
-                VX_EVENT_USER,
+                (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
                 (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
     }
@@ -263,31 +263,31 @@ vx_status vxWaitEventQueue(
             event->timestamp = elem->timestamp;
             event->app_value = elem->app_value;
 
-            if(elem->event_id==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
+            if(elem->event_id==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
             {
                 event->event_info.graph_parameter_consumed.graph = (vx_graph)elem->param1;
                 event->event_info.graph_parameter_consumed.graph_parameter_index = (uint32_t)elem->param2;
             }
             else
-            if(elem->event_id==VX_EVENT_GRAPH_COMPLETED)
+            if(elem->event_id==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
             {
                 event->event_info.graph_completed.graph = (vx_graph)elem->param1;
             }
             else
-            if(elem->event_id==VX_EVENT_NODE_COMPLETED)
+            if(elem->event_id==(vx_enum)VX_EVENT_NODE_COMPLETED)
             {
                 event->event_info.node_completed.graph = (vx_graph)elem->param1;
                 event->event_info.node_completed.node = (vx_node)elem->param2;
             }
             else
-            if(elem->event_id==VX_EVENT_NODE_ERROR)
+            if(elem->event_id==(vx_enum)VX_EVENT_NODE_ERROR)
             {
                 event->event_info.node_error.graph = (vx_graph)elem->param1;
                 event->event_info.node_error.node = (vx_node)elem->param2;
                 event->event_info.node_error.status = (vx_status)elem->param3;
             }
             else
-            if(elem->event_id==VX_EVENT_USER)
+            if(elem->event_id==(vx_enum)VX_EVENT_USER)
             {
                 event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
@@ -322,19 +322,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
-    if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
-        if( (type==VX_EVENT_NODE_COMPLETED) ||
-            (type==VX_EVENT_NODE_ERROR) )
+        if( (type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
+            (type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
             vx_node node = (vx_node)ref;
 
-            if (TIVX_EVENT_GRAPH_QUEUE == queue_type)
+            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
                 status = (vx_status)VX_SUCCESS;
             }
-            else if (TIVX_EVENT_CONTEXT_QUEUE == queue_type)
+            else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
                 status = (vx_status)VX_SUCCESS;
@@ -352,14 +352,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
         }
     }
     else
-    if (ownIsValidSpecificReference(ref, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if(type==VX_EVENT_GRAPH_COMPLETED)
+        if(type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
             status = ownGraphRegisterCompletionEvent((vx_graph)ref, app_value);
         }
         else
-        if(type==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
+        if(type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
             status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
         }

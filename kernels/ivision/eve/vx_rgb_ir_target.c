@@ -158,11 +158,11 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
     dstIR_desc_target_ptr = tivxMemShared2TargetPtr(&dstIR->mem_ptr[0]);
 
     tivxMemBufferMap(src_desc_target_ptr, src->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     tivxMemBufferMap(dstBayer_desc_target_ptr, dstBayer->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     tivxMemBufferMap(dstIR_desc_target_ptr, dstBayer->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
     prms->inBufDesc.numPlanes= 1;
     prms->inBufDesc.bufPlanes[0u].buf= src_desc_target_ptr;
@@ -204,11 +204,11 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
         (IVISION_OutArgs *)&prms->outArgs);
 
     tivxMemBufferUnmap(src_desc_target_ptr, src->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     tivxMemBufferUnmap(dstBayer_desc_target_ptr, dstBayer->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     tivxMemBufferUnmap(dstIR_desc_target_ptr, dstIR->mem_size[0],
-        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
   }
 
   return (status);
@@ -247,7 +247,7 @@ static vx_status VX_CALLBACK tivxKernelRgbIrCreate(
     sc_sensorPhase = (tivx_obj_desc_scalar_t *)obj_desc[
                                                         TIVX_KERNEL_RGB_IR_SENSOR_PHASE_IDX];
 
-    prms = tivxMemAlloc(sizeof(tivxRgbIrParams), TIVX_MEM_EXTERNAL);
+    prms = tivxMemAlloc(sizeof(tivxRgbIrParams), (vx_enum)TIVX_MEM_EXTERNAL);
     if (NULL != prms)
     {
       memset(prms, 0, sizeof(tivxRgbIrParams));
@@ -369,20 +369,20 @@ void tivxAddTargetKernelRgbIr()
 
   self_cpu = tivxGetSelfCpuId();
 
-  if ((self_cpu == TIVX_CPU_ID_EVE1) || (self_cpu == TIVX_CPU_ID_EVE2) ||
-      (self_cpu == TIVX_CPU_ID_EVE3) || (self_cpu == TIVX_CPU_ID_EVE4))
+  if ((self_cpu == (vx_enum)TIVX_CPU_ID_EVE1) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2) ||
+      (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3) || (self_cpu == (vx_enum)TIVX_CPU_ID_EVE4))
   {
-    if (self_cpu == TIVX_CPU_ID_EVE1)
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE1)
     {
       strncpy(target_name, TIVX_TARGET_EVE1,
           TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE2)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE2)
     {
       strncpy(target_name, TIVX_TARGET_EVE2,
           TIVX_TARGET_MAX_NAME);
     }
-    else if (self_cpu == TIVX_CPU_ID_EVE3)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_EVE3)
     {
       strncpy(target_name, TIVX_TARGET_EVE3,
           TIVX_TARGET_MAX_NAME);
@@ -414,7 +414,7 @@ static void tivxRgbIrFreeMem(tivxRgbIrParams *prms)
 {
   if (NULL != prms)
   {
-    tivxMemFree(prms, sizeof(tivxRgbIrParams), TIVX_MEM_EXTERNAL);
+    tivxMemFree(prms, sizeof(tivxRgbIrParams), (vx_enum)TIVX_MEM_EXTERNAL);
   }
 }
 

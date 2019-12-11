@@ -194,9 +194,9 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_SATURATE;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_SATURATE;
 
-        usecase->scalar_4 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_4 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_4 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -206,7 +206,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     {
         vx_int32 value = 0;
 
-        usecase->shift = vxCreateScalar(context, VX_TYPE_INT32, &value);
+        usecase->shift = vxCreateScalar(context, (vx_enum)VX_TYPE_INT32, &value);
         if (usecase->shift == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -223,9 +223,9 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_SATURATE;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_SATURATE;
 
-        usecase->scalar_6 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_6 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_6 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -242,9 +242,9 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_data_create(vx_tutorial_g
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_enum value = VX_CONVERT_POLICY_SATURATE;
+        vx_enum value = (vx_enum)VX_CONVERT_POLICY_SATURATE;
 
-        usecase->scalar_8 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_8 = vxCreateScalar(context, (vx_enum)VX_TYPE_ENUM, &value);
         if (usecase->scalar_8 == NULL)
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -324,7 +324,7 @@ static vx_node usecase_node_create_node_1 (
           (vx_reference)image_1 ,
           (vx_reference)image_2
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_SOBEL_3x3, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_SOBEL_3x3, params, 3);
 
     return node;
 }
@@ -343,7 +343,7 @@ static vx_node usecase_node_create_node_2 (
           (vx_reference)image_1 ,
           (vx_reference)image_2
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_MAGNITUDE, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_MAGNITUDE, params, 3);
 
     return node;
 }
@@ -362,7 +362,7 @@ static vx_node usecase_node_create_node_3 (
           (vx_reference)image_1 ,
           (vx_reference)image_2
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_PHASE, params, 3);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_PHASE, params, 3);
 
     return node;
 }
@@ -383,7 +383,7 @@ static vx_node usecase_node_create_node_5 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_CONVERTDEPTH, params, 4);
 
     return node;
 }
@@ -404,7 +404,7 @@ static vx_node usecase_node_create_node_7 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_CONVERTDEPTH, params, 4);
 
     return node;
 }
@@ -425,7 +425,7 @@ static vx_node usecase_node_create_node_9 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByKernelEnum(graph, (vx_enum)VX_KERNEL_CONVERTDEPTH, params, 4);
 
     return node;
 }
@@ -454,7 +454,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->grad_y
           );
         vxSetReferenceName( (vx_reference)usecase->node_1, "node_1");
-        vxSetNodeTarget(usecase->node_1, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_1, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -465,7 +465,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->magnitude
           );
         vxSetReferenceName( (vx_reference)usecase->node_2, "node_2");
-        vxSetNodeTarget(usecase->node_2, VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        vxSetNodeTarget(usecase->node_2, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -476,7 +476,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->phase
           );
         vxSetReferenceName( (vx_reference)usecase->node_3, "node_3");
-        vxSetNodeTarget(usecase->node_3, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_3, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -488,7 +488,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->shift
           );
         vxSetReferenceName( (vx_reference)usecase->node_5, "node_5");
-        vxSetNodeTarget(usecase->node_5, VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        vxSetNodeTarget(usecase->node_5, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -500,7 +500,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->shift
           );
         vxSetReferenceName( (vx_reference)usecase->node_7, "node_7");
-        vxSetNodeTarget(usecase->node_7, VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        vxSetNodeTarget(usecase->node_7, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -512,7 +512,7 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->shift
           );
         vxSetReferenceName( (vx_reference)usecase->node_9, "node_9");
-        vxSetNodeTarget(usecase->node_9, VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        vxSetNodeTarget(usecase->node_9, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
     }
 
     usecase->graph_0 = graph;

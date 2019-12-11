@@ -44,15 +44,15 @@ vx_convolution VX_API_CALL vxCreateConvolution(
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((isodd(columns) == 1) && (columns >= 3) &&
-            (columns < VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
+            (columns < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
             (isodd(rows) == 1) && (rows >= 3) &&
-            (rows < VX_CONTEXT_CONVOLUTION_MAX_DIMENSION))
+            (rows < (vx_enum)VX_CONTEXT_CONVOLUTION_MAX_DIMENSION))
         {
             cnvl = (vx_convolution)ownCreateReference(context,
-                VX_TYPE_CONVOLUTION, VX_EXTERNAL, &context->base);
+                (vx_enum)VX_TYPE_CONVOLUTION, (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)cnvl) == (vx_status)VX_SUCCESS) &&
-                (cnvl->base.type == VX_TYPE_CONVOLUTION))
+                (cnvl->base.type == (vx_enum)VX_TYPE_CONVOLUTION))
             {
                 /* assign refernce type specific callback's */
                 cnvl->base.destructor_callback = &ownDestructConvolution;
@@ -61,7 +61,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                     (tivx_reference_release_callback_f)&vxReleaseConvolution;
 
                 obj_desc = (tivx_obj_desc_convolution_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_CONVOLUTION, (vx_reference)cnvl);
+                    (vx_enum)TIVX_OBJ_DESC_CONVOLUTION, (vx_reference)cnvl);
                 if(obj_desc==NULL)
                 {
                     vxReleaseConvolution(&cnvl);
@@ -79,7 +79,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                     obj_desc->mem_size = columns*rows*sizeof(vx_int16);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     cnvl->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -92,7 +92,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseConvolution(vx_convolution *cnvl)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)cnvl, VX_TYPE_CONVOLUTION, VX_EXTERNAL, NULL));
+        (vx_reference*)cnvl, (vx_enum)VX_TYPE_CONVOLUTION, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_status VX_API_CALL vxQueryConvolution(
@@ -101,7 +101,7 @@ vx_status VX_API_CALL vxQueryConvolution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -127,7 +127,7 @@ vx_status VX_API_CALL vxQueryConvolution(
     {
         switch (attribute)
         {
-            case VX_CONVOLUTION_SCALE:
+            case (vx_enum)VX_CONVOLUTION_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->scale;
@@ -138,7 +138,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONVOLUTION_COLUMNS:
+            case (vx_enum)VX_CONVOLUTION_COLUMNS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->columns;
@@ -149,7 +149,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONVOLUTION_ROWS:
+            case (vx_enum)VX_CONVOLUTION_ROWS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->rows;
@@ -160,7 +160,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_CONVOLUTION_SIZE:
+            case (vx_enum)VX_CONVOLUTION_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr =
@@ -188,7 +188,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -208,7 +208,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     {
         switch (attribute)
         {
-            case VX_CONVOLUTION_SCALE:
+            case (vx_enum)VX_CONVOLUTION_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     vx_uint32 scale = *(vx_uint32 *)ptr;
@@ -244,7 +244,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     vx_uint32 size;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    if (ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -256,14 +256,14 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     }
     else
     {
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: user_mem_type is not VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: Memory still not allocated\n");
@@ -282,15 +282,15 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
         size = obj_desc->mem_size;
 
         /* Copy from cnvl object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to cnvl object */
         {
@@ -299,12 +299,12 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
             if ((vx_status)VX_SUCCESS == status)
             {
                 tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                 memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             }
             else
             {
@@ -322,7 +322,7 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_CONVOLUTION)
+    if(ref->type == (vx_enum)VX_TYPE_CONVOLUTION)
     {
         obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
 
@@ -333,7 +333,7 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -346,7 +346,7 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
                     obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
                             obj_desc->mem_ptr.host_ptr,
-                            TIVX_MEM_EXTERNAL);
+                            (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -369,7 +369,7 @@ static vx_status ownDestructConvolution(vx_reference ref)
 {
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_CONVOLUTION)
+    if(ref->type == (vx_enum)VX_TYPE_CONVOLUTION)
     {
         obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
 

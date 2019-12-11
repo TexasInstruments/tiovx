@@ -117,12 +117,12 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivxInitBufParams(src, &vxlib_src[0]);
     tivxInitBufParams(dst, &vxlib_dst);
 
-    if (VX_CHANNEL_Y == ch->data.enm)
+    if ((vx_enum)VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
         buf_params[0] = &vxlib_src[0];
     }
-    else if (VX_CHANNEL_U == ch->data.enm)
+    else if ((vx_enum)VX_CHANNEL_U == ch->data.enm)
     {
         plane_idx = 1;
         buf_params[0] = &vxlib_src[1];
@@ -169,7 +169,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
     tivxInitBufParams(src, &vxlib_src[0]);
     tivxInitBufParams(dst, &vxlib_dst);
 
-    if (VX_CHANNEL_Y == ch->data.enm)
+    if ((vx_enum)VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
         buf_params[0] = &vxlib_src[0];
@@ -182,10 +182,10 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_Y:
+        case (vx_enum)VX_CHANNEL_Y:
             channel_offset = 0;
             break;
-        case VX_CHANNEL_U:
+        case (vx_enum)VX_CHANNEL_U:
             if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 0;
@@ -195,7 +195,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
                 channel_offset = 1;
             }
             break;
-        case VX_CHANNEL_V:
+        case (vx_enum)VX_CHANNEL_V:
             if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 1;
@@ -221,7 +221,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
          * is optionally disabled, put NULL */
         buf_params[1] = &vxlib_dst;
 
-        if(ch->data.enm == VX_CHANNEL_Y)
+        if(ch->data.enm == (vx_enum)VX_CHANNEL_Y)
         {
             BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
                 &kernel_details.kernel_info);
@@ -277,7 +277,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_Y:
+        case (vx_enum)VX_CHANNEL_Y:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
@@ -287,7 +287,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
                 channel_offset = 1;
             }
             break;
-        case VX_CHANNEL_U:
+        case (vx_enum)VX_CHANNEL_U:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
@@ -297,7 +297,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
                 channel_offset = 0;
             }
             break;
-        case VX_CHANNEL_V:
+        case (vx_enum)VX_CHANNEL_V:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
@@ -324,7 +324,7 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
         buf_params[0] = &vxlib_src;
         buf_params[1] = &vxlib_dst;
 
-        if(ch->data.enm == VX_CHANNEL_Y)
+        if(ch->data.enm == (vx_enum)VX_CHANNEL_Y)
         {
             BAM_VXLIB_channelExtract_1of2_i8u_o8u_params params;
 
@@ -382,20 +382,20 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_0:
-        case VX_CHANNEL_R:
+        case (vx_enum)VX_CHANNEL_0:
+        case (vx_enum)VX_CHANNEL_R:
             channel_offset = 0;
             break;
-        case VX_CHANNEL_1:
-        case VX_CHANNEL_G:
+        case (vx_enum)VX_CHANNEL_1:
+        case (vx_enum)VX_CHANNEL_G:
             channel_offset = 1;
             break;
-        case VX_CHANNEL_2:
-        case VX_CHANNEL_B:
+        case (vx_enum)VX_CHANNEL_2:
+        case (vx_enum)VX_CHANNEL_B:
             channel_offset = 2;
             break;
-        case VX_CHANNEL_3:
-        case VX_CHANNEL_A:
+        case (vx_enum)VX_CHANNEL_3:
+        case (vx_enum)VX_CHANNEL_A:
             if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
@@ -477,11 +477,11 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
 
-    if (VX_CHANNEL_Y == ch->data.enm)
+    if ((vx_enum)VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
     }
-    else if (VX_CHANNEL_U == ch->data.enm)
+    else if ((vx_enum)VX_CHANNEL_U == ch->data.enm)
     {
         plane_idx = 1;
     }
@@ -503,7 +503,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
           if you select plane_idx 1 or 2, the input and output images needs to be scaled*/
         if (src->format == (vx_df_image)VX_DF_IMAGE_IYUV)
         {
-            if (VX_CHANNEL_U == ch->data.enm)
+            if ((vx_enum)VX_CHANNEL_U == ch->data.enm)
             {
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                     horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
@@ -516,7 +516,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
                     vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
                                           + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
             }
-            else if (VX_CHANNEL_V == ch->data.enm)
+            else if ((vx_enum)VX_CHANNEL_V == ch->data.enm)
             {
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                     horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
@@ -547,7 +547,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
 
-    if (VX_CHANNEL_Y == ch->data.enm)
+    if ((vx_enum)VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
     }
@@ -558,10 +558,10 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_Y:
+        case (vx_enum)VX_CHANNEL_Y:
             channel_offset = 0;
             break;
-        case VX_CHANNEL_U:
+        case (vx_enum)VX_CHANNEL_U:
             if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 0;
@@ -571,7 +571,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
                 channel_offset = 1;
             }
             break;
-        case VX_CHANNEL_V:
+        case (vx_enum)VX_CHANNEL_V:
             if(src->format == (vx_df_image)VX_DF_IMAGE_NV12)
             {
                 channel_offset = 1;
@@ -590,7 +590,7 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if(ch->data.enm == VX_CHANNEL_Y)
+        if(ch->data.enm == (vx_enum)VX_CHANNEL_Y)
         {
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
@@ -650,7 +650,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_Y:
+        case (vx_enum)VX_CHANNEL_Y:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 0;
@@ -660,7 +660,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
                 channel_offset = 1;
             }
             break;
-        case VX_CHANNEL_U:
+        case (vx_enum)VX_CHANNEL_U:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 1;
@@ -670,7 +670,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
                 channel_offset = 0;
             }
             break;
-        case VX_CHANNEL_V:
+        case (vx_enum)VX_CHANNEL_V:
             if(src->format == (vx_df_image)VX_DF_IMAGE_YUYV)
             {
                 channel_offset = 3;
@@ -689,7 +689,7 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if(ch->data.enm == VX_CHANNEL_Y)
+        if(ch->data.enm == (vx_enum)VX_CHANNEL_Y)
         {
             BAM_VXLIB_channelExtract_1of2_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelExtract_1of2_i8u_o8u_params*)scratch;
 
@@ -758,20 +758,20 @@ static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
 
     switch(ch->data.enm)
     {
-        case VX_CHANNEL_0:
-        case VX_CHANNEL_R:
+        case (vx_enum)VX_CHANNEL_0:
+        case (vx_enum)VX_CHANNEL_R:
             channel_offset = 0;
             break;
-        case VX_CHANNEL_1:
-        case VX_CHANNEL_G:
+        case (vx_enum)VX_CHANNEL_1:
+        case (vx_enum)VX_CHANNEL_G:
             channel_offset = 1;
             break;
-        case VX_CHANNEL_2:
-        case VX_CHANNEL_B:
+        case (vx_enum)VX_CHANNEL_2:
+        case (vx_enum)VX_CHANNEL_B:
             channel_offset = 2;
             break;
-        case VX_CHANNEL_3:
-        case VX_CHANNEL_A:
+        case (vx_enum)VX_CHANNEL_3:
+        case (vx_enum)VX_CHANNEL_A:
             if(src->format == (vx_df_image)VX_DF_IMAGE_RGBX)
             {
                 channel_offset = 3;
@@ -938,7 +938,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
             TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxBamChannelExtractParams),
-            TIVX_MEM_EXTERNAL);
+            (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -987,7 +987,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
             if (NULL != prms)
             {
                 tivxMemFree(prms, sizeof(tivxBamChannelExtractParams),
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -1020,7 +1020,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
                 tivxBamDestroyHandle(prms->graph_handle);
             }
             tivxMemFree(prms, sizeof(tivxBamChannelExtractParams),
-                TIVX_MEM_EXTERNAL);
+                (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -1034,9 +1034,9 @@ void tivxAddTargetKernelBamChannelExtract(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -1048,7 +1048,7 @@ void tivxAddTargetKernelBamChannelExtract(void)
         }
 
         vx_channel_extract_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_CHANNEL_EXTRACT,
+            (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
             target_name,
             tivxKernelBamChannelExtractProcess,
             tivxKernelBamChannelExtractCreate,
@@ -1099,7 +1099,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        prms = tivxMemAlloc(sizeof(tivxBamChannelExtractParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxBamChannelExtractParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -1149,7 +1149,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxBamChannelExtractParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxBamChannelExtractParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

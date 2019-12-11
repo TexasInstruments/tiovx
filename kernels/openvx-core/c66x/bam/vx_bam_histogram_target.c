@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferMap(dst_target_ptr, dst->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
@@ -164,7 +164,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         status  = tivxBamProcessGraph(prms->graph_handle);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -195,7 +195,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
         dst = (tivx_obj_desc_distribution_t *)obj_desc[
             TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxHistogramParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -238,7 +238,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxHistogramParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -269,7 +269,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxHistogramParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -283,9 +283,9 @@ void tivxAddTargetKernelBamHistogram(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -297,7 +297,7 @@ void tivxAddTargetKernelBamHistogram(void)
         }
 
         vx_histogram_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_HISTOGRAM,
+            (vx_enum)VX_KERNEL_HISTOGRAM,
             target_name,
             tivxKernelHistogramProcess,
             tivxKernelHistogramCreate,
@@ -342,7 +342,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         dist = (tivx_obj_desc_distribution_t *)obj_desc[
             TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxHistogramParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         BAM_VXLIB_histogram_i8u_o32u_params *kernel_params = (BAM_VXLIB_histogram_i8u_o32u_params*)scratch;
 
@@ -385,7 +385,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxHistogramParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -449,7 +449,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramPreprocessInBamGraph(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferMap(dst_target_ptr, dst->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         status = tivxBamControlNode(*g_handle, prms->bam_node_num,
                            VXLIB_HISTOGRAM_I8U_O32U_CMD_SET_DIST_PTR,
@@ -480,7 +480,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramPostprocessInBamGraph(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;

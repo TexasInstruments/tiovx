@@ -98,11 +98,11 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         img = (vx_image)parameters[TIVX_KERNEL_HARRISC_IN_IMG_IDX];
 
         /* Get the image width/heigh and format */
-        status = vxQueryImage(img, VX_IMAGE_FORMAT, &fmt,
+        status = vxQueryImage(img, (vx_enum)VX_IMAGE_FORMAT, &fmt,
             sizeof(fmt));
 
-        status |= vxQueryImage(img, VX_IMAGE_WIDTH, &w, sizeof(w));
-        status |= vxQueryImage(img, VX_IMAGE_HEIGHT, &h, sizeof(h));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_WIDTH, &w, sizeof(w));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_HEIGHT, &h, sizeof(h));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -118,18 +118,18 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_HARRISC_IN_SC_WIN_SIZE_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT8)
+            if (stype != (vx_enum)VX_TYPE_UINT8)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -148,18 +148,18 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         scalar = (vx_scalar)parameters[
             TIVX_KERNEL_HARRISC_IN_SC_SCORE_METHOD_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT8)
+            if (stype != (vx_enum)VX_TYPE_UINT8)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -177,18 +177,18 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         scalar = (vx_scalar)parameters[
             TIVX_KERNEL_HARRISC_IN_SC_SUPPR_METHOD_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT8)
+            if (stype != (vx_enum)VX_TYPE_UINT8)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -206,18 +206,18 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_SIZE)
+            if (stype != (vx_enum)VX_TYPE_SIZE)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &arr_capacity,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if ((status == (vx_status)VX_SUCCESS) &&
                     ((arr_capacity > 1023) || (arr_capacity == 0)))
@@ -234,18 +234,18 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     {
         arr = (vx_array)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX];
 
-        status = vxQueryArray(arr, VX_ARRAY_ITEMTYPE, &arr_type,
+        status = vxQueryArray(arr, (vx_enum)VX_ARRAY_ITEMTYPE, &arr_type,
             sizeof(arr_type));
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (VX_TYPE_KEYPOINT != arr_type)
+            if ((vx_enum)VX_TYPE_KEYPOINT != arr_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
-        status = vxQueryArray(arr, VX_ARRAY_CAPACITY, &arr_capacity,
+        status = vxQueryArray(arr, (vx_enum)VX_ARRAY_CAPACITY, &arr_capacity,
             sizeof(arr_capacity));
 
         if ((vx_status)VX_SUCCESS == status)
@@ -259,13 +259,13 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        arr_type = VX_TYPE_KEYPOINT;
+        arr_type = (vx_enum)VX_TYPE_KEYPOINT;
 
         if (NULL != metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], VX_ARRAY_ITEMTYPE, &arr_type,
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &arr_type,
                 sizeof(arr_type));
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], VX_ARRAY_CAPACITY,
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRISC_OUT_ARR_IDX], (vx_enum)VX_ARRAY_CAPACITY,
                 &arr_capacity, sizeof(arr_capacity));
         }
     }
@@ -298,9 +298,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_IMAGE,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -308,9 +308,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -318,9 +318,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -328,9 +328,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -338,9 +338,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -348,9 +348,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -358,9 +358,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -368,9 +368,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_OUTPUT,
-                VX_TYPE_ARRAY,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_OUTPUT,
+                (vx_enum)VX_TYPE_ARRAY,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -378,9 +378,9 @@ vx_status tivxAddIVisionKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_OUTPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_OPTIONAL
+                (vx_enum)VX_OUTPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_OPTIONAL
                 );
             index++;
         }

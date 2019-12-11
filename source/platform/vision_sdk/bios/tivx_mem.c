@@ -56,16 +56,16 @@ vx_status tivxMemBufferAlloc(
     {
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 /* Since there is no L3 memory, so using OCMC memory */
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
@@ -105,11 +105,11 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
     switch (mem_heap_region)
     {
-    case TIVX_MEM_EXTERNAL:
-    case TIVX_MEM_EXTERNAL_SCRATCH:
+    case (vx_enum)TIVX_MEM_EXTERNAL:
+    case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
         heap_id = UTILS_HEAPID_DDR_CACHED_SR;
         break;
-    case TIVX_MEM_INTERNAL_L3:
+    case (vx_enum)TIVX_MEM_INTERNAL_L3:
         /* In case of EVE, L3 memory correspond to one of the OCMC memory.
          * We use hardcoded addresses because on EVE, only TI-DL use case needs allocation
          * in OCMC and the TI_DL implementation assumes that the entire OCMC memory is available for its consumption.
@@ -118,27 +118,27 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
          */
         cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
 
-        if (cpuId== TIVX_CPU_ID_EVE1)
+        if (cpuId== (vx_enum)TIVX_CPU_ID_EVE1)
         {
             ptr = (void *)OCMC_1_BASE_ADDRESS;
             goto exit; /* Jump to exit-point because we don't want to call Utils_memAlloc */
         }
-        else if (cpuId== TIVX_CPU_ID_EVE2)
+        else if (cpuId== (vx_enum)TIVX_CPU_ID_EVE2)
         {
             ptr = (void *)OCMC_2_BASE_ADDRESS;
             goto exit;
         }
-        else if (cpuId== TIVX_CPU_ID_EVE3)
+        else if (cpuId== (vx_enum)TIVX_CPU_ID_EVE3)
         {
             ptr = (void *)OCMC_3_BASE_ADDRESS;
             goto exit;
         }
-        else if (cpuId== TIVX_CPU_ID_EVE4)
+        else if (cpuId== (vx_enum)TIVX_CPU_ID_EVE4)
         {
             ptr = (void *)(OCMC_3_BASE_ADDRESS + (OCMC_3_SIZE/2));
             goto exit;
         }
-        else if ((cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+        else if ((cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || (cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
         {
             heap_id = UTILS_HEAPID_DDR_CACHED_SR;
         }
@@ -148,8 +148,8 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
             heap_id = UTILS_HEAPID_OCMC_SR;
         }
         break;
-    case TIVX_MEM_INTERNAL_L1:
-    case TIVX_MEM_INTERNAL_L2:
+    case (vx_enum)TIVX_MEM_INTERNAL_L1:
+    case (vx_enum)TIVX_MEM_INTERNAL_L2:
         heap_id = UTILS_HEAPID_L2_LOCAL;
         break;
     default:
@@ -177,20 +177,20 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     {
         switch (mem_heap_region)
         {
-        case TIVX_MEM_EXTERNAL:
-        case TIVX_MEM_EXTERNAL_SCRATCH:
+        case (vx_enum)TIVX_MEM_EXTERNAL:
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = UTILS_HEAPID_DDR_CACHED_SR;
             break;
-        case TIVX_MEM_INTERNAL_L3:
+        case (vx_enum)TIVX_MEM_INTERNAL_L3:
             /* In case of EVE, L3 memory correspond to one of the OCMC memory.
              * We had used hardcoded addresses for the allocation and thus no call to Utils_memFree() must be made
              * */
             cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
-            if ((cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4))
+            if ((cpuId== (vx_enum)TIVX_CPU_ID_EVE1) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE2) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE3) || (cpuId== (vx_enum)TIVX_CPU_ID_EVE4))
             {
                 goto exit;
             }
-            else if ((cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+            else if ((cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || (cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
             {
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
             }
@@ -199,8 +199,8 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
                 heap_id = UTILS_HEAPID_OCMC_SR;
             }
             break;
-        case TIVX_MEM_INTERNAL_L1:
-        case TIVX_MEM_INTERNAL_L2:
+        case (vx_enum)TIVX_MEM_INTERNAL_L1:
+        case (vx_enum)TIVX_MEM_INTERNAL_L2:
             heap_id = UTILS_HEAPID_L2_LOCAL;
             break;
         default:
@@ -240,15 +240,15 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         switch (mem_ptr->mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
@@ -296,15 +296,15 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L3:
+            case (vx_enum)TIVX_MEM_INTERNAL_L3:
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
-            case TIVX_MEM_INTERNAL_L1:
-            case TIVX_MEM_INTERNAL_L2:
+            case (vx_enum)TIVX_MEM_INTERNAL_L1:
+            case (vx_enum)TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
@@ -336,7 +336,7 @@ void tivxMemBufferMap(
      * to be safe, we still perform invalidate even in WRITE only mode. */
     if ((NULL != host_ptr) && (0U != size))
     {
-        if (TIVX_MEMORY_TYPE_DMA != mem_type)
+        if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
             BspOsal_cacheInv(
                 host_ptr,
@@ -356,8 +356,8 @@ void tivxMemBufferUnmap(
 {
     if ((NULL != host_ptr) && (0U != size))
     {
-        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
-            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+        if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
             BspOsal_cacheWb(
                 host_ptr,
@@ -398,7 +398,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
+    if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
     {
         /* Return success since there is not scratch mem region on PC */
         status = (vx_status)VX_SUCCESS;

@@ -185,9 +185,9 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
         conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxBamConvolveParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxBamConvolveParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -257,7 +257,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxBamConvolveParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxBamConvolveParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -288,7 +288,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxBamConvolveParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxBamConvolveParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -302,9 +302,9 @@ void tivxAddTargetKernelBamConvolve(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -316,7 +316,7 @@ void tivxAddTargetKernelBamConvolve(void)
         }
 
         vx_convolve_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_CUSTOM_CONVOLUTION,
+            (vx_enum)VX_KERNEL_CUSTOM_CONVOLUTION,
             target_name,
             tivxKernelConvolveProcess,
             tivxKernelConvolveCreate,
@@ -370,9 +370,9 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
         conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        prms = tivxMemAlloc(sizeof(tivxBamConvolveParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxBamConvolveParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -445,7 +445,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxBamConvolveParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxBamConvolveParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

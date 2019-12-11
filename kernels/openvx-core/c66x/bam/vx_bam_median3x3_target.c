@@ -191,7 +191,7 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_MEDIAN3X3_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxMedianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -233,7 +233,7 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxMedianParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -264,7 +264,7 @@ static vx_status VX_CALLBACK tivxKernelMedian3X3Delete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxMedianParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -278,9 +278,9 @@ void tivxAddTargetKernelBamMedian3X3(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -292,7 +292,7 @@ void tivxAddTargetKernelBamMedian3X3(void)
         }
 
         vx_median_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_MEDIAN_3x3,
+            (vx_enum)VX_KERNEL_MEDIAN_3x3,
             target_name,
             tivxKernelMedian3X3Process,
             tivxKernelMedian3X3Create,
@@ -334,7 +334,7 @@ static vx_status VX_CALLBACK tivxKernelMedianCreateInBamGraph(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        prms = tivxMemAlloc(sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxMedianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -365,7 +365,7 @@ static vx_status VX_CALLBACK tivxKernelMedianCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxMedianParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

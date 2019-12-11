@@ -339,7 +339,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         /* Allocate Scratch memory */
         if (NULL != prms)
@@ -508,7 +508,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
                 params.u_pix = src->format == (vx_df_image)VX_DF_IMAGE_NV12 ? 0 : 1;
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 vxlib_src[1].dim_x = src->imagepatch_addr[1].dim_x;
 
@@ -533,7 +533,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
                 params.u_pix = src->format == (vx_df_image)VX_DF_IMAGE_NV12 ? 0 : 1;
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 vxlib_src[1].dim_x = src->imagepatch_addr[1].dim_x;
 
@@ -613,7 +613,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                     params.x_value = 1;
                 }
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -642,7 +642,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                     params.x_value = 1;
                 }
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_dst[0];
@@ -719,7 +719,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_params params;
 
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_src[1];
@@ -741,7 +741,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_params params;
 
                 params.src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_src[1];
@@ -808,7 +808,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
             if (NULL != prms)
             {
                 tivxMemFree(prms, sizeof(tivxColorConvertParams),
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -840,7 +840,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxColorConvertParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -854,9 +854,9 @@ void tivxAddTargetKernelBamColorConvert(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -868,7 +868,7 @@ void tivxAddTargetKernelBamColorConvert(void)
         }
 
         vx_color_convert_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_COLOR_CONVERT,
+            (vx_enum)VX_KERNEL_COLOR_CONVERT,
             target_name,
             tivxKernelBamColorConvertProcess,
             tivxKernelBamColorConvertCreate,
@@ -924,7 +924,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -1036,7 +1036,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
 
                     kernel_params->u_pix = src->format == (vx_df_image)VX_DF_IMAGE_NV12 ? 0 : 1;
                     kernel_params->src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1062,7 +1062,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
 
                     kernel_params->u_pix = src->format == (vx_df_image)VX_DF_IMAGE_NV12 ? 0 : 1;
                     kernel_params->src_space = src->color_space -
-                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                    VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1143,7 +1143,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                         kernel_params->x_value = 1;
                     }
                     kernel_params->src_space = src->color_space -
-                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                        VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1176,7 +1176,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                         kernel_params->x_value = 1;
                     }
                     kernel_params->src_space = src->color_space -
-                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                        VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1262,7 +1262,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGB_I8U_O8U;
 
                     kernel_params->src_space = src->color_space -
-                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                        VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1286,7 +1286,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                     node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGBX_I8U_O8U;
 
                     kernel_params->src_space = src->color_space -
-                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+                        VX_ENUM_BASE((vx_enum)VX_ID_KHRONOS, (vx_enum)VX_ENUM_COLOR_SPACE);
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -1336,7 +1336,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxColorConvertParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

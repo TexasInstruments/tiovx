@@ -182,19 +182,19 @@ vx_status tivx_utils_png_file_read(
         if(status==(vx_status)VX_SUCCESS)
         {
             uint32_t y;
-            png_context_t *png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
+            png_context_t *png_context = tivxMemAlloc(sizeof(png_context_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if(png_context)
             {
                 png_context->row_pointers_size = sizeof(png_bytep) * png_height;
                 png_context->data_ptr_size = 0;
 
-                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
+                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if(*data_ptr==NULL)
                 {
                     /* allocate memory */
                     png_context->data_ptr_size = png_get_rowbytes(png_ptr,info_ptr) * png_height;
-                    png_context->data_ptr = tivxMemAlloc(png_context->data_ptr_size, TIVX_MEM_EXTERNAL);
+                    png_context->data_ptr = tivxMemAlloc(png_context->data_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
                 else
                 {
@@ -246,13 +246,13 @@ void tivx_utils_png_file_read_release(void *png_file_context)
     {
         if(png_context->row_pointers)
         {
-            tivxMemFree(png_context->row_pointers, png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(png_context->row_pointers, png_context->row_pointers_size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
         if(png_context->data_ptr && (png_context->data_ptr_size > 0))
         {
-            tivxMemFree(png_context->data_ptr, png_context->data_ptr_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(png_context->data_ptr, png_context->data_ptr_size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
-        tivxMemFree(png_context, sizeof(png_context_t), TIVX_MEM_EXTERNAL);
+        tivxMemFree(png_context, sizeof(png_context_t), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 
@@ -356,13 +356,13 @@ int32_t tivx_utils_png_file_write(
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
+            png_context = tivxMemAlloc(sizeof(png_context_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if(png_context)
             {
                 png_context->row_pointers_size = sizeof(png_bytep) * height;
                 png_context->data_ptr_size = 0;
-                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
+                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 png_context->data_ptr = data_ptr;
             }
             if((png_context == NULL) || (png_context->row_pointers == NULL) || (png_context->data_ptr == NULL))
@@ -509,8 +509,8 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
                 0,
                 &image_addr,
                 data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST
+                (vx_enum)VX_WRITE_ONLY,
+                (vx_enum)VX_MEMORY_TYPE_HOST
                 );
 
             /** \endcode */
@@ -553,9 +553,9 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
          * \code
          */
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
         /** \endcode */
 
         /** - Map image data to user accessible memory space
@@ -579,9 +579,9 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
             &map_id,
             &image_addr,
             &data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
+            (vx_enum)VX_READ_ONLY,
+            (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_NOGAP_X
             );
         /** \endcode */
 
@@ -635,9 +635,9 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
         img_height = 0;
         img_width = 0;
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+        vxQueryImage(image, (vx_enum)VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
 
         if(img_width>width)
         {
@@ -727,9 +727,9 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
                 &map_id,
                 &image_addr,
                 &dst_data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST,
-                VX_NOGAP_X
+                (vx_enum)VX_WRITE_ONLY,
+                (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_NOGAP_X
                 );
 
             if(!enable_rgb2gray && !enable_gray2rgb)

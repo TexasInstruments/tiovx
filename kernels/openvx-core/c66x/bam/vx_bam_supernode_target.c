@@ -283,7 +283,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxSupernodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     if (NULL != prms)
@@ -350,7 +350,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     size[i] = prms->knl[i]->kernel_params_size;
                     if ( size[i] > 0 )
                     {
-                        scratch[i] = tivxMemAlloc(size[i], TIVX_MEM_EXTERNAL);
+                        scratch[i] = tivxMemAlloc(size[i], (vx_enum)TIVX_MEM_EXTERNAL);
                         if(NULL == scratch[i])
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Failed to allocate scratch for kernel[%s], size = %d\n", kernel_name, size[i]);
@@ -404,7 +404,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
                             for(j = 0; j < super_node->num_edges; j++)
                             {
-                                if(super_node->edge_list[j].src_node_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+                                if(super_node->edge_list[j].src_node_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
                                     src_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->edge_list[j].src_node_obj_desc_id);
                                     src_kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescGet(src_node_obj_desc->kernel_name_obj_desc_id);
@@ -416,7 +416,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
                                     if (!tivx_obj_desc_strncmp(src_kernel_name, str1, strlen(str1)))
                                     {
-                                        if(super_node->edge_list[j].dst_node_obj_desc_id != TIVX_OBJ_DESC_INVALID)
+                                        if(super_node->edge_list[j].dst_node_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
                                         {
                                             VX_PRINT(VX_ZONE_ERROR, "Canny Edge Detector's output could NOT be an internal edge in the supernode\n");
                                             status = (vx_status)VX_FAILURE;
@@ -481,13 +481,13 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                 if (!port_used)
                 {
                     /* Find all the source edges */
-                    if(super_node->edge_list[i].src_node_obj_desc_id == TIVX_OBJ_DESC_INVALID)
+                    if(super_node->edge_list[i].src_node_obj_desc_id == (vx_enum)TIVX_OBJ_DESC_INVALID)
                     {
                         tivx_obj_desc_node_t *dst_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->edge_list[i].dst_node_obj_desc_id);
                         tivx_obj_desc_t *dst_param = tivxObjDescGet(dst_node_obj_desc->data_id[super_node->edge_list[i].dst_node_prm_idx]);
 
                         /* BAM wrapper assumes source nodes operate on images for now */
-                        if(dst_param->type == TIVX_OBJ_DESC_IMAGE)
+                        if(dst_param->type == (vx_enum)TIVX_OBJ_DESC_IMAGE)
                         {
                             found_indices[prms->obj_desc_image_count] = super_node->edge_list[i].src_node_prm_idx;
 
@@ -495,7 +495,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
                             for(j = i; j < super_node->num_edges; j++)
                             {
-                                if ((super_node->edge_list[j].src_node_obj_desc_id == TIVX_OBJ_DESC_INVALID) &&
+                                if ((super_node->edge_list[j].src_node_obj_desc_id == (vx_enum)TIVX_OBJ_DESC_INVALID) &&
                                     (super_node->edge_list[j].src_node_prm_idx == super_node->edge_list[i].src_node_prm_idx))
                                 {
                                     node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[j].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
@@ -526,7 +526,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                             {
                                 for(j = i; j < super_node->num_edges; j++)
                                 {
-                                    if ((super_node->edge_list[j].src_node_obj_desc_id == TIVX_OBJ_DESC_INVALID) &&
+                                    if ((super_node->edge_list[j].src_node_obj_desc_id == (vx_enum)TIVX_OBJ_DESC_INVALID) &&
                                         (super_node->edge_list[j].src_node_prm_idx == super_node->edge_list[i].src_node_prm_idx))
                                     {
                                         node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[j].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
@@ -666,8 +666,8 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             for(i = 0; i < super_node->num_edges; i++)
             {
                 /* Find all the internal edges */
-                if((super_node->edge_list[i].src_node_obj_desc_id != TIVX_OBJ_DESC_INVALID) &&
-                   (super_node->edge_list[i].dst_node_obj_desc_id != TIVX_OBJ_DESC_INVALID))
+                if((super_node->edge_list[i].src_node_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID) &&
+                   (super_node->edge_list[i].dst_node_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
                 {
                     tivx_obj_desc_node_t *src_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->edge_list[i].src_node_obj_desc_id);
                     tivx_obj_desc_t *src_param = tivxObjDescGet(src_node_obj_desc->data_id[super_node->edge_list[i].src_node_prm_idx]);
@@ -675,7 +675,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     tivx_obj_desc_t *dst_param = tivxObjDescGet(dst_node_obj_desc->data_id[super_node->edge_list[i].dst_node_prm_idx]);
 
                     /* BAM wrapper assumes source nodes operate on images for now */
-                    if((src_param->type == TIVX_OBJ_DESC_IMAGE) && (dst_param->type == TIVX_OBJ_DESC_IMAGE))
+                    if((src_param->type == (vx_enum)TIVX_OBJ_DESC_IMAGE) && (dst_param->type == (vx_enum)TIVX_OBJ_DESC_IMAGE))
                     {
                         /* Assume that the image formats of src_param and dst_param must be the same, this would have been verified by graph_verify*/
                         tivx_obj_desc_image_t *src = (tivx_obj_desc_image_t *)src_param;
@@ -720,13 +720,13 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             for(i = 0; i < super_node->num_edges; i++)
             {
                 /* Find all the sink edges */
-                if(super_node->edge_list[i].dst_node_obj_desc_id == TIVX_OBJ_DESC_INVALID)
+                if(super_node->edge_list[i].dst_node_obj_desc_id == (vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     tivx_obj_desc_node_t *src_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(super_node->edge_list[i].src_node_obj_desc_id);
                     tivx_obj_desc_t *src_param = tivxObjDescGet(src_node_obj_desc->data_id[super_node->edge_list[i].src_node_prm_idx]);
 
                     /* BAM wrapper assumes sink nodes operate on images for now */
-                    if(src_param->type == TIVX_OBJ_DESC_IMAGE)
+                    if(src_param->type == (vx_enum)TIVX_OBJ_DESC_IMAGE)
                     {
                         tivx_obj_desc_image_t *dst = (tivx_obj_desc_image_t *)src_param;
 
@@ -890,7 +890,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     {
         if(scratch[i] != NULL)
         {
-            tivxMemFree(scratch[i], size[i], TIVX_MEM_EXTERNAL);
+            tivxMemFree(scratch[i], size[i], (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -982,7 +982,7 @@ static void tivxSupernodeDestruct(tivxSupernodeParams *prms, tivx_obj_desc_super
             tivxBamDestroyHandle(prms->graph_handle);
         }
 
-        tivxMemFree(prms, sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(prms, sizeof(tivxSupernodeParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 
@@ -993,9 +993,9 @@ void tivxAddTargetKernelBamSupernode(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -1123,7 +1123,7 @@ static void tivxEdgeSortQuick(BAM_EdgeParams edge_list[], tivx_edge_sort_indices
     tivx_edge_sort_context *context;
     tivx_edge_sort_indices left_array_indices, right_array_indices;
 
-    context = tivxMemAlloc(sizeof(tivx_edge_sort_context), TIVX_MEM_EXTERNAL);
+    context = tivxMemAlloc(sizeof(tivx_edge_sort_context), (vx_enum)TIVX_MEM_EXTERNAL);
     memset(context, 0, sizeof(tivx_edge_sort_context));
 
     tivxEdgeSortStackReset(context, indices.right_index + 1);
@@ -1151,7 +1151,7 @@ static void tivxEdgeSortQuick(BAM_EdgeParams edge_list[], tivx_edge_sort_indices
 
     if (NULL != context)
     {
-        tivxMemFree(context, sizeof(tivx_edge_sort_context), TIVX_MEM_EXTERNAL);
+        tivxMemFree(context, sizeof(tivx_edge_sort_context), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
 

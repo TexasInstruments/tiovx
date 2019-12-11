@@ -844,7 +844,7 @@ static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle)
     {
         tivxMemFree(p_handle->bam_graph_ptrs.graphcontext,
                     p_handle->bam_graph_sizes.graphcontextSize,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
         p_handle->bam_graph_ptrs.graphcontext = NULL;
     }
 
@@ -852,7 +852,7 @@ static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle)
     {
         tivxMemFree(p_handle->bam_graph_ptrs.graphScratch,
                     p_handle->bam_graph_sizes.graphScratchSize,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
         p_handle->bam_graph_ptrs.graphScratch = NULL;
     }
 
@@ -860,7 +860,7 @@ static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle)
     {
         tivxMemFree(p_handle->bam_graph_ptrs.graphObj,
                     p_handle->bam_graph_sizes.graphObjSize,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
         p_handle->bam_graph_ptrs.graphObj = NULL;
     }
 }
@@ -1060,7 +1060,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         /* For now keep separate ... these could potentially be an array of 2 of same structure */
         graph_args.kernel_info      = &kernel_details->kernel_info;
         graph_args.buf_params       = buf_params;
-        graph_args.compute_kernel_args = tivxMemAlloc(kernel_details->kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
+        graph_args.compute_kernel_args = tivxMemAlloc(kernel_details->kernel_info.kernelArgSize, (vx_enum)TIVX_MEM_EXTERNAL);
 
         if(NULL == graph_args.compute_kernel_args)
         {
@@ -1144,7 +1144,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         edge_list[j].downStreamNode.port = 0;
 
         /* Allocate memory for context handle */
-        p_graph_handle = tivxMemAlloc(sizeof(tivx_bam_graph_handle_t), TIVX_MEM_EXTERNAL);
+        p_graph_handle = tivxMemAlloc(sizeof(tivx_bam_graph_handle_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if(NULL == p_graph_handle)
         {
@@ -1175,9 +1175,9 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         p_graph_sizes->graphScratchSize = 10000;
         p_graph_sizes->graphcontextSize = 10000;
 
-        p_graph_ptrs->graphObj     = tivxMemAlloc(p_graph_sizes->graphObjSize, TIVX_MEM_EXTERNAL);
-        p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, TIVX_MEM_EXTERNAL);
-        p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphObj     = tivxMemAlloc(p_graph_sizes->graphObjSize, (vx_enum)TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, (vx_enum)TIVX_MEM_EXTERNAL);
 
         if((NULL == p_graph_ptrs->graphObj) ||
             (NULL == p_graph_ptrs->graphScratch) ||
@@ -1244,7 +1244,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
     {
         if(graph_create_params.graphMemConsumed > 0) {
             p_graph_sizes->graphObjSize = graph_create_params.graphMemConsumed;
-            p_graph_ptrs->graphObj = tivxMemAlloc(p_graph_sizes->graphObjSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphObj = tivxMemAlloc(p_graph_sizes->graphObjSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.graphMemSize = p_graph_sizes->graphObjSize;
             graph_create_params.graphMem = p_graph_ptrs->graphObj;
 
@@ -1261,7 +1261,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(graph_create_params.onChipScratchMemConsumed > 0) {
             p_graph_sizes->graphScratchSize = graph_create_params.onChipScratchMemConsumed;
-            p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.onChipScratchMemSize = p_graph_sizes->graphScratchSize;
             graph_create_params.onChipScratchMem = p_graph_ptrs->graphScratch;
 
@@ -1278,7 +1278,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         if(graph_create_params.extMemConsumed > 0) {
             p_graph_sizes->graphcontextSize = graph_create_params.extMemConsumed;
-            p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.extMemSize = p_graph_sizes->graphcontextSize;
             graph_create_params.extMem = p_graph_ptrs->graphcontext;
 
@@ -1305,7 +1305,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
             status_v = (vx_status)VX_FAILURE;
         }
 
-        tivxMemFree(graph_args.compute_kernel_args, kernel_details->kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
+        tivxMemFree(graph_args.compute_kernel_args, kernel_details->kernel_info.kernelArgSize, (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     if((vx_status)VX_SUCCESS == status_v)
@@ -1447,7 +1447,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         node_list[0].kernelArgs = (void *)&graph_args.dma_read_autoinc_args;
         for(i = 1; i < num_nodes-1; i++)
         {
-            graph_args.compute_kernel_args[i] = tivxMemAlloc(kernel_details[i].kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
+            graph_args.compute_kernel_args[i] = tivxMemAlloc(kernel_details[i].kernel_info.kernelArgSize, (vx_enum)TIVX_MEM_EXTERNAL);
             node_list[i].kernelArgs = graph_args.compute_kernel_args[i];
             /* TIOVX-186:
              * - Although this works, may investigate more: since node_list is in graph_args, perhaps the compute_kernel_args
@@ -1491,7 +1491,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         }
 
         /* Allocate memory for context handle */
-        p_graph_handle = tivxMemAlloc(sizeof(tivx_bam_graph_handle_t), TIVX_MEM_EXTERNAL);
+        p_graph_handle = tivxMemAlloc(sizeof(tivx_bam_graph_handle_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if(NULL == p_graph_handle)
         {
@@ -1521,7 +1521,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if((vx_status)VX_SUCCESS == status_v)
     {
-        edge_params = tivxMemAlloc(sizeof(tivx_edge_params_t)*num_edges, TIVX_MEM_EXTERNAL);
+        edge_params = tivxMemAlloc(sizeof(tivx_edge_params_t)*num_edges, (vx_enum)TIVX_MEM_EXTERNAL);
 
         if(NULL == edge_params)
         {
@@ -1549,7 +1549,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
             i++;
         }
 
-        data_blocks = tivxMemAlloc(sizeof(tivx_data_block_params_t)*num_data_blocks, TIVX_MEM_EXTERNAL);
+        data_blocks = tivxMemAlloc(sizeof(tivx_data_block_params_t)*num_data_blocks, (vx_enum)TIVX_MEM_EXTERNAL);
 
         if(NULL == data_blocks)
         {
@@ -1699,9 +1699,9 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         p_graph_sizes->graphScratchSize = 3000*num_nodes;
         p_graph_sizes->graphcontextSize = 3000*num_nodes;
 
-        p_graph_ptrs->graphObj     = tivxMemAlloc(p_graph_sizes->graphObjSize, TIVX_MEM_EXTERNAL);
-        p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, TIVX_MEM_EXTERNAL);
-        p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphObj     = tivxMemAlloc(p_graph_sizes->graphObjSize, (vx_enum)TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
+        p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, (vx_enum)TIVX_MEM_EXTERNAL);
 
         if((NULL == p_graph_ptrs->graphObj) ||
             (NULL == p_graph_ptrs->graphScratch) ||
@@ -1768,7 +1768,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
     {
         if(graph_create_params.graphMemConsumed > 0) {
             p_graph_sizes->graphObjSize = graph_create_params.graphMemConsumed;
-            p_graph_ptrs->graphObj = tivxMemAlloc(p_graph_sizes->graphObjSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphObj = tivxMemAlloc(p_graph_sizes->graphObjSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.graphMemSize = p_graph_sizes->graphObjSize;
             graph_create_params.graphMem = p_graph_ptrs->graphObj;
 
@@ -1785,7 +1785,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(graph_create_params.onChipScratchMemConsumed > 0) {
             p_graph_sizes->graphScratchSize = graph_create_params.onChipScratchMemConsumed;
-            p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphScratch = tivxMemAlloc(p_graph_sizes->graphScratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.onChipScratchMemSize = p_graph_sizes->graphScratchSize;
             graph_create_params.onChipScratchMem = p_graph_ptrs->graphScratch;
 
@@ -1802,7 +1802,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         if(graph_create_params.extMemConsumed > 0) {
             p_graph_sizes->graphcontextSize = graph_create_params.extMemConsumed;
-            p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, TIVX_MEM_EXTERNAL);
+            p_graph_ptrs->graphcontext = tivxMemAlloc(p_graph_sizes->graphcontextSize, (vx_enum)TIVX_MEM_EXTERNAL);
             graph_create_params.extMemSize = p_graph_sizes->graphcontextSize;
             graph_create_params.extMem = p_graph_ptrs->graphcontext;
 
@@ -1831,7 +1831,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         for(i = 1; i < num_nodes-1; i++)
         {
-            tivxMemFree(graph_args.compute_kernel_args[i], kernel_details[i].kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
+            tivxMemFree(graph_args.compute_kernel_args[i], kernel_details[i].kernel_info.kernelArgSize, (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -1884,11 +1884,11 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
     /* Clean up temporary memory */
     if( edge_params != NULL)
     {
-        tivxMemFree(edge_params, sizeof(tivx_edge_params_t)*num_edges, TIVX_MEM_EXTERNAL);
+        tivxMemFree(edge_params, sizeof(tivx_edge_params_t)*num_edges, (vx_enum)TIVX_MEM_EXTERNAL);
     }
     if( data_blocks != NULL)
     {
-        tivxMemFree(data_blocks, sizeof(tivx_data_block_params_t)*num_data_blocks, TIVX_MEM_EXTERNAL);
+        tivxMemFree(data_blocks, sizeof(tivx_data_block_params_t)*num_data_blocks, (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     return status_v;
@@ -1897,7 +1897,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle)
 {
     tivxBamFreeContextPtrs(graph_handle);
-    tivxMemFree(graph_handle, sizeof(tivx_bam_graph_handle_t), TIVX_MEM_EXTERNAL);
+    tivxMemFree(graph_handle, sizeof(tivx_bam_graph_handle_t), (vx_enum)TIVX_MEM_EXTERNAL);
 }
 
 vx_status tivxBamInitKernelDetails(tivx_bam_kernel_details_t *kernel_details,

@@ -124,17 +124,17 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_FORMAT, &gaussian_fmt, sizeof(gaussian_fmt)));
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_WIDTH, &gaussian_w, sizeof(gaussian_w)));
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_HEIGHT, &gaussian_h, sizeof(gaussian_h)));
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale)));
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_FORMAT, &gaussian_fmt, sizeof(gaussian_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_WIDTH, &gaussian_w, sizeof(gaussian_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_HEIGHT, &gaussian_h, sizeof(gaussian_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels)));
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -201,7 +201,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for gaussian pyramid \n");
@@ -212,11 +212,11 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_HEIGHT, &input_h, sizeof(input_h));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], (vx_enum)VX_PYRAMID_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], (vx_enum)VX_PYRAMID_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], (vx_enum)VX_PYRAMID_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], (vx_enum)VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], (vx_enum)VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale));
     }
 
 #endif
@@ -254,8 +254,8 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale)));
-        tivxCheckStatus(&status, vxQueryPyramid(gaussian, VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_SCALE, &gaussian_scale, sizeof(gaussian_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(gaussian, (vx_enum)VX_PYRAMID_LEVELS, &gaussian_levels, sizeof(gaussian_levels)));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
         tivxCheckStatus(&status, vxReleaseImage(&img));
@@ -301,7 +301,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
                 prms.left_pad = 1U;
                 prms.right_pad = 1U;
 
-                prms.border_mode = VX_BORDER_UNDEFINED;
+                prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
                 tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
 
@@ -328,7 +328,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
                 prms.left_pad = 2U;
                 prms.right_pad = 2U;
 
-                prms.border_mode = VX_BORDER_UNDEFINED;
+                prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
                 tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
 
@@ -359,7 +359,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.gaussian_pyramid",
-                    VX_KERNEL_GAUSSIAN_PYRAMID,
+                    (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
                     NULL,
                     TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS,
                     tivxAddKernelGaussianPyramidValidate,
@@ -375,9 +375,9 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -385,9 +385,9 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_PYRAMID,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_PYRAMID,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

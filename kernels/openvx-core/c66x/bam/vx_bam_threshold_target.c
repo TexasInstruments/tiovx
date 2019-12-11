@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
             TIVX_KERNEL_THRESHOLD_THRESH_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxThresholdParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -195,7 +195,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            if (VX_THRESHOLD_TYPE_BINARY == thr->type)
+            if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
             {
                 BAM_VXLIB_thresholdBinary_i8u_o8u_params kernel_params;
                 kernel_params.threshold  = thr->value;
@@ -243,7 +243,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxThresholdParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -274,7 +274,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdDelete(
             {
                 tivxBamDestroyHandle(prms->graph_handle);
             }
-            tivxMemFree(prms, sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxThresholdParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -288,9 +288,9 @@ void tivxAddTargetKernelBamThreshold(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -302,7 +302,7 @@ void tivxAddTargetKernelBamThreshold(void)
         }
 
         vx_threshold_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_THRESHOLD,
+            (vx_enum)VX_KERNEL_THRESHOLD,
             target_name,
             tivxKernelThresholdProcess,
             tivxKernelThresholdCreate,
@@ -348,7 +348,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
             TIVX_KERNEL_THRESHOLD_THRESH_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxThresholdParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -357,7 +357,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if (VX_THRESHOLD_TYPE_BINARY == thr->type)
+            if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
             {
                 BAM_VXLIB_thresholdBinary_i8u_o8u_params *kernel_params = (BAM_VXLIB_thresholdBinary_i8u_o8u_params*)scratch;
 
@@ -420,7 +420,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxThresholdParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }

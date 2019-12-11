@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
         gsize = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxHalfScaleGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -289,7 +289,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
                 BAM_VXLIB_scaleImageNearest_i8u_o8u_params kernel_params;
 
                 prms->scratchSize = vxlib_src.dim_y*vxlib_src.stride_y;
-                prms->scratch = tivxMemAlloc(prms->scratchSize, TIVX_MEM_EXTERNAL);
+                prms->scratch = tivxMemAlloc(prms->scratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
 
                 kernel_params.xScale = 2;
                 kernel_params.yScale = 2;
@@ -422,7 +422,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -461,11 +461,11 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
                 if(gsize->data.s32 == 3)
                 {
                     tivxBamDestroyHandle(prms->graph_handleScale);
-                    tivxMemFree(prms->scratch, prms->scratchSize, TIVX_MEM_EXTERNAL);
+                    tivxMemFree(prms->scratch, prms->scratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 #endif
-            tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxHalfScaleGaussianParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -479,9 +479,9 @@ void tivxAddTargetKernelBamHalfscaleGaussian(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -493,7 +493,7 @@ void tivxAddTargetKernelBamHalfscaleGaussian(void)
         }
 
         vx_halfscale_gaussian_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_HALFSCALE_GAUSSIAN,
+            (vx_enum)VX_KERNEL_HALFSCALE_GAUSSIAN,
             target_name,
             tivxBamKernelHalfScaleGaussianProcess,
             tivxBamKernelHalfScaleGaussianCreate,

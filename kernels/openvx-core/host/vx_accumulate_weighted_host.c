@@ -122,17 +122,17 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
 
-        tivxCheckStatus(&status, vxQueryScalar(alpha, VX_SCALAR_TYPE, &alpha_scalar_type, sizeof(alpha_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(alpha, &alpha_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(alpha, (vx_enum)VX_SCALAR_TYPE, &alpha_scalar_type, sizeof(alpha_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(alpha, &alpha_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
 
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_WIDTH, &accum_w, sizeof(accum_w)));
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_HEIGHT, &accum_h, sizeof(accum_h)));
-        tivxCheckStatus(&status, vxQueryImage(accum, VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_WIDTH, &accum_w, sizeof(accum_w)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_HEIGHT, &accum_h, sizeof(accum_h)));
+        tivxCheckStatus(&status, vxQueryImage(accum, (vx_enum)VX_IMAGE_FORMAT, &accum_fmt, sizeof(accum_fmt)));
 
 #if 1
 
@@ -153,7 +153,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != alpha_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != alpha_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'alpha' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
@@ -206,9 +206,9 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -245,7 +245,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedInitialize(vx_node n
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -271,7 +271,7 @@ vx_status tivxAddKernelAccumulateWeighted(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.accumulate_weighted",
-                    VX_KERNEL_ACCUMULATE_WEIGHTED,
+                    (vx_enum)VX_KERNEL_ACCUMULATE_WEIGHTED,
                     NULL,
                     TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS,
                     tivxAddKernelAccumulateWeightedValidate,
@@ -287,9 +287,9 @@ vx_status tivxAddKernelAccumulateWeighted(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -297,9 +297,9 @@ vx_status tivxAddKernelAccumulateWeighted(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -307,9 +307,9 @@ vx_status tivxAddKernelAccumulateWeighted(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

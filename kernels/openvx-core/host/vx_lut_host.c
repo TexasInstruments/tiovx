@@ -121,15 +121,15 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryLUT(lut, VX_LUT_TYPE, &lut_type, sizeof(lut_type)));
+        tivxCheckStatus(&status, vxQueryLUT(lut, (vx_enum)VX_LUT_TYPE, &lut_type, sizeof(lut_type)));
 
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
-        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, (vx_enum)VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
 
 #if 1
 
@@ -151,8 +151,8 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_S16 \n");
         }
 
-        if ((VX_TYPE_UINT8 != lut_type) &&
-            (VX_TYPE_INT16 != lut_type))
+        if (((vx_enum)VX_TYPE_UINT8 != lut_type) &&
+            ((vx_enum)VX_TYPE_INT16 != lut_type))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'lut' should be a lut of type:\n VX_TYPE_UINT8 or VX_DF_IMAGE_S16 \n");
@@ -175,9 +175,9 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         if ((((vx_df_image)VX_DF_IMAGE_U8 == input_fmt) &&
-            (VX_TYPE_UINT8 != lut_type)) ||
+            ((vx_enum)VX_TYPE_UINT8 != lut_type)) ||
             (((vx_df_image)VX_DF_IMAGE_S16 == input_fmt) &&
-            (VX_TYPE_INT16 != lut_type)))
+            ((vx_enum)VX_TYPE_INT16 != lut_type)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'lut' should should have the same bitsize and sign as 'input' \n");
@@ -209,9 +209,9 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LUT_OUTPUT_IDX], (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
 #endif
@@ -249,7 +249,7 @@ static vx_status VX_CALLBACK tivxAddKernelLutInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -275,7 +275,7 @@ vx_status tivxAddKernelLut(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.table_lookup",
-                    VX_KERNEL_TABLE_LOOKUP,
+                    (vx_enum)VX_KERNEL_TABLE_LOOKUP,
                     NULL,
                     TIVX_KERNEL_LUT_MAX_PARAMS,
                     tivxAddKernelLutValidate,
@@ -291,9 +291,9 @@ vx_status tivxAddKernelLut(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -301,9 +301,9 @@ vx_status tivxAddKernelLut(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_LUT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_LUT,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -311,9 +311,9 @@ vx_status tivxAddKernelLut(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)

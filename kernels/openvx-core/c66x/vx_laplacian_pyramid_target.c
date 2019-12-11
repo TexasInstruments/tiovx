@@ -156,7 +156,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
         low_img_target_ptr = tivxMemShared2TargetPtr(&low_img->mem_ptr[0]);
         tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
@@ -164,7 +164,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
@@ -186,7 +186,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
             tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             tivxSetPointerLocation(dst, &dst_target_ptr, (uint8_t**)&dst_addr);
 
@@ -257,7 +257,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             }
 
             tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
             if (status != VXLIB_SUCCESS)
             {
@@ -267,10 +267,10 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -307,7 +307,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
             TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxLaplacianPyramidParams),
-            TIVX_MEM_EXTERNAL);
+            (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -317,7 +317,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
                 img->imagepatch_addr[0].dim_y);
 
             prms->upsample_output = tivxMemAlloc(prms->buff_size,
-                TIVX_MEM_EXTERNAL);
+                (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->upsample_output)
             {
@@ -327,45 +327,45 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
             if ((vx_status)VX_SUCCESS == status)
             {
                 prms->gauss_output = tivxMemAlloc(prms->buff_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->gauss_output)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
             if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hsg_output[0] = tivxMemAlloc(prms->buff_size / 4,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[0])
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->gauss_output, prms->buff_size,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
             if ((vx_status)VX_SUCCESS == status)
             {
                 prms->hsg_output[1] = tivxMemAlloc(prms->buff_size / 16,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[1])
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                     tivxMemFree(prms->upsample_output, prms->buff_size,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->gauss_output, prms->buff_size,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->hsg_output[0], prms->buff_size / 4,
-                        TIVX_MEM_EXTERNAL);
+                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
                 else
                 {
@@ -425,25 +425,25 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
             if (NULL != prms->upsample_output)
             {
                 tivxMemFree(prms->upsample_output, prms->buff_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->gauss_output)
             {
                 tivxMemFree(prms->gauss_output, prms->buff_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->hsg_output[0])
             {
                 tivxMemFree(prms->hsg_output[0], prms->buff_size / 4,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->hsg_output[1])
             {
                 tivxMemFree(prms->hsg_output[1], prms->buff_size / 16,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
             }
 
-            tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -457,9 +457,9 @@ void tivxAddTargetKernelLaplacianPyramid(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -471,7 +471,7 @@ void tivxAddTargetKernelLaplacianPyramid(void)
         }
 
         vx_laplacian_pyramid_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_LAPLACIAN_PYRAMID,
+            (vx_enum)VX_KERNEL_LAPLACIAN_PYRAMID,
             target_name,
             tivxKernelLplPmdProcess,
             tivxKernelLplPmdCreate,

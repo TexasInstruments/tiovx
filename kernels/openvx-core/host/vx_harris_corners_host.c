@@ -148,31 +148,31 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryScalar(strength_thresh, VX_SCALAR_TYPE, &strength_thresh_scalar_type, sizeof(strength_thresh_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(strength_thresh, (vx_enum)VX_SCALAR_TYPE, &strength_thresh_scalar_type, sizeof(strength_thresh_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(min_distance, VX_SCALAR_TYPE, &min_distance_scalar_type, sizeof(min_distance_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(min_distance, (vx_enum)VX_SCALAR_TYPE, &min_distance_scalar_type, sizeof(min_distance_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(sensitivity, VX_SCALAR_TYPE, &sensitivity_scalar_type, sizeof(sensitivity_scalar_type)));
+        tivxCheckStatus(&status, vxQueryScalar(sensitivity, (vx_enum)VX_SCALAR_TYPE, &sensitivity_scalar_type, sizeof(sensitivity_scalar_type)));
 
-        tivxCheckStatus(&status, vxQueryScalar(gradient_size, VX_SCALAR_TYPE, &gradient_size_scalar_type, sizeof(gradient_size_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(gradient_size, (vx_enum)VX_SCALAR_TYPE, &gradient_size_scalar_type, sizeof(gradient_size_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(gradient_size, &gradient_size_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryScalar(block_size, VX_SCALAR_TYPE, &block_size_scalar_type, sizeof(block_size_scalar_type)));
-        tivxCheckStatus(&status, vxCopyScalar(block_size, &block_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        tivxCheckStatus(&status, vxQueryScalar(block_size, (vx_enum)VX_SCALAR_TYPE, &block_size_scalar_type, sizeof(block_size_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(block_size, &block_size_val, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST));
 
-        tivxCheckStatus(&status, vxQueryArray(corners, VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(corners, VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(corners, (vx_enum)VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(corners, (vx_enum)VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity)));
 
         if (NULL != num_corners)
         {
-            tivxCheckStatus(&status, vxQueryScalar(num_corners, VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type)));
+            tivxCheckStatus(&status, vxQueryScalar(num_corners, (vx_enum)VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type)));
         }
 
-        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+        tivxCheckStatus(&status, vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border)));
 
 #if 1
 
@@ -193,31 +193,31 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != strength_thresh_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != strength_thresh_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'strength_thresh' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != min_distance_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != min_distance_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'min_distance' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_FLOAT32 != sensitivity_scalar_type)
+        if ((vx_enum)VX_TYPE_FLOAT32 != sensitivity_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'sensitivity' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
         }
 
-        if (VX_TYPE_INT32 != gradient_size_scalar_type)
+        if ((vx_enum)VX_TYPE_INT32 != gradient_size_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'gradient_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
         }
 
-        if (VX_TYPE_INT32 != block_size_scalar_type)
+        if ((vx_enum)VX_TYPE_INT32 != block_size_scalar_type)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'block_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
         if ((vx_bool)vx_false_e == is_virtual)
         {
-            if (VX_TYPE_KEYPOINT != corners_item_type)
+            if ((vx_enum)VX_TYPE_KEYPOINT != corners_item_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'corners' should be an array of type:\n VX_TYPE_KEYPOINT \n");
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
         if (NULL != num_corners)
         {
-            if (VX_TYPE_SIZE != num_corners_scalar_type)
+            if ((vx_enum)VX_TYPE_SIZE != num_corners_scalar_type)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'num_corners' should be a scalar of type:\n VX_TYPE_SIZE \n");
@@ -278,7 +278,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_BORDER_UNDEFINED != border.mode)
+        if ((vx_enum)VX_BORDER_UNDEFINED != border.mode)
         {
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for harris corners \n");
@@ -289,14 +289,14 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        corners_item_type = VX_TYPE_KEYPOINT;
+        corners_item_type = (vx_enum)VX_TYPE_KEYPOINT;
 
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX], VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type));
-        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX], VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX], (vx_enum)VX_ARRAY_ITEMTYPE, &corners_item_type, sizeof(corners_item_type));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX], (vx_enum)VX_ARRAY_CAPACITY, &corners_capacity, sizeof(corners_capacity));
 
         if (NULL != num_corners)
         {
-            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX], VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX], (vx_enum)VX_SCALAR_TYPE, &num_corners_scalar_type, sizeof(num_corners_scalar_type));
         }
     }
 
@@ -338,7 +338,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCornersInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -364,7 +364,7 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.harris_corners",
-                    VX_KERNEL_HARRIS_CORNERS,
+                    (vx_enum)VX_KERNEL_HARRIS_CORNERS,
                     NULL,
                     TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS,
                     tivxAddKernelHarrisCornersValidate,
@@ -380,9 +380,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -390,9 +390,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -400,9 +400,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -410,9 +410,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -420,9 +420,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -430,9 +430,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -440,9 +440,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_ARRAY,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_ARRAY,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -450,9 +450,9 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_SCALAR,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
             );
         }
         if (status == (vx_status)VX_SUCCESS)

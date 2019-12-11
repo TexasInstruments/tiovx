@@ -36,54 +36,54 @@ typedef struct _vx_enum_type_size {
 } vx_enum_type_size_t;
 
 static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
-    {VX_TYPE_INVALID,       0},
+    {(vx_enum)VX_TYPE_INVALID,       0},
     /* Scalar Types */
-    {VX_TYPE_CHAR,          sizeof(vx_char)},
-    {VX_TYPE_INT8,          sizeof(vx_int8)},
-    {VX_TYPE_INT16,         sizeof(vx_int16)},
-    {VX_TYPE_INT32,         sizeof(vx_int32)},
-    {VX_TYPE_INT64,         sizeof(vx_int64)},
-    {VX_TYPE_UINT8,         sizeof(vx_uint8)},
-    {VX_TYPE_UINT16,        sizeof(vx_uint16)},
-    {VX_TYPE_UINT32,        sizeof(vx_uint32)},
-    {VX_TYPE_UINT64,        sizeof(vx_uint64)},
-    {VX_TYPE_FLOAT32,       sizeof(vx_float32)},
-    {VX_TYPE_FLOAT64,       sizeof(vx_float64)},
-    {VX_TYPE_ENUM,          sizeof(vx_enum)},
-    {VX_TYPE_BOOL,          sizeof(vx_bool)},
-    {VX_TYPE_SIZE,          sizeof(vx_size)},
-    {VX_TYPE_DF_IMAGE,      sizeof(vx_df_image)},
+    {(vx_enum)VX_TYPE_CHAR,          sizeof(vx_char)},
+    {(vx_enum)VX_TYPE_INT8,          sizeof(vx_int8)},
+    {(vx_enum)VX_TYPE_INT16,         sizeof(vx_int16)},
+    {(vx_enum)VX_TYPE_INT32,         sizeof(vx_int32)},
+    {(vx_enum)VX_TYPE_INT64,         sizeof(vx_int64)},
+    {(vx_enum)VX_TYPE_UINT8,         sizeof(vx_uint8)},
+    {(vx_enum)VX_TYPE_UINT16,        sizeof(vx_uint16)},
+    {(vx_enum)VX_TYPE_UINT32,        sizeof(vx_uint32)},
+    {(vx_enum)VX_TYPE_UINT64,        sizeof(vx_uint64)},
+    {(vx_enum)VX_TYPE_FLOAT32,       sizeof(vx_float32)},
+    {(vx_enum)VX_TYPE_FLOAT64,       sizeof(vx_float64)},
+    {(vx_enum)VX_TYPE_ENUM,          sizeof(vx_enum)},
+    {(vx_enum)VX_TYPE_BOOL,          sizeof(vx_bool)},
+    {(vx_enum)VX_TYPE_SIZE,          sizeof(vx_size)},
+    {(vx_enum)VX_TYPE_DF_IMAGE,      sizeof(vx_df_image)},
     /* Structures */
-    {VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
-    {VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
-    {VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
-    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
+    {(vx_enum)VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
+    {(vx_enum)VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
+    {(vx_enum)VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
+    {(vx_enum)VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
     /* Pseudo Objects */
-    {VX_TYPE_META_FORMAT,   sizeof(tivx_meta_format_t)},
+    {(vx_enum)VX_TYPE_META_FORMAT,   sizeof(tivx_meta_format_t)},
     /* Framework Objects */
-    {VX_TYPE_REFERENCE,     sizeof(tivx_reference_t)},
-    {VX_TYPE_CONTEXT,       sizeof(tivx_context_t)},
-    {VX_TYPE_GRAPH,         sizeof(tivx_graph_t)},
-    {VX_TYPE_NODE,          sizeof(tivx_node_t)},
-    {VX_TYPE_PARAMETER,     sizeof(tivx_parameter_t)},
-    {VX_TYPE_KERNEL,        sizeof(tivx_kernel_t)},
+    {(vx_enum)VX_TYPE_REFERENCE,     sizeof(tivx_reference_t)},
+    {(vx_enum)VX_TYPE_CONTEXT,       sizeof(tivx_context_t)},
+    {(vx_enum)VX_TYPE_GRAPH,         sizeof(tivx_graph_t)},
+    {(vx_enum)VX_TYPE_NODE,          sizeof(tivx_node_t)},
+    {(vx_enum)VX_TYPE_PARAMETER,     sizeof(tivx_parameter_t)},
+    {(vx_enum)VX_TYPE_KERNEL,        sizeof(tivx_kernel_t)},
     {TIVX_TYPE_SUPER_NODE,  sizeof(tivx_super_node_t)},
     /* data objects */
-    {VX_TYPE_ARRAY,         sizeof(tivx_array_t)},
+    {(vx_enum)VX_TYPE_ARRAY,         sizeof(tivx_array_t)},
     {VX_TYPE_USER_DATA_OBJECT, sizeof(tivx_user_data_object_t)},
     {TIVX_TYPE_RAW_IMAGE, sizeof(tivx_raw_image_t)},
-    {VX_TYPE_CONVOLUTION,   sizeof(tivx_convolution_t)},
-    {VX_TYPE_DELAY,         sizeof(tivx_delay_t)},
-    {VX_TYPE_DISTRIBUTION,  sizeof(tivx_distribution_t)},
-    {VX_TYPE_IMAGE,         sizeof(tivx_image_t)},
-    {VX_TYPE_TENSOR,        sizeof(tivx_tensor_t)},
-    {VX_TYPE_LUT,           sizeof(tivx_lut_t)},
-    {VX_TYPE_MATRIX,        sizeof(tivx_matrix_t)},
-    {VX_TYPE_PYRAMID,       sizeof(tivx_pyramid_t)},
-    {VX_TYPE_REMAP,         sizeof(tivx_remap_t)},
-    {VX_TYPE_SCALAR,        sizeof(tivx_scalar_t)},
-    {VX_TYPE_THRESHOLD,     sizeof(tivx_threshold_t)},
-    {TIVX_TYPE_DATA_REF_Q,  sizeof(tivx_data_ref_queue_t)},
+    {(vx_enum)VX_TYPE_CONVOLUTION,   sizeof(tivx_convolution_t)},
+    {(vx_enum)VX_TYPE_DELAY,         sizeof(tivx_delay_t)},
+    {(vx_enum)VX_TYPE_DISTRIBUTION,  sizeof(tivx_distribution_t)},
+    {(vx_enum)VX_TYPE_IMAGE,         sizeof(tivx_image_t)},
+    {(vx_enum)VX_TYPE_TENSOR,        sizeof(tivx_tensor_t)},
+    {(vx_enum)VX_TYPE_LUT,           sizeof(tivx_lut_t)},
+    {(vx_enum)VX_TYPE_MATRIX,        sizeof(tivx_matrix_t)},
+    {(vx_enum)VX_TYPE_PYRAMID,       sizeof(tivx_pyramid_t)},
+    {(vx_enum)VX_TYPE_REMAP,         sizeof(tivx_remap_t)},
+    {(vx_enum)VX_TYPE_SCALAR,        sizeof(tivx_scalar_t)},
+    {(vx_enum)VX_TYPE_THRESHOLD,     sizeof(tivx_threshold_t)},
+    {(vx_enum)TIVX_TYPE_DATA_REF_Q,  sizeof(tivx_data_ref_queue_t)},
 };
 
 vx_size ownSizeOfEnumType(vx_enum item_type)
@@ -108,8 +108,8 @@ vx_bool ownIsValidReference(vx_reference ref)
     {
         if ( (ref->magic == TIVX_MAGIC) &&
              (ownIsValidType(ref->type) == (vx_bool)vx_true_e) &&
-             (( (ref->type != VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == (vx_bool)vx_true_e) ) ||
-              ( (ref->type == VX_TYPE_CONTEXT) && (ref->context == NULL) )) )
+             (( (ref->type != (vx_enum)VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == (vx_bool)vx_true_e) ) ||
+              ( (ref->type == (vx_enum)VX_TYPE_CONTEXT) && (ref->context == NULL) )) )
         {
             ret = (vx_bool)vx_true_e;
         }
@@ -117,7 +117,7 @@ vx_bool ownIsValidReference(vx_reference ref)
         {
             VX_PRINT(VX_ZONE_INFO, "Reference has already been released and garbage collected!\n");
         }
-        else if (ref->type != VX_TYPE_CONTEXT)
+        else if (ref->type != (vx_enum)VX_TYPE_CONTEXT)
         {
             VX_PRINT(VX_ZONE_INFO, "Not a valid reference!\n");
         }
@@ -158,7 +158,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 
         status = (vx_status)VX_SUCCESS;
 
-        if((ref->type==VX_TYPE_CONTEXT) || (ref->type==VX_TYPE_GRAPH))
+        if((ref->type==(vx_enum)VX_TYPE_CONTEXT) || (ref->type==(vx_enum)VX_TYPE_GRAPH))
         {
             /* create referencec only for context and graph
              * for others use the context lock
@@ -181,7 +181,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
     if (ref)
     {
         ownReferenceLock(ref);
-        if ((reftype == VX_INTERNAL) || (reftype == VX_BOTH))
+        if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
             if (ref->internal_count == 0)
             {
@@ -192,7 +192,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
                 ref->internal_count--;
             }
         }
-        if ((reftype == VX_EXTERNAL) || (reftype == VX_BOTH))
+        if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
             if (ref->external_count == 0)
             {
@@ -228,11 +228,11 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
     if (ref)
     {
         ownReferenceLock(ref);
-        if ((reftype == VX_EXTERNAL) || (reftype == VX_BOTH))
+        if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
             ref->external_count++;
         }
-        if ((reftype == VX_INTERNAL) || (reftype == VX_BOTH))
+        if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
             ref->internal_count++;
         }
@@ -359,7 +359,7 @@ void ownPrintReference(vx_reference ref)
 vx_bool ownIsValidType(vx_enum type)
 {
     vx_bool ret = (vx_bool)vx_false_e;
-    if (type <= VX_TYPE_INVALID)
+    if (type <= (vx_enum)VX_TYPE_INVALID)
     {
         ret = (vx_bool)vx_false_e;
     }
@@ -462,12 +462,12 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
         ref->scope = scope;
         if(NULL != ref->obj_desc)
         {
-            ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+            ref->obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
             if((NULL != scope) && (NULL != scope->obj_desc))
             {
-                if ((ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+                if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                         ||
-                    (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
+                    (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                     )
                 {
                     /* set scope_obj_desc_id in obj_desc only for composite objects like pyramid and object array */
@@ -505,7 +505,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
     {
         switch (attribute)
         {
-            case VX_REFERENCE_COUNT:
+            case (vx_enum)VX_REFERENCE_COUNT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = ref->external_count;
@@ -516,7 +516,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_REFERENCE_TYPE:
+            case (vx_enum)VX_REFERENCE_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = ref->type;
@@ -527,7 +527,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_REFERENCE_NAME:
+            case (vx_enum)VX_REFERENCE_NAME:
                 if (VX_CHECK_PARAM(ptr, size, vx_char*, 0x3U))
                 {
                     *(vx_char**)ptr = &ref->name[0];
@@ -584,7 +584,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
 
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
-        ownIncrementReference(ref, VX_EXTERNAL);
+        ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
     }
     else
     {
@@ -607,7 +607,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
     }
     else if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
-        if (ref->type == VX_TYPE_ERROR)
+        if (ref->type == (vx_enum)VX_TYPE_ERROR)
         {
             tivx_error_t *error = (tivx_error_t *)ref;
             status = error->status;

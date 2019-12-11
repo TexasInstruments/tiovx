@@ -37,7 +37,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref);
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)lut, VX_TYPE_LUT, VX_EXTERNAL, NULL));
+        (vx_reference*)lut, (vx_enum)VX_TYPE_LUT, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_lut VX_API_CALL vxCreateLUT(
@@ -49,25 +49,25 @@ vx_lut VX_API_CALL vxCreateLUT(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8) || (data_type == VX_TYPE_CHAR))
+        if ((data_type == (vx_enum)VX_TYPE_INT8) || (data_type == (vx_enum)VX_TYPE_UINT8) || (data_type == (vx_enum)VX_TYPE_CHAR))
         {
             if (count <= 256)
             {
                 dim = sizeof(vx_uint8);
             }
         }
-        else if ((data_type == VX_TYPE_INT16) || (data_type == VX_TYPE_UINT16))
+        else if ((data_type == (vx_enum)VX_TYPE_INT16) || (data_type == (vx_enum)VX_TYPE_UINT16))
         {
             if (count <= 65536)
             {
                 dim = sizeof(vx_uint16);
             }
         }
-        else if ((data_type == VX_TYPE_FLOAT32) || (data_type == VX_TYPE_UINT32) || (data_type == VX_TYPE_INT32))
+        else if ((data_type == (vx_enum)VX_TYPE_FLOAT32) || (data_type == (vx_enum)VX_TYPE_UINT32) || (data_type == (vx_enum)VX_TYPE_INT32))
         {
             dim = 4u; /* 4 bytes per entry for float32, int32, uint32 */
         }
-        else if ((data_type == VX_TYPE_FLOAT64) || (data_type == VX_TYPE_UINT64) || (data_type == VX_TYPE_INT64))
+        else if ((data_type == (vx_enum)VX_TYPE_FLOAT64) || (data_type == (vx_enum)VX_TYPE_UINT64) || (data_type == (vx_enum)VX_TYPE_INT64))
         {
             dim = 8u; /* 8 bytes per entry for float64, int64, uint64 */
         }
@@ -78,11 +78,11 @@ vx_lut VX_API_CALL vxCreateLUT(
 
         if (0 != dim)
         {
-            lut = (vx_lut)ownCreateReference(context, VX_TYPE_LUT,
-                VX_EXTERNAL, &context->base);
+            lut = (vx_lut)ownCreateReference(context, (vx_enum)VX_TYPE_LUT,
+                (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)lut) == (vx_status)VX_SUCCESS) &&
-                (lut->base.type == VX_TYPE_LUT))
+                (lut->base.type == (vx_enum)VX_TYPE_LUT))
             {
                 /* assign refernce type specific callback's */
                 lut->base.destructor_callback = &ownDestructLut;
@@ -91,7 +91,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     (tivx_reference_release_callback_f)&vxReleaseLUT;
 
                 obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_LUT, (vx_reference)lut);
+                    (vx_enum)TIVX_OBJ_DESC_LUT, (vx_reference)lut);
                 if(obj_desc==NULL)
                 {
                     vxReleaseLUT(&lut);
@@ -109,7 +109,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     obj_desc->mem_size = dim * count;
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
-                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
                     lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -125,7 +125,7 @@ vx_status VX_API_CALL vxQueryLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -138,7 +138,7 @@ vx_status VX_API_CALL vxQueryLUT(
         obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         switch (attribute)
         {
-            case VX_LUT_TYPE:
+            case (vx_enum)VX_LUT_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->item_type;
@@ -149,7 +149,7 @@ vx_status VX_API_CALL vxQueryLUT(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_LUT_COUNT:
+            case (vx_enum)VX_LUT_COUNT:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_items;
@@ -160,7 +160,7 @@ vx_status VX_API_CALL vxQueryLUT(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_LUT_SIZE:
+            case (vx_enum)VX_LUT_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->mem_size;
@@ -171,23 +171,23 @@ vx_status VX_API_CALL vxQueryLUT(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_LUT_OFFSET:
+            case (vx_enum)VX_LUT_OFFSET:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    if ( (VX_TYPE_UINT8 == obj_desc->item_type) ||
-                         (VX_TYPE_UINT16 == obj_desc->item_type) ||
-                         (VX_TYPE_UINT32 == obj_desc->item_type) ||
-                         (VX_TYPE_UINT64 == obj_desc->item_type) )
+                    if ( ((vx_enum)VX_TYPE_UINT8 == obj_desc->item_type) ||
+                         ((vx_enum)VX_TYPE_UINT16 == obj_desc->item_type) ||
+                         ((vx_enum)VX_TYPE_UINT32 == obj_desc->item_type) ||
+                         ((vx_enum)VX_TYPE_UINT64 == obj_desc->item_type) )
                     {
                         *(vx_uint32 *)ptr = 0;
                     }
-                    else if ( (VX_TYPE_CHAR == obj_desc->item_type) ||
-                              (VX_TYPE_INT8 == obj_desc->item_type) ||
-                              (VX_TYPE_INT16 == obj_desc->item_type) ||
-                              (VX_TYPE_INT32 == obj_desc->item_type) ||
-                              (VX_TYPE_INT64 == obj_desc->item_type) ||
-                              (VX_TYPE_FLOAT32 == obj_desc->item_type) ||
-                              (VX_TYPE_FLOAT64 == obj_desc->item_type) )
+                    else if ( ((vx_enum)VX_TYPE_CHAR == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_INT8 == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_INT16 == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_INT32 == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_INT64 == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_FLOAT32 == obj_desc->item_type) ||
+                              ((vx_enum)VX_TYPE_FLOAT64 == obj_desc->item_type) )
                     {
                         *(vx_uint32 *)ptr = (vx_uint32)(obj_desc->num_items/2);
                     }
@@ -220,7 +220,7 @@ vx_status VX_API_CALL vxCopyLUT(
     vx_uint32 size;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -231,14 +231,14 @@ vx_status VX_API_CALL vxCopyLUT(
     else
     {
         obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
-        if (VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Memory still not allocated */
-        if ((VX_READ_ONLY == usage) &&
+        if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: Memory is not allocated\n");
@@ -257,15 +257,15 @@ vx_status VX_API_CALL vxCopyLUT(
         size = obj_desc->mem_size;
 
         /* Copy from lut object to user memory */
-        if (VX_READ_ONLY == usage)
+        if ((vx_enum)VX_READ_ONLY == usage)
         {
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
         else /* Copy from user memory to lut object */
         {
@@ -274,12 +274,12 @@ vx_status VX_API_CALL vxCopyLUT(
             if ((vx_status)VX_SUCCESS == status)
             {
                 tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
                 memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
             }
         }
     }
@@ -294,7 +294,7 @@ vx_status VX_API_CALL vxMapLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -309,8 +309,8 @@ vx_status VX_API_CALL vxMapLUT(
         {
             obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
             tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-                obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-                VX_READ_AND_WRITE);
+                obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_AND_WRITE);
 
             *ptr = (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         }
@@ -324,7 +324,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -336,8 +336,8 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     {
         obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_AND_WRITE);
+            obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_READ_AND_WRITE);
     }
 
     return (status);
@@ -348,7 +348,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_LUT)
+    if(ref->type == (vx_enum)VX_TYPE_LUT)
     {
         obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
         if(obj_desc != NULL)
@@ -358,7 +358,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
-                    TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
@@ -371,7 +371,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
                     obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
                             obj_desc->mem_ptr.host_ptr,
-                            TIVX_MEM_EXTERNAL);
+                            (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -394,7 +394,7 @@ static vx_status ownDestructLut(vx_reference ref)
 {
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if(ref->type == VX_TYPE_LUT)
+    if(ref->type == (vx_enum)VX_TYPE_LUT)
     {
         obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
         if(obj_desc!=NULL)

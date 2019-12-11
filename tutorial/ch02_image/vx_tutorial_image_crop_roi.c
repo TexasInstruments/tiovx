@@ -166,8 +166,8 @@ void vx_tutorial_image_crop_roi()
     show_image_attributes(image);
     /** \endcode */
 
-    vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
-    vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(image, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
 
     rect.start_x = width/4;
     rect.start_y = height/4;
@@ -303,7 +303,7 @@ vx_image  load_image_from_handle_from_file(
          * Creates a reference to image object that was externally allocated
          * \code
          */
-        image = vxCreateImageFromHandle(context, df, image_addr, ptrs, VX_MEMORY_TYPE_HOST);
+        image = vxCreateImageFromHandle(context, df, image_addr, ptrs, (vx_enum)VX_MEMORY_TYPE_HOST);
         /** \endcode */
 
         /* MUST not free memory that is passed to vxCreateImageFromHandle, until

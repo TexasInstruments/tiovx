@@ -99,9 +99,9 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
         tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -127,9 +127,9 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         }
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return (status);
@@ -152,7 +152,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
             TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         temp_ptr = tivxMemAlloc(dst->imagepatch_addr[0].dim_x *
-            sizeof(uint32_t), TIVX_MEM_EXTERNAL);
+            sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL == temp_ptr)
         {
@@ -196,7 +196,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
         else
         {
             tivxMemFree(temp_ptr , (dst->imagepatch_addr[0].dim_x *
-                sizeof(uint32_t)), TIVX_MEM_EXTERNAL);
+                sizeof(uint32_t)), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -210,9 +210,9 @@ void tivxAddTargetKernelIntegralImage(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
                 TIVX_TARGET_MAX_NAME);
@@ -224,7 +224,7 @@ void tivxAddTargetKernelIntegralImage(void)
         }
 
         vx_intgimg_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_INTEGRAL_IMAGE,
+            (vx_enum)VX_KERNEL_INTEGRAL_IMAGE,
             target_name,
             tivxKernelIntgImgProcess,
             tivxKernelIntgImgCreate,

@@ -40,8 +40,8 @@ vx_status tivxMemBufferAlloc(
     {
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
-            case TIVX_MEM_EXTERNAL_SCRATCH:
+            case (vx_enum)TIVX_MEM_EXTERNAL:
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 /* Assuming block id 0 is used for external memory */
                 block_id = 0;
                 break;
@@ -157,7 +157,7 @@ void tivxMemBufferMap(
      * to be safe, we still perform invalidate even in WRITE only mode. */
     if ((NULL != host_ptr) && (0U != size))
     {
-        if (TIVX_MEMORY_TYPE_DMA != mem_type)
+        if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
             if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
             {
@@ -196,8 +196,8 @@ void tivxMemBufferUnmap(
 {
     if ((NULL != host_ptr) && (0U != size))
     {
-        if ((TIVX_MEMORY_TYPE_DMA != mem_type) &&
-            ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
+        if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
+            (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
             if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
             {

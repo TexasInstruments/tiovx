@@ -96,11 +96,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         img = (vx_image)parameters[TIVX_KERNEL_RGB_IR_IN_IMG_IDX];
 
         /* Get the image width/heigh and format */
-        status = vxQueryImage(img, VX_IMAGE_FORMAT, &fmt,
+        status = vxQueryImage(img, (vx_enum)VX_IMAGE_FORMAT, &fmt,
             sizeof(fmt));
 
-        status |= vxQueryImage(img, VX_IMAGE_WIDTH, &w, sizeof(w));
-        status |= vxQueryImage(img, VX_IMAGE_HEIGHT, &h, sizeof(h));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_WIDTH, &w, sizeof(w));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_HEIGHT, &h, sizeof(h));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -116,11 +116,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_RGB_IR_SENSOR_PHASE_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT8)
+            if (stype != (vx_enum)VX_TYPE_UINT8)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
@@ -128,7 +128,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         else
         {
             status = vxCopyScalar(scalar, &intVal,
-                VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
             if (status == (vx_status)VX_SUCCESS)
             {
@@ -144,11 +144,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_RGB_IR_THR_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT16)
+            if (stype != (vx_enum)VX_TYPE_UINT16)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
@@ -160,18 +160,18 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         scalar = (vx_scalar)parameters[
                                        TIVX_KERNEL_RGB_IR_ALPHA_R_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_FLOAT32)
+            if (stype != (vx_enum)VX_TYPE_FLOAT32)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -189,18 +189,18 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         scalar = (vx_scalar)parameters[
                                        TIVX_KERNEL_RGB_IR_ALPHA_G_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_FLOAT32)
+            if (stype != (vx_enum)VX_TYPE_FLOAT32)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -218,18 +218,18 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         scalar = (vx_scalar)parameters[
                                        TIVX_KERNEL_RGB_IR_ALPHA_B_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_FLOAT32)
+            if (stype != (vx_enum)VX_TYPE_FLOAT32)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
             else
             {
                 status = vxCopyScalar(scalar, &value,
-                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                    (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
                 if (status == (vx_status)VX_SUCCESS)
                 {
@@ -246,11 +246,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
     {
         scalar = (vx_scalar)parameters[TIVX_KERNEL_RGB_IR_BORDER_MODE_IDX];
 
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype,
+        status = vxQueryScalar(scalar, (vx_enum)VX_SCALAR_TYPE, &stype,
             sizeof(stype));
         if ((vx_status)VX_SUCCESS == status)
         {
-            if (stype != VX_TYPE_UINT8)
+            if (stype != (vx_enum)VX_TYPE_UINT8)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
@@ -258,7 +258,7 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         else
         {
             status = vxCopyScalar(scalar, &intVal,
-                VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+                (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
             if (status == (vx_status)VX_SUCCESS)
             {
@@ -277,11 +277,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         img = (vx_image)parameters[TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX];
 
         /* Get the image width/heigh and format */
-        status = vxQueryImage(img, VX_IMAGE_FORMAT, &fmt,
+        status = vxQueryImage(img, (vx_enum)VX_IMAGE_FORMAT, &fmt,
             sizeof(fmt));
 
-        status |= vxQueryImage(img, VX_IMAGE_WIDTH, &w, sizeof(w));
-        status |= vxQueryImage(img, VX_IMAGE_HEIGHT, &h, sizeof(h));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_WIDTH, &w, sizeof(w));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_HEIGHT, &h, sizeof(h));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -300,11 +300,11 @@ static vx_status VX_CALLBACK tivxAddKernelRgbIrValidate(vx_node node,
         img = (vx_image)parameters[TIVX_KERNEL_RGB_IR_OUT_IR_IDX];
 
         /* Get the image width/heigh and format */
-        status = vxQueryImage(img, VX_IMAGE_FORMAT, &fmt,
+        status = vxQueryImage(img, (vx_enum)VX_IMAGE_FORMAT, &fmt,
             sizeof(fmt));
 
-        status |= vxQueryImage(img, VX_IMAGE_WIDTH, &w, sizeof(w));
-        status |= vxQueryImage(img, VX_IMAGE_HEIGHT, &h, sizeof(h));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_WIDTH, &w, sizeof(w));
+        status |= vxQueryImage(img, (vx_enum)VX_IMAGE_HEIGHT, &h, sizeof(h));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -345,9 +345,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_IMAGE,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -355,9 +355,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -365,9 +365,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -375,9 +375,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -385,9 +385,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -395,9 +395,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -405,9 +405,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
-                VX_TYPE_SCALAR,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_INPUT,
+                (vx_enum)VX_TYPE_SCALAR,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -415,9 +415,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_OUTPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_OUTPUT,
+                (vx_enum)VX_TYPE_IMAGE,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -425,9 +425,9 @@ vx_status tivxAddIVisionKernelRgbIr(vx_context context)
         {
                     status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
                         );
                     index++;
         }

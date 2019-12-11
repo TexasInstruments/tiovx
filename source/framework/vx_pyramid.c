@@ -60,7 +60,7 @@ static const vx_float32 gOrbScaleFactor
 VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)prmd, VX_TYPE_PYRAMID, VX_EXTERNAL, NULL));
+        (vx_reference*)prmd, (vx_enum)VX_TYPE_PYRAMID, (vx_enum)VX_EXTERNAL, NULL));
 }
 
 vx_pyramid VX_API_CALL vxCreatePyramid(
@@ -122,11 +122,11 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
-                VX_EXTERNAL, &context->base);
+            prmd = (vx_pyramid)ownCreateReference(context, (vx_enum)VX_TYPE_PYRAMID,
+                (vx_enum)VX_EXTERNAL, &context->base);
 
             if ((vxGetStatus((vx_reference)prmd) == (vx_status)VX_SUCCESS) &&
-                (prmd->base.type == VX_TYPE_PYRAMID))
+                (prmd->base.type == (vx_enum)VX_TYPE_PYRAMID))
             {
                 /* assign refernce type specific callback's */
                 prmd->base.destructor_callback = &ownDestructPyramid;
@@ -135,7 +135,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     (tivx_reference_release_callback_f)&vxReleasePyramid;
 
                 obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
+                    (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
                 if(obj_desc==NULL)
                 {
                     vxReleasePyramid(&prmd);
@@ -177,7 +177,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 {
     vx_image img = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) ==
+    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) ==
             (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
         (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
             num_levels))
@@ -186,7 +186,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 
         /* Should increment the reference count,
            To release this image, app should explicitely call ReleaseImage */
-        ownIncrementReference(&img->base, VX_EXTERNAL);
+        ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
 
         /* setting is_array_element flag */
         img->base.is_array_element = (vx_bool)vx_true_e;
@@ -210,7 +210,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     /* levels can not be 0 even in virtual prmd */
-    if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
         (levels > 0) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
         ( ((scale == VX_SCALE_PYRAMID_ORB) && (levels <= TIVX_PYRAMID_MAX_LEVELS_ORB)) ||
@@ -220,11 +220,11 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 
         /* frame size and format can be unspecified in virtual prmd */
 
-        prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
-            VX_EXTERNAL, &context->base);
+        prmd = (vx_pyramid)ownCreateReference(context, (vx_enum)VX_TYPE_PYRAMID,
+            (vx_enum)VX_EXTERNAL, &context->base);
 
         if ((vxGetStatus((vx_reference)prmd) == (vx_status)VX_SUCCESS) &&
-            (prmd->base.type == VX_TYPE_PYRAMID))
+            (prmd->base.type == (vx_enum)VX_TYPE_PYRAMID))
         {
             /* assign refernce type specific callback's */
             prmd->base.destructor_callback = &ownDestructPyramid;
@@ -233,7 +233,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 (tivx_reference_release_callback_f)&vxReleasePyramid;
 
             obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
+                (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
             if(obj_desc==NULL)
             {
                 vxReleasePyramid(&prmd);
@@ -284,7 +284,7 @@ vx_status ownInitVirtualPyramid(
     vx_status status = (vx_status)VX_FAILURE;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
         &&
         (prmd->base.obj_desc != NULL))
     {
@@ -311,7 +311,7 @@ vx_status VX_API_CALL vxQueryPyramid(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
             || (prmd->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid reference\n");
@@ -322,7 +322,7 @@ vx_status VX_API_CALL vxQueryPyramid(
         obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
         switch (attribute)
         {
-            case VX_PYRAMID_LEVELS:
+            case (vx_enum)VX_PYRAMID_LEVELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_levels;
@@ -333,7 +333,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_PYRAMID_SCALE:
+            case (vx_enum)VX_PYRAMID_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3U))
                 {
                     *(vx_float32 *)ptr = obj_desc->scale;
@@ -344,7 +344,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_PYRAMID_WIDTH:
+            case (vx_enum)VX_PYRAMID_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->width;
@@ -355,7 +355,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_PYRAMID_HEIGHT:
+            case (vx_enum)VX_PYRAMID_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->height;
@@ -366,7 +366,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_PYRAMID_FORMAT:
+            case (vx_enum)VX_PYRAMID_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
                     *(vx_df_image *)ptr = obj_desc->format;
@@ -395,7 +395,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
     vx_image img;
 
-    if(prmd->base.type == VX_TYPE_PYRAMID)
+    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
     {
         if(prmd->base.obj_desc != NULL)
         {
@@ -450,14 +450,14 @@ static vx_status ownDestructPyramid(vx_reference ref)
         {
             /* increment the internal counter on the image, not the
                external one */
-            ownDecrementReference((vx_reference)prmd->img[i], VX_INTERNAL);
+            ownDecrementReference((vx_reference)prmd->img[i], (vx_enum)VX_INTERNAL);
 
             ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
-                VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
+                (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
         }
     }
 
-    if(prmd->base.type == VX_TYPE_PYRAMID)
+    if(prmd->base.type == (vx_enum)VX_TYPE_PYRAMID)
     {
         if(prmd->base.obj_desc!=NULL)
         {
@@ -498,7 +498,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
             /* increment the internal counter on the image, not the
                external one */
-            ownIncrementReference((vx_reference)img, VX_INTERNAL);
+            ownIncrementReference((vx_reference)img, (vx_enum)VX_INTERNAL);
 
             /* remember that the scope of the image is the prmd */
             ownReferenceSetScope(&img->base, &prmd->base);
@@ -535,10 +535,10 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
             {
                 /* increment the internal counter on the image, not the
                    external one */
-                ownDecrementReference((vx_reference)prmd->img[j], VX_INTERNAL);
+                ownDecrementReference((vx_reference)prmd->img[j], (vx_enum)VX_INTERNAL);
 
                 ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
-                    VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
+                    (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
             }
         }
     }

@@ -34,13 +34,13 @@ static tivx_error_t *ownAllocateError(vx_context context, vx_status status);
 
 static vx_status VX_API_CALL ownReleaseErrorInt(vx_reference *ref)
 {
-    return ownReleaseReferenceInt(ref, VX_TYPE_ERROR, VX_INTERNAL, NULL);
+    return ownReleaseReferenceInt(ref, (vx_enum)VX_TYPE_ERROR, (vx_enum)VX_INTERNAL, NULL);
 }
 
 static tivx_error_t *ownAllocateError(vx_context context, vx_status status)
 {
     /* PROBLEM: ownCreateReference needs error object to be created already */
-    tivx_error_t *error = (tivx_error_t *)ownCreateReference(context, VX_TYPE_ERROR, VX_INTERNAL, &context->base);
+    tivx_error_t *error = (tivx_error_t *)ownCreateReference(context, (vx_enum)VX_TYPE_ERROR, (vx_enum)VX_INTERNAL, &context->base);
     if (error)
     {
         error->base.release_callback = &ownReleaseErrorInt;
@@ -75,7 +75,7 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
     {
         if (context->reftable[i] != NULL)
         {
-            if (context->reftable[i]->type == VX_TYPE_ERROR)
+            if (context->reftable[i]->type == (vx_enum)VX_TYPE_ERROR)
             {
                 error = (tivx_error_t *)context->reftable[i];
                 if (error->status == status)

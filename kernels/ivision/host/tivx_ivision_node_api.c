@@ -76,17 +76,17 @@ VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
                             vx_scalar num_corners)
 {
     vx_scalar sc_fact = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT32, &scaling_factor);
+        (vx_enum)VX_TYPE_UINT32, &scaling_factor);
     vx_scalar sc_thr = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_INT32, &nms_threshold);
+        (vx_enum)VX_TYPE_INT32, &nms_threshold);
     vx_scalar sc_q_shift = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &q_shift);
+        (vx_enum)VX_TYPE_UINT8, &q_shift);
     vx_scalar sc_win = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &win_size);
+        (vx_enum)VX_TYPE_UINT8, &win_size);
     vx_scalar sc_score = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &score_method);
+        (vx_enum)VX_TYPE_UINT8, &score_method);
     vx_scalar sc_suppr = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &suppression_method);
+        (vx_enum)VX_TYPE_UINT8, &suppression_method);
 
     vx_reference params[] = {
             (vx_reference)input,
@@ -124,17 +124,17 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
                             vx_image  outputIR)
 {
     vx_scalar sc_sensorPhase = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &sensorPhase);
+        (vx_enum)VX_TYPE_UINT8, &sensorPhase);
     vx_scalar sc_thr = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT16, &threshold);
+        (vx_enum)VX_TYPE_UINT16, &threshold);
     vx_scalar sc_alphaR = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_FLOAT32, &alphaR);
+        (vx_enum)VX_TYPE_FLOAT32, &alphaR);
     vx_scalar sc_alphaG = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_FLOAT32, &alphaG);
+        (vx_enum)VX_TYPE_FLOAT32, &alphaG);
     vx_scalar sc_alphaB = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_FLOAT32, &alphaB);
+        (vx_enum)VX_TYPE_FLOAT32, &alphaB);
     vx_scalar sc_borderMode = vxCreateScalar(vxGetContext((vx_reference)graph),
-        VX_TYPE_UINT8, &borderMode);
+        (vx_enum)VX_TYPE_UINT8, &borderMode);
 
     vx_reference params[] = {
             (vx_reference)input,

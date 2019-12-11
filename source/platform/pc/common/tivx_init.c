@@ -101,45 +101,45 @@ void tivxInit(void)
     /* trick target kernel used in DSP emulation mode to think
      * they are being invoked from a DSP
      */
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     tivxRegisterOpenVXCoreTargetKernels();
     #ifdef BUILD_TUTORIAL
     tivxRegisterTutorialTargetKernels();
     #endif
 
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
     tivxRegisterOpenVXCoreTargetKernels();
     #ifdef BUILD_TUTORIAL
     tivxRegisterTutorialTargetKernels();
     #endif
 
     #ifndef _DISABLE_TIDL
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE1);
     tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE2);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE2);
     tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE3);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE3);
     tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE4);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE4);
     tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
     tivxRegisterTIDLTargetKernels();
     #endif
 
     #ifdef BUILD_CONFORMANCE_TEST
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetC66Kernels();
 
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetC66Kernels();
     #endif
 
     /* let rest of system think it is running on DSP1 */
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
 
     tivxHostInit();
 

@@ -143,7 +143,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if (   (NULL != graph)
-        && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
         && (graph->verified == (vx_bool)vx_true_e))
     {
         for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)

@@ -32,7 +32,7 @@ typedef struct tivx_platform_info
 
     /*! \brief Platform locks to protect access to the descriptor id
      */
-    tivx_mutex g_platform_lock[TIVX_PLATFORM_LOCK_MAX];
+    tivx_mutex g_platform_lock[(vx_enum)TIVX_PLATFORM_LOCK_MAX];
 } tivx_platform_info_t;
 
 
@@ -61,7 +61,7 @@ vx_status tivxPlatformInit(void)
     }
     else
     {
-        for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+        for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
         {
             status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
@@ -88,7 +88,7 @@ void tivxPlatformDeInit(void)
     tivxMemDeInit();
     tivxIpcDeInit();
 
-    for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+    for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
         if (NULL != g_tivx_platform_info.g_platform_lock[i])
         {
@@ -99,11 +99,11 @@ void tivxPlatformDeInit(void)
 
 void tivxPlatformSystemLock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
-        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* for data ref queue lock, need to take a multi processor lock,
              * since multiple CPUs could be trying to queue/dequeue from the same
@@ -117,9 +117,9 @@ void tivxPlatformSystemLock(vx_enum lock_id)
 
 void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
+    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
-        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             System_openvxHwSpinLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
@@ -197,7 +197,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
         for(i=0; i<table_info->num_entries; i++)
         {
             tmp_obj_desc = (tivx_obj_desc_t*)&table_info->table_base[i];
-            tmp_obj_desc->type = TIVX_OBJ_DESC_INVALID;
+            tmp_obj_desc->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
         }
 
         table_info->last_alloc_index = 0;

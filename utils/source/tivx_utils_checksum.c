@@ -84,9 +84,9 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
             &map_id,
             &image_addr,
             (void**) &data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
+            (vx_enum)VX_READ_ONLY,
+            (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_NOGAP_X
             );
 
         stride_xby2 = (image_addr.stride_x == 0) ? 3 : (image_addr.stride_x*2);

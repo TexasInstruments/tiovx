@@ -109,8 +109,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
         config = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
 
-        tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(config, (vx_enum)VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(config, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
 
         if ((config_size != sizeof(sTIDL_IOBufDesc_t)) ||
             (strncmp(config_name, "sTIDL_IOBufDesc_t", sizeof(config_name)) != 0))
@@ -128,8 +128,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
       network = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
-      tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
-      tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
 
       if ((network_size < 1) ||
           (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
@@ -147,8 +147,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
       createParams = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
 
-      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, VX_USER_DATA_OBJECT_NAME, &createParams_name, sizeof(createParams_name)));
-      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, VX_USER_DATA_OBJECT_SIZE, &createParams_size, sizeof(createParams_size)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, (vx_enum)VX_USER_DATA_OBJECT_NAME, &createParams_name, sizeof(createParams_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &createParams_size, sizeof(createParams_size)));
 
       if ((createParams_size != sizeof(TIDL_CreateParams)) ||
           (strncmp(createParams_name, "TIDL_CreateParams", sizeof(createParams_name)) != 0))
@@ -166,8 +166,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
       inArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
 
-      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, VX_USER_DATA_OBJECT_NAME, &inArgs_name, sizeof(inArgs_name)));
-      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, VX_USER_DATA_OBJECT_SIZE, &inArgs_size, sizeof(inArgs_size)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, (vx_enum)VX_USER_DATA_OBJECT_NAME, &inArgs_name, sizeof(inArgs_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &inArgs_size, sizeof(inArgs_size)));
 
       if ((inArgs_size != sizeof(TIDL_InArgs)) ||
           (strncmp(inArgs_name, "TIDL_InArgs", sizeof(inArgs_name)) != 0))
@@ -185,8 +185,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
       outArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
 
-      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, VX_USER_DATA_OBJECT_NAME, &outArgs_name, sizeof(outArgs_name)));
-      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, VX_USER_DATA_OBJECT_SIZE, &outArgs_size, sizeof(outArgs_size)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, (vx_enum)VX_USER_DATA_OBJECT_NAME, &outArgs_name, sizeof(outArgs_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &outArgs_size, sizeof(outArgs_size)));
 
       if ((outArgs_size != sizeof(TIDL_outArgs)) ||
           (strncmp(outArgs_name, "TIDL_outArgs", sizeof(outArgs_name)) != 0))
@@ -240,9 +240,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_INPUT,
+                (vx_enum)VX_INPUT,
                 VX_TYPE_USER_DATA_OBJECT,
-                VX_PARAMETER_STATE_REQUIRED
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
         }
@@ -250,9 +250,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
           status = vxAddParameterToKernel(kernel,
               index,
-              VX_INPUT,
+              (vx_enum)VX_INPUT,
               VX_TYPE_USER_DATA_OBJECT,
-              VX_PARAMETER_STATE_REQUIRED
+              (vx_enum)VX_PARAMETER_STATE_REQUIRED
           );
           index++;
         }
@@ -260,9 +260,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
           status = vxAddParameterToKernel(kernel,
               index,
-              VX_INPUT,
+              (vx_enum)VX_INPUT,
               VX_TYPE_USER_DATA_OBJECT,
-              VX_PARAMETER_STATE_REQUIRED
+              (vx_enum)VX_PARAMETER_STATE_REQUIRED
           );
           index++;
         }
@@ -270,9 +270,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
           status = vxAddParameterToKernel(kernel,
               index,
-              VX_INPUT,
+              (vx_enum)VX_INPUT,
               VX_TYPE_USER_DATA_OBJECT,
-              VX_PARAMETER_STATE_REQUIRED
+              (vx_enum)VX_PARAMETER_STATE_REQUIRED
           );
           index++;
         }
@@ -280,9 +280,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
           status = vxAddParameterToKernel(kernel,
               index,
-              VX_OUTPUT,
+              (vx_enum)VX_OUTPUT,
               VX_TYPE_USER_DATA_OBJECT,
-              VX_PARAMETER_STATE_REQUIRED
+              (vx_enum)VX_PARAMETER_STATE_REQUIRED
           );
           index++;
         }
@@ -292,9 +292,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             {
                 status = vxAddParameterToKernel(kernel,
                     index,
-                    VX_INPUT,
-                    VX_TYPE_TENSOR,
-                    VX_PARAMETER_STATE_REQUIRED
+                    (vx_enum)VX_INPUT,
+                    (vx_enum)VX_TYPE_TENSOR,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
                     );
                 index++;
             }
@@ -306,9 +306,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             {
                 status = vxAddParameterToKernel(kernel,
                     index,
-                    VX_OUTPUT,
-                    VX_TYPE_TENSOR,
-                    VX_PARAMETER_STATE_REQUIRED
+                    (vx_enum)VX_OUTPUT,
+                    (vx_enum)VX_TYPE_TENSOR,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
                     );
                 index++;
             }

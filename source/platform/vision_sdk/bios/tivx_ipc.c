@@ -24,7 +24,7 @@ static void tivxIpcHandler(uint32_t payload);
  *   vision sdk cpu id.
  * \ingroup group_tivx_ipc
  */
-static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+static uint32_t g_ipc_cpu_id_map[(vx_enum)TIVX_CPU_ID_MAX] = {
     SYSTEM_PROC_DSP1,
     SYSTEM_PROC_DSP2,
     SYSTEM_PROC_EVE1,
@@ -67,7 +67,7 @@ vx_status tivxIpcSendMsg(
     uint32_t vsdk_cpu_id;
     vx_status status;
 
-    if( cpu_id < TIVX_CPU_ID_MAX)
+    if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
@@ -98,7 +98,7 @@ uint32_t tivxIpcGetSelfPortId(void)
 
 vx_enum tivxGetSelfCpuId(void)
 {
-    vx_enum cpu_id = TIVX_CPU_ID_INVALID;
+    vx_enum cpu_id = (vx_enum)TIVX_CPU_ID_INVALID;
     uint32_t i, vsdk_cpu_id;
 
     vsdk_cpu_id =  System_getSelfProcId();
@@ -142,7 +142,7 @@ vx_bool tivxIsTargetEnabled(char target_name[])
         if (target_id != TIVX_TARGET_ID_INVALID)
         {
             cpu_id = tivxTargetGetCpuId(target_id);
-            if( cpu_id < TIVX_CPU_ID_MAX)
+            if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
             {
                 vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
                 vsdk_isenabled = System_openvxIsProcEnabled(vsdk_cpu_id);

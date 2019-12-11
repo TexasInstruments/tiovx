@@ -208,7 +208,7 @@ void vx_tutorial_tidl()
   context = vxCreateContext();
   VX_TUTORIAL_ASSERT_VALID_REF(context);
 
-  vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE);
+  vxDirective((vx_reference)context, (vx_enum)VX_DIRECTIVE_ENABLE_PERFORMANCE);
 
   sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), CFG_FILE_NAME);
 
@@ -254,7 +254,7 @@ void vx_tutorial_tidl()
      * In case the network has only one group of layer, assign the first core and disable the second core
      * In case there are 2 groups of layers. 1st group is always assigned to EVE and second group always assigned to DSP
      * */
-    int32_t layersGroupCount[TIVX_CPU_ID_MAX];
+    int32_t layersGroupCount[(vx_enum)TIVX_CPU_ID_MAX];
     int32_t numLayersGroup= vx_tidl_utils_countLayersGroup(network, layersGroupCount);
 
     if (numLayersGroup== 1) {
@@ -262,13 +262,13 @@ void vx_tutorial_tidl()
         /* If the entire network runs on EVE, spun the processing into as many threads as there are EVEs to demonstrate parallelism between EVEs */
         maxNumThreads= NUM_EVE_CPU;
         targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
-        targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
+        targetCpuId1[0]= (vx_enum)TIVX_CPU_ID_EVE1;targetCpuId1[1]= (vx_enum)TIVX_CPU_ID_EVE2;targetCpuId1[2]= (vx_enum)TIVX_CPU_ID_EVE3;targetCpuId1[3]= (vx_enum)TIVX_CPU_ID_EVE4;
       }
       else if (layersGroupCount[2]!=0) {
         /* If the entire network runs on DSP, spun the processing into as many threads as there are DSPs to demonstrate parallelism between DSPs */
         maxNumThreads= NUM_DSP_CPU;
         targetCore1[0]= TIVX_TARGET_DSP1;targetCore1[1]= TIVX_TARGET_DSP2;
-        targetCpuId1[0]= TIVX_CPU_ID_DSP1;targetCpuId1[1]= TIVX_CPU_ID_DSP2;
+        targetCpuId1[0]= (vx_enum)TIVX_CPU_ID_DSP1;targetCpuId1[1]= (vx_enum)TIVX_CPU_ID_DSP2;
       }
       else {
         printf(" Invalid layer group ID detected, exiting ...\n");
@@ -276,15 +276,15 @@ void vx_tutorial_tidl()
       }
       for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
         targetCore2[threadIdx]= NULL;
-        targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
+        targetCpuId2[threadIdx]= (vx_enum)TIVX_CPU_ID_INVALID;
       }
     }/* In case the network has 2 groups, it will run on two cores */
     else if (numLayersGroup== 2) {
       maxNumThreads= NUM_EVE_CPU;
       targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
-      targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
+      targetCpuId1[0]= (vx_enum)TIVX_CPU_ID_EVE1;targetCpuId1[1]= (vx_enum)TIVX_CPU_ID_EVE2;targetCpuId1[2]= (vx_enum)TIVX_CPU_ID_EVE3;targetCpuId1[3]= (vx_enum)TIVX_CPU_ID_EVE4;
       targetCore2[0]= TIVX_TARGET_DSP1;targetCore2[1]= TIVX_TARGET_DSP1;targetCore2[2]= TIVX_TARGET_DSP1;targetCore2[3]= TIVX_TARGET_DSP1;
-      targetCpuId2[0]= TIVX_CPU_ID_DSP1;targetCpuId2[1]= TIVX_CPU_ID_DSP1;targetCpuId2[2]= TIVX_CPU_ID_DSP1;targetCpuId2[3]= TIVX_CPU_ID_DSP1;
+      targetCpuId2[0]= (vx_enum)TIVX_CPU_ID_DSP1;targetCpuId2[1]= (vx_enum)TIVX_CPU_ID_DSP1;targetCpuId2[2]= (vx_enum)TIVX_CPU_ID_DSP1;targetCpuId2[3]= (vx_enum)TIVX_CPU_ID_DSP1;
     }
     else {
       printf(" Invalid number of groups of layers, exiting ...\n");
@@ -295,19 +295,19 @@ void vx_tutorial_tidl()
   else if (obj->processing_core_mode== 1) {
     maxNumThreads= NUM_EVE_CPU;
     targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
-    targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
+    targetCpuId1[0]= (vx_enum)TIVX_CPU_ID_EVE1;targetCpuId1[1]= (vx_enum)TIVX_CPU_ID_EVE2;targetCpuId1[2]= (vx_enum)TIVX_CPU_ID_EVE3;targetCpuId1[3]= (vx_enum)TIVX_CPU_ID_EVE4;
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
       targetCore2[threadIdx]= NULL;
-      targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
+      targetCpuId2[threadIdx]= (vx_enum)TIVX_CPU_ID_INVALID;
     }
   }
   else if (obj->processing_core_mode== 2) {
     maxNumThreads= NUM_DSP_CPU;
     targetCore1[0]= TIVX_TARGET_DSP1;targetCore1[1]= TIVX_TARGET_DSP2;
-    targetCpuId1[0]= TIVX_CPU_ID_DSP1;targetCpuId1[1]= TIVX_CPU_ID_DSP2;
+    targetCpuId1[0]= (vx_enum)TIVX_CPU_ID_DSP1;targetCpuId1[1]= (vx_enum)TIVX_CPU_ID_DSP2;
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
       targetCore2[threadIdx]= NULL;
-      targetCpuId2[threadIdx]= TIVX_CPU_ID_INVALID;
+      targetCpuId2[threadIdx]= (vx_enum)TIVX_CPU_ID_INVALID;
     }
   }
   else {
@@ -323,7 +323,7 @@ void vx_tutorial_tidl()
   config1 = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors1, targetCpuId1[0]);
 
   /* In case the network runs on one CPU, set num_output_tensors2 to 0 */
-  if (targetCpuId2[0]== TIVX_CPU_ID_INVALID) {
+  if (targetCpuId2[0]== (vx_enum)TIVX_CPU_ID_INVALID) {
     num_output_tensors2= 0;
     config2= 0;
   }
@@ -346,7 +346,7 @@ void vx_tutorial_tidl()
   kernel1 = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors1);
   VX_TUTORIAL_ASSERT_VALID_REF(kernel1)
 
-  if (targetCpuId2[0]!= TIVX_CPU_ID_INVALID) {
+  if (targetCpuId2[0]!= (vx_enum)TIVX_CPU_ID_INVALID) {
     kernel2 = tivxAddKernelTIDL(context, num_output_tensors1, num_output_tensors2);
     VX_TUTORIAL_ASSERT_VALID_REF(kernel2)
   }
@@ -404,14 +404,14 @@ void vx_tutorial_tidl()
     VX_TUTORIAL_ASSERT_VALID_REF(node1[threadIdx])
 
     /* Set target node to targetCore1 (EVEn or DSP1)*/
-    vxSetNodeTarget(node1[threadIdx], VX_TARGET_STRING, targetCore1[threadIdx]);
+    vxSetNodeTarget(node1[threadIdx], (vx_enum)VX_TARGET_STRING, targetCore1[threadIdx]);
 #ifdef HOST_EMULATION
     /* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
      * */
     gTidlNodeCpuId[2*threadIdx]= targetCpuId1[threadIdx];
 #endif
 
-    if ((targetCpuId2[threadIdx]== TIVX_CPU_ID_DSP1) || (targetCpuId2[threadIdx]== TIVX_CPU_ID_DSP2)) {
+    if ((targetCpuId2[threadIdx]== (vx_enum)TIVX_CPU_ID_DSP1) || (targetCpuId2[threadIdx]== (vx_enum)TIVX_CPU_ID_DSP2)) {
       printf("Thread #%d: Create output tensors for node 2 ... \n", threadIdx+1);
 
       /* Create array of output tensors for the second node */
@@ -438,7 +438,7 @@ void vx_tutorial_tidl()
       VX_TUTORIAL_ASSERT_VALID_REF(node2[threadIdx])
 
       /* Set target node to targetCore2 (EVEn or DSP1)*/
-      vxSetNodeTarget(node2[threadIdx], VX_TARGET_STRING, targetCore2[threadIdx]);
+      vxSetNodeTarget(node2[threadIdx], (vx_enum)VX_TARGET_STRING, targetCore2[threadIdx]);
 #ifdef HOST_EMULATION
       /* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
        * */
@@ -512,7 +512,7 @@ void vx_tutorial_tidl()
       printf("---------------------\n");
 
       /* Display the output_tensors1 if graph runs 1 cores */
-      if (targetCpuId2[threadIdx]== TIVX_CPU_ID_INVALID) {
+      if (targetCpuId2[threadIdx]== (vx_enum)TIVX_CPU_ID_INVALID) {
         real_output_tensors= &output_tensors1[threadIdx][0];
         realConfig= config1;
       }
@@ -527,15 +527,15 @@ void vx_tutorial_tidl()
   }
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-    vxQueryNode(node1[threadIdx], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node1[threadIdx], (vx_enum)VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     printf("\n---- Thread #%d: Node 1 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore1[threadIdx], perf_node1.min/1000000.0);
 
     if(node2[threadIdx] != 0) {
-      vxQueryNode(node2[threadIdx], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+      vxQueryNode(node2[threadIdx], (vx_enum)VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
       printf("---- Thread #%d: Node 2 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore2[threadIdx], perf_node2.min/1000000.0);
     }
 
-    vxQueryGraph(graph[threadIdx], VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+    vxQueryGraph(graph[threadIdx], (vx_enum)VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
      printf("---- Thread #%d: Total Graph Execution time: %4.6f ms\n", threadIdx + 1, perf_graph.min/1000000.0);
   }
 
@@ -754,7 +754,7 @@ static vx_status createInputTensors(vx_context context, vx_user_data_object conf
   vx_status status = (vx_status)VX_SUCCESS;
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&ioBufDesc, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   if (ioBufDesc->numInputBuf < VX_TUTORIAL_MAX_TENSORS) {
 
@@ -763,7 +763,7 @@ static vx_status createInputTensors(vx_context context, vx_user_data_object conf
       input_sizes[1] = ioBufDesc->inHeight[id] + ioBufDesc->inPadT[id] + ioBufDesc->inPadB[id];
       input_sizes[2] = ioBufDesc->inNumChannels[id];
 
-      input_tensors[id] = vxCreateTensor(context, 3, input_sizes, VX_TYPE_UINT8, 0);
+      input_tensors[id] = vxCreateTensor(context, 3, input_sizes, (vx_enum)VX_TYPE_UINT8, 0);
     }
 
   }
@@ -785,7 +785,7 @@ static vx_status createOutputTensor(vx_context context, vx_user_data_object conf
   vx_status status = (vx_status)VX_SUCCESS;
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&ioBufDesc, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   if (ioBufDesc->numOutputBuf < VX_TUTORIAL_MAX_TENSORS) {
 
@@ -794,7 +794,7 @@ static vx_status createOutputTensor(vx_context context, vx_user_data_object conf
       output_sizes[1] = ioBufDesc->outHeight[id] + ioBufDesc->outPadT[id] + ioBufDesc->outPadB[id];
       output_sizes[2] = ioBufDesc->outNumChannels[id];
 
-      output_tensors[id] = vxCreateTensor(context, 3, output_sizes, VX_TYPE_FLOAT32, 0);
+      output_tensors[id] = vxCreateTensor(context, 3, output_sizes, (vx_enum)VX_TYPE_FLOAT32, 0);
     }
 
   }
@@ -860,7 +860,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
   }
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&ioBufDesc, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   for(id = 0; id < ioBufDesc->numInputBuf; id++)
   {
@@ -874,7 +874,7 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
     input_strides[1] = input_sizes[0];
     input_strides[2] = input_sizes[1] * input_strides[1];
 
-    status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, (void **)&input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+    status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, (void **)&input_buffer, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -916,7 +916,7 @@ static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_pt
   sTIDL_IOBufDesc_t *ioBufDesc;
 
   vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+      (void **)&ioBufDesc, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
 
   for(id = 0; id < 1; id++)
   {
@@ -941,7 +941,7 @@ static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_pt
       output_strides[1] = output_sizes[0];
       output_strides[2] = output_sizes[1] * output_strides[1];
 
-      tivxMapTensorPatch(output_tensors[id], 3, start, output_sizes, &map_id_output, output_strides, &output_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+      tivxMapTensorPatch(output_tensors[id], 3, start, output_sizes, &map_id_output, output_strides, &output_buffer, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
 
       if (operation_mode == 0)
       {

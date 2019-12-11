@@ -114,13 +114,13 @@ static vx_status VX_CALLBACK tivxAddKernelHistogramValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
-        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, (vx_enum)VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
 
-        tivxCheckStatus(&status, vxQueryDistribution(distribution, VX_DISTRIBUTION_BINS, &distribution_bins, sizeof(distribution_bins)));
-        tivxCheckStatus(&status, vxQueryDistribution(distribution, VX_DISTRIBUTION_RANGE, &distribution_range, sizeof(distribution_range)));
-        tivxCheckStatus(&status, vxQueryDistribution(distribution, VX_DISTRIBUTION_OFFSET, &distribution_offset, sizeof(distribution_offset)));
+        tivxCheckStatus(&status, vxQueryDistribution(distribution, (vx_enum)VX_DISTRIBUTION_BINS, &distribution_bins, sizeof(distribution_bins)));
+        tivxCheckStatus(&status, vxQueryDistribution(distribution, (vx_enum)VX_DISTRIBUTION_RANGE, &distribution_range, sizeof(distribution_range)));
+        tivxCheckStatus(&status, vxQueryDistribution(distribution, (vx_enum)VX_DISTRIBUTION_OFFSET, &distribution_offset, sizeof(distribution_offset)));
     }
 
 
@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK tivxAddKernelHistogramInitialize(vx_node node,
         prms.bot_pad = 0U;
         prms.left_pad = 0U;
         prms.right_pad = 0U;
-        prms.border_mode = VX_BORDER_UNDEFINED;
+        prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
@@ -210,7 +210,7 @@ vx_status tivxAddKernelHistogram(vx_context context)
         kernel = vxAddUserKernel(
                     context,
                     "org.khronos.openvx.histogram",
-                    VX_KERNEL_HISTOGRAM,
+                    (vx_enum)VX_KERNEL_HISTOGRAM,
                     NULL,
                     TIVX_KERNEL_HISTOGRAM_MAX_PARAMS,
                     tivxAddKernelHistogramValidate,
@@ -226,9 +226,9 @@ vx_status tivxAddKernelHistogram(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_INPUT,
+                        (vx_enum)VX_TYPE_IMAGE,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -236,9 +236,9 @@ vx_status tivxAddKernelHistogram(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        VX_OUTPUT,
-                        VX_TYPE_DISTRIBUTION,
-                        VX_PARAMETER_STATE_REQUIRED
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_DISTRIBUTION,
+                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );
         }
         if (status == (vx_status)VX_SUCCESS)
