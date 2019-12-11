@@ -664,7 +664,7 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
 }
 
 /* Abstracted check for checking if references match
- * "(vx_bool)vx_true_e" will be returned if references match or if references parent object matches */
+ * "vx_true_e" will be returned if references match or if references parent object matches */
 vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2)
 {
     vx_bool ret = (vx_bool)vx_false_e;

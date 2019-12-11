@@ -245,8 +245,8 @@ void vx_tutorial_image_crop_roi()
  *
  * \param context [in] Context
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
- *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  * \param bmp_file_context [in] BMP file context
  *
  * \return Image data object from file. \n

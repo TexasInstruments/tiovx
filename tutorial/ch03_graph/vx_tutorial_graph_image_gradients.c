@@ -558,7 +558,7 @@ void vx_tutorial_graph_image_gradients()
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
          * before this function will pass.
          *
          * \code

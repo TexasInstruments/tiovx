@@ -138,8 +138,8 @@ static vx_enum phase_rgb_user_kernel_id = (vx_status)VX_ERROR_INVALID_PARAMETERS
  * \brief Add user/target kernel to OpenVX context
  *
  * \param context [in] OpenVX context into with the user kernel is added
- * \param add_as_target_kernel [in] '(vx_bool)vx_false_e', add this kernel as user kernel \n
- *                                  '(vx_bool)vx_true_e', add this kernel as target kernel \n
+ * \param add_as_target_kernel [in] 'vx_false_e', add this kernel as user kernel \n
+ *                                  'vx_true_e', add this kernel as target kernel \n
  */
 vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_kernel)
 {
@@ -410,7 +410,7 @@ vx_status phase_rgb_user_kernel_remove(vx_context context)
  *  \param num [in] Number of parameter references
  *  \param metas [in/out] Meta references update with attribute values
  *
- *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             const vx_reference parameters[ ],
@@ -540,7 +540,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
             const vx_reference parameters[ ],
@@ -561,7 +561,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
             const vx_reference parameters[ ],
@@ -677,7 +677,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
  *  \param parameters [in] Parameters references for this kernel function
  *  \param num [in] Number of parameter references
  *
- *  \return (vx_status)VX_SUCCESS if validate is successful, else appropiate error code
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
  */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_deinit(vx_node node,
             const vx_reference parameters[ ],

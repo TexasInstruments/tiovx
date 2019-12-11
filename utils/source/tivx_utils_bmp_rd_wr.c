@@ -373,7 +373,7 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
          * <b>TIP:</b> In OpenVX whenever an object is created use
          * vxGetStatus() to find if the object creation was successful.
          * The object must be typecasted to vx_reference type when calling
-         * vxGetStatus() API. If the reference is valid (vx_status)VX_SUCCESS should be
+         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
          * returned by vxGetStatus().
          * \code
          */

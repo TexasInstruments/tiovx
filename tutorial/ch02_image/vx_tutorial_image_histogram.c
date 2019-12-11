@@ -256,7 +256,7 @@ void vx_tutorial_image_histogram()
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
          * before this function will pass.
          *
          * \code

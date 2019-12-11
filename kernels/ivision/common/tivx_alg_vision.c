@@ -153,7 +153,7 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
  * \param  numMemRec         [IN] Number of objects
  * \param  memRec            [IN] pointer to the memory records
  *
- * \return  (vx_status)VX_SUCCESS on success
+ * \return  VX_SUCCESS on success
  *
  *******************************************************************************
  */
@@ -211,7 +211,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
  * \param  numMemRec         [IN] Number of objects
  * \param  memRec            [IN] pointer to the memory records
  *
- * \return  (vx_status)VX_SUCCESS on success
+ * \return  VX_SUCCESS on success
  *
  *******************************************************************************
  */

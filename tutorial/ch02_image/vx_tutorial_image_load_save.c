@@ -223,12 +223,12 @@ void vx_tutorial_image_load_save()
  *
  * \param context [in] OpenVX context within which the image object will get created
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
- *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
  * \return Image data object. \n
- *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is (vx_bool)vx_false_e \n
- *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is (vx_bool)vx_true_e
+ *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is vx_false_e \n
+ *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is vx_true_e
  */
 vx_image  create_image_from_file(vx_context context, char *filename, vx_bool convert_to_gray_scale)
 {
@@ -279,7 +279,7 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
          * <b>TIP:</b> In OpenVX whenever an object is created use
          * vxGetStatus() to find if the object creation was successful.
          * The object must be typecasted to vx_reference type when calling
-         * vxGetStatus() API. If the reference is valid (vx_status)VX_SUCCESS should be
+         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
          * returned by vxGetStatus().
          * \code
          */
@@ -371,7 +371,7 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
  * \param filename [in] BMP filename, MUST have extension of .bmp
  * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
  *
- * \return (vx_status)VX_SUCCESS if BMP could be created and saved with data from image object
+ * \return VX_SUCCESS if BMP could be created and saved with data from image object
  */
 vx_status save_image_to_file(char *filename, vx_image image)
 {
@@ -473,10 +473,10 @@ vx_status save_image_to_file(char *filename, vx_image image)
  *
  * \param image [in] Previouly created image object
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] (vx_bool)vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
- *                                   (vx_bool)vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
- * \return (vx_status)VX_SUCCESS if BMP file data could be loaded into the vx_image object.
+ * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
  */
 vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {

@@ -293,7 +293,7 @@ void vx_tutorial_image_color_convert()
         /**
          * - Schedule graph.
          *
-         * Schedules graph for future execution. vxVerifyGraph must return (vx_status)VX_SUCCESS
+         * Schedules graph for future execution. vxVerifyGraph must return VX_SUCCESS
          * before this function will pass.
          *
          * \code
@@ -500,10 +500,10 @@ void show_node_attributes(vx_node node)
     switch(status)
     {
         case (vx_status)VX_SUCCESS:
-            strncpy(status_name, "(vx_status)VX_SUCCESS", MAX_ATTRIBUTE_NAME);
+            strncpy(status_name, "VX_SUCCESS", MAX_ATTRIBUTE_NAME);
             break;
         case (vx_status)VX_FAILURE:
-            strncpy(status_name, "(vx_status)VX_FAILURE", MAX_ATTRIBUTE_NAME);
+            strncpy(status_name, "VX_FAILURE", MAX_ATTRIBUTE_NAME);
             break;
         default:
             strncpy(status_name, "VX_FAILURE_OTHER", MAX_ATTRIBUTE_NAME);
