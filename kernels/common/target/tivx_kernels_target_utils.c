@@ -74,7 +74,7 @@ void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t nu
 
     for (i = 0; i < num_kernels; i ++)
     {
-        if (kernel_list[i].add_kernel)
+        if (kernel_list[i].add_kernel != NULL)
         {
             kernel_list[i].add_kernel();
         }
@@ -87,7 +87,7 @@ void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t 
 
     for (i = 0; i < num_kernels; i ++)
     {
-        if (kernel_list[i].remove_kernel)
+        if (kernel_list[i].remove_kernel != NULL)
         {
             kernel_list[i].remove_kernel();
         }

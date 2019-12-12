@@ -114,22 +114,22 @@ extern "C" {
 /*! \brief Used to determine if a type is a scalar.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_SCALAR(type) ((VX_TYPE_INVALID < (type)) && ((type) < VX_TYPE_SCALAR_MAX))
+#define TIVX_TYPE_IS_SCALAR(type) (((vx_enum)VX_TYPE_INVALID < (type)) && ((type) < (vx_enum)VX_TYPE_SCALAR_MAX))
 
 /*! \brief Used to determine if a type is a struct.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_STRUCT(type) (((type) >= VX_TYPE_RECTANGLE) && ((type) < VX_TYPE_KHRONOS_STRUCT_MAX))
+#define TIVX_TYPE_IS_STRUCT(type) (((type) >= (vx_enum)VX_TYPE_RECTANGLE) && ((type) < (vx_enum)VX_TYPE_KHRONOS_STRUCT_MAX))
 
 /*! \brief Used to determine if a type is an Khronos defined object.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_OBJECT(type) (((type) >= VX_TYPE_REFERENCE) && ((type) < VX_TYPE_KHRONOS_OBJECT_END))
+#define TIVX_TYPE_IS_OBJECT(type) (((type) >= (vx_enum)VX_TYPE_REFERENCE) && ((type) < (vx_enum)VX_TYPE_KHRONOS_OBJECT_END))
 
 /*! \brief Used to determine if a type is TI defined object.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_TI_OBJECT(type) (((type) >= VX_TYPE_VENDOR_OBJECT_START) && ((type) < VX_TYPE_VENDOR_OBJECT_END))
+#define TIVX_TYPE_IS_TI_OBJECT(type) (((type) >= (vx_enum)VX_TYPE_VENDOR_OBJECT_START) && ((type) < (vx_enum)VX_TYPE_VENDOR_OBJECT_END))
 
 /*! \brief A magic value to look for and set in references.
  * \ingroup group_vx_utils
@@ -140,7 +140,7 @@ extern "C" {
 /*! \brief A magic value to look for and set in references. Used to indicate a free'ed reference
  * \ingroup group_vx_utils
  */
-#define TIVX_BAD_MAGIC        (42)
+#define TIVX_BAD_MAGIC        (42U)
 
 /*! \brief TIVX defined reference types
  * \ingroup group_vx_utils

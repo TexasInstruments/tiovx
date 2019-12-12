@@ -288,19 +288,19 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
         {
             if (NULL != prms)
             {
-                if (prms->corners)
+                if (prms->corners != NULL)
                 {
                     tivxMemFree(prms->corners, arr->capacity * 4U,
                         (vx_enum)TIVX_MEM_EXTERNAL);
                     prms->corners = NULL;
                 }
-                if (prms->strength)
+                if (prms->strength != NULL)
                 {
                     tivxMemFree(prms->strength, arr->capacity,
                         (vx_enum)TIVX_MEM_EXTERNAL);
                     prms->strength = NULL;
                 }
-                if (prms->scratch)
+                if (prms->scratch != NULL)
                 {
                     tivxMemFree(prms->scratch, prms->scratch_size,
                         (vx_enum)TIVX_MEM_EXTERNAL);
@@ -354,19 +354,19 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
         if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxFastCornersParams) == size))
         {
-            if (prms->corners)
+            if (prms->corners != NULL)
             {
                 tivxMemFree(prms->corners, arr->capacity * 4U,
                     (vx_enum)TIVX_MEM_EXTERNAL);
                 prms->corners = NULL;
             }
-            if (prms->strength)
+            if (prms->strength != NULL)
             {
                 tivxMemFree(prms->strength, arr->capacity,
                     (vx_enum)TIVX_MEM_EXTERNAL);
                 prms->strength = NULL;
             }
-            if (prms->scratch)
+            if (prms->scratch != NULL)
             {
                 tivxMemFree(prms->scratch, prms->scratch_size,
                     (vx_enum)TIVX_MEM_EXTERNAL);

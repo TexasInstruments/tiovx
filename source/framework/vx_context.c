@@ -134,7 +134,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     {
         status1 = tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd);
     }
-    if(context->cmd_ack_event)
+    if(context->cmd_ack_event != NULL)
     {
         status2 = tivxEventDelete(&context->cmd_ack_event);
     }
@@ -690,7 +690,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     vx_uint32 r;
     uint32_t idx;
 
-    if (c)
+    if (c != NULL)
     {
         *c = 0;
     }
@@ -755,7 +755,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             /* By now, all external and internal references should be removed */
             for (r = 0; r < dimof(context->reftable); r++)
             {
-                if(context->reftable[r])
+                if(context->reftable[r] != NULL)
                 {
                         VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                 }

@@ -37,7 +37,7 @@ static vx_status ownDestructParameter(vx_reference ref)
 
     if(param != NULL)
     {
-        if (param->node)
+        if (param->node != NULL)
         {
             if (ownIsValidSpecificReference(&param->node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
             {
@@ -45,7 +45,7 @@ static vx_status ownDestructParameter(vx_reference ref)
                 ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
             }
         }
-        if (param->kernel)
+        if (param->kernel != NULL)
         {
             if (ownIsValidSpecificReference(&param->kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
@@ -262,7 +262,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             if(status == (vx_status)VX_SUCCESS)
             {
-                if (node->parameters[index])
+                if (node->parameters[index] != NULL)
                 {
                     if (node->parameters[index]->delay!=NULL) {
                         /* we already have a delay element here */
@@ -318,7 +318,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parame
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     if (ownIsValidSpecificReference((vx_reference)parameter, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
-        if (parameter->node)
+        if (parameter->node != NULL)
         {
             status = vxSetParameterByIndex(parameter->node, parameter->index, value);
         }
@@ -380,11 +380,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
             case (vx_enum)VX_PARAMETER_REF:
                 if (VX_CHECK_PARAM(ptr, size, vx_reference, 0x3U))
                 {
-                    if (parameter->node)
+                    if (parameter->node != NULL)
                     {
                         vx_reference ref = parameter->node->parameters[parameter->index];
                         /* does this object have USER access? */
-                        if (ref)
+                        if (ref != NULL)
                         {
                             /*! \internal this could potentially allow the user to break
                              * a currently chosen optimization! We need to alert the

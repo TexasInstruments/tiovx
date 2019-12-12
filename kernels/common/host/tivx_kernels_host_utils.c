@@ -75,7 +75,7 @@ vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_l
 
     for (i = 0; i < num_kernels; i ++)
     {
-        if (kernel_list[i].add_kernel)
+        if (kernel_list[i].add_kernel != NULL)
         {
             status = kernel_list[i].add_kernel(context);
         }
@@ -96,7 +96,7 @@ vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel
 
     for (i = 0; i < num_kernels; i ++)
     {
-        if (kernel_list[i].remove_kernel)
+        if (kernel_list[i].remove_kernel != NULL)
         {
             status = kernel_list[i].remove_kernel(context);
         }

@@ -484,7 +484,7 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
 
 void ownGraphFreeStreaming(vx_graph graph)
 {
-    if (graph->is_streaming_enabled)
+    if (graph->is_streaming_enabled != 0)
     {
         /* Clear event and send user event */
         tivxEventClear(graph->delete_done);

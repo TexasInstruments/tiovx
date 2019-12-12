@@ -193,7 +193,7 @@ static void tivxTargetNodeDescSendComplete(
         {
             tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)tivxObjDescGet(cmd_obj_desc_id);
 
-            if( tivxObjDescIsValidType( (tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD) )
+            if( tivxObjDescIsValidType( (tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD) != 0)
             {
                 uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
 
@@ -225,7 +225,7 @@ static vx_bool tivxTargetNodeDescCanNodeExecute(
         prev_node_obj_desc_id = node_obj_desc->in_node_id[i];
         prev_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(prev_node_obj_desc_id);
 
-        if( tivxObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) )
+        if( tivxObjDescIsValidType( (tivx_obj_desc_t*)prev_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
         {
             if( tivxFlagIsBitSet(prev_node_obj_desc->flags,
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
@@ -252,7 +252,7 @@ static void tivxTargetNodeDescTriggerNextNodes(
         next_node_obj_desc_id = node_obj_desc->out_node_id[i];
         next_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(next_node_obj_desc_id);
 
-        if( tivxObjDescIsValidType( (tivx_obj_desc_t*)next_node_obj_desc, TIVX_OBJ_DESC_NODE) )
+        if( tivxObjDescIsValidType( (tivx_obj_desc_t*)next_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
         {
             can_execute = tivxTargetNodeDescCanNodeExecute(next_node_obj_desc);
 
@@ -294,7 +294,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
             {
                 prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
-                if(prm_obj_desc)
+                if(prm_obj_desc != NULL)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
                         prm_obj_desc->scope_obj_desc_id);
@@ -313,7 +313,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             params[i] = NULL;
             if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
             {
-                if(parent_obj_desc[i])
+                if(parent_obj_desc[i] != NULL)
                 {
                     if(parent_obj_desc[i]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
                     {
@@ -350,7 +350,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                      */
 
                     parent_obj_desc[i] = tivxObjDescGet(prm_obj_desc_id[i]);
-                    if(parent_obj_desc[i])
+                    if(parent_obj_desc[i] != NULL)
                     {
                         if(parent_obj_desc[i]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
                         {
@@ -491,7 +491,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
                 prm_obj_desc = tivxObjDescGet(params[i]->obj_desc_id);
 
-                if (prm_obj_desc)
+                if (prm_obj_desc != NULL)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
                         prm_obj_desc->scope_obj_desc_id);
@@ -601,7 +601,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                 node_obj_desc->target_kernel_index[0], node_obj_desc->kernel_id);
 
             /* Note: in the case of user kernel, target_kernel instance is NULL */
-            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
             {
                 if (NULL != target_kernel_instance)
                 {
@@ -626,7 +626,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                 {
                     tivxTargetNodeDescAcquireAllParametersForPipeup(node_obj_desc, prm_obj_desc_id);
 
-                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
                     {
                         tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
                     }
@@ -659,7 +659,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
                 tivxLogRtTraceNodeExeStart(beg_time, node_obj_desc);
 
-                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
                 {
                     tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
                 }
@@ -792,7 +792,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                 if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
                 {
                     prm_obj_desc = tivxObjDescGet(node_obj_desc->data_id[i]);
-                    if(prm_obj_desc)
+                    if(prm_obj_desc != NULL)
                     {
                         parent_obj_desc[i] = tivxObjDescGet(
                             prm_obj_desc->scope_obj_desc_id);
@@ -805,7 +805,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                 params[i] = NULL;
                 if((is_prm_replicated & ((uint32_t)1U << i)) != 0U)
                 {
-                    if(parent_obj_desc[i])
+                    if(parent_obj_desc[i] != NULL)
                     {
                         if(parent_obj_desc[i]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
                         {
@@ -1026,7 +1026,7 @@ static vx_status tivxTargetNodeDescNodeControl(
 
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
-    if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK))
+    if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) != 0)
     {
         tivxFlagBitClear( &cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK);
 
@@ -1065,7 +1065,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
     }
 
     /* first we let any node events to go thru before sending graph events */
-    if(is_send_graph_complete_event)
+    if(is_send_graph_complete_event!= 0)
     {
         ownSendGraphCompletedEvent(node->graph);
     }
@@ -1083,7 +1083,7 @@ static void tivxTargetSetGraphStateAbandon(
 
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
 {
-    if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_SEND_ACK))
+    if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_SEND_ACK) != 0)
     {
         tivxFlagBitSet( &cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK);
 
@@ -1110,9 +1110,9 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
                 node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc_id);
 
-                if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
+                if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
                 {
-                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
                     {
                         if(cmd_obj_desc->cmd_id == (vx_enum)TIVX_CMD_NODE_CREATE)
                         {
@@ -1152,7 +1152,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
             node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
             node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc_id);
 
-            if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
+            if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
             {
                 uint64_t timestamp;
 
@@ -1225,13 +1225,13 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
                 switch(obj_desc->type)
                 {
                     case (vx_enum)TIVX_OBJ_DESC_CMD:
-                        if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_CMD) )
+                        if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_CMD) != 0)
                         {
                             tivxTargetCmdDescHandler((tivx_obj_desc_cmd_t*)obj_desc);
                         }
                         break;
                     case (vx_enum)TIVX_OBJ_DESC_NODE:
-                        if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_NODE) )
+                        if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_NODE) != 0)
                         {
                             tivxTargetNodeDescNodeExecute(target, (tivx_obj_desc_node_t*)obj_desc);
                         }
@@ -1339,7 +1339,7 @@ void tivxTargetTriggerNode(uint16_t node_obj_desc_id)
 
     node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc_id);
 
-    if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
+    if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
     {
         tivxObjDescSend( node_obj_desc->target_id, node_obj_desc_id);
     }

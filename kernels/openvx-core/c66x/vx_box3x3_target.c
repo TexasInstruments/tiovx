@@ -170,7 +170,7 @@ vx_status VX_CALLBACK tivxProcessBox3X3(
          * height, but leave output width the same (DSP optimization) */
         vxlib_dst.dim_x = vxlib_src.dim_x;
 
-        if (kern_info->filter_func)
+        if (kern_info->filter_func != NULL)
         {
             status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
                 &vxlib_dst);

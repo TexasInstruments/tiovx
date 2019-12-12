@@ -89,7 +89,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
 vx_size ownSizeOfEnumType(vx_enum item_type)
 {
     vx_uint32 i = 0;
-    vx_size size = 0UL;
+    vx_size size = 0U;
 
     for (i = 0; i < dimof(g_reference_enum_type_sizes); i++) {
         if (item_type == g_reference_enum_type_sizes[i].item_type) {
@@ -137,7 +137,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if (ref)
+    if (ref != NULL)
     {
         ref->magic = TIVX_MAGIC;
         ref->type = type;
@@ -164,7 +164,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
              * for others use the context lock
              */
             status = tivxMutexCreate(&ref->lock);
-            if (status)
+            if (status != 0)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
             }
@@ -178,12 +178,12 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 result = (uint32_t)UINT32_MAX;
-    if (ref)
+    if (ref != NULL)
     {
         ownReferenceLock(ref);
         if ((reftype == (vx_enum)VX_INTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
-            if (ref->internal_count == 0)
+            if (ref->internal_count == 0U)
             {
                 VX_PRINT(VX_ZONE_WARNING, "#### INTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
             }
@@ -194,7 +194,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
         }
         if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
         {
-            if (ref->external_count == 0)
+            if (ref->external_count == 0U)
             {
                 VX_PRINT(VX_ZONE_WARNING, "#### EXTERNAL REF COUNT IS ALREADY ZERO!!! "VX_FMT_REF" type:%08x #####\n", ref, ref->type);
             }
@@ -213,7 +213,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 vx_uint32 ownTotalReferenceCount(vx_reference ref)
 {
     vx_uint32 count = 0;
-    if (ref)
+    if (ref != NULL)
     {
         ownReferenceLock(ref);
         count = ref->external_count + ref->internal_count;
@@ -225,7 +225,7 @@ vx_uint32 ownTotalReferenceCount(vx_reference ref)
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 count = 0u;
-    if (ref)
+    if (ref != NULL)
     {
         ownReferenceLock(ref);
         if ((reftype == (vx_enum)VX_EXTERNAL) || (reftype == (vx_enum)VX_BOTH))
@@ -248,11 +248,21 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                         tivx_reference_callback_f special_destructor)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_reference ref = (pref ? *pref : NULL);
+    vx_reference ref;
+
+    if (pref != NULL)
+    {
+        ref = *pref;
+    }
+    else
+    {
+        ref = NULL;
+    }
+
     if ((NULL != ref) &&
         (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e))
     {
-        if (ownDecrementReference(ref, reftype) == 0)
+        if (ownDecrementReference(ref, reftype) == 0U)
         {
             tivx_reference_callback_f destructor = special_destructor;
 
@@ -270,12 +280,12 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 }
 
                 /* if there is a destructor, call it. */
-                if (destructor)
+                if (destructor != NULL)
                 {
                     destructor(ref);
                 }
 
-                if(ref->lock)
+                if(ref->lock != NULL)
                 {
                     tivxMutexDelete(&ref->lock);
                 }
@@ -297,7 +307,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
     vx_reference ref = (vx_reference)tivxObjectAlloc(type);
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ref)
+    if (ref != NULL)
     {
         status = ownInitReference(ref, context, type, scope);
         if(status==(vx_status)VX_SUCCESS)
@@ -347,7 +357,7 @@ vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
 
 void ownPrintReference(vx_reference ref)
 {
-    if (ref)
+    if (ref != NULL)
     {
         VX_PRINT(VX_ZONE_REFERENCE, "vx_reference: magic:%08x type:%08x count:[%u,%u]\n", ref, ref->magic, ref->type, ref->external_count, ref->internal_count);
     }
@@ -390,15 +400,15 @@ vx_status ownReferenceLock(vx_reference ref)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if(ref)
+    if(ref != NULL)
     {
-        if(ref->lock)
+        if(ref->lock != NULL)
         {
             status = tivxMutexLock(ref->lock);
         }
         else
         {
-            if(ref->context)
+            if(ref->context != NULL)
             {
                 status = tivxMutexLock(ref->context->base.lock);
             }
@@ -412,15 +422,15 @@ vx_status ownReferenceUnlock(vx_reference ref)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if(ref)
+    if(ref != NULL)
     {
-        if(ref->lock)
+        if(ref->lock != NULL)
         {
             status = tivxMutexUnlock(ref->lock);
         }
         else
         {
-            if(ref->context)
+            if(ref->context != NULL)
             {
                 status = tivxMutexUnlock(ref->context->base.lock);
             }
@@ -441,7 +451,7 @@ vx_status ownReferenceAllocMem(vx_reference ref)
 
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
-        if(ref->mem_alloc_callback)
+        if(ref->mem_alloc_callback != NULL)
         {
             status = ref->mem_alloc_callback(ref);
         }
@@ -457,7 +467,7 @@ vx_status ownReferenceAllocMem(vx_reference ref)
 
 void ownReferenceSetScope(vx_reference ref, vx_reference scope)
 {
-    if(ref)
+    if(ref != NULL)
     {
         ref->scope = scope;
         if(NULL != ref->obj_desc)
@@ -550,7 +560,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
 VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx_char *name)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if (ownIsValidReference(ref))
+    if (ownIsValidReference(ref) != 0)
     {
         snprintf(ref->name, VX_MAX_REFERENCE_NAME, name);
         status = (vx_status)VX_SUCCESS;
@@ -565,11 +575,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseReference(vx_reference* ref_ptr)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    vx_reference ref;
 
-    vx_reference ref = (ref_ptr ? *ref_ptr : NULL);
+    if (ref_ptr != NULL)
+    {
+        ref = *ref_ptr;
+    }
+    else
+    {
+        ref = NULL;
+    }
+
     if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
-        if(ref->release_callback)
+        if(ref->release_callback != NULL)
         {
             status = ref->release_callback(ref_ptr);
         }

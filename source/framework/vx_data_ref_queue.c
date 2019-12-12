@@ -252,11 +252,11 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
 
     if(ref!=NULL)
     {
-        if(ref->wait_done_ref_available_event)
+        if(ref->wait_done_ref_available_event != NULL)
         {
             tivxEventPost(ref->wait_done_ref_available_event);
         }
-        if(ref->is_enable_send_ref_consumed_event)
+        if(ref->is_enable_send_ref_consumed_event != 0)
         {
             tivxEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
@@ -285,11 +285,11 @@ static vx_status tivxDataRefQueueDestruct(vx_reference ref)
 
         for(i=0; i<data_ref_q->pipeline_depth; i++)
         {
-            if(data_ref_q->obj_desc[i])
+            if(data_ref_q->obj_desc[i] != NULL)
             {
                 tivxObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
             }
-            if(data_ref_q->obj_desc_cmd[i])
+            if(data_ref_q->obj_desc_cmd[i] != NULL)
             {
                 tivxObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
             }
@@ -354,7 +354,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                 if(status==(vx_status)VX_SUCCESS)
                 {
                     /* if user queueing is enabled, need to send response back to host */
-                    if(prms->enable_user_queueing)
+                    if(prms->enable_user_queueing != 0)
                     {
                         ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
@@ -366,7 +366,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                if(prms->enable_user_queueing)
+                if(prms->enable_user_queueing != 0)
                 {
                     status = tivxEventCreate(&ref->wait_done_ref_available_event);
                 }
@@ -377,7 +377,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                if(prms->enable_user_queueing)
+                if(prms->enable_user_queueing != 0)
                 {
                     status = tivxObjDescQueueCreate(&ref->release_q_obj_desc_id);
                 }
@@ -385,7 +385,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
             if(status==(vx_status)VX_SUCCESS)
             {
                 /* all resource acquired now set the data structure fields */
-                if(prms->enable_user_queueing)
+                if(prms->enable_user_queueing != 0)
                 {
                     ref->ready_q_obj_desc_id = ref->acquire_q_obj_desc_id;
                     ref->done_q_obj_desc_id = ref->release_q_obj_desc_id;
@@ -402,13 +402,13 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                     obj_desc->ref_consumed_cmd_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
                     obj_desc->release_q_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-                    if(prms->enable_user_queueing)
+                    if(prms->enable_user_queueing != 0)
                     {
                         tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT);
                         obj_desc->ref_consumed_cmd_obj_desc_id = obj_desc_cmd->base.obj_desc_id;
                     }
                     obj_desc->acquire_q_obj_desc_id = ref->acquire_q_obj_desc_id;
-                    if(prms->enable_user_queueing)
+                    if(prms->enable_user_queueing != 0)
                     {
                         obj_desc->release_q_obj_desc_id = ref->release_q_obj_desc_id;
                     }
@@ -423,7 +423,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                     obj_desc->delay_slot_index = 0;
                     obj_desc->delay_slots = 0;
 
-                    if(prms->enable_user_queueing)
+                    if(prms->enable_user_queueing != 0)
                     {
                         obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_DATA_REF_CONSUMED;
 
@@ -483,7 +483,7 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
         cur_data_ref_q = delay_data_ref_q_list[i];
         next_data_ref_q = delay_data_ref_q_list[(i+1) % delay_slots];
 
-        if(next_data_ref_q->enable_user_queueing)
+        if(next_data_ref_q->enable_user_queueing != 0)
         {
             cur_data_ref_q->release_q_obj_desc_id = next_data_ref_q->done_q_obj_desc_id;
         }
@@ -504,12 +504,12 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
             obj_desc->delay_slot_index = i;
             obj_desc->delay_slots = delay_slots;
 
-            if(auto_age_delay_slot[i])
+            if(auto_age_delay_slot[i] != 0)
             {
                 tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE);
             }
 
-            if(next_data_ref_q->enable_user_queueing)
+            if(next_data_ref_q->enable_user_queueing != 0)
             {
                 obj_desc->release_q_obj_desc_id = next_data_ref_q->done_q_obj_desc_id;
             }
@@ -517,7 +517,7 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
             {
                 obj_desc->release_q_obj_desc_id = next_data_ref_q->acquire_q_obj_desc_id;
             }
-            if(next_data_ref_q->enable_user_queueing)
+            if(next_data_ref_q->enable_user_queueing != 0)
             {
                 tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT);
                 obj_desc->ref_consumed_cmd_obj_desc_id = next_data_ref_q->obj_desc_cmd[pipe_id]->base.obj_desc_id;

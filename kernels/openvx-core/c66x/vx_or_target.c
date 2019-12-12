@@ -231,7 +231,7 @@ void tivxRemoveTargetKernelOr(void)
 {
     vx_status status;
 
-    if (gTivxOrKernelInfo.target_kernel)
+    if (gTivxOrKernelInfo.target_kernel != NULL)
     {
         status = tivxRemoveTargetKernel(gTivxOrKernelInfo.target_kernel);
 

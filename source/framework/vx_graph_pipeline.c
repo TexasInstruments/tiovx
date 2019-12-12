@@ -280,10 +280,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
             }
         }
 
-        if(num_enqueue>0)
+        if(num_enqueue>0U)
         {
             /* Note: keeping compatibility with deprecated API */
-            if(flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP)
+            if((flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP) != 0U)
             {
                 /* if enqueing buffers for pipeup then dont schedule graph,
                  * just enqueue the buffers
@@ -291,7 +291,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
                 graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx--;
             }
             /* Note: once pipeup_buf_idx == 1, the source node is in steady state */
-            else if (graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx > 1)
+            else if (graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx > 1U)
             {
                 graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx--;
             }
@@ -628,12 +628,10 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 
             if(graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
             {
-                uint32_t i;
-
                 /* delays need aging only if pipelining is not used */
                 for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
                 {
-                    if(graph->delays[i])
+                    if(graph->delays[i] != NULL)
                     {
                         vxAgeDelay(graph->delays[i]);
                     }
@@ -644,7 +642,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                     }
                 }
             }
-            if (graph_obj_desc->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
+            if ((vx_enum)graph_obj_desc->state == (vx_enum)VX_GRAPH_STATE_RUNNING)
             {
                 graph_obj_desc->state = (vx_enum)VX_GRAPH_STATE_COMPLETED;
             }
@@ -665,9 +663,9 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
              * is state on current completed graph pipeline instance
              * else dont change the state of graph object
              */
-            if ( graph->submitted_count == 0 )
+            if ( graph->submitted_count == 0U )
             {
-                graph->state = graph_obj_desc->state;
+                graph->state = (int32_t)graph_obj_desc->state;
             }
 
             ownGraphEnqueueFreeObjDesc(graph, graph_obj_desc);
@@ -687,7 +685,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
              * based on how many graph desc were scheduled
              * and how many were left pending.
              */
-            if(graph->schedule_pending_count > 0)
+            if(graph->schedule_pending_count > 0U)
             {
                 schedule_count = graph->schedule_pending_count;
 
@@ -697,8 +695,8 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
             /* if all submitted graphs completed and no more pending to be scheduled
              * then post all graph completed event
              */
-            if ( ( graph->submitted_count == 0 )
-                    && (schedule_count == 0))
+            if ( ( graph->submitted_count == 0U )
+                    && (schedule_count == 0U))
             {
                 VX_PRINT(VX_ZONE_INFO,"All Graphs Completed\n");
 
@@ -710,7 +708,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
 
     ownReferenceUnlock(&graph->base);
 
-    if(schedule_count > 0)
+    if(schedule_count > 0U)
     {
         ownGraphScheduleGraph(graph, schedule_count);
     }
@@ -823,7 +821,7 @@ vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_param
     {
         if(graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
         {
-            if(graph_parameter_index == 0)
+            if(graph_parameter_index == 0U)
             {
                 do_schedule_graph_after_enqueue = (vx_bool)vx_true_e;
             }
@@ -859,7 +857,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             if (pipeline_depth < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
             {
                 graph->pipeline_depth = pipeline_depth;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", graph->pipeline_depth+1);
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", (uint16_t)graph->pipeline_depth+1U);
             }
             else
             {
@@ -890,7 +888,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
 
             for(i=0; i<graph->num_params; i++)
             {
-                if(graph->parameters[i].queue_enable)
+                if(graph->parameters[i].queue_enable != 0)
                 {
                     count = 0;
 

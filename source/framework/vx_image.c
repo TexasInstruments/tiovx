@@ -118,7 +118,7 @@ static vx_bool ownIsValidImage(vx_image image)
 static vx_bool ownIsOdd(vx_uint32 a)
 {
     vx_bool isOdd;
-    if (a & 0x1U)
+    if ((a & 0x1U) != 0U)
     {
         isOdd = (vx_bool)vx_true_e;
     }
@@ -176,7 +176,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
 static vx_size ownSizeOfChannel(vx_df_image color)
 {
     vx_size size = 0UL;
-    if (ownIsSupportedFourcc(color))
+    if (ownIsSupportedFourcc(color) != 0)
     {
         switch (color)
         {
@@ -340,7 +340,7 @@ static void ownInitPlane(vx_image image,
     uint32_t mem_size;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if (image)
+    if (image != NULL)
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -666,7 +666,7 @@ static vx_status ownCopyAndMapCheckParams(
 
 void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr)
 {
-    if (addr)
+    if (addr != NULL)
     {
         VX_PRINT(VX_ZONE_IMAGE, "dim={%u,%u} stride={%d,%d} scale={%u,%u} step={%u,%u}\n",
                 addr->dim_x, addr->dim_y,

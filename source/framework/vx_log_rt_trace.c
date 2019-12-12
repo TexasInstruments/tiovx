@@ -74,7 +74,7 @@
 
 void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
 {
-    if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
             timestamp,
@@ -85,7 +85,7 @@ void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_o
 
 void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
 {
-    if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
             timestamp,
@@ -95,7 +95,7 @@ void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj
 
 void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
 {
-    if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" g_%d\n",
             timestamp,
@@ -106,7 +106,7 @@ void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *grap
 
 void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc)
 {
-    if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "bZ g_%d\n",
             timestamp,
@@ -116,7 +116,7 @@ void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_
 
 void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc)
 {
-    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "b1 t_%d\n",
             tivxPlatformGetTimeInUsecs(),
@@ -126,7 +126,7 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc)
 
 void tivxLogRtTraceTargetExeEnd(tivx_target target, tivx_obj_desc_t *obj_desc)
 {
-    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE))
+    if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
         printf("#%" PRIu64 "\n" "b0 t_%d\n",
             tivxPlatformGetTimeInUsecs(),
@@ -157,7 +157,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
         {
             vx_node node = graph->nodes[node_id];
 
-            if(node)
+            if(node != NULL)
             {
                 printf("$var reg 4 n_%" PRIuPTR " %s $end\n",
                     (uintptr_t)node,
@@ -165,14 +165,14 @@ vx_status tivxLogRtTrace(vx_graph graph)
 
                 for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
                 {
-                    if(node->obj_desc[pipe_id])
+                    if(node->obj_desc[pipe_id] != NULL)
                     {
                         tivxFlagBitSet(
                             &node->obj_desc[pipe_id]->base.flags,
                             TIVX_REF_FLAG_LOG_RT_TRACE);
                     }
                 }
-                if(node->obj_desc[0])
+                if(node->obj_desc[0] != NULL)
                 {
                     vx_bool done = (vx_bool)vx_false_e;
                     for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
@@ -187,7 +187,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
                             targets[target_id] = node->obj_desc[0]->target_id;
                             done = (vx_bool)vx_true_e;
                         }
-                        if(done)
+                        if(done != 0)
                         {
                             break;
                         }
@@ -197,7 +197,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
         }
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
-            if(graph->obj_desc[pipe_id])
+            if(graph->obj_desc[pipe_id] != NULL)
             {
                 printf("$var reg 4 g_%d %s-%d $end\n",
                     graph->obj_desc[pipe_id]->base.obj_desc_id,

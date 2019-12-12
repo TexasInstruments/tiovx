@@ -117,7 +117,7 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
 
 void tivx_print(vx_enum zone, const char *format, ...)
 {
-    if (g_debug_zonemask & ZONE_BIT((vx_uint32)zone))
+    if ((g_debug_zonemask & ZONE_BIT((vx_uint32)zone)) != 0U)
     {
         uint32_t size;
         char string[1024];

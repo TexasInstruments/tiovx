@@ -397,10 +397,10 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
             {
                 ref = objarr->ref[i];
 
-                if (ref)
+                if (ref != NULL)
                 {
                     status = (vx_status)VX_SUCCESS;
-                    if(ref->mem_alloc_callback)
+                    if(ref->mem_alloc_callback != NULL)
                     {
                         status = ref->mem_alloc_callback(ref);
                     }

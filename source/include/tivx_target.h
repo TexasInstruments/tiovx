@@ -135,7 +135,7 @@ extern "C" {
 /*! \brief Const to denote invalid ID's
  * \ingroup group_tivx_target
  */
-#define TIVX_TARGET_ID_INVALID      (0xFFFFFFFFu)
+#define TIVX_TARGET_ID_INVALID      (0xFFFFFFFFU)
 
 /*! \brief Const to denote invalid ID's
  * \ingroup group_tivx_target

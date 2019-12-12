@@ -61,7 +61,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
         kernel = vxGetKernelByEnum(context, kernelenum);
         release_kernel = 1;
     }
-    if (kernel)
+    if (kernel != NULL)
     {
         node = vxCreateGenericNode(graph, kernel);
         if (vxGetStatus((vx_reference)node) == (vx_status)VX_SUCCESS)
@@ -85,7 +85,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
             VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: Failed to create node with kernel enum %d\n", kernelenum);
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
-        if (release_kernel)
+        if (release_kernel != 0U)
         {
             vxReleaseKernel(&kernel);
         }

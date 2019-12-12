@@ -41,7 +41,7 @@ static tivx_error_t *ownAllocateError(vx_context context, vx_status status)
 {
     /* PROBLEM: ownCreateReference needs error object to be created already */
     tivx_error_t *error = (tivx_error_t *)ownCreateReference(context, (vx_enum)VX_TYPE_ERROR, (vx_enum)VX_INTERNAL, &context->base);
-    if (error)
+    if (error != NULL)
     {
         error->base.release_callback = &ownReleaseErrorInt;
         error->status = status;

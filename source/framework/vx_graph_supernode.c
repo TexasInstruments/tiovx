@@ -128,13 +128,13 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
 
                                     ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
 
-                                    if(ref2)
+                                    if(ref2 != NULL)
                                     {
                                         if( prm_next_dir == (vx_enum)VX_OUTPUT )
                                         {
                                             /* check if output data reference of next node is equal to
                                                input data reference of current */
-                                            if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
+                                            if( ownGraphCheckIsRefMatch(graph, ref1, ref2) != 0)
                                             {
                                                 /* Node to Node edge */
                                                 if(node_next->super_node == super_node)
@@ -263,13 +263,13 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
 
                                         ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
 
-                                        if(ref2)
+                                        if(ref2 != NULL)
                                         {
                                             if( (prm_next_dir == (vx_enum)VX_INPUT) || (prm_next_dir == (vx_enum)VX_BIDIRECTIONAL) )
                                             {
                                                 /* check if input data reference of next node is equal to
                                                    output data reference of current */
-                                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
+                                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) != 0)
                                                 {
                                                     if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
                                                     {
@@ -524,7 +524,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
 
         ownContextUnlock(graph->base.context);
 
-        if(has_cycle)
+        if(has_cycle != 0)
         {
               VX_PRINT(VX_ZONE_ERROR,"Supernode has cycles (output of supernode has path to input of same supernode))\n");
               status = (vx_status)VX_FAILURE;
