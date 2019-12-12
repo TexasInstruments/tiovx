@@ -74,8 +74,11 @@
 
 #define MAX_NUM_BUF                         (8u)
 
+/* Number of capture channels per port/instance  */
 #define NUM_CAPT_CHANNELS                   (4u)
-#define CHANNEL_SWITCH_FRAME_COUNT          (300u)
+/* Number of instances to use   */
+#define NUM_CAPT_INST                       (1U)
+#define CHANNEL_SWITCH_FRAME_COUNT          (150u)
 
 TESTCASE(tivxHwaCaptureDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -156,7 +159,8 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
     vx_node displayNode = 0, captureNode = 0;
     vx_user_data_object capture_param_obj;
     tivx_capture_params_t capture_params;
-    uint32_t num_refs, buf_id, num_buf, num_channels=NUM_CAPT_CHANNELS, loop_id;
+    uint32_t num_refs, buf_id, num_buf, num_channels=(NUM_CAPT_CHANNELS * NUM_CAPT_INST), loop_id;
+    uint32_t instIdx, chIdx;
     uint32_t loop_count = arg_->loopCount;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
     AppSensorCmdParams cmdPrms;
@@ -186,15 +190,25 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         /* Capture initialization */
         tivx_capture_params_init(&capture_params);
-        capture_params.enableCsiv2p0Support = (uint32_t)vx_true_e;
-        capture_params.numDataLanes = 4U;
-        for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
+        capture_params.numInst = NUM_CAPT_INST;
+        capture_params.numCh   =
+                                (NUM_CAPT_CHANNELS * NUM_CAPT_INST);
+        chIdx = 0U;
+        for (instIdx = 0U ; instIdx < NUM_CAPT_INST ; instIdx++)
         {
-            capture_params.dataLanesMap[loop_id] = (loop_id + 1u);
-        }
-        for (loop_id = 0U; loop_id < NUM_CAPT_CHANNELS; loop_id++)
-        {
-            capture_params.vcNum[loop_id] = loop_id;
+            capture_params.instId[instIdx] = instIdx;
+            capture_params.instCfg[instIdx].enableCsiv2p0Support = (uint32_t)vx_true_e;
+            capture_params.instCfg[instIdx].numDataLanes         = 4U;
+            for (loop_id = 0U; loop_id < capture_params.instCfg[0U].numDataLanes ; loop_id++)
+            {
+                capture_params.instCfg[instIdx].dataLanesMap[loop_id] = (loop_id + 1u);
+            }
+            for (loop_id = 0U; loop_id < NUM_CAPT_CHANNELS; loop_id++)
+            {
+                capture_params.chVcNum[chIdx]   = loop_id;
+                capture_params.chInstMap[chIdx] = instIdx;
+                chIdx++;
+            }
         }
 
         ASSERT_VX_OBJECT(capture_param_obj = vxCreateUserDataObject(context, "tivx_capture_params_t" , sizeof(tivx_capture_params_t), &capture_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -258,7 +272,12 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-2], 1);
 
         /* After first trigger, configure and start the sensor */
-        cmdPrms.numSensors = num_channels;
+        cmdPrms.numSensors = NUM_CAPT_CHANNELS;
+        cmdPrms.portNum = NUM_CAPT_INST;
+        for (loop_id = 0U; loop_id < cmdPrms.portNum; loop_id++)
+        {
+            cmdPrms.portIdMap[loop_id] = loop_id;
+        }
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
             APP_REMOTE_SERVICE_SENSOR_NAME,
             APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
@@ -270,7 +289,6 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         for(loop_id=0; loop_id<(loop_count+num_buf); loop_id++)
         {
             vx_object_array frame;
-
             /* Get output reference, waits until a frame is available */
             vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&frame, 1, &num_refs);
 

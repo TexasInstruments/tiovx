@@ -73,6 +73,7 @@
 
 #define MAX_NUM_BUF                         (8u)
 #define NUM_CAPT_CHANNELS                   (3U)
+#define CAPT_INST_ID                       (0U)
 #define CHANNEL_SWITCH_FRAME_COUNT          (300u)
 #define NUM_BUFS                            (4u)
 
@@ -235,15 +236,19 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
 
         /***************** Capture initialization *****************/
         tivx_capture_params_init(&capture_params);
-        capture_params.enableCsiv2p0Support = (uint32_t)vx_true_e;
-        capture_params.numDataLanes = 4U;
-        for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
+        capture_params.numInst                          = 1U;
+        capture_params.numCh                            = NUM_CAPT_CHANNELS;
+        capture_params.instId[0U]                       = CAPT_INST_ID;
+        capture_params.instCfg[0U].enableCsiv2p0Support = (uint32_t)vx_true_e;
+        capture_params.instCfg[0U].numDataLanes         = 4U;
+        for (loop_id=0U; loop_id < capture_params.instCfg[0U].numDataLanes; loop_id++)
         {
-            capture_params.dataLanesMap[loop_id] = loop_id+1;
+            capture_params.instCfg[0U].dataLanesMap[loop_id] = loop_id+1;
         }
         for (loop_id = 0U; loop_id < NUM_CAPT_CHANNELS; loop_id++)
         {
-            capture_params.vcNum[loop_id] = loop_id;
+            capture_params.chVcNum[loop_id]   = loop_id;
+            capture_params.chInstMap[loop_id] = CAPT_INST_ID;
         }
 
         ASSERT_VX_OBJECT(capture_param_obj =
@@ -455,6 +460,11 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
             (vx_reference*)&capt_frames[NUM_BUFS-2], 1);
 
         cmdPrms.numSensors = NUM_CAPT_CHANNELS;
+        cmdPrms.portNum = 1U;
+        for (loop_id = 0U; loop_id < cmdPrms.portNum; loop_id++)
+        {
+            cmdPrms.portIdMap[loop_id] = CAPT_INST_ID;
+        }
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
             APP_REMOTE_SERVICE_SENSOR_NAME,
             APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms,

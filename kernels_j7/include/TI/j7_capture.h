@@ -88,13 +88,15 @@ extern "C" {
 /*! \brief Control Command to print capture statistics
  *         No argument is needed to query statistics.
  *
- *  \ingroup group_vision_function_vpac_msc
+ *  \ingroup group_vision_function_capture
  */
 #define TIVX_CAPTURE_PRINT_STATISTICS                    (0x40000000u)
 
 /*! \brief Control Command to return capture statistics to application
  *
- *  \ingroup group_vision_function_vpac_msc
+ *  \ingroup group_vision_function_capture
+ *  This control command returns the status of the capture node.
+ *  Please refer to #tivx_capture_statistics_t structure.
  */
 #define TIVX_CAPTURE_GET_STATISTICS                      (0x40000001u)
 
@@ -110,10 +112,33 @@ extern "C" {
  */
 #define TIVX_CAPTURE_MAX_CH                                 (16U)
 
+/*! \brief Maximum number of instances supported in the capture node.
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_MAX_INST                               (2U)
+
+/*! \brief Maximum number of streams supported in a capture module.
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_MAX_STRM                               (4U)
+
 
 /*********************************
  *      Capture STRUCTURES
  *********************************/
+/*!
+ * \brief The CSIRX DRV instance configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
+ *
+ * \ingroup group_vision_function_capture
+ */
+typedef struct
+{
+    uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
+    uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
+    uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+} tivx_capture_inst_params_t;
 
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
@@ -122,39 +147,75 @@ extern "C" {
  */
 typedef struct
 {
-    uint32_t instId;                /*!< CSI2Rx Instance Id, 0:CSIRx0 1:CSIRx0 */
-    uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
-    uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
-    uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
-    uint32_t vcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
+    tivx_capture_inst_params_t instCfg[TIVX_CAPTURE_MAX_INST]; /*!< CSI2Rx Instance configuration */
+    uint32_t instId[TIVX_CAPTURE_MAX_INST]; /*!< CSI2Rx Instance Id, 0:CSIRx0 1:CSIRx0 */
+    uint32_t numInst; /*!< Number of instances in current capture node */
+    uint32_t numCh; /*!< Number of channels to be processed on current instance of Node */
+    uint32_t chVcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
+    uint32_t chInstMap[TIVX_CAPTURE_MAX_CH]; /*!< Instance ID for each channel */
 } tivx_capture_params_t;
 
-/**
- *  \brief Capture status structure used to get the current status.
+/*!
+ * \brief Capture status structure used to get the current status.
+ *
+ * \ingroup group_vision_function_capture
  */
 typedef struct
 {
-    /**< Counter to keep track of how many requests are queued to the
-     *   driver.
-     *   Note: This counter will be reset at the time of driver init. */
-    uint32_t queueCount[TIVX_CAPTURE_MAX_CH];
-    /**< Counter to keep track of how many requests are dequeued from the
-     *   driver.
-     *   Note: This counter will be reset at the time of driver init. */
-    uint32_t dequeueCount[TIVX_CAPTURE_MAX_CH];
-    /**< Counter to keep track of how many frames are dropped from the
-     *   driver when no buffers are queued by the application.
-     *   Note: This counter will be reset at the time of driver init. */
-    uint32_t dropCount[TIVX_CAPTURE_MAX_CH];
-    /**< Counter to keep track of the occurrence of overflow error.
-     *   Note: This counter will be reset at the time of driver create and
-     *   during driver start. */
-    uint32_t overflowCount;
-    /**< Counter to keep track of the occurrences of spurious UDMA interrupts.
-     *   Note: This counter will be reset at the time of driver create and
-     *   during driver start. */
-    uint32_t spuriousUdmaIntrCount;
-} tivx_capture_status_t;
+    /*! Counter to keep track of how many requests are queued to the
+        driver.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t queueCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_CH];
+    /*! Counter to keep track of how many requests are dequeued from the
+        driver.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t dequeueCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_CH];
+    /*! Counter to keep track of how many frames are dropped from the
+        driver when no buffers are queued by the application.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t dropCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_CH];
+    /*! Counter to keep track of the occurrence of overflow error.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t overflowCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of spurious UDMA interrupts.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t spuriousUdmaIntrCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of Front FIFO Overflow.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t frontFIFOOvflCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of CRC errors.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t crcCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of un-corrected ECC errors.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t eccCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of corrected ECC errors.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t correctedEccCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of Data ID errors.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t dataIdErrorCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of Invalid accesses.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t invalidAccessCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of reception of
+        invalid short packet.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t invalidSpCount[TIVX_CAPTURE_MAX_INST];
+    /*! Counter to keep track of the occurrences of Front FIFO Overflow.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t strmFIFOOvflCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_STRM];
+} tivx_capture_statistics_t;
 
 
 /*********************************

@@ -83,6 +83,7 @@
 #define MAX_ABS_FILENAME    (1024u)
 
 #define NUM_CHANNELS        (4U)
+#define CAPT_INST_ID       (0U)
 
 #define IMAGE_WIDTH         (1936)
 #define IMAGE_HEIGHT        (1100)
@@ -217,7 +218,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     AppSensorCmdParams cmdPrms;
     vx_reference refs[1];
     vx_user_data_object capture_stats_obj;
-    tivx_capture_status_t *capture_stats_struct;
+    tivx_capture_statistics_t *capture_stats_struct;
     vx_map_id capture_stats_map_id;
     uint32_t *data_ptr;
     uint8_t i;
@@ -244,17 +245,21 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
 
     /* Config initialization */
     tivx_capture_params_init(&local_capture_config);
-    local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
-    local_capture_config.numDataLanes = 4U;
+    local_capture_config.numInst                          = 1U;
+    local_capture_config.numCh                            = NUM_CHANNELS;
+    local_capture_config.instId[0U]                       = CAPT_INST_ID;
+    local_capture_config.instCfg[0U].enableCsiv2p0Support = (uint32_t)vx_true_e;
+    local_capture_config.instCfg[0U].numDataLanes         = 4U;
     for (loopCnt = 0U ;
-         loopCnt < local_capture_config.numDataLanes ;
+         loopCnt < local_capture_config.instCfg[0U].numDataLanes ;
          loopCnt++)
     {
-        local_capture_config.dataLanesMap[loopCnt] = (loopCnt + 1u);
+        local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
     for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
     {
-        local_capture_config.vcNum[loopCnt] = loopCnt;
+        local_capture_config.chVcNum[loopCnt]   = loopCnt;
+        local_capture_config.chInstMap[loopCnt] = CAPT_INST_ID;
     }
 
     ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -285,6 +290,11 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     exe_time = tivxPlatformGetTimeInUsecs();
 
     cmdPrms.numSensors = num_capture_frames;
+    cmdPrms.portNum = 1U;
+    for (loop_id = 0U; loop_id < cmdPrms.portNum; loop_id++)
+    {
+        cmdPrms.portIdMap[loop_id] = CAPT_INST_ID;
+    }
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
         APP_REMOTE_SERVICE_SENSOR_NAME,
         APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
@@ -317,8 +327,8 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
     capture_stats_obj =
-        vxCreateUserDataObject(context, "tivx_capture_status_t" ,
-        sizeof(tivx_capture_status_t), NULL);
+        vxCreateUserDataObject(context, "tivx_capture_statistics_t" ,
+        sizeof(tivx_capture_statistics_t), NULL);
 
     refs[0] = (vx_reference)capture_stats_obj;
     tivxNodeSendCommand(n0, 0,
@@ -327,7 +337,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     vxMapUserDataObject(
             (vx_user_data_object)refs[0],
             0,
-            sizeof(tivx_capture_status_t),
+            sizeof(tivx_capture_statistics_t),
             &capture_stats_map_id,
             (void **)&data_ptr,
             VX_READ_ONLY,
@@ -335,24 +345,25 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
             0
         );
 
-    capture_stats_struct = (tivx_capture_status_t*)data_ptr;
+    capture_stats_struct = (tivx_capture_statistics_t*)data_ptr;
 
+    /* As this is single instance app, array index to access status will be always '0U' */
     printf("\n\r==========================================================\r\n");
     printf(": Capture Status:\r\n");
     printf("==========================================================\r\n");
     printf(": FIFO Overflow Count: %d\r\n",
-              capture_stats_struct->overflowCount);
+              capture_stats_struct->overflowCount[0U]);
     printf(": Spurious UDMA interrupt count: %d\r\n",
-              capture_stats_struct->spuriousUdmaIntrCount);
+              capture_stats_struct->spuriousUdmaIntrCount[0U]);
     printf("  [Channel No] | Frame Queue Count |"
         " Frame De-queue Count | Frame Drop Count |\n");
     for(i = 0U ; i < num_capture_frames ; i ++)
     {
         printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
               i,
-              capture_stats_struct->queueCount[i],
-              capture_stats_struct->dequeueCount[i],
-              capture_stats_struct->dropCount[i]);
+              capture_stats_struct->queueCount[0U][i],
+              capture_stats_struct->dequeueCount[0U][i],
+              capture_stats_struct->dropCount[0U][i]);
     }
     vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
 
@@ -391,7 +402,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     tivx_raw_image_create_params_t params;
     vx_reference refs[1];
     vx_user_data_object capture_stats_obj;
-    tivx_capture_status_t *capture_stats_struct;
+    tivx_capture_statistics_t *capture_stats_struct;
     vx_map_id capture_stats_map_id;
     uint32_t *data_ptr;
 
@@ -434,17 +445,21 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
     /* Config initialization */
     tivx_capture_params_init(&local_capture_config);
-    local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
-    local_capture_config.numDataLanes = 4U;
+    local_capture_config.numInst                          = 1U;
+    local_capture_config.numCh                            = NUM_CHANNELS;
+    local_capture_config.instId[0U]                       = CAPT_INST_ID;
+    local_capture_config.instCfg[0U].enableCsiv2p0Support = (uint32_t)vx_true_e;
+    local_capture_config.instCfg[0U].numDataLanes         = 4U;
     for (loopCnt = 0U ;
-         loopCnt < local_capture_config.numDataLanes ;
+         loopCnt < local_capture_config.instCfg[0U].numDataLanes ;
          loopCnt++)
     {
-        local_capture_config.dataLanesMap[loopCnt] = (loopCnt + 1u);
+        local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
     for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
     {
-        local_capture_config.vcNum[loopCnt] = loopCnt;
+        local_capture_config.chVcNum[loopCnt]   = loopCnt;
+        local_capture_config.chInstMap[loopCnt] = CAPT_INST_ID;
     }
 
     ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -507,8 +522,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
     capture_stats_obj =
-        vxCreateUserDataObject(context, "tivx_capture_status_t" ,
-        sizeof(tivx_capture_status_t), NULL);
+        vxCreateUserDataObject(context, "tivx_capture_statistics_t" ,
+        sizeof(tivx_capture_statistics_t), NULL);
 
     refs[0] = (vx_reference)capture_stats_obj;
     tivxNodeSendCommand(n0, 0,
@@ -517,7 +532,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     vxMapUserDataObject(
             (vx_user_data_object)refs[0],
             0,
-            sizeof(tivx_capture_status_t),
+            sizeof(tivx_capture_statistics_t),
             &capture_stats_map_id,
             (void **)&data_ptr,
             VX_READ_ONLY,
@@ -525,24 +540,25 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
             0
         );
 
-    capture_stats_struct = (tivx_capture_status_t*)data_ptr;
+    capture_stats_struct = (tivx_capture_statistics_t*)data_ptr;
 
+    /* As this is single instance app, array index to access status will be always '0U' */
     printf("\n\r==========================================================\r\n");
     printf(": Capture Status:\r\n");
     printf("==========================================================\r\n");
     printf(": FIFO Overflow Count: %d\r\n",
-              capture_stats_struct->overflowCount);
+              capture_stats_struct->overflowCount[0U]);
     printf(": Spurious UDMA interrupt count: %d\r\n",
-              capture_stats_struct->spuriousUdmaIntrCount);
+              capture_stats_struct->spuriousUdmaIntrCount[0U]);
     printf("  [Channel No] | Frame Queue Count |"
         " Frame De-queue Count | Frame Drop Count |\n");
     for(i = 0U ; i < num_capture_frames ; i ++)
     {
         printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
               i,
-              capture_stats_struct->queueCount[i],
-              capture_stats_struct->dequeueCount[i],
-              capture_stats_struct->dropCount[i]);
+              capture_stats_struct->queueCount[0U][i],
+              capture_stats_struct->dequeueCount[0U][i],
+              capture_stats_struct->dropCount[0U][i]);
     }
     vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
 

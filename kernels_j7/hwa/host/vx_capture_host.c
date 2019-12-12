@@ -296,21 +296,26 @@ vx_status tivxRemoveKernelCapture(vx_context context)
 
 void tivx_capture_params_init(tivx_capture_params_t *prms)
 {
-    uint32_t cnt;
+    uint32_t cnt, loopCnt;
 
+    prms->numInst = 1u;
+    prms->numCh   = 0u;
     if (NULL != prms)
     {
-        prms->instId = 0u;
-        prms->enableCsiv2p0Support = (uint32_t)(vx_bool)vx_true_e;
-        prms->numDataLanes = 4u;
-        prms->dataLanesMap[0u] = 1u;
-        prms->dataLanesMap[1u] = 2u;
-        prms->dataLanesMap[2u] = 3u;
-        prms->dataLanesMap[3u] = 4u;
-
+        for (loopCnt = 0U ; loopCnt < TIVX_CAPTURE_MAX_INST ; loopCnt++)
+        {
+            prms->instId[loopCnt]                       = loopCnt;
+            prms->instCfg[loopCnt].enableCsiv2p0Support = (uint32_t)vx_true_e;
+            prms->instCfg[loopCnt].numDataLanes         = 4u;
+            prms->instCfg[loopCnt].dataLanesMap[0u]     = 1u;
+            prms->instCfg[loopCnt].dataLanesMap[1u]     = 2u;
+            prms->instCfg[loopCnt].dataLanesMap[2u]     = 3u;
+            prms->instCfg[loopCnt].dataLanesMap[3u]     = 4u;
+        }
         for (cnt = 0u; cnt < TIVX_CAPTURE_MAX_CH; cnt ++)
         {
-            prms->vcNum[cnt] = cnt;
+            prms->chVcNum[cnt]   = cnt;
+            prms->chInstMap[cnt] = 0U;
         }
     }
 }
