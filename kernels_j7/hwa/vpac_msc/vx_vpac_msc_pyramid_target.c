@@ -334,11 +334,11 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
                 inst_obj = &gTivxVpacMscPmdInstObj[cnt];
-                if (inst_obj->target_kernel)
+                if (inst_obj->target_kernel != NULL)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                 }
-                if (inst_obj->lock)
+                if (inst_obj->lock != NULL)
                 {
                     tivxMutexDelete(&inst_obj->lock);
                 }
@@ -464,11 +464,11 @@ void tivxAddTargetKernelVpacMscPyramid(void)
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
                 inst_obj = &gTivxVpacMscPmdInstObj[cnt];
-                if (inst_obj->target_kernel)
+                if (inst_obj->target_kernel != NULL)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                 }
-                if (inst_obj->lock)
+                if (inst_obj->lock != NULL)
                 {
                     tivxMutexDelete(&inst_obj->lock);
                 }
@@ -891,7 +891,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 {
                     frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                         in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                        (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
                 }
             }
             else
@@ -905,7 +905,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 {
                     frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                         img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                        (int32_t)img_desc->mem_ptr[plane_cnt].mem_heap_region);
                 }
             }
 
@@ -922,7 +922,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 {
                     frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                         img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        img_desc->mem_ptr[plane_cnt].
+                        (int32_t)img_desc->mem_ptr[plane_cnt].
                         mem_heap_region);
                 }
                 outFrmList->numFrames ++;
@@ -964,14 +964,14 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
         if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
         else
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
@@ -1136,8 +1136,8 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
 
         fmt->width      = img_desc->imagepatch_addr[0].dim_x;
         fmt->height     = img_desc->imagepatch_addr[0].dim_y;
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
-        fmt->pitch[1]   = img_desc->imagepatch_addr[1].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
     }
 }
 
@@ -1153,13 +1153,14 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
 
     if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
+        float temp;
         sc_cfg->enable = TRUE;
         sc_cfg->filtMode = MSC_FILTER_MODE_SINGLE_PHASE;
 
         /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
         if ( (0U == level) &&
                ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
-                (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1].target_kernel == target_kernel)) )
+                (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1U].target_kernel == target_kernel)) )
         {
             sc_cfg->hsSpCoeffSel = 0;
             sc_cfg->vsSpCoeffSel = 0;
@@ -1175,10 +1176,10 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
-        sc_cfg->horzAccInit =
-            (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-        sc_cfg->vertAccInit =
-            (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        temp = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        sc_cfg->horzAccInit = (uint32_t)temp;
+        temp = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        sc_cfg->vertAccInit = (uint32_t)temp;
     }
 }
 
@@ -1200,7 +1201,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
      * max_ds_factor is set to 2
      */
     if ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
-        (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1].target_kernel == target_kernel))
+        (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1U].target_kernel == target_kernel))
     {
         max_ds_factor = 2;
     }
@@ -1358,7 +1359,7 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
         }
         else
         {
-            idx = MSC_MAX_OUTPUT - 1 - out_cnt;
+            idx = MSC_MAX_OUTPUT - 1U - out_cnt;
         }
 
         ss_info->sc_map_idx[out_cnt] = idx;

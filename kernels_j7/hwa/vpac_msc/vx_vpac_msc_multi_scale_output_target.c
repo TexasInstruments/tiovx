@@ -264,11 +264,11 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
                 inst_obj = &gTivxVpacMscMScaleInstObj[cnt];
-                if (inst_obj->target_kernel)
+                if (inst_obj->target_kernel != NULL)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                 }
-                if (inst_obj->lock)
+                if (inst_obj->lock != NULL)
                 {
                     tivxMutexDelete(&inst_obj->lock);
                 }

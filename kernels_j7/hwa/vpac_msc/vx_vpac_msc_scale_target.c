@@ -278,11 +278,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
                 inst_obj = &gTivxVpacMscScaleInstObj[cnt];
-                if (inst_obj->target_kernel)
+                if (inst_obj->target_kernel != NULL)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                 }
-                if (inst_obj->lock)
+                if (inst_obj->lock != NULL)
                 {
                     tivxMutexDelete(&inst_obj->lock);
                 }
@@ -409,11 +409,11 @@ void tivxAddTargetKernelVpacMscScale(void)
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
                 inst_obj = &gTivxVpacMscScaleInstObj[cnt];
-                if (inst_obj->target_kernel)
+                if (inst_obj->target_kernel != NULL)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                 }
-                if (inst_obj->lock)
+                if (inst_obj->lock != NULL)
                 {
                     tivxMutexDelete(&inst_obj->lock);
                 }
@@ -578,7 +578,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         }
         else
         {
-            idx = MSC_MAX_OUTPUT - 1;
+            idx = MSC_MAX_OUTPUT - 1U;
             msc_obj->sc_map_idx = idx;
         }
         fmt = &msc_prms->outFmt[idx];

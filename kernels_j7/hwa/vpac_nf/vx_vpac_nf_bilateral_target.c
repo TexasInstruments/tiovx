@@ -862,7 +862,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     /*---------------------------------------------------------------------*/
 
     /* If the space sigma is 0, then table should remain all zeros */
-    if (sigma_s)
+    if (sigma_s != 0.0f)
     {
         /* Index of the space distance from the center pixel, 0-4 */
         const uint8_t spaceWeightIndex[25] = {  4, 3, 2, 3, 4,
@@ -951,7 +951,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     /*---------------------------------------------------------------------*/
     /* Fixed point LUT creation here.                                      */
     /*---------------------------------------------------------------------*/
-    if (i_wt_lut_full){
+    if (i_wt_lut_full != NULL){
         int i;
         memset(i_wt_lut_full, 0, LUT_ROWS * lutSize*sizeof(uint32_t));
         if (mode == 2u)
@@ -1001,8 +1001,8 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTab
 
 static uint32_t getSubRangeBits(uint16_t i)
 {
-    uint32_t out = 0u;
-    while (i >>= 1)
+    uint32_t out = 0U;
+    while ((i >>= 1) != 0U)
     {
         out++;
     }
@@ -1167,12 +1167,12 @@ void tivxVpacNfBilateralErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *a
 
     if (NULL != nf_bilateral_obj)
     {
-        if(errEvents & VHWA_NF_RD_ERR)
+        if((errEvents & VHWA_NF_RD_ERR) != 0U)
         {
             /* SL2 RD Error */
             errEvents = (errEvents & (~VHWA_NF_RD_ERR));
         }
-        else if(errEvents & VHWA_NF_WR_ERR)
+        else if((errEvents & VHWA_NF_WR_ERR) != 0U)
         {
             /* SL2 WR Error */
             errEvents = (errEvents & (~VHWA_NF_WR_ERR));

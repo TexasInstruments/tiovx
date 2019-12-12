@@ -191,7 +191,7 @@ void tivxAddTargetKernelDmpacSde(void)
             }
             else
             {
-                memset(&gTivxDmpacSdeInstObj.sdeObj, 0x0U,
+                memset(&gTivxDmpacSdeInstObj.sdeObj, 0x0,
                     sizeof(tivxDmpacSdeObj) * VHWA_M2M_SDE_MAX_HANDLES);
             }
         }
@@ -384,7 +384,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_SDE,
-            cur_time,
+            (uint32_t)cur_time,
             sdePrms->sdeCfg.width*sdePrms->sdeCfg.height /* pixels processed */
             );
     }
@@ -531,14 +531,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         if (aligned_width < 128U) {
             aligned_width = 128U;    /* Minimum width = 128 */
         }
-        if (aligned_width & 15U) {
+        if ((aligned_width & 15U) != 0U) {
             aligned_width += 16U;
             aligned_width &= ~15U;   /* Must be multiple of 16 */
         }
         if (aligned_height < 64U) {
             aligned_height = 64U;    /* Minimum height = 64 */
         }
-        if (aligned_height & 15U) {
+        if ((aligned_height & 15U)!= 0U) {
             aligned_height += 16U;
             aligned_height &= ~15U;   /* Must be multiple of 16 */
         }
@@ -830,7 +830,7 @@ static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
             }
         }
 
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
     }
 }
 
@@ -879,22 +879,22 @@ void tivxDmpacSdeErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData)
 
     if (NULL != sde_obj)
     {
-        if(errEvents & VHWA_SDE_RD_ERR)
+        if((errEvents & VHWA_SDE_RD_ERR) != 0U)
         {
             /* SL2 RD Error */
             errEvents = (errEvents & (~VHWA_SDE_RD_ERR));
         }
-        else if(errEvents & VHWA_SDE_WR_ERR)
+        else if((errEvents & VHWA_SDE_WR_ERR) != 0U)
         {
             /* SL2 WR Error */
             errEvents = (errEvents & (~VHWA_SDE_WR_ERR));
         }
-        else if(errEvents & VHWA_SDE_FOCO0_SL2_WR_ERR)
+        else if((errEvents & VHWA_SDE_FOCO0_SL2_WR_ERR) != 0U)
         {
             /* FOCO0 SL2 WR Error */
             errEvents = (errEvents & (~VHWA_SDE_FOCO0_SL2_WR_ERR));
         }
-        else if(errEvents & VHWA_SDE_FOCO0_VBUSM_RD_ERR)
+        else if((errEvents & VHWA_SDE_FOCO0_VBUSM_RD_ERR) != 0U)
         {
             /* FOCO0 VBUSM RD Error */
             errEvents = (errEvents & (~VHWA_SDE_FOCO0_VBUSM_RD_ERR));

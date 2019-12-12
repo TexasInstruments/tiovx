@@ -435,7 +435,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     uint32_t stride = src->imagepatch_addr[exposure].stride_y;
     uint32_t idx = exposure;
 
-    if(src->params.line_interleaved)
+    if(src->params.line_interleaved != 0)
     {
         idx = 0;
     }

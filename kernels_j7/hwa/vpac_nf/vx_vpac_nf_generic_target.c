@@ -193,7 +193,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
             }
             else
             {
-                memset(&gTivxVpacNfGenericInstObj.nfGenericObj, 0x0U,
+                memset(&gTivxVpacNfGenericInstObj.nfGenericObj, 0x0,
                     sizeof(tivxVpacNfGenericObj) * VHWA_M2M_NF_MAX_HANDLES);
             }
         }
@@ -327,8 +327,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                     }
                     else
                     {
-                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + (conv->rows/2)) * conv->columns) +
-                                                                       (k + (conv->columns/2))];
+                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + ((int32_t)conv->rows/2)) * (int32_t)conv->columns) +
+                                                                       (k + ((int32_t)conv->columns/2))];
                     }
                 }
             }
@@ -420,7 +420,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_NF,
-            cur_time,
+            (uint32_t)cur_time,
             dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
             );
     }
@@ -572,8 +572,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                     }
                     else
                     {
-                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + (conv->rows/2)) * conv->columns) +
-                                                                       (k + (conv->columns/2))];
+                        temp_lut[((m + 2) * 5) + (k + 2)] = pConv[((m + ((int32_t)conv->rows/2)) * (int32_t)conv->columns) +
+                                                                       (k + ((int32_t)conv->columns/2))];
                     }
                 }
             }
@@ -861,7 +861,7 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
 
         fmt->width     = img_desc->imagepatch_addr[0U].dim_x;
         fmt->height    = img_desc->imagepatch_addr[0U].dim_y;
-        fmt->pitch[0U] = img_desc->imagepatch_addr[0U].stride_y;
+        fmt->pitch[0U] = (uint32_t)img_desc->imagepatch_addr[0U].stride_y;
     }
 }
 
@@ -1018,12 +1018,12 @@ void tivxVpacNfGenericErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *app
 
     if (NULL != nf_generic_obj)
     {
-        if(errEvents & VHWA_NF_RD_ERR)
+        if((errEvents & VHWA_NF_RD_ERR) != 0U)
         {
             /* SL2 RD Error */
             errEvents = (errEvents & (~VHWA_NF_RD_ERR));
         }
-        else if(errEvents & VHWA_NF_WR_ERR)
+        else if((errEvents & VHWA_NF_WR_ERR) != 0U)
         {
             /* SL2 WR Error */
             errEvents = (errEvents & (~VHWA_NF_WR_ERR));
