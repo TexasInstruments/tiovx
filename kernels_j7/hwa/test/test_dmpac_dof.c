@@ -67,6 +67,7 @@
 #include <string.h>
 #include "tivx_utils_file_rd_wr.h"
 #include "tivx_utils_checksum.h"
+#include "test_hwa_common.h"
 
 TESTCASE(tivxHwaDmpacDof, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -447,6 +448,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
         vx_enum format = VX_DF_IMAGE_U8;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         tivx_dmpac_dof_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -810,6 +812,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
         vx_enum format = VX_DF_IMAGE_U8;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         tivx_dmpac_dof_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -972,6 +975,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
         vx_enum format = VX_DF_IMAGE_U8;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         tivx_dmpac_dof_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);

@@ -23,6 +23,7 @@
 #include "test_engine/test.h"
 #include <string.h>
 #include <math.h>
+#include "test_hwa_common.h"
 
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
 #define CHECK_OUTPUT
@@ -48,6 +49,7 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
     {
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
 
@@ -569,6 +571,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT(arg_->scale < 1.0);
 
@@ -627,6 +630,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testImmediateProcessing, Arg,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
 

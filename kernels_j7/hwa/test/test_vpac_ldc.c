@@ -67,6 +67,7 @@
 #include <string.h>
 #include <math.h>
 #include "tivx_utils_checksum.h"
+#include "test_hwa_common.h"
 
 #ifndef M_PI
 #define M_PIF   3.14159265358979323846f
@@ -94,6 +95,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -705,6 +707,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         rect.end_x = arg_->out_width;
         rect.end_y = arg_->out_height;
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->src_width, arg_->src_height));
         ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->out_width, arg_->out_height, VX_DF_IMAGE_U8));
@@ -958,6 +961,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         pixel.U32 = 0x0a7f1345;
         rect.start_x = 0;
@@ -1039,6 +1043,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);

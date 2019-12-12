@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include <math.h> // floorf
+#include "test_hwa_common.h"
 
 TESTCASE(tivxHwaVpacMscScaleMultiOutput, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -36,6 +37,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -73,17 +75,17 @@ static void scale_set_output_params(tivx_vpac_msc_output_params_t *params,
     params->saturation_mode = 0;
     params->offset_x = 0;
     params->offset_y = 0;
-    //params->output_align_12bit = 
+    //params->output_align_12bit =
     params->multi_phase.phase_mode = 0;
     params->multi_phase.horz_coef_sel = 0;
     params->multi_phase.vert_coef_sel = 0;
 
     if (VX_INTERPOLATION_BILINEAR == interpolation)
     {
-        params->multi_phase.init_phase_x = 
+        params->multi_phase.init_phase_x =
                     (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
 
-        params->multi_phase.init_phase_y = 
+        params->multi_phase.init_phase_y =
                     (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
     }
     else
@@ -753,6 +755,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
@@ -838,7 +841,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
             );
 
         vxUnmapImagePatch(dst_image, map_id);*/
-#endif      
+#endif
 
         ASSERT_NO_FAILURE(scale_check(src, dst, arg_->interpolation, arg_->border, arg_->exact_result));
 
@@ -906,6 +909,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_TwoOutput, Arg
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
@@ -1001,6 +1005,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_ThreeOutput, A
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
@@ -1133,6 +1138,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FourOutput, Ar
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
@@ -1237,6 +1243,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FiveOutput, Ar
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);

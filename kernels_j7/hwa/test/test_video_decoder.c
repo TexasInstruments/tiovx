@@ -69,6 +69,7 @@
 #include <stdio.h>
 #include "tivx_utils_file_rd_wr.h"
 #include "tivx_utils_checksum.h"
+#include "test_hwa_common.h"
 
 TESTCASE(tivxHwaVideoDecoder, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -190,6 +191,7 @@ TEST(tivxHwaVideoDecoder, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         tivx_video_decoder_params_init(&params);
         ASSERT_VX_OBJECT(configuration_obj = vxCreateUserDataObject(context, "tivx_video_decoder_params_t", sizeof(tivx_video_decoder_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -291,6 +293,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
         rect.end_x = width;
         rect.end_y = height;
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         seek[0] = 0;
         for(i = 1; i < 100; i++)
@@ -398,15 +401,15 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     uint32_t height_l = 1080;
     vx_size bitstream_sizes_s[NUM_ITERATIONS] =
     {
-        82993, 39524, 45091, 54504, 61170, 63748, 68745, 72731, 75608, 79709, 
-        83861, 84205, 90563, 89582, 89739, 93068, 91550, 91049, 94106, 92786, 
-        92651, 95588, 92252, 91914, 95318, 92290, 91719, 93320, 88900, 88733, 
-        91082, 86712, 86524, 89613, 88475, 88643, 90706, 88526, 88337, 88624, 
-        87462, 84908, 87462, 86257, 86886, 87548, 86529, 85777, 85991, 83117, 
-        84542, 87381, 83457, 83582, 85658, 81836, 84291, 88171, 82946, 86689, 
-        89300, 84837, 82122, 87507, 86454, 84334, 85784, 82419, 81170, 82763, 
-        81990, 80710, 83374, 82211, 84405, 88921, 84010, 83922, 86596, 86124, 
-        85306, 85711, 83999, 83530, 82458, 84406, 84058, 85849, 81413, 81070, 
+        82993, 39524, 45091, 54504, 61170, 63748, 68745, 72731, 75608, 79709,
+        83861, 84205, 90563, 89582, 89739, 93068, 91550, 91049, 94106, 92786,
+        92651, 95588, 92252, 91914, 95318, 92290, 91719, 93320, 88900, 88733,
+        91082, 86712, 86524, 89613, 88475, 88643, 90706, 88526, 88337, 88624,
+        87462, 84908, 87462, 86257, 86886, 87548, 86529, 85777, 85991, 83117,
+        84542, 87381, 83457, 83582, 85658, 81836, 84291, 88171, 82946, 86689,
+        89300, 84837, 82122, 87507, 86454, 84334, 85784, 82419, 81170, 82763,
+        81990, 80710, 83374, 82211, 84405, 88921, 84010, 83922, 86596, 86124,
+        85306, 85711, 83999, 83530, 82458, 84406, 84058, 85849, 81413, 81070,
         82996, 80906, 80357, 82020, 80679, 80966, 82257, 81149, 81531, 83673
     };
     vx_size bitstream_sizes_l[NUM_ITERATIONS] =
@@ -498,6 +501,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
         rect_l.end_x = width_l;
         rect_l.end_y = height_l;
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         seek_s[0] = 0;
         seek_l[0] = 0;

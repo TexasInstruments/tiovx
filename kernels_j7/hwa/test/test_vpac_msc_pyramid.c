@@ -23,6 +23,7 @@
 #include "test_engine/test.h"
 #include <string.h>
 #include <math.h>
+#include "test_hwa_common.h"
 
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
 #define CHECK_OUTPUT
@@ -48,6 +49,7 @@ TEST(tivxHwaVpacMscPyramid, testVpacMscPyramidNodeCreation)
     {
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
 
@@ -250,7 +252,7 @@ static vx_int32 gaussian_pyramid_get_pixel(CT_Image input, int x, int y, vx_bord
 {
     if (border.mode == VX_BORDER_UNDEFINED)
     {
-        if ((x >= (2 + level)) && (y >= (2 + level)) && 
+        if ((x >= (2 + level)) && (y >= (2 + level)) &&
             (x < ((int)input->width - 2 - level)) && (y < ((int)input->height - 2 - level)))
             return gaussian5x5_pyramid_calculate(input, x, y);
         else
@@ -580,6 +582,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT(arg_->scale < 1.0);
 

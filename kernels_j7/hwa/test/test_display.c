@@ -65,6 +65,7 @@
 #include <TI/j7.h>
 #include "test_engine/test.h"
 #include <string.h>
+#include "test_hwa_common.h"
 
 #define DISPLAY_NUM_RUN_COUNT 100
 
@@ -150,6 +151,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
 
@@ -252,6 +254,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(disp_image[0] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(disp_image[1] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);

@@ -76,6 +76,7 @@
 #include <utils/sensors/include/app_sensors.h>
 #include <utils/remote_service/include/app_remote_service.h>
 #include <utils/ipc/include/app_ipc.h>
+#include "test_hwa_common.h"
 
 
 #define MAX_NUM_BUF         (8u)
@@ -226,6 +227,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     loop_cnt = arg_->loop_cnt;
 
     tivxHwaLoadKernels(context);
+    CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
@@ -407,6 +409,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     loop_cnt = arg_->loop_cnt;
 
     tivxHwaLoadKernels(context);
+    CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 

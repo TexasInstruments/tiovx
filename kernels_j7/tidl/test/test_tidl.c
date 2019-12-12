@@ -687,6 +687,18 @@ typedef struct {
     CT_GENERATE_PARAMETERS("squeez1", ARG, "squeez1", 0)
 #endif
 
+static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
+{
+    vx_context context = (vx_context)*context_;
+    if (context == NULL)
+        return;
+
+    if (CT_HasFailure())
+    {
+        tivxTIDLUnLoadKernels(context);
+    }
+}
+
 TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -733,6 +745,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         uint32_t num_output_tensors = 0;
 
         tivxTIDLLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_tidl_kernels, CT_GC_OBJECT);
 
         sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
         ASSERT(sz < MAXPATHLENGTH);

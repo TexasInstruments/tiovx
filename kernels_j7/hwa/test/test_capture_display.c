@@ -69,6 +69,7 @@
 #include <utils/sensors/include/app_sensors.h>
 #include <utils/remote_service/include/app_remote_service.h>
 #include <utils/ipc/include/app_ipc.h>
+#include "test_hwa_common.h"
 
 
 #define MAX_NUM_BUF                         (8u)
@@ -167,6 +168,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 

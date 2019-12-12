@@ -68,6 +68,7 @@
 #include "tivx_utils_file_rd_wr.h"
 #include <string.h>
 #include <utils/iss/include/app_iss.h>
+#include "test_hwa_common.h"
 
 #define APP_MAX_FILE_PATH           (512u)
 
@@ -203,6 +204,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
@@ -343,6 +345,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -458,6 +461,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -619,6 +623,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -659,8 +664,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         );
         memset(dcc_viss_buf, 0xAB, dcc_buff_size);
 
-	    dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
-	    ASSERT(dcc_status == 0);
+        dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
+        ASSERT(dcc_status == 0);
 
         vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id);
         /* Done w/ DCC */
@@ -853,6 +858,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -1135,6 +1141,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -1755,6 +1762,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         vx_uint32 width, height;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -1943,7 +1951,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 #define PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
-    
+
 TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     PARAMETERS_NEGATIVE)
 {
@@ -1979,6 +1987,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);

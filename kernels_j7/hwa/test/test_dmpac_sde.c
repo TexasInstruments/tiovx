@@ -67,6 +67,7 @@
 #include <string.h>
 #include "tivx_utils_file_rd_wr.h"
 #include "tivx_utils_checksum.h"
+#include "test_hwa_common.h"
 
 #define MAX_ABS_FILENAME (1024)
 
@@ -107,7 +108,7 @@ static vx_status dump_binary_to_file(vx_image image, uint32_t width, uint32_t he
             pFile = fopen(full_filename,"wb");
 
             if (pFile){
-                fwrite(data_ptr, image_addr.stride_y * image_addr.dim_y, 1, pFile);    
+                fwrite(data_ptr, image_addr.stride_y * image_addr.dim_y, 1, pFile);
                 fclose(pFile);
             }
             else
@@ -127,7 +128,7 @@ static vx_status dump_binary_to_file(vx_image image, uint32_t width, uint32_t he
         status = VX_FAILURE;
         printf(" ERROR: Null image!\n");
     }
-    
+
     return status;
 }
 
@@ -142,7 +143,7 @@ static vx_status convert_s16_to_u8(vx_context context, vx_image in_image,
     vx_map_id                   out_map_id;
     uint16_t                   *in_data_ptr;
     uint8_t                    *out_data_ptr;
-    
+
     int                         i;
 
     rect.start_x = 0;
@@ -202,7 +203,7 @@ static vx_status crop_image(vx_context context, vx_image in_image,
     vx_map_id                   out_map_id;
     uint8_t                    *in_data_ptr;
     uint8_t                    *out_data_ptr;
-    
+
     int                         i;
     int                         j;
 
@@ -297,6 +298,7 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(left_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(right_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -430,7 +432,7 @@ static vx_status check_histogram(vx_distribution histogram,
     uint16_t i;
 
     index = (12U * a) + (4U * b) + (2U * c) + d;
-    
+
     status = vxMapDistribution(histogram,
                 &map_id,
                 (void**) &hist_ptr,
@@ -454,7 +456,7 @@ static vx_status check_histogram(vx_distribution histogram,
     {
         printf(" ERROR: Could not map distribution!\n");
     }
-    
+
     return status;
 }
 
@@ -537,6 +539,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
         rect.end_y = 716;
 
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_NO_FAILURE(srcL = arg_->generator(arg_->fileNameLeft, arg_->width, arg_->height));
         ASSERT_NO_FAILURE(srcR = arg_->generator(arg_->fileNameRight, arg_->width, arg_->height));
@@ -650,13 +653,14 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_sde_params_t",
                                                             sizeof(tivx_dmpac_sde_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         width = 640;
         height = 480;
-        
+
         params.median_filter_enable = 0;
         params.disparity_min = 0;
         params.disparity_max = 0;
@@ -669,7 +673,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
         params.aggregation_penalty_p1 = 0;
         params.aggregation_penalty_p2 = 0;
         params.reduced_range_search_enable = 0;
-        
+
         switch (arg_->negative_test)
         {
             case 0:
@@ -882,7 +886,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
                 break;
             }
         }
-        
+
         ASSERT_NO_FAILURE(srcL = arg_->generator(arg_->fileName, width, height));
         ASSERT_NO_FAILURE(srcR = arg_->generator(arg_->fileName, width, height));
         ASSERT_VX_OBJECT(left_image = ct_image_to_vx_image(srcL, context), VX_TYPE_IMAGE);
@@ -963,6 +967,7 @@ TEST(tivxHwaDmpacSde, testRealGraphProcessing)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(left_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(right_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);

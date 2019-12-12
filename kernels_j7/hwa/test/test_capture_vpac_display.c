@@ -69,6 +69,7 @@
 #include <utils/sensors/include/app_sensors.h>
 #include <utils/remote_service/include/app_remote_service.h>
 #include <utils/ipc/include/app_ipc.h>
+#include "test_hwa_common.h"
 
 #define MAX_NUM_BUF                         (8u)
 #define NUM_CAPT_CHANNELS                   (3U)
@@ -201,6 +202,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1)) )
     {
         tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -275,7 +277,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         /* Get one NV12 image for VISS and Display initialization */
         if (NULL != viss_out_frames)
         {
-           ASSERT_VX_OBJECT(viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0), VX_TYPE_IMAGE);          
+           ASSERT_VX_OBJECT(viss_nv12_out_img = (vx_image) vxGetObjectArrayItem(viss_out_frames, 0), VX_TYPE_IMAGE);
         }
 
         memset(&viss_params, 0, sizeof(tivx_vpac_viss_params_t));
