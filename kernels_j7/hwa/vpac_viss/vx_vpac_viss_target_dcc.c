@@ -87,7 +87,6 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
-
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapRGB2YUVParams(tivxVpacVissObj *vissObj);
@@ -96,8 +95,17 @@ static void tivxVpacVissDccMapGammaParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapRGBLutParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapHistParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj);
-
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapDpcLutParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapDpcOtfParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapMergeParams(tivxVpacVissObj *vissObj,
+    uint32_t inst_id);
+static void tivxVpacVissDccMapLscParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapRfeLutParams(tivxVpacVissObj *vissObj,
+    uint32_t lut_id);
+static void tivxVpacVissDccMapWb2Params(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
+    uint32_t inst_id);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -394,7 +402,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
 
         dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
 
-        if (0U != dcc_status)
+        if (0 != dcc_status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacVissApplyAEWBParams: DCC Update Failed !!!\n");
@@ -952,7 +960,7 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
         glbceCfg->dither = GLBCE_NO_DITHER;
         glbceCfg->maxSlopeLimit = 72;
         glbceCfg->minSlopeLimit = 62;
-        memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4);
+        memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4U);
 
         vissObj->vissCfgRef.glbceCfg = glbceCfg;
 
@@ -1024,7 +1032,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
             lut16to12Cfg->enable    = dcc_cfa_cfg->lut_enable;
             lut16to12Cfg->inputBits = dcc_cfa_cfg->bitWidth;
 
-            memcpy(gcfa_lut_16to12, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * FLXD_LUT_SIZE);
+            memcpy(gcfa_lut_16to12, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * (uint32_t)FLXD_LUT_SIZE);
             lut16to12Cfg->tableAddr = gcfa_lut_16to12;
             vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
         }
@@ -1514,7 +1522,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             lutCfg->clip        = 65535;
             lutCfg->tableAddr   = grawfe_pwl_vshort_lut;
 
-            if (1 == vissObj->dcc_out_prms.issRfeDecompand.enable)
+            if (1U == vissObj->dcc_out_prms.issRfeDecompand.enable)
             {
                 int i;
                 dcc_parser_output_params_t  *dcc_out_prms = &vissObj->dcc_out_prms;

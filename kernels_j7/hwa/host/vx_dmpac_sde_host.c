@@ -308,18 +308,24 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map should contain values between 0 and 127 inclusive\n");
-                break;
             }
-            if ((7U > i) && (126U < params.confidence_score_map[i]))
+            else if ((7U > i) && (126U < params.confidence_score_map[i]))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map (0-6) should contain values between 0 and 126 inclusive\n");
-                break;
             }
-            if ((0U != i) && (params.confidence_score_map[i] <= params.confidence_score_map[i - 1]))
+            else if ((0U != i) && (params.confidence_score_map[i] <= params.confidence_score_map[i - 1U]))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map should contain strictly increasing values\n");
+            }
+            else
+            {
+                /* do nothing */
+            }
+
+            if(status != (vx_status)VX_SUCCESS)
+            {
                 break;
             }
         }

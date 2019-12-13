@@ -62,6 +62,7 @@
 
 #include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
+#include <TI/j7_vpac_msc.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 

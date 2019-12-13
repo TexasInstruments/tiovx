@@ -157,6 +157,14 @@ static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
 static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 
+/* Global Prototypes */
+void tivxAddTargetKernelVpacMscGaussianPyramid(void);
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
+
+void tivxAddTargetKernelVpacMscPyramid(void);
+void tivxRemoveTargetKernelVpacMscPyramid(void);
+
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -168,7 +176,7 @@ static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxAddTargetKernelVpacMscPyramid()
+void tivxAddTargetKernelVpacMscPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -201,7 +209,7 @@ void tivxRemoveTargetKernelVpacMscPyramid()
     }
 }
 
-void tivxAddTargetKernelVpacMscGaussianPyramid()
+void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -225,7 +233,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid()
     }
 }
 
-void tivxRemoveTargetKernelVpacMscGaussianPyramid()
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
 {
     if (NULL != vx_gaussian_pyramid_target_kernel)
     {

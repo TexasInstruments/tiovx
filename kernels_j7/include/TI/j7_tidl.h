@@ -95,6 +95,11 @@ typedef struct{
 
 }tivxTIDLJ7Params;
 
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams);
+
 /*!
  * \brief TIDL params initialization
  * \ingroup group_vision_function_tidl

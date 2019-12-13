@@ -4,11 +4,15 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F C66))
 include $(PRELUDE)
 TARGET      := vx_target_kernels_j7_arm
 TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
+CSOURCES    := vx_kernels_hwa_target.c vx_dof_visualize_target.c
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+  CSOURCES    += vx_kernels_hwa_target_utils.c
+endif
+
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
-IDIRS       += $(J7_C_MODELS_PATH)/include
 
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 DEFS += BUILD_HWA_DMPAC_DOF

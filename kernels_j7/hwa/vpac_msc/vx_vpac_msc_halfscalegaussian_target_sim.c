@@ -96,6 +96,9 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianDelete(
        uint16_t num_params, void *priv_arg);
 static void tivxKernelHalfScaleGaussianFreeMem(tivxHalfScaleGaussianParams *prms);
 
+void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
+void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
+
 
 static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],

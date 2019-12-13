@@ -173,6 +173,12 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 /* Driver Callback */
 int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData);
 
+/* Global Prototypes */
+void tivxAddTargetKernelVpacMscScale(void);
+void tivxRemoveTargetKernelVpacMscScale(void);
+
+void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
+void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -192,7 +198,7 @@ int32_t gVpacMscScaleMpCoeff[2U][64u*5u] = TIVX_VPAC_MSC_MP_SCALE_COEFFICIENTS;
 
 void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 {
-    vx_status                status;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 cnt;
     uint32_t                 inst_start;
     char                     target_name[TIVX_TARGET_MAX_NAME];
@@ -209,7 +215,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
             sizeof(tivxVpacMscScaleInstObj) * VHWA_M2M_MSC_MAX_INST);
 
-        for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+        for (cnt = 0u; (cnt < VHWA_M2M_MSC_MAX_INST) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
@@ -242,7 +248,6 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddTargetKernelVpacMscHalfScaleGaussian: Failed to create Semaphore\n");
-                    break;
                 }
                 else
                 {
@@ -266,10 +271,12 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacMscHalfScaleGaussian: Failed to Add MSC TargetKernel\n");
-                break;
             }
 
-            inst_obj->target_type = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_TARGET;
+            if(status == (vx_status)VX_SUCCESS)
+            {
+                inst_obj->target_type = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_TARGET;
+            }
         }
 
         /* Clean up allocated resources */
@@ -323,7 +330,7 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void)
 
 void tivxAddTargetKernelVpacMscScale(void)
 {
-    vx_status                status;
+    vx_status                status = (vx_status)VX_SUCCESS;
     uint32_t                 cnt;
     char                     target_name[TIVX_TARGET_MAX_NAME];
     vx_enum                  self_cpu;
@@ -340,7 +347,7 @@ void tivxAddTargetKernelVpacMscScale(void)
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
             sizeof(tivxVpacMscScaleInstObj) * VHWA_M2M_MSC_MAX_INST);
 
-        for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+        for (cnt = 0u; (cnt < VHWA_M2M_MSC_MAX_INST) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
@@ -373,7 +380,6 @@ void tivxAddTargetKernelVpacMscScale(void)
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddTargetKernelVpacMscScale: Failed to create Semaphore\n");
-                    break;
                 }
                 else
                 {
@@ -397,10 +403,12 @@ void tivxAddTargetKernelVpacMscScale(void)
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacMscScale: Failed to Add MSC TargetKernel\n");
-                break;
             }
 
-            inst_obj->target_type = TIVX_VPAC_MSC_SCALE_IMAGE_TARGET;
+            if(status == (vx_status)VX_SUCCESS)
+            {
+                inst_obj->target_type = TIVX_VPAC_MSC_SCALE_IMAGE_TARGET;
+            }
         }
 
         /* Clean up allocated resources */

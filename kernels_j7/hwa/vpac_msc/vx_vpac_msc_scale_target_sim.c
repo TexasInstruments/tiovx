@@ -97,6 +97,8 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
        uint16_t num_params, void *priv_arg);
 static void tivxKernelScaleFreeMem(tivxScaleParams *prms);
 
+void tivxAddTargetKernelVpacMscScale(void);
+void tivxRemoveTargetKernelVpacMscScale(void);
 
 static vx_status VX_CALLBACK tivxKernelScaleProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],

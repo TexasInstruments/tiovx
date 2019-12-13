@@ -226,6 +226,13 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     tivx_vpac_msc_output_params_t *out_prms);
 
+/* Global Prototypes */
+void tivxAddTargetKernelVpacMscPyramid(void);
+void tivxRemoveTargetKernelVpacMscPyramid(void);
+
+void tivxAddTargetKernelVpacMscGaussianPyramid(void);
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
+
 /* Control Command Implementation */
 static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
@@ -250,7 +257,7 @@ tivxVpacMscPmdInstObj gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_NUM_INST];
 
 void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
-    vx_status               status;
+    vx_status               status = (vx_status)VX_SUCCESS;
     uint32_t                cnt;
     uint32_t                inst_start;
     char                    target_name[TIVX_TARGET_MAX_NAME];
@@ -267,7 +274,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
         memset(&gTivxVpacMscPmdInstObj[inst_start], 0x0,
             sizeof(tivxVpacMscPmdInstObj) * VHWA_M2M_MSC_MAX_INST);
 
-        for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+        for (cnt = 0u; (cnt < VHWA_M2M_MSC_MAX_INST) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             inst_obj = &gTivxVpacMscPmdInstObj[inst_start + cnt];
 
@@ -300,7 +307,6 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddTargetKernelVpacMsc: Failed to create Semaphore\n");
-                    break;
                 }
                 else
                 {
@@ -324,7 +330,6 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacMsc: Failed to Add MSC TargetKernel\n");
-                break;
             }
         }
 
@@ -380,7 +385,7 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
 
 void tivxAddTargetKernelVpacMscPyramid(void)
 {
-    vx_status               status;
+    vx_status               status = (vx_status)VX_SUCCESS;
     uint32_t                cnt;
     uint32_t                inst_start;
     char                    target_name[TIVX_TARGET_MAX_NAME];
@@ -397,7 +402,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
         memset(&gTivxVpacMscPmdInstObj[inst_start], 0x0,
             sizeof(tivxVpacMscPmdInstObj) * VHWA_M2M_MSC_MAX_INST);
 
-        for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+        for (cnt = 0u; (cnt < VHWA_M2M_MSC_MAX_INST) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             inst_obj = &gTivxVpacMscPmdInstObj[inst_start + cnt];
 
@@ -430,7 +435,6 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddTargetKernelVpacMsc: Failed to create Semaphore\n");
-                    break;
                 }
                 else
                 {
@@ -454,7 +458,6 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacMsc: Failed to Add MSC TargetKernel\n");
-                break;
             }
         }
 
@@ -860,7 +863,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
 
         cur_time = tivxPlatformGetTimeInUsecs();
 
-        for (oct_cnt = 0u; oct_cnt < msc_obj->num_pmd_subsets; oct_cnt ++)
+        for (oct_cnt = 0u; (oct_cnt < msc_obj->num_pmd_subsets) && (status == (vx_status)VX_SUCCESS); oct_cnt ++)
         {
             ss_info = &msc_obj->ss_info[oct_cnt];
 
@@ -878,79 +881,82 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacMscPmdProcess: Failed to set params\n");
                     status = (vx_status)VX_FAILURE;
-                    break;
                 }
             }
 
-            frm = &msc_obj->inFrm;
-            /* For the first octave, input is from the actual input image */
-            if (0u == oct_cnt)
+            if(status == (vx_status)VX_SUCCESS)
             {
-                for (plane_cnt = 0u; plane_cnt < in_img_desc->planes;
-                        plane_cnt ++)
+                frm = &msc_obj->inFrm;
+                /* For the first octave, input is from the actual input image */
+                if (0u == oct_cnt)
                 {
-                    frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
-                        in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                    for (plane_cnt = 0u; plane_cnt < in_img_desc->planes;
+                            plane_cnt ++)
+                    {
+                        frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
+                            in_img_desc->mem_ptr[plane_cnt].shared_ptr,
+                            (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                    }
                 }
-            }
-            else
-            {
-                /* For the rest octaves, Use the last output
-                 * from the previous octave, as an input */
-                in_idx = ss_info->input_idx;
-                img_desc = msc_obj->out_img_desc[in_idx];
-                for (plane_cnt = 0u; plane_cnt < img_desc->planes;
-                        plane_cnt ++)
+                else
                 {
-                    frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
-                        img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        (int32_t)img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                    /* For the rest octaves, Use the last output
+                     * from the previous octave, as an input */
+                    in_idx = ss_info->input_idx;
+                    img_desc = msc_obj->out_img_desc[in_idx];
+                    for (plane_cnt = 0u; plane_cnt < img_desc->planes;
+                            plane_cnt ++)
+                    {
+                        frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
+                            img_desc->mem_ptr[plane_cnt].shared_ptr,
+                            (int32_t)img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                    }
                 }
-            }
 
-            outFrmList->numFrames = 0u;
-            out_img_idx = ss_info->out_start_idx;
-            for (out_cnt = 0u; out_cnt < ss_info->num_levels; out_cnt ++)
-            {
-                img_desc = msc_obj->out_img_desc[out_img_idx];
-                sc_idx = ss_info->sc_map_idx[out_cnt];
-                frm = &msc_obj->outFrm[sc_idx];
-
-                for (plane_cnt = 0u; plane_cnt < img_desc->planes;
-                        plane_cnt ++)
+                outFrmList->numFrames = 0u;
+                out_img_idx = ss_info->out_start_idx;
+                for (out_cnt = 0u; out_cnt < ss_info->num_levels; out_cnt ++)
                 {
-                    frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
-                        img_desc->mem_ptr[plane_cnt].shared_ptr,
-                        (int32_t)img_desc->mem_ptr[plane_cnt].
-                        mem_heap_region);
+                    img_desc = msc_obj->out_img_desc[out_img_idx];
+                    sc_idx = ss_info->sc_map_idx[out_cnt];
+                    frm = &msc_obj->outFrm[sc_idx];
+
+                    for (plane_cnt = 0u; plane_cnt < img_desc->planes;
+                            plane_cnt ++)
+                    {
+                        frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
+                            img_desc->mem_ptr[plane_cnt].shared_ptr,
+                            (int32_t)img_desc->mem_ptr[plane_cnt].
+                            mem_heap_region);
+                    }
+                    outFrmList->numFrames ++;
+                    out_img_idx ++;
                 }
-                outFrmList->numFrames ++;
-                out_img_idx ++;
-            }
 
-            /* Submit MSC Request*/
-            fvid2_status = Fvid2_processRequest(msc_obj->handle, inFrmList,
-                outFrmList, FVID2_TIMEOUT_FOREVER);
-            if (FVID2_SOK != fvid2_status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdProcess: Failed to Submit Request\n");
-                status = (vx_status)VX_FAILURE;
-                break;
-            }
+                /* Submit MSC Request*/
+                fvid2_status = Fvid2_processRequest(msc_obj->handle, inFrmList,
+                    outFrmList, FVID2_TIMEOUT_FOREVER);
+                if (FVID2_SOK != fvid2_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacMscPmdProcess: Failed to Submit Request\n");
+                    status = (vx_status)VX_FAILURE;
+                }
 
-            /* Wait for Frame Completion */
-            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                if(status == (vx_status)VX_FAILURE)
+                {
+                    /* Wait for Frame Completion */
+                    tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-            fvid2_status = Fvid2_getProcessedRequest(msc_obj->handle,
-                inFrmList, outFrmList, 0);
-            if (FVID2_SOK != fvid2_status)
-            {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdProcess: Failed to Get Processed Request\n");
-                status = (vx_status)VX_FAILURE;
-                break;
+                    fvid2_status = Fvid2_getProcessedRequest(msc_obj->handle,
+                        inFrmList, outFrmList, 0);
+                    if (FVID2_SOK != fvid2_status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "tivxVpacMscPmdProcess: Failed to Get Processed Request\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
             }
         }
     }
@@ -1005,7 +1011,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
         status = (vx_status)VX_FAILURE;
     }
     else
-	{
+    {
         /* do nothing */
     }
 
@@ -1244,7 +1250,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
             /* Atleast, one subset is required */
             num_subsets ++;
 
-            for (cnt = 0u; cnt < num_pmd_levels; cnt ++)
+            for (cnt = 0u; (cnt < num_pmd_levels) && (status == (vx_status)VX_SUCCESS); cnt ++)
             {
                 out_img_desc = msc_obj->out_img_desc[cnt];
 
@@ -1280,7 +1286,6 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
                         VX_PRINT(VX_ZONE_ERROR,
                             "tivxVpacMscPmdCalcSubSetInfo: Pyramid Subsets required are more than TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                        break;
                     }
                 }
                 else
@@ -1288,12 +1293,14 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
                     ss_info->num_levels ++;
                 }
 
-                if (MSC_MAX_OUTPUT < ss_info->num_levels)
+                if(status == (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCalcSubSetInfo: Max 10 outputs supported in subset\n");
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    break;
+                    if (MSC_MAX_OUTPUT < ss_info->num_levels)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "tivxVpacMscPmdCalcSubSetInfo: Max 10 outputs supported in subset\n");
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
                 }
             }
         }

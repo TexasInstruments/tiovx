@@ -485,58 +485,51 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+        for (cnt = 0u; (cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             if (NULL == out_img[cnt])
             {
                 /* all images must be continuous */
                 break;
             }
-
-            if (((vx_df_image)VX_DF_IMAGE_NV12 != out_img_fmt[cnt]) &&
-                ((vx_df_image)VX_DF_IMAGE_U8 != out_img_fmt[cnt]) &&
-                ((vx_df_image)VX_DF_IMAGE_U16 != out_img_fmt[cnt]) &&
-                ((vx_df_image)TIVX_DF_IMAGE_P12 != out_img_fmt[cnt]))
+            else
             {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect out img fmt \n");
-                break;
-            }
-
-            if (((vx_df_image)VX_DF_IMAGE_NV12 == out_img_fmt[cnt]) &&
-                ((vx_df_image)VX_DF_IMAGE_NV12 != in_img_fmt))
-            {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect out img fmt \n");
-                break;
-            }
-
-            if ((out_img_w[cnt] > in_img_w))
-            {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect Out Width \n");
-                break;
-            }
-
-            if ((out_img_h[cnt] > in_img_h))
-            {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect Out Height \n");
-                break;
-            }
-
-            if (cnt > 0u)
-            {
-                if (out_img_fmt[cnt] != out_img_fmt[cnt-1u])
+                if (((vx_df_image)VX_DF_IMAGE_NV12 != out_img_fmt[cnt]) &&
+                    ((vx_df_image)VX_DF_IMAGE_U8 != out_img_fmt[cnt]) &&
+                    ((vx_df_image)VX_DF_IMAGE_U16 != out_img_fmt[cnt]) &&
+                    ((vx_df_image)TIVX_DF_IMAGE_P12 != out_img_fmt[cnt]))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddKernelVpacLdcValidate: Format must be same for all outputs\n");
-                    break;
+                    VX_PRINT(VX_ZONE_ERROR, "'out_img[%d]' should be an image of type:\n VX_DF_IMAGE_NV12 or VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12\n", cnt);
+                }
+
+                if (((vx_df_image)VX_DF_IMAGE_NV12 == out_img_fmt[cnt]) &&
+                    ((vx_df_image)VX_DF_IMAGE_NV12 != in_img_fmt))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'out_img[%d]' should be an image of type:\n VX_DF_IMAGE_NV12 when in_img is VX_DF_IMAGE_NV12\n", cnt);
+                }
+
+                if ((out_img_w[cnt] > in_img_w))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'out_img[%d]' width should not be larger than the input width\n", cnt);
+                }
+
+                if ((out_img_h[cnt] > in_img_h))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'out_img[%d]' height should not be larger than the input height\n", cnt);
+                }
+
+                if (cnt > 0u)
+                {
+                    if (out_img_fmt[cnt] != out_img_fmt[cnt-1u])
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "'out_img[%d]' format should be same as 'out_img[%d]' format\n", cnt, cnt-1u);
+                        VX_PRINT(VX_ZONE_ERROR, "Format must be same for all outputs\n");
+                    }
                 }
             }
         }

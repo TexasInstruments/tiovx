@@ -165,10 +165,15 @@ static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
     tivx_obj_desc_image_t *out_img_desc);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
+static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
+    tivx_vpac_msc_output_params_t *out_prms);
 
 /* Driver Callback */
 int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData);
 
+/* Global Prototypes */
+void tivxAddTargetKernelVpacMscMultiScale(void);
+void tivxRemoveTargetKernelVpacMscMultiScale(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -182,7 +187,7 @@ tivxVpacMscScaleInstObj gTivxVpacMscMScaleInstObj[VHWA_M2M_MSC_MAX_INST];
 
 void tivxAddTargetKernelVpacMscMultiScale(void)
 {
-    vx_status status;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t cnt;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -197,7 +202,7 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
         memset(gTivxVpacMscMScaleInstObj, 0x0,
             sizeof(tivxVpacMscScaleInstObj) * VHWA_M2M_MSC_MAX_INST);
 
-        for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+        for (cnt = 0u; (cnt < VHWA_M2M_MSC_MAX_INST) && (status == (vx_status)VX_SUCCESS); cnt ++)
         {
             inst_obj = &gTivxVpacMscMScaleInstObj[cnt];
 
@@ -230,7 +235,6 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxAddTargetKernelVpacMsc: Failed to create Mutex\n");
-                    break;
                 }
                 else
                 {
@@ -254,7 +258,6 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
                 /* TODO: how to handle this condition */
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacMsc: Failed to Add MSC TargetKernel\n");
-                break;
             }
         }
 
@@ -449,7 +452,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 }
                 else
                 {
-                    idx = MSC_MAX_OUTPUT - 1 - cnt;
+                    idx = MSC_MAX_OUTPUT - 1U - cnt;
                     fmt = &msc_prms->outFmt[idx];
                     sc_cfg = &msc_prms->mscCfg.scCfg[idx];
                     msc_obj->sc_map_idx[cnt] = idx;
@@ -458,9 +461,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
 
-                sc_cfg->horzAccInit = 
+                sc_cfg->horzAccInit =
                     (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                sc_cfg->vertAccInit = 
+                sc_cfg->vertAccInit =
                     (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
 
             }

@@ -96,6 +96,8 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
        uint16_t num_params, void *priv_arg);
 static void tivxKernelGsnPmdFreeMem(tivxGassPyrmdParams *prms);
 
+void tivxAddTargetKernelVpacMscGaussianPyramid(void);
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
 
 static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -424,6 +426,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
     return status;
 }
 
+/* ToDo: this function is defined in multiple places */
 void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
