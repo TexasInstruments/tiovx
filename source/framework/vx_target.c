@@ -747,7 +747,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     {
         kernel_name = kernel_name_obj_desc->kernel_name;
     }
-    for (cnt = 0; cnt < loop_max; cnt ++)
+    for (cnt = 0; (cnt < loop_max) && (status == (vx_status)VX_SUCCESS); cnt ++)
     {
         target_kernel_instance = tivxTargetKernelInstanceAlloc(
             node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
@@ -756,7 +756,6 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeCreate: target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
-            break;
         }
         else
         {
@@ -834,26 +833,23 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             /* copy border mode also in the target_kernel_instance */
             tivx_obj_desc_memcpy(&target_kernel_instance->border_mode, &node_obj_desc->border_mode, sizeof(vx_border_t));
 
+            if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
+                (vx_bool)vx_true_e)
             {
-                if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_SUPERNODE) ==
-                    (vx_bool)vx_true_e)
-                {
-                    params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
+                params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
-                    status = tivxTargetKernelCreate(target_kernel_instance,
-                        params, 1);
-                }
-                else
-                {
-                    status = tivxTargetKernelCreate(target_kernel_instance,
-                        params, node_obj_desc->num_params);
-                }
+                status = tivxTargetKernelCreate(target_kernel_instance,
+                    params, 1);
+            }
+            else
+            {
+                status = tivxTargetKernelCreate(target_kernel_instance,
+                    params, node_obj_desc->num_params);
             }
 
             if(status!=(vx_status)VX_SUCCESS)
             {
                 tivxTargetKernelInstanceFree(&target_kernel_instance);
-                break;
             }
         }
     }

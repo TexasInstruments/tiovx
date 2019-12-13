@@ -82,27 +82,26 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
     {
         uint32_t i;
 
-        for(i=0; i < num_nodes; i++)
+        for(i=0; (i < num_nodes) && (is_valid == (vx_bool)vx_true_e); i++)
         {
             if ((ownIsValidSpecificReference(&nodes[i]->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e))
             {
                 is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not a valid node\n", i);
-               break;
             }
-
-            if (nodes[i]->graph != graph)
+            else if (nodes[i]->graph != graph)
             {
                 is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not in graph\n", i);
-                break;
             }
-
-            if (nodes[i]->super_node != NULL)
+            else if (nodes[i]->super_node != NULL)
             {
                 is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is already in a super node\n", i);
-                break;
+            }
+            else
+            {
+                /* do nothing */
             }
         }
     }

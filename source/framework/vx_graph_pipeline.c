@@ -169,7 +169,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                 uint32_t i;
 
                 graph->schedule_mode = graph_schedule_mode;
-                for(i=0; i<graph_parameters_list_size; i++)
+                for(i=0; (i<graph_parameters_list_size) && (status == (vx_status)VX_SUCCESS); i++)
                 {
                     if((graph_parameters_queue_params_list[i].graph_parameter_index
                         >= graph->num_params)
@@ -179,7 +179,6 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                     {
                         VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Invalid parameters\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                        break;
                     }
                     else
                     {
@@ -201,9 +200,8 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                             }
                             else
                             {
-                                VX_PRINT(VX_ZONE_ERROR, 
+                                VX_PRINT(VX_ZONE_ERROR,
                                     "Graph parameter refs list at index %d contains inconsistent meta data. Please ensure that all buffers in list contain the same meta data\n", i);
-                                break;
                             }
                         }
                     }

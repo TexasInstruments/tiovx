@@ -424,7 +424,7 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
     tivx_obj_desc_super_node_t *obj_desc = NULL;
     tivx_obj_desc_node_t *node_obj_desc = NULL;
 
-    for(i=0; i < graph->num_supernodes; i++)
+    for(i=0; (i < graph->num_supernodes) && (status == (vx_status)VX_SUCCESS); i++)
     {
         super_node = graph->supernodes[i];
         obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;
@@ -452,58 +452,59 @@ vx_status ownGraphSuperNodeConfigure(vx_graph graph)
         {
             VX_PRINT(VX_ZONE_ERROR,"Supernode node count not equal to number of nodes in graph associated with supernode\n");
             status = (vx_status)VX_FAILURE;
-            break;
         }
-
-        /* Check for target mismatch error */
-        status = ownGraphSuperNodeCheckTarget(super_node);
-
-        if(status != (vx_status)VX_SUCCESS)
+        else
         {
-            VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have the same target of all nodes within it\n", i);
-            status = (vx_status)VX_FAILURE;
-            break;
-        }
 
-        {
-            /* Check for continuity for each node in super node */
-            vx_bool is_continuous = (vx_bool)vx_false_e;
+            /* Check for target mismatch error */
+            status = ownGraphSuperNodeCheckTarget(super_node);
 
-            ownContextLock(graph->base.context);
-
-            if (num_nodes_in_supernode < TIVX_SUPER_NODE_MAX_NODES)
+            if(status != (vx_status)VX_SUCCESS)
             {
-                ownGraphCheckContinuityOfSupernode(
-                            &graph->base.context->graph_sort_context,
-                            super_node,
-                            num_nodes_in_supernode,
-                            &is_continuous);
+                VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have the same target of all nodes within it\n", i);
             }
             else
             {
-                status = (vx_status)VX_FAILURE;
+                /* Check for continuity for each node in super node */
+                vx_bool is_continuous = (vx_bool)vx_false_e;
+
+                ownContextLock(graph->base.context);
+
+                if (num_nodes_in_supernode < TIVX_SUPER_NODE_MAX_NODES)
+                {
+                    ownGraphCheckContinuityOfSupernode(
+                                &graph->base.context->graph_sort_context,
+                                super_node,
+                                num_nodes_in_supernode,
+                                &is_continuous);
+                }
+                else
+                {
+                    status = (vx_status)VX_FAILURE;
+                }
+
+                ownContextUnlock(graph->base.context);
+
+                if(is_continuous == (vx_bool)vx_false_e)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have continuity of all nodes within it\n", i);
+                    status = (vx_status)VX_FAILURE;
+                }
             }
 
-            ownContextUnlock(graph->base.context);
-
-            if(is_continuous == (vx_bool)vx_false_e)
+            if(status == (vx_status)VX_SUCCESS)
             {
-                VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] does not have continuity of all nodes within it\n", i);
-                status = (vx_status)VX_FAILURE;
-                break;
+                cnt = 0;
+
+                /* Create super node edge list and
+                 * Update graph node execution dependencies to point to/from supernodes */
+                status = ownGraphCalcEdgeList(graph, super_node);
+
+                if(status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] failed ownGraphCalcEdgeList\n", i);
+                }
             }
-        }
-
-        cnt = 0;
-
-        /* Create super node edge list and
-         * Update graph node execution dependencies to point to/from supernodes */
-        status = ownGraphCalcEdgeList(graph, super_node);
-
-        if(status != (vx_status)VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] failed ownGraphCalcEdgeList\n", i);
-            break;
         }
     }
 

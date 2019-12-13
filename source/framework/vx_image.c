@@ -745,11 +745,12 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
         if ( (vxGetStatus((vx_reference)image) == (vx_status)VX_SUCCESS) && (image->base.type == (vx_enum)VX_TYPE_IMAGE) )
         {
             vx_uint32 plane_idx = 0;
+            vx_status status = (vx_status)VX_SUCCESS;
 
             obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
             /* now assign the plane pointers, assume linearity */
-            for (plane_idx = 0; plane_idx < obj_desc->planes; plane_idx++)
+            for (plane_idx = 0; (plane_idx < obj_desc->planes) && (status == (vx_status)VX_SUCCESS); plane_idx++)
             {
                 /* ensure row-major memory layout */
                 if ((color == (vx_df_image)TIVX_DF_IMAGE_P12) || (color == (vx_df_image)TIVX_DF_IMAGE_NV12_P12))
@@ -758,7 +759,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                     {
                         vxReleaseImage(&image);
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
-                        break;
+                        status = (vx_status)VX_FAILURE;
                     }
 
                 }
@@ -768,28 +769,31 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                     {
                         vxReleaseImage(&image);
                         image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
-                        break;
+                        status = (vx_status)VX_FAILURE;
                     }
                 }
 
-                imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
-                mem_ptr = &obj_desc->mem_ptr[plane_idx];
-
-                imagepatch_addr->stride_x = addrs[plane_idx].stride_x;
-                imagepatch_addr->stride_y = addrs[plane_idx].stride_y;
-
-                obj_desc->mem_size[plane_idx] = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
-
-                mem_ptr->mem_heap_region =  (vx_enum)TIVX_MEM_EXTERNAL;
-                mem_ptr->host_ptr = (uint64_t)(uintptr_t)ptrs[plane_idx];
-                if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+                if(status == (vx_status)VX_SUCCESS)
                 {
-                    /* ptrs[plane_idx] can be NULL */
-                    mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                    imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
+                    mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
-                    tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
-                        obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL,
-                        (vx_enum)VX_WRITE_ONLY);
+                    imagepatch_addr->stride_x = addrs[plane_idx].stride_x;
+                    imagepatch_addr->stride_y = addrs[plane_idx].stride_y;
+
+                    obj_desc->mem_size[plane_idx] = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
+
+                    mem_ptr->mem_heap_region =  (vx_enum)TIVX_MEM_EXTERNAL;
+                    mem_ptr->host_ptr = (uint64_t)(uintptr_t)ptrs[plane_idx];
+                    if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
+                    {
+                        /* ptrs[plane_idx] can be NULL */
+                        mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+
+                        tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
+                            obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL,
+                            (vx_enum)VX_WRITE_ONLY);
+                    }
                 }
             }
         }

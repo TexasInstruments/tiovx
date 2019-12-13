@@ -815,7 +815,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     graph->num_head_nodes = 0;
     graph->num_leaf_nodes = 0;
 
-    for(i=0; i<graph->num_nodes; i++)
+    for(i=0; (i<graph->num_nodes) && (status == (vx_status)VX_SUCCESS); i++)
     {
         node = graph->nodes[i];
 
@@ -834,13 +834,15 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/TI/tivx_config.h\n");
-                    break;
                 }
-                graph->head_nodes[graph->num_head_nodes] = node;
-                graph->num_head_nodes++;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
+                else
+                {
+                    graph->head_nodes[graph->num_head_nodes] = node;
+                    graph->num_head_nodes++;
+                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
+                }
             }
-            if(num_out==0)
+            if((num_out==0) && (status == (vx_status)VX_SUCCESS))
             {
                 if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
                 {
@@ -848,11 +850,13 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                     VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
                     VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/TI/tivx_config.h\n");
-                    break;
                 }
-                graph->leaf_nodes[graph->num_leaf_nodes] = node;
-                graph->num_leaf_nodes++;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
+                else
+                {
+                    graph->leaf_nodes[graph->num_leaf_nodes] = node;
+                    graph->num_leaf_nodes++;
+                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
+                }
             }
         }
     }
