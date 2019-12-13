@@ -355,7 +355,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 
 void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr)
 {
-#ifdef TARGET_OS_LINUX
+#ifdef TARGET_HLOS
     return (void*)(uintptr_t)(shared_ptr->host_ptr);
 #else
     return (void*)(uintptr_t)(shared_ptr->shared_ptr);
