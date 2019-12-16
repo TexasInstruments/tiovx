@@ -163,14 +163,7 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
  * \ingroup group_tivx_ext_host_kernel
  */
 static inline void tivxKernelValidRectParams_init(
-    tivxKernelValidRectParams *prms)
-{
-    if (NULL != prms)
-    {
-        memset(prms, 0, sizeof(tivxKernelValidRectParams));
-        prms->border_mode = VX_BORDER_UNDEFINED;
-    }
-}
+    tivxKernelValidRectParams *prms);
 
 /*!
  * \brief Function to set the status variable equal to status_temp
@@ -181,12 +174,7 @@ static inline void tivxKernelValidRectParams_init(
  *
  * \ingroup group_tivx_ext_host_kernel
  */
-static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
-{
-    if((vx_status)VX_SUCCESS != status_temp) {
-        *status = status_temp;
-    }
-}
+static inline void tivxCheckStatus(vx_status *status, vx_status status_temp);
 
 /*!
  * \brief Function to calculate and configure valid region
@@ -206,6 +194,29 @@ static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
  * \ingroup group_tivx_ext_host_kernel
  */
 vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
+
+
+
+/*!
+ *  STATIC INLINE FUNCTION DEFINITIONS
+ */
+
+static inline void tivxKernelValidRectParams_init(
+    tivxKernelValidRectParams *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0, sizeof(tivxKernelValidRectParams));
+        prms->border_mode = VX_BORDER_UNDEFINED;
+    }
+}
+
+static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
+{
+    if((vx_status)VX_SUCCESS != status_temp) {
+        *status = status_temp;
+    }
+}
 
 #ifdef __cplusplus
 }
