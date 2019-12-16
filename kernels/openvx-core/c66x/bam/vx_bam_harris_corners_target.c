@@ -186,7 +186,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         void *img_ptrs[2];
         void *src_target_ptr;
         void *arr_target_ptr;
-        VXLIB_STATUS status_vxlib = (vx_status)VXLIB_SUCCESS;
+        VXLIB_STATUS status_vxlib = (VXLIB_STATUS)VXLIB_SUCCESS;
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         arr_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);

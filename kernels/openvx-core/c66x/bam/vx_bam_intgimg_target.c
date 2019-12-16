@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
             BAM_VXLIB_integralImage_i8u_o32u_getKernelInfo( &kernel_params,
                                                         &kernel_details.kernel_info);
 
-            status = tivxBamCreateHandleSingleNode(BAM_KERNELID_(uint32_t)VXLIB_INTEGRALIMAGE_I8U_O32U,
+            status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U,
                                                    buf_params, &kernel_details,
                                                    &prms->graph_handle);
         }
@@ -342,7 +342,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_(uint32_t)VXLIB_INTEGRALIMAGE_I8U_O32U;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             kernel_params->frameWidth   = dst->valid_roi.end_x - dst->valid_roi.start_x;
@@ -394,11 +394,11 @@ static vx_status VX_CALLBACK tivxKernelIntgImgGetNodePort(
         {
             case TIVX_KERNEL_INTG_IMG_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_(uint32_t)VXLIB_INTEGRALIMAGE_I8U_O32U_INPUT_IMAGE_PORT;
+                *bam_port = BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_INTG_IMG_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_(uint32_t)VXLIB_INTEGRALIMAGE_I8U_O32U_OUTPUT_IMAGE_PORT;
+                *bam_port = BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelIntgImgGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
