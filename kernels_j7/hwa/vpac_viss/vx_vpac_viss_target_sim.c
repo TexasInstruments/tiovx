@@ -68,6 +68,7 @@
 #include "tivx_kernel_vpac_viss.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_viss_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include "rawfe.h"
 #include "nsf4.h"
@@ -1023,17 +1024,17 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     /* Compute AF buffer size */
                     if (prms->h3a_params.pcr_AF_VF_EN)
                     {
-						int16_t temp_af_buffer_size = ((int16_t)16 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * (int16_t)sizeof(uint32_t);
+                        int16_t temp_af_buffer_size = ((int16_t)16 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * (int16_t)sizeof(uint32_t);
                         prms->af_buffer_size = (uint32_t)temp_af_buffer_size;
                     }
                     else
                     {
-						int16_t temp0 = prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC;
+                        int16_t temp0 = prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC;
                         int32_t temp1;
                         af_pad = 0;
                         if ((int16_t)1 == (prms->h3a_params.afpax2_PAXHC%2))
                         {
-							int16_t temp_af_pad = 4*prms->h3a_params.afpax2_PAXVC;
+                            int16_t temp_af_pad = 4*prms->h3a_params.afpax2_PAXVC;
                             af_pad = (int32_t)temp_af_pad;
                         }
                         temp1 = ((12 * (int32_t)temp0) + af_pad) * (int32_t)sizeof(uint32_t);

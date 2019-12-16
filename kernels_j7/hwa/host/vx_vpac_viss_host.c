@@ -65,6 +65,7 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_viss.h"
 #include "TI/tivx_target_kernel.h"
+#include "tivx_hwa_host_priv.h"
 
 static vx_kernel vx_vpac_viss_kernel = NULL;
 
@@ -75,8 +76,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVpacVissInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelVpacViss(vx_context context);
-vx_status tivxRemoveKernelVpacViss(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             const vx_reference parameters[ ],

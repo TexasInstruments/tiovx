@@ -68,6 +68,7 @@
 #include "tivx_kernel_display.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_display_priv.h"
 #include <TI/tivx_queue.h>
 #include <ti/drv/dss/dss.h>
 
@@ -220,7 +221,7 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
-        case (vx_df_image)VX_DF_IMAGE_U8:    
+        case (vx_df_image)VX_DF_IMAGE_U8:
             format->ccsFormat = FVID2_CCSF_BITS8_PACKED;
             format->dataFormat = FVID2_DF_YUV420SP_UV;
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
@@ -266,16 +267,16 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                 chroma_ptr16 = (uint16_t *)chroma_target_ptr;
                 for (cnt = 0; cnt < (dispPrms->chromaBufSize / 2); cnt ++)
                 {
-                       *chroma_ptr16 = 0x800u; 
+                       *chroma_ptr16 = 0x800u;
                        chroma_ptr16 ++;
-                }   
+                }
             }
             else if ((vx_df_image)VX_DF_IMAGE_U8 == obj_desc_img->format)
             {
                 chroma_ptr8 = (uint8_t *)chroma_target_ptr;
                 for (cnt = 0; cnt < dispPrms->chromaBufSize  ; cnt ++)
                 {
-                       *chroma_ptr8 = 0x80u; 
+                       *chroma_ptr8 = 0x80u;
                        chroma_ptr8 ++;
                 }
             }
@@ -285,7 +286,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             }
 
             tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
-                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);            
+                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
         }
     }
     else

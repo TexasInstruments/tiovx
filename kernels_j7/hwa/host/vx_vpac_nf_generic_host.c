@@ -65,6 +65,7 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_nf_generic.h"
 #include "TI/tivx_target_kernel.h"
+#include "tivx_hwa_host_priv.h"
 
 static vx_kernel vx_vpac_nf_generic_kernel = NULL;
 
@@ -75,8 +76,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelVpacNfGeneric(vx_context context);
-vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -204,7 +203,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-		vx_border_t border;
+        vx_border_t border;
         status = vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -286,7 +285,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
-		vx_border_t border;
+        vx_border_t border;
         status = vxQueryNode(node, (vx_enum)VX_NODE_BORDER, &border, sizeof(border));
         if ((vx_status)VX_SUCCESS == status)
         {

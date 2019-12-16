@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_nf_bilateral.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_nf_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include <math.h>
@@ -97,7 +98,7 @@ typedef struct
     Fvid2_Handle                        handle;
     tivx_event                          waitForProcessCmpl;
     Nf_ErrEventParams                   errEvtPrms;
-    
+
     Fvid2_Frame                         inFrm;
     Fvid2_Frame                         outFrm;
     Fvid2_CbParams                      cbPrms;
@@ -154,7 +155,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfBilateralGetErrStatusCmd(tivxVpacNfBilateralObj *nf_bilateral_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
-           
+
 int32_t tivxVpacNfBilateralFrameComplCb(Fvid2_Handle handle, void *appData);
 void tivxVpacNfBilateralErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
 
@@ -181,7 +182,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
-        
+
         vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_VPAC_NF_BILATERAL_NAME,
                     target_name,
@@ -197,7 +198,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacNfBilateral: Failed to create Mutex\n");
+                    "Failed to create Mutex\n");
             }
             else
             {
@@ -211,13 +212,13 @@ void tivxAddTargetKernelVpacNfBilateral(void)
 
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddTargetKernelVpacNfBilateral: Failed to Add NF Bilateral TargetKernel\n");
+                "Failed to Add NF Bilateral TargetKernel\n");
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,
-            "tivxAddTargetKernelVpacNfBilateral: Invalid CPU\n");
+            "Invalid CPU\n");
     }
 }
 
@@ -329,7 +330,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         /* Initialize NF Output Frame List */
         outFrmList->frames[0U] = &nf_bilateral_obj->outFrm;
         outFrmList->numFrames = 1U;
-        
+
         nf_bilateral_obj->outFrm.addr[0U] = (uint64_t) dst_target_ptr;
 
         cur_time = tivxPlatformGetTimeInUsecs();
@@ -511,10 +512,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         nf_cfg->nfCfg.subTableIdx = params->sub_table_select;
         nf_cfg->nfCfg.centralPixelWeight = 255u;
         nf_bilateral_obj->wgtTbl.filterMode = NF_FILTER_MODE_BILATERAL;
-                
+
         tivxVpacNfBilateralGenerateLut(getSubRangeBits(sigmas->num_sigmas), sigmas->sigma_space, sigmas->sigma_range,
             nf_bilateral_obj->wgtTbl.blFilterLut);
-    
+
         tivxVpacNfSetFmt(&nf_cfg->inFmt, src);
         tivxVpacNfSetFmt(&nf_cfg->outFmt, dst);
 
@@ -546,7 +547,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
-        
+
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, nf_bilateral_obj,
@@ -699,7 +700,7 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
 
     /* Lock instance mutex */
     tivxMutexLock(instObj->lock);
-    
+
     for (cnt = 0U; cnt < VHWA_M2M_NF_MAX_HANDLES; cnt ++)
     {
         if (0U == instObj->nfBilateralObj[cnt].isAlloc)
@@ -956,7 +957,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
         memset(i_wt_lut_full, 0, LUT_ROWS * lutSize*sizeof(uint32_t));
         if (mode == 2u)
         {
-			/* do nothing */
+            /* do nothing */
         }
         else {
             for (i = 0; i < (LUT_ROWS * lutSize); i++) {
@@ -1099,7 +1100,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
             wgtTbl = (Nf_WgtTableConfig *)target_ptr;
             fvid2_status = Fvid2_control(nf_bilateral_obj->handle, IOCTL_VHWA_M2M_NF_SET_FILTER_COEFF,
                            wgtTbl, NULL);
-                           
+
             if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,

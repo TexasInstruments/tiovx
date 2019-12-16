@@ -67,6 +67,7 @@
 #include "tivx_kernel_dmpac_sde.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_dmpac_sde_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include "tivx_kernel_dmpac_sde_generic.h"
 #include <math.h>

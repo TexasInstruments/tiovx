@@ -65,10 +65,8 @@
 #include <TI/j7_vpac_viss.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_viss_priv.h"
 
-void tivxAddTargetKernelVpacViss(void);
-
-void tivxRemoveTargetKernelVpacViss(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelVpacViss, &tivxRemoveTargetKernelVpacViss},

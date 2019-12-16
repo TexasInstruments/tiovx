@@ -71,6 +71,7 @@
 #include "tivx_kernel_video_decoder.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vdec_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include "mm_dec.h"
@@ -461,7 +462,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
             VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderCreate: tivxMemAlloc failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
-        
+
         decoder_obj->internal_buff_2 = (uint8_t*)appMemAlloc(APP_MEM_HEAP_DDR, decoder_obj->internal_size, 4096);
 
         if (NULL == decoder_obj->internal_buff_2)
@@ -497,7 +498,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         vdec_params.width = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, HW_ALIGN);
         vdec_params.height = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, HW_ALIGN);
-        
+
         if (TIVX_BITSTREAM_FORMAT_H264 == decoder_params->bitstream_format)
         {
             vdec_params.in_pixelformat = MM_PIX_FMT_H264;
@@ -516,7 +517,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
                 "tivxVideoDecoderCreate: Invalid input format\n");
             status = (vx_status)VX_FAILURE;
         }
-        
+
         if ((vx_df_image)VX_DF_IMAGE_NV12 == output_image_fmt)
         {
             vdec_params.out_pixelformat = MM_PIX_FMT_NV12;
@@ -627,7 +628,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderDelete(
         {
             tivxEventDelete(&decoder_obj->waitForProcessCmpl);
         }
-        
+
         if (NULL != decoder_obj->internal_buff_1)
         {
             appMemFree(APP_MEM_HEAP_DDR, decoder_obj->internal_buff_1, decoder_obj->internal_size);

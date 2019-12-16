@@ -65,10 +65,8 @@
 #include <TI/j7_capture.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_capture_priv.h"
 
-void tivxAddTargetKernelCapture(void);
-
-void tivxRemoveTargetKernelCapture(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelCapture, &tivxRemoveTargetKernelCapture}

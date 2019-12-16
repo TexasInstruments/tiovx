@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
@@ -225,13 +226,6 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
     tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     tivx_vpac_msc_output_params_t *out_prms);
-
-/* Global Prototypes */
-void tivxAddTargetKernelVpacMscPyramid(void);
-void tivxRemoveTargetKernelVpacMscPyramid(void);
-
-void tivxAddTargetKernelVpacMscGaussianPyramid(void);
-void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
 
 /* Control Command Implementation */
 static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,

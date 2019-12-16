@@ -65,10 +65,8 @@
 #include "TI/j7_vpac_ldc.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_ldc_priv.h"
 
-void tivxAddTargetKernelVpacLdc(void);
-
-void tivxRemoveTargetKernelVpacLdc(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelVpacLdc, tivxRemoveTargetKernelVpacLdc},

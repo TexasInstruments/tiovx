@@ -74,6 +74,7 @@
 #include "vx_kernels_hwa_target.h"
 #include "scaler_core.h"
 #include "tivx_kernel_vpac_msc.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

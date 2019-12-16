@@ -65,18 +65,8 @@
 #include <TI/j7_vpac_msc.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 
-void tivxAddTargetKernelVpacMscGaussianPyramid(void);
-void tivxAddTargetKernelVpacMscPyramid(void);
-void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
-void tivxAddTargetKernelVpacMscScale(void);
-void tivxAddTargetKernelVpacMscMultiScale(void);
-
-void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
-void tivxRemoveTargetKernelVpacMscPyramid(void);
-void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
-void tivxRemoveTargetKernelVpacMscScale(void);
-void tivxRemoveTargetKernelVpacMscMultiScale(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelVpacMscPyramid, &tivxRemoveTargetKernelVpacMscPyramid},

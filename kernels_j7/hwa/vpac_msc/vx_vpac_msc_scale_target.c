@@ -71,6 +71,7 @@
 #include "tivx_hwa_kernels.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
@@ -172,13 +173,6 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 
 /* Driver Callback */
 int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData);
-
-/* Global Prototypes */
-void tivxAddTargetKernelVpacMscScale(void);
-void tivxRemoveTargetKernelVpacMscScale(void);
-
-void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
-void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */

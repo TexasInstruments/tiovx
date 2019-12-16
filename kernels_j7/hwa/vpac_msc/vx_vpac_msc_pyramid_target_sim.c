@@ -71,6 +71,7 @@
 #include <tivx_kernel_scale.h>
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include "scaler_core.h"
 #include "tivx_kernel_vpac_msc.h"
@@ -156,14 +157,6 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
 static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
 static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
-
-/* Global Prototypes */
-void tivxAddTargetKernelVpacMscGaussianPyramid(void);
-void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
-
-void tivxAddTargetKernelVpacMscPyramid(void);
-void tivxRemoveTargetKernelVpacMscPyramid(void);
-
 
 /* ========================================================================== */
 /*                            Global Variables                                */

@@ -65,12 +65,8 @@
 #include <TI/j7_vpac_nf.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_nf_priv.h"
 
-void tivxAddTargetKernelVpacNfGeneric(void);
-void tivxAddTargetKernelVpacNfBilateral(void);
-
-void tivxRemoveTargetKernelVpacNfGeneric(void);
-void tivxRemoveTargetKernelVpacNfBilateral(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelVpacNfGeneric, &tivxRemoveTargetKernelVpacNfGeneric},

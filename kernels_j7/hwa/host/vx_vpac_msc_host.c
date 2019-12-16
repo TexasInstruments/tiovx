@@ -70,8 +70,8 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
-
 #include "tivx_vpac_msc_mp_coeffs.h"
+#include "tivx_hwa_host_priv.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -94,12 +94,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num, vx_meta_format metas[]);
 static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params);
-
-vx_status tivxAddKernelVpacMscMultiScale(vx_context context);
-vx_status tivxRemoveKernelVpacMscMultiScale(vx_context context);
-
-vx_status tivxAddKernelVpacMscPyramid(vx_context context);
-vx_status tivxRemoveKernelVpacMscPyramid(vx_context context);
 
 /* ========================================================================== */
 /*                            Global Variables                                */

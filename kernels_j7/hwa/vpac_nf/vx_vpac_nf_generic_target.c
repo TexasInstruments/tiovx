@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_nf_generic.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_nf_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
@@ -96,7 +97,7 @@ typedef struct
     Fvid2_Handle                        handle;
     tivx_event                          waitForProcessCmpl;
     Nf_ErrEventParams                   errEvtPrms;
-    
+
     Fvid2_Frame                         inFrm;
     Fvid2_Frame                         outFrm;
     Fvid2_CbParams                      cbPrms;
@@ -132,7 +133,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-       
+
 static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
        tivxVpacNfGenericInstObj *instObj);
 static void tivxVpacNfGenericFreeObject(
@@ -146,7 +147,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfGenericGetErrStatusCmd(tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
-           
+
 int32_t tivxVpacNfGenericFrameComplCb(Fvid2_Handle handle, void *appData);
 void tivxVpacNfGenericErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
 
@@ -173,7 +174,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
-        
+
         vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
                     target_name,
@@ -189,7 +190,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
             if ((vx_status)VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacNfGeneric: Failed to create Mutex\n");
+                    "Failed to create Mutex\n");
             }
             else
             {
@@ -203,13 +204,13 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddTargetKernelVpacNfGeneric: Failed to Add NF Generic TargetKernel\n");
+                "Failed to Add NF Generic TargetKernel\n");
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR,
-            "tivxAddTargetKernelVpacNfGeneric: Invalid CPU\n");
+            "Invalid CPU\n");
     }
 }
 
@@ -380,15 +381,15 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         inFrmList->frames[0U] =
             &nf_generic_obj->inFrm;
         inFrmList->numFrames = 1U;
-        
+
         nf_generic_obj->inFrm.addr[0U] = (uint64_t) src_target_ptr;
 
         /* Initialize NF Output Frame List */
         outFrmList->frames[0U] = &nf_generic_obj->outFrm;
         outFrmList->numFrames = 1U;
-        
+
         nf_generic_obj->outFrm.addr[0U] = (uint64_t) dst_target_ptr;
-        
+
         /* Submit NF Request*/
         fvid2_status = Fvid2_processRequest(nf_generic_obj->handle, inFrmList,
             outFrmList, FVID2_TIMEOUT_FOREVER);
@@ -629,7 +630,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
-        
+
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, nf_generic_obj,
@@ -950,7 +951,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
             wgtTbl = (Nf_WgtTableConfig *)target_ptr;
             fvid2_status = Fvid2_control(nf_generic_obj->handle, IOCTL_VHWA_M2M_NF_SET_FILTER_COEFF,
                            wgtTbl, NULL);
-                           
+
             if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,

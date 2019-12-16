@@ -68,6 +68,7 @@
 #include "tivx_kernel_capture.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_capture_priv.h"
 
 #include <TI/tivx_queue.h>
 #include <ti/drv/fvid2/fvid2.h>
@@ -997,7 +998,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
     }
 
     if ((vx_status)VX_SUCCESS == status)
-    {    
+    {
         switch (node_cmd_id)
         {
             case TIVX_CAPTURE_PRINT_STATISTICS:

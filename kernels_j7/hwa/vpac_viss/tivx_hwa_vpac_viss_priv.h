@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -61,27 +61,8 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include <TI/j7_dmpac_dof.h>
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernels_target_utils.h"
-#include "vx_kernels_hwa_target.h"
-#include "tivx_hwa_arm_priv.h"
 
+void tivxAddTargetKernelVpacViss(void);
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    #ifdef BUILD_HWA_DMPAC_DOF
-    {&tivxAddTargetKernelDofVisualize, &tivxRemoveTargetKernelDofVisualize},
-    #endif
-};
-
-void tivxRegisterHwaTargetArmKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
-
-void tivxUnRegisterHwaTargetArmKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
+void tivxRemoveTargetKernelVpacViss(void);
 

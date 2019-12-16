@@ -14,6 +14,9 @@
 #define TIVX_TARGET_MCU2_1_MAX          (14)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
+static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name);
+static void tivxPlatformDeleteTargetId(vx_enum target_id);
+
 /**
  *******************************************************************************
  * \brief Target Stack
@@ -25,7 +28,7 @@ __attribute__ ((aligned(8192)))
     ;
 
 
-void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name)
+static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -37,7 +40,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name)
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = 8U;
     strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
-    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1] = 0;
+    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = 0;
 
     status = tivxTargetCreate(target_id, &target_create_prms);
     if ((vx_status)VX_SUCCESS != status)
@@ -46,7 +49,7 @@ void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name)
     }
 }
 
-void tivxPlatformDeleteTargetId(vx_enum target_id)
+static void tivxPlatformDeleteTargetId(vx_enum target_id)
 {
     vx_status status;
 

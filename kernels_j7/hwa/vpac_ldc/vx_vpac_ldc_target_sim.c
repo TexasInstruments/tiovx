@@ -67,6 +67,7 @@
 #include "tivx_kernel_vpac_ldc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_ldc_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include "ldc.h"
 

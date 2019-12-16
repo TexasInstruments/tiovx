@@ -64,37 +64,12 @@
 #include <TI/j7.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_host_utils.h"
+#include "tivx_hwa_host_priv.h"
 
 static vx_status VX_CALLBACK publishKernels(vx_context context);
 static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
 static uint32_t gIsHwaKernelsLoad = 0u;
-
-vx_status tivxAddKernelVpacNfGeneric(vx_context context);
-vx_status tivxAddKernelVpacNfBilateral(vx_context context);
-vx_status tivxAddKernelDmpacSde(vx_context context);
-vx_status tivxAddKernelVpacLdc(vx_context context);
-vx_status tivxAddKernelVpacMscMultiScale(vx_context context);
-vx_status tivxAddKernelVpacMscPyramid(vx_context context);
-vx_status tivxAddKernelDmpacDof(vx_context context);
-vx_status tivxAddKernelDofVisualize(vx_context context);
-vx_status tivxAddKernelVpacViss(vx_context context);
-vx_status tivxAddKernelDisplay(vx_context context);
-vx_status tivxAddKernelCapture(vx_context context);
-vx_status tivxAddKernelVideoDecoder(vx_context context);
-
-vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
-vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
-vx_status tivxRemoveKernelDmpacSde(vx_context context);
-vx_status tivxRemoveKernelVpacLdc(vx_context context);
-vx_status tivxRemoveKernelVpacMscMultiScale(vx_context context);
-vx_status tivxRemoveKernelVpacMscPyramid(vx_context context);
-vx_status tivxRemoveKernelDmpacDof(vx_context context);
-vx_status tivxRemoveKernelDofVisualize(vx_context context);
-vx_status tivxRemoveKernelVpacViss(vx_context context);
-vx_status tivxRemoveKernelDisplay(vx_context context);
-vx_status tivxRemoveKernelCapture(vx_context context);
-vx_status tivxRemoveKernelVideoDecoder(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelVpacNfGeneric, &tivxRemoveKernelVpacNfGeneric},

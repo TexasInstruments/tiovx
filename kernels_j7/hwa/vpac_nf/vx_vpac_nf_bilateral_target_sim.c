@@ -67,6 +67,7 @@
 #include "tivx_kernel_vpac_nf_bilateral.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_nf_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include <TI_BilateralFilter_cn.h>
 #include <math.h>
@@ -647,8 +648,8 @@ static uint32_t bilateral_coefsLUTGen
             int32_t one_lsl_out_bitw = (1 << out_bitw);
             double temp0 = ((max * (double)one_lsl_out_bitw) - 1.0f);
             for (i = 0; i < (LUT_ROWS * lutSize); i++) {
-				int32_t one_lsl_out_bitw_minus_one = (one_lsl_out_bitw - 1);
-				double temp1 = (((double)(f_wt_lut[i] / max) * (double)one_lsl_out_bitw_minus_one) + 0.5f);
+                int32_t one_lsl_out_bitw_minus_one = (one_lsl_out_bitw - 1);
+                double temp1 = (((double)(f_wt_lut[i] / max) * (double)one_lsl_out_bitw_minus_one) + 0.5f);
                 i_wt_lut_full[i] = (uint16_t)temp1;
             }
             *mmrCenterPixelWeight = (uint16_t)temp0;

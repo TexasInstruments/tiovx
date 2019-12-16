@@ -65,10 +65,8 @@
 #include <TI/j7_display.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_display_priv.h"
 
-void tivxAddTargetKernelDisplay(void);
-
-void tivxRemoveTargetKernelDisplay(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelDisplay, &tivxRemoveTargetKernelDisplay}

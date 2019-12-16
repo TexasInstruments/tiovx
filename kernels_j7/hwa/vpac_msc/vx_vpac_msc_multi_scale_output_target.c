@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
@@ -170,10 +171,6 @@ static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
 
 /* Driver Callback */
 int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData);
-
-/* Global Prototypes */
-void tivxAddTargetKernelVpacMscMultiScale(void);
-void tivxRemoveTargetKernelVpacMscMultiScale(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */

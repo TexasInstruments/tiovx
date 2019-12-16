@@ -65,10 +65,8 @@
 #include <TI/j7_video_decoder.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vdec_priv.h"
 
-void tivxAddTargetKernelVideoDecoder(void);
-
-void tivxRemoveTargetKernelVideoDecoder(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
 

@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_ldc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_ldc_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
@@ -1019,7 +1020,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 
             if(3u == warp_matrix_desc->columns)
             {
-				float temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
+                float temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
                 cfg->coeffA       = (int16_t)temp_coeffA;
                 float temp_coeffB = (mat_addr[3] / mat_addr[9]) * 4096.0f;
                 cfg->coeffB       = (int16_t)temp_coeffB;
@@ -1039,7 +1040,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
             }
             else
             {
-				float temp_coeffA = mat_addr[0] * 4096.0f;
+                float temp_coeffA = mat_addr[0] * 4096.0f;
                 cfg->coeffA       = (int16_t)temp_coeffA;
                 float temp_coeffB = mat_addr[2] * 4096.0f;
                 cfg->coeffB       = (int16_t)temp_coeffB;

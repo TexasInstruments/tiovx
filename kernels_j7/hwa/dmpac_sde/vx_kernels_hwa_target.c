@@ -65,10 +65,8 @@
 #include <TI/j7_dmpac_sde.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_dmpac_sde_priv.h"
 
-void tivxAddTargetKernelDmpacSde(void);
-
-void tivxRemoveTargetKernelDmpacSde(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelDmpacSde, &tivxRemoveTargetKernelDmpacSde},

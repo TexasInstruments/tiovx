@@ -67,6 +67,7 @@
 #include "tivx_kernel_vpac_nf_generic.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_nf_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include <TI_BilateralFilter_cn.h>
 

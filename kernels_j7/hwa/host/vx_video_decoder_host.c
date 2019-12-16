@@ -65,6 +65,7 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_video_decoder.h"
 #include "TI/tivx_target_kernel.h"
+#include "tivx_hwa_host_priv.h"
 
 static vx_kernel vx_video_decoder_kernel = NULL;
 
@@ -75,8 +76,6 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVideoDecoderInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelVideoDecoder(vx_context context);
-vx_status tivxRemoveKernelVideoDecoder(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -167,7 +166,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Decoder param 'bitstream_format' should be:\n TIVX_BITSTREAM_FORMAT_H264 \n");
         }
     }
-    
+
     /* PARAMETER RELATIONSHIP CHECKING */
 
     if ((vx_status)VX_SUCCESS == status)

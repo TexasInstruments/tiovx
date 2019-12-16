@@ -69,6 +69,7 @@
 #include "tivx_kernel_dof_visualize.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_arm_priv.h"
 
 static tivx_target_kernel vx_dof_visualize_target_kernel = NULL;
 

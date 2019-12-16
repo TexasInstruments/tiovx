@@ -64,7 +64,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 #include <vx_vpac_viss_target_priv.h>
-
+#include "tivx_hwa_vpac_viss_priv.h"
 #include "utils/perf_stats/include/app_perf_stats.h"
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

@@ -67,6 +67,7 @@
 #include <tivx_kernel_scale.h>
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_vpac_msc_priv.h"
 #include "vx_kernels_hwa_target.h"
 #include "scaler_core.h"
 
@@ -96,9 +97,6 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static void tivxKernelScaleFreeMem(tivxScaleParams *prms);
-
-void tivxAddTargetKernelVpacMscScale(void);
-void tivxRemoveTargetKernelVpacMscScale(void);
 
 static vx_status VX_CALLBACK tivxKernelScaleProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],

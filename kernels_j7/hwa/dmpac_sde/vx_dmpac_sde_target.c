@@ -71,6 +71,7 @@
 #include "tivx_kernel_dmpac_sde.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_dmpac_sde_priv.h"
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include <math.h>
@@ -138,7 +139,7 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
        tivxDmpacSdeInstObj *instObj);
 static void tivxDmpacSdeFreeObject(
        tivxDmpacSdeInstObj *instObj,
-	   tivxDmpacSdeObj *sde_obj);
+       tivxDmpacSdeObj *sde_obj);
 static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 static vx_status tivxDmpacSdeGetErrStatusCmd(
@@ -171,7 +172,7 @@ void tivxAddTargetKernelDmpacSde(void)
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
-        
+
         vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_DMPAC_SDE_NAME,
                     target_name,
@@ -267,11 +268,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
         if ((vx_status)VX_SUCCESS != status)
         {
-			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Null Desc\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Null Desc\n");
         }
         else if (sizeof(tivxDmpacSdeObj) != size)
         {
-			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Object Size\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Object Size\n");
             status = (vx_status)VX_FAILURE;
         }
         else
@@ -314,20 +315,20 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 (vx_enum)VX_WRITE_ONLY);
         }
 
-		/* Initialize SDE Input Frame List */
+        /* Initialize SDE Input Frame List */
         inFrmList->frames[SDE_INPUT_BASE_IMG] =
             &sde_obj->inFrm[SDE_INPUT_BASE_IMG];
         inFrmList->frames[SDE_INPUT_REFERENCE_IMG] =
-		    &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
+            &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
         inFrmList->numFrames = 2U;
 
-		sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) left_target_ptr;
-		sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) right_target_ptr;
+        sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) left_target_ptr;
+        sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) right_target_ptr;
 
         /* Initialize SDE Output Frame List */
         outFrmList->frames[0U] = &sde_obj->outFrm;
         outFrmList->numFrames = 1U;
-        
+
         sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
 
         cur_time = tivxPlatformGetTimeInUsecs();
@@ -419,16 +420,16 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
-	uint32_t                          i;
+    uint32_t                          i;
     uint32_t                          aligned_width;
     uint32_t                          aligned_height;
     tivxDmpacSdeObj                  *sde_obj = NULL;
     Vhwa_M2mSdePrms                  *sdePrms = NULL;
     tivx_dmpac_sde_params_t          *params = NULL;
     tivx_obj_desc_user_data_object_t *params_array = NULL;
-	tivx_obj_desc_image_t            *left_desc;
-	tivx_obj_desc_image_t            *right_desc;
-	tivx_obj_desc_image_t            *output_desc;
+    tivx_obj_desc_image_t            *left_desc;
+    tivx_obj_desc_image_t            *right_desc;
+    tivx_obj_desc_image_t            *output_desc;
     void                             *params_array_target_ptr = NULL;
 
     if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
@@ -449,12 +450,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
             params_array = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
-			left_desc = (tivx_obj_desc_image_t *)
-			    obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
-			right_desc = (tivx_obj_desc_image_t *)
-			    obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-			output_desc = (tivx_obj_desc_image_t *)
-			    obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+            left_desc = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+            right_desc = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+            output_desc = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         }
         else
         {
@@ -480,7 +481,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
             if (NULL == sde_obj->handle)
             {
-				VX_PRINT(VX_ZONE_ERROR,
+                VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Alloc Sde Object\n");
 
                 status = (vx_status)VX_FAILURE;
@@ -497,7 +498,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     if ((vx_status)VX_SUCCESS == status)
     {
         sde_obj->errEvtPrms.errEvents = VHWA_SDE_RD_ERR | VHWA_SDE_WR_ERR |
-		    VHWA_SDE_FOCO0_SL2_WR_ERR | VHWA_SDE_FOCO0_VBUSM_RD_ERR;
+            VHWA_SDE_FOCO0_SL2_WR_ERR | VHWA_SDE_FOCO0_VBUSM_RD_ERR;
         sde_obj->errEvtPrms.cbFxn     = tivxDmpacSdeErrorCb;
         sde_obj->errEvtPrms.appData   = sde_obj;
 
@@ -505,7 +506,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             VHWA_M2M_IOCTL_SDE_REGISTER_ERR_CB, &sde_obj->errEvtPrms, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-			VX_PRINT(VX_ZONE_ERROR,
+            VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Register Error Callback\n");
             status = (vx_status)VX_FAILURE;
         }
@@ -553,24 +554,24 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             VX_PRINT(VX_ZONE_ERROR, "Parameter height should be no greater than %d\n", SDE_MAX_IMAGE_HEIGHT);
         }
     }
-    
+
     if ((vx_status)VX_SUCCESS == status)
     {
-		sdePrms->sdeCfg.enableSDE = 1U;
-		sdePrms->sdeCfg.medianFilter = (uint32_t) (params->median_filter_enable);
-		sdePrms->sdeCfg.width = aligned_width;
-		sdePrms->sdeCfg.height = aligned_height;
-		sdePrms->sdeCfg.minDisparity = (uint32_t) (params->disparity_min);
-		sdePrms->sdeCfg.searchRange = (uint32_t) (params->disparity_max);
-		sdePrms->sdeCfg.lrThreshold = (uint32_t)  (params->threshold_left_right);
-		sdePrms->sdeCfg.enableTextureFilter = (uint32_t) (params->texture_filter_enable);
-		sdePrms->sdeCfg.textureFilterThreshold = (uint32_t) (params->threshold_texture);
-		sdePrms->sdeCfg.penaltyP1 = (uint32_t) (params->aggregation_penalty_p1);
-		sdePrms->sdeCfg.penaltyP2 = (uint32_t) (params->aggregation_penalty_p2);
-		for(i = 0U; i < DMPAC_SDE_NUM_SCORE_MAP; i++)
-		{
-			sdePrms->sdeCfg.confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
-		}
+        sdePrms->sdeCfg.enableSDE = 1U;
+        sdePrms->sdeCfg.medianFilter = (uint32_t) (params->median_filter_enable);
+        sdePrms->sdeCfg.width = aligned_width;
+        sdePrms->sdeCfg.height = aligned_height;
+        sdePrms->sdeCfg.minDisparity = (uint32_t) (params->disparity_min);
+        sdePrms->sdeCfg.searchRange = (uint32_t) (params->disparity_max);
+        sdePrms->sdeCfg.lrThreshold = (uint32_t)  (params->threshold_left_right);
+        sdePrms->sdeCfg.enableTextureFilter = (uint32_t) (params->texture_filter_enable);
+        sdePrms->sdeCfg.textureFilterThreshold = (uint32_t) (params->threshold_texture);
+        sdePrms->sdeCfg.penaltyP1 = (uint32_t) (params->aggregation_penalty_p1);
+        sdePrms->sdeCfg.penaltyP2 = (uint32_t) (params->aggregation_penalty_p2);
+        for(i = 0U; i < DMPAC_SDE_NUM_SCORE_MAP; i++)
+        {
+            sdePrms->sdeCfg.confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
+        }
 
         tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_BASE_IMG],
             left_desc);
@@ -613,7 +614,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
     }
-        
+
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxSetTargetKernelInstanceContext(kernel, sde_obj,
@@ -702,13 +703,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-	    VX_PRINT(VX_ZONE_ERROR,
+        VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeControl: Failed to Get Target Kernel Instance Context\n");
     }
     else if ((NULL == sde_obj) ||
         (sizeof(tivxDmpacSdeObj) != size))
     {
-	    VX_PRINT(VX_ZONE_ERROR,
+        VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
         status = (vx_status)VX_FAILURE;
     }
