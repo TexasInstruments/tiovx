@@ -64,6 +64,16 @@
 
 #include <vx_internal.h>
 
+static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
+                             vx_enum kernel_id,
+                             const char *kernel_name,
+                             const char *target_name,
+                             tivx_target_kernel_f process_func,
+                             tivx_target_kernel_f create_func,
+                             tivx_target_kernel_f delete_func,
+                             tivx_target_kernel_control_f control_func,
+                             void *priv_arg);
+
 static tivx_target_kernel_t g_target_kernel_table[TIVX_TARGET_KERNEL_MAX];
 static tivx_mutex g_target_kernel_lock;
 

@@ -62,101 +62,10 @@
 
 #include <TI/tivx.h>
 #include "tivx_kernels_host_utils.h"
+#include "tivx_core_host_priv.h"
 
 static vx_status VX_CALLBACK publishKernels(vx_context context);
 static vx_status VX_CALLBACK unPublishKernels(vx_context context);
-
-vx_status tivxAddKernelAbsdiff(vx_context context);
-vx_status tivxAddKernelAccumulate(vx_context context);
-vx_status tivxAddKernelAccumulateSquare(vx_context context);
-vx_status tivxAddKernelAccumulateWeighted(vx_context context);
-vx_status tivxAddKernelAdd(vx_context context);
-vx_status tivxAddKernelAnd(vx_context context);
-vx_status tivxAddKernelBox3X3(vx_context context);
-vx_status tivxAddKernelCanny(vx_context context);
-vx_status tivxAddKernelChannelCombine(vx_context context);
-vx_status tivxAddKernelChannelExtract(vx_context context);
-vx_status tivxAddKernelColorConvert(vx_context context);
-vx_status tivxAddKernelConvertDepth(vx_context context);
-vx_status tivxAddKernelConvolve(vx_context context);
-vx_status tivxAddKernelDilate3X3(vx_context context);
-vx_status tivxAddKernelEqualizeHistogram(vx_context context);
-vx_status tivxAddKernelErode3X3(vx_context context);
-vx_status tivxAddKernelFastCorners(vx_context context);
-vx_status tivxAddKernelGaussianPyramid(vx_context context);
-vx_status tivxAddKernelGaussian3X3(vx_context context);
-vx_status tivxAddKernelHarrisCorners(vx_context context);
-vx_status tivxAddKernelHalfscaleGaussian(vx_context context);
-vx_status tivxAddKernelHistogram(vx_context context);
-vx_status tivxAddKernelIntegralImage(vx_context context);
-vx_status tivxAddKernelLaplacianPyramid(vx_context context);
-vx_status tivxAddKernelLaplacianReconstruct(vx_context context);
-vx_status tivxAddKernelLut(vx_context context);
-vx_status tivxAddKernelMagnitude(vx_context context);
-vx_status tivxAddKernelMeanStdDev(vx_context context);
-vx_status tivxAddKernelMedian3X3(vx_context context);
-vx_status tivxAddKernelMinMaxLoc(vx_context context);
-vx_status tivxAddKernelMultiply(vx_context context);
-vx_status tivxAddKernelNonLinearFilter(vx_context context);
-vx_status tivxAddKernelNot(vx_context context);
-vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context);
-vx_status tivxAddKernelOr(vx_context context);
-vx_status tivxAddKernelPhase(vx_context context);
-vx_status tivxAddKernelRemap(vx_context context);
-vx_status tivxAddKernelScale(vx_context context);
-vx_status tivxAddKernelSobel3X3(vx_context context);
-vx_status tivxAddKernelSub(vx_context context);
-vx_status tivxAddKernelThreshold(vx_context context);
-vx_status tivxAddKernelWarpAffine(vx_context context);
-vx_status tivxAddKernelWarpPerspective(vx_context context);
-vx_status tivxAddKernelXor(vx_context context);
-vx_status tivxAddKernelSuperNode(vx_context context);
-
-vx_status tivxRemoveKernelAbsdiff(vx_context context);
-vx_status tivxRemoveKernelAccumulate(vx_context context);
-vx_status tivxRemoveKernelAccumulateSquare(vx_context context);
-vx_status tivxRemoveKernelAccumulateWeighted(vx_context context);
-vx_status tivxRemoveKernelAdd(vx_context context);
-vx_status tivxRemoveKernelAnd(vx_context context);
-vx_status tivxRemoveKernelBox3X3(vx_context context);
-vx_status tivxRemoveKernelCanny(vx_context context);
-vx_status tivxRemoveKernelChannelCombine(vx_context context);
-vx_status tivxRemoveKernelChannelExtract(vx_context context);
-vx_status tivxRemoveKernelColorConvert(vx_context context);
-vx_status tivxRemoveKernelConvertDepth(vx_context context);
-vx_status tivxRemoveKernelConvolve(vx_context context);
-vx_status tivxRemoveKernelDilate3X3(vx_context context);
-vx_status tivxRemoveKernelEqualizeHistogram(vx_context context);
-vx_status tivxRemoveKernelErode3X3(vx_context context);
-vx_status tivxRemoveKernelFastCorners(vx_context context);
-vx_status tivxRemoveKernelGaussianPyramid(vx_context context);
-vx_status tivxRemoveKernelGaussian3X3(vx_context context);
-vx_status tivxRemoveKernelHarrisCorners(vx_context context);
-vx_status tivxRemoveKernelHalfscaleGaussian(vx_context context);
-vx_status tivxRemoveKernelHistogram(vx_context context);
-vx_status tivxRemoveKernelIntegralImage(vx_context context);
-vx_status tivxRemoveKernelLut(vx_context context);
-vx_status tivxRemoveKernelLaplacianPyramid(vx_context context);
-vx_status tivxRemoveKernelLaplacianReconstruct(vx_context context);
-vx_status tivxRemoveKernelMagnitude(vx_context context);
-vx_status tivxRemoveKernelMeanStdDev(vx_context context);
-vx_status tivxRemoveKernelMedian3X3(vx_context context);
-vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
-vx_status tivxRemoveKernelMultiply(vx_context context);
-vx_status tivxRemoveKernelNonLinearFilter(vx_context context);
-vx_status tivxRemoveKernelNot(vx_context context);
-vx_status tivxRemoveKernelOpticalFlowPyrLk(vx_context context);
-vx_status tivxRemoveKernelOr(vx_context context);
-vx_status tivxRemoveKernelPhase(vx_context context);
-vx_status tivxRemoveKernelRemap(vx_context context);
-vx_status tivxRemoveKernelScale(vx_context context);
-vx_status tivxRemoveKernelSobel3X3(vx_context context);
-vx_status tivxRemoveKernelSub(vx_context context);
-vx_status tivxRemoveKernelThreshold(vx_context context);
-vx_status tivxRemoveKernelWarpAffine(vx_context context);
-vx_status tivxRemoveKernelWarpPerspective(vx_context context);
-vx_status tivxRemoveKernelXor(vx_context context);
-vx_status tivxRemoveKernelSuperNode(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsdiff, tivxRemoveKernelAbsdiff},

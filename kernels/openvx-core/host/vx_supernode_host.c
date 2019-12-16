@@ -64,6 +64,7 @@
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_supernode_kernel = NULL;
 

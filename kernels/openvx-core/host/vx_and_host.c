@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_and.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_and_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelAndValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelAndInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelAnd(vx_context context);
-vx_status tivxRemoveKernelAnd(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelAndValidate(vx_node node,
             const vx_reference parameters[ ],

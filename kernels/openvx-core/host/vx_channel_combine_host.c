@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_channel_combine.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_channel_combine_kernel = NULL;
 
@@ -74,9 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelChannelCombine(vx_context context);
-vx_status tivxRemoveKernelChannelCombine(vx_context context);
-
 static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectParams *prms);
 
 static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,

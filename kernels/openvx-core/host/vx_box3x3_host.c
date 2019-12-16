@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_box3x3.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_box3x3_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelBox3X3Validate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelBox3X3Initialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelBox3X3(vx_context context);
-vx_status tivxRemoveKernelBox3X3(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelBox3X3Validate(vx_node node,
             const vx_reference parameters[ ],

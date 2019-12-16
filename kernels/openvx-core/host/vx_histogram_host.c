@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_histogram.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_histogram_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelHistogramValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelHistogramInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelHistogram(vx_context context);
-vx_status tivxRemoveKernelHistogram(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelHistogramValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -141,7 +140,7 @@ static vx_status VX_CALLBACK tivxAddKernelHistogramValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if(256U < (((uint32_t) distribution_offset + (uint32_t) distribution_range)))  
+        if(256U < (((uint32_t) distribution_offset + (uint32_t) distribution_range)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Sum of 'distribution' offset and range must be less than or equal to 256 \n");

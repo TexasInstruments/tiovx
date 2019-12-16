@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_convolve.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_convolve_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelConvolve(vx_context context);
-vx_status tivxRemoveKernelConvolve(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
             const vx_reference parameters[ ],

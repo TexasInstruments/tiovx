@@ -69,6 +69,7 @@
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
+#include "tivx_target_kernels_priv.h"
 
 static tivx_target_kernel vx_absdiff_target_kernel = NULL;
 

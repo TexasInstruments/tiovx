@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_accumulate_square.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_accumulate_square_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelAccumulateSquare(vx_context context);
-vx_status tivxRemoveKernelAccumulateSquare(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
             const vx_reference parameters[ ],

@@ -64,6 +64,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_lut.h>
 #include <TI/tivx_target_kernel.h>
+#include "tivx_core_host_priv.h"
 
 static vx_kernel vx_lut_kernel = NULL;
 
@@ -74,8 +75,6 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelLutInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-vx_status tivxAddKernelLut(vx_context context);
-vx_status tivxRemoveKernelLut(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             const vx_reference parameters[ ],
