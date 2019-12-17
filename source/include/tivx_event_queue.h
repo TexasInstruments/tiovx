@@ -134,13 +134,13 @@ enum tivx_queue_type_e {
      *
      * The registered event will be used in the graph event queue
      */
-    TIVX_EVENT_GRAPH_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1,
+    TIVX_EVENT_GRAPH_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x1,
 
     /*! \brief Context event queue
      *
      * The registered event will be used in the context event queue
      */
-    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x2
+    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, (int32_t)0) + 0x2
 };
 
 /*!

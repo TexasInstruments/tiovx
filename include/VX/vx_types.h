@@ -484,7 +484,7 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
 /*! \brief A macro to extract the type from an enumerated attribute value.
  * \ingroup group_basic_features
  */
-#define VX_TYPE(e)                          (((vx_uint32)e & VX_TYPE_MASK) >> 8)
+#define VX_TYPE(e)                          ((vx_int32)((vx_int32)e & VX_TYPE_MASK) >> 8)
 
 /*! \brief A macro to extract the enum type from an enumerated value.
  * \ingroup group_basic_features

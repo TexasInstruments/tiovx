@@ -83,7 +83,9 @@
 /* ========================================================================== */
 static void getNodeColor(vx_node node, char *node_color_name);
 static int exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename);
+#ifndef PC
 static void exportTargetLegend(FILE *fp, vx_graph graph);
+#endif
 static void exportDataRef(FILE *fp, vx_reference ref);
 static void exportDataRefObjDesc(FILE *fp, vx_reference ref);
 static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_buf, vx_bool is_graph_parameter);

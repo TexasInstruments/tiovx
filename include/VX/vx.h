@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -64,7 +64,7 @@
 /*! Defines the major version number macro.
  * \ingroup group_basic_features
  */
-#define VX_VERSION_MAJOR(x) ((x & 0xFF) << 8)
+#define VX_VERSION_MAJOR(x) ((int32_t)(x & 0xFF) << 8)
 
 /*! Defines the minor version number macro.
  * \ingroup group_basic_features

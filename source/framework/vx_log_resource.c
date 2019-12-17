@@ -62,6 +62,10 @@
 
 #include <vx_internal.h>
 
+static int findMacroSize(const char *resource_name);
+static int getNumDigits(int value);
+static char *test_file_path(void);
+
 static tivx_mutex g_tivx_log_resource_lock;
 
 static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
@@ -280,7 +284,7 @@ void tivxLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int i;
     tivxMutexLock(g_tivx_log_resource_lock);
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
     {
         if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
         {
@@ -301,7 +305,7 @@ void tivxLogResourceFree(const char *resource_name, uint16_t num_frees)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int i;
     tivxMutexLock(g_tivx_log_resource_lock);
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
     {
         if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
         {
@@ -318,7 +322,7 @@ void tivxLogSetResourceUsedValue(const char *resource_name, uint16_t value)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int i;
     tivxMutexLock(g_tivx_log_resource_lock);
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
     {
         if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
         {
@@ -340,7 +344,7 @@ vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_
     int i;
     tivxMutexLock(g_tivx_log_resource_lock);
 
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
     {
         if ( strncmp(g_tivx_resource_stats_table[i].name, resource_name, TIVX_RESOURCE_NAME_MAX) == 0 )
         {
@@ -356,9 +360,9 @@ vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_
 
 static int findMacroSize(const char *resource_name)
 {
-    int i, size = TIVX_RESOURCE_NAME_MAX;
+    int i, size = (int)TIVX_RESOURCE_NAME_MAX;
 
-    for (i = 0; i < TIVX_RESOURCE_NAME_MAX; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_NAME_MAX; i++)
     {
         if (resource_name[i] == '\0')
         {
@@ -399,18 +403,18 @@ void tivxPrintAllResourceStats(void)
     printf("----------------------------------------------------------------------\n");
     tivxMutexLock(g_tivx_log_resource_lock);
 
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+    for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
     {
         int name_length, numDigits;
         stat = g_tivx_resource_stats_table[i];
         name_length = findMacroSize(stat.name);
         printf("%s ", stat.name);
-        for (j = 0; j < (TIVX_RESOURCE_NAME_MAX - name_length); j++)
+        for (j = 0; j < ((int)TIVX_RESOURCE_NAME_MAX - name_length); j++)
         {
             printf(" ");
         }
         printf("|");
-        numDigits = getNumDigits(stat.max_value);
+        numDigits = getNumDigits((int)stat.max_value);
         for (j = 0; j < (6 - numDigits); j++)
         {
             printf(" ");
@@ -421,7 +425,7 @@ void tivxPrintAllResourceStats(void)
             printf(" ");
         }
         printf("|");
-        numDigits = getNumDigits(stat.max_used_value);
+        numDigits = getNumDigits((int)stat.max_used_value);
         for (j = 0; j < (9 - numDigits); j++)
         {
             printf(" ");
@@ -459,45 +463,45 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
     if (NULL != test_file_path())
     {
         snprintf(outputFilename, TIVX_CONFIG_PATH_LENGTH, "%s/%s", test_file_path(), "output/tivx_config_generated.h");
+
+        ofp = fopen(outputFilename, "w");
+
+        if (ofp == NULL)
+        {
+            fprintf(stderr, "Can't open output file!\n");
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            fprintf(ofp, "#ifndef TIVX_CONFIG_H_\n");
+            fprintf(ofp, "#define TIVX_CONFIG_H_\n\n");
+
+            fprintf(ofp, "#ifdef __cplusplus\n");
+            fprintf(ofp, "extern \"C\" {\n");
+            fprintf(ofp, "#endif\n\n");
+
+            for (i = 0; i < (int)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
+            {
+                stat = g_tivx_resource_stats_table[i];
+                fprintf(ofp, "#define ");
+                fprintf(ofp, "%s ", stat.name);
+                fprintf(ofp, "(%du)\n\n", stat.max_used_value);
+            }
+
+            fprintf(ofp, "#ifdef __cplusplus\n");
+            fprintf(ofp, "}\n");
+            fprintf(ofp, "#endif\n\n");
+            fprintf(ofp, "#endif\n");
+
+            fclose(ofp);
+            tivxMutexUnlock(g_tivx_log_resource_lock);
+        }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxExportAllResourceMaxUsedValueToFile: VX_TEST_DATA_PATH has not been set!\n");
+        VX_PRINT(VX_ZONE_ERROR, "VX_TEST_DATA_PATH has not been set!\n");
         tivxMutexUnlock(g_tivx_log_resource_lock);
-        return status;
     }
-
-    ofp = fopen(outputFilename, "w");
-
-    if (ofp == NULL)
-    {
-        fprintf(stderr, "Can't open output file!\n");
-        status = (vx_status)VX_FAILURE;
-        return status;
-    }
-
-    fprintf(ofp, "#ifndef TIVX_CONFIG_H_\n");
-    fprintf(ofp, "#define TIVX_CONFIG_H_\n\n");
-
-    fprintf(ofp, "#ifdef __cplusplus\n");
-    fprintf(ofp, "extern \"C\" {\n");
-    fprintf(ofp, "#endif\n\n");
-
-    for (i = 0; i < TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
-    {
-        stat = g_tivx_resource_stats_table[i];
-        fprintf(ofp, "#define ");
-        fprintf(ofp, "%s ", stat.name);
-        fprintf(ofp, "(%du)\n\n", stat.max_used_value);
-    }
-
-    fprintf(ofp, "#ifdef __cplusplus\n");
-    fprintf(ofp, "}\n");
-    fprintf(ofp, "#endif\n\n");
-    fprintf(ofp, "#endif\n");
-
-    fclose(ofp);
-    tivxMutexUnlock(g_tivx_log_resource_lock);
 #endif
     return status;
 }

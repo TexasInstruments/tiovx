@@ -56,7 +56,34 @@ static vx_status ownInitMetaFormatWithUserDataObject(
     vx_meta_format meta, vx_user_data_object exemplar);
 static vx_status ownInitMetaFormatWithRawImage(
     vx_meta_format meta, tivx_raw_image exemplar);
-
+static vx_bool ownIsMetaFormatArrayEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatDistributionEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatImageEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatLutEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatMatrixEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatObjectArrayEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatPyramidEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatRawImageEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatTensorEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatScalarEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatTensorEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatRemapEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatThresholdEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
+static vx_bool ownIsMetaFormatUserDataObjectEqual(
+    vx_meta_format meta1, vx_meta_format meta2);
 
 vx_meta_format vxCreateMetaFormat(vx_context context)
 {
@@ -462,14 +489,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case (vx_enum)VX_TENSOR_DIMS:
-                if ((size <= (sizeof(vx_size)*TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3) == 0))
+                if ((size <= (sizeof(vx_size)*(vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3U) == 0U))
                 {
                     int i;
                     const vx_size *p = ptr;
                     vx_size num_dims = size / sizeof(vx_size);
 
                     /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
-                    for(i=0; i<num_dims; i++)
+                    for(i=0; i<(int)num_dims; i++)
                     {
                         meta->tensor.dimensions[i] = p[i];
                     }
@@ -510,7 +537,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case (vx_enum)VX_USER_DATA_OBJECT_NAME:
-                if (size <= VX_MAX_REFERENCE_NAME)
+                if (size <= (vx_size)VX_MAX_REFERENCE_NAME)
                 {
                     tivx_obj_desc_strncpy(meta->user_data_object.type_name, (void*)ptr, VX_MAX_REFERENCE_NAME);
                 }
@@ -582,7 +609,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case (vx_enum)TIVX_RAW_IMAGE_FORMAT:
-                if ((size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES)) && (((vx_size)ptr & 0x3) == 0))
+                if ((size <= (sizeof(tivx_raw_image_format_t)*(vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES)) && (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
 

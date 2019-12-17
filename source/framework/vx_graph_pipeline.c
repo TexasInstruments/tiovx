@@ -66,10 +66,12 @@
 static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph);
 static void ownGraphEnqueueFreeObjDesc(vx_graph graph,
                         tivx_obj_desc_graph_t *obj_desc);
+static tivx_obj_desc_graph_t *ownGraphGetObjDesc(vx_graph graph, uint32_t pipeline_id);
+static vx_status ownGraphPipelineValidateRefsList(
+                     const vx_graph_parameter_queue_params_t graph_parameters_queue_param);
 
 static vx_status ownGraphPipelineValidateRefsList(
-    const vx_graph_parameter_queue_params_t graph_parameters_queue_param
-    )
+    const vx_graph_parameter_queue_params_t graph_parameters_queue_param)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_meta_format meta_base = NULL, meta = NULL;

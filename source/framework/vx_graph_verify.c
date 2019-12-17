@@ -83,6 +83,26 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index);
 static vx_status ownGraphDetectSourceSink(vx_graph graph);
+static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check);
+static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref);
+static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph, vx_node node,
+                                                                uint32_t index, tivx_data_ref_queue data_ref_q);
+static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph);
+static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph);
+static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph);
+static vx_status ownGraphFindAndAddDataReferences(vx_graph graph);
+static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t node_prm_idx);
+static void ownGraphLinkArrayElements(vx_graph graph);
+static void ownGraphLinkDataReferenceQueues(vx_graph graph);
+static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph, tivx_data_ref_queue data_ref_q,
+                                                       vx_node node, uint32_t index);
+static vx_status ownGraphNodePipeline(vx_graph graph);
+static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph);
+static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_reference exemplar, vx_reference ref);
+static vx_status ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(vx_graph graph);
+static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image exemplar, vx_image ref);
+static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_object_array exemplar, vx_object_array ref);
+static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_graph graph, vx_pyramid exemplar, vx_pyramid ref);
 
 /* Add's data reference to a list, increments number of times it is refered as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
@@ -95,7 +115,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         if(check && ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref))
         {
             /* increment num_in_node count for ref */
-            if(prm_dir==(vx_enum)VX_INPUT)
+            if(prm_dir==(uint32_t)VX_INPUT)
             {
                 graph->data_ref_num_in_nodes[i]++;
             }
@@ -110,7 +130,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         graph->data_ref[i] = ref;
         graph->data_ref_num_in_nodes[i] = 0;
         graph->data_ref_num_out_nodes[i] = 0;
-        if(prm_dir==(vx_enum)VX_INPUT)
+        if(prm_dir==(uint32_t)VX_INPUT)
         {
             graph->data_ref_num_in_nodes[i]++;
         }
@@ -119,7 +139,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
             graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
-        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", graph->num_data_ref);
+        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
         status = (vx_status)VX_SUCCESS;
     }
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
@@ -155,9 +175,9 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph)
 
         if (NULL != cur_node)
         {
-            if (cur_node->kernel->num_pipeup_bufs > 1)
+            if (cur_node->kernel->num_pipeup_bufs > 1U)
             {
-                num_out_nodes = ownNodeGetNumOutNodes(cur_node);
+                num_out_nodes = (uint16_t)ownNodeGetNumOutNodes(cur_node);
 
                 for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
                 {
@@ -165,7 +185,7 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph)
 
                     if (NULL != next_node)
                     {
-                        if (next_node->kernel->num_sink_bufs > 1)
+                        if (next_node->kernel->num_sink_bufs > 1U)
                         {
                             if (next_node->kernel->num_sink_bufs > graph->nodes[cur_node_idx]->kernel->connected_sink_bufs)
                             {
@@ -242,7 +262,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
         for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
         {
             ref = ownNodeGetParameterRef(node_cur, prm_cur_idx);
-            prm_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+            prm_dir = (uint32_t)ownNodeGetParameterDir(node_cur, prm_cur_idx);
 
             if(ref!=NULL) /* ref could be NULL due to optional parameters */
             {
@@ -339,7 +359,7 @@ static vx_status ownGraphValidRectCallback(
                         {
                             for(k=0; k<levels; k++)
                             {
-                                vx_image img = vxGetPyramidLevel((vx_pyramid)ref, k);
+                                vx_image img = vxGetPyramidLevel((vx_pyramid)ref, (uint32_t)k);
 
                                 status |= vxSetImageValidRectangle(img, &graph->out_valid_rect[k]);
 
@@ -407,12 +427,12 @@ static vx_status ownGraphInitVirtualNode(
                             }
                             break;
                         case (vx_enum)VX_TYPE_IMAGE:
-                            if (0 == mf->img.width)
+                            if (0U == mf->img.width)
                             {
                                 status = (vx_status)VX_ERROR_INVALID_VALUE;
                                 VX_PRINT(VX_ZONE_ERROR,"image width value equal to zero\n");
                             }
-                            else if (0 == mf->img.height)
+                            else if (0U == mf->img.height)
                             {
                                 status = (vx_status)VX_ERROR_INVALID_VALUE;
                                 VX_PRINT(VX_ZONE_ERROR,"image height value equal to zero\n");
@@ -444,12 +464,12 @@ static vx_status ownGraphInitVirtualNode(
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid levels incorrect\n");
                                 }
-                                else if (0 == mf->pmd.width)
+                                else if (0U == mf->pmd.width)
                                 {
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid width equal to zero\n");
                                 }
-                                else if (0 == mf->pmd.height)
+                                else if (0U == mf->pmd.height)
                                 {
                                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                                     VX_PRINT(VX_ZONE_ERROR,"pyramid height equal to zero\n");
@@ -716,28 +736,28 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
         for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
         {
-            prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+            prm_cur_dir = (uint32_t)ownNodeGetParameterDir(node_cur, prm_cur_idx);
 
             ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
 
-            if( (ref1) && ((prm_cur_dir == (vx_enum)VX_OUTPUT) || (prm_cur_dir == (vx_enum)VX_BIDIRECTIONAL)) )
+            if( (ref1) && ((prm_cur_dir == (uint32_t)VX_OUTPUT) || (prm_cur_dir == (uint32_t)VX_BIDIRECTIONAL)) )
             {
                 /* for each output, see if it matches any node input data */
-                for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
+                for(node_next_idx=(node_cur_idx+1U)%graph->num_nodes;
                     node_next_idx!=node_cur_idx;
-                    node_next_idx=(node_next_idx+1)%graph->num_nodes)
+                    node_next_idx=(node_next_idx+1U)%graph->num_nodes)
                 {
                     node_next = graph->nodes[node_next_idx];
 
                     for(prm_next_idx=0; prm_next_idx < ownNodeGetNumParameters(node_next); prm_next_idx++)
                     {
-                        prm_next_dir = ownNodeGetParameterDir(node_next, prm_next_idx);
+                        prm_next_dir = (uint32_t)ownNodeGetParameterDir(node_next, prm_next_idx);
 
                         ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
 
                         if(ref2 != NULL)
                         {
-                            if( (prm_next_dir == (vx_enum)VX_INPUT) || (prm_next_dir == (vx_enum)VX_BIDIRECTIONAL) )
+                            if( (prm_next_dir == (uint32_t)VX_INPUT) || (prm_next_dir == (uint32_t)VX_BIDIRECTIONAL) )
                             {
                                 /* check if input data reference of next node is equal to
                                    output data reference of current */
@@ -762,7 +782,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                 }
                             }
                             else
-                            if( prm_next_dir == (vx_enum)VX_OUTPUT )
+                            if( prm_next_dir == (uint32_t)VX_OUTPUT )
                             {
                                 vx_reference parent_ref_node_cur, parent_ref_node_next;
 
@@ -826,7 +846,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
             num_in = ownNodeGetNumInNodes(node);
             num_out = ownNodeGetNumOutNodes(node);
 
-            if(num_in==0)
+            if(num_in==0U)
             {
                 if (graph->num_head_nodes >= TIVX_GRAPH_MAX_HEAD_NODES)
                 {
@@ -839,10 +859,10 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 {
                     graph->head_nodes[graph->num_head_nodes] = node;
                     graph->num_head_nodes++;
-                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
+                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", (uint16_t)graph->num_head_nodes);
                 }
             }
-            if((num_out==0) && (status == (vx_status)VX_SUCCESS))
+            if((num_out==0U) && (status == (vx_status)VX_SUCCESS))
             {
                 if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
                 {
@@ -855,7 +875,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 {
                     graph->leaf_nodes[graph->num_leaf_nodes] = node;
                     graph->num_leaf_nodes++;
-                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
+                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", (uint16_t)graph->num_leaf_nodes);
                 }
             }
         }
@@ -1400,11 +1420,11 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image 
 
         if((img_ref_obj_desc != NULL)
             && (img_exemplar_obj_desc != NULL)
-            && (img_ref_obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_IMAGE)
-            && (img_exemplar_obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_IMAGE)
+            && (img_ref_obj_desc->base.type == (uint32_t)TIVX_OBJ_DESC_IMAGE)
+            && (img_exemplar_obj_desc->base.type == (uint32_t)TIVX_OBJ_DESC_IMAGE)
             )
         {
-            tivx_obj_desc_memcpy(&img_ref_obj_desc->valid_roi, &img_exemplar_obj_desc->valid_roi, sizeof(img_exemplar_obj_desc->valid_roi));
+            tivx_obj_desc_memcpy(&img_ref_obj_desc->valid_roi, &img_exemplar_obj_desc->valid_roi, (uint32_t)sizeof(img_exemplar_obj_desc->valid_roi));
         }
         else
         {
@@ -1615,7 +1635,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
      */
     if((ownNodeGetParameterDir(node, index) != (vx_enum)VX_OUTPUT) /* input parameter */
         || (param_ref == NULL) /* no reference specified at node,index */
-        || ((ownGraphGetNumInNodes(graph, node, index) == 0) && /* leaf parameter and not a delay */
+        || ((ownGraphGetNumInNodes(graph, node, index) == 0U) && /* leaf parameter and not a delay */
              !((param_ref->delay != NULL) && ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY)))
         )
     {
@@ -1656,7 +1676,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             /* if user has requested more than 1 buf at this node, then allocate the additional references */
             num_buf = ownNodeGetParameterNumBuf(node, index);
 
-            if(num_buf>0)
+            if(num_buf>0U)
             {
                 uint32_t buf_id;
                 vx_bool is_replicated;
@@ -1713,7 +1733,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             if(status==(vx_status)VX_SUCCESS)
             {
                 graph->num_data_ref_q++;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", graph->num_data_ref_q);
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", (uint16_t)graph->num_data_ref_q);
             }
         }
         else
@@ -1769,7 +1789,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
             ||
             (graph->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
             ||
-            (graph->pipeline_depth > 1)
+            (graph->pipeline_depth > 1U)
             )
         {
             for(node_id=0; node_id<graph->num_nodes; node_id++)

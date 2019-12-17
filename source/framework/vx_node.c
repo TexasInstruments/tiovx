@@ -34,6 +34,7 @@ static vx_status ownDestructNode(vx_reference ref);
 static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id);
 static vx_status ownRemoveNodeInt(vx_node *n);
 static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
+static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id);
 
 static vx_status ownDestructNode(vx_reference ref)
 {
@@ -1033,7 +1034,7 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
     return is_replicated;
 }
 
-uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id)
+static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id)
 {
     uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
