@@ -943,7 +943,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     status = (vx_status)VX_FAILURE;
                 }
 
-                if(status == (vx_status)VX_FAILURE)
+                if(status == (vx_status)VX_SUCCESS)
                 {
                     /* Wait for Frame Completion */
                     tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
