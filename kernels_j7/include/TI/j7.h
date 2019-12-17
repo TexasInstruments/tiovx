@@ -90,6 +90,21 @@ extern "C" {
  */
 #define TIVX_TARGET_A72_0      "A72-0"
 
+/*! \brief Target name for A72_1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_1      "A72-1"
+
+/*! \brief Target name for A72_2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_2      "A72-2"
+
+/*! \brief Target name for A72_3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_3      "A72-3"
+
 /*! \brief Target name for DSP_C7_1
  * \ingroup group_tivx_ext_targets
  */
@@ -165,7 +180,7 @@ extern "C" {
 /*! \brief CPU ID for DSP_C7_1 */
 #define TIVX_CPU_ID_DSP_C7_1      TIVX_CPU_ID_EVE1
 
-/*! \brief CPU ID for A72_0 */
+/*! \brief CPU ID for A72_x */
 #define TIVX_CPU_ID_A72_0         TIVX_CPU_ID_A15_0
 
 

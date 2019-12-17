@@ -26,7 +26,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (19u)
+#define TIVX_PLATFORM_MAX_TARGETS            (22u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -68,6 +68,15 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for A72-0 */
     TIVX_TARGET_ID_A72_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A72_0, 0u),
+
+    /*! \brief target ID for A72-0 */
+    TIVX_TARGET_ID_A72_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A72_0, 1u),
+
+    /*! \brief target ID for A72-0 */
+    TIVX_TARGET_ID_A72_2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A72_0, 2u),
+
+    /*! \brief target ID for A72-0 */
+    TIVX_TARGET_ID_A72_3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A72_0, 3u),
 
     /*! \brief target ID for IPU1-0 */
     TIVX_TARGET_ID_IPU1_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 0u),
@@ -126,6 +135,9 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_DSP_C7_1},                           \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
     {TIVX_TARGET_A72_0, TIVX_TARGET_ID_A72_0},                                 \
+    {TIVX_TARGET_A72_1, TIVX_TARGET_ID_A72_1},                                 \
+    {TIVX_TARGET_A72_2, TIVX_TARGET_ID_A72_2},                                 \
+    {TIVX_TARGET_A72_3, TIVX_TARGET_ID_A72_3},                                 \
     {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_VPAC_NF},                             \
     {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_VPAC_LDC1},                         \
     {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_VPAC_MSC1},                         \
