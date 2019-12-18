@@ -76,6 +76,8 @@
 
 #define CAPTURE_FRAME_DROP_LEN (4096U*4U)
 
+static uint32_t tivxCaptureMapInstId(uint32_t instId);
+
 typedef struct
 {
     tivx_obj_desc_t *img_obj_desc[TIVX_CAPTURE_MAX_CH];
@@ -147,6 +149,7 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
     tivx_capture_status_t *capt_status_prms);
+static void tivxCapturePrintStatus(tivxCaptureParams *prms);
 
 /**
  *******************************************************************************
@@ -193,7 +196,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
     for (chId = 0; chId < prms->numCh; chId++)
     {
-        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
         {
             tivx_obj_desc_raw_image_t *raw_image;
 
@@ -256,7 +259,7 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
         case (vx_df_image)VX_DF_IMAGE_U16:
-        case TIVX_RAW_IMAGE_P12_BIT:
+        case (uint32_t)TIVX_RAW_IMAGE_P12_BIT:
             inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
@@ -277,7 +280,7 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
 
     switch (format)
     {
-        case TIVX_RAW_IMAGE_P12_BIT:
+        case (uint32_t)TIVX_RAW_IMAGE_P12_BIT:
             ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
         case (vx_enum)TIVX_RAW_IMAGE_16_BIT:
@@ -339,7 +342,7 @@ static void tivxCaptureSetCreateParams(
     /* set instance configuration parameters */
     Csirx_createParamsInit(&prms->createPrms);
 
-    if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+    if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
     {
         tivx_obj_desc_raw_image_t *raw_image;
         raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
@@ -349,7 +352,7 @@ static void tivxCaptureSetCreateParams(
         planes = raw_image->params.num_exposures;
         for (i = 0; i < planes; i++)
         {
-            stride[i] = raw_image->imagepatch_addr[i].stride_y;
+            stride[i] = (uint32_t)raw_image->imagepatch_addr[i].stride_y;
         }
         prms->raw_capture = 1;
     }
@@ -363,7 +366,7 @@ static void tivxCaptureSetCreateParams(
         planes = image->planes;
         for (i = 0; i < planes; i++)
         {
-            stride[i] = image->imagepatch_addr[i].stride_y;
+            stride[i] = (uint32_t)image->imagepatch_addr[i].stride_y;
         }
         prms->raw_capture = 0;
     }
@@ -376,7 +379,7 @@ static void tivxCaptureSetCreateParams(
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
         prms->createPrms.chCfg[loopCnt].vcNum = params->vcNum[loopCnt];
 
-        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
         {
             prms->createPrms.chCfg[loopCnt].inCsiDataType =
                 FVID2_CSI2_DF_RAW12;
@@ -616,7 +619,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             /* Initialize raw capture to 0 */
             prms->raw_capture = 0;
             /* Set number of channels to number of items in object array */
-            prms->numCh = output_desc->num_items;
+            prms->numCh = (uint8_t)output_desc->num_items;
 
             if (prms->numCh > TIVX_CAPTURE_MAX_CH)
             {
@@ -757,7 +760,7 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
                                 IOCTL_CSIRX_GET_INST_STATUS,
                                 &prms->captStatus,
                                 NULL);
-        tivx_set_debug_zone(VX_ZONE_INFO);
+        tivx_set_debug_zone((vx_enum)VX_ZONE_INFO);
         if (FVID2_SOK == fvid2_status)
         {
             VX_PRINT(VX_ZONE_INFO,
@@ -790,7 +793,7 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
         {
             VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Control failed !!!\n");
         }
-        tivx_clr_debug_zone(VX_ZONE_INFO);
+        tivx_clr_debug_zone((vx_enum)VX_ZONE_INFO);
     }
 }
 

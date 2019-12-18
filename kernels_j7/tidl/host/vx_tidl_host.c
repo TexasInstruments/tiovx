@@ -71,13 +71,18 @@
 static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params,
             vx_meta_format metas[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
     vx_uint32 i;
 
-    if (num_params < 7)
+    if (num_params < 7U)
     {
         /* Number of parameters should be a minimum of 7 */
         /* config, network, createParams, inArgs, outArgs, mininum 1-input, minimum 1-output */
@@ -124,7 +129,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
 
-        if ((network_size < 1) ||
+        if ((network_size < 1U) ||
             (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -211,11 +216,11 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
     if (status == (vx_status)VX_SUCCESS)
     {
         /* Number of parameters are config + network + createParams + inArgs + outArgs + input tensors + output tensors */
-        uint32_t num_params = 5 + num_input_tensors + num_output_tensors;
+        uint32_t num_params = 5U + num_input_tensors + num_output_tensors;
 
         if ( (num_params <= TIVX_KERNEL_MAX_PARAMS) &&
-             (num_input_tensors != 0) &&
-             (num_output_tensors != 0))
+             (num_input_tensors != 0U) &&
+             (num_output_tensors != 0U))
         {
             kernel = vxAddUserKernel(
                                 context,

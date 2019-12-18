@@ -140,7 +140,16 @@ static uint32_t tivxDisplayGetPipeType(uint32_t drvId);
 static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
                                        uint32_t *copySize0,
                                        uint32_t *copySize1);
-
+static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
+                                            Fvid2_Format *fmt,
+                                            tivx_obj_desc_image_t *obj_desc_img);
+static vx_status VX_CALLBACK tivxDisplayControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static void tivxDisplayFreeChromaBuff(tivxDisplayParams *dispPrms);
+static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
+    tivx_obj_desc_user_data_object_t *usr_data_obj);
 
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     tivx_obj_desc_user_data_object_t *usr_data_obj)
@@ -196,36 +205,36 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
     {
         case (vx_df_image)TIVX_DF_IMAGE_RGB565:
             format->dataFormat = FVID2_DF_BGR16_565;
-            format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGB:
             format->dataFormat = FVID2_DF_RGB24_888;
-            format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGBX:
             format->dataFormat = FVID2_DF_RGBX24_8888;
-            format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
             format->dataFormat = FVID2_DF_YUV422I_UYVY;
-            format->pitch[FVID2_YUV_INT_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_INT_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_NV12:
             format->dataFormat = FVID2_DF_YUV420SP_UV;
-            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
-            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[1].stride_y;
+            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[1].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_U16:
             format->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             format->dataFormat = FVID2_DF_YUV420SP_UV;
-            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
-            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case (vx_df_image)VX_DF_IMAGE_U8:
             format->ccsFormat = FVID2_CCSF_BITS8_PACKED;
             format->dataFormat = FVID2_DF_YUV420SP_UV;
-            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
-            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         default:
             status = (vx_status)VX_FAILURE;
@@ -255,7 +264,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
         {
             dispPrms->chromaBufAddr =
                 tivxMemShared2PhysPtr(dispPrms->chroma_mem_ptr.shared_ptr,
-                dispPrms->chroma_mem_ptr.mem_heap_region);
+                (int32_t)dispPrms->chroma_mem_ptr.mem_heap_region);
 
             chroma_target_ptr = tivxMemShared2TargetPtr(&dispPrms->chroma_mem_ptr);
 
@@ -265,7 +274,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
             if ((vx_df_image)VX_DF_IMAGE_U16 == obj_desc_img->format)
             {
                 chroma_ptr16 = (uint16_t *)chroma_target_ptr;
-                for (cnt = 0; cnt < (dispPrms->chromaBufSize / 2); cnt ++)
+                for (cnt = 0; cnt < (dispPrms->chromaBufSize / 2U); cnt ++)
                 {
                        *chroma_ptr16 = 0x800u;
                        chroma_ptr16 ++;
@@ -331,17 +340,17 @@ static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
     switch (obj_desc_image->format)
     {
         case (vx_df_image)VX_DF_IMAGE_RGB:
-            *copySize0 = obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
+            *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGBX:
-            *copySize0 = obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
+            *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
-            *copySize0 = obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
+            *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
             break;
         case (vx_df_image)VX_DF_IMAGE_NV12:
-            *copySize0 = obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
-            *copySize1 = obj_desc_image->imagepatch_addr[1].stride_y * obj_desc_image->height;
+            *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
+            *copySize1 = (uint32_t)obj_desc_image->imagepatch_addr[1].stride_y * obj_desc_image->height;
             break;
         default:
             *copySize0 = 0;
@@ -477,12 +486,12 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
 
                 if((vx_status)VX_SUCCESS == status)
                 {
-                    if(displayParams->copyImageSize[0] != 0)
+                    if(displayParams->copyImageSize[0] != 0U)
                     {
                         displayParams->copyImagePtr[0][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                         displayParams->copyImagePtr[1][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
-                    if((displayParams->copyImageSize[1] != 0) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
+                    if((displayParams->copyImageSize[1] != 0U) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                     {
                         displayParams->copyImagePtr[0][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
                         displayParams->copyImagePtr[1][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
@@ -632,12 +641,12 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
 
             if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
             {
-                if(displayParams->copyImageSize[0] != 0)
+                if(displayParams->copyImageSize[0] != 0U)
                 {
                     tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                 }
-                if((displayParams->copyImageSize[1] != 0) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
+                if((displayParams->copyImageSize[1] != 0U) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                 {
                     tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(displayParams->copyImagePtr[1][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
@@ -747,7 +756,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     if((vx_status)VX_SUCCESS == status)
     {
         active_channel = displayParams->active_channel;
-        if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
+        if((vx_enum)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
         {
             tivx_obj_desc_object_array_t *obj_desc_obj_array;
 
@@ -757,7 +766,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
         }
         else
         {
-            if ((vx_enum)TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
+            if ((vx_enum)TIVX_OBJ_DESC_INVALID != (vx_enum)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
             {
                 tivxGetObjDescList(
                     &obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id,
@@ -952,7 +961,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 if((1U == frmList.numFrames) && (FVID2_SOK == fvid2_status))
                 {
                     /* Change Curr Index */
-                    if(displayParams->currIdx == 0)
+                    if(displayParams->currIdx == 0U)
                     {
                         displayParams->currIdx = 1;
                     }
