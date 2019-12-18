@@ -73,13 +73,49 @@
 
 static tivx_target_kernel vx_channel_extract_target_kernel = NULL;
 
-vx_status tivxChannelExtractRgbRgbxInput(
+vx_status VX_CALLBACK tivxChannelExtract(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status tivxChannelExtractRgbRgbxInput(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst
-            )
+            VXLIB_bufParams2D_t *vxlib_dst);
+static vx_status VX_CALLBACK tivxChannelExtractCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxChannelExtractDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status tivxChannelExtractIyuvYuv4Input(
+            tivx_obj_desc_image_t *in_desc,
+            tivx_obj_desc_image_t *out_desc,
+            vx_enum channel_value,
+            uint8_t *dst_addr,
+            VXLIB_bufParams2D_t *vxlib_dst);
+static vx_status tivxChannelExtractNv12Nv21Input(
+            tivx_obj_desc_image_t *in_desc,
+            tivx_obj_desc_image_t *out_desc,
+            vx_enum channel_value,
+            uint8_t *dst_addr,
+            VXLIB_bufParams2D_t *vxlib_dst);
+static vx_status tivxChannelExtractYuyvUyvyInput(
+            tivx_obj_desc_image_t *in_desc,
+            tivx_obj_desc_image_t *out_desc,
+            vx_enum channel_value,
+            uint8_t *dst_addr,
+            const VXLIB_bufParams2D_t *vxlib_dst);
+
+static vx_status tivxChannelExtractRgbRgbxInput(
+            tivx_obj_desc_image_t *in_desc,
+            tivx_obj_desc_image_t *out_desc,
+            vx_enum channel_value,
+            uint8_t *dst_addr,
+            VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -158,13 +194,12 @@ vx_status tivxChannelExtractRgbRgbxInput(
     return status;
 }
 
-vx_status tivxChannelExtractYuyvUyvyInput(
+static vx_status tivxChannelExtractYuyvUyvyInput(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            const VXLIB_bufParams2D_t *vxlib_dst
-            )
+            const VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -229,7 +264,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
         { /* channel_value is (vx_enum)VX_CHANNEL_U or (vx_enum)VX_CHANNEL_V
            * consider plane to be 4 bytes per pixel, i.e half the width
            */
-            vxlib_src.dim_x = vxlib_src.dim_x/2;
+            vxlib_src.dim_x = vxlib_src.dim_x/2U;
 
             status = (vx_status)VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
@@ -242,13 +277,12 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     return status;
 }
 
-vx_status tivxChannelExtractNv12Nv21Input(
+static vx_status tivxChannelExtractNv12Nv21Input(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst
-            )
+            VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -348,13 +382,12 @@ vx_status tivxChannelExtractNv12Nv21Input(
     return status;
 }
 
-vx_status tivxChannelExtractIyuvYuv4Input(
+static vx_status tivxChannelExtractIyuvYuv4Input(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst
-            )
+            VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -525,7 +558,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelExtractCreate(
+static vx_status VX_CALLBACK tivxChannelExtractCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -535,7 +568,7 @@ vx_status VX_CALLBACK tivxChannelExtractCreate(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelExtractDelete(
+static vx_status VX_CALLBACK tivxChannelExtractDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

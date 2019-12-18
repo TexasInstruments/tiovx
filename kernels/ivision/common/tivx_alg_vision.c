@@ -73,14 +73,14 @@ typedef struct IM_Fxns
 }IM_Fxns;
 
 /* Local Functions */
-vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle);
-vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
-vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
+static vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle);
+static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
+static vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
+static vx_int32 tivxAlgiVisionGetHeapId(vx_uint32 space, vx_uint32 attrs, vx_uint32 *heap_id);
 
-
-static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t *heap_id)
+static vx_int32 tivxAlgiVisionGetHeapId(vx_uint32 space, vx_uint32 attrs, vx_uint32 *heap_id)
 {
-    int32_t status = (vx_status)VX_SUCCESS;
+    vx_int32 status = (vx_status)VX_SUCCESS;
 
     *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
     switch(space)
@@ -88,11 +88,11 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
         default:
             status = (vx_status)VX_FAILURE;
             break;
-        case IALG_EPROG:
-        case IALG_IPROG:
-        case IALG_ESDATA:
-        case IALG_EXTERNAL:
-            if(attrs==IALG_SCRATCH)
+        case (vx_uint32)IALG_EPROG:
+        case (vx_uint32)IALG_IPROG:
+        case (vx_uint32)IALG_ESDATA:
+        case (vx_uint32)IALG_EXTERNAL:
+            if((vx_enum)attrs==(vx_enum)IALG_SCRATCH)
             {
                *heap_id = (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH;
             }
@@ -101,20 +101,20 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
                *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
             }
             break;
-        case IALG_DARAM0:
-        case IALG_DARAM1:
-        case IALG_SARAM0:
-        case IALG_SARAM1:
-        case IALG_DARAM2:
-        case IALG_SARAM2:
-            if(attrs==IALG_SCRATCH)
+        case (vx_uint32)IALG_DARAM0:
+        case (vx_uint32)IALG_DARAM1:
+        case (vx_uint32)IALG_SARAM0:
+        case (vx_uint32)IALG_SARAM1:
+        case (vx_uint32)IALG_DARAM2:
+        case (vx_uint32)IALG_SARAM2:
+            if((vx_enum)attrs==(vx_enum)IALG_SCRATCH)
             {
-                if(space==IALG_DARAM0)
+                if((vx_enum)space==(vx_enum)IALG_DARAM0)
                 {
                   *heap_id = (vx_enum)TIVX_MEM_INTERNAL_L1;
                 }
                 else
-                if(space==IALG_DARAM1)
+                if((vx_enum)space==(vx_enum)IALG_DARAM1)
                 {
 #ifdef TDAX
                     tivx_cpu_id_e cpuId;
@@ -157,7 +157,7 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
  *
  *******************************************************************************
  */
-vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
+static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 {
     vx_uint32 memRecId, heap_id;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -167,10 +167,10 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
         VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n",
                  memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
 
-        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        status = tivxAlgiVisionGetHeapId((vx_uint32)memRec[memRecId].space, (vx_uint32)memRec[memRecId].attrs, &heap_id);
         if(status==(vx_status)VX_SUCCESS)
         {
-            memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size, heap_id);
+            memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size, (vx_int32)heap_id);
         }
 
         VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n",
@@ -188,12 +188,12 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 #ifndef HOST_EMULATION
     for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
-        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        status = tivxAlgiVisionGetHeapId((vx_uint32)memRec[memRecId].space, (vx_uint32)memRec[memRecId].attrs, &heap_id);
         if(status==(vx_status)VX_SUCCESS)
         {
-            if ((heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
+            if (((vx_enum)heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
             {
-                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
             }
         }
     }
@@ -215,23 +215,23 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
  *
  *******************************************************************************
  */
-vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
+static vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
 {
     vx_uint32 memRecId, heap_id;
     vx_status status = (vx_status)VX_SUCCESS;
 
     for (memRecId = 0; memRecId < numMemRec; memRecId++)
     {
-        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        status = tivxAlgiVisionGetHeapId((vx_uint32)memRec[memRecId].space, (vx_uint32)memRec[memRecId].attrs, &heap_id);
         if(status==(vx_status)VX_SUCCESS)
         {
 #ifndef HOST_EMULATION
-            if ((heap_id!= (vx_enum)TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
+            if (((vx_enum)heap_id != (vx_enum)TIVX_MEM_INTERNAL_L2) || (memRec[memRecId].attrs!= IALG_SCRATCH))
             {
-                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
             }
 #else
-            tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
+            tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
 #endif
         }
     }
@@ -239,14 +239,14 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
     return status;
 }
 
-vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
+static vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
 {
     vx_uint32 numMemRec;
     IALG_MemRec   *memRec;
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
     vx_status status = 0;
 
-    numMemRec = ivision->fxns->ialg.algNumAlloc();
+    numMemRec = (vx_uint32)ivision->fxns->ialg.algNumAlloc();
 
     /*
      * Allocate memory for the records. These are NOT the actual memory of
@@ -278,7 +278,7 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
 
     VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
 
-    numMemRec = fxns->ialg.algNumAlloc();
+    numMemRec = (vx_uint32)fxns->ialg.algNumAlloc();
 
     VX_PRINT(VX_ZONE_INFO, "Allocating %d memory records ...\n", numMemRec);
 
@@ -315,7 +315,7 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
                     tivxAlgiVisionDeleteAlg(algHandle);
                     algHandle = NULL;
                 }
-                else if ( (cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || (cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
+                else if ( ((vx_enum)cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || ((vx_enum)cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
                 {
                     /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
                     tivxMemBufferUnmap(memRec[0].base, memRec[0].size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);

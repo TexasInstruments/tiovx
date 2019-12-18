@@ -73,6 +73,20 @@
 
 static tivx_target_kernel vx_accumulate_weighted_target_kernel = NULL;
 
+static vx_status VX_CALLBACK tivxKernelAccumulateWeightedCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelAccumulateWeightedDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status tivxKernelAccumulateWeighted(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params,
+    vx_enum kern_type);
+
 /* Work on this section */
 static vx_status tivxKernelAccumulateWeighted(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],

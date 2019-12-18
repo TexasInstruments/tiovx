@@ -73,6 +73,18 @@
 #include <stdio.h>
 
 static tivx_target_kernel vx_channel_combine_target_kernel = NULL;
+vx_status VX_CALLBACK tivxChannelCombine(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxChannelCombineCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxChannelCombineDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
 
 vx_status VX_CALLBACK tivxChannelCombine(
        tivx_target_kernel_instance kernel,
@@ -289,7 +301,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         dst_desc->imagepatch_addr[plane_idx].stride_y;
                     vxlib_dst.data_type = (uint32_t)VXLIB_UINT8;
 
-                    if(plane_idx==0)
+                    if(plane_idx==0U)
                     {
                         status = (vx_status)VXLIB_channelCopy_1to1_i8u_o8u(
                             src0_addr, &vxlib_src0,
@@ -297,7 +309,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                             );
                     }
                     else
-                    if(plane_idx==1)
+                    if(plane_idx==1U)
                     {
                         if(dst_desc->format == (vx_df_image)VX_DF_IMAGE_NV21)
                         {
@@ -367,7 +379,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelCombineCreate(
+static vx_status VX_CALLBACK tivxChannelCombineCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -377,7 +389,7 @@ vx_status VX_CALLBACK tivxChannelCombineCreate(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelCombineDelete(
+static vx_status VX_CALLBACK tivxChannelCombineDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

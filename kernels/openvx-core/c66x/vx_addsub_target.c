@@ -73,6 +73,29 @@
 
 static tivx_target_kernel vx_add_target_kernel = NULL, vx_sub_target_kernel = NULL;
 
+static vx_status VX_CALLBACK tivxKernelAddCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelAddDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelAddProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status tivxKernelAddSub(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params,
+    vx_enum kern_type);
+static vx_status VX_CALLBACK tivxKernelSubCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelSubDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelSubProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
 static vx_status tivxKernelAddSub(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,

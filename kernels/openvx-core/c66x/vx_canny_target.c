@@ -105,7 +105,15 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm,
 static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs);
 static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
     uint32_t *num_items, int32_t lower, int32_t upper, int32_t gs);
-
+static vx_status VX_CALLBACK tivxKernelCannyProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelCannyCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelCannyDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
 static void tivxCannyFreeMem(tivxCannyParams *prms);
 
 static tivx_target_kernel vx_harris_corners_target_kernel = NULL;
@@ -173,19 +181,19 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
-        prms->gs = sc_gs->data.s32;
+        prms->gs = (uint32_t)sc_gs->data.s32;
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
         border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
         tivxInitBufParams(src, &prms->vxlib_src);
@@ -211,10 +219,10 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         /* Edge Tracing requires 1 pixel border of zeros */
         memset(border_addr_tl, 0, (size_t)prms->vxlib_dst.dim_x + (size_t)2);
         memset(border_addr_bl, 0, (size_t)prms->vxlib_dst.dim_x + (size_t)2);
-        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
+        for(i=0; i<(prms->vxlib_dst.dim_y+2U); i++)
         {
-            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
-            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tl[(int32_t)i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tr[(int32_t)i*prms->vxlib_dst.stride_y] = 0;
         }
 
         if ((vx_status)VXLIB_SUCCESS == status)
@@ -280,17 +288,17 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             prms->vxlib_sobx.dim_x = prms->vxlib_src.dim_x;
             prms->vxlib_sobx.dim_y = prms->vxlib_src.dim_y -
-                (sc_gs->data.s32 - 1u);
-            prms->vxlib_sobx.stride_y = (prms->vxlib_src.stride_y * 2u);
+                ((uint32_t)sc_gs->data.s32 - 1U);
+            prms->vxlib_sobx.stride_y = (prms->vxlib_src.stride_y * 2);
             prms->vxlib_sobx.data_type = (uint32_t)VXLIB_UINT16;
 
             prms->vxlib_soby.dim_x = prms->vxlib_src.dim_x;
             prms->vxlib_soby.dim_y = prms->vxlib_src.dim_y -
-                (sc_gs->data.s32 - 1u);
-            prms->vxlib_soby.stride_y = (prms->vxlib_src.stride_y * 2u);
+                ((uint32_t)sc_gs->data.s32 - 1U);
+            prms->vxlib_soby.stride_y = (prms->vxlib_src.stride_y * 2);
             prms->vxlib_soby.data_type = (uint32_t)VXLIB_UINT16;
 
-            prms->sobel_size = prms->vxlib_sobx.stride_y *
+            prms->sobel_size = (uint32_t)prms->vxlib_sobx.stride_y *
                 prms->vxlib_src.dim_y;
 
             prms->sobel_x = tivxMemAlloc(prms->sobel_size, (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
@@ -315,12 +323,12 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             {
                 prms->vxlib_norm.dim_x = prms->vxlib_src.dim_x;
                 prms->vxlib_norm.dim_y = prms->vxlib_src.dim_y -
-                    (sc_gs->data.s32 - 1u);
+                    ((uint32_t)sc_gs->data.s32 - 1U);
                 prms->vxlib_norm.stride_y = (prms->vxlib_src.stride_y *
-                    2u);
+                    2);
                 prms->vxlib_norm.data_type = (uint32_t)VXLIB_UINT16;
 
-                prms->norm_size = prms->vxlib_norm.stride_y *
+                prms->norm_size = (uint32_t)prms->vxlib_norm.stride_y *
                     prms->vxlib_src.dim_y;
 
                 prms->norm = tivxMemAlloc(prms->norm_size, (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
@@ -335,11 +343,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             {
                 prms->vxlib_edge.dim_x = prms->vxlib_src.dim_x;
                 prms->vxlib_edge.dim_y = prms->vxlib_src.dim_y -
-                    (sc_gs->data.s32 - 1u) - 2u;
+                    ((uint32_t)sc_gs->data.s32 - 1U) - 2U;
                 prms->vxlib_edge.stride_y = prms->vxlib_src.stride_y;
                 prms->vxlib_edge.data_type = (uint32_t)VXLIB_UINT8;
 
-                prms->nms_edge_size = prms->vxlib_edge.stride_y *
+                prms->nms_edge_size = (uint32_t)prms->vxlib_edge.stride_y *
                     prms->vxlib_src.dim_y;
 
                 prms->nms_edge = tivxMemAlloc(prms->nms_edge_size,
@@ -498,10 +506,10 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
         {
             case 3:
                 temp1_16 = (int16_t *)((uintptr_t)prms->sobel_x +
-                    prms->vxlib_sobx.stride_y + 2u);
+                    (uint32_t)prms->vxlib_sobx.stride_y + 2U);
 
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
-                    prms->vxlib_soby.stride_y + 2u);
+                    (uint32_t)prms->vxlib_soby.stride_y + 2U);
 
                 status = (vx_status)VXLIB_sobel_3x3_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
@@ -509,10 +517,10 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
                 break;
             case 5:
                 temp1_16 = (int16_t *)((uintptr_t)prms->sobel_x +
-                    (prms->vxlib_sobx.stride_y*2u) + 4u);
+                    ((uint32_t)prms->vxlib_sobx.stride_y*2U) + 4U);
 
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
-                    (prms->vxlib_soby.stride_y*2u) + 4u);
+                    ((uint32_t)prms->vxlib_soby.stride_y*2U) + 4U);
 
                 status = (vx_status)VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
@@ -521,10 +529,10 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
             case 7:
             default:
                 temp1_16 = (int16_t *)((uintptr_t)prms->sobel_x +
-                    (prms->vxlib_sobx.stride_y*3u) + 6u);
+                    ((uint32_t)prms->vxlib_sobx.stride_y*3U) + 6U);
 
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
-                    (prms->vxlib_soby.stride_y*3u) + 6u);
+                    ((uint32_t)prms->vxlib_soby.stride_y*3U) + 6U);
 
                 status = (vx_status)VXLIB_sobel_7x7_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
@@ -550,12 +558,12 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
 
     if (NULL != prms)
     {
-        sobx = (int16_t *)((uintptr_t)prms->sobel_x + (prms->vxlib_sobx.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
-        soby = (int16_t *)((uintptr_t)prms->sobel_y + (prms->vxlib_soby.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
-        norm = (uint16_t *)((uintptr_t)prms->norm + (prms->vxlib_norm.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
+        sobx = (int16_t *)((uintptr_t)prms->sobel_x + ((uint32_t)prms->vxlib_sobx.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
+        soby = (int16_t *)((uintptr_t)prms->sobel_y + ((uint32_t)prms->vxlib_soby.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
+        norm = (uint16_t *)((uintptr_t)prms->norm + ((uint32_t)prms->vxlib_norm.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
 
         if ((vx_enum)VX_NORM_L1 == norm_enm)
         {
@@ -586,14 +594,14 @@ static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
 
     if (NULL != prms)
     {
-        sobx = (int16_t *)((uintptr_t)prms->sobel_x + (prms->vxlib_sobx.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
-        soby = (int16_t *)((uintptr_t)prms->sobel_y + (prms->vxlib_soby.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
-        norm = (uint16_t *)((uintptr_t)prms->norm + (prms->vxlib_norm.stride_y *
-            (gs / 2u)) + ((gs / 2u) * 2u));
-        edge = (uint8_t *) ((uintptr_t)prms->nms_edge + (prms->vxlib_edge.stride_y *
-            ((gs / 2u) + 1u)) + (gs / 2u) + 1u);
+        sobx = (int16_t *)((uintptr_t)prms->sobel_x + ((uint32_t)prms->vxlib_sobx.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
+        soby = (int16_t *)((uintptr_t)prms->sobel_y + ((uint32_t)prms->vxlib_soby.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
+        norm = (uint16_t *)((uintptr_t)prms->norm + ((uint32_t)prms->vxlib_norm.stride_y *
+            ((uint32_t)gs / 2U)) + (((uint32_t)gs / 2U) * 2U));
+        edge = (uint8_t *) ((uintptr_t)prms->nms_edge + ((uint32_t)prms->vxlib_edge.stride_y *
+            (((uint32_t)gs / 2U) + 1U)) + ((uint32_t)gs / 2U) + 1U);
 
         status = (vx_status)VXLIB_cannyNMS_i16s_i16s_i16u_o8u(sobx, &prms->vxlib_sobx,
                 soby, &prms->vxlib_soby, norm, &prms->vxlib_norm, edge,
@@ -618,20 +626,20 @@ static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
 
     if (NULL != prms)
     {
-        start_pos = (prms->vxlib_edge.stride_y * ((gs / 2u) + 1u)) +
-            ((gs / 2u) +1u);
-        norm = (uint16_t*)((uintptr_t)prms->norm + (prms->vxlib_norm.stride_y *
-            ((gs/2u)+1u)) + (((gs/2u)+1u)*2u));
+        start_pos = ((uint32_t)prms->vxlib_edge.stride_y * (((uint32_t)gs / 2U) + 1U)) +
+            (((uint32_t)gs / 2U) +1U);
+        norm = (uint16_t*)((uintptr_t)prms->norm + ((uint32_t)prms->vxlib_norm.stride_y *
+            (((uint32_t)gs/2U)+1U)) + ((((uint32_t)gs/2U)+1U)*2U));
         edge = (uint8_t*)((uintptr_t)prms->nms_edge + start_pos);
 
-        vxlib_prms.dim_x = prms->vxlib_edge.dim_x - gs;
+        vxlib_prms.dim_x = prms->vxlib_edge.dim_x - (uint32_t)gs;
         vxlib_prms.dim_y = prms->vxlib_edge.dim_y;
         vxlib_prms.stride_y = prms->vxlib_edge.stride_y;
         vxlib_prms.data_type = prms->vxlib_edge.data_type;
 
         status = (vx_status)VXLIB_doubleThreshold_i16u_i8u(norm, &prms->vxlib_norm,
-            edge, &vxlib_prms, prms->vxlib_edge.stride_y, prms->edge_list,
-            prms->edge_list_size, num_items, start_pos, lower, upper);
+            edge, &vxlib_prms, (uint16_t)prms->vxlib_edge.stride_y, prms->edge_list,
+            prms->edge_list_size, num_items, start_pos, (uint32_t)lower, (uint32_t)upper);
     }
     if (status != (vx_status)VXLIB_SUCCESS)
     {

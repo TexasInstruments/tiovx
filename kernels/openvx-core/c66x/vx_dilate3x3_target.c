@@ -91,8 +91,17 @@ static tivxDilate3X3KernelInfo gTivxDilate3X3KernelInfo =
     (vx_enum)VX_KERNEL_DILATE_3x3,
     NULL,
     VXLIB_dilate_3x3_i8u_o8u
-
 };
+
+static vx_status VX_CALLBACK tivxDilate3X3Create(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxDilate3X3Delete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
+    uint16_t num_params, void *priv_arg);
+vx_status VX_CALLBACK tivxProcessDilate3X3(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
 
 vx_status VX_CALLBACK tivxProcessDilate3X3(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -142,9 +151,9 @@ vx_status VX_CALLBACK tivxProcessDilate3X3(
         }
 
         if ((src_desc->imagepatch_addr[0U].stride_y <
-                src_desc->imagepatch_addr[0U].dim_x) ||
+                (int32_t)src_desc->imagepatch_addr[0U].dim_x) ||
             (dst_desc->imagepatch_addr[0U].stride_y <
-                dst_desc->imagepatch_addr[0U].dim_x))
+                (int32_t)dst_desc->imagepatch_addr[0U].dim_x))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
@@ -172,7 +181,7 @@ vx_status VX_CALLBACK tivxProcessDilate3X3(
 
         if (kern_info->filter_func != NULL)
         {
-            status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
+            status = (vx_status)kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
                 &vxlib_dst);
         }
         if ((vx_status)VXLIB_SUCCESS != status)
@@ -191,7 +200,7 @@ vx_status VX_CALLBACK tivxProcessDilate3X3(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxDilate3X3Create(
+static vx_status VX_CALLBACK tivxDilate3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -200,7 +209,7 @@ vx_status VX_CALLBACK tivxDilate3X3Create(
     return status;
 }
 
-vx_status VX_CALLBACK tivxDilate3X3Delete(
+static vx_status VX_CALLBACK tivxDilate3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {

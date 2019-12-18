@@ -62,6 +62,7 @@
 
 #include <vx_internal.h>
 
+static vx_status tivxDataRefQueueDestruct(vx_reference ref);
 
 vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
 {
@@ -294,11 +295,11 @@ static vx_status tivxDataRefQueueDestruct(vx_reference ref)
                 tivxObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
             }
         }
-        if(data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivxObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
         }
-        if(data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivxObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
         }
@@ -418,7 +419,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                     }
                     obj_desc->ref_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
                     obj_desc->in_node_done_cnt = 0;
-                    obj_desc->num_in_nodes = prms->num_in_nodes;
+                    obj_desc->num_in_nodes = (vx_uint16)prms->num_in_nodes;
                     obj_desc->next_obj_desc_id_in_delay = (vx_enum)TIVX_OBJ_DESC_INVALID;
                     obj_desc->delay_slot_index = 0;
                     obj_desc->delay_slots = 0;
@@ -431,7 +432,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                         obj_desc_cmd->flags = 0;
 
                         /* this command is sent by the target node to HOST hence dst_target_id is HOST */
-                        obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+                        obj_desc_cmd->dst_target_id = (vx_uint32)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
 
                         /* source is node target which is not known at this moment, however
                          * since ACK is not required for this command, this can be set to INVALID
@@ -481,7 +482,7 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
     for(i=0; i<delay_slots; i++)
     {
         cur_data_ref_q = delay_data_ref_q_list[i];
-        next_data_ref_q = delay_data_ref_q_list[(i+1) % delay_slots];
+        next_data_ref_q = delay_data_ref_q_list[(i+1U) % delay_slots];
 
         if(next_data_ref_q->enable_user_queueing != 0)
         {
@@ -501,8 +502,8 @@ vx_status tivxDataRefQueueLinkDelayDataRefQueues(
 
             tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY);
             obj_desc->next_obj_desc_id_in_delay = next_obj_desc->base.obj_desc_id;
-            obj_desc->delay_slot_index = i;
-            obj_desc->delay_slots = delay_slots;
+            obj_desc->delay_slot_index = (vx_uint16)i;
+            obj_desc->delay_slots = (vx_uint16)delay_slots;
 
             if(auto_age_delay_slot[i] != 0)
             {

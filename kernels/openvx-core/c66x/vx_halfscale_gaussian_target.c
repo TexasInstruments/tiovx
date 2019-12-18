@@ -73,7 +73,20 @@
 
 static tivx_target_kernel vx_halfscale_gaussian_target_kernel = NULL;
 
-vx_status VX_CALLBACK tivxHalfscaleGaussian(
+static vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxHalfscaleGaussian(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxHalfscaleGaussian(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -123,9 +136,9 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
         {
             tivxInitBufParams(src_desc, &vxlib_src);
             tivxInitBufParams(dst_desc, &vxlib_dst);
-            status |= VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
+            status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                                                       dst_addr, &vxlib_dst,
-                                                      2, 2, 0, 0, 0, 0);
+                                                      2.0f, 2.0f, 0, 0, 0, 0);
         }
         else if ((gsize_value == 3) || (gsize_value == 5))
         {
@@ -135,8 +148,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
             tivxInitBufParams(src_desc, &vxlib_src);
             tivxInitBufParams(dst_desc, &vxlib_dst);
 
-            gauss_params.dim_x    = vxlib_src.dim_x-(gsize_value-1);
-            gauss_params.dim_y    = vxlib_src.dim_y-(gsize_value-1);
+            gauss_params.dim_x    = vxlib_src.dim_x-((uint32_t)gsize_value-1U);
+            gauss_params.dim_y    = vxlib_src.dim_y-((uint32_t)gsize_value-1U);
             gauss_params.stride_y = vxlib_src.stride_y;
 
             if (gsize_value == 3) {
@@ -146,14 +159,14 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     pGauss = (uint8_t*)(gaussOut);
-                    status |= VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
+                    status |= (vx_status)VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
                                                      pGauss, &gauss_params);
-                    status |= VXLIB_scaleImageNearest_i8u_o8u((uint8_t*)gaussOut, &gauss_params,
+                    status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u((uint8_t*)gaussOut, &gauss_params,
                                                           dst_addr, &vxlib_dst,
-                                                          2, 2, 0, 0, 0, 0);
+                                                          2.0f, 2.0f, 0, 0, 0, 0);
                 }
             } else {
-                status |= VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
+                status |= (vx_status)VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
                                                               dst_addr, &vxlib_dst);
             }
         }
@@ -173,7 +186,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
     return status;
 }
 
-vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
+static vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -216,7 +229,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
 
             src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
 
-            temp_ptr = tivxMemAlloc(src_desc->imagepatch_addr[0].stride_y *
+            temp_ptr = tivxMemAlloc((uint32_t)src_desc->imagepatch_addr[0].stride_y *
                 src_desc->imagepatch_addr[0].dim_y, (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
@@ -225,10 +238,10 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
             }
             else
             {
-                memset(temp_ptr, 0, src_desc->imagepatch_addr[0].stride_y *
+                memset(temp_ptr, 0, (uint32_t)src_desc->imagepatch_addr[0].stride_y *
                     src_desc->imagepatch_addr[0].dim_y);
                 tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
-                    (src_desc->imagepatch_addr[0].stride_y *
+                    ((uint32_t)src_desc->imagepatch_addr[0].stride_y *
                     src_desc->imagepatch_addr[0].dim_y) );
             }
         }
@@ -237,7 +250,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
+static vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
