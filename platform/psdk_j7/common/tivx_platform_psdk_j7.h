@@ -21,6 +21,7 @@ extern "C" {
  */
 
 #include <TI/j7.h>
+#include <stdbool.h>
 
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
@@ -50,7 +51,7 @@ extern "C" {
 #define ASSERT_CONCAT_(a, b) a##b
 #define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
 #define BUILD_ASSERT(e) \
-     enum { ASSERT_CONCAT(assert_line_, __LINE__) = 1/(!!(e)) }
+     enum { ASSERT_CONCAT(assert_line_, __LINE__) = (bool)1/(!!(e)) }
 
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
