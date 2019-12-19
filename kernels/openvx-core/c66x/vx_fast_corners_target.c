@@ -83,6 +83,16 @@ typedef struct
 
 static vx_status VX_CALLBACK tivxKernelFastCProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelFastCCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelFastCDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelFastCProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -153,7 +163,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
         status = (vx_status)VXLIB_fastCorners_i8u(
             src_addr, &vxlib_src, prms->corners, prms->strength,
             arr->capacity, (uint8_t)sc_thr->data.f32, &num_corners,
-            sc_nms->data.boolean, prms->scratch, prms->scratch_size);
+            (uint8_t)sc_nms->data.boolean, prms->scratch, prms->scratch_size);
 
         if (status != (vx_status)VXLIB_SUCCESS)
         {
@@ -176,9 +186,9 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
-                kp->x = prms->corners[i] & 0xFFFFu;
-                kp->y = (prms->corners[i] & 0xFFFF0000u) >> 16u;
-                kp->strength = prms->strength[i];
+                kp->x = (int32_t)prms->corners[i] & 0xFFFF;
+                kp->y = (int32_t)(((int32_t)prms->corners[i] & (int32_t)0xFFFF0000U) >> 16);
+                kp->strength = (float)prms->strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;
                 kp->tracking_status = 1;

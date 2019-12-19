@@ -74,6 +74,16 @@ static tivx_target_kernel vx_lut_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLutCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLutDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLutProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -115,7 +125,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
         {
             status = (vx_status)VXLIB_tableLookup_i8u_o8u(src_addr, &vxlib_src,
-                dst_addr, &vxlib_dst, lut_target_ptr, lut->num_items);
+                dst_addr, &vxlib_dst, lut_target_ptr, (uint16_t)lut->num_items);
         }
         else
         {

@@ -64,6 +64,7 @@
 #include <TI/tivx_target_kernel.h>
 #include <tivx_target_kernels_priv.h>
 #include <tivx_kernels_target_utils.h>
+#include <tivx_openvx_core_kernels.h>
 
 #ifdef BUILD_BAM
 

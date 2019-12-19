@@ -75,6 +75,16 @@ static tivx_target_kernel vx_threshold_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelThresholdCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelThresholdDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelThresholdProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -113,14 +123,14 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
         {
             status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(src_addr, &vxlib_src,
-                dst_addr, &vxlib_dst, thr->value, thr->true_value,
-                thr->false_value);
+                dst_addr, &vxlib_dst, (uint8_t)thr->value, (uint8_t)thr->true_value,
+                (uint8_t)thr->false_value);
         }
         else
         {
             status = (vx_status)VXLIB_thresholdRange_i8u_o8u(src_addr, &vxlib_src,
-                dst_addr, &vxlib_dst, thr->upper, thr->lower, thr->true_value,
-                thr->false_value);
+                dst_addr, &vxlib_dst, (uint8_t)thr->upper, (uint8_t)thr->lower, (uint8_t)thr->true_value,
+                (uint8_t)thr->false_value);
         }
         if (status != (vx_status)VXLIB_SUCCESS)
         {

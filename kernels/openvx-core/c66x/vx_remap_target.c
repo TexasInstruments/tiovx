@@ -75,6 +75,16 @@ static tivx_target_kernel vx_remap_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelRemapProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelRemapCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelRemapDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelRemapProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -130,7 +140,7 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
 
         vxlib_remap.dim_x = dst->imagepatch_addr[0].dim_x * 2U;
         vxlib_remap.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
+        vxlib_remap.stride_y = (int32_t)dst->imagepatch_addr[0].dim_x * 8;
         vxlib_remap.data_type = (uint32_t)VXLIB_FLOAT32;
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);

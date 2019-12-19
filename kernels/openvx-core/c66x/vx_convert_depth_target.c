@@ -73,6 +73,20 @@
 
 static tivx_target_kernel vx_convert_depth_target_kernel = NULL;
 
+static vx_status tivxKernelConvertDepth(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params,
+    vx_enum kern_type);
+static vx_status VX_CALLBACK tivxKernelConvertDepthCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelConvertDepthDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelConvertDepthProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
 /* Work on this section */
 static vx_status tivxKernelConvertDepth(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -143,12 +157,12 @@ static vx_status tivxKernelConvertDepth(
         if ((uint32_t)VXLIB_INT16 == vxlib_dst.data_type)
         {
             status = (vx_status)VXLIB_convertDepth_i8u_o16s((uint8_t *)src_addr,
-                        &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, sc_desc[1]->data.s32);
+                        &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, (uint32_t)sc_desc[1]->data.s32);
         }
         else
         {
             status = (vx_status)VXLIB_convertDepth_i16s_o8u((int16_t *)src_addr,
-                        &vxlib_src, (uint8_t *)dst_addr, &vxlib_dst, sc_desc[1]->data.s32, overflow_policy);
+                        &vxlib_src, (uint8_t *)dst_addr, &vxlib_dst, (uint32_t)sc_desc[1]->data.s32, overflow_policy);
         }
 
 

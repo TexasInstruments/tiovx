@@ -93,6 +93,19 @@ typedef struct
 static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -219,7 +232,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         termination_value = termination_desc->data.u08;
         epsilon_value = epsilon_desc->data.f32;
         num_iterations_value = num_iterations_desc->data.u32;
-        use_initial_estimate_value = use_initial_estimate_desc->data.boolean;
+        use_initial_estimate_value = (bool)use_initial_estimate_desc->data.boolean;
         window_dimension_value = window_dimension_desc->data.size;
 
         num_levels = old_pyramid_desc->num_levels;
@@ -232,7 +245,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         nextpts_desc->num_items = prevpts_desc->num_items;
 
         /* if Use initial estimate is true, use the estimated pts */
-        if (0 != use_initial_estimate_value)
+        if (use_initial_estimate_value)
         {
             estPts_addr = (vx_keypoint_t *)estimatedpts_target_ptr;
         }
@@ -243,7 +256,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         {
             prms->oldPoints[list_indx] = _ftof2((VXLIB_F32)oldPts_addr[list_indx].y, (VXLIB_F32)oldPts_addr[list_indx].x);
             prms->newPoints[list_indx] = _ftof2((VXLIB_F32)estPts_addr[list_indx].y, (VXLIB_F32)estPts_addr[list_indx].x);
-            prms->tracking[list_indx] = estPts_addr[list_indx].tracking_status;
+            prms->tracking[list_indx] = (uint8_t)estPts_addr[list_indx].tracking_status;
         }
 
         /* We are done with external prevpts and estimatedpts buffers since we have copied what we need internally s*/
@@ -255,7 +268,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             (vx_enum)VX_READ_ONLY);
 
         /* Set the scale for the lowest resolution level for first iteration */
-        scale = pow(pyramid_scale, num_levels-1);
+        scale = (float)pow((double)pyramid_scale, (double)((double)num_levels-(double)1.0f));
 
         /* call kernel processing functions for each level of the pyramid */
         for( level = (vx_int32)num_levels-1; level >= 0; level-- )
@@ -300,13 +313,13 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->old_params.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->scharrGrad_params.dim_x = width;
-            prms->scharrGrad_params.dim_y = height - 2;
-            prms->scharrGrad_params.stride_y = width*2;
+            prms->scharrGrad_params.dim_y = height - 2U;
+            prms->scharrGrad_params.stride_y = (int32_t)width*2;
             prms->scharrGrad_params.data_type = (uint32_t)VXLIB_INT16;
 
-            status |= VXLIB_scharr_3x3_i8u_o16s_o16s(old_image_addr, &prms->old_params,
-                                                     &prms->pSchX[width+1], &prms->scharrGrad_params,
-                                                     &prms->pSchY[width+1], &prms->scharrGrad_params);
+            status |= (vx_status)VXLIB_scharr_3x3_i8u_o16s_o16s(old_image_addr, &prms->old_params,
+                                                     &prms->pSchX[width+1U], &prms->scharrGrad_params,
+                                                     &prms->pSchY[width+1U], &prms->scharrGrad_params);
 
             /* Prepare and execute tracking function */
 
@@ -322,12 +335,12 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 scale = 1.0f/pyramid_scale;
             }
 
-            status |= VXLIB_trackFeaturesLK_i8u(old_image_addr, &prms->old_params,
+            status |= (vx_status)VXLIB_trackFeaturesLK_i8u(old_image_addr, &prms->old_params,
                                                  new_image_addr, &prms->new_params,
                                                  prms->pSchX, &prms->scharrGrad_params,
                                                  prms->pSchY, &prms->scharrGrad_params,
                                                  prms->oldPoints, prms->newPoints, prms->tracking, list_length,
-                                                 num_iterations_value, epsilon_value, scale, window_dimension_value, level,
+                                                 num_iterations_value, epsilon_value, scale, (uint8_t)window_dimension_value, (uint8_t)level,
                                                  termination_value, prms->scratch, prms->scratch_buff_size);
 
             tivxMemBufferUnmap(old_image_target_ptr,
@@ -342,9 +355,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         /* After all level processing, copy results back to output array */
         for(list_indx = 0; list_indx < list_length; list_indx++)
         {
-            newPts_addr[list_indx].x = _lof2(prms->newPoints[list_indx]) + 0.5f;
-            newPts_addr[list_indx].y = _hif2(prms->newPoints[list_indx]) + 0.5f;
-            newPts_addr[list_indx].tracking_status = prms->tracking[list_indx];
+            float temp_x = _lof2(prms->newPoints[list_indx]) + 0.5f;
+            float temp_y = _hif2(prms->newPoints[list_indx]) + 0.5f;
+            newPts_addr[list_indx].x = (int32_t)temp_x;
+            newPts_addr[list_indx].y = (int32_t)temp_y;
+            newPts_addr[list_indx].tracking_status = (int32_t)prms->tracking[list_indx];
         }
 
         /* kernel processing function complete */
@@ -417,7 +432,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
         {
             memset(prms, 0, sizeof(tivxOpticalFlowPyrLkParams));
 
-            prms->scratch_buff_size = window_dimension_value*window_dimension_value*8*sizeof(uint8_t);
+            prms->scratch_buff_size = window_dimension_value*window_dimension_value*8U*sizeof(uint8_t);
 
             prms->scratch = tivxMemAlloc(prms->scratch_buff_size,
                 (vx_enum)TIVX_MEM_EXTERNAL);

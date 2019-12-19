@@ -77,6 +77,16 @@ static tivx_target_kernel vx_histogram_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelHistogramCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelHistogramDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelHistogramProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -116,7 +126,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
             memset(dst_target_ptr, 0, dst->mem_size);
 
             status = (vx_status)VXLIB_histogram_i8u_o32u(src_addr, &vxlib_src,
-                    dst_target_ptr, (uint32_t*)scratch, dst->offset, dst->range, dst->num_bins, 1);
+                    dst_target_ptr, (uint32_t*)scratch, (uint8_t)dst->offset, (uint16_t)dst->range, (uint16_t)dst->num_bins, 1);
         }
         else
         {
@@ -150,7 +160,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     if ((vx_status)VX_SUCCESS == status)
     {
 
-        temp_ptr = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
+        temp_ptr = tivxMemAlloc((uint32_t)SCRATCH_BUFFER_SIZE *
             sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL == temp_ptr)
@@ -159,10 +169,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
         }
         else
         {
-            memset(temp_ptr, 0, SCRATCH_BUFFER_SIZE *
+            memset(temp_ptr, 0, (uint32_t)SCRATCH_BUFFER_SIZE *
                 sizeof(uint32_t));
             tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
-                             SCRATCH_BUFFER_SIZE * sizeof(uint32_t));
+                             (uint32_t)SCRATCH_BUFFER_SIZE * sizeof(uint32_t));
         }
     }
 

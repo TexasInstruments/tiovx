@@ -80,6 +80,16 @@ typedef struct
 
 static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -157,7 +167,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             void *src_target_ptr;
             void *dst_target_ptr;
 
-            if (0 == levels)
+            if (0U == levels)
             {
                 src = (tivx_obj_desc_image_t *)obj_desc[
                     TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
@@ -235,13 +245,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                     vxlib_gauss.stride_y = src->imagepatch_addr[0].stride_y;
 
                     temp_buf = (uint8_t*)(prms->interm_output +
-                        (2U*vxlib_gauss.stride_y) + 2U);
+                        (2U*(uint32_t)vxlib_gauss.stride_y) + 2U);
 
                     status = (vx_status)VXLIB_gaussian_5x5_i8u_o8u(
                         src_addr, &vxlib_src, temp_buf, &vxlib_gauss, 8);
 
                     vxlib_gauss.dim_y = vxlib_src.dim_y;
-                    status |= VXLIB_scaleImageNearest_i8u_o8u(
+                    status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u(
                         prms->interm_output, &vxlib_gauss,
                         dst_addr, &vxlib_dst,
                         (VXLIB_F32)vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
@@ -309,7 +319,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
 
             if (0.5f != pmd->scale)
             {
-                size = img->imagepatch_addr[0].stride_y *
+                size = (uint32_t)img->imagepatch_addr[0].stride_y *
                     img->imagepatch_addr[0].dim_y;
 
                 temp_ptr = tivxMemAlloc(size, (vx_enum)TIVX_MEM_EXTERNAL);

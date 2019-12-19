@@ -73,7 +73,7 @@
 
 static tivx_target_kernel vx_channel_extract_target_kernel = NULL;
 
-vx_status VX_CALLBACK tivxChannelExtract(
+static vx_status VX_CALLBACK tivxChannelExtract(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
@@ -450,7 +450,7 @@ static vx_status tivxChannelExtractIyuvYuv4Input(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelExtract(
+static vx_status VX_CALLBACK tivxChannelExtract(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

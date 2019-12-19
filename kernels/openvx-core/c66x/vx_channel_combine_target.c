@@ -73,7 +73,8 @@
 #include <stdio.h>
 
 static tivx_target_kernel vx_channel_combine_target_kernel = NULL;
-vx_status VX_CALLBACK tivxChannelCombine(
+
+static vx_status VX_CALLBACK tivxChannelCombine(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
@@ -86,7 +87,7 @@ static vx_status VX_CALLBACK tivxChannelCombineDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 
-vx_status VX_CALLBACK tivxChannelCombine(
+static vx_status VX_CALLBACK tivxChannelCombine(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

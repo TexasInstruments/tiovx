@@ -98,6 +98,17 @@ tivxOrKernelInfo gTivxOrKernelInfo =
 vx_status VX_CALLBACK tivxKernelOrProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
+    void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelOrCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelOrDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+vx_status VX_CALLBACK tivxKernelOrProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params,
     void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -154,7 +165,7 @@ vx_status VX_CALLBACK tivxKernelOrProcess(
 
         if (NULL != kern_info->vxlib_process)
         {
-            status = kern_info->vxlib_process(
+            status = (vx_status)kern_info->vxlib_process(
                 src0_addr, &vxlib_src0, src1_addr, &vxlib_src1,
                 dst_addr, &vxlib_dst);
 

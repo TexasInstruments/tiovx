@@ -75,6 +75,16 @@ static tivx_target_kernel vx_scale_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelScaleProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelScaleCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelScaleDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelScaleProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -134,8 +144,8 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
                 status = (vx_status)VXLIB_scaleImageBilinear_br_i8u_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
-                    vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
-                    vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
+                    (VXLIB_F32)vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
+                    (VXLIB_F32)vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
                     0, 0, 0, 0);
             }
             else /* For both constant and undefined mode, this api is used */
@@ -143,8 +153,8 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
                 status = (vx_status)VXLIB_scaleImageBilinear_bc_i8u_o8u(
                     src_addr, &vxlib_src,
                     dst_addr, &vxlib_dst,
-                    vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
-                    vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
+                    (VXLIB_F32)vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
+                    (VXLIB_F32)vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
                     border.constant_value.U8,
                     0, 0, 0, 0);
             }
@@ -154,8 +164,8 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         {
             status = (vx_status)VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst,
-                vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
-                vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y, 0, 0, 0, 0);
+                (VXLIB_F32)vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
+                (VXLIB_F32)vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y, 0, 0, 0, 0);
         }
         else
         {

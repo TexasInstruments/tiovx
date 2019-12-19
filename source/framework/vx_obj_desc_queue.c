@@ -61,6 +61,8 @@
 */
 #include <vx_internal.h>
 
+static void tivxObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc);
+
 static void tivxObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc)
 {
     tivx_obj_desc_queue_blocked_nodes_t *blocked_nodes;
@@ -103,11 +105,11 @@ vx_status tivxObjDescQueueRelease(uint16_t *obj_desc_id)
     tivx_obj_desc_queue_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_FAILURE;
 
-    if((obj_desc_id!=NULL) && (*obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
+    if((obj_desc_id!=NULL) && ((vx_enum)*obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
     {
         obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(*obj_desc_id);
 
-        if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+        if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
         {
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
             *obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
@@ -133,7 +135,7 @@ vx_status tivxObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id)
 
     obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t cur_wr, count;
 
@@ -143,7 +145,7 @@ vx_status tivxObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id)
         if(count < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
         {
             obj_desc->queue_mem[cur_wr] = obj_desc_id;
-            cur_wr = (cur_wr+1) % TIVX_OBJ_DESC_QUEUE_MAX_DEPTH;
+            cur_wr = (cur_wr+1U) % TIVX_OBJ_DESC_QUEUE_MAX_DEPTH;
             count++;
 
             obj_desc->count = count;
@@ -167,7 +169,7 @@ vx_status tivxObjDescQueueGetCount(uint16_t obj_desc_q_id, uint32_t *count)
 
     obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         *count = obj_desc->count;
 
@@ -188,17 +190,17 @@ vx_status tivxObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id)
     obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(obj_desc_q_id);
     *obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t cur_rd, count;
 
         cur_rd = obj_desc->cur_rd;
         count = obj_desc->count;
 
-        if(count > 0)
+        if(count > 0U)
         {
             *obj_desc_id = obj_desc->queue_mem[cur_rd];
-            cur_rd = (cur_rd+1) % TIVX_OBJ_DESC_QUEUE_MAX_DEPTH;
+            cur_rd = (cur_rd+1U) % TIVX_OBJ_DESC_QUEUE_MAX_DEPTH;
             count--;
 
             obj_desc->count = count;
@@ -222,7 +224,7 @@ vx_status tivxObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_i
 
     obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t num_nodes;
 
@@ -261,7 +263,7 @@ vx_status tivxObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
 
     obj_desc = (tivx_obj_desc_queue_t *)tivxObjDescGet(obj_desc_q_id);
 
-    if((obj_desc!=NULL) && (obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
+    if((obj_desc!=NULL) && ((vx_enum)obj_desc->base.type == (vx_enum)TIVX_OBJ_DESC_QUEUE))
     {
         uint16_t node_id;
 

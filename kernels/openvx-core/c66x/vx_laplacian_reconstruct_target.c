@@ -88,6 +88,16 @@ typedef struct
 
 static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLplRcstrctDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -169,7 +179,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
 
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x;
         prms->vxlib_src.dim_y = prms->vxlib_scratch.dim_y;
-        prms->vxlib_src.stride_y = prms->vxlib_scratch.dim_x*2u;
+        prms->vxlib_src.stride_y = (int32_t)prms->vxlib_scratch.dim_x*2;
         prms->vxlib_src.data_type = (uint32_t)VXLIB_INT16;
 
         src_addr = (uint8_t *)prms->add_output;
@@ -183,7 +193,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x*2u;
         prms->vxlib_src.data_type = (uint32_t)VXLIB_UINT8;
 
-        for (level = pmd->num_levels-1; (level >= 0) && ((vx_status)VX_SUCCESS == status);
+        for (level = (int32_t)pmd->num_levels-1; (level >= 0) && ((vx_status)VX_SUCCESS == status);
                 level --)
         {
             pyd_level = prms->img_obj_desc[level];
@@ -199,7 +209,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
 
             prms->vxlib_scratch.dim_x = rect.end_x - rect.start_x;
             prms->vxlib_scratch.dim_y = (rect.end_y - rect.start_y)/2u;
-            prms->vxlib_scratch.stride_y = (rect.end_x - rect.start_x)*2;
+            prms->vxlib_scratch.stride_y = ((int32_t)rect.end_x - (int32_t)rect.start_x)*2;
             prms->vxlib_scratch.data_type = (uint32_t)VXLIB_UINT8;
 
             prms->vxlib_laplac.dim_x = rect.end_x - rect.start_x;
@@ -209,7 +219,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
 
             prms->vxlib_add.dim_x = rect.end_x - rect.start_x;;
             prms->vxlib_add.dim_y = rect.end_y - rect.start_y;
-            prms->vxlib_add.stride_y = (rect.end_x - rect.start_x)*2;
+            prms->vxlib_add.stride_y = ((int32_t)rect.end_x - (int32_t)rect.start_x)*2;
             prms->vxlib_add.data_type = (uint32_t)VXLIB_INT16;
 
             /* First upsample previous stage result */
@@ -217,7 +227,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 prms->upsample_output, &prms->vxlib_scratch);
 
             prms->vxlib_scratch.dim_y = rect.end_y - rect.start_y;
-            prms->vxlib_scratch.stride_y = rect.end_x - rect.start_x;
+            prms->vxlib_scratch.stride_y = (int32_t)rect.end_x - (int32_t)rect.start_x;
 
             if ((vx_status)VXLIB_SUCCESS == status)
             {

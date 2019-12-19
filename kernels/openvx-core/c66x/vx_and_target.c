@@ -101,12 +101,12 @@ static vx_status VX_CALLBACK tivxKernelAndCreate(
 static vx_status VX_CALLBACK tivxKernelAndDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
-vx_status VX_CALLBACK tivxKernelAndProcess(
+static vx_status VX_CALLBACK tivxKernelAndProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
     void *priv_arg);
 
-vx_status VX_CALLBACK tivxKernelAndProcess(
+static vx_status VX_CALLBACK tivxKernelAndProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
     void *priv_arg)

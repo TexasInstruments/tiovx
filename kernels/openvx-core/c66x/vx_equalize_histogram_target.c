@@ -77,6 +77,16 @@ static tivx_target_kernel vx_equalize_histogram_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -179,7 +189,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
     if ((vx_status)VX_SUCCESS == status)
     {
 
-        temp_ptr = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
+        temp_ptr = tivxMemAlloc((uint32_t)SCRATCH_BUFFER_SIZE *
             sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
         if (NULL == temp_ptr)
@@ -188,10 +198,10 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramCreate(
         }
         else
         {
-            memset(temp_ptr, 0, SCRATCH_BUFFER_SIZE *
+            memset(temp_ptr, 0, (uint32_t)SCRATCH_BUFFER_SIZE *
                 sizeof(uint32_t));
             tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
-                             SCRATCH_BUFFER_SIZE * sizeof(uint32_t));
+                             (uint32_t)SCRATCH_BUFFER_SIZE * sizeof(uint32_t));
         }
     }
 

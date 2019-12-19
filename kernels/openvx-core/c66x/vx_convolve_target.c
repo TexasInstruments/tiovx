@@ -75,6 +75,16 @@ static tivx_target_kernel vx_convolve_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelConvolveProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelConvolveCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelConvolveDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelConvolveProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -132,13 +142,13 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         {
             status = (vx_status)VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, conv_target_ptr,
-                conv->columns, conv->rows, conv->scale);
+                conv->columns, conv->rows, (uint32_t)conv->scale);
         }
         else
         {
             status = (vx_status)VXLIB_convolve_i8u_c16s_o16s(src_addr, &vxlib_src,
                 (int16_t*)dst_addr, &vxlib_dst, conv_target_ptr,
-                conv->columns, conv->rows, conv->scale);
+                (int32_t)conv->columns, (int32_t)conv->rows, conv->scale);
         }
         if ((vx_status)VXLIB_SUCCESS != status)
         {

@@ -75,6 +75,16 @@ static tivx_target_kernel vx_intgimg_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -114,7 +124,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         if (NULL != prev_row)
         {
             status = (vx_status)VXLIB_integralImage_i8u_o32u(src_addr, &vxlib_src,
-                    dst_addr, &vxlib_dst, prev_row, NULL, 0);
+                    dst_addr, &vxlib_dst, prev_row, (uint32_t*)NULL, 0);
         }
         else
         {

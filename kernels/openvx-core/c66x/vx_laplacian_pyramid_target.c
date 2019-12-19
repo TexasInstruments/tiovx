@@ -86,6 +86,16 @@ typedef struct
 
 static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -179,7 +189,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         for (levels = 0; (levels < pmd->num_levels) && ((vx_status)VX_SUCCESS == status);
                 levels ++)
         {
-            uint32_t buf = levels & 1;
+            uint32_t buf = levels & 1U;
 
             dst = prms->img_obj_desc[levels];
 
@@ -202,9 +212,9 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             {
                 /* Half scaled intermediate result */
                 rect = dst->valid_roi;
-                prms->vxlib_gauss0.dim_x = (rect.end_x - rect.start_x) / 2;
-                prms->vxlib_gauss0.dim_y = (rect.end_y - rect.start_y) / 2;
-                prms->vxlib_gauss0.stride_y = (rect.end_x - rect.start_x) / 2;
+                prms->vxlib_gauss0.dim_x = (rect.end_x - rect.start_x) / 2U;
+                prms->vxlib_gauss0.dim_y = (rect.end_y - rect.start_y) / 2U;
+                prms->vxlib_gauss0.stride_y = ((int32_t)rect.end_x - (int32_t)rect.start_x) / 2;
 
                 out_addr = prms->hsg_output[buf];
             }
@@ -212,7 +222,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             /* Full scale intermediate result (half scaled upsampled) */
             tivxInitBufParams(dst, &prms->vxlib_gauss1);
             rect = dst->valid_roi;
-            prms->vxlib_gauss1.stride_y = rect.end_x - rect.start_x;
+            prms->vxlib_gauss1.stride_y = (int32_t)rect.end_x - (int32_t)rect.start_x;
             prms->vxlib_gauss1.data_type = (uint32_t)VXLIB_UINT8;
 
             tivxInitBufParams(dst, &prms->vxlib_dst);
@@ -339,7 +349,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->hsg_output[0] = tivxMemAlloc(prms->buff_size / 4,
+                prms->hsg_output[0] = tivxMemAlloc(prms->buff_size / 4U,
                     (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[0])
@@ -354,7 +364,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->hsg_output[1] = tivxMemAlloc(prms->buff_size / 16,
+                prms->hsg_output[1] = tivxMemAlloc(prms->buff_size / 16U,
                     (vx_enum)TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->hsg_output[1])
@@ -364,7 +374,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
                         (vx_enum)TIVX_MEM_EXTERNAL);
                     tivxMemFree(prms->gauss_output, prms->buff_size,
                         (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->hsg_output[0], prms->buff_size / 4,
+                    tivxMemFree(prms->hsg_output[0], prms->buff_size / 4U,
                         (vx_enum)TIVX_MEM_EXTERNAL);
                 }
                 else
@@ -434,12 +444,12 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
             }
             if (NULL != prms->hsg_output[0])
             {
-                tivxMemFree(prms->hsg_output[0], prms->buff_size / 4,
+                tivxMemFree(prms->hsg_output[0], prms->buff_size / 4U,
                     (vx_enum)TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->hsg_output[1])
             {
-                tivxMemFree(prms->hsg_output[1], prms->buff_size / 16,
+                tivxMemFree(prms->hsg_output[1], prms->buff_size / 16U,
                     (vx_enum)TIVX_MEM_EXTERNAL);
             }
 

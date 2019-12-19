@@ -99,11 +99,11 @@ static vx_status VX_CALLBACK tivxDilate3X3Create(
 static vx_status VX_CALLBACK tivxDilate3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg);
-vx_status VX_CALLBACK tivxProcessDilate3X3(
+static vx_status VX_CALLBACK tivxProcessDilate3X3(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-vx_status VX_CALLBACK tivxProcessDilate3X3(
+static vx_status VX_CALLBACK tivxProcessDilate3X3(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {

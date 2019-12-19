@@ -95,7 +95,18 @@ tivxNotKernelInfo gTivxNotKernelInfo =
     NULL
 };
 
-vx_status VX_CALLBACK tivxKernelNotProcess(
+static vx_status VX_CALLBACK tivxKernelNotProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params,
+    void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelNotCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelNotDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
     void *priv_arg)

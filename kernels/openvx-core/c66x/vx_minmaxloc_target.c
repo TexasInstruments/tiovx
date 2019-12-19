@@ -75,6 +75,16 @@ static tivx_target_kernel vx_mml_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelMmlProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelMmlCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelMmlDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelMmlProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -154,7 +164,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         else
         {
             sc[0U]->data.s16 = 0x7fff;
-            sc[1U]->data.s16 = 0x8000;
+            sc[1U]->data.s16 = (int16_t)0x8000;
             status = (vx_status)VXLIB_minMaxLoc_i16s((int16_t*)src_addr, &vxlib_src,
                 (int16_t*)&sc[0U]->data.s16, (int16_t*)&sc[1U]->data.s16,
                 &min_cnt, &max_cnt,

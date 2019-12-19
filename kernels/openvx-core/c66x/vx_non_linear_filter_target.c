@@ -73,7 +73,20 @@
 
 static tivx_target_kernel vx_non_linear_filter_target_kernel = NULL;
 
-vx_status VX_CALLBACK tivxNonLinearFilter(
+static vx_status VX_CALLBACK tivxNonLinearFilter(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxNonLinearFilterCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxNonLinearFilterDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxNonLinearFilter(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -131,18 +144,18 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
 
         mask_params.dim_x    = mask_desc->columns;
         mask_params.dim_y    = mask_desc->rows;
-        mask_params.stride_y = mask_desc->columns;
+        mask_params.stride_y = (int32_t)mask_desc->columns;
         mask_params.data_type = (uint32_t)VXLIB_UINT8;
 
         if ((vx_enum)VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
         {
-            status |= VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
+            status |= (vx_status)VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                   dst_addr, &vxlib_dst,
                                                   mask_addr, &mask_params);
         }
         else if ((vx_enum)VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
         {
-            status |= VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
+            status |= (vx_status)VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                    dst_addr, &vxlib_dst,
                                                    mask_addr, &mask_params);
         }
@@ -156,7 +169,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
 
             if(status==(vx_status)VX_SUCCESS)
             {
-                status |= VXLIB_median_MxN_i8u_i8u_o8u(
+                status |= (vx_status)VXLIB_median_MxN_i8u_i8u_o8u(
                                         src_addr, &vxlib_src,
                                         dst_addr, &vxlib_dst,
                                         mask_addr, &mask_params,
@@ -180,7 +193,7 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
     return status;
 }
 
-vx_status VX_CALLBACK tivxNonLinearFilterCreate(
+static vx_status VX_CALLBACK tivxNonLinearFilterCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -216,7 +229,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
         {
             mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
 
-            temp_ptr = tivxMemAlloc(mask_desc->columns*mask_desc->rows*2*
+            temp_ptr = tivxMemAlloc(mask_desc->columns*mask_desc->rows*2U*
                 sizeof(int64_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
@@ -225,9 +238,9 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
             }
             else
             {
-                memset(temp_ptr, 0, mask_desc->columns*mask_desc->rows*2*sizeof(int64_t));
+                memset(temp_ptr, 0, mask_desc->columns*mask_desc->rows*2U*sizeof(int64_t));
                 tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
-                    mask_desc->columns*mask_desc->rows*2*sizeof(int64_t));
+                    mask_desc->columns*mask_desc->rows*2U*sizeof(int64_t));
             }
         }
     }
@@ -235,7 +248,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxNonLinearFilterDelete(
+static vx_status VX_CALLBACK tivxNonLinearFilterDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

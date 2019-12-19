@@ -45,6 +45,9 @@
 
 #define STREAMING_EVENT (0x00000001U)
 
+static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var);
+static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var);
+
 static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
 {
     vx_graph graph = (vx_graph)app_var;
@@ -286,7 +289,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+    uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
     status = tivxEventQueueAddEvent(
                 &graph->event_queue,
@@ -334,11 +337,11 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
         {
             int i;
 
-            for (i = 0; i < graph->num_nodes; i++)
+            for (i = 0; i < (int)graph->num_nodes; i++)
             {
                 if (graph->nodes[i] == trigger_node)
                 {
-                    graph->trigger_node_index = i;
+                    graph->trigger_node_index = (uint32_t)i;
                     graph->trigger_node_set = (vx_bool)vx_true_e;
                     break;
                 }
@@ -378,7 +381,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             streamingTaskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
             streamingTaskParams.priority = TIVX_STREAMING_TASK_PRIORITY;
             strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
-            streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1] = 0;
+            streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
             status = tivxEventQueueCreate(&graph->event_queue);
 
@@ -386,7 +389,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             {
                 tivxEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
 
-                if (graph->pipeline_depth > 1)
+                if (graph->pipeline_depth > 1U)
                 {
                     /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
                     if ( ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&

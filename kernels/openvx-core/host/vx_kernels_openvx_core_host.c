@@ -62,6 +62,7 @@
 
 #include <TI/tivx.h>
 #include "tivx_kernels_host_utils.h"
+#include "tivx_openvx_core_kernels.h"
 #include "tivx_core_host_priv.h"
 
 static vx_status VX_CALLBACK publishKernels(vx_context context);
