@@ -149,6 +149,9 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
     {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_A72_1, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_A72_2, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_A72_3, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_CPU2},                                \
     {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_CPU3},                              \
