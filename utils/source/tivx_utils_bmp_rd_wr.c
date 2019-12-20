@@ -67,6 +67,10 @@
 #include <test_engine/test_image.h>
 #include <test_engine/test_bmp.h>
 
+static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int dcn);
+static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int bufsize, int dcn);
+static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image);
+
 static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int dcn)
 {
     FILE* f = 0;
@@ -299,7 +303,7 @@ int32_t tivx_utils_bmp_file_write(
 
     /* workaround to enable CT context */
     CT_SetHasRunningTest();
-    
+
     CT_Image image = NULL;
     uint32_t bpp;
     vx_status status;

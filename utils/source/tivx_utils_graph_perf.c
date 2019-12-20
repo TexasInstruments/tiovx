@@ -70,6 +70,8 @@
     fwrite(line, 1, strlen(line), fp); \
     } while (1 == 0)
 
+static vx_status tivx_utils_node_perf_export(FILE *fp, vx_node node);
+
 vx_status tivx_utils_node_perf_print(vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -109,7 +111,7 @@ vx_status tivx_utils_node_perf_print(vx_node node)
     return status;
 }
 
-vx_status tivx_utils_node_perf_export(FILE *fp, vx_node node)
+static vx_status tivx_utils_node_perf_export(FILE *fp, vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_perf_t node_perf;

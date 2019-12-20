@@ -493,7 +493,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
     for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
     {
-        if(tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1U<<prm_id))==(vx_bool)vx_false_e)
+        if(tivxFlagIsBitSet((uint32_t)is_prm_data_ref_q_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_false_e)
         {
             prm_obj_desc_id[prm_id] = node_obj_desc->data_id[prm_id];
         }
@@ -542,7 +542,7 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
 
     for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
     {
-        if(tivxFlagIsBitSet((uint32_t)is_prm_data_ref_q_flag, (1U<<(uint32_t)prm_id))==(vx_bool)vx_false_e)
+        if(tivxFlagIsBitSet((uint32_t)is_prm_data_ref_q_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_false_e)
         {
             prm_obj_desc_id[prm_id] = node_obj_desc->data_id[prm_id];
         }
@@ -578,7 +578,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
     for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
     {
-        if(tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1U<<(uint32_t)prm_id))==(vx_bool)vx_false_e)
+        if(tivxFlagIsBitSet(is_prm_data_ref_q_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_false_e)
         {
             /* not a data ref q, nothing to release */
         }
@@ -590,7 +590,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
             if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
-                is_prm_input = tivxFlagIsBitSet(is_prm_input_flag, (1U<<(uint32_t)prm_id));
+                is_prm_input = tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id));
 
                 is_prm_released = (vx_bool)vx_false_e;
 
