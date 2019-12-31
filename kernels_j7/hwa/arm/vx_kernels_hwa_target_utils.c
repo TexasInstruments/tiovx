@@ -72,9 +72,9 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[ch].dim_x;
-    uint32_t h = src->imagepatch_addr[ch].dim_y / src->imagepatch_addr[ch].step_y;
-    uint32_t stride = src->imagepatch_addr[ch].stride_y;
+    int32_t w = (int32_t)src->imagepatch_addr[ch].dim_x;
+    int32_t h = (int32_t)src->imagepatch_addr[ch].dim_y / (int32_t)src->imagepatch_addr[ch].step_y;
+    int32_t stride = src->imagepatch_addr[ch].stride_y;
 
     if (((vx_df_image)VX_DF_IMAGE_U8 == src->format) || ((vx_df_image)VX_DF_IMAGE_NV12 == src->format))
     {
@@ -86,7 +86,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
         {
             for(i=0; i < w; i++)
             {
-                if(out_bit_alignment == 0)
+                if(out_bit_alignment == 0U)
                 {
                     /* Put 8 bits to 12 */
                     src16[(j*w)+i] = (uint16_t)src_addr8[(j*stride)+i] << 4;
@@ -130,14 +130,14 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
             for(i=0; i < w; i+=8)
             {
                 /* 8 pixels are packed among 3 32-bit words */
-                src16[(j*w)+i+0]  = src_addr32[(j*stride)+k] & 0xFFF;
-                src16[(j*w)+i+1]  = (src_addr32[(j*stride)+k] >> 12) & 0xFFF;
-                src16[(j*w)+i+2]  = (src_addr32[(j*stride)+k] >> 24) | ((src_addr32[(j*stride)+k+1] & 0xF) << 8);
-                src16[(j*w)+i+3]  = (src_addr32[(j*stride)+k+1] >> 4) & 0xFFF;
-                src16[(j*w)+i+4]  = (src_addr32[(j*stride)+k+1] >> 16) & 0xFFF;
-                src16[(j*w)+i+5]  = (src_addr32[(j*stride)+k+1] >> 28) | ((src_addr32[(j*stride)+k+2] & 0xFF) << 4);
-                src16[(j*w)+i+6]  = (src_addr32[(j*stride)+k+2] >> 8) & 0xFFF;
-                src16[(j*w)+i+7]  = (src_addr32[(j*stride)+k+2] >> 20);
+                src16[(j*w)+i+0]  = (uint16_t)src_addr32[(j*stride)+k] & 0xFFFU;
+                src16[(j*w)+i+1]  = (uint16_t)(src_addr32[(j*stride)+k] >> 12) & 0xFFFU;
+                src16[(j*w)+i+2]  = (uint16_t)(src_addr32[(j*stride)+k] >> 24) | (((uint16_t)src_addr32[(j*stride)+k+1] & 0xFU) << 8);
+                src16[(j*w)+i+3]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 4) & 0xFFFU;
+                src16[(j*w)+i+4]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 16) & 0xFFFU;
+                src16[(j*w)+i+5]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 28) | (((uint16_t)src_addr32[(j*stride)+k+2] & 0xFFU) << 4);
+                src16[(j*w)+i+6]  = (uint16_t)(src_addr32[(j*stride)+k+2] >> 8) & 0xFFFU;
+                src16[(j*w)+i+7]  = (uint16_t)(src_addr32[(j*stride)+k+2] >> 20);
                 k+=3;
             }
         }
@@ -150,11 +150,11 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = dst->imagepatch_addr[ch].dim_x;
-    uint32_t h = dst->imagepatch_addr[ch].dim_y / dst->imagepatch_addr[ch].step_y;
-    uint32_t stride = dst->imagepatch_addr[ch].stride_y;
-    uint16_t downshift = input_bits-8;
-    uint16_t upshift = 12-input_bits;
+    int32_t w = (int32_t)dst->imagepatch_addr[ch].dim_x;
+    int32_t h = (int32_t)dst->imagepatch_addr[ch].dim_y / (int32_t)dst->imagepatch_addr[ch].step_y;
+    int32_t stride = dst->imagepatch_addr[ch].stride_y;
+    uint16_t downshift = input_bits-8U;
+    uint16_t upshift = 12U-input_bits;
 
     if (((vx_df_image)VX_DF_IMAGE_U8 == dst->format) || ((vx_df_image)VX_DF_IMAGE_NV12 == dst->format))
     {
@@ -167,7 +167,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
             for(i=0; i < w; i++)
             {
                 /* Downshift bits to align msb to bit 7 */
-                dst_addr8[(j*stride)+i] = dst16[(j*w)+i] >> downshift;
+                dst_addr8[(j*stride)+i] = (uint8_t)(dst16[(j*w)+i] >> downshift);
             }
         }
     }
@@ -203,11 +203,11 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
                 /* 8 pixels are packed among 3 32-bit words */
                 dst_addr32[(j*stride)+k+0] =   ((uint32_t)dst16[(j*w)+i+0] << upshift) |
                                             (((uint32_t)dst16[(j*w)+i+1] << upshift) << 12) |
-                                           ((((uint32_t)dst16[(j*w)+i+2] << upshift) & 0xFF) << 24);
+                                           ((((uint32_t)dst16[(j*w)+i+2] << upshift) & 0xFFU) << 24);
                 dst_addr32[(j*stride)+k+1] =  (((uint32_t)dst16[(j*w)+i+2] << upshift) >> 8) |
                                             (((uint32_t)dst16[(j*w)+i+3] << upshift) << 4) |
                                             (((uint32_t)dst16[(j*w)+i+4] << upshift) << 16) |
-                                           ((((uint32_t)dst16[(j*w)+i+5] << upshift) & 0xF) << 28);
+                                           ((((uint32_t)dst16[(j*w)+i+5] << upshift) & 0xFU) << 28);
                 dst_addr32[(j*stride)+k+2] =  (((uint32_t)dst16[(j*w)+i+5] << upshift) >> 4) |
                                             (((uint32_t)dst16[(j*w)+i+6] << upshift) << 8) |
                                             (((uint32_t)dst16[(j*w)+i+7] << upshift) << 20);
@@ -223,11 +223,11 @@ void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, 
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = dst->imagepatch_addr[0].dim_x;
-    uint32_t h = dst->imagepatch_addr[0].dim_y / dst->imagepatch_addr[0].step_y;
-    uint32_t stride = dst->imagepatch_addr[0].stride_y;
-    uint16_t downshift = input_bits-8;
-    uint32_t y,u;
+    int32_t w = (int32_t)dst->imagepatch_addr[0].dim_x;
+    int32_t h = (int32_t)dst->imagepatch_addr[0].dim_y / (int32_t)dst->imagepatch_addr[0].step_y;
+    int32_t stride = dst->imagepatch_addr[0].stride_y;
+    uint16_t downshift = input_bits-8U;
+    int32_t y,u;
 
     uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
         tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -249,8 +249,8 @@ void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, 
         for(i=0; i < w; i++)
         {
             /* Downshift bits to align msb to bit 7 */
-            dst_addr8[(j*stride)+(i*2)+y] = dst16_0[(j*w)+i] >> downshift;
-            dst_addr8[(j*stride)+(i*2)+u] = dst16_1[(j*w)+i] >> downshift;
+            dst_addr8[(j*stride)+(i*2)+y] = (uint8_t)(dst16_0[(j*w)+i] >> downshift);
+            dst_addr8[(j*stride)+(i*2)+u] = (uint8_t)(dst16_1[(j*w)+i] >> downshift);
         }
     }
 }
@@ -259,11 +259,11 @@ void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint
 {
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[0].dim_x;
-    uint32_t h = src->imagepatch_addr[0].dim_y / src->imagepatch_addr[0].step_y;
-    uint32_t stride = src->imagepatch_addr[0].stride_y;
-    uint16_t downshift = input_bits-8;
-    uint32_t y,u;
+    int32_t w = (int32_t)src->imagepatch_addr[0].dim_x;
+    int32_t h = (int32_t)src->imagepatch_addr[0].dim_y / (int32_t)src->imagepatch_addr[0].step_y;
+    int32_t stride = src->imagepatch_addr[0].stride_y;
+    uint16_t downshift = input_bits-8U;
+    int32_t y,u;
 
     uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
         tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -297,9 +297,9 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[0].dim_x;
-    uint32_t h = src->imagepatch_addr[0].dim_y;
-    uint32_t stride = src->imagepatch_addr[0].stride_y;
+    int32_t w = (int32_t)src->imagepatch_addr[0].dim_x;
+    int32_t h = (int32_t)src->imagepatch_addr[0].dim_y;
+    int32_t stride = src->imagepatch_addr[0].stride_y;
 
     if ((vx_df_image)VX_DF_IMAGE_U8 == src->format)
     {
@@ -312,7 +312,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             for(i=0; i < w; i++)
             {
                 /* Put 8 bits to 12 and then into 32b container */
-                src32[(j*w)+i] = src_addr8[(j*stride)+i] << 4;
+                src32[(j*w)+i] = (int32_t)src_addr8[(j*stride)+i] << 4;
             }
         }
     }
@@ -328,7 +328,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             for(i=0; i < w; i++)
             {
                 /* Take 16 as is */
-                src32[(j*w)+i] = src_addr16[(j*stride)+i];
+                src32[(j*w)+i] = (int32_t)src_addr16[(j*stride)+i];
             }
         }
     }
@@ -344,7 +344,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             for(i=0; i < w; i++)
             {
                 /* Take 32 as is */
-                src32[(j*w)+i] = src_addr32[(j*stride)+i];
+                src32[(j*w)+i] = (int32_t)src_addr32[(j*stride)+i];
             }
         }
     }
@@ -362,14 +362,14 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
             for(i=0; i < w; i+=8)
             {
                 /* 8 pixels are packed among 3 32-bit words */
-                src32[(j*w)+i+0]  = src_addr32[(j*stride)+k] & 0xFFF;
-                src32[(j*w)+i+1]  = (src_addr32[(j*stride)+k] >> 12) & 0xFFF;
-                src32[(j*w)+i+2]  = (src_addr32[(j*stride)+k] >> 24) | ((src_addr32[(j*stride)+k+1] & 0xF) << 8);
-                src32[(j*w)+i+3]  = (src_addr32[(j*stride)+k+1] >> 4) & 0xFFF;
-                src32[(j*w)+i+4]  = (src_addr32[(j*stride)+k+1] >> 16) & 0xFFF;
-                src32[(j*w)+i+5]  = (src_addr32[(j*stride)+k+1] >> 28) | ((src_addr32[(j*stride)+k+2] & 0xFF) << 4);
-                src32[(j*w)+i+6]  = (src_addr32[(j*stride)+k+2] >> 8) & 0xFFF;
-                src32[(j*w)+i+7]  = (src_addr32[(j*stride)+k+2] >> 20);
+                src32[(j*w)+i+0]  = (int32_t)src_addr32[(j*stride)+k] & 0xFFF;
+                src32[(j*w)+i+1]  = ((int32_t)src_addr32[(j*stride)+k] >> 12) & 0xFFF;
+                src32[(j*w)+i+2]  = ((int32_t)src_addr32[(j*stride)+k] >> 24) | (((int32_t)src_addr32[(j*stride)+k+1] & 0xF) << 8);
+                src32[(j*w)+i+3]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 4) & 0xFFF;
+                src32[(j*w)+i+4]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 16) & 0xFFF;
+                src32[(j*w)+i+5]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 28) | (((int32_t)src_addr32[(j*stride)+k+2] & 0xFF) << 4);
+                src32[(j*w)+i+6]  = ((int32_t)src_addr32[(j*stride)+k+2] >> 8) & 0xFFF;
+                src32[(j*w)+i+7]  = ((int32_t)src_addr32[(j*stride)+k+2] >> 20);
                 k+=3;
             }
         }
@@ -382,9 +382,9 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = dst->imagepatch_addr[0].dim_x;
-    uint32_t h = dst->imagepatch_addr[0].dim_y;
-    uint32_t stride = dst->imagepatch_addr[0].stride_y;
+    int32_t w = (int32_t)dst->imagepatch_addr[0].dim_x;
+    int32_t h = (int32_t)dst->imagepatch_addr[0].dim_y;
+    int32_t stride = dst->imagepatch_addr[0].stride_y;
 
     if(((vx_df_image)VX_DF_IMAGE_U32 == dst->format) || ((vx_df_image)VX_DF_IMAGE_S32 == dst->format))
     {
@@ -398,7 +398,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
             for(i=0; i < w; i++)
             {
                 /* Take 32b as is */
-                dst_addr32[(j*stride)+i] = dst32[(j*w)+i];
+                dst_addr32[(j*stride)+i] = (uint32_t)dst32[(j*w)+i];
             }
         }
     }
@@ -414,7 +414,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
             for(i=0; i < w; i++)
             {
                 /* Take lower 16 bits */
-                dst_addr16[(j*stride)+i] = dst32[(j*w)+i] & 0x0000FFFF;
+                dst_addr16[(j*stride)+i] = (uint16_t)dst32[(j*w)+i] & 0x0000FFFFU;
             }
         }
     }
@@ -430,9 +430,9 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[exposure].dim_x;
-    uint32_t h = src->imagepatch_addr[exposure].dim_y;
-    uint32_t stride = src->imagepatch_addr[exposure].stride_y;
+    int32_t w = (int32_t)src->imagepatch_addr[exposure].dim_x;
+    int32_t h = (int32_t)src->imagepatch_addr[exposure].dim_y;
+    int32_t stride = src->imagepatch_addr[exposure].stride_y;
     uint32_t idx = exposure;
 
     if(src->params.line_interleaved != 0)
@@ -440,7 +440,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
         idx = 0;
     }
 
-    if ((vx_enum)TIVX_RAW_IMAGE_8_BIT == src->params.format[idx].pixel_container)
+    if ((vx_enum)TIVX_RAW_IMAGE_8_BIT == (vx_enum)src->params.format[idx].pixel_container)
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -455,7 +455,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
             }
         }
     }
-    else if((vx_enum)TIVX_RAW_IMAGE_16_BIT == src->params.format[idx].pixel_container)
+    else if((vx_enum)TIVX_RAW_IMAGE_16_BIT == (vx_enum)src->params.format[idx].pixel_container)
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
@@ -485,14 +485,14 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
             for(i=0; i < w; i+=8)
             {
                 /* 8 pixels are packed among 3 32-bit words */
-                src16[(j*w)+i+0]  = src_addr32[(j*stride)+k] & 0xFFF;
-                src16[(j*w)+i+1]  = (src_addr32[(j*stride)+k] >> 12) & 0xFFF;
-                src16[(j*w)+i+2]  = (src_addr32[(j*stride)+k] >> 24) | ((src_addr32[(j*stride)+k+1] & 0xF) << 8);
-                src16[(j*w)+i+3]  = (src_addr32[(j*stride)+k+1] >> 4) & 0xFFF;
-                src16[(j*w)+i+4]  = (src_addr32[(j*stride)+k+1] >> 16) & 0xFFF;
-                src16[(j*w)+i+5]  = (src_addr32[(j*stride)+k+1] >> 28) | ((src_addr32[(j*stride)+k+2] & 0xFF) << 4);
-                src16[(j*w)+i+6]  = (src_addr32[(j*stride)+k+2] >> 8) & 0xFFF;
-                src16[(j*w)+i+7]  = (src_addr32[(j*stride)+k+2] >> 20);
+                src16[(j*w)+i+0]  = (uint16_t)src_addr32[(j*stride)+k] & 0xFFFU;
+                src16[(j*w)+i+1]  = (uint16_t)(src_addr32[(j*stride)+k] >> 12) & 0xFFFU;
+                src16[(j*w)+i+2]  = (uint16_t)(src_addr32[(j*stride)+k] >> 24) | ((uint16_t)(src_addr32[(j*stride)+k+1] & 0xFU) << 8);
+                src16[(j*w)+i+3]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 4) & 0xFFFU;
+                src16[(j*w)+i+4]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 16) & 0xFFFU;
+                src16[(j*w)+i+5]  = (uint16_t)(src_addr32[(j*stride)+k+1] >> 28) | ((uint16_t)(src_addr32[(j*stride)+k+2] & 0xFFU) << 4);
+                src16[(j*w)+i+6]  = (uint16_t)(src_addr32[(j*stride)+k+2] >> 8) & 0xFFFU;
+                src16[(j*w)+i+7]  = (uint16_t)(src_addr32[(j*stride)+k+2] >> 20);
                 k+=3;
             }
         }

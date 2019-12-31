@@ -35,7 +35,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
         params->core_affinity = TIVX_TASK_AFFINITY_ANY;
         params->priority = TIVX_TASK_PRI_LOWEST;
         strncpy(params->task_name, "TIVX", TIVX_MAX_TASK_NAME);
-        params->task_name[TIVX_MAX_TASK_NAME-1] = 0;
+        params->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
     }
 }
 
@@ -60,13 +60,13 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 
         bios_task_prms.stacksize = params->stack_size;
         bios_task_prms.stack     = params->stack_ptr;
-        bios_task_prms.priority  = params->priority;
+        bios_task_prms.priority  = (int8_t)params->priority;
         bios_task_prms.arg0      = (void*)(task);
         bios_task_prms.arg1      = (void*)(task);
         bios_task_prms.name      = (uint8_t*)&task->task_name[0];
 
         strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
-        task->task_name[TIVX_MAX_TASK_NAME-1] = 0;
+        task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
         tskHndl = (void*)TaskP_create(
                             tivxTaskDefHandle,

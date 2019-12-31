@@ -23,10 +23,10 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 
 void tivxInit(void)
 {
-    tivx_set_debug_zone(VX_ZONE_INIT);
-    tivx_set_debug_zone(VX_ZONE_ERROR);
-    tivx_set_debug_zone(VX_ZONE_WARNING);
-    tivx_clr_debug_zone(VX_ZONE_INFO);
+    tivx_set_debug_zone((int32_t)VX_ZONE_INIT);
+    tivx_set_debug_zone((int32_t)VX_ZONE_ERROR);
+    tivx_set_debug_zone((int32_t)VX_ZONE_WARNING);
+    tivx_clr_debug_zone((int32_t)VX_ZONE_INFO);
 
     /* Initialize resource logging */
     tivxLogResourceInit();

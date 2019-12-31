@@ -77,7 +77,7 @@ vx_status tivxIpcSendMsg(
          * in this case send to the common global TIOVX port ID used by all
          * RTOS
          */
-        if(cpu_id==host_cpu_id)
+        if(cpu_id==(vx_enum)host_cpu_id)
         {
             status = appIpcSendNotifyPort(
                 vsdk_cpu_id,
@@ -145,7 +145,7 @@ void tivxIpcDeInit(void)
 vx_bool tivxIsTargetEnabled(char target_name[])
 {
     vx_bool isEnabled = (vx_bool)vx_false_e;
-    vx_enum target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
     vx_enum cpu_id;
     uint32_t vsdk_cpu_id;
     uint32_t vsdk_isenabled;
@@ -154,7 +154,7 @@ vx_bool tivxIsTargetEnabled(char target_name[])
     {
         /* Get the targetId */
         target_id = tivxPlatformGetTargetId(target_name);
-        if (target_id != TIVX_TARGET_ID_INVALID)
+        if (target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
         {
             cpu_id = tivxTargetGetCpuId(target_id);
             if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)

@@ -273,11 +273,11 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         /* After first trigger, configure and start the sensor */
         cmdPrms.numSensors = NUM_CAPT_CHANNELS;
-        cmdPrms.portNum = NUM_CAPT_INST;
+        /*cmdPrms.portNum = NUM_CAPT_INST;
         for (loop_id = 0U; loop_id < cmdPrms.portNum; loop_id++)
         {
             cmdPrms.portIdMap[loop_id] = loop_id;
-        }
+        }*/
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
             APP_REMOTE_SERVICE_SENSOR_NAME,
             APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));

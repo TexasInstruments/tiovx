@@ -80,6 +80,7 @@
 
 typedef struct tivxCaptureParams_t tivxCaptureParams;
 static uint32_t tivxCaptureMapInstId(uint32_t instId);
+static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
 
 typedef struct
 {
@@ -241,7 +242,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
 
                 captured_frame = ((uintptr_t)output_image_target_ptr +
-                    tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
+                    (uint64_t)tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
             }
             else
             {
@@ -252,7 +253,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
                 output_image_target_ptr = tivxMemShared2TargetPtr(&image->mem_ptr[0]);
 
                 captured_frame = ((uintptr_t)output_image_target_ptr +
-                    tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
+                    (uint64_t)tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
             }
 
             tivxQueueGet(&prms->freeFvid2FrameQ[chId], (uintptr_t*)&fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);

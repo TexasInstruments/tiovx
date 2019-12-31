@@ -55,19 +55,20 @@ void *tivxPlatformGetDmaObj(void)
 vx_status tivxPlatformInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    uint32_t i = 0, shmSize = 0;
+    int32_t i = 0;
+    uint32_t shmSize = 0;
     int32_t retVal;
 
     /* Build time check to see if the structure size is 8byte aligned and size of the elements is not more than  */
     BUILD_ASSERT(
     ((sizeof(tivx_obj_desc_shm_entry_t)) % (TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN))
-        == 0);
+        == 0U);
     BUILD_ASSERT(
     (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE);
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
-    if( (0U != retVal) || (gTivxObjDescShmEntry == NULL)
+    if( (0 != retVal) || (gTivxObjDescShmEntry == NULL)
         || (shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*(uint32_t)sizeof(tivx_obj_desc_shm_entry_t))))
     {
         /* insufficient shared memory size */
@@ -98,7 +99,7 @@ vx_status tivxPlatformInit(void)
 
 void tivxPlatformDeInit(void)
 {
-    uint32_t i;
+    int32_t i;
 
     tivxIpcDeInit();
 
@@ -113,7 +114,7 @@ void tivxPlatformDeInit(void)
 
 void tivxPlatformSystemLock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
 
@@ -131,7 +132,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
 
 void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
-    if ((uint32_t)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
+    if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
@@ -147,7 +148,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
 vx_enum tivxPlatformGetTargetId(const char *target_name)
 {
     uint32_t i;
-    vx_enum target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if (NULL != target_name)
     {
@@ -230,7 +231,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
                 TIVX_TARGET_MAX_NAME))
         {
             /* update target_id for TIVX_TARGET_HOST */
-            g_tivx_platform_info.target_info[i].target_id = host_target_id;
+            g_tivx_platform_info.target_info[i].target_id = (vx_enum)host_target_id;
             break;
         }
     }
@@ -242,7 +243,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
 
     snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
 
-    if(target_id!=TIVX_TARGET_ID_INVALID)
+    if(target_id != (vx_enum)TIVX_TARGET_ID_INVALID)
     {
         for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
         {

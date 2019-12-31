@@ -97,14 +97,14 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
     ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
 
-    num_input_tensors  = ioBufDesc->numInputBuf;
-    num_output_tensors = ioBufDesc->numOutputBuf;
+    num_input_tensors  = (uint32_t)ioBufDesc->numInputBuf;
+    num_output_tensors = (uint32_t)ioBufDesc->numOutputBuf;
 
-    num_params= TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
+    num_params= (int32_t)TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + (int32_t)num_input_tensors + (int32_t)num_output_tensors;
 
     vxUnmapUserDataObject(config, map_id_config);
 
-    if(num_params > TIVX_KERNEL_MAX_PARAMS)
+    if(num_params > (int32_t)TIVX_KERNEL_MAX_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR, "Exceeded max parameters for a kernel\n");
     }
@@ -116,18 +116,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
         params[3]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
         params[4]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
 
-        for (i= 0; i < num_input_tensors; i++) {
-          params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
+        for (i= 0; i < (int32_t)num_input_tensors; i++) {
+          params[(int32_t)TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
         }
 
-        for (i= 0; i < num_output_tensors; i++) {
-          params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + num_input_tensors + i]=  (vx_reference)output_tensors[i];
+        for (i= 0; i < (int32_t)num_output_tensors; i++) {
+          params[(int32_t)TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + (int32_t)num_input_tensors + i]=  (vx_reference)output_tensors[i];
         }
 
         node = tivxCreateNodeByKernelRef(graph,
                                          kernel,
                                          params,
-                                         num_params);
+                                         (uint32_t)num_params);
 
         if(vxGetStatus((vx_reference)(node))==(vx_status)VX_SUCCESS)
         {

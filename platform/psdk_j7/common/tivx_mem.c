@@ -29,7 +29,7 @@ vx_status tivxMemBufferAlloc(
         {
             VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
-        if (0 == size)
+        if (0U == size)
         {
             VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
@@ -69,7 +69,7 @@ vx_status tivxMemBufferAlloc(
 
             if ((uintptr_t)NULL != mem_ptr->host_ptr)
             {
-                mem_ptr->mem_heap_region = mem_heap_region;
+                mem_ptr->mem_heap_region = (uint32_t)mem_heap_region;
                 mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(
                     mem_ptr->host_ptr, mem_heap_region);
                 mem_ptr->dma_buf_fd = (int32_t)appMemGetDmaBufFd(
@@ -169,7 +169,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
-        if (0 == size)
+        if (0U == size)
         {
             VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }

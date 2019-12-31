@@ -46,19 +46,19 @@ void tivxPlatformCreateTargets(void)
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY;
     strncpy(target_create_prms.task_name, "TIVX_CPU",TIVX_TARGET_MAX_TASK_NAME);
-    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1] = 0;
+    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
 
     switch (self_cpu)
     {
         case (vx_enum)TIVX_CPU_ID_DSP1:
-            target_id = TIVX_TARGET_ID_DSP1;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             break;
         case (vx_enum)TIVX_CPU_ID_DSP2:
-            target_id = TIVX_TARGET_ID_DSP2;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */
-        case TIVX_CPU_ID_DSP_C7_1:
-            target_id = TIVX_TARGET_ID_DSP_C7_1;
+        case (vx_enum)TIVX_CPU_ID_DSP_C7_1:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");
@@ -86,14 +86,14 @@ void tivxPlatformDeleteTargets(void)
     switch (self_cpu)
     {
         case (vx_enum)TIVX_CPU_ID_DSP1:
-            target_id = TIVX_TARGET_ID_DSP1;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP1;
             break;
         case (vx_enum)TIVX_CPU_ID_DSP2:
-            target_id = TIVX_TARGET_ID_DSP2;
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP2;
             break;
         /* Note: this is repurposed to be C7X */
-        case TIVX_CPU_ID_DSP_C7_1:
-            target_id = TIVX_TARGET_ID_DSP_C7_1;
+        case (vx_enum)TIVX_CPU_ID_DSP_C7_1:
+            target_id = (vx_enum)TIVX_TARGET_ID_DSP_C7_1;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");

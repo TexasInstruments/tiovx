@@ -64,10 +64,10 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
     if (NULL != mutex)
     {
-        retVal = SemaphoreP_pend((SemaphoreP_Handle)mutex,
+        retVal = (uint32_t)SemaphoreP_pend((SemaphoreP_Handle)mutex,
             SemaphoreP_WAIT_FOREVER);
 
-        if (SemaphoreP_OK != retVal)
+        if (SemaphoreP_OK != (int32_t)retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Semaphore wait failed\n");
             status = (vx_status)VX_FAILURE;
