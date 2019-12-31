@@ -197,8 +197,8 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
 
         for (i = 0U; i < laplacian_levels; i++)
         {
-            w = (vx_uint32)ceilf(w * laplacian_scale);
-            h = (vx_uint32)ceilf(h * laplacian_scale);
+            w = (vx_uint32)ceilf((vx_float32)w * laplacian_scale);
+            h = (vx_uint32)ceilf((vx_float32)h * laplacian_scale);
         }
 
         if ((vx_bool)vx_false_e == laplacian_is_virtual)
@@ -360,7 +360,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidInitialize(vx_node nod
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        in_img = vxGetPyramidLevel(laplacian, laplacian_levels - 1U);
+        in_img = vxGetPyramidLevel(laplacian, (vx_uint32)laplacian_levels - 1U);
         prms.in_img[0U] = in_img;
         prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_LAPLACIAN_PYRAMID_OUTPUT_IDX];
 

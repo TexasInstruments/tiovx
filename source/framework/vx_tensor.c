@@ -135,28 +135,28 @@ static void ownInitTensorObject(
 
     obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
 
-    obj_desc->data_type = data_type;
-    obj_desc->fixed_point_position = fixed_point_position;
-    obj_desc->number_of_dimensions = number_of_dimensions;
+    obj_desc->data_type = (vx_uint32)data_type;
+    obj_desc->fixed_point_position = (vx_uint32)fixed_point_position;
+    obj_desc->number_of_dimensions = (vx_uint32)number_of_dimensions;
     obj_desc->scaling_divisor = 1;
     obj_desc->scaling_divisor_fixed_point_position= 0;
 
     /* Stride 0 is simply sizeof(data_type) */
-    obj_desc->dimensions[0] = dimensions[0];
-    obj_desc->stride[0] = ownSizeOfEnumType(obj_desc->data_type);
+    obj_desc->dimensions[0] = (vx_uint32)dimensions[0];
+    obj_desc->stride[0] = (vx_uint32)ownSizeOfEnumType((vx_int32)obj_desc->data_type);
 
     /* Remaining strides are simple equation */
     for (i = 1; i < number_of_dimensions; i++)
     {
-        obj_desc->dimensions[i] = dimensions[i];
-        obj_desc->stride[i] = obj_desc->stride[i - 1] * obj_desc->dimensions[i - 1];
+        obj_desc->dimensions[i] = (vx_uint32)dimensions[i];
+        obj_desc->stride[i] = obj_desc->stride[i - 1U] * obj_desc->dimensions[i - 1U];
     }
 
     obj_desc->mem_size =
-        obj_desc->stride[number_of_dimensions - 1] * obj_desc->dimensions[number_of_dimensions - 1];
+        obj_desc->stride[number_of_dimensions - 1U] * obj_desc->dimensions[number_of_dimensions - 1U];
 
     /* Clear the dimensions beyond what the user is creating */
-    for (i = number_of_dimensions; i < TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+    for (i = (vx_uint32)number_of_dimensions; (vx_int32)i < TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
     {
         obj_desc->dimensions[i] = 0;
         obj_desc->stride[i] = 0;
@@ -215,11 +215,11 @@ static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, c
     vx_size i;
     for (i = 0; i < number_of_dimensions; i++)
     {
-        divisor = end[i] - start[i];
-        vx_size curr_dim_index = index_leftover%divisor;
+        divisor = (int)end[i] - (int)start[i];
+        vx_size curr_dim_index = (vx_size)index_leftover%(vx_size)divisor;
         *tensor_pos += tensor_stride[i] * (curr_dim_index + start[i]);
         *patch_pos += patch_stride[i] * curr_dim_index ;
-        index_leftover = index_leftover /divisor;
+        index_leftover = index_leftover / (vx_uint32)divisor;
     }
 }
 
@@ -229,7 +229,7 @@ static vx_uint32 ownComputePatchOffset(vx_size num_dims, const vx_size *dim_coor
 
     for(i=0; i < num_dims; i++)
     {
-        offset += (strides[i] * dim_coordinate[i]);
+        offset += (strides[i] * (vx_uint32)dim_coordinate[i]);
     }
     return offset;
 }
@@ -250,13 +250,13 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((number_of_dims < 1) || (number_of_dims > TIVX_CONTEXT_MAX_TENSOR_DIMS))
+        if ((number_of_dims < 1U) || ((vx_int32)number_of_dims > TIVX_CONTEXT_MAX_TENSOR_DIMS))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid dims for the tensor.\n");
             tensor = (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_DIMENSION);
         }
 
-        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, fixed_point_position))
+        if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, (vx_uint8)fixed_point_position))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid data_type for the tensor.\n");
             tensor =  (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_TYPE);
@@ -333,13 +333,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 }
                 break;
             case (vx_enum)VX_TENSOR_DIMS:
-                if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3) == 0))
+                if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3U) == 0U))
                 {
                     int i;
                     vx_size *p = ptr;
 
                     /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
-                    for(i=0; i<obj_desc->number_of_dimensions; i++)
+                    for(i=0; i<(int)obj_desc->number_of_dimensions; i++)
                     {
                         p[i] = obj_desc->dimensions[i];
                     }
@@ -353,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
             case (vx_enum)VX_TENSOR_DATA_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    *(vx_enum *)ptr = obj_desc->data_type;
+                    *(vx_enum *)ptr = (vx_enum)obj_desc->data_type;
                 }
                 else
                 {
@@ -364,7 +364,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
             case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
-                    *(vx_int8 *)ptr = obj_desc->fixed_point_position;
+                    *(vx_int8 *)ptr = (vx_int8)obj_desc->fixed_point_position;
                 }
                 else
                 {
@@ -375,7 +375,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
             case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
-                    *(vx_uint8 *)ptr = obj_desc->scaling_divisor;
+                    *(vx_uint8 *)ptr = (vx_uint8)obj_desc->scaling_divisor;
                 }
                 else
                 {
@@ -386,7 +386,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
             case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
-                    *(vx_uint8 *)ptr = obj_desc->scaling_divisor_fixed_point_position;
+                    *(vx_uint8 *)ptr = (vx_uint8)obj_desc->scaling_divisor_fixed_point_position;
                 }
                 else
                 {
@@ -426,7 +426,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
             case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
-                    obj_desc->fixed_point_position = *(vx_int8 *)ptr;
+                    obj_desc->fixed_point_position = (vx_uint32)*(vx_int8 *)ptr;
                 }
                 else
                 {
@@ -521,7 +521,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
 
         for (i = 1; i < number_of_dimensions; i++)
         {
-            if ((user_stride[i] < (view_end[i-1] - view_start[i-1])))
+            if ((user_stride[i] < (view_end[i-1U] - view_start[i-1U])))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid view parameter(s) in dimension: %d\n", i);
@@ -547,7 +547,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         vx_uint8* user_curr_ptr = (vx_uint8*)user_ptr;
         vx_uint8* tensor_ptr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         vx_size patch_size = ownComputePatchSize (view_start, view_end, number_of_dimensions);
-        vx_uint32 elements_per_line = view_end[0]-view_start[0];
+        vx_uint32 elements_per_line = (vx_uint32)view_end[0]-(vx_uint32)view_start[0];
         vx_uint32 bytes_per_line = obj_desc->stride[0] * elements_per_line;
 
         for (i = 0; i < patch_size; i+=elements_per_line) {
@@ -680,11 +680,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 end_addr = host_addr + map_size;
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-                map_size = end_addr - host_addr;
+                uintptr_t temp_map_size0 = (uintptr_t)end_addr - (uintptr_t)host_addr;
+                map_size = (vx_uint32)temp_map_size0;
                 tivxMemBufferMap(map_addr, map_size,
                     memory_type, usage);
 
-                tivxLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", map_idx+1);
+                tivxLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", (vx_uint16)map_idx+1U);
             }
             else
             {
@@ -728,19 +729,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
     {
         if( (tensor->maps[map_id].map_addr!=NULL)
             &&
-            (tensor->maps[map_id].map_size!=0)
+            (tensor->maps[map_id].map_size!=0U)
             )
         {
             vx_uint8* map_addr = NULL, *end_addr = NULL;
             uint32_t map_size = 0;
 
             map_addr = tensor->maps[map_id].map_addr;
-            map_size = tensor->maps[map_id].map_size;
+            map_size = (vx_uint32)tensor->maps[map_id].map_size;
 
             end_addr = map_addr + map_size;
-            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128);
-            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128);
-            map_size = end_addr - map_addr;
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+            uintptr_t temp_map_size1 = (uintptr_t)end_addr - (uintptr_t)map_addr;
+            map_size = (vx_uint32)temp_map_size1;
 
             tivxMemBufferUnmap(
                 map_addr, map_size,
@@ -756,7 +758,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxUnmapTensorPatch: map address is null\n");
             }
-            if(tensor->maps[map_id].map_size==0)
+            if(tensor->maps[map_id].map_size==0U)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxUnmapTensorPatch: map size is equal to 0\n");
             }

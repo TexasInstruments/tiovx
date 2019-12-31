@@ -67,7 +67,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 break;
             case (vx_enum)VX_KERNEL_NAME:
-                if ((ptr != NULL) && (size >= VX_MAX_KERNEL_NAME))
+                if ((ptr != NULL) && ((vx_enum)size >= VX_MAX_KERNEL_NAME))
                 {
                     strncpy(ptr, kernel->name, VX_MAX_KERNEL_NAME);
                 }
@@ -148,7 +148,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 {
                     kernel->num_pipeup_bufs = *(vx_uint32*)ptr;
                     kernel->pipeup_buf_idx  = *(vx_uint32*)ptr;
-                    if (kernel->num_pipeup_bufs > 1)
+                    if (kernel->num_pipeup_bufs > 1U)
                     {
                         kernel->state = (vx_enum)VX_NODE_STATE_PIPEUP;
                     }
@@ -247,7 +247,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                 kern->signature.directions[index] = dir;
                 kern->signature.types[index] = data_type;
                 kern->signature.states[index] = state;
-                tivxLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", kern->signature.num_parameters);
+                tivxLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", (uint16_t)kern->signature.num_parameters);
                 status = (vx_status)VX_SUCCESS;
             }
         }
@@ -296,7 +296,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
             if ((vxGetStatus((vx_reference)kernel) == (vx_status)VX_SUCCESS) && (kernel->base.type == (vx_enum)VX_TYPE_KERNEL))
             {
                 strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
-                kernel->name[VX_MAX_KERNEL_NAME-1]=0;
+                kernel->name[VX_MAX_KERNEL_NAME-1]=(char)0;
                 kernel->enumeration = enumeration;
                 kernel->function = func_ptr;
                 kernel->validate = validate;
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
                     TIVX_TARGET_MAX_NAME
                 );
             kernel->num_targets++;
-            tivxLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", kernel->num_targets);
+            tivxLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", (uint16_t)kernel->num_targets);
         }
         else
         {
@@ -443,14 +443,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
 
 vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 {
-    vx_enum target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if ((NULL != kernel) &&
         (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
-        if(kernel->num_targets==0)
+        if(kernel->num_targets==0U)
         {
-            target_id = TIVX_TARGET_ID_INVALID;
+            target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
         }
         else
         {
@@ -466,16 +466,16 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
 {
     uint32_t i;
-    vx_enum target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if ((NULL != kernel) &&
           (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) ==
                 (vx_bool)vx_true_e) &&
           (NULL != target_string))
     {
-        if(kernel->num_targets==0)
+        if(kernel->num_targets==0U)
         {
-            target_id = TIVX_TARGET_ID_INVALID;
+            target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
         }
         else
         {

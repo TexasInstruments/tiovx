@@ -55,7 +55,7 @@ static vx_status ownDestructGraph(vx_reference ref)
             {
                 tivxDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
             }
-            if(graph->data_ref_q_list[i].num_buf > 1)
+            if(graph->data_ref_q_list[i].num_buf > 1U)
             {
                 vx_bool is_replicated
                             = ownNodeIsPrmReplicated(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
@@ -123,7 +123,7 @@ static vx_status ownResetGraphPerf(vx_graph graph)
         graph->perf.end = 0;
         graph->perf.sum = 0;
         graph->perf.avg = 0;
-        graph->perf.min = 0xFFFFFFFFFFFFFFFFULL;
+        graph->perf.min = 0xFFFFFFFFFFFFFFFFUL;
         graph->perf.num = 0;
         graph->perf.max = 0;
     }
@@ -152,9 +152,9 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
         tivx_uint32_to_uint64(&beg_time, obj_desc->exe_time_beg_h, obj_desc->exe_time_beg_l);
         tivx_uint32_to_uint64(&end_time, obj_desc->exe_time_end_h, obj_desc->exe_time_end_l);
 
-        graph->perf.beg = beg_time*1000; /* convert to nano secs */
-        graph->perf.end = end_time*1000; /* convert to nano secs */
-        graph->perf.tmp = (end_time - beg_time)*1000; /* convert to nano secs */
+        graph->perf.beg = beg_time*1000U; /* convert to nano secs */
+        graph->perf.end = end_time*1000U; /* convert to nano secs */
+        graph->perf.tmp = (end_time - beg_time)*1000U; /* convert to nano secs */
         graph->perf.sum += graph->perf.tmp;
         graph->perf.num++;
         if(graph->perf.tmp < graph->perf.min)
@@ -184,7 +184,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
     {
         if(graph->num_nodes < TIVX_GRAPH_MAX_NODES)
         {
-            free_index = graph->num_nodes;
+            free_index = (int32_t)graph->num_nodes;
         }
         else
         {
@@ -202,7 +202,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
     if ((NULL != graph) &&
         (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
-        if( (index < TIVX_GRAPH_MAX_NODES) && (index == graph->num_nodes) )
+        if( (index < (int32_t)TIVX_GRAPH_MAX_NODES) && (index == (int32_t)graph->num_nodes) )
         {
             /* index MUST be graph->num_nodes, since that is what is returned via
                 ownGraphGetFreeNodeIndex() */
@@ -210,7 +210,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
             graph->nodes[graph->num_nodes] = node;
             graph->num_nodes++;
             ownGraphSetReverify(graph);
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_NODES", graph->num_nodes);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_NODES", (uint16_t)graph->num_nodes);
         }
         else
         {
@@ -241,7 +241,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
             graph->supernodes[graph->num_supernodes] = super_node;
             graph->num_supernodes++;
             ownGraphSetReverify(graph);
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_SUPER_NODES", graph->num_supernodes);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_SUPER_NODES", (uint16_t)graph->num_supernodes);
         }
         else
         {
@@ -272,8 +272,8 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
             if(node==graph->head_nodes[i])
             {
                 /* swap with last entry to make the list compact */
-                graph->head_nodes[i] = graph->head_nodes[graph->num_head_nodes-1];
-                graph->head_nodes[graph->num_head_nodes-1] = NULL;
+                graph->head_nodes[i] = graph->head_nodes[graph->num_head_nodes-1U];
+                graph->head_nodes[graph->num_head_nodes-1U] = NULL;
                 graph->num_head_nodes--;
                 break;
             }
@@ -284,8 +284,8 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
             if(node==graph->leaf_nodes[i])
             {
                 /* swap with last entry to make the list compact */
-                graph->leaf_nodes[i] = graph->leaf_nodes[graph->num_leaf_nodes-1];
-                graph->head_nodes[graph->num_leaf_nodes-1] = NULL;
+                graph->leaf_nodes[i] = graph->leaf_nodes[graph->num_leaf_nodes-1U];
+                graph->head_nodes[graph->num_leaf_nodes-1U] = NULL;
                 graph->num_leaf_nodes--;
                 break;
             }
@@ -296,8 +296,8 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
             if(node==graph->nodes[i])
             {
                 /* swap with last entry to make the list compact */
-                graph->nodes[i] = graph->nodes[graph->num_nodes-1];
-                graph->nodes[graph->num_nodes-1] = NULL;
+                graph->nodes[i] = graph->nodes[graph->num_nodes-1U];
+                graph->nodes[graph->num_nodes-1U] = NULL;
                 graph->num_nodes--;
                 ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
                 status = (vx_status)VX_SUCCESS;
@@ -518,7 +518,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].num_buf = 0;
             graph->parameters[graph->num_params].type = (vx_enum)VX_TYPE_PARAMETER;
             graph->num_params++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
             status = (vx_status)VX_SUCCESS;
         }
         else
@@ -538,7 +538,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = 0;
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->num_params++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
             status = (vx_status)VX_SUCCESS;
         }
         else
@@ -635,7 +635,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                     {
                         is_full = (vx_bool)vx_false_e;
                         graph->delays[i] = delay;
-                        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DELAYS", i+1);
+                        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DELAYS", (uint16_t)i+1U);
                         break;
                     }
                 }
@@ -723,7 +723,7 @@ vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
         {
             uint32_t num_schedule = ownGraphGetNumSchedule(graph);
 
-            if(num_schedule>0)
+            if(num_schedule>0U)
             {
                 /* schedule graph 'num_schedule' times */
                 ownGraphScheduleGraph(graph, num_schedule);
@@ -840,7 +840,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
         {
             uint64_t timestamp;
 
-            timestamp = tivxPlatformGetTimeInUsecs()*1000; /* in nano-secs */
+            timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
             tivxEventQueueAddEvent(&graph->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
@@ -921,7 +921,7 @@ void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state)
 
         if(graph_obj_desc!=NULL)
         {
-            graph_obj_desc->state = state;
+            graph_obj_desc->state = (uint32_t)state;
         }
     }
 }

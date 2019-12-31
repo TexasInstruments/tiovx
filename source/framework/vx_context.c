@@ -366,7 +366,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
-            if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0) )
+            if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0U) )
             {
                 /* found free entry */
                 context->kerneltable[idx] = NULL;
@@ -443,7 +443,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
     if((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
        (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS))
     {
-        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
         ownContextLock(context);
 
@@ -459,13 +459,13 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
         obj_desc_cmd->dst_target_id = target_id;
         obj_desc_cmd->src_target_id =
-            tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+            (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
         obj_desc_cmd->num_obj_desc = 1u;
         obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
         obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
         obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
 
-        obj_desc_cmd->replicated_node_idx = replicated_node_idx;
+        obj_desc_cmd->replicated_node_idx = (int32_t)replicated_node_idx;
         obj_desc_cmd->node_cmd_id = node_cmd_id;
         obj_desc_cmd->num_cmd_params = num_obj_desc;
         for (i = 0; i < num_obj_desc; i ++)
@@ -483,7 +483,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
 
         if(status == (vx_status)VX_SUCCESS)
         {
-            if ((vx_status)VX_SUCCESS != obj_desc_cmd->cmd_status)
+            if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "ownContextSendControlCmd: Failed to send object desc\n");
@@ -518,7 +518,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
     if( (ownIsValidContext(context) == (vx_bool)vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
     {
-        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
         ownContextLock(context);
 
@@ -530,7 +530,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         context->obj_desc_cmd->cmd_id = cmd;
         context->obj_desc_cmd->dst_target_id = target_id;
-        context->obj_desc_cmd->src_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+        context->obj_desc_cmd->src_target_id = (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
         context->obj_desc_cmd->num_obj_desc = num_obj_desc;
         context->obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
         context->obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
@@ -548,7 +548,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
             if(status == (vx_status)VX_SUCCESS)
             {
-                if ((vx_status)VX_SUCCESS != context->obj_desc_cmd->cmd_status)
+                if ((vx_status)VX_SUCCESS != (vx_status)context->obj_desc_cmd->cmd_status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Command ack message returned failure cmd_status: %d\n", context->obj_desc_cmd->cmd_status);
                     status = (vx_status)VX_FAILURE;
@@ -686,9 +686,18 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_context context = (c?*c:0);
+    vx_context context;
     vx_uint32 r;
     uint32_t idx;
+
+    if(c != NULL)
+    {
+        context = *c;
+    }
+    else
+    {
+        context = 0;
+    }
 
     if (c != NULL)
     {
@@ -697,7 +706,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (ownDecrementReference(&context->base, (vx_enum)VX_EXTERNAL) == 0)
+        if (ownDecrementReference(&context->base, (vx_enum)VX_EXTERNAL) == 0U)
         {
             ownContextSetKernelRemoveLock(context, (vx_bool)vx_true_e);
 
@@ -729,7 +738,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 vx_reference ref = context->reftable[r];
 
                 /* Warnings should only come when users have not released all external references */
-                if ((NULL != ref) && (ref->external_count > 0) ) {
+                if ((NULL != ref) && (ref->external_count > 0U) ) {
                     VX_PRINT(VX_ZONE_WARNING,"Stale reference "VX_FMT_REF" of type %08x at external count %u, internal count %u\n",
                              ref, ref->type, ref->external_count, ref->internal_count);
                     if (NULL != ref->name)
@@ -744,10 +753,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 }
 
                 /* Warning above so user can fix release external objects, but close here anyway */
-                while ((NULL != ref)&& (ref->external_count > 1) ) {
+                while ((NULL != ref)&& (ref->external_count > 1U) ) {
                     ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);
                 }
-                if ((NULL != ref) && (ref->external_count > 0) ) {
+                if ((NULL != ref) && (ref->external_count > 0U) ) {
                     ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_EXTERNAL, NULL);
                 }
             }
@@ -844,7 +853,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case (vx_enum)VX_CONTEXT_IMPLEMENTATION:
-                if ((size <= VX_MAX_IMPLEMENTATION_NAME) && (NULL != ptr))
+                if (((int32_t)size <= VX_MAX_IMPLEMENTATION_NAME) && (NULL != ptr))
                 {
                     strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
                 }
@@ -1083,7 +1092,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     vx_uint32 i = 0;
 
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
-        (size != 0))
+        (size != 0U))
     {
         ownContextLock(context);
 
@@ -1091,10 +1100,10 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
         {
             if (context->user_structs[i].type == (vx_enum)VX_TYPE_INVALID)
             {
-                context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + i;
+                context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + (int32_t)i;
                 context->user_structs[i].size = size;
                 type = context->user_structs[i].type;
-                tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (i+1));
+                tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (uint16_t)i+1U);
                 break;
             }
         }
@@ -1117,9 +1126,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
         ownContextLock(context);
 
         status = (vx_status)VX_ERROR_NO_RESOURCES;
-        if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
+        if((int32_t)context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
-            *pKernelEnumId = VX_KERNEL_BASE((vx_enum)VX_ID_USER,(int32_t)0) + context->next_dynamic_user_kernel_id++;
+            *pKernelEnumId = VX_KERNEL_BASE((vx_enum)VX_ID_USER,(int32_t)0) + (int32_t)context->next_dynamic_user_kernel_id++;
             status = (vx_status)VX_SUCCESS;
         }
 
@@ -1138,7 +1147,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
         status = (vx_status)VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
         {
-            *pLibraryId = context->next_dynamic_user_library_id;
+            *pLibraryId = (int32_t)context->next_dynamic_user_library_id;
             context->next_dynamic_user_library_id =
                 context->next_dynamic_user_library_id + 1u;
             status = (vx_status)VX_SUCCESS;
@@ -1169,7 +1178,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                 {
                     context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
                     strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string));
-                    context->imm_target_string[sizeof(context->imm_target_string) - 1] = '\0';
+                    context->imm_target_string[sizeof(context->imm_target_string) - 1U] = '\0';
                     status = (vx_status)VX_SUCCESS;
                 }
                 else /* target was not found */

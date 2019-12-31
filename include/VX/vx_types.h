@@ -454,7 +454,7 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
  * The vendor defines the library ID. The range is \f$ [0,2^{8}-1] \f$ inclusive.
  * \ingroup group_basic_features
  */
-#define VX_LIBRARY_MASK                     (0x000FF000)
+#define VX_LIBRARY_MASK                     (0x000FF000U)
 
 /*! \brief An individual kernel in a library has its own unique ID within \f$ [0,2^{12}-1] \f$ (inclusive).
  * \ingroup group_basic_features

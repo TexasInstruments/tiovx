@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         {
             status = (vx_status)VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
                 dst_addr, &vxlib_dst, conv_target_ptr,
-                conv->columns, conv->rows, (uint32_t)conv->scale);
+                (int32_t)conv->columns, (int32_t)conv->rows, (uint32_t)conv->scale);
         }
         else
         {

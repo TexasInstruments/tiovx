@@ -149,11 +149,11 @@ static vx_status ownInitUserDataObjectObject(
 
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
-    obj_desc->mem_size = size;
-    obj_desc->valid_mem_size = size;
+    obj_desc->mem_size = (vx_uint32)size;
+    obj_desc->valid_mem_size = (vx_uint32)size;
 
     /* Initialize string with zeros, which safely fills with null terminators */
-    obj_desc->type_name[0] = 0;
+    obj_desc->type_name[0] = (char)0;
 
     if (type_name != NULL)
     {
@@ -188,7 +188,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (size < 1)
+        if (size < 1U)
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid size for the user data object.\n");
             user_data_object = (vx_user_data_object)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
@@ -290,7 +290,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
         switch (attribute)
         {
             case (vx_enum)VX_USER_DATA_OBJECT_NAME:
-                if ((ptr != NULL) && (size >= VX_MAX_REFERENCE_NAME))
+                if ((ptr != NULL) && ((vx_enum)size >= VX_MAX_REFERENCE_NAME))
                 {
                     tivx_obj_desc_strncpy(ptr, obj_desc->type_name, VX_MAX_REFERENCE_NAME);
                 }
@@ -353,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
             case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    obj_desc->valid_mem_size = *(vx_size *)ptr;
+                    obj_desc->valid_mem_size = (vx_uint32)*(vx_size *)ptr;
                 }
                 else
                 {
@@ -409,7 +409,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((size < 1) || ((offset + size) > obj_desc->mem_size))
+        if ((size < 1U) || ((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -520,7 +520,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
             uint32_t map_size;
 
             map_addr = (vx_uint8*)(uintptr_t)(obj_desc->mem_ptr.host_ptr + offset);
-            map_size = (size > 0) ? size : (obj_desc->mem_size - offset);
+            map_size = (size > 0U) ? (uint32_t)size : ((uint32_t)obj_desc->mem_size - (uint32_t)offset);
 
             user_data_object->maps[i].map_addr = map_addr;
             user_data_object->maps[i].map_size = map_size;
@@ -534,7 +534,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
 
             *map_id = i;
 
-            tivxLogSetResourceUsedValue("TIVX_USER_DATA_OBJECT_MAX_MAPS", i+1);
+            tivxLogSetResourceUsedValue("TIVX_USER_DATA_OBJECT_MAX_MAPS", (uint16_t)i+1U);
         }
         else
         {
@@ -572,19 +572,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
     {
         if( (user_data_object->maps[map_id].map_addr!=NULL)
             &&
-            (user_data_object->maps[map_id].map_size!=0)
+            (user_data_object->maps[map_id].map_size!=0U)
             )
         {
             vx_uint8* map_addr = NULL, *end_addr = NULL;
             uint32_t map_size = 0;
 
             map_addr = user_data_object->maps[map_id].map_addr;
-            map_size = user_data_object->maps[map_id].map_size;
+            map_size = (uint32_t)user_data_object->maps[map_id].map_size;
 
             end_addr = map_addr + map_size;
-            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128);
-            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128);
-            map_size = end_addr - map_addr;
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
+            uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
+            map_size = (uint32_t)temp_map_size;
 
             tivxMemBufferUnmap(
                 map_addr, map_size,
@@ -600,7 +601,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxUnmapUserDataObject: map address is null\n");
             }
-            if(user_data_object->maps[map_id].map_size==0)
+            if(user_data_object->maps[map_id].map_size==0U)
             {
                 VX_PRINT(VX_ZONE_ERROR, "vxUnmapUserDataObject: map size is equal to 0\n");
             }

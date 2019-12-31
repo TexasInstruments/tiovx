@@ -270,10 +270,10 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;
 
-        prms.top_pad = (mask_rows - 1U) / 2U;
-        prms.bot_pad = (mask_rows - 1U) / 2U;
-        prms.left_pad = (mask_cols - 1U) / 2U;
-        prms.right_pad = (mask_cols - 1U) / 2U;
+        prms.top_pad = ((uint32_t)mask_rows - 1U) / 2U;
+        prms.bot_pad = ((uint32_t)mask_rows - 1U) / 2U;
+        prms.left_pad = ((uint32_t)mask_cols - 1U) / 2U;
+        prms.right_pad = ((uint32_t)mask_cols - 1U) / 2U;
         prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));

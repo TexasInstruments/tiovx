@@ -160,9 +160,9 @@ static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32
         nodes[i]->super_node = super_node;
     }
 
-    obj_desc->num_nodes = num_nodes;
+    obj_desc->num_nodes = (uint16_t)num_nodes;
 
-    tivxLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_NODES", num_nodes);
+    tivxLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_NODES", (uint16_t)num_nodes);
 }
 
 VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
@@ -272,7 +272,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
             case (vx_enum)TIVX_SUPER_NODE_TARGET_STRING:
                 if ((ptr != NULL) && (size >= TIVX_TARGET_MAX_NAME))
                 {
-                    tivxPlatformGetTargetName(super_node->node->obj_desc[0]->target_id, ptr);
+                    tivxPlatformGetTargetName((int32_t)super_node->node->obj_desc[0]->target_id, ptr);
                 }
                 else
                 {
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                      * may not reflect correct status
                      * in pipelined mode
                      */
-                    *(vx_status *)ptr = super_node->node->obj_desc[0]->exe_status;
+                    *(vx_status *)ptr = (vx_status)super_node->node->obj_desc[0]->exe_status;
                 }
                 else
                 {

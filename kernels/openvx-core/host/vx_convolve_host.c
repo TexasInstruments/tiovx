@@ -283,10 +283,10 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;
 
-        prms.top_pad = (rows - 1U) / 2U;
-        prms.bot_pad = (rows - 1U) / 2U;
-        prms.left_pad = (cols - 1U) / 2U;
-        prms.right_pad = (cols - 1U) / 2U;
+        prms.top_pad = ((uint32_t)rows - 1U) / 2U;
+        prms.bot_pad = ((uint32_t)rows - 1U) / 2U;
+        prms.left_pad = ((uint32_t)cols - 1U) / 2U;
+        prms.right_pad = ((uint32_t)cols - 1U) / 2U;
         prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));

@@ -148,7 +148,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
     {
         for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
         {
-            targets[target_id] = TIVX_TARGET_ID_INVALID;
+            targets[target_id] = (vx_enum)TIVX_TARGET_ID_INVALID;
         }
         printf("$timescale\n");
         printf("1 us\n");
@@ -178,13 +178,13 @@ vx_status tivxLogRtTrace(vx_graph graph)
                     for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
                     {
                         done = (vx_bool)vx_false_e;
-                        if(node->obj_desc[0]->target_id==targets[target_id])
+                        if((vx_enum)node->obj_desc[0]->target_id==targets[target_id])
                         {
                             done = (vx_bool)vx_true_e;
                         }
-                        if(targets[target_id]==TIVX_TARGET_ID_INVALID)
+                        if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
                         {
-                            targets[target_id] = node->obj_desc[0]->target_id;
+                            targets[target_id] = (vx_enum)node->obj_desc[0]->target_id;
                             done = (vx_bool)vx_true_e;
                         }
                         if(done != 0)
@@ -210,7 +210,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
         }
         for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
         {
-            if(targets[target_id]==TIVX_TARGET_ID_INVALID)
+            if(targets[target_id]==(vx_enum)TIVX_TARGET_ID_INVALID)
             {
                 break;
             }

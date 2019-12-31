@@ -145,7 +145,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", index+1);
+                tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)index+1U);
             }
         }
         if(status != (vx_status)VX_SUCCESS)
@@ -201,7 +201,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
     }
     else
     {
-        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
         status = tivxEventQueueAddEvent(
                 &context->event_queue,
@@ -324,17 +324,17 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
-        if( (type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
-            (type==(vx_enum)VX_EVENT_NODE_ERROR) )
+        if( ((vx_enum)type==(vx_enum)VX_EVENT_NODE_COMPLETED) ||
+            ((vx_enum)type==(vx_enum)VX_EVENT_NODE_ERROR) )
         {
             vx_node node = (vx_node)ref;
 
-            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == queue_type)
+            if ((vx_enum)TIVX_EVENT_GRAPH_QUEUE == (vx_enum)queue_type)
             {
                 node->is_graph_event = (vx_bool)vx_true_e;
                 status = (vx_status)VX_SUCCESS;
             }
-            else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == queue_type)
+            else if ((vx_enum)TIVX_EVENT_CONTEXT_QUEUE == (vx_enum)queue_type)
             {
                 node->is_context_event = (vx_bool)vx_true_e;
                 status = (vx_status)VX_SUCCESS;
@@ -347,19 +347,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                status = ownNodeRegisterEvent((vx_node)ref, type, app_value);
+                status = ownNodeRegisterEvent((vx_node)ref, (vx_enum)type, app_value);
             }
         }
     }
     else
     if (ownIsValidSpecificReference(ref, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        if(type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
+        if((vx_enum)type==(vx_enum)VX_EVENT_GRAPH_COMPLETED)
         {
             status = ownGraphRegisterCompletionEvent((vx_graph)ref, app_value);
         }
         else
-        if(type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
+        if((vx_enum)type==(vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
             status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
         }

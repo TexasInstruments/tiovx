@@ -121,7 +121,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
 
     if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
-        if ((src_width != 0) && (src_height != 0) && (dst_width != 0) && (dst_height != 0))
+        if ((src_width != 0U) && (src_height != 0U) && (dst_width != 0U) && (dst_height != 0U))
         {
             remap = (vx_remap)ownCreateReference(context, (vx_enum)VX_TYPE_REMAP, (vx_enum)VX_EXTERNAL, &context->base);
             if ((vxGetStatus((vx_reference)remap) == (vx_status)VX_SUCCESS) && (remap->base.type == (vx_enum)VX_TYPE_REMAP))
@@ -263,19 +263,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
 
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
-                if ( (dst_x==0) && (dst_y==0))
+                if ( (dst_x==0U) && (dst_y==0U))
                 {
-                    tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
+                    tivxMemBufferMap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 }
 
                 remap_point->src_x = src_x;
                 remap_point->src_y = src_y;
 
-                if ( (dst_x == (obj_desc->dst_width-1)) &&
-                     (dst_y == (obj_desc->dst_height-1)))
+                if ( (dst_x == (obj_desc->dst_width-1U)) &&
+                     (dst_y == (obj_desc->dst_height-1U)))
                 {
-                    tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
+                    tivxMemBufferUnmap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 }
 
@@ -330,19 +330,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
 
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
-                if ( (dst_x==0) && (dst_y==0))
+                if ( (dst_x==0U) && (dst_y==0U))
                 {
-                    tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
+                    tivxMemBufferMap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                 }
 
                 *src_x = remap_point->src_x;
                 *src_y = remap_point->src_y;
 
-                if ( (dst_x == (obj_desc->dst_width-1)) &&
-                     (dst_y == (obj_desc->dst_height-1)))
+                if ( (dst_x == (obj_desc->dst_width-1U)) &&
+                     (dst_y == (obj_desc->dst_height-1U)))
                 {
-                    tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
+                    tivxMemBufferUnmap(remap_point, (uint32_t)sizeof(tivx_remap_point_t),
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                 }
 
