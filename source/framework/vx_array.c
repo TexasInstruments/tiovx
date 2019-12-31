@@ -364,7 +364,7 @@ vx_status VX_API_CALL vxAddArrayItems(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
-        obj_desc->num_items += count;
+        obj_desc->num_items += (uint32_t)count;
     }
 
     return (status);
@@ -404,7 +404,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 
     if ((vx_status)(vx_status)VX_SUCCESS == status)
     {
-        obj_desc->num_items = new_num_items;
+        obj_desc->num_items = (uint32_t)new_num_items;
     }
 
     return (status);
@@ -522,7 +522,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
 
-        obj_desc->num_items += inst;
+        obj_desc->num_items += (uint32_t)inst;
     }
 
     return (status);
@@ -592,7 +592,7 @@ vx_status VX_API_CALL vxMapArrayRange(
             /* Get the offset to the free memory */
             start_offset = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr +
                 (range_start * obj_desc->item_size);
-            inst = range_end - range_start;
+            inst = (uint32_t)range_end - (uint32_t)range_start;
 
             if ((NULL != ptr) && (NULL != map_id))
             {
@@ -601,7 +601,7 @@ vx_status VX_API_CALL vxMapArrayRange(
                 arr->maps[i].mem_type = mem_type;
                 arr->maps[i].usage = usage;
 
-                tivxMemBufferMap(start_offset, arr->maps[i].map_size,
+                tivxMemBufferMap(start_offset, (uint32_t)arr->maps[i].map_size,
                     mem_type, usage);
 
                 *ptr = (vx_uint8 *)start_offset;
@@ -609,7 +609,7 @@ vx_status VX_API_CALL vxMapArrayRange(
 
                 *map_id = i;
 
-                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", i+1U);
+                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", (uint16_t)i+1U);
             }
         }
         else
@@ -661,7 +661,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
     if ((vx_status)(vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(arr->maps[map_id].map_addr,
-            arr->maps[map_id].map_size, arr->maps[map_id].mem_type,
+            (uint32_t)arr->maps[map_id].map_size, arr->maps[map_id].mem_type,
             arr->maps[map_id].usage);
 
         arr->maps[map_id].map_addr = NULL;
@@ -749,12 +749,12 @@ static void ownInitArrayObject(
 
     obj_desc->item_type = item_type;
     obj_desc->item_size =
-        ownGetArrayItemSize(arr->base.context, item_type);
+        (uint32_t)ownGetArrayItemSize(arr->base.context, item_type);
     obj_desc->num_items = 0;
-    obj_desc->capacity = capacity;
+    obj_desc->capacity = (uint32_t)capacity;
 
     obj_desc->mem_size =
-        obj_desc->item_size * capacity;
+        obj_desc->item_size * (uint32_t)capacity;
     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;

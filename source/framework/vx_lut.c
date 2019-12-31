@@ -51,14 +51,14 @@ vx_lut VX_API_CALL vxCreateLUT(
     {
         if ((data_type == (vx_enum)VX_TYPE_INT8) || (data_type == (vx_enum)VX_TYPE_UINT8) || (data_type == (vx_enum)VX_TYPE_CHAR))
         {
-            if (count <= 256)
+            if (count <= 256U)
             {
                 dim = sizeof(vx_uint8);
             }
         }
         else if ((data_type == (vx_enum)VX_TYPE_INT16) || (data_type == (vx_enum)VX_TYPE_UINT16))
         {
-            if (count <= 65536)
+            if (count <= 65536U)
             {
                 dim = sizeof(vx_uint16);
             }
@@ -76,7 +76,7 @@ vx_lut VX_API_CALL vxCreateLUT(
             dim = 0;
         }
 
-        if (0 != dim)
+        if (0U != dim)
         {
             lut = (vx_lut)ownCreateReference(context, (vx_enum)VX_TYPE_LUT,
                 (vx_enum)VX_EXTERNAL, &context->base);
@@ -104,9 +104,9 @@ vx_lut VX_API_CALL vxCreateLUT(
                 else
                 {
                     obj_desc->item_type = data_type;
-                    obj_desc->item_size = dim;
-                    obj_desc->num_items = count;
-                    obj_desc->mem_size = dim * count;
+                    obj_desc->item_size = (uint32_t)dim;
+                    obj_desc->num_items = (uint32_t)count;
+                    obj_desc->mem_size = (uint32_t)dim * (uint32_t)count;
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
@@ -189,7 +189,7 @@ vx_status VX_API_CALL vxQueryLUT(
                               ((vx_enum)VX_TYPE_FLOAT32 == obj_desc->item_type) ||
                               ((vx_enum)VX_TYPE_FLOAT64 == obj_desc->item_type) )
                     {
-                        *(vx_uint32 *)ptr = (vx_uint32)(obj_desc->num_items/2);
+                        *(vx_uint32 *)ptr = (vx_uint32)(obj_desc->num_items/2U);
                     }
                     else
                     {

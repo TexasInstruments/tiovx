@@ -74,7 +74,7 @@ vx_status tivxTargetKernelInstanceInit(void)
 
     for(i=0; i<dimof(g_target_kernel_instance_table); i++)
     {
-        g_target_kernel_instance_table[i].kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
+        g_target_kernel_instance_table[i].kernel_id = (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID;
         g_target_kernel_instance_table[i].index = i;
         g_target_kernel_instance_table[i].state = (vx_enum)VX_NODE_STATE_STEADY;
     }
@@ -116,7 +116,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
             for(i=0; i<dimof(g_target_kernel_instance_table); i++)
             {
                 tmp_kernel_instance = &g_target_kernel_instance_table[i];
-                if(tmp_kernel_instance->kernel_id == TIVX_TARGET_KERNEL_ID_INVALID)
+                if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)
                 {
                     /* free entry found */
                     tmp_kernel_instance->kernel_id = kernel_id;
@@ -124,7 +124,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
                     tmp_kernel_instance->kernel_context = NULL;
                     tmp_kernel_instance->kernel_context_size = 0;
                     tmp_kernel_instance->kernel = kernel;
-                    if (kernel->num_pipeup_bufs > 1)
+                    if (kernel->num_pipeup_bufs > 1U)
                     {
                         tmp_kernel_instance->state = (vx_enum)VX_NODE_STATE_PIPEUP;
                     }
@@ -141,7 +141,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
                 }
             }
 
-            if(tmp_kernel_instance->kernel_id == TIVX_TARGET_KERNEL_ID_INVALID)
+            if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)
             {
                 VX_PRINT(VX_ZONE_WARNING, "tivxTargetKernelInstanceAlloc: May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/TI/tivx_config.h\n");
             }
@@ -158,7 +158,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
 
     if((NULL != target_kernel_instance) && (NULL != *target_kernel_instance))
     {
-        (*target_kernel_instance)->kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
+        (*target_kernel_instance)->kernel_id = (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID;
         *target_kernel_instance = NULL;
 
         tivxLogResourceFree("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
@@ -178,7 +178,7 @@ uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_ker
     uint32_t index = TIVX_TARGET_KERNEL_INSTANCE_MAX;
 
     if((NULL != target_kernel_instance) &&
-       (target_kernel_instance->index < TIVX_TARGET_KERNEL_INSTANCE_MAX))
+       (target_kernel_instance->index < (uint32_t)TIVX_TARGET_KERNEL_INSTANCE_MAX))
     {
         index = target_kernel_instance->index;
     }
@@ -191,7 +191,7 @@ tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance
     tivx_target_kernel kernel = NULL;
 
     if((NULL != target_kernel_instance)
-        && (target_kernel_instance->kernel_id != TIVX_TARGET_KERNEL_ID_INVALID))
+        && (target_kernel_instance->kernel_id != (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID))
     {
         kernel = target_kernel_instance->kernel;
     }

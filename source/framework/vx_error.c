@@ -67,11 +67,11 @@ vx_bool ownCreateConstErrors(vx_context context)
 vx_reference ownGetErrorObject(vx_context context, vx_status status)
 {
     tivx_error_t *error = NULL;
-    vx_size i = 0UL;
+    vx_size i = 0U;
 
     ownContextLock(context);
 
-    for (i = 0UL; i < dimof(context->reftable); i++)
+    for (i = 0U; i < dimof(context->reftable); i++)
     {
         if (context->reftable[i] != NULL)
         {

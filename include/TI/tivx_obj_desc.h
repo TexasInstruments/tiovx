@@ -798,7 +798,7 @@ typedef struct _tivx_obj_desc_scalar
         /*! \brief Signed 64 bit */
         volatile vx_int64  s64;
         /*! \brief Unsigned 64 bit */
-        volatile vx_int64  u64;
+        volatile vx_uint64  u64;
 #if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)
         /*! \brief 16 bit float */
         volatile vx_float16 f16;

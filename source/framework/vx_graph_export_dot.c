@@ -107,7 +107,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
 
     if(node->obj_desc[0] != NULL)
     {
-        tivxPlatformGetTargetName(node->obj_desc[0]->target_id, target_name);
+        tivxPlatformGetTargetName((int32_t)node->obj_desc[0]->target_id, target_name);
     }
     else
     {
@@ -286,7 +286,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
 
         if(graph->nodes[node_id]->obj_desc[0] != NULL)
         {
-            tivxPlatformGetTargetName(graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
+            tivxPlatformGetTargetName((int32_t)graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
             for (target_id = 0; target_id < num_targets; target_id++)
             {
                 if(strcmp(target_name, target_name_list[target_id]) == 0)
@@ -481,8 +481,7 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
                             TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%d [label = %d, style=dashed, color=gray]",
                                 ref->obj_desc[pipe_id]->base.obj_desc_id,
                                 next_obj_desc->base.obj_desc_id,
-                                -((ref->obj_desc[pipe_id]->delay_slot_index+1)%ref->obj_desc[pipe_id]->delay_slots)
-                                );
+                                -(((int32_t)ref->obj_desc[pipe_id]->delay_slot_index+1)%(int32_t)ref->obj_desc[pipe_id]->delay_slots));
                         }
                     }
                 }
@@ -696,7 +695,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
         {
             if(data_ref_q->obj_desc[pipe_id]!=NULL)
             {
-                if(data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                if((vx_enum)data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     TIVX_EXPORT_WRITELN(fp, "dq_cmd_%d [shape=record, label=\"{response cmd|desc %d}\", style=filled]",
                         data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id,
@@ -708,7 +707,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                         data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id
                         );
                 }
-                if(data_ref_q->obj_desc[pipe_id]->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                if((vx_enum)data_ref_q->obj_desc[pipe_id]->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     TIVX_EXPORT_WRITELN(fp, "d_%d -> queue_%d [label=\"release\"]\n",
                         data_ref_q->obj_desc[pipe_id]->base.obj_desc_id,
@@ -716,7 +715,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                         );
                 }
 
-                if(data_ref_q->obj_desc[pipe_id]->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                if((vx_enum)data_ref_q->obj_desc[pipe_id]->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
                     TIVX_EXPORT_WRITELN(fp, "queue_%d -> d_%d [label=\"acquire\"]\n",
                         data_ref_q->obj_desc[pipe_id]->acquire_q_obj_desc_id,
@@ -726,7 +725,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
             }
         }
 
-        if(data_ref_q->done_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)data_ref_q->done_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             TIVX_EXPORT_WRITELN(fp, "queue_%d -> dequeue_%d [label=\"done\"]\n",
                 data_ref_q->done_q_obj_desc_id,
@@ -734,19 +733,19 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                 );
         }
 
-        if(data_ref_q->ready_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)data_ref_q->ready_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             TIVX_EXPORT_WRITELN(fp, "enqueue_%d -> queue_%d [label=\"ready\"]\n",
                 graph_parameter_index,
                 data_ref_q->ready_q_obj_desc_id
                 );
         }
-        if(data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_queue_t *obj_desc_queue
                 = (tivx_obj_desc_queue_t *)tivxObjDescGet(data_ref_q->acquire_q_obj_desc_id);
 
-            if((obj_desc_queue != NULL) && (obj_desc_queue->count > 0))
+            if((obj_desc_queue != NULL) && (obj_desc_queue->count > 0U))
             {
                 uint32_t data_id;
 
@@ -814,7 +813,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
             if (graph->data_ref_q_list[i].data_ref_queue != NULL)
             {
                 exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf,
-                    (vx_bool)vx_false_e, vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                    (vx_bool)vx_false_e, (vx_bool)vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
                 tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
                     graph->num_params+i);
             }
@@ -824,7 +823,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
             if (graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
             {
                 exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1,
-                    (vx_bool)vx_false_e, vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
+                    (vx_bool)vx_false_e, (vx_bool)vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
                 tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
                     graph->num_params+graph->num_data_ref_q+i);
             }
@@ -920,7 +919,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
 
-                exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, vx_true_e, 1);
+                exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, (vx_bool)vx_true_e, 1);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -957,24 +956,24 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                         char replicated_label[32]="";
                         vx_bool is_replicated;
 
-                        is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, (1<<data_id));
+                        is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                         if(is_replicated != 0)
                         {
                             snprintf(replicated_label, 32, "[label=\" replicated\"]");
                         }
 
-                        if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)) != 0)
+                        if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                         {
-                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                             {
-                                if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
                                     TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_ref_q_id[data_id], node_desc->base.obj_desc_id, replicated_label);
                                 }
                             }
                             else
                             {
-                                if(node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
                                     TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_id[data_id], node_desc->base.obj_desc_id, replicated_label);
                                 }
@@ -982,16 +981,16 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
                         }
                         else
                         {
-                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
+                            if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                             {
-                                if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
                                     TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
                                 }
                             }
                             else
                             {
-                                if(node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
                                     TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
                                 }
@@ -1116,7 +1115,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                     node_desc = node->obj_desc[pipe_id];
                     if(node_desc != NULL)
                     {
-                        if(node_desc->prev_pipe_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                        if((vx_enum)node_desc->prev_pipe_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                         {
                             TIVX_EXPORT_WRITELN(fp, "ln_%d -> ln_%d [style=dashed]",
                                 node_desc->prev_pipe_node_id,
@@ -1263,7 +1262,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
 
                 if (ref != NULL)
                 {
-                    exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, vx_true_e, ref->pipeline_depth);
+                    exportDataRefQueueObjDesc(fp, ref, num_buf, (vx_bool)vx_true_e, (vx_bool)vx_true_e, ref->pipeline_depth);
                 }
             }
         }
@@ -1308,24 +1307,24 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                             char replicated_label[32]="";
                             vx_bool is_replicated;
 
-                            is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, (1<<data_id));
+                            is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                             if(is_replicated != 0)
                             {
                                 snprintf(replicated_label, 32, "[label=\" replicated\"]");
                             }
 
-                            if(tivxFlagIsBitSet(node_desc->is_prm_input, (1<<data_id)) != 0)
+                            if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                             {
-                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
+                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                                 {
-                                    if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                    if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
                                         TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_ref_q_id[data_id], node_desc->base.obj_desc_id, replicated_label);
                                     }
                                 }
                                 else
                                 {
-                                    if(node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                    if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
                                         TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_id[data_id], node_desc->base.obj_desc_id, replicated_label);
                                     }
@@ -1333,16 +1332,16 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                             }
                             else
                             {
-                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)) != 0)
+                                if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                                 {
-                                    if(node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                    if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
                                         TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
                                     }
                                 }
                                 else
                                 {
-                                    if(node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
+                                    if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
                                         TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
                                     }

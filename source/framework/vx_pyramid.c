@@ -38,23 +38,23 @@ static vx_status ownInitPyramid(vx_pyramid prmd);
 static const vx_float32 gOrbScaleFactor
     [TIVX_PYRAMID_MAX_LEVELS_ORB] =
 {
-    1.0,
-    0.8408964152537146,
-    0.7071067811865476,
-    0.5946035575013605,
-    0.5,
-    0.4204482076268573,
-    0.3535533905932737,
-    0.2973017787506803,
-    0.25,
-    0.2102241038134287,
-    0.1767766952966369,
-    0.1486508893753401,
-    0.125,
-    0.1051120519067143,
-    0.08838834764831843,
-    0.07432544468767006,
-    0.0625
+    1.0f,
+    0.8408964152537146f,
+    0.7071067811865476f,
+    0.5946035575013605f,
+    0.5f,
+    0.4204482076268573f,
+    0.3535533905932737f,
+    0.2973017787506803f,
+    0.25f,
+    0.2102241038134287f,
+    0.1767766952966369f,
+    0.1486508893753401f,
+    0.125f,
+    0.1051120519067143f,
+    0.08838834764831843f,
+    0.07432544468767006f,
+    0.0625f
 };
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
@@ -74,17 +74,17 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if (width == 0)
+        if (width == 0U)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Width is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
-        if (height == 0)
+        if (height == 0U)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Height is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
-        if (levels == 0)
+        if (levels == 0U)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels is equal to 0\n");
             status = (vx_status)VX_FAILURE;
@@ -112,12 +112,12 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         if (((vx_status)VX_SUCCESS == status) &&
             (scale == VX_SCALE_PYRAMID_ORB))
         {
-            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", levels);
+            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
         }
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", levels);
+            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -147,7 +147,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 }
                 else
                 {
-                    obj_desc->num_levels = levels;
+                    obj_desc->num_levels = (uint32_t)levels;
                     obj_desc->width = width;
                     obj_desc->height = height;
                     obj_desc->scale = scale;
@@ -212,7 +212,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
-        (levels > 0) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
+        (levels > 0U) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
         ( ((scale == VX_SCALE_PYRAMID_ORB) && (levels <= TIVX_PYRAMID_MAX_LEVELS_ORB)) ||
            (scale == VX_SCALE_PYRAMID_HALF) ) )
     {
@@ -245,7 +245,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             }
             else
             {
-                obj_desc->num_levels = levels;
+                obj_desc->num_levels = (uint32_t)levels;
                 obj_desc->width = width;
                 obj_desc->height = height;
                 obj_desc->scale = scale;
@@ -263,10 +263,10 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 
                 if (scale == VX_SCALE_PYRAMID_ORB)
                 {
-                    tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", levels);
+                    tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
                 }
 
-                tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", levels);
+                tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
             }
         }
     }
@@ -290,8 +290,8 @@ vx_status ownInitVirtualPyramid(
     {
         obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
 
-        if ((width > 0) &&
-            (height > 0) &&
+        if ((width > 0U) &&
+            (height > 0U) &&
             (prmd->base.is_virtual == (vx_bool)vx_true_e))
         {
             obj_desc->width = width;

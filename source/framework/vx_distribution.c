@@ -41,7 +41,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
-        if ((0 != num_bins) && (0 != range))
+        if ((0U != num_bins) && (0U != range))
         {
             dist = (vx_distribution)ownCreateReference(context,
                 (vx_enum)VX_TYPE_DISTRIBUTION, (vx_enum)VX_EXTERNAL, &context->base);
@@ -68,11 +68,11 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 }
                 else
                 {
-                    obj_desc->num_bins = num_bins;
+                    obj_desc->num_bins = (vx_uint32)num_bins;
                     obj_desc->range = range;
-                    obj_desc->offset = offset;
+                    obj_desc->offset = (vx_uint32)offset;
                     obj_desc->num_win = (vx_uint32)range/(vx_uint32)num_bins;
-                    obj_desc->mem_size = num_bins * sizeof(vx_int32);
+                    obj_desc->mem_size = (vx_uint32)num_bins * (vx_uint32)sizeof(vx_int32);
                     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
@@ -126,7 +126,7 @@ vx_status VX_API_CALL vxQueryDistribution(
             case (vx_enum)VX_DISTRIBUTION_OFFSET:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
-                    *(vx_int32 *)ptr = obj_desc->offset;
+                    *(vx_int32 *)ptr = (vx_int32)obj_desc->offset;
                 }
                 else
                 {

@@ -86,7 +86,7 @@ static vx_char *find_zone_name(vx_enum zone)
 
 void tivx_set_debug_zone(vx_enum zone)
 {
-    if ( (0 <= zone) && (zone < VX_ZONE_MAX) ) {
+    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) ) {
         g_debug_zonemask |= ZONE_BIT((vx_uint32)zone);
         tivx_print(zone, "Enabled\n");
     }
@@ -94,7 +94,7 @@ void tivx_set_debug_zone(vx_enum zone)
 
 void tivx_clr_debug_zone(vx_enum zone)
 {
-    if ( (0 <= zone) && (zone < VX_ZONE_MAX) ) {
+    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) ) {
         tivx_print(zone, "Disabled\n");
         g_debug_zonemask &= ~(ZONE_BIT((vx_uint32)zone));
     }
@@ -104,9 +104,9 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
 {
     vx_bool zone_enabled;
 
-    if ( (0 <= zone) && (zone < VX_ZONE_MAX) )
+    if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
     {
-        zone_enabled = ((g_debug_zonemask & zone) != (vx_bool)(vx_bool)vx_false_e) ? (vx_bool)(vx_bool)vx_true_e : (vx_bool)(vx_bool)vx_false_e;
+        zone_enabled = (((vx_bool)g_debug_zonemask & (vx_bool)zone) != (vx_bool)vx_false_e) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
     }
     else
     {
@@ -126,7 +126,7 @@ void tivx_print(vx_enum zone, const char *format, ...)
         va_start(ap, format);
 
         snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
-        size = strlen(string);
+        size = (uint32_t)strlen(string);
         vsnprintf(&string[size], sizeof(string)-size, format, ap);
         tivxPlatformPrintf(string);
         va_end(ap);

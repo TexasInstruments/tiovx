@@ -204,8 +204,8 @@ void tivxReserveC66xL2MEM(void);
 static inline vx_uint32 tivxComputePatchOffset(
     vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
 {
-    return (addr->stride_y * (y / addr->step_y)) +
-           (addr->stride_x * (x / addr->step_x));
+    return ((vx_uint32)addr->stride_y * (y / addr->step_y)) +
+           ((vx_uint32)addr->stride_x * (x / addr->step_x));
 }
 
 /*!
@@ -215,12 +215,12 @@ static inline vx_status tivxCheckNullParams(
     tivx_obj_desc_t *obj_desc[], uint16_t num_params,
     uint16_t max_params)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     if (num_params != max_params)
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else
     {
@@ -228,7 +228,7 @@ static inline vx_status tivxCheckNullParams(
         {
             if (NULL == obj_desc[i])
             {
-                status = VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
                 break;
             }
         }

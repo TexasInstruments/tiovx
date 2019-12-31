@@ -99,7 +99,7 @@ static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
 
 static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload)
 {
-    return (payload >> TIVX_TARGET_ID_SHIFT) & TIVX_TARGET_ID_MASK;
+    return ((vx_enum)payload >> (vx_enum)TIVX_TARGET_ID_SHIFT) & (vx_enum)TIVX_TARGET_ID_MASK;
 }
 
 static void tivxObjDescIpcHandler(uint32_t payload)
@@ -140,28 +140,28 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
     {
         tmp_obj_desc = (tivx_obj_desc_t*)&g_obj_desc_table.table_base[idx];
 
-        if(tmp_obj_desc->type==(vx_enum)TIVX_OBJ_DESC_INVALID)
+        if((vx_enum)tmp_obj_desc->type==(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
-            tivx_obj_desc_memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
+            tivx_obj_desc_memset(tmp_obj_desc, 0, (uint32_t)sizeof(tivx_obj_desc_shm_entry_t));
 
             /* init entry that is found */
-            tmp_obj_desc->obj_desc_id = idx;
+            tmp_obj_desc->obj_desc_id = (uint16_t)idx;
             tmp_obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
             tmp_obj_desc->element_idx = 0;
-            tmp_obj_desc->type = type;
+            tmp_obj_desc->type = (uint16_t)type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             tmp_obj_desc->host_port_id = tivxIpcGetSelfPortId();
-            tmp_obj_desc->host_cpu_id  = tivxGetSelfCpuId();
+            tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
 
             g_obj_desc_table.last_alloc_index
-                = (idx+1)%g_obj_desc_table.num_entries;
+                = (idx+1U)%g_obj_desc_table.num_entries;
 
             obj_desc = tmp_obj_desc;
             break;
         }
 
-        idx = (idx+1)%g_obj_desc_table.num_entries;
+        idx = (idx+1U)%g_obj_desc_table.num_entries;
     }
 
     tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
@@ -210,7 +210,7 @@ vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e t
     vx_bool is_valid = (vx_bool)vx_false_e;
 
     if(    (NULL != obj_desc)
-        && (obj_desc->type == type)
+        && (obj_desc->type == (uint32_t)type)
         && (obj_desc->obj_desc_id < g_obj_desc_table.num_entries))
     {
         is_valid = (vx_bool)vx_true_e;
@@ -226,12 +226,12 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *obj_desc;
 
-    cpu_id = tivxTargetGetCpuId(dst_target_id);
+    cpu_id = tivxTargetGetCpuId((int32_t)dst_target_id);
 
     if(cpu_id == tivxGetSelfCpuId())
     {
         /* target is on same CPU queue obj_desc using target APIs */
-        status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
+        status = tivxTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
 
         if(status != (vx_status)VX_SUCCESS)
         {
@@ -240,7 +240,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     }
     else
     {
-        ipc_payload = tivxIpcPayloadMake(dst_target_id, obj_desc_id);
+        ipc_payload = tivxIpcPayloadMake((int32_t)dst_target_id, obj_desc_id);
 
         obj_desc = tivxObjDescGet(obj_desc_id);
 
@@ -297,10 +297,10 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
     volatile uint8_t *s=(uint8_t*)src;
     uint32_t i;
 
-    for(i=0; i<(size-1); i++)
+    for(i=0; i<(size-1U); i++)
     {
         d[i] = s[i];
-        if(s[i]==0)
+        if(s[i]==0U)
         {
             break;
         }
@@ -340,9 +340,9 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
 
     for(i=0; i<size; i++)
     {
-        if((d[i] != s[i]) || (d[i] == 0) || (s[i] == 0))
+        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U))
         {
-            ret = (d[i] - s[i]);
+            ret = ((int32_t)d[i] - (int32_t)s[i]);
             break;
         }
     }

@@ -59,7 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
 #include <tivx_utils_checksum.h>
@@ -72,9 +72,8 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
     uint32_t                   *data_ptr;
     uint32_t                    sum = 0U;
     uint32_t                    stride_xby2;
-
-    uint32_t                    i;
-    uint32_t                    j;
+    int32_t                    i;
+    int32_t                    j;
 
     if(NULL != image)
     {
@@ -89,13 +88,13 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
             (vx_enum)VX_NOGAP_X
             );
 
-        stride_xby2 = (image_addr.stride_x == 0) ? 3 : (image_addr.stride_x*2);
+        stride_xby2 = (image_addr.stride_x == 0) ? 3U : ((uint32_t)image_addr.stride_x*2U);
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            for (i = 0U; i < ((image_addr.dim_y * image_addr.stride_y) / 4U); i += (image_addr.stride_y / 4U))
+            for (i = 0; i < (((int32_t)image_addr.dim_y * image_addr.stride_y) / 4); i += (image_addr.stride_y / 4))
             {
-                for (j = 0U; j < (((image_addr.dim_x * stride_xby2) / 2U) / 4U); j++)
+                for (j = 0; j < ((((int32_t)image_addr.dim_x * (int32_t)stride_xby2) / 2) / 4); j++)
                 {
                     sum += data_ptr[i + j];
                 }

@@ -76,54 +76,62 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
     FILE* f = 0;
     size_t sz;
     char* buf = 0;
-    CT_Image image = 0;
+    CT_Image image = 0, returnVal = 0;
     char file[MAXPATHLENGTH];
 
     if (!fileName)
     {
         CT_ADD_FAILURE("Image file name not specified\n");
-        return 0;
+        returnVal = 0;
     }
-
-    sz = snprintf(file, MAXPATHLENGTH, "%s", fileName);
-    ASSERT_(return 0, (sz < MAXPATHLENGTH));
-
-    f = fopen(file, "rb");
-    if (!f)
+    else
     {
-        CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
-        return 0;
-    }
+        sz = (uint32_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
+        ASSERT_(return 0, (sz < MAXPATHLENGTH));
 
-    fseek(f, 0, SEEK_END);
-    sz = ftell(f);
-    if( sz > 0 )
-    {
-        buf = (char*)ct_alloc_mem(sz);
-        fseek(f, 0, SEEK_SET);
-        if (NULL != buf)
+        f = fopen(file, "rb");
+        if (!f)
         {
-            if( fread(buf, 1, sz, f) == sz )
-            {
-                image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
-            }
+            CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
+            returnVal = 0;
         }
         else
         {
-            fclose(f);
-            return NULL;
+            fseek(f, 0, SEEK_END);
+            sz = (size_t)ftell(f);
+            if( sz > 0U )
+            {
+                buf = (char*)ct_alloc_mem(sz);
+                fseek(f, 0, SEEK_SET);
+                if (NULL != buf)
+                {
+                    if( fread(buf, 1, sz, f) == sz )
+                    {
+                        image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+                        returnVal = image;
+                    }
+                }
+                else
+                {
+                    fclose(f);
+                    returnVal = NULL;
+                }
+            }
+
+            if (returnVal != NULL)
+            {
+                ct_free_mem(buf);
+                fclose(f);
+
+                if(!image)
+                {
+                    CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
+                }
+            }
         }
     }
 
-    ct_free_mem(buf);
-    fclose(f);
-
-    if(!image)
-    {
-        CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
-    }
-
-    return image;
+    return returnVal;
 }
 
 static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int bufsize, int dcn)
@@ -147,7 +155,7 @@ static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image i
         size = (size_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
         ASSERT(size < MAXPATHLENGTH);
 
-        dotpos = strrchr(file, '.');
+        dotpos = strrchr(file, (int32_t)'.');
         if((dotpos != NULL) &&
            ((strcmp(dotpos, ".bmp") == 0) ||
             (strcmp(dotpos, ".BMP") == 0)))
@@ -243,7 +251,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
     /* workaround to enable CT context */
     CT_SetHasRunningTest();
 
-    image = tivx_utils_load_ct_image_from_bmpfile_memory(buf, buf_size, dcn);
+    image = tivx_utils_load_ct_image_from_bmpfile_memory(buf, (int32_t)buf_size, dcn);
 
     if(image != NULL)
     {
@@ -328,7 +336,7 @@ int32_t tivx_utils_bmp_file_write(
     }
 
     status = (vx_status)VX_FAILURE;
-    if( bpp > 0)
+    if( bpp > 0U)
     {
         image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
 
@@ -433,8 +441,8 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
 
             image_addr.dim_x = width;
             image_addr.dim_y = height;
-            image_addr.stride_x = bpp;
-            image_addr.stride_y = stride;
+            image_addr.stride_x = (int32_t)bpp;
+            image_addr.stride_y = (int32_t)stride;
             image_addr.scale_x = VX_SCALE_UNITY;
             image_addr.scale_y = VX_SCALE_UNITY;
             image_addr.step_x = 1;
@@ -535,7 +543,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
              * above
              * \code
              */
-            tivx_utils_bmp_file_write(filename, width, height, image_addr.stride_y, df, data_ptr);
+            tivx_utils_bmp_file_write(filename, width, height, (uint32_t)image_addr.stride_y, df, data_ptr);
             /** \endcode */
 
             /** - Unmapped a previously mapped image object
@@ -598,11 +606,11 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             copy_height = img_height;
         }
 
-        src_start_x = (width - copy_width)/2;
-        src_start_y = (height - copy_height)/2;
+        src_start_x = (width - copy_width)/2U;
+        src_start_y = (height - copy_height)/2U;
 
-        dst_start_x = (img_width - copy_width)/2;
-        dst_start_y = (img_height - copy_height)/2;
+        dst_start_x = (img_width - copy_width)/2U;
+        dst_start_y = (img_height - copy_height)/2U;
 
         enable_rgb2gray = (vx_bool)vx_false_e;
         enable_gray2rgb = (vx_bool)vx_false_e;
@@ -693,11 +701,11 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 {
                     for(x=0; x<copy_width; x++)
                     {
-                        b = ((uint8_t*)data_ptr)[(3*x) + 0];
-                        g = ((uint8_t*)data_ptr)[(3*x) + 1];
-                        r = ((uint8_t*)data_ptr)[(3*x) + 2];
+                        b = ((uint8_t*)data_ptr)[(3U*x) + 0U];
+                        g = ((uint8_t*)data_ptr)[(3U*x) + 1U];
+                        r = ((uint8_t*)data_ptr)[(3U*x) + 2U];
 
-                        ((uint8_t*)dst_data_ptr)[x] = (r+b+g)/3;
+                        ((uint8_t*)dst_data_ptr)[x] = (uint8_t)((r+b+g)/3U);
                     }
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
@@ -714,9 +722,9 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                     {
                         g = ((uint8_t*)data_ptr)[x];
 
-                        ((uint8_t*)dst_data_ptr)[(3*x) + 0] = g;
-                        ((uint8_t*)dst_data_ptr)[(3*x) + 1] = g;
-                        ((uint8_t*)dst_data_ptr)[(3*x) + 2] = g;
+                        ((uint8_t*)dst_data_ptr)[(3U*x) + 0U] = (uint8_t)g;
+                        ((uint8_t*)dst_data_ptr)[(3U*x) + 1U] = (uint8_t)g;
+                        ((uint8_t*)dst_data_ptr)[(3U*x) + 2U] = (uint8_t)g;
                     }
                     data_ptr = (void*)((uint8_t*)data_ptr + stride);
                     dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);

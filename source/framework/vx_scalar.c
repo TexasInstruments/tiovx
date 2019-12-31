@@ -240,7 +240,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 }
                 else
                 {
-                    obj_desc->data_type = data_type;
+                    obj_desc->data_type = (vx_uint32)data_type;
                     scalar->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                     /* User can pass a NULL ptr, but scalar will be initialized */
                     if (NULL != ptr)
@@ -276,7 +276,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
             case (vx_enum)VX_SCALAR_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    *(vx_enum*)ptr = ((tivx_obj_desc_scalar_t*)(pscalar->
+                    *(vx_enum*)ptr = (vx_enum)((tivx_obj_desc_scalar_t*)(pscalar->
                         base.obj_desc))->data_type;
                 }
                 else

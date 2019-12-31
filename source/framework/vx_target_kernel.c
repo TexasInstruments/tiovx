@@ -84,8 +84,8 @@ vx_status tivxTargetKernelInit(void)
 
     for(i=0; i<dimof(g_target_kernel_table); i++)
     {
-        g_target_kernel_table[i].kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
-        g_target_kernel_table[i].target_id = TIVX_TARGET_KERNEL_ID_INVALID;
+        g_target_kernel_table[i].kernel_id = (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
+        g_target_kernel_table[i].target_id = (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
     }
 
     status = tivxMutexCreate(&g_target_kernel_lock);
@@ -124,11 +124,11 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
-                if (TIVX_TARGET_KERNEL_ID_INVALID ==
+                if ((vx_int32)TIVX_TARGET_KERNEL_ID_INVALID ==
                     g_target_kernel_table[i].kernel_id)
                 {
                     g_target_kernel_table[i].kernel_id = kernel_id;
-                    g_target_kernel_table[i].kernel_name[0] = 0;
+                    g_target_kernel_table[i].kernel_name[0] = (char)0;
                     if(kernel_name!=NULL)
                     {
                         strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME);
@@ -178,7 +178,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              void *priv_arg)
 {
     return tivxAddTargetKernelInternal(
-                TIVX_TARGET_KERNEL_ID_NOT_USED,
+                (vx_int32)TIVX_TARGET_KERNEL_ID_NOT_USED,
                 kernel_name, target_name, process_func, create_func, delete_func, control_func, priv_arg);
 }
 
@@ -213,9 +213,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                     &g_target_kernel_table[i])
                 {
                     g_target_kernel_table[i].kernel_id =
-                        TIVX_TARGET_KERNEL_ID_INVALID;
+                        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
                     g_target_kernel_table[i].target_id =
-                        TIVX_TARGET_KERNEL_ID_INVALID;
+                        (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
                     g_target_kernel_table[i].process_func = NULL;
                     g_target_kernel_table[i].create_func = NULL;
                     g_target_kernel_table[i].delete_func = NULL;
@@ -249,7 +249,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
         for(i=0; i<dimof(g_target_kernel_table); i++)
         {
             tmp_knl = &g_target_kernel_table[i];
-            if(tmp_knl->kernel_name[0]==0)
+            if(tmp_knl->kernel_name[0]==(char)0)
             {
                 /* kernel is registered using kernel_id only */
                 if ((kernel_id == tmp_knl->kernel_id) &&
