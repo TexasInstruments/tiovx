@@ -471,12 +471,12 @@ static void tivxVpacVissDccMapH3aParams(tivxVpacVissObj *vissObj,
 
     vissObj->vissCfgRef.h3aCfg = h3aCfg;
 
-    vissObj->aew_config.aewwin1_WINH = aewbCfg->winCfg.height;
-    vissObj->aew_config.aewwin1_WINW = aewbCfg->winCfg.width;
-    vissObj->aew_config.aewwin1_WINVC = aewbCfg->winCfg.vertCount;
-    vissObj->aew_config.aewwin1_WINHC = aewbCfg->winCfg.horzCount;
-    vissObj->aew_config.aewsubwin_AEWINCV = aewbCfg->winCfg.vertIncr;
-    vissObj->aew_config.aewsubwin_AEWINCH = aewbCfg->winCfg.horzIncr;
+    vissObj->aew_config.aewwin1_WINH = (uint16_t)aewbCfg->winCfg.height;
+    vissObj->aew_config.aewwin1_WINW = (uint16_t)aewbCfg->winCfg.width;
+    vissObj->aew_config.aewwin1_WINVC = (uint16_t)aewbCfg->winCfg.vertCount;
+    vissObj->aew_config.aewwin1_WINHC = (uint16_t)aewbCfg->winCfg.horzCount;
+    vissObj->aew_config.aewsubwin_AEWINCV = (uint16_t)aewbCfg->winCfg.vertIncr;
+    vissObj->aew_config.aewsubwin_AEWINCH = (uint16_t)aewbCfg->winCfg.horzIncr;
 
     /* Setting config flag to 1,
      * assumes caller protects this flag */
@@ -507,11 +507,11 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
     if(0u == use_defaults)
     {
-        nsf4Cfg->mode = dccNsf4Cfg->mode;
-        nsf4Cfg->tKnee = dccNsf4Cfg->u1_knee;
-        nsf4Cfg->tnScale[0U] = dccNsf4Cfg->tn1;
-        nsf4Cfg->tnScale[1U] = dccNsf4Cfg->tn2;
-        nsf4Cfg->tnScale[2U] = dccNsf4Cfg->tn3;
+        nsf4Cfg->mode = (uint32_t)dccNsf4Cfg->mode;
+        nsf4Cfg->tKnee = (uint32_t)dccNsf4Cfg->u1_knee;
+        nsf4Cfg->tnScale[0U] = (uint32_t)dccNsf4Cfg->tn1;
+        nsf4Cfg->tnScale[1U] = (uint32_t)dccNsf4Cfg->tn2;
+        nsf4Cfg->tnScale[2U] = (uint32_t)dccNsf4Cfg->tn3;
 
         for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
         {
@@ -523,14 +523,14 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
             }
         }
 
-        lsccCfg->enable         = dccNsf4Cfg->shading_gain;
-        lsccCfg->lensCenterX    = dccNsf4Cfg->shd_x;
-        lsccCfg->lensCenterY    = dccNsf4Cfg->shd_y;
-        lsccCfg->tCfg           = dccNsf4Cfg->shd_t;
-        lsccCfg->khCfg          = dccNsf4Cfg->shd_kh;
-        lsccCfg->kvCfg          = dccNsf4Cfg->shd_kv;
-        lsccCfg->gMaxCfg        = dccNsf4Cfg->shd_gmax;
-        lsccCfg->setSel         = dccNsf4Cfg->shd_set_sel;
+        lsccCfg->enable         = (uint32_t)dccNsf4Cfg->shading_gain;
+        lsccCfg->lensCenterX    = (uint32_t)dccNsf4Cfg->shd_x;
+        lsccCfg->lensCenterY    = (uint32_t)dccNsf4Cfg->shd_y;
+        lsccCfg->tCfg           = (uint32_t)dccNsf4Cfg->shd_t;
+        lsccCfg->khCfg          = (uint32_t)dccNsf4Cfg->shd_kh;
+        lsccCfg->kvCfg          = (uint32_t)dccNsf4Cfg->shd_kv;
+        lsccCfg->gMaxCfg        = (uint32_t)dccNsf4Cfg->shd_gmax;
+        lsccCfg->setSel         = (uint32_t)dccNsf4Cfg->shd_set_sel;
 
         for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
         {
@@ -554,7 +554,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         {
             for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
-                nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
+                nsf4Cfg->gains[cnt1] = (uint32_t)dccNsf4Cfg->wb_gains[cnt1];
             }
         }
     }
@@ -568,54 +568,54 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
         for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
         {
-            nsf4Cfg->tnCurve[cnt1][0u].posX  = 0u;
-            nsf4Cfg->tnCurve[cnt1][1u].posX  = 64u;
-            nsf4Cfg->tnCurve[cnt1][2u].posX  = 256u;
-            nsf4Cfg->tnCurve[cnt1][3u].posX  = 1024u;
-            nsf4Cfg->tnCurve[cnt1][4u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][5u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][6u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][7u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][8u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][9u].posX  = 4096u;
-            nsf4Cfg->tnCurve[cnt1][10u].posX = 4096u;
-            nsf4Cfg->tnCurve[cnt1][11u].posX = 4096u;
+            nsf4Cfg->tnCurve[cnt1][0u].posX  = 0;
+            nsf4Cfg->tnCurve[cnt1][1u].posX  = 64;
+            nsf4Cfg->tnCurve[cnt1][2u].posX  = 256;
+            nsf4Cfg->tnCurve[cnt1][3u].posX  = 1024;
+            nsf4Cfg->tnCurve[cnt1][4u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][5u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][6u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][7u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][8u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][9u].posX  = 4096;
+            nsf4Cfg->tnCurve[cnt1][10u].posX = 4096;
+            nsf4Cfg->tnCurve[cnt1][11u].posX = 4096;
 
-            nsf4Cfg->tnCurve[cnt1][0u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][1u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][2u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][3u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][4u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][5u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][6u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][7u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][8u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][9u].posY  = 0u;
-            nsf4Cfg->tnCurve[cnt1][10u].posY = 0u;
-            nsf4Cfg->tnCurve[cnt1][11u].posY = 0u;
+            nsf4Cfg->tnCurve[cnt1][0u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][1u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][2u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][3u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][4u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][5u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][6u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][7u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][8u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][9u].posY  = 0;
+            nsf4Cfg->tnCurve[cnt1][10u].posY = 0;
+            nsf4Cfg->tnCurve[cnt1][11u].posY = 0;
 
-            nsf4Cfg->tnCurve[cnt1][0u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][1u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][2u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][3u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][4u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][5u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][6u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][7u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][8u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][9u].slope  = 0u;
-            nsf4Cfg->tnCurve[cnt1][10u].slope = 0u;
-            nsf4Cfg->tnCurve[cnt1][11u].slope = 0u;
+            nsf4Cfg->tnCurve[cnt1][0u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][1u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][2u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][3u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][4u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][5u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][6u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][7u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][8u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][9u].slope  = 0;
+            nsf4Cfg->tnCurve[cnt1][10u].slope = 0;
+            nsf4Cfg->tnCurve[cnt1][11u].slope = 0;
         }
 
-        lsccCfg->enable         = dccNsf4Cfg->shading_gain;
-        lsccCfg->lensCenterX    = dccNsf4Cfg->shd_x;
-        lsccCfg->lensCenterY    = dccNsf4Cfg->shd_y;
-        lsccCfg->tCfg           = dccNsf4Cfg->shd_t;
-        lsccCfg->khCfg          = dccNsf4Cfg->shd_kh;
-        lsccCfg->kvCfg          = dccNsf4Cfg->shd_kv;
-        lsccCfg->gMaxCfg        = dccNsf4Cfg->shd_gmax;
-        lsccCfg->setSel         = dccNsf4Cfg->shd_set_sel;
+        lsccCfg->enable         = (uint32_t)dccNsf4Cfg->shading_gain;
+        lsccCfg->lensCenterX    = (uint32_t)dccNsf4Cfg->shd_x;
+        lsccCfg->lensCenterY    = (uint32_t)dccNsf4Cfg->shd_y;
+        lsccCfg->tCfg           = (uint32_t)dccNsf4Cfg->shd_t;
+        lsccCfg->khCfg          = (uint32_t)dccNsf4Cfg->shd_kh;
+        lsccCfg->kvCfg          = (uint32_t)dccNsf4Cfg->shd_kv;
+        lsccCfg->gMaxCfg        = (uint32_t)dccNsf4Cfg->shd_gmax;
+        lsccCfg->setSel         = (uint32_t)dccNsf4Cfg->shd_set_sel;
 
         for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
         {
@@ -639,7 +639,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         {
             for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
             {
-                nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
+                nsf4Cfg->gains[cnt1] = (uint32_t)dccNsf4Cfg->wb_gains[cnt1];
             }
         }
         lsccCfg->enable         = 0;
@@ -1418,10 +1418,10 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 
             pwlCfg->mask         = 4095u;
             pwlCfg->shift        = 0u;
-            pwlCfg->offset[0u]   = 0u;
-            pwlCfg->offset[1u]   = 0u;
-            pwlCfg->offset[2u]   = 0u;
-            pwlCfg->offset[3u]   = 0u;
+            pwlCfg->offset[0u]   = 0;
+            pwlCfg->offset[1u]   = 0;
+            pwlCfg->offset[2u]   = 0;
+            pwlCfg->offset[3u]   = 0;
             pwlCfg->gain[0u]     = 512u;
             pwlCfg->gain[1u]     = 512u;
             pwlCfg->gain[2u]     = 512u;
@@ -1456,10 +1456,10 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 
             pwlCfg->mask        = 4095u;
             pwlCfg->shift       = 0u;     /* 3 bits  */
-            pwlCfg->offset[0u]  = 0u;   //S16
-            pwlCfg->offset[1u]  = 0u;   //S16
-            pwlCfg->offset[2u]  = 0u;   //S16
-            pwlCfg->offset[3u]  = 0u;   //S16
+            pwlCfg->offset[0u]  = 0;   //S16
+            pwlCfg->offset[1u]  = 0;   //S16
+            pwlCfg->offset[2u]  = 0;   //S16
+            pwlCfg->offset[3u]  = 0;   //S16
             pwlCfg->gain[0u]    = 512u;     //U13Q9
             pwlCfg->gain[1u]    = 512u;     //U13Q9
             pwlCfg->gain[2u]    = 512u;     //U13Q9

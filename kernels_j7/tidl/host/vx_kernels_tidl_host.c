@@ -68,7 +68,7 @@ static uint32_t gIsTIDLKernelsLoad = 0u;
 
 void tivxTIDLLoadKernels(vx_context context)
 {
-    if ((0 == gIsTIDLKernelsLoad) && (NULL != context))
+    if ((0U == gIsTIDLKernelsLoad) && (NULL != context))
     {
         void tivxSetSelfCpuId(vx_enum cpu_id);
 

@@ -831,7 +831,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             vissObj->inFrm[cnt].addr[0u] = tivxMemShared2PhysPtr(
                 raw_img_desc->img_ptr[cnt].shared_ptr,
-                raw_img_desc->img_ptr[cnt].mem_heap_region);
+                (int32_t)raw_img_desc->img_ptr[cnt].mem_heap_region);
         }
 
         /* Set the buffer address in the output buffer */
@@ -842,7 +842,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 vissObj->outFrm[cnt].addr[buf_cnt] = tivxMemShared2PhysPtr(
                     img_desc[cnt]->mem_ptr[buf_cnt].shared_ptr,
-                    img_desc[cnt]->mem_ptr[buf_cnt].mem_heap_region);
+                    (int32_t)img_desc[cnt]->mem_ptr[buf_cnt].mem_heap_region);
             }
         }
 
@@ -852,7 +852,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_out->h3a_source_data = vissPrms->h3a_in;
             h3a_out->size = vissObj->h3a_output_size;
 
-            if(0 == vissPrms->h3a_aewb_af_mode)
+            if(0U == vissPrms->h3a_aewb_af_mode)
             {
                 /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
                  * in case third party 2A nodes which don't use DCC can easily see this information */
@@ -902,7 +902,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
-            cur_time,
+            (uint32_t)cur_time,
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
             );
     }
@@ -1086,7 +1086,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
                 for (cnt = 0u; cnt < TIVX_IMAGE_MAX_PLANES; cnt ++)
                 {
                     outPrms->fmt.pitch[cnt] =
-                        im_desc->imagepatch_addr[cnt].stride_y;
+                        (uint32_t)im_desc->imagepatch_addr[cnt].stride_y;
                 }
             }
             else
@@ -1160,7 +1160,7 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
     /* Set the Input Format */
     fmt->width = raw_img_desc->params.width;
     fmt->height = raw_img_desc->params.height;
-    fmt->pitch[0] = raw_img_desc->imagepatch_addr[0U].stride_y;
+    fmt->pitch[0] = (uint32_t)raw_img_desc->imagepatch_addr[0U].stride_y;
     fmt->dataFormat = FVID2_DF_RAW;
 
     switch (raw_img_desc->params.format[0U].pixel_container)
@@ -1171,7 +1171,7 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
         case (vx_enum)TIVX_RAW_IMAGE_16_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
-        case TIVX_RAW_IMAGE_P12_BIT:
+        case (vx_enum)TIVX_RAW_IMAGE_P12_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
         default:
@@ -1530,7 +1530,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             {
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
                     vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == vissObj->ctx_mem_ptr.host_ptr)
+                if (NULL == (int32_t)vissObj->ctx_mem_ptr.host_ptr)
                 {
                     vissObj->ctx_mem_phys_ptr = 0u;
                     status = (vx_status)VX_ERROR_NO_MEMORY;
@@ -1541,7 +1541,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
                 {
                     vissObj->ctx_mem_phys_ptr = tivxMemShared2PhysPtr(
                         vissObj->ctx_mem_ptr.shared_ptr,
-                        vissObj->ctx_mem_ptr.mem_heap_region);
+                        (int32_t)vissObj->ctx_mem_ptr.mem_heap_region);
                 }
             }
         }
@@ -1583,7 +1583,7 @@ static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj)
         prms.length = vissObj->glbceStatInfo.size;
         status = appUdmaCopy1D(NULL, &prms);
 
-        if (0u != status)
+        if (0 != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "vhwaVissRestoreCtx: Failed to restore Context !!!\n");
@@ -1603,7 +1603,7 @@ static void vhwaVissSaveCtx(tivxVpacVissObj *vissObj)
         prms.length = vissObj->glbceStatInfo.size;
         status = appUdmaCopy1D(NULL, &prms);
 
-        if (0u != status)
+        if (0 != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "vhwaVissSaveCtx: Failed to restore Context !!!\n");

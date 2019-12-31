@@ -331,23 +331,23 @@ void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_msc_coefficients_t));
 
-        prms->single_phase[0u][0u] = 16u;
-        prms->single_phase[0u][1u] = 48u;
-        prms->single_phase[0u][2u] = 128u;
-        prms->single_phase[0u][3u] = 48u;
-        prms->single_phase[0u][4u] = 16u;
+        prms->single_phase[0u][0u] = 16;
+        prms->single_phase[0u][1u] = 48;
+        prms->single_phase[0u][2u] = 128;
+        prms->single_phase[0u][3u] = 48;
+        prms->single_phase[0u][4u] = 16;
 
-        prms->single_phase[1u][0u] = 32u;
-        prms->single_phase[1u][1u] = 32u;
-        prms->single_phase[1u][2u] = 128u;
-        prms->single_phase[1u][3u] = 32u;
-        prms->single_phase[1u][4u] = 32u;
+        prms->single_phase[1u][0u] = 32;
+        prms->single_phase[1u][1u] = 32;
+        prms->single_phase[1u][2u] = 128;
+        prms->single_phase[1u][3u] = 32;
+        prms->single_phase[1u][4u] = 32;
 
         for (i = 0u; i < 4u; i ++)
         {
             for (j = 0u; j < (32u*5u); j ++)
             {
-                prms->multi_phase[i][j] = tivx_vpac_msc_mp_coeff[idx ++];
+                prms->multi_phase[i][j] = (int32_t)tivx_vpac_msc_mp_coeff[idx ++];
             }
         }
     }

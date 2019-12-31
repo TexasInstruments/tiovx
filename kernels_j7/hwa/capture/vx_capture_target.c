@@ -231,7 +231,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
         frmList.numFrames = instParams->numCh;
         for (chId = startChIdx ; chId < endChIdx ; chId++)
         {
-            if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+            if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
             {
                 tivx_obj_desc_raw_image_t *raw_image;
 
@@ -276,7 +276,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
         fvid2_status = Fvid2_queue(instParams->drvHandle, &frmList, 0);
         if (FVID2_SOK != fvid2_status)
         {
-            status = VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Frame could not be queued for frame %d !!!\n", chId);
             break;
         }
@@ -370,7 +370,7 @@ static void tivxCaptureSetCreateParams(
     uint32_t loopCnt = 0U, i, format, width, height, planes, stride[TIVX_IMAGE_MAX_PLANES];
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
-    uint32_t chIdx, instId, instIdx;
+    uint32_t chIdx, instId = 0U, instIdx;
     Csirx_CreateParams *createParams;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
@@ -443,7 +443,7 @@ static void tivxCaptureSetCreateParams(
             createParams->chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
             createParams->chCfg[loopCnt].vcNum = prms->instParams[instIdx].chVcMap[loopCnt];
 
-            if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+            if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
             {
                 createParams->chCfg[loopCnt].inCsiDataType =
                     FVID2_CSI2_DF_RAW12;
@@ -470,7 +470,7 @@ static void tivxCaptureSetCreateParams(
         }
         /* set frame drop buffer parameters */
         createParams->frameDropBufLen = CAPTURE_FRAME_DROP_LEN;
-        createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, TIVX_MEM_EXTERNAL);
+        createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, (int32_t)TIVX_MEM_EXTERNAL);
 
         /* set instance to be used for capture */
         prms->instParams[instIdx].instId = tivxCaptureMapInstId(params->instId[instIdx]);
@@ -550,13 +550,13 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                         fvid2_status = Fvid2_start(prms->instParams[instIdx].drvHandle, NULL);
                         if (FVID2_SOK != fvid2_status)
                         {
-                            status = VX_FAILURE;
+                            status = (vx_status)VX_FAILURE;
                             VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Could not start FVID2 !!!\n");
                             break;
                         }
                     }
 
-                    if (status == VX_SUCCESS)
+                    if (status == (vx_status)VX_SUCCESS)
                     {
                         prms->steady_state_started = 1;
                     }
@@ -625,7 +625,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                                 /* TIOVX-687: Note: disabling for now until investigated further */
                                 if (FVID2_EAGAIN != fvid2_status)
                                 {
-                                    status = VX_FAILURE;
+                                    status = (vx_status)VX_FAILURE;
                                     VX_PRINT(VX_ZONE_ERROR,
                                         " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n");
                                 }
@@ -750,7 +750,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                     (instParams->createStatus.retVal != FVID2_SOK))
                 {
                     VX_PRINT(VX_ZONE_ERROR, ": Capture Create Failed!!!\r\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
                 else
                 {
@@ -762,7 +762,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                         &instParams->dphyCfg, NULL);
                     if (FVID2_SOK != fvid2_status)
                     {
-                        status = VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR, ": Failed to set PHY Parameters!!!\r\n");
                     }
                 }
@@ -915,19 +915,19 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
         {
             instParams = &prms->instParams[instIdx];
             /* Stopping FVID2 Capture */
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 fvid2_status = Fvid2_stop(instParams->drvHandle, NULL);
 
                 if (FVID2_SOK != fvid2_status)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture not stopped !!!\n");
                 }
             }
 
             /* Dequeue all the request from the driver */
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 Fvid2FrameList_init(&frmList);
                 do
@@ -942,35 +942,35 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 if (FVID2_ENO_MORE_BUFFERS != fvid2_status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture Dequeue Failed !!!\n");
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
 
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 tivxCapturePrintStatus(instParams);
             }
 
             /* Deleting FVID2 handle */
-            if (VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 fvid2_status = Fvid2_delete(instParams->drvHandle, NULL);
 
                 if (FVID2_SOK != fvid2_status)
                 {
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                     VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Delete Failed !!!\n");
                 }
             }
 
             /* Free-ing kernel instance params */
-            if ( (VX_SUCCESS == status) && (NULL != prms))
+            if ( ((vx_status)VX_SUCCESS == status) && (NULL != prms))
             {
                 instParams->drvHandle = NULL;
 
                 if (sizeof(tivxCaptureParams) == size)
                 {
-                    tivxMemFree(prms, sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
+                    tivxMemFree(prms, sizeof(tivxCaptureParams), (vx_status)TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -1133,7 +1133,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                 "tivxCaptureControl: Get status returned failure\n");
-                            status = VX_FAILURE;
+                            status = (vx_status)VX_FAILURE;
                             break;
                         }
                     }
@@ -1145,7 +1145,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                 "tivxCaptureControl: Get status failed\n");
-                            status = VX_FAILURE;
+                            status = (vx_status)VX_FAILURE;
                         }
 
                     }

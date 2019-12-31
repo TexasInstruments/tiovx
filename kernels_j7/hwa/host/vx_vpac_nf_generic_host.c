@@ -427,7 +427,7 @@ void tivx_vpac_nf_common_params_init(tivx_vpac_nf_common_params_t *prms)
         memset(prms, 0x0, sizeof(tivx_vpac_nf_common_params_t));
 
         prms->input_interleaved = 0u;
-        prms->output_downshift = 0u;
+        prms->output_downshift = 0;
         prms->output_offset = 0u;
         prms->output_pixel_skip = 0u;
         prms->output_pixel_skip_odd = 0u;

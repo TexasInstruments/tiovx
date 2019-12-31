@@ -804,7 +804,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                 in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
         frm = &msc_obj->outFrm;
@@ -812,7 +812,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                 out_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                out_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                (int32_t)out_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
         cur_time = tivxPlatformGetTimeInUsecs();
@@ -852,14 +852,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
         else
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
@@ -959,8 +959,8 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 
         fmt->width      = img_desc->imagepatch_addr[0].dim_x;
         fmt->height     = img_desc->imagepatch_addr[0].dim_y;
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
-        fmt->pitch[1]   = img_desc->imagepatch_addr[1].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
     }
 }
 

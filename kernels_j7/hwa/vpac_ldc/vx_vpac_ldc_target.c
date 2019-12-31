@@ -208,7 +208,7 @@ void tivxAddTargetKernelVpacLdc(void)
             }
             else
             {
-                memset(&gTivxVpacLdcInstObj.ldc_obj, 0x0U,
+                memset(&gTivxVpacLdcInstObj.ldc_obj, 0x0,
                     sizeof(tivxVpacLdcObj) * VHWA_M2M_LDC_MAX_HANDLES);
             }
         }
@@ -330,7 +330,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
             in_frm_desc->mem_ptr[plane_cnt].shared_ptr,
-            in_frm_desc->mem_ptr[plane_cnt].mem_heap_region);
+            (int32_t)in_frm_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
         for (out_cnt = 0u; out_cnt < ldc_obj->num_output; out_cnt ++)
@@ -341,7 +341,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             {
                 frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                     out_frm_desc[out_cnt]->mem_ptr[plane_cnt].shared_ptr,
-                    out_frm_desc[out_cnt]->mem_ptr[plane_cnt].mem_heap_region);
+                    (int32_t)out_frm_desc[out_cnt]->mem_ptr[plane_cnt].mem_heap_region);
             }
             outFrmList->numFrames ++;
         }
@@ -379,7 +379,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_LDC,
-            cur_time,
+            (uint32_t)cur_time,
             ldc_obj->ldc_cfg.outputFrameWidth*ldc_obj->ldc_cfg.outputFrameHeight /* pixels processed */
             );
     }
@@ -585,11 +585,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 uint8_t * dcc_ldc_buf = (uint8_t *)target_ptr_dcc;
-                int dcc_buf_size = dcc_buf_desc->mem_size;
+                int dcc_buf_size = (int)dcc_buf_desc->mem_size;
 
                 dcc_parser_input_params_t parser_input = {
                     dcc_ldc_buf,
-                    dcc_buf_size,
+                    (uint32_t)dcc_buf_size,
                     0,
                     0,
                     0,
@@ -599,7 +599,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 pout->useVpacLdcCfg = 0;
                 dcc_update(&parser_input, pout);
 
-                if (1 == pout->useVpacLdcCfg)
+                if (1U == pout->useVpacLdcCfg)
                 {
                     ldc_cfg->perspTrnsformCfg.enableWarp = params->pwarpen;
                     ldc_cfg->perspTrnsformCfg.coeffA     = params->affine_a;
@@ -618,22 +618,22 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     ldc_cfg->outputStartX                = params->ld_initx;
                     ldc_cfg->outputStartY                = params->ld_inity;
 
-                    if (1 == ldc_cfg->enableMultiRegions)
+                    if (1U == ldc_cfg->enableMultiRegions)
                     {
                         int cnt1, cnt2;
-                        for (cnt1 = 0u; cnt1 < LDC_MAX_HORZ_REGIONS; cnt1 ++)
+                        for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_HORZ_REGIONS; cnt1 ++)
                         {
                             ldc_cfg->regCfg.width[cnt1] = params->ld_sf_width[cnt1];
                         }
 
-                        for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+                        for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_VERT_REGIONS; cnt1 ++)
                         {
                             ldc_cfg->regCfg.height[cnt1] = params->ld_sf_height[cnt1];
                         }
 
-                        for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+                        for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_VERT_REGIONS; cnt1 ++)
                         {
-                            for (cnt2 = 0u; cnt2 < LDC_MAX_HORZ_REGIONS; cnt2 ++)
+                            for (cnt2 = 0; cnt2 < (int32_t)LDC_MAX_HORZ_REGIONS; cnt2 ++)
                             {
                                 ldc_cfg->regCfg.enable[cnt1][cnt2]      = params->ld_sf_en[cnt1][cnt2];
                                 ldc_cfg->regCfg.blockWidth[cnt1][cnt2]  = params->ld_sf_obw[cnt1][cnt2];
@@ -643,7 +643,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                         }
                     }
 
-                    if (0 != params->ldmapen)
+                    if (0U != params->ldmapen)
                     {
                         Ldc_LutCfg *lut_cfg        = &ldc_cfg->lutCfg;
 
@@ -962,8 +962,8 @@ static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
             fmt->height = fmt->height * 2U;
         }
 
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
-        fmt->pitch[1]   = img_desc->imagepatch_addr[1].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
     }
 
     return status;
@@ -989,7 +989,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 
             mat_addr = (int16_t *)((uintptr_t)warp_matrix_target_ptr);
 
-            if(3 == warp_matrix_desc->columns)
+            if(3U == warp_matrix_desc->columns)
             {
                 cfg->coeffA     = mat_addr[0];
                 cfg->coeffB     = mat_addr[3];
@@ -1063,14 +1063,14 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
     }
     else
     {
-        cfg->coeffA     = 4096U;
-        cfg->coeffB     = 0U;
-        cfg->coeffC     = 0U;
-        cfg->coeffD     = 0U;
-        cfg->coeffE     = 4096U;
-        cfg->coeffF     = 0U;
-        cfg->coeffG     = 0U;
-        cfg->coeffH     = 0U;
+        cfg->coeffA     = 4096;
+        cfg->coeffB     = 0;
+        cfg->coeffC     = 0;
+        cfg->coeffD     = 0;
+        cfg->coeffE     = 4096;
+        cfg->coeffF     = 0;
+        cfg->coeffG     = 0;
+        cfg->coeffH     = 0;
         cfg->enableWarp = 0U;
     }
 }
@@ -1097,8 +1097,8 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
             lut_cfg   = &ldc_cfg->lutCfg;
 
             lut_cfg->address    = tivxMemShared2PhysPtr(mesh_img_desc->mem_ptr[0].shared_ptr,
-                mesh_img_desc->mem_ptr[0].mem_heap_region);
-            lut_cfg->lineOffset = mesh_img_desc->imagepatch_addr[0].stride_y;
+                (int32_t)mesh_img_desc->mem_ptr[0].mem_heap_region);
+            lut_cfg->lineOffset = (uint32_t)mesh_img_desc->imagepatch_addr[0].stride_y;
             lut_cfg->dsFactor   = mesh_prms->subsample_factor;
             lut_cfg->width      = mesh_prms->mesh_frame_width;
             lut_cfg->height     = mesh_prms->mesh_frame_height;

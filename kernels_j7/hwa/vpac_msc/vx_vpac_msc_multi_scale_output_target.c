@@ -458,11 +458,10 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
 
-                sc_cfg->horzAccInit =
-                    (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                sc_cfg->vertAccInit =
-                    (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-
+                float temp_horzAccInit = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                sc_cfg->horzAccInit = (uint32_t)temp_horzAccInit;
+                float temp_vertAccInit = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                sc_cfg->vertAccInit = (uint32_t)temp_vertAccInit;
             }
             else
             {
@@ -652,7 +651,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                 in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
         outFrmList->numFrames = 0u;
@@ -668,7 +667,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             {
                 frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                     out_img_desc[idx]->mem_ptr[plane_cnt].shared_ptr,
-                    out_img_desc[idx]->mem_ptr[plane_cnt].
+                    (int32_t)out_img_desc[idx]->mem_ptr[plane_cnt].
                     mem_heap_region);
             }
             outFrmList->numFrames ++;
@@ -711,14 +710,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
         else
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
-                cur_time,
+                (uint32_t)cur_time,
                 in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
                 );
         }
@@ -882,8 +881,8 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 
         fmt->width      = img_desc->imagepatch_addr[0].dim_x;
         fmt->height     = img_desc->imagepatch_addr[0].dim_y;
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
-        fmt->pitch[1]   = img_desc->imagepatch_addr[1].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
     }
 }
 

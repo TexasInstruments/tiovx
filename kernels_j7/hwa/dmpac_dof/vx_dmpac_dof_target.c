@@ -203,7 +203,7 @@ void tivxAddTargetKernelDmpacDof(void)
             }
             else
             {
-                memset(&gTivxDmpacDofInstObj.dofObj, 0x0U,
+                memset(&gTivxDmpacDofInstObj.dofObj, 0x0,
                     sizeof(tivxDmpacDofObj) * VHWA_M2M_DOF_MAX_HANDLES);
             }
         }
@@ -321,7 +321,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         if(NULL != input_current_base_desc)
         {
-            total_pyr_lvl = input_current_desc->num_levels + 1;
+            total_pyr_lvl = input_current_desc->num_levels + 1U;
             isBaseImg = 1;
         }
         else
@@ -389,67 +389,67 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         cur_time = tivxPlatformGetTimeInUsecs();
 
-        for(pyr_cnt = total_pyr_lvl; pyr_cnt > 0; pyr_cnt--)
+        for(pyr_cnt = total_pyr_lvl; pyr_cnt > 0U; pyr_cnt--)
         {
-            pyr_lvl = pyr_cnt - 1;
-            if(0 == isBaseImg)
+            pyr_lvl = pyr_cnt - 1U;
+            if(0U == isBaseImg)
             {
                 dofObj->inFrm[DOF_INPUT_REFERENCE_IMG].addr[0] =
                     tivxMemShared2PhysPtr(
                         img_reference_desc[pyr_lvl]->mem_ptr[0].shared_ptr,
-                        img_reference_desc[pyr_lvl]->mem_ptr[0].mem_heap_region);
+                        (int32_t)img_reference_desc[pyr_lvl]->mem_ptr[0].mem_heap_region);
 
                 dofObj->inFrm[DOF_INPUT_CURRENT_IMG].addr[0] =
                     tivxMemShared2PhysPtr(
                         img_current_desc[pyr_lvl]->mem_ptr[0].shared_ptr,
-                        img_current_desc[pyr_lvl]->mem_ptr[0].mem_heap_region);
+                        (int32_t)img_current_desc[pyr_lvl]->mem_ptr[0].mem_heap_region);
             }
             else
             {
-                if(pyr_lvl > 0)
+                if(pyr_lvl > 0U)
                 {
                     dofObj->inFrm[DOF_INPUT_REFERENCE_IMG].addr[0] =
                         tivxMemShared2PhysPtr(
-                            img_reference_desc[pyr_lvl-1]->mem_ptr[0].shared_ptr,
-                            img_reference_desc[pyr_lvl-1]->mem_ptr[0].mem_heap_region);
+                            img_reference_desc[pyr_lvl-1U]->mem_ptr[0].shared_ptr,
+                            (int32_t)img_reference_desc[pyr_lvl-1U]->mem_ptr[0].mem_heap_region);
 
                     dofObj->inFrm[DOF_INPUT_CURRENT_IMG].addr[0] =
                         tivxMemShared2PhysPtr(
-                            img_current_desc[pyr_lvl-1]->mem_ptr[0].shared_ptr,
-                            img_current_desc[pyr_lvl-1]->mem_ptr[0].mem_heap_region);
+                            img_current_desc[pyr_lvl-1U]->mem_ptr[0].shared_ptr,
+                            (int32_t)img_current_desc[pyr_lvl-1U]->mem_ptr[0].mem_heap_region);
                 }
                 else
                 {
                     dofObj->inFrm[DOF_INPUT_REFERENCE_IMG].addr[0] =
                         tivxMemShared2PhysPtr(
                             input_reference_base_desc->mem_ptr[0].shared_ptr,
-                            input_reference_base_desc->mem_ptr[0].mem_heap_region);
+                            (int32_t)input_reference_base_desc->mem_ptr[0].mem_heap_region);
 
                     dofObj->inFrm[DOF_INPUT_CURRENT_IMG].addr[0] =
                         tivxMemShared2PhysPtr(
                             input_current_base_desc->mem_ptr[0].shared_ptr,
-                            input_current_base_desc->mem_ptr[0].mem_heap_region);
+                            (int32_t)input_current_base_desc->mem_ptr[0].mem_heap_region);
                 }
             }
 
             dofObj->inFrm[DOF_INPUT_TEMPORAL_PRED].addr[0] = NULL;
             dofObj->inFrm[DOF_INPUT_SOF].addr[0] = NULL;
 
-            if(0 == pyr_lvl)
+            if(0U == pyr_lvl)
             {
                 if(NULL != flow_vector_in_desc)
                 {
                     dofObj->inFrm[DOF_INPUT_TEMPORAL_PRED].addr[0] =
                         tivxMemShared2PhysPtr(
                             flow_vector_in_desc->mem_ptr[0].shared_ptr,
-                            flow_vector_in_desc->mem_ptr[0].mem_heap_region);
+                            (int32_t)flow_vector_in_desc->mem_ptr[0].mem_heap_region);
                 }
                 if(NULL != sparse_of_map_desc)
                 {
                     dofObj->inFrm[DOF_INPUT_SOF].addr[0] =
                         tivxMemShared2PhysPtr(
                             sparse_of_map_desc->mem_ptr[0].shared_ptr,
-                            sparse_of_map_desc->mem_ptr[0].mem_heap_region);
+                            (int32_t)sparse_of_map_desc->mem_ptr[0].mem_heap_region);
                 }
                 dofObj->inFrm[DOF_INPUT_PYRAMID_PRED].addr[0] =
                                                             dofObj->inter_buff1;
@@ -457,7 +457,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 dofObj->outFrm.addr[0] =
                         tivxMemShared2PhysPtr(
                             flow_vector_out_desc->mem_ptr[0].shared_ptr,
-                            flow_vector_out_desc->mem_ptr[0].mem_heap_region);
+                            (int32_t)flow_vector_out_desc->mem_ptr[0].mem_heap_region);
             }
             else
             {
@@ -520,7 +520,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_DOF,
-            cur_time,
+            (uint32_t)cur_time,
             dofObj->dofPrms.coreCfg.width*dofObj->dofPrms.coreCfg.height /* pixels processed */
             );
 
@@ -550,7 +550,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         }
 
-        if(1 == dofObj->isFirstFrame)
+        if(1U == dofObj->isFirstFrame)
         {
             /* This was the first iteration, so the Temporal predictor was
                 turned off, Enable the Temporal predictor if configured */
@@ -576,7 +576,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             update_prms = 1;
         }
 
-        if(1 == update_prms)
+        if(1U == update_prms)
         {
             status = tivxDmpacDofUpdateCfgPrms(dofObj, dofAppPrms, flow_vector_out_desc->format);
         }
@@ -633,7 +633,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 
             if(NULL != obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX])
             {
-                dofObj->total_pyr_lvl = input_current_desc->num_levels + 1;
+                dofObj->total_pyr_lvl = input_current_desc->num_levels + 1U;
             }
             else
             {
@@ -767,14 +767,14 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     {
         /* Size = base image width * height * 2 bytes/pixel / 4 (half scale is largest size needed) */
         dofObj->inter_buff_size = (dofObj->dofPrms.coreCfg.width *
-                                   dofObj->dofPrms.coreCfg.height) / 2;
+                                   dofObj->dofPrms.coreCfg.height) / 2U;
 
         status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
         if ((vx_status)VX_SUCCESS == status)
         {
             dofObj->inter_buff1 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
-                                                tBuffPtr.mem_heap_region);
+                                                (int32_t)tBuffPtr.mem_heap_region);
 
             status = tivxMemBufferAlloc(&tBuffPtr, dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
@@ -788,7 +788,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             dofObj->inter_buff2 =
                         tivxMemShared2PhysPtr(tBuffPtr.shared_ptr,
-                                                tBuffPtr.mem_heap_region);
+                                                (int32_t)tBuffPtr.mem_heap_region);
         }
         else
         {
@@ -860,13 +860,13 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
                 tivxEventDelete(&dofObj->waitForProcessCmpl);
             }
 
-            if (NULL != dofObj->inter_buff1)
+            if (NULL != (int32_t)dofObj->inter_buff1)
             {
                 tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff1), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff1 = NULL;
             }
 
-            if (NULL != dofObj->inter_buff2)
+            if (NULL != (int32_t)dofObj->inter_buff2)
             {
                 tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff2), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 dofObj->inter_buff2 = NULL;
@@ -1027,7 +1027,7 @@ static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
             }
         }
 
-        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
+        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
     }
 }
 
@@ -1057,7 +1057,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     if(NULL != input_curr_base_desc)
     {
         /* Information is in base input */
-        dofPrms->tPrmdLvl = input_curr_desc->num_levels + 1;
+        dofPrms->tPrmdLvl = input_curr_desc->num_levels + 1U;
 
         dofPrms->coreCfg.width = input_curr_base_desc->imagepatch_addr[0U].dim_x;
         dofPrms->coreCfg.height = input_curr_base_desc->imagepatch_addr[0U].dim_y;
@@ -1089,17 +1089,17 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     dofPrms->coreCfg.bottomSearchRange = dofAppPrms->vertical_search_range[1];
     dofPrms->coreCfg.medianFilter = dofAppPrms->median_filter_enable;
 
-    if(0 == dofAppPrms->motion_direction)
+    if(0U == dofAppPrms->motion_direction)
     {
         dofPrms->coreCfg.currentCensusTransform = 0;
         dofPrms->coreCfg.referenceCensusTransform = 0;
     }
-    else if(1 == dofAppPrms->motion_direction)
+    else if(1U == dofAppPrms->motion_direction)
     {
         dofPrms->coreCfg.currentCensusTransform = 0;
         dofPrms->coreCfg.referenceCensusTransform = 1;
     }
-    else if(2 == dofAppPrms->motion_direction)
+    else if(2U == dofAppPrms->motion_direction)
     {
         dofPrms->coreCfg.currentCensusTransform = 1;
         dofPrms->coreCfg.referenceCensusTransform = 0;
@@ -1113,7 +1113,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     dofPrms->coreCfg.motionSmoothnessFactor = dofAppPrms->motion_smoothness_factor;
     dofPrms->coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
 
-    dofPrms->coreCfg.lkConfidanceScore = (fv_out_desc->format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
+    dofPrms->coreCfg.lkConfidanceScore = (fv_out_desc->format == (vx_df_image)VX_DF_IMAGE_U16) ? 0U : 1U;
 
     if((NULL != obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX]) &&
        (NULL != sofAppPrms))
@@ -1122,7 +1122,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                         obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
 
         dofPrms->inOutImgFmt[0][DOF_INPUT_SOF].pitch[0U] =
-                                sof_map_desc->imagepatch_addr[0].stride_y;
+                                (uint32_t)sof_map_desc->imagepatch_addr[0].stride_y;
 
         dofPrms->coreCfg.enableSof   = 1u;
         dofPrms->coreCfg.maxMVsInSof = sofAppPrms->sof_max_pix_in_row;
@@ -1138,7 +1138,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
        (DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2))
     {
         dofPrms->inOutImgFmt[0][DOF_INPUT_TEMPORAL_PRED].pitch[0U] =
-                                    fv_out_desc->imagepatch_addr[0].stride_y;
+                                    (uint32_t)fv_out_desc->imagepatch_addr[0].stride_y;
         dofPrms->coreCfg.enableSof = 0u;
     }
     else
@@ -1147,12 +1147,12 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     }
 
     dofPrms->inOutImgFmt[0][DOF_OUTPUT].pitch[0U] =
-                                    fv_out_desc->imagepatch_addr[0].stride_y;
+                                    (uint32_t)fv_out_desc->imagepatch_addr[0].stride_y;
 
     for(pyr_cnt = 0; pyr_cnt < dofPrms->tPrmdLvl; pyr_cnt++)
     {
         /* Set for Temporal and SOF image */
-        if(0 != pyr_cnt)
+        if(0U != pyr_cnt)
         {
             dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_TEMPORAL_PRED].pitch[0U] = 0U;
             dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_SOF].pitch[0U] = 0U;
@@ -1169,9 +1169,9 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
             tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt]);
 
             dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
-                        img_current_desc[pyr_cnt]->imagepatch_addr[0].stride_y;
+                        (uint32_t)img_current_desc[pyr_cnt]->imagepatch_addr[0].stride_y;
 
-            if(pyr_cnt > 0)
+            if(pyr_cnt > 0U)
             {
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
                     img_current_desc[pyr_cnt]->imagepatch_addr[0].dim_x * 2u;
@@ -1179,18 +1179,18 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
         }
         else
         {
-            if(pyr_cnt > 0)
+            if(pyr_cnt > 0U)
             {
-                tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt-1]);
+                tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt-1U]);
 
                 fmt = &dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_REFERENCE_IMG];
-                tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt-1]);
+                tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt-1U]);
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
-                        img_current_desc[pyr_cnt-1]->imagepatch_addr[0].stride_y;
+                        (uint32_t)img_current_desc[pyr_cnt-1U]->imagepatch_addr[0].stride_y;
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
-                    img_current_desc[pyr_cnt-1]->imagepatch_addr[0].dim_x * 2u;
+                    (uint32_t)img_current_desc[pyr_cnt-1U]->imagepatch_addr[0].dim_x * 2u;
             }
             else
             {
@@ -1200,7 +1200,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                 tivxDmpacDofSetFmt(fmt, input_curr_base_desc);
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
-                        input_curr_base_desc->imagepatch_addr[0].stride_y;
+                        (uint32_t)input_curr_base_desc->imagepatch_addr[0].stride_y;
             }
         }
 
@@ -1252,17 +1252,17 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
         dof_obj->dofPrms.coreCfg.medianFilter =
                                     dofAppPrms->median_filter_enable;
 
-        if(0 == dofAppPrms->motion_direction)
+        if(0U == dofAppPrms->motion_direction)
         {
             dof_obj->dofPrms.coreCfg.currentCensusTransform = 0;
             dof_obj->dofPrms.coreCfg.referenceCensusTransform = 0;
         }
-        else if(1 == dofAppPrms->motion_direction)
+        else if(1U == dofAppPrms->motion_direction)
         {
             dof_obj->dofPrms.coreCfg.currentCensusTransform = 0;
             dof_obj->dofPrms.coreCfg.referenceCensusTransform = 1;
         }
-        else if(2 == dofAppPrms->motion_direction)
+        else if(2U == dofAppPrms->motion_direction)
         {
             dof_obj->dofPrms.coreCfg.currentCensusTransform = 1;
             dof_obj->dofPrms.coreCfg.referenceCensusTransform = 0;
@@ -1277,7 +1277,7 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
                                     dofAppPrms->motion_smoothness_factor;
         dof_obj->dofPrms.coreCfg.iirFilterAlpha = dofAppPrms->iir_filter_alpha;
         dof_obj->dofPrms.coreCfg.lkConfidanceScore =
-                    (output_format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
+                    (output_format == (vx_df_image)VX_DF_IMAGE_U16) ? 0U : 1U;
 
         fvid2_status = Fvid2_control(dof_obj->handle,
                     VHWA_M2M_IOCTL_DOF_SET_PARAMS, &dof_obj->dofPrms, NULL);
