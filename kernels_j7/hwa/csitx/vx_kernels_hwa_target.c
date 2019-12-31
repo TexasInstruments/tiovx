@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,98 +60,26 @@
  *
  */
 
-#ifndef J7_KERNELS_H_
-#define J7_KERNELS_H_
-
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
- */
-
-/*! \brief Name for OpenVX Extension kernel module: hwa
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_HWA    "hwa"
-
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
-
-/*! \brief dof_visualize kernel name
- *  \ingroup group_vision_function_dmpac_dof
- */
-#define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! End of group_vision_function_hwa */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the hwa kernels into the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the hwa kernels from the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLUnLoadKernels(vx_context context);
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include <TI/j7_csitx.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_csitx_priv.h"
 
 
 
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelCsitx, &tivxRemoveTargetKernelCsitx},
+};
 
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxUnRegisterTIDLTargetKernels(void);
-
-
-#ifdef __cplusplus
+void tivxRegisterHwaTargetCsitxKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
-#endif
 
-#endif /* J7_KERNELS_H_ */
-
+void tivxUnRegisterHwaTargetCsitxKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

@@ -76,13 +76,15 @@ TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaVpacMscScaleMultiOutput)
 TESTCASE(tivxHwaVpacMscPyramid)
-
 #if defined(J7)
 #if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
 TESTCASE(tivxHwaDisplay)
 #endif
 #if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
 TESTCASE(tivxHwaCapture)
+#endif
+#if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
+TESTCASE(tivxHwaCsitxCsirx)
 #endif
 /* Note: the following are implemented as applications in vision apps */
 #if 0

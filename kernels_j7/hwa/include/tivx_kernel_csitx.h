@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,98 +60,32 @@
  *
  */
 
-#ifndef J7_KERNELS_H_
-#define J7_KERNELS_H_
-
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+#ifndef _TIVX_KERNEL_CSITX_
+#define _TIVX_KERNEL_CSITX_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
- */
 
-/*! \brief Name for OpenVX Extension kernel module: hwa
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_HWA    "hwa"
+#define TIVX_KERNEL_CSITX_CONFIGURATION_IDX (0U)
 
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
-
-/*! \brief dof_visualize kernel name
- *  \ingroup group_vision_function_dmpac_dof
- */
-#define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! End of group_vision_function_hwa */
+#define TIVX_KERNEL_CSITX_INPUT_IDX (1U)
 
 
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the hwa kernels into the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the hwa kernels from the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLUnLoadKernels(vx_context context);
+#define TIVX_KERNEL_CSITX_MAX_PARAMS (2U)
 
 
+#define TIVX_CSITX_MIN_PIPEUP_BUFS (0U)
 
-
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxUnRegisterTIDLTargetKernels(void);
+#define TIVX_CSITX_MAX_NUM_BUFS (10U)
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* J7_KERNELS_H_ */
+
+#endif /* _TIVX_KERNEL_CSITX_ */
 
 

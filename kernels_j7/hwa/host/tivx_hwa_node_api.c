@@ -336,3 +336,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVideoEncoderNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_object_array             input)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CSITX_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

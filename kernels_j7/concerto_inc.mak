@@ -32,6 +32,7 @@ STATIC_LIBS += vx_target_kernels_j7_arm
 ifeq ($(TARGET_PLATFORM),J7)
 STATIC_LIBS += vx_target_kernels_display
 STATIC_LIBS += vx_target_kernels_capture
+STATIC_LIBS += vx_target_kernels_csitx
 
 STATIC_LIBS += vx_target_kernels_vdec
 STATIC_LIBS += drv_fw_decoder_tirtos

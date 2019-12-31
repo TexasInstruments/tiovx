@@ -90,7 +90,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             flow_vector_rgb,
                                       vx_image             confidence_image);
 
-
 #ifdef __cplusplus
 }
 #endif

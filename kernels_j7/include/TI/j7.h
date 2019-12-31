@@ -73,6 +73,7 @@
 #include <TI/j7_vpac_nf.h>
 #include <TI/j7_capture.h>
 #include <TI/j7_display.h>
+#include <TI/j7_csitx.h>
 #include <TI/j7_video_decoder.h>
 #include <TI/j7_video_encoder.h>
 #include <TI/j7_nodes.h>
@@ -171,6 +172,10 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VENC2     "VENC2"
+/*! \brief Target name for CSITX
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CSITX     "CSITX"
 
 
 /*! \brief CPU ID for supported CPUs

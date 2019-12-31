@@ -84,7 +84,8 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
     {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
     {&tivxAddKernelVideoDecoder, &tivxRemoveKernelVideoDecoder},
-    {&tivxAddKernelVideoEncoder, &tivxRemoveKernelVideoEncoder}
+    {&tivxAddKernelVideoEncoder, &tivxRemoveKernelVideoEncoder},
+    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -183,7 +184,7 @@ void tivxHwaUnLoadKernels(vx_context context)
         /*tivxUnRegisterHwaTargetVencKernels();*/
 
         #endif
-
+       
         gIsHwaKernelsLoad = 0U;
     }
 }
