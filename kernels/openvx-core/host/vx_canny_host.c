@@ -306,10 +306,10 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;
 
-        prms.top_pad = ((gradient_size_val - 1U) / 2U) + 1U;
-        prms.bot_pad = ((gradient_size_val - 1U) / 2U) + 1U;
-        prms.left_pad = ((gradient_size_val - 1U) / 2U) + 1U;
-        prms.right_pad = ((gradient_size_val - 1U) / 2U) + 1U;
+        prms.top_pad = (((vx_uint32)gradient_size_val - 1U) / 2U) + 1U;
+        prms.bot_pad = (((vx_uint32)gradient_size_val - 1U) / 2U) + 1U;
+        prms.left_pad = (((vx_uint32)gradient_size_val - 1U) / 2U) + 1U;
+        prms.right_pad = (((vx_uint32)gradient_size_val - 1U) / 2U) + 1U;
         prms.border_mode = (vx_enum)VX_BORDER_UNDEFINED;
 
         tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));

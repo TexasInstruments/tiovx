@@ -192,8 +192,8 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
 
         for (i = 0U; i < laplacian_levels; i++)
         {
-            w = (vx_uint32)ceilf(w * laplacian_scale);
-            h = (vx_uint32)ceilf(h * laplacian_scale);
+            w = (vx_uint32)ceilf((vx_float32)w * laplacian_scale);
+            h = (vx_uint32)ceilf((vx_float32)h * laplacian_scale);
         }
 
         if ((vx_bool)vx_false_e == is_virtual)

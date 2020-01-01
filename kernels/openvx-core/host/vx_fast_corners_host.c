@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxAddKernelFastCornersValidate(vx_node node,
 
     vx_bool is_virtual = (vx_bool)vx_false_e;
 
-    if ( ((num != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS) && (num != (TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS - 1)))
+    if ( ((num != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS) && (num != (TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS - 1U)))
         || (NULL == parameters[TIVX_KERNEL_FAST_CORNERS_INPUT_IDX])
         || (NULL == parameters[TIVX_KERNEL_FAST_CORNERS_STRENGTH_THRESH_IDX])
         || (NULL == parameters[TIVX_KERNEL_FAST_CORNERS_NONMAX_SUPPRESSION_IDX])

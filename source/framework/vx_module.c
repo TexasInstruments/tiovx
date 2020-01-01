@@ -206,7 +206,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
             }
         }
     }
-    if((idx>=dimof(g_module_table)) && (0 == kernels_loaded))
+    if((idx>=dimof(g_module_table)) && (0U == kernels_loaded))
     {
         if ((vx_status)VX_SUCCESS == status)
         {

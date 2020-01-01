@@ -107,13 +107,13 @@ void tivxInitBufParams(
         buf_params[i].dim_y = obj_desc->valid_roi.end_y - obj_desc->valid_roi.start_y;
         buf_params[i].stride_y = obj_desc->imagepatch_addr[i].stride_y;
 
-        if (512 == obj_desc->imagepatch_addr[i].scale_x)
+        if (512U == obj_desc->imagepatch_addr[i].scale_x)
         {
-            buf_params[i].dim_y = buf_params[i].dim_y / 2;
+            buf_params[i].dim_y = buf_params[i].dim_y / 2U;
 
             if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc->format)
             {
-                buf_params[i].dim_x = buf_params[i].dim_x / 2;
+                buf_params[i].dim_x = buf_params[i].dim_x / 2U;
             }
         }
 
@@ -192,23 +192,23 @@ void tivxInitTwoBufParams(
         buf_params0[i].stride_y = obj_desc0->imagepatch_addr[i].stride_y;
         buf_params1[i].stride_y = obj_desc1->imagepatch_addr[i].stride_y;
 
-        if (512 == obj_desc0->imagepatch_addr[i].scale_x)
+        if (512U == obj_desc0->imagepatch_addr[i].scale_x)
         {
-            buf_params0[i].dim_y = buf_params0[i].dim_y / 2;
+            buf_params0[i].dim_y = buf_params0[i].dim_y / 2U;
 
             if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc0->format)
             {
-                buf_params0[i].dim_x = buf_params0[i].dim_x / 2;
+                buf_params0[i].dim_x = buf_params0[i].dim_x / 2U;
             }
         }
 
-        if (512 == obj_desc1->imagepatch_addr[i].scale_x)
+        if (512U == obj_desc1->imagepatch_addr[i].scale_x)
         {
-            buf_params1[i].dim_y = buf_params1[i].dim_y / 2;
+            buf_params1[i].dim_y = buf_params1[i].dim_y / 2U;
 
             if ((vx_df_image)VX_DF_IMAGE_IYUV == obj_desc1->format)
             {
-                buf_params1[i].dim_x = buf_params1[i].dim_x / 2;
+                buf_params1[i].dim_x = buf_params1[i].dim_x / 2U;
             }
         }
 

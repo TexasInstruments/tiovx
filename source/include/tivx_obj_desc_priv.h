@@ -404,27 +404,27 @@ typedef struct _tivx_obj_desc_super_node
  */
 typedef union {
 
-    tivx_obj_desc_cmd_t cmd;
-    tivx_obj_desc_node_t node;
-    tivx_obj_desc_image_t image;
-    tivx_obj_desc_remap_t remap;
-    tivx_obj_desc_matrix_t matrix;
-    tivx_obj_desc_lut_t lut;
-    tivx_obj_desc_pyramid_t pyramid;
-    tivx_obj_desc_convolution_t convolution;
-    tivx_obj_desc_threshold_t threshold;
-    tivx_obj_desc_distribution_t distribution;
-    tivx_obj_desc_array_t array;
-    tivx_obj_desc_user_data_object_t user_data_object;
-    tivx_obj_desc_raw_image_t raw_image;
-    tivx_obj_desc_object_array_t objarray;
-    tivx_obj_desc_tensor_t tensor;
-    tivx_obj_desc_scalar_t scalar;
-    tivx_obj_desc_kernel_name_t kernel_name;
-    tivx_obj_desc_queue_t obj_desc_queue;
-    tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q;
-    tivx_obj_desc_graph_t obj_desc_graph;
-    tivx_obj_desc_super_node_t super_node;
+    tivx_obj_desc_cmd_t cmd_union;
+    tivx_obj_desc_node_t node_union;
+    tivx_obj_desc_image_t image_union;
+    tivx_obj_desc_remap_t remap_union;
+    tivx_obj_desc_matrix_t matrix_union;
+    tivx_obj_desc_lut_t lut_union;
+    tivx_obj_desc_pyramid_t pyramid_union;
+    tivx_obj_desc_convolution_t convolution_union;
+    tivx_obj_desc_threshold_t threshold_union;
+    tivx_obj_desc_distribution_t distribution_union;
+    tivx_obj_desc_array_t array_union;
+    tivx_obj_desc_user_data_object_t user_data_object_union;
+    tivx_obj_desc_raw_image_t raw_image_union;
+    tivx_obj_desc_object_array_t objarray_union;
+    tivx_obj_desc_tensor_t tensor_union;
+    tivx_obj_desc_scalar_t scalar_union;
+    tivx_obj_desc_kernel_name_t kernel_name_union;
+    tivx_obj_desc_queue_t obj_desc_queue_union;
+    tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q_union;
+    tivx_obj_desc_graph_t obj_desc_graph_union;
+    tivx_obj_desc_super_node_t super_node_union;
 
     uint8_t rsv[TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE];
 

@@ -227,7 +227,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
                 }
             }
 
-            output_w_meta = input_w / 2;
+            output_w_meta = input_w / 2U;
             output_h_meta = input_h;
         }
         else

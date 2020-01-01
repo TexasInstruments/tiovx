@@ -577,7 +577,7 @@ static vx_status tivxKernelConfigChannelCombineValidRect(tivxKernelValidRectPara
             }
             else
             {
-                if ((i == 0) ||
+                if ((i == 0U) ||
                     ((fmt != (vx_df_image)VX_DF_IMAGE_IYUV) && (fmt != (vx_df_image)VX_DF_IMAGE_NV12) &&
                      (fmt != (vx_df_image)VX_DF_IMAGE_NV21) && (fmt != (vx_df_image)VX_DF_IMAGE_YUYV) && (fmt != (vx_df_image)VX_DF_IMAGE_UYVY)))
                 {

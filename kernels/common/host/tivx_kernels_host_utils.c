@@ -196,9 +196,9 @@ vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 output
 
         /* Check for valid frame sizes */
         if ( ((expectedWidth == outputWidth) && (expectedHeight == outputHeight)) ||
-             ((0 == outputWidth)             && (0 == outputHeight)) ||
-             ((expectedWidth == outputWidth) && (0 == outputHeight)) ||
-             ((0 == outputWidth)             && (expectedHeight == outputHeight)) )
+             ((0U == outputWidth)             && (0U == outputHeight)) ||
+             ((expectedWidth == outputWidth) && (0U == outputHeight)) ||
+             ((0U == outputWidth)             && (expectedHeight == outputHeight)) )
         {
             status = (vx_status)VX_SUCCESS;
         }
