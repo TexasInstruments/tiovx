@@ -79,8 +79,6 @@
 #define CAPTURE_INST_ID_INVALID                         (0xFFFFU)
 
 typedef struct tivxCaptureParams_t tivxCaptureParams;
-static uint32_t tivxCaptureMapInstId(uint32_t instId);
-static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
 
 typedef struct
 {
@@ -179,6 +177,8 @@ static void tivxCaptureGetChannelIndices(tivxCaptureParams *prms,
 static uint32_t tivxCaptureGetNodeChannelNum(tivxCaptureParams *prms,
                                              uint32_t instId,
                                              uint32_t chId);
+static uint32_t tivxCaptureMapInstId(uint32_t instId);
+static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
 
 /**
  *******************************************************************************

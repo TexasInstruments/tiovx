@@ -394,7 +394,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
         if (NULL != sparse_of_map)
         {
-            if ((sparse_of_map_w*8) != input_current_w)
+            if ((sparse_of_map_w*8U) != input_current_w)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' width should be == 'input_current' width / 8\n");
@@ -450,11 +450,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         }
         else
         {
-            if ( (input_current_levels+1) > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
+            if ( (input_current_levels+1U) > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of total pyramid levels %d exceeds max supported values of %d !!!\n",
-                    input_current_levels+1,
+                    input_current_levels+1U,
                     TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
                     );
             }

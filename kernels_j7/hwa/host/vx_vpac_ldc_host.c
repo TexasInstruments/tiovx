@@ -220,13 +220,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 or VX_TYPE_FLOAT32 \n");
             }
-            if ((2 != warp_matrix_w) && (3 != warp_matrix_w))
+            if ((2U != warp_matrix_w) && (3U != warp_matrix_w))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "'warp_matrix' columns should be 2 (affine warp) or 3 (perspective warp) \n");
             }
-            if (3 != warp_matrix_h)
+            if (3U != warp_matrix_h)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,

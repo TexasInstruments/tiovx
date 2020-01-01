@@ -108,7 +108,7 @@ void tivxUnRegisterHwaKernels(void)
 
 void tivxHwaLoadKernels(vx_context context)
 {
-    if ((0 == gIsHwaKernelsLoad) && (NULL != context))
+    if ((0U == gIsHwaKernelsLoad) && (NULL != context))
     {
         void tivxSetSelfCpuId(vx_enum cpu_id);
 

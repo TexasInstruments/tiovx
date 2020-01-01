@@ -496,9 +496,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     {
         if (NULL != output1)
         {
-            if((0 == params.mux_output1) && (0 == params.chroma_mode))
+            if((0U == params.mux_output1) && (0U == params.chroma_mode))
             {
-                if ((output1_h*2) != raw_h)
+                if ((output1_h*2U) != raw_h)
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "Parameter 'output1' should have half the height of 'raw'\n");
@@ -515,9 +515,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
         if (NULL != output3)
         {
-            if((0 == params.mux_output3) && (0 == params.chroma_mode))
+            if((0U == params.mux_output3) && (0U == params.chroma_mode))
             {
-                if ((output3_h*2) != raw_h)
+                if ((output3_h*2U) != raw_h)
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "Parameter 'output3' should have half the height of 'raw'\n");
