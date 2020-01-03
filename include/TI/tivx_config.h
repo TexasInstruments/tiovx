@@ -210,7 +210,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_TENSOR_MAX_OBJECTS                     (48u)
+#define TIVX_TENSOR_MAX_OBJECTS                     (64u)
 
 /*!
  * \brief Max number lut objects supported
