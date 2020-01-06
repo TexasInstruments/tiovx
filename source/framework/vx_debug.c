@@ -39,7 +39,7 @@ static vx_uint32 g_debug_zonemask = 0;
 
 #define ZONE_BIT(zone)  ((vx_uint32)1U << (zone))
 
-#define _STR2(x) {#x, x}
+#define _STR2(x) {#x, (vx_enum)x}
 
 struct vx_string_and_enum_e {
     vx_char name[20];
