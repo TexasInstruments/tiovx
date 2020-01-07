@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -367,8 +368,8 @@ void tivxAddTargetKernelBamConvertDepth(void)
             NULL,
             tivxKernelConvertDepthPreprocessInBamGraph,
             NULL,
-            MAX2(sizeof(BAM_VXLIB_convertDepth_i8u_o16s_params),
-                 sizeof(BAM_VXLIB_convertDepth_i16s_o8u_params)),
+            MAX2((int32_t)sizeof(BAM_VXLIB_convertDepth_i8u_o16s_params),
+                 (int32_t)sizeof(BAM_VXLIB_convertDepth_i16s_o8u_params)),
             NULL);
     }
 }
@@ -410,7 +411,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxConvertDepthParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if (dst->format == (vx_df_image)VX_DF_IMAGE_S16)
@@ -418,11 +419,11 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
                 BAM_VXLIB_convertDepth_i8u_o16s_params *kernel_params = (BAM_VXLIB_convertDepth_i8u_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_convertDepth_i8u_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_convertDepth_i8u_o16s_params)))
                 {
                     kernel_params->shift = sc_desc[1]->data.s32;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVERTDEPTH_I8U_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CONVERTDEPTH_I8U_O16S;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void *)kernel_params;
 
@@ -439,12 +440,12 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
                 BAM_VXLIB_convertDepth_i16s_o8u_params *kernel_params = (BAM_VXLIB_convertDepth_i16s_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_convertDepth_i16s_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_convertDepth_i16s_o8u_params)))
                 {
 
                     kernel_params->shift = sc_desc[1]->data.s32;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVERTDEPTH_I16S_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CONVERTDEPTH_I16S_O8U;
 
                     if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc_desc[0]->data.enm)
                     {
@@ -466,7 +467,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthCreateInBamGraph(
                 }
             }
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -507,11 +508,11 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthGetNodePort(
         {
             case TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CONVERTDEPTH_I8U_O16S_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CONVERTDEPTH_I8U_O16S_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CONVERTDEPTH_I8U_O16S_OUTPUT_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CONVERTDEPTH_I8U_O16S_OUTPUT_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelConvertDepthGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

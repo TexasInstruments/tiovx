@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -337,8 +338,8 @@ static vx_status VX_CALLBACK tivxKernelOrCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxOrParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_OR_I8U_I8U_O8U;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_OR_I8U_I8U_O8U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             BAM_VXLIB_or_i8u_i8u_o8u_getKernelInfo(NULL,
@@ -346,7 +347,7 @@ static vx_status VX_CALLBACK tivxKernelOrCreateInBamGraph(
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -387,15 +388,15 @@ static vx_status VX_CALLBACK tivxKernelOrGetNodePort(
         {
             case TIVX_KERNEL_OR_IN1_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_OR_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_OR_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_OR_IN2_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_OR_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_OR_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_OR_OUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_OR_I8U_I8U_O8U_OUTPUT_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_OR_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelOrGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

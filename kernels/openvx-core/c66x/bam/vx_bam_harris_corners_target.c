@@ -212,9 +212,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                 prms->hcd_corners, prms->hcd_strength,
                 prms->vxlib_score.dim_x * prms->vxlib_score.dim_y,
                 &num_corners_hcd, sc_thr->data.f32,
-                (prms->gs/2) + (prms->bs/2), (prms->gs/2) + (prms->bs/2));
+                ((uint16_t)prms->gs/2U) + ((uint16_t)prms->bs/2U), ((uint16_t)prms->gs/2U) + ((uint16_t)prms->bs/2U));
 
-            if (status_vxlib != (vx_status)VXLIB_SUCCESS)
+            if ((vx_status)status_vxlib != (vx_status)VXLIB_SUCCESS)
             {
                 status = (vx_status)VX_FAILURE;
             }
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                     prms->nms_strength, num_corners_hcd, &num_corners,
                     prms->nms_scratch, prms->nms_scratch_size, prms->rad, NULL);
 
-                if (status_vxlib != (vx_status)VXLIB_SUCCESS)
+                if ((vx_status)status_vxlib != (vx_status)VXLIB_SUCCESS)
                 {
                     status = (vx_status)VX_FAILURE;
                 }
@@ -256,9 +256,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
             kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
-                kp->x = rect.start_x + (prms->nms_corners[i] & 0xFFFFu);
-                kp->y = rect.start_y + ((prms->nms_corners[i] & 0xFFFF0000u) >>
-                    16u);
+                kp->x = (int32_t)rect.start_x + ((int32_t)prms->nms_corners[i] & (int32_t)0xFFFFU);
+                kp->y = (int32_t)rect.start_y + (((int32_t)prms->nms_corners[i] & (int32_t)0xFFFF0000U) >>
+                    16);
                 kp->strength = prms->nms_strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;
@@ -337,24 +337,24 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             memset(prms, 0, sizeof(tivxHarrisCornersParams));
 
             BAM_NodeParams node_list[] = { \
-                {SOURCE_NODE, BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
-                {SOBEL_NODE, BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S, NULL}, \
-                {SCORE_NODE, BAM_KERNELID_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F, NULL}, \
-                {SINK_NODE, BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
+                {SOURCE_NODE, (uint32_t)BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
+                {SOBEL_NODE, (uint32_t)BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S, NULL}, \
+                {SCORE_NODE, (uint32_t)BAM_KERNELID_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F, NULL}, \
+                {SINK_NODE, (uint32_t)BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
                 {BAM_END_NODE_MARKER,   0,                          NULL},\
             };
 
-            prms->gs = sc_gs->data.s32;
-            prms->bs = sc_bs->data.s32;
+            prms->gs = (uint32_t)sc_gs->data.s32;
+            prms->bs = (uint32_t)sc_bs->data.s32;
 
             harris_score_kernel_params.sensitivity   = sc_sens->data.f32;
-            harris_score_kernel_params.gradient_size = prms->gs;
-            harris_score_kernel_params.block_size    = prms->bs;
+            harris_score_kernel_params.gradient_size = (uint8_t)prms->gs;
+            harris_score_kernel_params.block_size    = (uint8_t)prms->bs;
 
             /* Update the Sobel and harris score type accordingly */
-            if(3 == prms->gs)
+            if(3U == prms->gs)
             {
-                node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+                node_list[SOBEL_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
                     &kernel_details[SOBEL_NODE].kernel_info);
 
@@ -362,9 +362,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                     &harris_score_kernel_params,
                     &kernel_details[SCORE_NODE].kernel_info);
             }
-            else if(5 == prms->gs)
+            else if(5U == prms->gs)
             {
-                node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
+                node_list[SOBEL_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_5x5_i8u_o16s_o16s_getKernelInfo( NULL,
                     &kernel_details[SOBEL_NODE].kernel_info);
 
@@ -374,11 +374,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             }
             else
             {
-                node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O32S_O32S;
+                node_list[SOBEL_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O32S_O32S;
                 BAM_VXLIB_sobel_7x7_i8u_o32s_o32s_getKernelInfo( NULL,
                     &kernel_details[SOBEL_NODE].kernel_info);
 
-                node_list[SCORE_NODE].kernelId = BAM_KERNELID_VXLIB_HARRISCORNERSSCORE_I32S_I32S_O32F;
+                node_list[SCORE_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_HARRISCORNERSSCORE_I32S_I32S_O32F;
                 BAM_VXLIB_harrisCornersScore_i32s_i32s_o32f_getKernelInfo(
                     (BAM_VXLIB_harrisCornersScore_i32s_i32s_o32f_params*)&harris_score_kernel_params,
                     &kernel_details[SCORE_NODE].kernel_info);
@@ -386,15 +386,15 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
             BAM_EdgeParams edge_list[]= {\
                 {{SOURCE_NODE, 0},
-                    {SOBEL_NODE, BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT}},\
+                    {SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT},
-                    {SCORE_NODE, BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_INPUT_X_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT},
+                    {SCORE_NODE, (uint8_t)BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_INPUT_X_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_Y_PORT},
-                    {SCORE_NODE, BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_INPUT_Y_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_Y_PORT},
+                    {SCORE_NODE, (uint8_t)BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_INPUT_Y_PORT}},\
 
-                {{SCORE_NODE, BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_OUTPUT_PORT},
+                {{SCORE_NODE, (uint8_t)BAM_VXLIB_HARRISCORNERSSCORE_I16S_I16S_O32F_OUTPUT_PORT},
                     {SINK_NODE, 0}},\
 
                 {{BAM_END_NODE_MARKER, 0},
@@ -409,14 +409,14 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             tivxInitBufParams(img, &vxlib_src);
 
             prms->vxlib_score.dim_x = img->imagepatch_addr[0].dim_x -
-                (prms->gs - 1) - (prms->bs - 1);
+                (prms->gs - 1U) - (prms->bs - 1U);
             prms->vxlib_score.dim_y = img->imagepatch_addr[0].dim_y -
-                (prms->gs - 1) - (prms->bs - 1);
+                (prms->gs - 1U) - (prms->bs - 1U);
             prms->vxlib_score.stride_y =
-                img->imagepatch_addr[0].dim_x * sizeof((uint32_t)VXLIB_FLOAT32);
+                (int32_t)img->imagepatch_addr[0].dim_x * (int32_t)sizeof((uint32_t)VXLIB_FLOAT32);
             prms->vxlib_score.data_type = (uint32_t)VXLIB_FLOAT32;
 
-            prms->hcs_score_size = prms->vxlib_score.stride_y *
+            prms->hcs_score_size = (uint32_t)prms->vxlib_score.stride_y *
                 prms->vxlib_score.dim_y;
 
             prms->hcs_score = tivxMemAlloc(prms->hcs_score_size,
@@ -445,7 +445,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             if ((vx_status)VX_SUCCESS == status)
             {
                 /* TODO: reduce size to save memory */
-                prms->hcd_sprs_size = prms->vxlib_score.stride_y *
+                prms->hcd_sprs_size = (uint32_t)prms->vxlib_score.stride_y *
                     img->imagepatch_addr[0].dim_y;
 
                 prms->hcd_sprs = tivxMemAlloc(prms->hcd_sprs_size,
@@ -494,8 +494,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
 
                     prms->nms_scratch_size = (img->imagepatch_addr[0].dim_x *
                         img->imagepatch_addr[0].dim_y) +
-                            ((((uintptr_t)prms->rad+1)*2)*
-                            (((uintptr_t)prms->rad+1)*2)*2);
+                            ((((uintptr_t)prms->rad+1U)*2U)*
+                            (((uintptr_t)prms->rad+1U)*2U)*2U);
 
                     prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size,
                         (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);

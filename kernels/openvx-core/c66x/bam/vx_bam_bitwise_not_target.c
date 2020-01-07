@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -332,8 +333,8 @@ static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxNotParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NOT_I8U_O8U;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_NOT_I8U_O8U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             BAM_VXLIB_not_i8u_o8u_getKernelInfo(NULL,
@@ -341,7 +342,7 @@ static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -381,12 +382,12 @@ static vx_status VX_CALLBACK tivxKernelNotGetNodePort(
         if(ovx_port == TIVX_KERNEL_NOT_INPUT_IDX)
         {
             *bam_node = prms->bam_node_num;
-            *bam_port = BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT;
+            *bam_port = (uint8_t)BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT;
         }
         else if(ovx_port == TIVX_KERNEL_NOT_OUTPUT_IDX)
         {
             *bam_node = prms->bam_node_num;
-            *bam_port = BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT;
+            *bam_port = (uint8_t)BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT;
         }
         else {
             VX_PRINT(VX_ZONE_ERROR,"tivxKernelNotGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

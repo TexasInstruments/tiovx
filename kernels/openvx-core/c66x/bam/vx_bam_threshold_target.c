@@ -198,9 +198,9 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
             if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
             {
                 BAM_VXLIB_thresholdBinary_i8u_o8u_params kernel_params;
-                kernel_params.threshold  = thr->value;
-                kernel_params.trueValue  = thr->true_value;
-                kernel_params.falseValue = thr->false_value;
+                kernel_params.threshold  = (uint8_t)thr->value;
+                kernel_params.trueValue  = (uint8_t)thr->true_value;
+                kernel_params.falseValue = (uint8_t)thr->false_value;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -214,10 +214,10 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
             else
             {
                 BAM_VXLIB_thresholdRange_i8u_o8u_params kernel_params;
-                kernel_params.upper  = thr->upper;
-                kernel_params.lower  = thr->lower;
-                kernel_params.trueValue  = thr->true_value;
-                kernel_params.falseValue = thr->false_value;
+                kernel_params.upper  = (uint8_t)thr->upper;
+                kernel_params.lower  = (uint8_t)thr->lower;
+                kernel_params.trueValue  = (uint8_t)thr->true_value;
+                kernel_params.falseValue = (uint8_t)thr->false_value;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -316,8 +316,8 @@ void tivxAddTargetKernelBamThreshold(void)
             NULL,
             NULL,
             NULL,
-            MAX2(sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params),
-                 sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)),
+            MAX2((int32_t)sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params),
+                 (int32_t)sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)),
             NULL);
     }
 }
@@ -354,7 +354,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxThresholdParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if ((vx_enum)VX_THRESHOLD_TYPE_BINARY == thr->type)
@@ -362,13 +362,13 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                 BAM_VXLIB_thresholdBinary_i8u_o8u_params *kernel_params = (BAM_VXLIB_thresholdBinary_i8u_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U;
 
-                    kernel_params->threshold  = thr->value;
-                    kernel_params->trueValue  = thr->true_value;
-                    kernel_params->falseValue = thr->false_value;
+                    kernel_params->threshold  = (uint8_t)thr->value;
+                    kernel_params->trueValue  = (uint8_t)thr->true_value;
+                    kernel_params->falseValue = (uint8_t)thr->false_value;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -385,14 +385,14 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                 BAM_VXLIB_thresholdRange_i8u_o8u_params *kernel_params = (BAM_VXLIB_thresholdRange_i8u_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U;
 
-                    kernel_params->upper  = thr->upper;
-                    kernel_params->lower  = thr->lower;
-                    kernel_params->trueValue  = thr->true_value;
-                    kernel_params->falseValue = thr->false_value;
+                    kernel_params->upper  = (uint8_t)thr->upper;
+                    kernel_params->lower  = (uint8_t)thr->lower;
+                    kernel_params->trueValue  = (uint8_t)thr->true_value;
+                    kernel_params->falseValue = (uint8_t)thr->false_value;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
@@ -404,7 +404,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -445,11 +445,11 @@ static vx_status VX_CALLBACK tivxKernelThresholdGetNodePort(
         {
             case TIVX_KERNEL_THRESHOLD_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_THRESHOLDBINARY_I8U_O8U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_THRESHOLDBINARY_I8U_O8U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_THRESHOLD_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_THRESHOLDBINARY_I8U_O8U_OUTPUT_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_THRESHOLDBINARY_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelThresholdGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

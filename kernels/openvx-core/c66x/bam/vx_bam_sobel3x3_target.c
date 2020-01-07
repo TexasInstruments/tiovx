@@ -464,35 +464,35 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxSobelParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
             if ((dstx != NULL) && (dsty != NULL))
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
 
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
             else if (dstx != NULL)
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBELX_3X3_I8U_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBELX_3X3_I8U_O16S;
 
                 BAM_VXLIB_sobelX_3x3_i8u_o16s_getKernelInfo( NULL,
                                                              &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S;
 
                 BAM_VXLIB_sobelY_3x3_i8u_o16s_getKernelInfo( NULL,
                                                              &kernel_details[*bam_node_cnt].kernel_info);
                 prms->switch_buffers = 1;
             }
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -534,17 +534,17 @@ static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
         {
             case TIVX_KERNEL_SOBEL3X3_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
                 break;
             case TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_Y_PORT;
-                if (prms->switch_buffers) {
-                    *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_Y_PORT;
+                if (prms->switch_buffers != 0U) {
+                    *bam_port = (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
                 }
                 break;
             default:

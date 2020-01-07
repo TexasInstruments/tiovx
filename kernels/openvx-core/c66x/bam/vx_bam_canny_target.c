@@ -183,13 +183,13 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         rect = src->valid_roi;
 
         border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
         img_ptrs[0] = src_addr;
@@ -203,12 +203,12 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
                            &num_dbl_thr_items);
 
         /* Edge Tracing requires 1 pixel border of zeros */
-        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
-        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
-        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
+        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2U);
+        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2U);
+        for(i=0; i<(prms->vxlib_dst.dim_y+2U); i++)
         {
-            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
-            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tl[(int32_t)i*prms->vxlib_dst.stride_y] = 0U;
+            border_addr_tr[(int32_t)i*prms->vxlib_dst.stride_y] = 0U;
         }
 
         if ((vx_status)VXLIB_SUCCESS == status)
@@ -280,27 +280,27 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             memset(prms, 0, sizeof(tivxCannyParams));
 
             BAM_NodeParams node_list[] = { \
-                {SOURCE_NODE, BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
-                {SOBEL_NODE, BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O16S_O16S, NULL}, \
-                {NORM_NODE, BAM_KERNELID_VXLIB_NORML2_I16S_I16S_O16U, NULL}, \
-                {NMS_NODE, BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U, NULL}, \
-                {DBTHRESHOLD_NODE, BAM_KERNELID_VXLIB_DOUBLETHRESHOLD_I16S_I8U, NULL}, \
-                {SINK_NODE, BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
+                {SOURCE_NODE, (uint32_t)BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
+                {SOBEL_NODE, (uint32_t)BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O16S_O16S, NULL}, \
+                {NORM_NODE, (uint32_t)BAM_KERNELID_VXLIB_NORML2_I16S_I16S_O16U, NULL}, \
+                {NMS_NODE, (uint32_t)BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U, NULL}, \
+                {DBTHRESHOLD_NODE, (uint32_t)BAM_KERNELID_VXLIB_DOUBLETHRESHOLD_I16S_I8U, NULL}, \
+                {SINK_NODE, (uint32_t)BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
                 {BAM_END_NODE_MARKER,   0,                          NULL},\
             };
 
-            prms->gs = sc_gs->data.s32;
+            prms->gs = (uint32_t)sc_gs->data.s32;
 
             /* Update the Sobel type accordingly */
-            if(3 == prms->gs)
+            if(3U == prms->gs)
             {
-                node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+                node_list[SOBEL_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[SOBEL_NODE].kernel_info);
             }
-            else if(5 == prms->gs)
+            else if(5U == prms->gs)
             {
-                node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
+                node_list[SOBEL_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_5x5_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[SOBEL_NODE].kernel_info);
             }
@@ -313,7 +313,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             /* Update the Norm type accordingly */
             if((vx_enum)VX_NORM_L1 == sc_norm->data.enm)
             {
-                node_list[NORM_NODE].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
+                node_list[NORM_NODE].kernelId = (uint32_t)BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
                 BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
                                                                  &kernel_details[NORM_NODE].kernel_info);
             }
@@ -325,30 +325,30 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             BAM_EdgeParams edge_list[]= {\
                 {{SOURCE_NODE, 0},
-                    {SOBEL_NODE, BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_INPUT_IMAGE_PORT}},\
+                    {SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_INPUT_IMAGE_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT},
-                    {NORM_NODE, BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_X_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT},
+                    {NORM_NODE, (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_X_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT},
-                    {NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_X_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT},
+                    {NMS_NODE, (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_X_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT},
-                    {NORM_NODE, BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_Y_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT},
+                    {NORM_NODE, (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_Y_PORT}},\
 
-                {{SOBEL_NODE, BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT},
-                    {NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_Y_PORT}},\
+                {{SOBEL_NODE, (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT},
+                    {NMS_NODE, (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_Y_PORT}},\
 
-                {{NORM_NODE, BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT},
-                    {NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_MAG_PORT}},\
+                {{NORM_NODE, (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT},
+                    {NMS_NODE, (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_MAG_PORT}},\
 
-                {{NORM_NODE, BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT},
-                    {DBTHRESHOLD_NODE, BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_MAG_PORT}},\
+                {{NORM_NODE, (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT},
+                    {DBTHRESHOLD_NODE, (uint8_t)BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_MAG_PORT}},\
 
-                {{NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT},
-                    {DBTHRESHOLD_NODE, BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_EDGEMAP_PORT}},\
+                {{NMS_NODE, (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT},
+                    {DBTHRESHOLD_NODE, (uint8_t)BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_EDGEMAP_PORT}},\
 
-                {{NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT},
+                {{NMS_NODE, (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT},
                     {SINK_NODE, 0}},\
 
                 {{BAM_END_NODE_MARKER, 0},
@@ -374,11 +374,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 buf_params[0] = &vxlib_src;
                 buf_params[1] = &prms->vxlib_dst;
 
-                dbThreshold_kernel_params.edgeMapLineOffset   = prms->vxlib_dst.stride_y;
+                dbThreshold_kernel_params.edgeMapLineOffset   = (uint16_t)prms->vxlib_dst.stride_y;
                 dbThreshold_kernel_params.edgeList            = prms->edge_list;
                 dbThreshold_kernel_params.edgeListCapacity    = prms->edge_list_size;
-                dbThreshold_kernel_params.loThreshold         = thr->lower;
-                dbThreshold_kernel_params.hiThreshold         = thr->upper;
+                dbThreshold_kernel_params.loThreshold         = (uint32_t)thr->lower;
+                dbThreshold_kernel_params.hiThreshold         = (uint32_t)thr->upper;
 
                 BAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_getKernelInfo( NULL,
                                                                      &kernel_details[NMS_NODE].kernel_info);
@@ -502,7 +502,7 @@ void tivxAddTargetKernelBamCannyEd(void)
             tivxKernelCannyAppendInternalEdges,
             NULL,
             tivxKernelCannyPostprocessInBamGraph,
-            sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params),
+            (int32_t)sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params),
             NULL);
     }
 }
@@ -546,53 +546,53 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
             memset(prms, 0, sizeof(tivxCannyParams));
 
             tivxInitBufParams(dst, &prms->vxlib_dst);
-            prms->gs = sc_gs->data.s32;
+            prms->gs = (uint32_t)sc_gs->data.s32;
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            if(3 == prms->gs)
+            if(3U == prms->gs)
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
-            else if(5 == prms->gs)
+            else if(5U == prms->gs)
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_5x5_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O16S_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_SOBEL_7X7_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_7x7_i8u_o16s_o16s_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
             *bam_node_cnt = *bam_node_cnt + 1;
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if((vx_enum)VX_NORM_L1 == sc_norm->data.enm)
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
                 BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NORML2_I16S_I16S_O16U;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_NORML2_I16S_I16S_O16U;
                 BAM_VXLIB_normL2_i16s_i16s_o16u_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             }
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
             *bam_node_cnt = *bam_node_cnt + 1;
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U;
             BAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_getKernelInfo( NULL,
                                                                  &kernel_details[*bam_node_cnt].kernel_info);
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
@@ -611,17 +611,17 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
                 BAM_VXLIB_doubleThreshold_i16u_i8u_params *kernel_params = (BAM_VXLIB_doubleThreshold_i16u_i8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_doubleThreshold_i16u_i8u_params)))
                 {
-                    node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+                    node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
                     node_list[*bam_node_cnt].kernelArgs = NULL;
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_DOUBLETHRESHOLD_I16S_I8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_DOUBLETHRESHOLD_I16S_I8U;
 
-                    kernel_params->edgeMapLineOffset   = prms->vxlib_dst.stride_y;
+                    kernel_params->edgeMapLineOffset   = (uint16_t)prms->vxlib_dst.stride_y;
                     kernel_params->edgeList            = prms->edge_list;
                     kernel_params->edgeListCapacity    = prms->edge_list_size;
-                    kernel_params->loThreshold         = thr->lower;
-                    kernel_params->hiThreshold         = thr->upper;
+                    kernel_params->loThreshold         = (uint32_t)thr->lower;
+                    kernel_params->hiThreshold         = (uint32_t)thr->upper;
 
                     kernel_details[*bam_node_cnt].compute_kernel_params = kernel_params;
 
@@ -634,7 +634,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreateInBamGraph(
                 }
             }
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -670,46 +670,46 @@ static vx_status VX_CALLBACK tivxKernelCannyAppendInternalEdges(
     if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
         (sizeof(tivxCannyParams) == size))
     {
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
-        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_X_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2U;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_X_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
-        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_X_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_X_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1U;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_X_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
-        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 2U;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_INPUT_Y_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
-        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 3U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_SOBEL_7X7_I8U_O16S_O16S_OUTPUT_Y_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1U;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_Y_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
-        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_MAG_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num - 1U;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_INPUT_MAG_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 2U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_NORML2_I16S_I16S_O16U_OUTPUT_PORT;
         edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_MAG_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_MAG_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
 
-        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 1;
-        edge_list[*bam_edge_cnt].upStreamNode.port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
+        edge_list[*bam_edge_cnt].upStreamNode.id = prms->bam_node_num - 1U;
+        edge_list[*bam_edge_cnt].upStreamNode.port = (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
         edge_list[*bam_edge_cnt].downStreamNode.id = prms->bam_node_num;
-        edge_list[*bam_edge_cnt].downStreamNode.port = BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_EDGEMAP_PORT;
+        edge_list[*bam_edge_cnt].downStreamNode.port = (uint8_t)BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_INPUT_EDGEMAP_PORT;
         *bam_edge_cnt = *bam_edge_cnt + 1;
     }
 
@@ -732,12 +732,12 @@ static vx_status VX_CALLBACK tivxKernelCannyGetNodePort(
         switch (ovx_port)
         {
             case TIVX_KERNEL_CANNY_INPUT_IDX:
-                *bam_node = prms->bam_node_num - 3;
-                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
+                *bam_node = prms->bam_node_num - 3U;
+                *bam_port = (uint8_t)BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_CANNY_OUTPUT_IDX:
-                *bam_node = prms->bam_node_num - 1;
-                *bam_port = BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
+                *bam_node = prms->bam_node_num - 1U;
+                *bam_port = (uint8_t)BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
@@ -792,13 +792,13 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
         rect = src->valid_roi;
 
         border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
         border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
-            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
         tivxBamControlNode(*g_handle, prms->bam_node_num,
@@ -806,12 +806,12 @@ static vx_status VX_CALLBACK tivxKernelCannyPostprocessInBamGraph(
                            &num_dbl_thr_items);
 
         /* Edge Tracing requires 1 pixel border of zeros */
-        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
-        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
-        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
+        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2U);
+        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2U);
+        for(i=0; i<(prms->vxlib_dst.dim_y+2U); i++)
         {
-            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
-            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tl[(int32_t)i*prms->vxlib_dst.stride_y] = 0U;
+            border_addr_tr[(int32_t)i*prms->vxlib_dst.stride_y] = 0U;
         }
 
         if ((vx_status)VXLIB_SUCCESS == status)

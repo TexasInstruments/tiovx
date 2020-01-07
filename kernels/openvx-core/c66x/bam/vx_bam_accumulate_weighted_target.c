@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {

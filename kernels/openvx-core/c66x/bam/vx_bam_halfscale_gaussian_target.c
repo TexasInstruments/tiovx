@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 /* In the case of gaussian size == 3, use 2 separate graphs, one for
  * gaussian 3x3, and another for half scale.  A single graph for these
@@ -104,6 +105,10 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
 static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+void tivxAddTargetKernelBamHalfscaleGaussian(void);
+
+void tivxRemoveTargetKernelBamHalfscaleGaussian(void);
 
 static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -159,14 +164,14 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
 
         if( gsize != NULL)
         {
-            gsize_value = gsize->data.s32;
+            gsize_value = (uint32_t)gsize->data.s32;
         }
 
-        if (gsize_value == 1)
+        if (gsize_value == 1U)
         {
             img_ptrs[1] = dst_addr;
         }
-        else if (gsize_value == 3)
+        else if (gsize_value == 3U)
         {
 #if TWO_BAM_GRAPHS
             img_ptrs[1] = (vx_uint8*)(prms->scratch + src->imagepatch_addr[0].stride_y + 1);
@@ -175,13 +180,14 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
 #endif
 
         }
-        else if (gsize_value == 5)
+        else if (gsize_value == 5U)
         {
             dst_addr = (vx_uint8*)(dst_addr + dst->imagepatch_addr[0].stride_y + 1);
             img_ptrs[1] = dst_addr;
         }
         else
         {
+            /* do nothing */
         }
 
         img_ptrs[0] = src_addr;
@@ -190,7 +196,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
         status  = tivxBamProcessGraph(prms->graph_handle);
 
 #if TWO_BAM_GRAPHS
-        if(gsize_value == 3)
+        if(gsize_value == 3U)
         {
             img_ptrs[0] = prms->scratch;
             img_ptrs[1] = dst_addr;
@@ -265,8 +271,8 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
             {
                 BAM_VXLIB_scaleImageNearest_i8u_o8u_params kernel_params;
 
-                kernel_params.xScale = 2;
-                kernel_params.yScale = 2;
+                kernel_params.xScale = 2.0f;
+                kernel_params.yScale = 2.0f;
                 kernel_params.srcOffsetX = 0;
                 kernel_params.srcOffsetY = 0;
                 kernel_params.dstOffsetX = 0;
@@ -288,11 +294,11 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
                 VXLIB_bufParams2D_t vxlib_int;
                 BAM_VXLIB_scaleImageNearest_i8u_o8u_params kernel_params;
 
-                prms->scratchSize = vxlib_src.dim_y*vxlib_src.stride_y;
+                prms->scratchSize = vxlib_src.dim_y*(uint32_t)vxlib_src.stride_y;
                 prms->scratch = tivxMemAlloc(prms->scratchSize, (vx_enum)TIVX_MEM_EXTERNAL);
 
-                kernel_params.xScale = 2;
-                kernel_params.yScale = 2;
+                kernel_params.xScale = 2.0f;
+                kernel_params.yScale = 2.0f;
                 kernel_params.srcOffsetX = 0;
                 kernel_params.srcOffsetY = 0;
                 kernel_params.dstOffsetX = 0;
@@ -300,8 +306,8 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
-                vxlib_int.dim_x = src->imagepatch_addr[0].dim_x-2;
-                vxlib_int.dim_y = src->imagepatch_addr[0].dim_y-2;
+                vxlib_int.dim_x = src->imagepatch_addr[0].dim_x-2U;
+                vxlib_int.dim_y = src->imagepatch_addr[0].dim_y-2U;
                 vxlib_int.stride_y = src->imagepatch_addr[0].stride_y;
                 vxlib_int.data_type = (uint32_t)VXLIB_UINT8;
 
@@ -392,8 +398,8 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
             }
             else if (5 == gsize_value)
             {
-                vxlib_dst.dim_x -= 2;
-                vxlib_dst.dim_y -= 2;
+                vxlib_dst.dim_x -= 2U;
+                vxlib_dst.dim_y -= 2U;
 
                 BAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_getKernelInfo(
                     NULL, &kernel_details.kernel_info);

@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -387,24 +388,24 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxAbsDiffParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U;
                 BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S;
                 BAM_VXLIB_absDiff_i16s_i16s_o16s_getKernelInfo(NULL,
                     &kernel_details[*bam_node_cnt].kernel_info);
             }
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -445,17 +446,17 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffGetNodePort(
         {
             case TIVX_KERNEL_ABSDIFF_IN1_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
                 //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_INPUT0_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_ABSDIFF_IN2_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
                 //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_INPUT1_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_ABSDIFF_OUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_OUTPUT_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_OUTPUT_PORT;
                 //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_OUTPUT_PORT;
                 break;
             default:

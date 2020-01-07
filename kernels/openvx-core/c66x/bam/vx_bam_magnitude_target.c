@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -339,8 +340,8 @@ static vx_status VX_CALLBACK tivxKernelMagnitudeCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxMagnitudeParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MAGNITUDE_I16S_I16S_O16S;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MAGNITUDE_I16S_I16S_O16S;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             BAM_VXLIB_magnitude_i16s_i16s_o16s_getKernelInfo(NULL,
@@ -348,7 +349,7 @@ static vx_status VX_CALLBACK tivxKernelMagnitudeCreateInBamGraph(
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -389,15 +390,15 @@ static vx_status VX_CALLBACK tivxKernelMagnitudeGetNodePort(
         {
             case TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT0_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT0_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT1_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT1_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_MAGNITUDE_MAG_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_OUTPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelMagnitudeGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

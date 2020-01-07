@@ -71,6 +71,7 @@
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
 #include <edma_utils_memcpy.h>
+#include "tivx_target_kernels_priv.h"
 
 #define SOURCE_NODE1      0
 #define CHCOPY_NODE0      1
@@ -193,9 +194,9 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
         }
         else if (src2 != NULL)
         {
-            if (dst->format == (vx_df_image)VX_DF_IMAGE_RGB ||
-                dst->format == (vx_df_image)VX_DF_IMAGE_YUYV ||
-                dst->format == (vx_df_image)VX_DF_IMAGE_UYVY)
+            if ((dst->format == (vx_df_image)VX_DF_IMAGE_RGB) ||
+                (dst->format == (vx_df_image)VX_DF_IMAGE_YUYV) ||
+                (dst->format == (vx_df_image)VX_DF_IMAGE_UYVY))
             {
                 img_ptrs[0] = src0_addr;
                 img_ptrs[1] = src1_addr;
@@ -235,9 +236,9 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
                 img_ptrs[0] = src1_addr;
                 img_ptrs[1] = src2_addr;
                 img_ptrs[2] = dst_addr[1U];
-                EDMA_UTILS_memcpy2D(dst_addr[0U], src0_addr, src0->imagepatch_addr[0U].dim_x,
-                                    src0->imagepatch_addr[0U].dim_y, dst->imagepatch_addr[0U].stride_y,
-                                    src0->imagepatch_addr[0U].stride_y);
+                EDMA_UTILS_memcpy2D(dst_addr[0U], src0_addr, (uint16_t)src0->imagepatch_addr[0U].dim_x,
+                                    (uint16_t)src0->imagepatch_addr[0U].dim_y, (int16_t)dst->imagepatch_addr[0U].stride_y,
+                                    (int16_t)src0->imagepatch_addr[0U].stride_y);
                 tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
                 status  = tivxBamProcessGraph(prms->graph_handle);
             }
@@ -246,11 +247,15 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
                 img_ptrs[0] = src2_addr;
                 img_ptrs[1] = src1_addr;
                 img_ptrs[2] = dst_addr[1U];
-                EDMA_UTILS_memcpy2D(dst_addr[0U], src0_addr, src0->imagepatch_addr[0U].dim_x,
-                                    src0->imagepatch_addr[0U].dim_y, dst->imagepatch_addr[0U].stride_y,
-                                    src0->imagepatch_addr[0U].stride_y);
+                EDMA_UTILS_memcpy2D(dst_addr[0U], src0_addr, (uint16_t)src0->imagepatch_addr[0U].dim_x,
+                                    (uint16_t)src0->imagepatch_addr[0U].dim_y, (int16_t)dst->imagepatch_addr[0U].stride_y,
+                                    (int16_t)src0->imagepatch_addr[0U].stride_y);
                 tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
                 status  = tivxBamProcessGraph(prms->graph_handle);
+            }
+            else
+            {
+                /* do nothing */
             }
         }
         else
@@ -410,17 +415,21 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
             {
                 for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
                 {
-                    if (plane_idx==0)
+                    if (plane_idx==0U)
                     {
                         buf_params[0] = &vxlib_src0;
                     }
-                    else if (plane_idx==1)
+                    else if (plane_idx==1U)
                     {
                         buf_params[0] = &vxlib_src1;
                     }
-                    else if (plane_idx==2)
+                    else if (plane_idx==2U)
                     {
                         buf_params[0] = &vxlib_src2;
+                    }
+                    else
+                    {
+                        /* do nothing */
                     }
 
                     vxlib_dst[0].dim_x =
@@ -448,31 +457,31 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
             {
                 tivx_bam_kernel_details_t multi_kernel_details[6];
                 BAM_NodeParams node_list[] = { \
-                    {SOURCE_NODE1, BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
-                    {CHCOPY_NODE0, BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
-                    {CHCOPY_NODE1, BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
-                    {CHCOPY_NODE2, BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
-                    {SINK_NODE1, BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
+                    {SOURCE_NODE1, (uint32_t)BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
+                    {CHCOPY_NODE0, (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
+                    {CHCOPY_NODE1, (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
+                    {CHCOPY_NODE2, (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U, NULL}, \
+                    {SINK_NODE1, (uint32_t)BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
                     {BAM_END_NODE_MARKER,   0,                          NULL},\
                 };
 
                 BAM_EdgeParams edge_list[]= {\
                     {{SOURCE_NODE1, 0},
-                        {CHCOPY_NODE0, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
+                        {CHCOPY_NODE0, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
 
                     {{SOURCE_NODE1, 1},
-                        {CHCOPY_NODE1, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
+                        {CHCOPY_NODE1, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
 
                     {{SOURCE_NODE1, 2},
-                        {CHCOPY_NODE2, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
+                        {CHCOPY_NODE2, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT}},\
 
-                    {{CHCOPY_NODE0, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
+                    {{CHCOPY_NODE0, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
                         {SINK_NODE1, 0}},\
 
-                    {{CHCOPY_NODE1, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
+                    {{CHCOPY_NODE1, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
                         {SINK_NODE1, 1}},\
 
-                    {{CHCOPY_NODE2, BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
+                    {{CHCOPY_NODE2, (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT},
                         {SINK_NODE1, 2}},\
 
                     {{BAM_END_NODE_MARKER, 0},
@@ -494,11 +503,11 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                     multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
                         vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
                     multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        horzSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                     multi_kernel_details[CHCOPY_NODE1].kernel_info.kernelExtraInfo.\
-                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        vertSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
 
                     BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
                         &multi_kernel_details[CHCOPY_NODE2].kernel_info);
@@ -508,11 +517,11 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                     multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
                         vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
                     multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        horzSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                     multi_kernel_details[CHCOPY_NODE2].kernel_info.kernelExtraInfo.\
-                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        vertSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
 
                     multi_kernel_details[SOURCE_NODE1].compute_kernel_params = NULL;
                     multi_kernel_details[CHCOPY_NODE0].compute_kernel_params = NULL;
@@ -545,7 +554,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                 vxlib_dst1.dim_x =
                     (dst->valid_roi.end_x - dst->valid_roi.start_x);
                 vxlib_dst1.dim_y =
-                    (dst->valid_roi.end_y - dst->valid_roi.start_y)/2;
+                    (dst->valid_roi.end_y - dst->valid_roi.start_y)/2U;
                 vxlib_dst1.stride_y =
                     dst->imagepatch_addr[1].stride_y;
                 vxlib_dst1.data_type = (uint32_t)VXLIB_UINT8;
@@ -565,8 +574,8 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                         &kernel_details.kernel_info);
 
                 kernel_details.kernel_info.kernelExtraInfo.\
-                    horzSamplingFactor[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 2.0f;
+                    horzSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
+                                          + (uint32_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 2.0f;
 
                 status = tivxBamCreateHandleSingleNode(
                         BAM_KERNELID_VXLIB_CHANNEL_COMBINE_2TO1_I8U_O8U, buf_params,
@@ -668,7 +677,7 @@ void tivxAddTargetKernelBamChannelCombine(void)
             NULL,
             NULL,
             NULL,
-            sizeof(BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params),
+            (int32_t)sizeof(BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params),
             NULL);
     }
 }
@@ -714,12 +723,12 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                 || (dst->format == (vx_df_image)VX_DF_IMAGE_UYVY)
                 )
             {
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
 
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_RGB)
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNEL_COMBINE_3TO1_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNEL_COMBINE_3TO1_I8U_O8U;
 
                     BAM_VXLIB_channelCombine_3to1_i8u_o8u_getKernelInfo(NULL,
                         &kernel_details[*bam_node_cnt].kernel_info);
@@ -729,7 +738,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                 else
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_RGBX)
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNEL_COMBINE_4TO1_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNEL_COMBINE_4TO1_I8U_O8U;
 
                     BAM_VXLIB_channelCombine_4to1_i8u_o8u_getKernelInfo(NULL,
                         &kernel_details[*bam_node_cnt].kernel_info);
@@ -737,14 +746,14 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 }
                 else
-                if( dst->format == (vx_df_image)VX_DF_IMAGE_YUYV || dst->format == (vx_df_image)VX_DF_IMAGE_UYVY)
+                if( (dst->format == (vx_df_image)VX_DF_IMAGE_YUYV) || (dst->format == (vx_df_image)VX_DF_IMAGE_UYVY))
                 {
                     BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params *kernel_params = (BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params*)scratch;
 
                     if ((NULL != kernel_params) &&
-                        (*size >= sizeof(BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params)))
+                        (*size >= (int32_t)sizeof(BAM_VXLIB_channelCombine_yuyv_i8u_o8u_params)))
                     {
-                        node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNEL_COMBINE_YUYV_I8U_O8U;
+                        node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNEL_COMBINE_YUYV_I8U_O8U;
 
                         if (dst->format == (vx_df_image)VX_DF_IMAGE_YUYV) {
                             kernel_params->yidx = 0;
@@ -765,20 +774,24 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     }
 
                 }
-                prms->bam_node_num = *bam_node_cnt;
+                else
+                {
+                    /* do nothing */
+                }
+                prms->bam_node_num = (uint8_t)*bam_node_cnt;
             }
-            else if (dst->format == (vx_df_image)VX_DF_IMAGE_YUV4 || dst->format == (vx_df_image)VX_DF_IMAGE_IYUV)
+            else if ((dst->format == (vx_df_image)VX_DF_IMAGE_YUV4) || (dst->format == (vx_df_image)VX_DF_IMAGE_IYUV))
             {
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
                 kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details[*bam_node_cnt].kernel_info);
                 *bam_node_cnt = *bam_node_cnt + 1;
 
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
                 kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
@@ -791,16 +804,16 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                         vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        horzSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        vertSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                 }
                 *bam_node_cnt = *bam_node_cnt + 1;
 
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
                 kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
@@ -813,29 +826,29 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                         vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT] = 0.5f;
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                        horzSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        horzSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                     kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                        vertSamplingFactor[BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
-                                              + BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
+                        vertSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_NUM_INPUT_BLOCKS\
+                                              + (uint32_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT] = 0.5f;
                 }
-                prms->bam_node_num = *bam_node_cnt;
+                prms->bam_node_num = (uint8_t)*bam_node_cnt;
                 prms->is_iyuv_yuv4 = 1;
             }
             else if ((dst->format == (vx_df_image)VX_DF_IMAGE_NV12) ||
                      (dst->format == (vx_df_image)VX_DF_IMAGE_NV21))
             {
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
                 kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 BAM_VXLIB_channelCopy_1to1_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details[*bam_node_cnt].kernel_info);
                 *bam_node_cnt = *bam_node_cnt + 1;
 
-                node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+                node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
                 node_list[*bam_node_cnt].kernelArgs = NULL;
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CHANNEL_COMBINE_2TO1_I8U_O8U;
+                node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CHANNEL_COMBINE_2TO1_I8U_O8U;
                 kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
                 BAM_VXLIB_channelCombine_2to1_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details[*bam_node_cnt].kernel_info);
@@ -849,10 +862,10 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
                     vertSamplingFactor[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT1_IMAGE_PORT] = 0.5f;
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                    vertSamplingFactor[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
-                                          + BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 0.5f;
+                    vertSamplingFactor[(uint32_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_NUM_INPUT_BLOCKS\
+                                          + (uint32_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = 0.5f;
                 kernel_details[*bam_node_cnt].kernel_info.kernelExtraInfo.\
-                    typeOutputElmt[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = (uint32_t)VXLIB_UINT8;
+                    typeOutputElmt[BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT] = (uint8_t)VXLIB_UINT8;
 
                 if( dst->format == (vx_df_image)VX_DF_IMAGE_NV12)
                 {
@@ -862,7 +875,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                 {
                     prms->switch_buffers = 1U;
                 }
-                prms->bam_node_num = *bam_node_cnt;
+                prms->bam_node_num = (uint8_t)*bam_node_cnt;
                 prms->is_nv12 = 1U;
             }
             else
@@ -955,70 +968,70 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineGetNodePort(
             case TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX:
 
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT0_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT0_IMAGE_PORT;
 
-                if (prms->is_iyuv_yuv4)
+                if (prms->is_iyuv_yuv4 != 0U)
                 {
                     *bam_node = prms->bam_node_num - 2U;
-                    *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
                 }
 
-                if (prms->is_nv12)
+                if (prms->is_nv12 != 0U)
                 {
                     *bam_node = prms->bam_node_num - 1U;
-                    *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
                 }
                 break;
             case TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX:
 
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT1_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT1_IMAGE_PORT;
 
-                if (prms->is_iyuv_yuv4)
+                if (prms->is_iyuv_yuv4 != 0U)
                 {
                     *bam_node = prms->bam_node_num - 1U;
-                    *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
                 }
 
-                if (prms->is_nv12)
+                if (prms->is_nv12 != 0U)
                 {
-                    if (prms->switch_buffers)
+                    if (prms->switch_buffers != 0U)
                     {
-                        *bam_port = BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT1_IMAGE_PORT;
+                        *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT1_IMAGE_PORT;
                     }
                     else
                     {
-                        *bam_port = BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT0_IMAGE_PORT;
+                        *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT0_IMAGE_PORT;
                     }
                 }
                 break;
             case TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX:
 
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT2_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT2_IMAGE_PORT;
 
-                if (prms->is_iyuv_yuv4)
+                if (prms->is_iyuv_yuv4 != 0U)
                 {
                     *bam_node = prms->bam_node_num;
-                    *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_INPUT_IMAGE_PORT;
                 }
 
-                if (prms->is_nv12)
+                if (prms->is_nv12 != 0U)
                 {
-                    if (prms->switch_buffers)
+                    if (prms->switch_buffers != 0U)
                     {
-                        *bam_port = BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT0_IMAGE_PORT;
+                        *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT0_IMAGE_PORT;
                     }
                     else
                     {
-                        *bam_port = BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT1_IMAGE_PORT;
+                        *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_INPUT1_IMAGE_PORT;
                     }
                 }
                 break;
             case TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX:
 
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT3_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_4TO1_I8U_O8U_INPUT3_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX:
 
@@ -1030,38 +1043,38 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineGetNodePort(
 
                         *bam_port = 0;
 
-                        if (prms->is_iyuv_yuv4)
+                        if (prms->is_iyuv_yuv4 != 0U)
                         {
                             *bam_node = prms->bam_node_num - 2U;
-                            *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
+                            *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
                         }
-                        if (prms->is_nv12)
+                        if (prms->is_nv12 != 0U)
                         {
                             *bam_node = prms->bam_node_num - 1U;
-                            *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
+                            *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
                         }
                         break;
                     case 1 :
 
                         *bam_port = 1;
 
-                        if (prms->is_iyuv_yuv4)
+                        if (prms->is_iyuv_yuv4 != 0U)
                         {
                             *bam_node = prms->bam_node_num - 1U;
-                            *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
+                            *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
                         }
-                        if (prms->is_nv12)
+                        if (prms->is_nv12 != 0U)
                         {
-                            *bam_port = BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT;
+                            *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOMBINE_2TO1_I8U_O8U_OUTPUT_PORT;
                         }
                         break;
                     case 2 :
 
                         *bam_port = 2;
 
-                        if (prms->is_iyuv_yuv4)
+                        if (prms->is_iyuv_yuv4 != 0U)
                         {
-                            *bam_port = BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
+                            *bam_port = (uint8_t)BAM_VXLIB_CHANNELCOPY_1TO1_I8U_IO8U_OUTPUT_PORT;
                         }
                         break;
                     default:

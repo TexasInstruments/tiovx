@@ -1159,7 +1159,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 end_addr = host_addr + map_size;
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-                map_size = (vx_uint32)((vx_uint64)end_addr - (vx_uint64)host_addr);
+                vx_uint64 temp_map_size0 = ((uintptr_t)end_addr - (uintptr_t)host_addr);
+                map_size = (vx_uint32)temp_map_size0;
                 tivxMemBufferMap(map_addr, map_size, mem_type, usage);
 
                 tivxLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
@@ -1230,7 +1231,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
             end_addr = map_addr + map_size;
             map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
             end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-            map_size = (vx_uint32)((vx_uint64)end_addr - (vx_uint64 )map_addr);
+            vx_uint64 temp_map_size1 = ((uintptr_t)end_addr - (uintptr_t)map_addr);
+            map_size = (vx_uint32)temp_map_size1;
 
             tivxMemBufferUnmap(
                 map_addr, map_size,

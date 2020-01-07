@@ -211,9 +211,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
              * is optionally disabled, put NULL */
             buf_params[0] = &vxlib_src;
 
-            kernel_params.offset          = dst->offset;
-            kernel_params.range           = dst->range;
-            kernel_params.numBins         = dst->num_bins;
+            kernel_params.offset          = (uint8_t)dst->offset;
+            kernel_params.range           = (uint16_t)dst->range;
+            kernel_params.numBins         = (uint16_t)dst->num_bins;
 
             kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -311,7 +311,7 @@ void tivxAddTargetKernelBamHistogram(void)
             NULL,
             tivxKernelHistogramPreprocessInBamGraph,
             tivxKernelHistogramPostprocessInBamGraph,
-            sizeof(BAM_VXLIB_histogram_i8u_o32u_params),
+            (int32_t)sizeof(BAM_VXLIB_histogram_i8u_o32u_params),
             NULL);
     }
 }
@@ -347,7 +347,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         BAM_VXLIB_histogram_i8u_o32u_params *kernel_params = (BAM_VXLIB_histogram_i8u_o32u_params*)scratch;
 
         if ((NULL == kernel_params) || (NULL == prms) ||
-            (sizeof(BAM_VXLIB_histogram_i8u_o32u_params) != *size))
+            ((int32_t)sizeof(BAM_VXLIB_histogram_i8u_o32u_params) != *size))
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -356,20 +356,20 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxHistogramParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            kernel_params->offset          = dist->offset;
-            kernel_params->range           = dist->range;
-            kernel_params->numBins         = dist->num_bins;
+            kernel_params->offset          = (uint8_t)dist->offset;
+            kernel_params->range           = (uint16_t)dist->range;
+            kernel_params->numBins         = (uint16_t)dist->num_bins;
 
             kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
             BAM_VXLIB_histogram_i8u_o32u_getKernelInfo(kernel_params,
                 &kernel_details[*bam_node_cnt].kernel_info);
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -410,7 +410,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramGetNodePort(
         {
             case TIVX_KERNEL_HISTOGRAM_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_HISTOGRAM_I8U_O32U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_HISTOGRAM_I8U_O32U_INPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelHistogramGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

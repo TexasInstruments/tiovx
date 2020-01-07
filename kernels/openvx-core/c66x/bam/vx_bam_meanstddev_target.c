@@ -363,8 +363,8 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxMeanStdDevParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MEAN_STDDEV_I8U_O32F;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MEAN_STDDEV_I8U_O32F;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
@@ -372,7 +372,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
             BAM_VXLIB_meanStdDev_i8u_o32f_getKernelInfo(NULL,
                 &kernel_details[*bam_node_cnt].kernel_info);
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -413,7 +413,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
         {
             case TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MEANSTDDEV_I8U_O32F_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_MEANSTDDEV_I8U_O32F_INPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelMeanStdDevGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

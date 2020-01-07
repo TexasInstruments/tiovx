@@ -333,8 +333,8 @@ static vx_status VX_CALLBACK tivxKernelBoxCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxBoxParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             BAM_VXLIB_box_3x3_i8u_o8u_getKernelInfo(NULL,
@@ -342,7 +342,7 @@ static vx_status VX_CALLBACK tivxKernelBoxCreateInBamGraph(
 
             kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -383,11 +383,11 @@ static vx_status VX_CALLBACK tivxKernelBoxGetNodePort(
         {
             case TIVX_KERNEL_BOX3X3_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_BOX_3X3_I8U_O8U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_BOX_3X3_I8U_O8U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_BOX3X3_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_BOX_3X3_I8U_O8U_OUTPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_BOX_3X3_I8U_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelBoxGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

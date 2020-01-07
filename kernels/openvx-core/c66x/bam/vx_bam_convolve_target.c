@@ -209,8 +209,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
                 BAM_VXLIB_convolve_i8u_c16s_o8u_params kernel_params;
 
                 kernel_params.conv_mat      = conv_target_ptr;
-                kernel_params.conv_width    = conv->columns;
-                kernel_params.conv_height   = conv->rows;
+                kernel_params.conv_width    = (int32_t)conv->columns;
+                kernel_params.conv_height   = (int32_t)conv->rows;
                 kernel_params.conv_scale    = conv->scale;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
@@ -228,8 +228,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
                 BAM_VXLIB_convolve_i8u_c16s_o16s_params kernel_params;
 
                 kernel_params.conv_mat      = conv_target_ptr;
-                kernel_params.conv_width    = conv->columns;
-                kernel_params.conv_height   = conv->rows;
+                kernel_params.conv_width    = (int32_t)conv->columns;
+                kernel_params.conv_height   = (int32_t)conv->rows;
                 kernel_params.conv_scale    = conv->scale;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
@@ -330,8 +330,8 @@ void tivxAddTargetKernelBamConvolve(void)
             NULL,
             NULL,
             NULL,
-            MAX2(sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params),
-                 sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)),
+            MAX2((int32_t)sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params),
+                 (int32_t)sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)),
             NULL);
     }
 }
@@ -378,7 +378,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxBamConvolveParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
@@ -386,14 +386,14 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
                 BAM_VXLIB_convolve_i8u_c16s_o8u_params *kernel_params = (BAM_VXLIB_convolve_i8u_c16s_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params)))
                 {
                     kernel_params->conv_mat      = conv_target_ptr;
-                    kernel_params->conv_width    = conv->columns;
-                    kernel_params->conv_height   = conv->rows;
+                    kernel_params->conv_width    = (int32_t)conv->columns;
+                    kernel_params->conv_height   = (int32_t)conv->rows;
                     kernel_params->conv_scale    = conv->scale;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U;
 
                     BAM_VXLIB_convolve_i8u_c16s_o8u_getKernelInfo(kernel_params,
                         &kernel_details[*bam_node_cnt].kernel_info);
@@ -410,14 +410,14 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
                 BAM_VXLIB_convolve_i8u_c16s_o16s_params *kernel_params = (BAM_VXLIB_convolve_i8u_c16s_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)))
                 {
                     kernel_params->conv_mat      = conv_target_ptr;
-                    kernel_params->conv_width    = conv->columns;
-                    kernel_params->conv_height   = conv->rows;
+                    kernel_params->conv_width    = (int32_t)conv->columns;
+                    kernel_params->conv_height   = (int32_t)conv->rows;
                     kernel_params->conv_scale    = conv->scale;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S;
 
                     BAM_VXLIB_convolve_i8u_c16s_o16s_getKernelInfo(
                         kernel_params, &kernel_details[*bam_node_cnt].kernel_info);
@@ -429,7 +429,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -470,11 +470,11 @@ static vx_status VX_CALLBACK tivxKernelConvolveGetNodePort(
         {
             case TIVX_KERNEL_CONVOLVE_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CONVOLVE_I8U_C16S_O8U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CONVOLVE_I8U_C16S_O8U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_CONVOLVE_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_CONVOLVE_I8U_C16S_O8U_OUTPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_CONVOLVE_I8U_C16S_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelConvolveGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

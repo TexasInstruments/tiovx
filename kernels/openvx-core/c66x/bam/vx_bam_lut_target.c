@@ -208,7 +208,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
             {
                 BAM_VXLIB_tableLookup_i8u_o8u_params kernel_params;
                 kernel_params.lut    = lut_target_ptr;
-                kernel_params.count  = lut->num_items;
+                kernel_params.count  = (uint16_t)lut->num_items;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -323,8 +323,8 @@ void tivxAddTargetKernelBamLut(void)
             NULL,
             NULL,
             NULL,
-            MAX2(sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params),
-                 sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)),
+            MAX2((int32_t)sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params),
+                 (int32_t)sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)),
             NULL);
     }
 }
@@ -371,7 +371,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxLutParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if (src->format == (vx_df_image)VX_DF_IMAGE_U8)
@@ -379,12 +379,12 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
                 BAM_VXLIB_tableLookup_i8u_o8u_params *kernel_params = (BAM_VXLIB_tableLookup_i8u_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params)))
                 {
                     kernel_params->lut    = lut_target_ptr;
-                    kernel_params->count  = lut->num_items;
+                    kernel_params->count  = (uint16_t)lut->num_items;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U;
 
                     BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo(kernel_params,
                         &kernel_details[*bam_node_cnt].kernel_info);
@@ -400,13 +400,13 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
                 BAM_VXLIB_tableLookup_i16s_o16s_params *kernel_params = (BAM_VXLIB_tableLookup_i16s_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)))
                 {
                     kernel_params->lut    = lut_target_ptr;
                     kernel_params->count  = lut->num_items;
                     kernel_params->offset = 32768U;
 
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S;
 
                     BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo(kernel_params,
                         &kernel_details[*bam_node_cnt].kernel_info);
@@ -418,7 +418,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -459,11 +459,11 @@ static vx_status VX_CALLBACK tivxKernelLutGetNodePort(
         {
             case TIVX_KERNEL_LUT_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_TABLELOOKUP_I8U_O8U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_TABLELOOKUP_I8U_O8U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_LUT_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_TABLELOOKUP_I8U_O8U_OUTPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_TABLELOOKUP_I8U_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelLutGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

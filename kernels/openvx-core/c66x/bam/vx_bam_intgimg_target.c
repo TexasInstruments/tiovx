@@ -197,8 +197,8 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
             buf_params[0] = &vxlib_src;
             buf_params[1] = &vxlib_dst;
 
-            kernel_params.frameWidth   = vxlib_dst.dim_x;
-            kernel_params.frameHeight  = vxlib_dst.dim_y;
+            kernel_params.frameWidth   = (uint16_t)vxlib_dst.dim_x;
+            kernel_params.frameHeight  = (uint16_t)vxlib_dst.dim_y;
 
             kernel_details.compute_kernel_params = (void*)&kernel_params;
 
@@ -296,7 +296,7 @@ void tivxAddTargetKernelBamIntegralImage(void)
             NULL,
             NULL,
             NULL,
-            sizeof(BAM_VXLIB_integralImage_i8u_o32u_params),
+            (int32_t)sizeof(BAM_VXLIB_integralImage_i8u_o32u_params),
             NULL);
     }
 }
@@ -332,7 +332,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
         BAM_VXLIB_integralImage_i8u_o32u_params *kernel_params = (BAM_VXLIB_integralImage_i8u_o32u_params*)scratch;
 
         if ((NULL == kernel_params) || (NULL == prms) ||
-            (sizeof(BAM_VXLIB_integralImage_i8u_o32u_params) != *size))
+            ((int32_t)sizeof(BAM_VXLIB_integralImage_i8u_o32u_params) != *size))
         {
             status = (vx_status)VX_FAILURE;
         }
@@ -341,19 +341,19 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
-            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            kernel_params->frameWidth   = dst->valid_roi.end_x - dst->valid_roi.start_x;
-            kernel_params->frameHeight  = dst->valid_roi.end_y - dst->valid_roi.start_y;
+            kernel_params->frameWidth   = (uint16_t)dst->valid_roi.end_x - (uint16_t)dst->valid_roi.start_x;
+            kernel_params->frameHeight  = (uint16_t)dst->valid_roi.end_y - (uint16_t)dst->valid_roi.start_y;
 
             BAM_VXLIB_integralImage_i8u_o32u_getKernelInfo(kernel_params,
                 &kernel_details[*bam_node_cnt].kernel_info);
 
             kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -394,11 +394,11 @@ static vx_status VX_CALLBACK tivxKernelIntgImgGetNodePort(
         {
             case TIVX_KERNEL_INTG_IMG_INPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_INPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_INPUT_IMAGE_PORT;
                 break;
             case TIVX_KERNEL_INTG_IMG_OUTPUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_OUTPUT_IMAGE_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_INTEGRALIMAGE_I8U_O32U_OUTPUT_IMAGE_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelIntgImgGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

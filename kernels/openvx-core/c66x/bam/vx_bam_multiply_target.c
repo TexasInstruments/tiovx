@@ -70,6 +70,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
+#include "tivx_target_kernels_priv.h"
 
 typedef struct
 {
@@ -423,10 +424,10 @@ void tivxAddTargetKernelBamMultiply(void)
             NULL,
             NULL,
             NULL,
-            MAX4(sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params),
-                 sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params),
-                 sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params),
-                 sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)),
+            MAX4((int32_t)sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params),
+                 (int32_t)sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params),
+                 (int32_t)sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params),
+                 (int32_t)sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)),
             NULL);
     }
 }
@@ -471,7 +472,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
         {
             memset(prms, 0, sizeof(tivxAddParams));
 
-            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].nodeIndex = (uint8_t)*bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
             if (dst->format == (vx_df_image)VX_DF_IMAGE_U8)
@@ -479,9 +480,9 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                 BAM_VXLIB_multiply_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_multiply_i8u_i8u_o8u_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U;
 
                     if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
                     {
@@ -503,15 +504,15 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            else if (src0->format == (vx_df_image)VX_DF_IMAGE_U8 &&
-                     src1->format == (vx_df_image)VX_DF_IMAGE_U8)
+            else if ((src0->format == (vx_df_image)VX_DF_IMAGE_U8) &&
+                     (src1->format == (vx_df_image)VX_DF_IMAGE_U8))
             {
                 BAM_VXLIB_multiply_i8u_i8u_o16s_params *kernel_params = (BAM_VXLIB_multiply_i8u_i8u_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S;
 
                     if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
                     {
@@ -533,15 +534,15 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            else if (src0->format == (vx_df_image)VX_DF_IMAGE_S16 &&
-                     src1->format == (vx_df_image)VX_DF_IMAGE_S16)
+            else if ((src0->format == (vx_df_image)VX_DF_IMAGE_S16) &&
+                     (src1->format == (vx_df_image)VX_DF_IMAGE_S16))
             {
                 BAM_VXLIB_multiply_i16s_i16s_o16s_params *kernel_params = (BAM_VXLIB_multiply_i16s_i16s_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S;
 
                     if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
                     {
@@ -569,9 +570,9 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                 BAM_VXLIB_multiply_i8u_i16s_o16s_params *kernel_params = (BAM_VXLIB_multiply_i8u_i16s_o16s_params*)scratch;
 
                 if ((NULL != kernel_params) &&
-                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)))
+                    (*size >= (int32_t)sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)))
                 {
-                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = (uint32_t)BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S;
 
                     if ((vx_enum)VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
                     {
@@ -584,8 +585,8 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                     kernel_params->scale_factor = sc[0]->data.f32;
 
 
-                    if (src0->format == (vx_df_image)VX_DF_IMAGE_S16 &&
-                        src1->format == (vx_df_image)VX_DF_IMAGE_U8)
+                    if ((src0->format == (vx_df_image)VX_DF_IMAGE_S16) &&
+                        (src1->format == (vx_df_image)VX_DF_IMAGE_U8))
                     {
                         prms->switch_buffers = 1;
                     }
@@ -601,7 +602,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
                     status = (vx_status)VX_FAILURE;
                 }
             }
-            prms->bam_node_num = *bam_node_cnt;
+            prms->bam_node_num = (uint8_t)*bam_node_cnt;
         }
         else
         {
@@ -643,23 +644,23 @@ static vx_status VX_CALLBACK tivxKernelMultiplyGetNodePort(
         {
             case TIVX_KERNEL_MULTIPLY_IN1_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
-                if (prms->switch_buffers)
+                *bam_port = (uint8_t)BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                if (prms->switch_buffers != 0U)
                 {
-                    *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
                 }
                 break;
             case TIVX_KERNEL_MULTIPLY_IN2_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
-                if (prms->switch_buffers)
+                *bam_port = (uint8_t)BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                if (prms->switch_buffers != 0U)
                 {
-                    *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                    *bam_port = (uint8_t)BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
                 }
                 break;
             case TIVX_KERNEL_MULTIPLY_OUT_IDX:
                 *bam_node = prms->bam_node_num;
-                *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_OUTPUT_PORT;
+                *bam_port = (uint8_t)BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");

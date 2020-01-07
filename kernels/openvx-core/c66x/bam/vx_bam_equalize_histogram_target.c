@@ -204,7 +204,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
             memset(prms, 0, sizeof(tivxEqHistParams));
 
             prms->scratch = tivxMemAlloc(SCRATCH_BUFFER_SIZE *
-                sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                (int32_t)sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->scratch)
             {
@@ -215,7 +215,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
             else
             {
                 memset(prms->scratch, 0, SCRATCH_BUFFER_SIZE *
-                    sizeof(uint32_t));
+                    (int32_t)sizeof(uint32_t));
             }
         }
         else
@@ -277,11 +277,11 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
         }
         else
         {
-            if (lut_kern_create)
+            if (lut_kern_create != 0U)
             {
                 tivxBamDestroyHandle(prms->lut_graph_handle);
             }
-            if (hist_kern_create)
+            if (hist_kern_create != 0U)
             {
                 tivxBamDestroyHandle(prms->hist_graph_handle);
             }
@@ -317,7 +317,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
             tivxBamDestroyHandle(prms->hist_graph_handle);
             tivxBamDestroyHandle(prms->lut_graph_handle);
             tivxMemFree(prms->scratch, SCRATCH_BUFFER_SIZE *
-                    sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                    (int32_t)sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
             tivxMemFree(prms, sizeof(tivxEqHistParams), (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
