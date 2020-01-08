@@ -3355,6 +3355,112 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
 }
 
 /*
+ * TIOVX-814
+ * Tries to create an event after verifying the graph.
+ * This will throw an error.
+ *
+ */
+TEST(tivxGraphPipeline, testEventHandlingGraphVerify)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL};
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf, loop_cnt;
+    uint32_t buf_id, loop_id, in_q_cnt;
+    uint64_t exe_time;
+
+    vx_bool done;
+    vx_event_t event;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = 64;
+    height = 48;
+    pipeline_depth = 1;
+    num_buf = 1;
+    loop_cnt = 1;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    VX_CALL(vxEnableEvents(context));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d2[buf_id] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+    ASSERT_VX_OBJECT(d1    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    /* set number of buffer at intermediate output */
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, GRAPH_CONSUMED_EVENT));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_COMPLETED, 0, NODE1_COMPLETED_EVENT));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, GRAPH_COMPLETED_EVENT));
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
  *
  * This test case test the below
  * - Disable of events and reenable of events
@@ -5240,6 +5346,7 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testUniformImage,
     testScalarOutput,
     testEventHandling,
+    testEventHandlingGraphVerify,
     testEventHandlingDisableEvents,
     testReplicateImage,
     DISABLED_testDontReplicateImage,

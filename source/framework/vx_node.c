@@ -1939,7 +1939,7 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
     {
         if (node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Not supported on verified graph\n");
+            VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Cannot register event on verified graph\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
