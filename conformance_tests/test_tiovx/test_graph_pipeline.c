@@ -919,6 +919,222 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
 /*
  *  d0     n0     d1     n1     d2
  * IMG -- NOT -- IMG -- NOT -- IMG
+ *  d0     n2     d3     n3     d4
+ * IMG -- NOT -- IMG -- NOT -- IMG
+ *
+ * TIOVX-808
+ * This test case test the below
+ * - Single input, single output nodes
+ * - Two nodes on two different targets
+ * - Number of buffers = pipeline depth
+ * - Virtual objects, no hints provided except for pipeline depth
+ * - fixed pipeline depth of 2
+ * Note: The d1 buffer is not accessible by the application in this
+ *       example.  If the application needs access to this buffer,
+ *       please refer to the testTwoNodes as an example.
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF] = {NULL}, d1, d2[MAX_NUM_BUF] = {NULL}, d3, d4[MAX_NUM_BUF] = {NULL};
+    vx_node n0, n1, n2, n3;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+
+    CT_Image ref_src[MAX_NUM_BUF], vxdst0, vxdst1;
+    uint32_t width, height, seq_init, pipeline_depth;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf;
+    uint64_t exe_time;
+
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    loop_cnt = arg_->loop_count;
+    num_buf = 2;
+    pipeline_depth = 2;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d4[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+    ASSERT_VX_OBJECT(d1    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(d3    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n2    = vxNotNode(graph, d0[0], d3), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n3    = vxNotNode(graph, d3, d4[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 1);
+    /* output @ n1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n3, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    graph_parameters_queue_params_list[2].graph_parameter_index = 2;
+    graph_parameters_queue_params_list[2].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&d4[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                ));
+
+    /* explicitly set graph pipeline depth */
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_input_multiple_enqueue");
+    log_graph_rt_trace(graph);
+    #if 1
+
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(d0[buf_id], ref_src[buf_id]));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d4[buf_id], 1));
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        vx_image out_img_n1, out_img_n3, in_img;
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img_n3, 1, &num_refs));
+
+        /* Get output reference, waits until a reference is available */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img_n1, 1, &num_refs));
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+
+            ASSERT_NO_FAILURE({
+                vxdst0 = ct_image_from_vx_image(out_img_n1);
+            });
+
+            ASSERT_NO_FAILURE({
+                vxdst1 = ct_image_from_vx_image(out_img_n3);
+            });
+
+            /* compare output */
+            ASSERT_EQ_CTIMAGE(ref_src[buf_id], vxdst0);
+
+            ASSERT_EQ_CTIMAGE(ref_src[buf_id], vxdst1);
+        }
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img_n1, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img_n3, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    VX_CALL(vxWaitGraph(graph));
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1, n2, n3 };
+
+        printGraphPipelinePerformance(graph, nodes, 4, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n3));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+        VX_CALL(vxReleaseImage(&d4[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(vxReleaseImage(&d3));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0     n0     d1     n1     d2
+ * IMG -- NOT -- IMG -- NOT -- IMG
  *
  * This test case test the below
  * - Single input, single output nodes
@@ -5338,6 +5554,7 @@ TEST(tivxGraphPipeline, negativeTestPyramidInconsistentRefs)
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
+    testInputMultipleEnqueue,
     testTwoNodes,
     testFourNodes,
     testMaxDataRef,
