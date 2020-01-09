@@ -280,6 +280,10 @@ vx_status tivxAddKernelVideoDecoder(vx_context context)
         if (status == (vx_status)VX_SUCCESS)
         {
             tivxAddKernelTarget(kernel, TIVX_TARGET_VDEC1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VDEC2);
+        }
+        if (status == (vx_status)VX_SUCCESS)
+        {
             status = vxFinalizeKernel(kernel);
         }
         if (status != (vx_status)VX_SUCCESS)

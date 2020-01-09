@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,41 +60,25 @@
  *
  */
 
-#if defined(J7) || defined(PC)
-#if defined(BUILD_CT_TIOVX_HWA)
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-#endif
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
+#ifndef _TIVX_KERNEL_VIDEO_ENCODER_
+#define _TIVX_KERNEL_VIDEO_ENCODER_
 
-#if defined(J7)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-TESTCASE(tivxHwaVideoEncoder)
-TESTCASE(tivxHwaVideoDecoder)
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+
+#define TIVX_KERNEL_VIDEO_ENCODER_CONFIGURATION_IDX (0U)
+#define TIVX_KERNEL_VIDEO_ENCODER_INPUT_IMAGE_IDX (1U)
+#define TIVX_KERNEL_VIDEO_ENCODER_OUTPUT_BITSTREAM_IDX (2U)
+
+#define TIVX_KERNEL_VIDEO_ENCODER_MAX_PARAMS (3U)
+
+#ifdef __cplusplus
+}
 #endif
 
-#endif
+
+#endif /* _TIVX_KERNEL_VIDEO_ENCODER_ */
+
 

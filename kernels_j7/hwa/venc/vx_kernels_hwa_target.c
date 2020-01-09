@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,41 +60,25 @@
  *
  */
 
-#if defined(J7) || defined(PC)
-#if defined(BUILD_CT_TIOVX_HWA)
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-#endif
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_venc_priv.h"
 
-#if defined(J7)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-TESTCASE(tivxHwaVideoEncoder)
-TESTCASE(tivxHwaVideoDecoder)
-#endif
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
 
-#endif
+    {&tivxAddTargetKernelVideoEncoder, &tivxRemoveTargetKernelVideoEncoder},
 
-#endif
+};
+
+void tivxRegisterHwaTargetVencKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+
+void tivxUnRegisterHwaTargetVencKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

@@ -27,7 +27,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (22u)
+#define TIVX_PLATFORM_MAX_TARGETS            (24u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -119,7 +119,13 @@ typedef enum _tivx_target_id_e {
     TIVX_TARGET_ID_VDEC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 12u),
 
     /*! \brief target ID for VDEC2 */
-    TIVX_TARGET_ID_VDEC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 13u)
+    TIVX_TARGET_ID_VDEC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 13u),
+
+    /*! \brief target ID for VENC1 */
+    TIVX_TARGET_ID_VENC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 14u),
+
+    /*! \brief target ID for VENC2 */
+    TIVX_TARGET_ID_VENC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 15u)
 
 } tivx_target_id_e;
 
@@ -152,6 +158,8 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DISPLAY2, (vx_enum)TIVX_TARGET_ID_DISPLAY2},                           \
     {TIVX_TARGET_VDEC1, (vx_enum)TIVX_TARGET_ID_VDEC1},                                 \
     {TIVX_TARGET_VDEC2, (vx_enum)TIVX_TARGET_ID_VDEC2},                                 \
+    {TIVX_TARGET_VENC1, (vx_enum)TIVX_TARGET_ID_VENC1},                                 \
+    {TIVX_TARGET_VENC2, (vx_enum)TIVX_TARGET_ID_VENC2},                                 \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \

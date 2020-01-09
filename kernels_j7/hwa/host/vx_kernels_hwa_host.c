@@ -83,7 +83,8 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelVpacViss, &tivxRemoveKernelVpacViss},
     {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
     {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
-    {&tivxAddKernelVideoDecoder, &tivxRemoveKernelVideoDecoder}
+    {&tivxAddKernelVideoDecoder, &tivxRemoveKernelVideoDecoder},
+    {&tivxAddKernelVideoEncoder, &tivxRemoveKernelVideoEncoder}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -141,6 +142,7 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaTargetVpacVissKernels();
 
         /*tivxRegisterHwaTargetVdecKernels();*/
+        /*tivxRegisterHwaTargetVencKernels();*/
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         #endif
@@ -177,6 +179,8 @@ void tivxHwaUnLoadKernels(vx_context context)
         tivxUnRegisterHwaTargetVpacVissKernels();
 
         /*tivxUnRegisterHwaTargetVdecKernels();*/
+
+        /*tivxUnRegisterHwaTargetVencKernels();*/
 
         #endif
 

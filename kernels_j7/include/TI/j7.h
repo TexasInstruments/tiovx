@@ -74,6 +74,7 @@
 #include <TI/j7_capture.h>
 #include <TI/j7_display.h>
 #include <TI/j7_video_decoder.h>
+#include <TI/j7_video_encoder.h>
 #include <TI/j7_nodes.h>
 
 #ifdef __cplusplus
@@ -162,6 +163,14 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_VDEC2     "VDEC2"
+/*! \brief Target name for VENC1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VENC1     "VENC1"
+/*! \brief Target name for VENC2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VENC2     "VENC2"
 
 
 /*! \brief CPU ID for supported CPUs

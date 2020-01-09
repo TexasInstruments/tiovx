@@ -140,7 +140,7 @@ static void tivxVideoDecoderFreeObject(
        tivxVideoDecoderInstObj *instObj,
        tivxVideoDecoderObj *decoder_obj);
 static void memcpyDMA(uint8_t *pOut, uint8_t *pIn, uint32_t length);
-void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_process_cb cb_type);
+void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_dec_process_cb cb_type);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -296,22 +296,22 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     {
         decoder_obj->in_buff.chId = decoder_obj->channel_id;
         decoder_obj->in_buff.type = MM_BUF_TYPE_VIDEO_INPUT;
-        decoder_obj->in_buff.size = decoder_obj->internal_size;
+        decoder_obj->in_buff.size[0] = decoder_obj->internal_size;
         decoder_obj->in_buff.buf_addr[0] = bitstream;
 
         decoder_obj->in_buff_2.chId = decoder_obj->channel_id;
         decoder_obj->in_buff_2.type = MM_BUF_TYPE_VIDEO_INPUT;
-        decoder_obj->in_buff_2.size = decoder_obj->internal_size;
+        decoder_obj->in_buff_2.size[0] = decoder_obj->internal_size;
         decoder_obj->in_buff_2.buf_addr[0] = bitstream;
 
         decoder_obj->out_buff.chId = decoder_obj->channel_id;
         decoder_obj->out_buff.type = MM_BUF_TYPE_VIDEO_OUTPUT;
-        decoder_obj->out_buff.size = decoder_obj->internal_size;
+        decoder_obj->out_buff.size[0] = decoder_obj->internal_size;
         decoder_obj->out_buff.buf_addr[0] = decoder_obj->internal_buff_1;
 
         decoder_obj->out_buff_2.chId = decoder_obj->channel_id;
         decoder_obj->out_buff_2.type = MM_BUF_TYPE_VIDEO_OUTPUT;
-        decoder_obj->out_buff_2.size = decoder_obj->internal_size;
+        decoder_obj->out_buff_2.size[0] = decoder_obj->internal_size;
         decoder_obj->out_buff_2.buf_addr[0] = decoder_obj->internal_buff_2;
 
         mm_status = MM_DEC_BufPrepare(&decoder_obj->in_buff, decoder_obj->channel_id);
@@ -334,8 +334,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         decoder_obj->processFlag = 0;
-        decoder_obj->in_buff.size = input_bitstream_desc->valid_mem_size;
-        decoder_obj->in_buff_2.size = input_bitstream_desc->valid_mem_size;
+        decoder_obj->in_buff.size[0] = input_bitstream_desc->valid_mem_size;
+        decoder_obj->in_buff_2.size[0] = input_bitstream_desc->valid_mem_size;
 
         if (1U == decoder_obj->which_buff)
         {
@@ -413,7 +413,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           mm_status = (int32_t)MM_DEC_SUCCESS;
     vx_df_image                       output_image_fmt;
-    mm_vdec_create_params             vdec_params;
+    mm_vid_create_params             vdec_params;
     tivxVideoDecoderObj              *decoder_obj = NULL;
     tivx_video_decoder_params_t      *decoder_params;
     tivx_obj_desc_user_data_object_t *configuration_desc;
@@ -722,7 +722,7 @@ static void memcpyDMA(uint8_t *pOut, uint8_t *pIn, uint32_t length)
 /*                              Driver Callbacks                              */
 /* ========================================================================== */
 
-void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_process_cb cb_type)
+void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_dec_process_cb cb_type)
 {
     tivxVideoDecoderObj *decoder_obj = NULL;
     uint32_t             cnt;
