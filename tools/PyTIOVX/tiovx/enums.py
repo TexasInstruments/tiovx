@@ -447,12 +447,18 @@ class Target(Enum) :
     DMPAC_DOF    = 18
     ## TIOVX equivalent = TIVX_TARGET_VPAC_VISS1
     VPAC_VISS1   = 19
-    ## TIOVX equivalent = TIVX_TARGET_VDEC
-    VDEC         = 20
+    ## TIOVX equivalent = TIVX_TARGET_VDEC1
+    VDEC1         = 20
+    ## TIOVX equivalent = TIVX_TARGET_VDEC2
+    VDEC2         = 21
+    ## TIOVX equivalent = TIVX_TARGET_VENC1
+    VENC1         = 22
+    ## TIOVX equivalent = TIVX_TARGET_VENC2
+    VENC2         = 23
     ## TIOVX equivalent = TIVX_TARGET_DSP_C7_1
-    DSP_C7_1     = 21
+    DSP_C7_1     = 24
     ## TIOVX equivalent = TIVX_TARGET_A72_0
-    A72_0        = 22
+    A72_0        = 25
     ## Above are J7 targets
     ## Used internally by the tool
     DEFAULT = DSP1
@@ -497,8 +503,14 @@ class Target(Enum) :
             return "dmpac_sde"
         if target == Target.VPAC_VISS1 :
             return "vpac_viss"
-        if target == Target.VDEC :
+        if target == Target.VDEC1 :
             return "vdec"
+        if target == Target.VDEC2 :
+            return "vdec"
+        if target == Target.VENC1 :
+            return "venc"
+        if target == Target.VENC2 :
+            return "venc"
         if target == Target.DSP_C7_1 :
             return "c7x"
         if target == Target.A72_0 :
@@ -566,7 +578,13 @@ class Target(Enum) :
             return Cpu.IPU1_0
         if target == Target.VPAC_VISS1 :
             return Cpu.IPU1_0
-        if target == Target.VDEC :
+        if target == Target.VDEC1 :
+            return Cpu.IPU1_0
+        if target == Target.VDEC2 :
+            return Cpu.IPU1_0
+        if target == Target.VENC1 :
+            return Cpu.IPU1_0
+        if target == Target.VENC2 :
             return Cpu.IPU1_0
         if target == Target.DSP_C7_1 :
             return Cpu.DSP_C7_1

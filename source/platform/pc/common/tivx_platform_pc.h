@@ -83,7 +83,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (25u)
+#define TIVX_PLATFORM_MAX_TARGETS            (27u)
 
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
@@ -165,7 +165,9 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
     {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
     {TIVX_TARGET_VDEC1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_VDEC2, TIVX_TARGET_ID_CPU1}                                   \
+    {TIVX_TARGET_VDEC2, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_VENC1, TIVX_TARGET_ID_CPU1},                                  \
+    {TIVX_TARGET_VENC2, TIVX_TARGET_ID_CPU1}                                   \
 }
 
 #endif
