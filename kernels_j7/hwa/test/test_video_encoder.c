@@ -304,7 +304,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
             out_fp = NULL;
             if (bitstream_size != num_read)
             {
-                printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file, num_read, bitstream_size);
+                printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file, (uint32_t)num_read, (uint32_t)bitstream_size);
                 ASSERT(bitstream_size == num_read);
             }
         }
@@ -608,7 +608,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                 out_fp_s = NULL;
                 if (bitstream_size_s != num_read_s)
                 {
-                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_s, num_read_s, bitstream_size_s);
+                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_s, (uint32_t)num_read_s, (uint32_t)bitstream_size_s);
                     ASSERT(bitstream_size_s == num_read_s);
                 }
             }
@@ -626,7 +626,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                 out_fp_l = NULL;
                 if (bitstream_size_l != num_read_l)
                 {
-                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_l, num_read_l, bitstream_size_l);
+                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_l, (uint32_t)num_read_l, (uint32_t)bitstream_size_l);
                     ASSERT(bitstream_size_l == num_read_l);
                 }
             }
