@@ -94,14 +94,17 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
         {
             for (i = 0; i < (((int32_t)image_addr.dim_y * image_addr.stride_y) / 4); i += (image_addr.stride_y / 4))
             {
-                for (j = 0; j < ((((int32_t)image_addr.dim_x * (int32_t)stride_xby2) / 2) / 4); j++)
+                int32_t temp_bytes = (((int32_t)image_addr.dim_x * (int32_t)stride_xby2) / 2);
+
+                for (j = 0; j < (temp_bytes / 4); j++)
                 {
                     sum += data_ptr[i + j];
                 }
 
-                if (0U != (((image_addr.dim_x * stride_xby2) / 2U) % 4U))
+                if (0 != (temp_bytes % 4))
                 {
-                    sum += data_ptr[i + j] >> ((4U - (((image_addr.dim_x * stride_xby2) / 2U) % 4U)) * 8U);
+                    uint32_t bitshift = (4U - ((uint32_t)temp_bytes % 4U)) * 8U;
+                    sum += (data_ptr[i + j] << bitshift) >> bitshift;
                 }
             }
         }
