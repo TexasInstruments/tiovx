@@ -375,8 +375,8 @@ void tivx_vpac_msc_output_params_init(tivx_vpac_msc_output_params_t *prms)
         prms->filter_mode = 1u;
         prms->coef_shift = 8u;
         prms->saturation_mode = 0u;
-        prms->offset_x = 0u;
-        prms->offset_y = 0u;
+        prms->offset_x = TIVX_VPAC_MSC_AUTOCOMPUTE;
+        prms->offset_y = TIVX_VPAC_MSC_AUTOCOMPUTE;
         prms->output_align_12bit = 0u;
 
         prms->single_phase.horz_coef_src = 0u;
@@ -384,11 +384,11 @@ void tivx_vpac_msc_output_params_init(tivx_vpac_msc_output_params_t *prms)
         prms->single_phase.vert_coef_src = 0u;
         prms->single_phase.vert_coef_sel = 0u;
 
-        prms->multi_phase.phase_mode = 1u;
+        prms->multi_phase.phase_mode = 0u;
         prms->multi_phase.horz_coef_sel = 0u;
         prms->multi_phase.vert_coef_sel = 0u;
-        prms->multi_phase.init_phase_x = 0u;
-        prms->multi_phase.init_phase_y = 0u;
+        prms->multi_phase.init_phase_x = TIVX_VPAC_MSC_AUTOCOMPUTE;
+        prms->multi_phase.init_phase_y = TIVX_VPAC_MSC_AUTOCOMPUTE;
     }
 }
 

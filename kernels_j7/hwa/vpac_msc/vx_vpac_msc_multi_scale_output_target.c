@@ -112,6 +112,14 @@ typedef struct
     Msc_Coeff               coeffCfg;
 
     uint32_t                num_outputs;
+
+    /* State from user commands to override auto mode or not */
+    uint32_t                user_init_phase_x[MSC_MAX_OUTPUT];
+    uint32_t                user_init_phase_y[MSC_MAX_OUTPUT];
+    uint32_t                user_offset_x[MSC_MAX_OUTPUT];
+    uint32_t                user_offset_y[MSC_MAX_OUTPUT];
+    uint32_t                user_crop_start_x[MSC_MAX_OUTPUT];
+    uint32_t                user_crop_start_y[MSC_MAX_OUTPUT];
 } tivxVpacMscScaleObj;
 
 
@@ -170,6 +178,8 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     tivx_vpac_msc_output_params_t *out_prms);
+static void tivxVpacMscScaleUpdateStartPhases(tivxVpacMscScaleObj *msc_obj,
+    Msc_ScConfig *sc_cfg, uint32_t cnt);
 
 /* Driver Callback */
 int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData);
@@ -460,10 +470,24 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
 
-                float temp_horzAccInit = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                sc_cfg->horzAccInit = (uint32_t)temp_horzAccInit;
-                float temp_vertAccInit = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                sc_cfg->vertAccInit = (uint32_t)temp_vertAccInit;
+                msc_obj->user_init_phase_x[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
+                msc_obj->user_init_phase_y[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
+                msc_obj->user_offset_x[cnt] =     TIVX_VPAC_MSC_AUTOCOMPUTE;
+                msc_obj->user_offset_y[cnt] =     TIVX_VPAC_MSC_AUTOCOMPUTE;
+                msc_obj->user_crop_start_x[cnt] = 0;
+                msc_obj->user_crop_start_y[cnt] = 0;
+
+                /* If rescale is smaller than 1/4, it might be because of crop, so don't set init yet */
+                if(((sc_cfg->outWidth * 4U) < sc_cfg->inRoi.cropWidth) ||
+                   ((sc_cfg->outHeight * 4U) < sc_cfg->inRoi.cropHeight))
+                {
+                    sc_cfg->horzAccInit = 0;
+                    sc_cfg->vertAccInit = 0;
+                }
+                else
+                {
+                    tivxVpacMscScaleUpdateStartPhases(msc_obj, sc_cfg, cnt);
+                }
             }
             else
             {
@@ -918,9 +942,6 @@ static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     sc_cfg->coeffShift = out_prms->coef_shift;
     sc_cfg->isEnableFiltSatMode = out_prms->saturation_mode;
 
-    sc_cfg->inRoi.cropStartX = out_prms->offset_x;
-    sc_cfg->inRoi.cropStartY = out_prms->offset_y;
-
     /* Single Phase Coefficients */
     if (0u == out_prms->filter_mode)
     {
@@ -1042,9 +1063,86 @@ static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
             }
         }
     }
+}
 
-    sc_cfg->horzAccInit = out_prms->multi_phase.init_phase_x;
-    sc_cfg->vertAccInit = out_prms->multi_phase.init_phase_y;
+static void tivxVpacMscScaleUpdateStartPhases(tivxVpacMscScaleObj *msc_obj,
+    Msc_ScConfig *sc_cfg, uint32_t cnt)
+{
+    float temp_horzAccInit, temp_vertAccInit;
+    uint32_t int_horzAccInit, int_vertAccInit;
+    uint32_t temp_cropStartX, temp_cropStartY;
+
+    if((TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_x[cnt]) ||
+       (TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_x[cnt]))
+    {
+        temp_horzAccInit = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        int_horzAccInit = (uint32_t)temp_horzAccInit;
+        temp_cropStartX = 0;
+        if(int_horzAccInit > 4095U)
+        {
+            int_horzAccInit -= 4096U;
+            temp_cropStartX = 1U;
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_x[cnt])
+        {
+            sc_cfg->horzAccInit = int_horzAccInit;
+        }
+        else
+        {
+            sc_cfg->horzAccInit = msc_obj->user_init_phase_x[cnt];
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_x[cnt])
+        {
+            sc_cfg->inRoi.cropStartX = msc_obj->user_crop_start_x[cnt] + temp_cropStartX;
+        }
+        else
+        {
+            sc_cfg->inRoi.cropStartX = msc_obj->user_crop_start_x[cnt] + msc_obj->user_offset_x[cnt];
+        }
+    }
+    else
+    {
+        sc_cfg->horzAccInit = msc_obj->user_init_phase_x[cnt];
+        sc_cfg->inRoi.cropStartX = msc_obj->user_crop_start_x[cnt] + msc_obj->user_offset_x[cnt];
+    }
+
+    if((TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_y[cnt]) ||
+       (TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_y[cnt]))
+    {
+        temp_vertAccInit = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        int_vertAccInit = (uint32_t)temp_vertAccInit;
+        temp_cropStartY = 0;
+        if(int_vertAccInit > 4095U)
+        {
+            int_vertAccInit -= 4096U;
+            temp_cropStartY = 1U;
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_y[cnt])
+        {
+            sc_cfg->vertAccInit = int_vertAccInit;
+        }
+        else
+        {
+            sc_cfg->vertAccInit = msc_obj->user_init_phase_y[cnt];
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_y[cnt])
+        {
+            sc_cfg->inRoi.cropStartY = msc_obj->user_crop_start_y[cnt] + temp_cropStartY;
+        }
+        else
+        {
+            sc_cfg->inRoi.cropStartY = msc_obj->user_crop_start_y[cnt] + msc_obj->user_offset_y[cnt];
+        }
+    }
+    else
+    {
+        sc_cfg->vertAccInit = msc_obj->user_init_phase_y[cnt];
+        sc_cfg->inRoi.cropStartY = msc_obj->user_crop_start_y[cnt] + msc_obj->user_offset_y[cnt];
+    }
 }
 
 /* ========================================================================== */
@@ -1145,6 +1243,13 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj
                 sc_cfg = &msc_obj->msc_prms.mscCfg.scCfg[idx];
 
                 tivxVpacMscScaleCopyOutPrmsToScCfg(sc_cfg, out_prms);
+
+                msc_obj->user_init_phase_x[cnt] = out_prms->multi_phase.init_phase_x;
+                msc_obj->user_init_phase_y[cnt] = out_prms->multi_phase.init_phase_y;
+                msc_obj->user_offset_x[cnt] =     out_prms->offset_x;
+                msc_obj->user_offset_y[cnt] =     out_prms->offset_y;
+
+                tivxVpacMscScaleUpdateStartPhases(msc_obj, sc_cfg, cnt);
             }
             else
             {
@@ -1280,6 +1385,11 @@ static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxVpacMscScaleObj *msc_obj,
                 sc_cfg->inRoi.cropStartY = out_prms->crop_start_y;
                 sc_cfg->inRoi.cropWidth = out_prms->crop_width;
                 sc_cfg->inRoi.cropHeight = out_prms->crop_height;
+
+                msc_obj->user_crop_start_x[cnt] = out_prms->crop_start_x;
+                msc_obj->user_crop_start_y[cnt] = out_prms->crop_start_y;
+
+                tivxVpacMscScaleUpdateStartPhases(msc_obj, sc_cfg, cnt);
             }
             else
             {

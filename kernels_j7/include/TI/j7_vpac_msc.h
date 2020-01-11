@@ -139,7 +139,7 @@ extern "C" {
  *         This command takes an array of vx_references as an argument,
  *         where each index contains crop parameters for the
  *         corresponding scaler. For example, the crop parameters at
- *         the index0 contains crop parameters required by output0 and so on. 
+ *         the index0 contains crop parameters required by output0 and so on.
  *         The crop parameters are applied on the corrosponding input image.
  *         If the reference is set to null for a scaler, default
  *         scaler parameters or previously set/configured parameters
@@ -175,6 +175,8 @@ extern "C" {
 /*! 32 Phase coefficients for Scaler */
 #define TIVX_VPAC_MSC_32_PHASE_COEFF                  (32U)
 
+/*! Autocompute: Allow the node to autocompute instead of specifying */
+#define TIVX_VPAC_MSC_AUTOCOMPUTE                     (0xFFFFFFFFU)
 
 /*********************************
  *      VPAC_MSC STRUCTURES
@@ -258,12 +260,18 @@ typedef struct {
      *          32 phase coefficient set [Range (0-3)]
      */
     uint32_t  vert_coef_sel;
-    /*! Multi-phase initial horizontal resize phase (U12Q12) [Range (0-4095)] */
+    /*! Multi-phase initial horizontal resize phase (U12Q12):
+     *  Used to align center tap if filter to appropriate input for first output [Range (0-4095, or TIVX_VPAC_MSC_AUTOCOMPUTE)]
+     *  \see tivx_vpac_msc_output_params_t::offset_x
+     *  \note Using TIVX_VPAC_MSC_AUTOCOMPUTE aligns center of output to match center of input cropped region for each output */
     uint32_t  init_phase_x;
-    /*! Multi-phase initial vertical resize phase (U12Q12) [Range (0-4095)] */
+    /*! Multi-phase initial vertical resize phase (U12Q12):
+     *  Used to align center tap if filter to appropriate input for first output [Range (0-4095, or TIVX_VPAC_MSC_AUTOCOMPUTE)]
+     *  \see tivx_vpac_msc_output_params_t::offset_y
+     *  \note Using TIVX_VPAC_MSC_AUTOCOMPUTE aligns center of output to match center of input cropped region for each output */
     uint32_t  init_phase_y;
 } tivx_vpac_msc_multi_phase_params_t;
- 
+
 /*!
  * \brief The crop config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
@@ -299,9 +307,13 @@ typedef struct {
      *   0: [0..4095] clipping;
      *   1: [-2048..2047] clip followed by + 2048 */
     uint32_t  saturation_mode;
-    /*! Source region of interest X offset [Range (0-8191)] */
+    /*! Source X offset: used to align center tap if filter to appropriate input for first output [Range (0,1, or TIVX_VPAC_MSC_AUTOCOMPUTE)]
+     *  \see tivx_vpac_msc_multi_phase_params_t::init_phase_x
+     *  \note Using TIVX_VPAC_MSC_AUTOCOMPUTE aligns center of output to match center of input cropped region for each output */
     uint32_t  offset_x;
-    /*! Source region of interest Y offset [Range (0-8191)] */
+    /*! Source Y offset: used to align center tap if filter to appropriate input for first output [Range (0,1, or TIVX_VPAC_MSC_AUTOCOMPUTE))]
+     *  \see tivx_vpac_msc_multi_phase_params_t::init_phase_y
+     *  \note Using TIVX_VPAC_MSC_AUTOCOMPUTE aligns center of output to match center of input cropped region for each output */
     uint32_t  offset_y;
     /*! Optional: When input 16-bit unpacked, alignment of 12-bit pixel,
      *  0: LSB, 1:MSB */

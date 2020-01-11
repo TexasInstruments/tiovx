@@ -103,6 +103,14 @@ typedef struct
     uint32_t crop_width[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
     uint32_t crop_height[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
 
+    /* State from user commands to override auto mode or not */
+    uint32_t user_init_phase_x[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t user_init_phase_y[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t user_offset_x[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t user_offset_y[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t user_crop_start_x[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t user_crop_start_y[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+
 } tivxMscScaleParams;
 
 /* ========================================================================== */
@@ -138,6 +146,8 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj[]);
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj[]);
+static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms,
+    uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -257,6 +267,16 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
 
                 if (NULL != imgOut)
                 {
+                    prms->user_init_phase_x[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
+                    prms->user_init_phase_y[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
+                    prms->user_offset_x[cnt] =     TIVX_VPAC_MSC_AUTOCOMPUTE;
+                    prms->user_offset_y[cnt] =     TIVX_VPAC_MSC_AUTOCOMPUTE;
+                    prms->user_crop_start_x[cnt] = 0;
+                    prms->user_crop_start_y[cnt] = 0;
+
+                    prms->crop_width[cnt] = imgIn->imagepatch_addr[0].dim_x;
+                    prms->crop_height[cnt] = imgIn->imagepatch_addr[0].dim_y;
+
                     prms->buffer_size_out[cnt] =
                         imgOut->imagepatch_addr[0].dim_x *
                         imgOut->imagepatch_addr[0].dim_y * 2;
@@ -383,9 +403,6 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        uint32_t iw = src->imagepatch_addr[0].dim_x;
-        uint32_t ih = src->imagepatch_addr[0].dim_y;
-
         prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
         prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
 
@@ -394,33 +411,21 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
         for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
-            if (NULL != dst[cnt])
+            if ((NULL != dst[cnt]) && ((vx_status)VX_SUCCESS == status))
             {
                 uint32_t ow = dst[cnt]->imagepatch_addr[0].dim_x;
                 uint32_t oh = dst[cnt]->imagepatch_addr[0].dim_y;
-                uint32_t hzScale = ((float)(4096*iw)/(float)ow) + 0.5f;
-                uint32_t vtScale = ((float)(4096*ih)/(float)oh) + 0.5f;
-
-                prms->config.settings.unitParams[cnt].outWidth =
-                    dst[cnt]->imagepatch_addr[0].dim_x;
-                prms->config.settings.unitParams[cnt].outHeight =
-                    dst[cnt]->imagepatch_addr[0].dim_y;
-                prms->config.settings.unitParams[cnt].hzScale = hzScale;
-                prms->config.settings.unitParams[cnt].vtScale = vtScale;
-
-                /* Control Command provides an interface for setting
-                 * init phase information, but currently overriding it
-                 * using this equation. */
-                prms->config.settings.unitParams[cnt].initPhaseX =
-                    (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                prms->config.settings.unitParams[cnt].initPhaseY =
-                    (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 1);
             }
             else
             {
                 break;
             }
         }
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
 
 #ifdef VLAB_HWA
 
@@ -466,9 +471,6 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
     if (((vx_status)VX_SUCCESS == status) && (src->format == (vx_df_image)VX_DF_IMAGE_NV12))
     {
-        uint32_t iw = src->imagepatch_addr[1].dim_x;
-        uint32_t ih = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
-
         prms->config.settings.G_inWidth[0] = src->imagepatch_addr[1].dim_x;
         prms->config.settings.G_inHeight[0] = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
 
@@ -477,27 +479,11 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
         for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
-            if (NULL != dst[cnt])
+            if ((NULL != dst[cnt]) && ((vx_status)VX_SUCCESS == status))
             {
                 uint32_t ow = dst[cnt]->imagepatch_addr[1].dim_x;
                 uint32_t oh = dst[cnt]->imagepatch_addr[1].dim_y / dst[cnt]->imagepatch_addr[1].step_y;
-                uint32_t hzScale = ((float)(4096*iw)/(float)ow) + 0.5f;
-                uint32_t vtScale = ((float)(4096*ih)/(float)oh) + 0.5f;
-
-                prms->config.settings.unitParams[cnt].outWidth =
-                    dst[cnt]->imagepatch_addr[1].dim_x;
-                prms->config.settings.unitParams[cnt].outHeight =
-                    dst[cnt]->imagepatch_addr[1].dim_y / dst[cnt]->imagepatch_addr[1].step_y;
-                prms->config.settings.unitParams[cnt].hzScale = hzScale;
-                prms->config.settings.unitParams[cnt].vtScale = vtScale;
-
-                /* Control Command provides an interface for setting
-                 * init phase information, but currently overriding it
-                 * using this equation. */
-                prms->config.settings.unitParams[cnt].initPhaseX =
-                    (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-                prms->config.settings.unitParams[cnt].initPhaseY =
-                    (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 2);
             }
             else
             {
@@ -946,8 +932,6 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
                 prms->config.settings.unitParams[cnt].filter_mode = out_prms->filter_mode;
                 prms->config.settings.unitParams[cnt].coefShift = out_prms->coef_shift;
                 prms->config.settings.unitParams[cnt].satMode = out_prms->saturation_mode;
-                prms->config.settings.unitParams[cnt].x_offset = out_prms->offset_x;
-                prms->config.settings.unitParams[cnt].y_offset = out_prms->offset_y;
                 prms->config.settings.unitParams[cnt].sp_hs_coef_src = out_prms->single_phase.horz_coef_src;
                 prms->config.settings.unitParams[cnt].sp_hs_coef_sel = out_prms->single_phase.horz_coef_sel;
                 prms->config.settings.unitParams[cnt].sp_vs_coef_src = out_prms->single_phase.vert_coef_src;
@@ -956,8 +940,12 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
                 prms->config.settings.unitParams[cnt].phase_mode = out_prms->multi_phase.phase_mode;
                 prms->config.settings.unitParams[cnt].hs_coef_sel = out_prms->multi_phase.horz_coef_sel;
                 prms->config.settings.unitParams[cnt].vs_coef_sel = out_prms->multi_phase.vert_coef_sel;
-                prms->config.settings.unitParams[cnt].initPhaseX = out_prms->multi_phase.init_phase_x;
-                prms->config.settings.unitParams[cnt].initPhaseY = out_prms->multi_phase.init_phase_y;
+
+                /* These will be applied or autocalculated during process callback (after all user commands have been called) */
+                prms->user_init_phase_x[cnt] = out_prms->multi_phase.init_phase_x;
+                prms->user_init_phase_y[cnt] = out_prms->multi_phase.init_phase_y;
+                prms->user_offset_x[cnt] =     out_prms->offset_x;
+                prms->user_offset_y[cnt] =     out_prms->offset_y;
             }
             else
             {
@@ -1001,10 +989,12 @@ static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
             {
                 out_prms = (tivx_vpac_msc_crop_params_t *)target_ptr;
 
-                prms->config.settings.unitParams[cnt].x_offset = out_prms->crop_start_x;
-                prms->config.settings.unitParams[cnt].y_offset = out_prms->crop_start_y;
                 prms->crop_width[cnt] = out_prms->crop_width;
                 prms->crop_height[cnt] = out_prms->crop_height;
+
+                /* These will be applied or autocalculated during process callback (after all user commands have been called) */
+                prms->user_crop_start_x[cnt] = out_prms->crop_start_x;
+                prms->user_crop_start_y[cnt] = out_prms->crop_start_y;
             }
             else
             {
@@ -1024,4 +1014,109 @@ static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
     }
 
     return (status);
+}
+
+static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms, uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    float temp_horzAccInit, temp_vertAccInit;
+    uint32_t int_horzAccInit, int_vertAccInit;
+    uint32_t temp_cropStartX, temp_cropStartY;
+    uint32_t iw = prms->crop_width[cnt];
+    uint32_t ih = prms->crop_height[cnt]/h_divider;
+    uint32_t hzScale = (4096*iw+(ow>>1))/ow;
+    uint32_t vtScale = (4096*ih+(oh>>1))/oh;
+
+    if(hzScale > 16384U)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "Output %d: max horizontal downscale exceeded, limit is 1/4\n", cnt);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if(vtScale > 16384U)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "Output %d: max vertical downscale exceeded, limit is 1/4\n", cnt);
+        status = (vx_status)VX_FAILURE;
+    }
+
+    prms->config.settings.unitParams[cnt].outWidth = ow;
+    prms->config.settings.unitParams[cnt].outHeight = oh;
+    prms->config.settings.unitParams[cnt].hzScale = hzScale;
+    prms->config.settings.unitParams[cnt].vtScale = vtScale;
+
+    if((TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_offset_x[cnt]) ||
+       (TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_init_phase_x[cnt]))
+    {
+        temp_horzAccInit = (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        int_horzAccInit = (uint32_t)temp_horzAccInit;
+        temp_cropStartX = 0;
+        if(int_horzAccInit > 4095U)
+        {
+            int_horzAccInit -= 4096U;
+            temp_cropStartX = 1U;
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_init_phase_x[cnt])
+        {
+            prms->config.settings.unitParams[cnt].initPhaseX = int_horzAccInit;
+        }
+        else
+        {
+            prms->config.settings.unitParams[cnt].initPhaseX = prms->user_init_phase_x[cnt];
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_offset_x[cnt])
+        {
+            prms->config.settings.unitParams[cnt].x_offset = prms->user_crop_start_x[cnt] + temp_cropStartX;
+        }
+        else
+        {
+            prms->config.settings.unitParams[cnt].x_offset = prms->user_crop_start_x[cnt] + prms->user_offset_x[cnt];
+        }
+    }
+    else
+    {
+        prms->config.settings.unitParams[cnt].initPhaseX = prms->user_init_phase_x[cnt];
+        prms->config.settings.unitParams[cnt].x_offset = prms->user_crop_start_x[cnt] + prms->user_offset_x[cnt];
+    }
+
+    if((TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_offset_y[cnt]) ||
+       (TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_init_phase_y[cnt]))
+    {
+        temp_vertAccInit = (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        int_vertAccInit = (uint32_t)temp_vertAccInit;
+        temp_cropStartY = 0;
+        if(int_vertAccInit > 4095U)
+        {
+            int_vertAccInit -= 4096U;
+            temp_cropStartY = 1U;
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_init_phase_y[cnt])
+        {
+            prms->config.settings.unitParams[cnt].initPhaseY = int_vertAccInit;
+        }
+        else
+        {
+            prms->config.settings.unitParams[cnt].initPhaseY = prms->user_init_phase_y[cnt];
+        }
+
+        if(TIVX_VPAC_MSC_AUTOCOMPUTE == prms->user_offset_y[cnt])
+        {
+            prms->config.settings.unitParams[cnt].y_offset = prms->user_crop_start_y[cnt] + temp_cropStartY;
+        }
+        else
+        {
+            prms->config.settings.unitParams[cnt].y_offset = prms->user_crop_start_y[cnt] + prms->user_offset_y[cnt];
+        }
+    }
+    else
+    {
+        prms->config.settings.unitParams[cnt].initPhaseY = prms->user_init_phase_y[cnt];
+        prms->config.settings.unitParams[cnt].y_offset = prms->user_crop_start_y[cnt] + prms->user_offset_y[cnt];
+    }
+
+    return status;
 }
