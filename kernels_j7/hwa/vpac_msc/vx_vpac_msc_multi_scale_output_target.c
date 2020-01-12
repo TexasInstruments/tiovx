@@ -896,7 +896,7 @@ static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
-        sc_cfg->inRoi.cropStartX = 0u;
+        sc_cfg->inRoi.cropStartY = 0u;
         sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
     }
