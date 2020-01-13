@@ -114,7 +114,7 @@ void vx_tutorial_run_interactive()
                 break;
             case '4':
 #ifdef _DISABLE_TIDL
-                printf("tidl tutorial disabled when compiled in 64-bits host-emulation, please compile in 32-bits\n");
+                printf("tidl tutorial disabled for TDA4; please reference TIDL apps in vision_apps\n");
 #else
                 vx_tutorial_tidl();
 #endif
