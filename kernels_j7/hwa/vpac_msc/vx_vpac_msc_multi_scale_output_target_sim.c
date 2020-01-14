@@ -143,9 +143,9 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxMscScaleParams *prms,
 static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj[]);
+    tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params);
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj[]);
+    tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params);
 static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms,
     uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider);
 
@@ -656,13 +656,13 @@ static vx_status VX_CALLBACK tivxKernelMscScaleControl(
             case TIVX_VPAC_MSC_CMD_SET_OUTPUT_PARAMS:
             {
                 status = tivxVpacMscScaleSetOutputParamsCmd(prms,
-                    (tivx_obj_desc_user_data_object_t **)&obj_desc[0U]);
+                    (tivx_obj_desc_user_data_object_t **)&obj_desc[0U], num_params);
                 break;
             }
             case TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS:
             {
                 status = tivxVpacMscScaleSetCropParamsCmd(prms,
-                    (tivx_obj_desc_user_data_object_t **)&obj_desc[0U]);
+                    (tivx_obj_desc_user_data_object_t **)&obj_desc[0U], num_params);
                 break;
             }
             default:
@@ -907,14 +907,17 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
 }
 
 static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj[])
+    tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          cnt;
     tivx_vpac_msc_output_params_t    *out_prms = NULL;
     void                             *target_ptr;
 
-    for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+    uint32_t loop_params = (num_params < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT) ? \
+                            num_params : TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT;
+
+    for (cnt = 0u; cnt < loop_params; cnt ++)
     {
         if (NULL != usr_data_obj[cnt])
         {
@@ -968,14 +971,17 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
 }
 
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj[])
+    tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          cnt;
     tivx_vpac_msc_crop_params_t      *out_prms = NULL;
     void                             *target_ptr;
 
-    for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+    uint32_t loop_params = (num_params < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT) ? \
+                            num_params : TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT;
+
+    for (cnt = 0u; cnt < loop_params; cnt ++)
     {
         if (NULL != usr_data_obj[cnt])
         {

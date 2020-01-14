@@ -955,7 +955,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
     vx_user_data_object coeff_obj, crop_obj;
     tivx_vpac_msc_coefficients_t coeffs;
     tivx_vpac_msc_crop_params_t crop;
-    vx_reference refs[5] = {0};
+    vx_reference refs[1] = {0};
     vx_rectangle_t rect;
     uint32_t checksum_actual;
 
@@ -1053,7 +1053,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
             refs[0] = (vx_reference)crop_obj;
             ASSERT_EQ_VX_STATUS(VX_SUCCESS,
                 tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS,
-                refs, 5u));
+                refs, 1u));
 
             VX_CALL(vxReleaseUserDataObject(&crop_obj));
         }
