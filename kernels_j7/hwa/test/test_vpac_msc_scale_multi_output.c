@@ -24,8 +24,24 @@
 
 #include <math.h> // floorf
 #include "test_hwa_common.h"
+#include "tivx_utils_checksum.h"
+#include "tivx_utils_file_rd_wr.h"
+
 
 TESTCASE(tivxHwaVpacMscScaleMultiOutput, CT_VXContext, ct_setup_vx_context, 0)
+
+static vx_status save_image_from_msc(vx_image y8, char *filename_prefix)
+{
+    char filename[MAXPATHLENGTH];
+    vx_status status;
+
+    snprintf(filename, MAXPATHLENGTH, "%s/%s.bmp",
+        ct_get_test_file_path(), filename_prefix);
+
+    status = tivx_utils_save_vximage_to_bmpfile(filename, y8);
+
+    return status;
+}
 
 TEST(tivxHwaVpacMscScaleMultiOutput, testNodeCreation)
 {
@@ -506,16 +522,16 @@ static void scale_validate(CT_Image src, CT_Image dst, vx_enum interpolation, vx
                     num_failed++;
                 }
             });
-    if (interpolation == VX_INTERPOLATION_BILINEAR)
-    {
+    //if (interpolation == VX_INTERPOLATION_BILINEAR)
+   // {
         int total = dst->width * dst->height;
-        if (num_failed * 100 > total * 2) // 98% should be valid
+        if (num_failed ) // 98% should be valid
         {
             printf("exact = %d\n", exact);
             printf("Check failed: %g (%d) pixels are wrong", (float)num_failed / total, num_failed);
             CT_FAIL("Check failed: %g (%d) pixels are wrong", (float)num_failed / total, num_failed);
         }
-    }
+    //}
 }
 
 static void scale_check(CT_Image src, CT_Image dst, vx_enum interpolation, vx_border_t border, int exact)
@@ -528,7 +544,7 @@ static void scale_check(CT_Image src, CT_Image dst, vx_enum interpolation, vx_bo
         printf("src->data.y[%d] = %d\n", i, src->data.y[i]);
         printf("dst->data.y[%d] = %d\n", i, dst->data.y[i]);
     }*/
-#if 0
+#if 1
     if (CT_HasFailure())
     {
         printf("=== SRC ===\n");
@@ -546,9 +562,9 @@ typedef struct {
     CT_Image (*generator)(const char* fileName, int width, int height);
     const char* fileName;
     void (*dst_size_generator)(int width, int height, int* dst_width, int* dst_height);
-    int exact_result;
+    int crop_mode;
+    uint32_t checksum;
     int width, height;
-    vx_border_t border;
 } Arg_OneOutput;
 
 typedef struct {
@@ -667,9 +683,213 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
 #define STR_VX_INTERPOLATION_BILINEAR "BILINEAR"
 #define STR_VX_INTERPOLATION_AREA "AREA"
 
-#define SCALE_TEST_ONE_OUTPUT(interpolation, inputDataGenerator, inputDataFile, scale, exact, nextmacro, ...) \
+#define ADD_CROP_0(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/crop=none", __VA_ARGS__, 0))
+
+#define ADD_CROP_1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/crop=1", __VA_ARGS__, 1))
+
+TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern
+)
+{
+    vx_context context = context_->vx_context_;
+    int w = 16, h = 16, i, j, crop_mode = 0;
+    int dst_width = 0, dst_height = 0;
+    vx_image src_image = 0, dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_user_data_object coeff_obj, crop_obj;
+    tivx_vpac_msc_coefficients_t coeffs;
+    tivx_vpac_msc_crop_params_t crop;
+    vx_reference refs[5] = {0};
+    vx_rectangle_t rect;
+    uint32_t checksum_actual;
+    vx_enum interpolation = VX_INTERPOLATION_BILINEAR;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    {
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, w, h, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+/* Note: for debug--load in a file by putting a breakpoint at unmap */
+#if 1
+        vx_imagepatch_addressing_t image_addr;
+        vx_map_id map_id;
+        vx_df_image df;
+        void *data_ptr, *data_ptr2;
+        uint8_t *data_ptr_u8;
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = w;
+        rect.end_y = h;
+
+        vxMapImagePatch(src_image,
+            &rect,
+            0,
+            &map_id,
+            &image_addr,
+            &data_ptr,
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        data_ptr_u8 = data_ptr;
+
+        for(j=0; j < h; j++)
+        {
+            for(i=0; i<w; i++)
+            {
+                data_ptr_u8[j*image_addr.stride_y+i] = j*16;
+                printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
+            }
+            printf("\n");
+        }
+
+        vxUnmapImagePatch(src_image, map_id);
+#endif
+        dst_width = w-4;
+        dst_height = h-4;
+
+        if(crop_mode == 1)
+        {
+            dst_width /= 2;
+            dst_height /= 2;
+        }
+
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
+            dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
+        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+
+        scale_set_coeff(&coeffs, interpolation);
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        /* Set Coefficients */
+        ASSERT_VX_OBJECT(coeff_obj = vxCreateUserDataObject(context,
+            "tivx_vpac_msc_coefficients_t",
+            sizeof(tivx_vpac_msc_coefficients_t), NULL),
+            (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        VX_CALL(vxCopyUserDataObject(coeff_obj, 0,
+            sizeof(tivx_vpac_msc_coefficients_t), &coeffs, VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+
+        refs[0] = (vx_reference)coeff_obj;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
+            refs, 1u));
+
+        VX_CALL(vxReleaseUserDataObject(&coeff_obj));
+
+        if(crop_mode == 1)
+        {
+            /* Set Input Crop */
+            ASSERT_VX_OBJECT(crop_obj = vxCreateUserDataObject(context,
+                "tivx_vpac_msc_crop_params_t",
+                sizeof(tivx_vpac_msc_crop_params_t), NULL),
+                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            /* Center crop of input */
+            crop.crop_start_x = w / 4;
+            crop.crop_start_y =h / 4;
+            crop.crop_width   = w / 2;
+            crop.crop_height  = h / 2;
+
+            VX_CALL(vxCopyUserDataObject(crop_obj, 0,
+                sizeof(tivx_vpac_msc_crop_params_t), &crop, VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST));
+
+            refs[0] = (vx_reference)crop_obj;
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS,
+                refs, 5u));
+
+            VX_CALL(vxReleaseUserDataObject(&crop_obj));
+        }
+
+        VX_CALL(vxProcessGraph(graph));
+
+        //ASSERT_NO_FAILURE(src = ct_image_from_vx_image(src_image));
+        //ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+#if 1
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = dst_width;
+        rect.end_y = dst_height;
+
+        vxMapImagePatch(dst_image,
+            &rect,
+            0,
+            &map_id,
+            &image_addr,
+            &data_ptr2,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        data_ptr_u8 = data_ptr2;
+
+        for(j=0; j < dst_height; j++)
+        {
+            for(i=0; i<dst_width; i++)
+            {
+                printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
+            }
+            printf("\n");
+        }
+
+        vxUnmapImagePatch(dst_image, map_id);
+#endif
+
+        //ASSERT_NO_FAILURE(scale_check(src, dst, arg_->interpolation, arg_->border, arg_->exact_result));
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = dst_width;
+        rect.end_y = dst_height;
+
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        printf("0x%08x\n", checksum_actual);
+        //printf("end_x = %d\n", dst_width);
+        //printf("end_y = %d\n", dst_height);
+
+        //ASSERT(arg_->checksum == checksum_actual);
+
+        save_image_from_msc(dst_image, "output/lena_msc");
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&src_image));
+
+        tivxHwaUnLoadKernels(context);
+    }
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+}
+
+
+#define SCALE_TEST_ONE_OUTPUT(interpolation, inputDataGenerator, inputDataFile, scale, crop_mode, checksum, nextmacro, ...) \
     CT_EXPAND(nextmacro(STR_##interpolation "/" inputDataFile "/" #scale, __VA_ARGS__, \
-            interpolation, inputDataGenerator, inputDataFile, dst_size_generator_ ## scale, exact))
+            interpolation, inputDataGenerator, inputDataFile, dst_size_generator_ ## scale, crop_mode, checksum))
+
+#define ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_BORDER_REPLICATE", __VA_ARGS__, { VX_BORDER_REPLICATE, {{ 0 }} }))
 
 #define ADD_DST_SIZE_NN(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/1_1", __VA_ARGS__, dst_size_generator_1_1)), \
@@ -694,48 +914,34 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
 #define ADD_SIZE_100x100(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=100x100", __VA_ARGS__, 100, 100))
 
-#define PARAMETERS_ONE_OUTPUT \
-    /* 1:1 scale */ \
-    /* BILINEAR downscales */ \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_1, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_1, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_1, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    /* NN upscale with integer factor */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_3, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 1_2, 1, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), */ \
-    /* NN downscale with odd integer factor */\
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 3_1, 1, ADD_SIZE_96x96, ADD_VX_BORDERS, ARG, 0), */\
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 5_1, 1, ADD_SIZE_100x100, ADD_VX_BORDERS, ARG, 0), */ \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_pattern3x3, "pattern3x3", 3_1, 0, ADD_SIZE_96x96, ADD_VX_BORDERS, ARG, 0), \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 3_1, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), */\
-    /* other NN downscales */ \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 2_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* BILINEAR upscale with integer factor */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_3, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* BILINEAR downscales */ \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 2_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 3_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0),*/ \
-    /*SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 4_1, 0, ADD_SIZE_256x256, ADD_VX_BORDERS, ARG, 0),*/ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 5_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* AREA tests */ \
-    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_gradient_16x16, "gradient16x16", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    /*SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_read_image, "lena.bmp", 4_1, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0),*/ \
-    /* AREA upscale */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_3, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* other */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
-    /* SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_AREA,             scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
 
+#define PARAMETERS_ONE_OUTPUT \
+    /* Crop off */ \
+    /* NN downscale */ \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 1_1, 0, 0x41dd742d, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 2_1, 0, 0xaad0c491, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 3_1, 0, 0x08c84775, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 4_1, 0, 0x39393c76, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", SCALE_PYRAMID_ORB, 0, 0xf4ca5ddd, ADD_SIZE_NONE, ARG, 0), \
+    /* BILINEAR downscales */ \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 1_1, 0, 0x41dd742d, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 2_1, 0, 0x2891bf11, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 3_1, 0, 0xe5404e1a, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 4_1, 0, 0x21264e4f, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", SCALE_PYRAMID_ORB, 0, 0xb4697795, ADD_SIZE_NONE, ARG, 0), \
+    /* Crop on */ \
+    /* NN downscale */ \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 1_1, 1, 0x8b8c0ce1, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 2_1, 1, 0x14dc69f0, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 3_1, 1, 0xe22db6f5, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 4_1, 1, 0x5d69ead7, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", SCALE_PYRAMID_ORB, 1, 0x87d625f5, ADD_SIZE_NONE, ARG, 0), \
+    /* BILINEAR downscales */ \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 1_1, 1, 0x8b8c0ce1, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 2_1, 1, 0xded3fe1d, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 3_1, 1, 0x8f75b64d, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", 4_1, 1, 0x1f8aa69c, ADD_SIZE_NONE, ARG, 0), \
+    SCALE_TEST_ONE_OUTPUT(VX_INTERPOLATION_BILINEAR, scale_read_image, "lena.bmp", SCALE_PYRAMID_ORB, 1, 0x2d376dc1, ADD_SIZE_NONE, ARG, 0), \
 
 TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg_OneOutput,
     PARAMETERS_ONE_OUTPUT
@@ -746,11 +952,14 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
     vx_image src_image = 0, dst_image = 0;
     vx_graph graph = 0;
     vx_node node = 0;
-    vx_user_data_object coeff_obj;
+    vx_user_data_object coeff_obj, crop_obj;
     tivx_vpac_msc_coefficients_t coeffs;
-    vx_reference refs[1];
+    tivx_vpac_msc_crop_params_t crop;
+    vx_reference refs[5] = {0};
+    vx_rectangle_t rect;
+    uint32_t checksum_actual;
 
-    CT_Image src = NULL, dst = NULL;
+    CT_Image src = NULL;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
@@ -763,7 +972,6 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
 /* Note: for debug--load in a file by putting a breakpoint at unmap */
 #if 0
         vx_imagepatch_addressing_t image_addr;
-        vx_rectangle_t rect;
         vx_map_id map_id;
         vx_df_image df;
         void *data_ptr, *data_ptr2;
@@ -789,6 +997,12 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
 #endif
         ASSERT_NO_FAILURE(arg_->dst_size_generator(src->width, src->height, &dst_width, &dst_height));
 
+        if(arg_->crop_mode == 1)
+        {
+            dst_width /= 2;
+            dst_height /= 2;
+        }
+
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -796,8 +1010,6 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
         ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
             dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
         ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-
-        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
 
         scale_set_coeff(&coeffs, arg_->interpolation);
 
@@ -818,10 +1030,38 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
             tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
             refs, 1u));
 
+        VX_CALL(vxReleaseUserDataObject(&coeff_obj));
+
+        if(arg_->crop_mode == 1)
+        {
+            /* Set Input Crop */
+            ASSERT_VX_OBJECT(crop_obj = vxCreateUserDataObject(context,
+                "tivx_vpac_msc_crop_params_t",
+                sizeof(tivx_vpac_msc_crop_params_t), NULL),
+                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            /* Center crop of input */
+            crop.crop_start_x = src->width / 4;
+            crop.crop_start_y = src->height / 4;
+            crop.crop_width   = src->width / 2;
+            crop.crop_height  = src->height / 2;
+
+            VX_CALL(vxCopyUserDataObject(crop_obj, 0,
+                sizeof(tivx_vpac_msc_crop_params_t), &crop, VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST));
+
+            refs[0] = (vx_reference)crop_obj;
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS,
+                refs, 5u));
+
+            VX_CALL(vxReleaseUserDataObject(&crop_obj));
+        }
+
         VX_CALL(vxProcessGraph(graph));
 
-        ASSERT_NO_FAILURE(src = ct_image_from_vx_image(src_image));
-        ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+        //ASSERT_NO_FAILURE(src = ct_image_from_vx_image(src_image));
+        //ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 
 #if 0
         /*rect.start_x = 0;
@@ -843,7 +1083,21 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
         vxUnmapImagePatch(dst_image, map_id);*/
 #endif
 
-        ASSERT_NO_FAILURE(scale_check(src, dst, arg_->interpolation, arg_->border, arg_->exact_result));
+        //ASSERT_NO_FAILURE(scale_check(src, dst, arg_->interpolation, arg_->border, arg_->exact_result));
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = dst_width;
+        rect.end_y = dst_height;
+
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        printf("0x%08x\n", checksum_actual);
+        //printf("end_x = %d\n", dst_width);
+        //printf("end_y = %d\n", dst_height);
+
+        ASSERT(arg_->checksum == checksum_actual);
+
+        save_image_from_msc(dst_image, "output/lena_msc");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -853,7 +1107,6 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
 
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseUserDataObject(&coeff_obj));
 
         tivxHwaUnLoadKernels(context);
     }
@@ -1325,6 +1578,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FiveOutput, Ar
 
 TESTCASE_TESTS(tivxHwaVpacMscScaleMultiOutput,
     testNodeCreation,
+    testGraphProcessing_FixedPattern,
     testGraphProcessing_OneOutput,
     testGraphProcessing_TwoOutput,
     testGraphProcessing_ThreeOutput,
