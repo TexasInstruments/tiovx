@@ -105,6 +105,8 @@ extern "C" {
 #define TIVX_GRAPH_MAX_SUPER_NODES         (8u)
 
 /*! \brief Max possible pipeline depth of a graph
+ *         The max value to be set by application is
+ *         (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
  * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (8u)

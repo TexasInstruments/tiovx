@@ -179,6 +179,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     {
         context = queue->context;
 
+        VX_PRINT(VX_ZONE_INFO, "tivxQueueDelete: if this hangs, please ensure all application threads have been destroyed\n");
         if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET))
         {
             pthread_cond_destroy(&(context)->condGet);

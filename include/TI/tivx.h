@@ -619,7 +619,8 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
 /*! \brief Indicates to the implementation the depth of the graph pipeline
  *
  * \param [in] graph Graph reference
- * \param [in] pipeline_depth Pipeline depth
+ * \param [in] pipeline_depth Pipeline depth; Max value is (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
+ *                            else it will return an error
  *
  * \ingroup group_tivx_ext_host
  */
