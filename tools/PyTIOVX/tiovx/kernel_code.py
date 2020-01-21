@@ -422,7 +422,7 @@ class KernelExportCode :
         self.host_c_code.write_line("vx_enum kernel_id;")
         self.host_c_code.write_newline()
         self.host_c_code.write_line("status = vxAllocateUserKernelId(context, &kernel_id);")
-        self.host_c_code.write_line("if(status != VX_SUCCESS)")
+        self.host_c_code.write_line("if(status != (vx_status)VX_SUCCESS)")
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate user kernel ID\\n\");")
         self.host_c_code.write_close_brace()
@@ -473,7 +473,7 @@ class KernelExportCode :
         self.host_c_code.write_line("status = vxFinalizeKernel(kernel);")
         self.host_c_code.write_close_brace()
 
-        self.host_c_code.write_line("if (status != VX_SUCCESS)")
+        self.host_c_code.write_line("if (status != (vx_status)VX_SUCCESS)")
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("vxReleaseKernel(&kernel);")
         self.host_c_code.write_line("kernel = NULL;")
@@ -553,7 +553,7 @@ class KernelExportCode :
         self.host_c_code.write_open_brace()
 
         # Initial parameters
-        self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.host_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         self.num_params = 0
         for prm in self.kernel.params :
             self.host_c_code.write_newline()
@@ -579,13 +579,13 @@ class KernelExportCode :
                 self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
         self.host_c_code.write_line(")")
         self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+        self.host_c_code.write_line("status = (vx_status)VX_ERROR_INVALID_PARAMETERS;")
         self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
         # Query all types here
-        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         # find code from target for here
         # assigned descriptors to local variables
@@ -607,7 +607,7 @@ class KernelExportCode :
         num_image = 0
         num_nonimage = 0
         num_scalar = 0
-        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
             if prm.state is ParamState.OPTIONAL :
@@ -638,7 +638,7 @@ class KernelExportCode :
         self.host_c_code.write_newline()
 
         # Check for sizeof array, and data type (format) of other objects
-        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.USER_DATA_OBJECT == prm.type or Type.is_scalar_type(prm.type) is True :
@@ -716,7 +716,7 @@ class KernelExportCode :
                         self.host_c_code.write_line("    (strncmp(%s_name, \"%s\", sizeof(%s_name)) != 0))" % (prm.name_lower, self.print_data_type[0], prm.name_lower))
 
                 self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+                self.host_c_code.write_line("status = (vx_status)VX_ERROR_INVALID_PARAMETERS;")
                 vowel = ["a","e","i","o"]
                 if Type.is_scalar_type(prm.type) :
                     self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a scalar of type:\\n " % (prm.name_lower), new_line=False)
@@ -741,7 +741,7 @@ class KernelExportCode :
             self.host_c_code.write_newline()
             self.host_c_code.write_line("/* PARAMETER RELATIONSHIP CHECKING */")
             self.host_c_code.write_newline()
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
             self.host_c_code.write_open_brace()
 
             for rel in self.kernel.relationship_list :
@@ -762,7 +762,7 @@ class KernelExportCode :
                             self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[1].name_lower, attr.value[0]))
 
                     self.host_c_code.write_open_brace()
-                    self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+                    self.host_c_code.write_line("status = (vx_status)VX_ERROR_INVALID_PARAMETERS;")
                     self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Parameters '%s' and '%s' " % (rel.prm_list[0].name_lower, rel.prm_list[1].name_lower), new_line=False)
                     for prm in rel.prm_list[2:] :
                         self.host_c_code.write_line("and '%s' " % (prm.name_lower), new_line=False, indent=False)
@@ -796,7 +796,7 @@ class KernelExportCode :
         self.host_c_code.write_line("            const vx_reference parameters[ ],")
         self.host_c_code.write_line("            vx_uint32 num_params)")
         self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.host_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         if self.kernel.getNumImages() > 0 :
             self.host_c_code.write_line("tivxKernelValidRectParams prms;")
         self.host_c_code.write_newline()
@@ -808,7 +808,7 @@ class KernelExportCode :
                 self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
         self.host_c_code.write_line(")")
         self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+        self.host_c_code.write_line("status = (vx_status)VX_ERROR_INVALID_PARAMETERS;")
         self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
         self.host_c_code.write_close_brace()
 
@@ -829,7 +829,7 @@ class KernelExportCode :
 
         # Config valid rectangle
         if num_input_image > 0 or num_output_image > 0 :
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
             self.host_c_code.write_open_brace()
             self.host_c_code.write_line("tivxKernelValidRectParams_init(&prms);")
             self.host_c_code.write_newline()
@@ -889,7 +889,7 @@ class KernelExportCode :
         self.target_c_code.write_line("void tivxAddTargetKernel%s(void)" % self.kernel.name_camel, files=0)
         self.target_c_code.write_line("void tivxAddTargetKernelBam%s(void)" % self.kernel.name_camel, files=1)
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_status status = VX_FAILURE;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_FAILURE;")
         self.target_c_code.write_line("char target_name[TIVX_TARGET_MAX_NAME];")
         self.target_c_code.write_line("vx_enum self_cpu;")
         self.target_c_code.write_newline()
@@ -898,14 +898,14 @@ class KernelExportCode :
         for target in self.kernel.targets :
             if type(target) is Target :
                 cpu = Target.get_cpu(target)
-                self.target_c_code.write_line("if ( self_cpu == %s )" % Cpu.get_vx_enum_name(cpu) )
+                self.target_c_code.write_line("if ( self_cpu == (vx_enum)%s )" % Cpu.get_vx_enum_name(cpu) )
             self.target_c_code.write_open_brace()
             self.target_c_code.write_line("strncpy(target_name, %s, TIVX_TARGET_MAX_NAME);" % Target.get_vx_enum_name(target))
-            self.target_c_code.write_line("status = VX_SUCCESS;")
+            self.target_c_code.write_line("status = (vx_status)VX_SUCCESS;")
             self.target_c_code.write_close_brace()
             self.target_c_code.write_line("else")
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("status = VX_FAILURE;")
+        self.target_c_code.write_line("status = (vx_status)VX_FAILURE;")
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
@@ -928,7 +928,7 @@ class KernelExportCode :
         self.target_c_code.write_line("void tivxRemoveTargetKernel%s(void)" % self.kernel.name_camel, files=0)
         self.target_c_code.write_line("void tivxRemoveTargetKernelBam%s(void)" % self.kernel.name_camel, files=1)
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         self.target_c_code.write_newline()
         self.target_c_code.write_line("status = tivxRemoveTargetKernel(vx_%s_target_kernel);" % self.kernel.name_lower)
         self.target_c_code.write_if_status()
@@ -1094,7 +1094,7 @@ class KernelExportCode :
     def extract_attribute(self, local, is_first_prm):
         invalid_type = False
         if not is_first_prm :
-            self.target_c_code.write_line("if (VX_SUCCESS == status)")
+            self.target_c_code.write_line("if ((vx_status)VX_SUCCESS == status)")
             self.target_c_code.write_open_brace()
         if local.prm.type != Type.NULL :
             # verifying that the optional parameter is being used
@@ -1351,11 +1351,11 @@ class KernelExportCode :
         # setting 0 is for allocating mem; setting 1 is for setting mem to 0
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify correct amount of memory is allocated >")
         self.target_c_code.write_line("prms->%s_size = %s;" % (local.name, size_str) )
-        self.target_c_code.write_line("prms->%s_ptr = tivxMemAlloc(prms->%s_size, TIVX_MEM_EXTERNAL);" % (local.name, local.name) )
+        self.target_c_code.write_line("prms->%s_ptr = tivxMemAlloc(prms->%s_size, (vx_enum)TIVX_MEM_EXTERNAL);" % (local.name, local.name) )
         self.target_c_code.write_newline()
         self.target_c_code.write_line("if (NULL == prms->%s_ptr)" % (local.name) )
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
+        self.target_c_code.write_line("status = (vx_status)VX_ERROR_NO_MEMORY;")
         self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
         self.target_c_code.write_close_brace()
         self.target_c_code.write_line("else")
@@ -1378,7 +1378,7 @@ class KernelExportCode :
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         contains_user_data_object = False
         for prm in self.kernel.params :
             if Type.USER_DATA_OBJECT == prm.type :
@@ -1402,7 +1402,7 @@ class KernelExportCode :
             self.target_c_code.write_line(")", files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
             # function parameters status check failure case
-            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_line("status = (vx_status)VX_FAILURE;", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_line("else", files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
@@ -1448,7 +1448,7 @@ class KernelExportCode :
                         self.target_c_code.write_line("if (%s_desc->mem_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]) , files=self.prms_write)
                         self.target_c_code.write_open_brace(files=self.prms_write)
                         self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"User data object size on target does not match the size on host, possibly due to misalignment in data structure\\n\");", files=self.prms_write)
-                        self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+                        self.target_c_code.write_line("status = (vx_status)VX_FAILURE;", files=self.prms_write)
                         self.target_c_code.write_close_brace(files=self.prms_write)
 
             # Allocating memory for local structure
@@ -1456,7 +1456,7 @@ class KernelExportCode :
                 if self.prms_commented_out:
                     self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
                     self.target_c_code.write_line("#if 0" , files=self.prms_write)
-                self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
+                self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), (vx_enum)TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
                 self.target_c_code.write_line("if (NULL != prms)", files=self.prms_write)
                 self.target_c_code.write_open_brace(files=self.prms_write)
                 # Allocating local memory data
@@ -1470,7 +1470,7 @@ class KernelExportCode :
                 self.target_c_code.write_close_brace(files=self.prms_write)
                 self.target_c_code.write_line("else", files=self.prms_write)
                 self.target_c_code.write_open_brace(files=self.prms_write)
-                self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+                self.target_c_code.write_line("status = (vx_status)VX_ERROR_NO_MEMORY;", files=self.prms_write)
                 self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
                 self.target_c_code.write_close_brace(files=self.prms_write)
                 self.target_c_code.write_newline(files=self.prms_write)
@@ -1482,14 +1482,14 @@ class KernelExportCode :
                 self.target_c_code.write_close_brace(files=1)
                 self.target_c_code.write_newline(files=1)
 
-                self.target_c_code.write_line("if (VX_SUCCESS == status)", files=self.prms_write)
+                self.target_c_code.write_line("if ((vx_status)VX_SUCCESS == status)", files=self.prms_write)
                 self.target_c_code.write_open_brace(files=self.prms_write)
                 self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,", files=self.prms_write)
                 self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel, files=self.prms_write)
                 self.target_c_code.write_close_brace(files=self.prms_write)
                 self.target_c_code.write_line("else", files=self.prms_write)
                 self.target_c_code.write_open_brace(files=self.prms_write)
-                self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+                self.target_c_code.write_line("status = (vx_status)VX_ERROR_NO_MEMORY;", files=self.prms_write)
                 self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
                 self.target_c_code.write_close_brace(files=self.prms_write)
                 if self.prms_commented_out:
@@ -1508,7 +1508,7 @@ class KernelExportCode :
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         if self.prms_needed :
             if self.prms_commented_out:
                 self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
@@ -1532,7 +1532,7 @@ class KernelExportCode :
             self.target_c_code.write_line(")", files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
             # function parameters status check failure case
-            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_line("status = (vx_status)VX_FAILURE;", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_line("else", files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
@@ -1545,14 +1545,14 @@ class KernelExportCode :
                  if self.is_supported_type(local.prm.type) :
                      self.target_c_code.write_line("if (NULL != prms->%s_ptr)" % (local.name), files=self.prms_write)
                      self.target_c_code.write_open_brace(files=self.prms_write)
-                     self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
+                     self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, (vx_enum)TIVX_MEM_EXTERNAL);" %
                          (local.name, local.name) , files=self.prms_write)
                      self.target_c_code.write_close_brace(files=self.prms_write)
                      self.target_c_code.write_newline(files=self.prms_write)
 
             self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
             self.target_c_code.write_comment_line("tivxBamDestroyHandle(prms->graph_handle);", files=1)
-            self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);", files=self.prms_write)
+            self.target_c_code.write_line("tivxMemFree(prms, size, (vx_enum)TIVX_MEM_EXTERNAL);", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             if self.prms_commented_out:
@@ -1568,7 +1568,7 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands")
         self.target_c_code.write_comment_line("                  the user can call to modify the processing of the kernel at run-time) >")
@@ -1666,7 +1666,7 @@ class KernelExportCode :
         self.target_c_code.write_open_brace()
 
         # define status variables and obj descriptor variable
-        self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.target_c_code.write_line("vx_status status = (vx_status)VX_SUCCESS;")
         if self.prms_needed :
             if self.prms_commented_out:
                 self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment if kernel context is needed >")
@@ -1716,11 +1716,11 @@ class KernelExportCode :
         self.target_c_code.write_open_brace()
 
         # function parameters status check failure case
-        self.target_c_code.write_line("status = VX_FAILURE;")
+        self.target_c_code.write_line("status = (vx_status)VX_FAILURE;")
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
-        self.target_c_code.write_line("if(VX_SUCCESS == status)")
+        self.target_c_code.write_line("if((vx_status)VX_SUCCESS == status)")
         self.target_c_code.write_open_brace()
 
         if self.prms_needed :
@@ -1745,10 +1745,10 @@ class KernelExportCode :
                 self.target_c_code.write_line("#if 0" , files=self.prms_write)
             self.target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,", files=self.prms_write)
             self.target_c_code.write_line("    (void **)&prms, &size);", files=self.prms_write)
-            self.target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||", files=self.prms_write)
+            self.target_c_code.write_line("if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||", files=self.prms_write)
             self.target_c_code.write_line("    (sizeof(tivx%sParams) != size))" % self.kernel.name_camel, files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
-            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_line("status = (vx_status)VX_FAILURE;", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             if self.prms_commented_out:
                 self.target_c_code.write_line("#endif" , files=self.prms_write)
@@ -1757,7 +1757,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
         # function parameters status check success case
 
-        self.target_c_code.write_line("if(VX_SUCCESS == status)")
+        self.target_c_code.write_line("if((vx_status)VX_SUCCESS == status)")
         self.target_c_code.write_open_brace()
 
         # define variables to hold scalar values
@@ -1799,15 +1799,15 @@ class KernelExportCode :
                                 self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                                    self.target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                                    self.target_c_code.write_line("   (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                             else :
                                 self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr[0]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                                    self.target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                                    self.target_c_code.write_line("   (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                         elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY:
                             if prm.type == Type.PYRAMID :
                                 self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
@@ -1815,37 +1815,37 @@ class KernelExportCode :
                                 self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_items);" % (desc, desc, desc) )
                             if self.multiplane :
                                 if prm.type == Type.PYRAMID :
-                                    self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                    self.target_c_code.write_line("for(i=0U; i<%s->num_levels; i++)" % desc )
                                 else :
-                                    self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
+                                    self.target_c_code.write_line("for(i=0U; i<%s->num_items; i++)" % desc )
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("%s_target_ptr[i] = tivxMemShared2TargetPtr(&img_%s[i]->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr[i]," % prm.name_lower )
-                                    self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                                    self.target_c_code.write_line("   (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                                 self.target_c_code.write_close_brace()
                             else :
                                 if prm.type == Type.PYRAMID :
-                                    self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                    self.target_c_code.write_line("for(i=0U; i<%s->num_levels; i++)" % desc )
                                 else :
-                                    self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
+                                    self.target_c_code.write_line("for(i=0U; i<%s->num_items; i++)" % desc )
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("%s_target_ptr[i] = tivxMemShared2TargetPtr(&img_%s[i]->mem_ptr[0]);" % (prm.name_lower, desc))
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr[i]," % prm.name_lower )
-                                    self.target_c_code.write_line("   img_%s[i]->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   img_%s[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                                    self.target_c_code.write_line("   (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                     elif prm.type != Type.THRESHOLD:
                         self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr);" % (prm.name_lower, desc))
                         if prm.do_map :
                             self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                            self.target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   %s->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("   (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                     if prm.state is ParamState.OPTIONAL:
                         self.target_c_code.write_close_brace()
                     self.target_c_code.write_newline()
@@ -1935,41 +1935,41 @@ class KernelExportCode :
                             self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                            self.target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   %s->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("    (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
                         else :
                             self.target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                            self.target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   %s->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("    (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                     elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY :
                         if self.multiplane :
                             if prm.type == Type.PYRAMID :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                self.target_c_code.write_line("for(i=0U; i<%s->num_levels; i++)" % desc )
                             else :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
+                                self.target_c_code.write_line("for(i=0U; i<%s->num_items; i++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr[i]," % prm.name_lower )
-                            self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("    (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
                             self.target_c_code.write_close_brace()
                         else :
                             if prm.type == Type.PYRAMID :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                self.target_c_code.write_line("for(i=0U; i<%s->num_levels; i++)" % desc )
                             else :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
+                                self.target_c_code.write_line("for(i=0U; i<%s->num_items; i++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr[i]," % prm.name_lower )
-                            self.target_c_code.write_line("   img_%s[i]->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   img_%s[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("    (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
                 elif prm.type != Type.THRESHOLD :
                     self.target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                    self.target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
-                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                    self.target_c_code.write_line("   %s->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                    self.target_c_code.write_line("    (vx_enum)%s);" % Direction.get_access_type(prm.direction))
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_close_brace()
                 self.target_c_code.write_newline()

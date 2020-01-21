@@ -237,9 +237,9 @@ class CodeGenerate :
                 self.additional_file.write('\n')
 
     def write_define_status(self, files=2) :
-        self.write_line("vx_status status = VX_SUCCESS;", True, True, files)
+        self.write_line("vx_status status = (vx_status)VX_SUCCESS;", True, True, files)
 
     def write_if_status(self, files=2) :
-        self.write_line("if (status == VX_SUCCESS)", True, True, files)
+        self.write_line("if (status == (vx_status)VX_SUCCESS)", True, True, files)
 
 
