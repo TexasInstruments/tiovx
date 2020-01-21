@@ -228,7 +228,8 @@ class KernelExportCode :
             self.idirs_path = "$("+self.env_var+")"
 
         if self.workarea == None or self.workarea == "":
-            sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
+            print("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
+            sys.exit("Try typing “export CUSTOM_APPLICATION_PATH=<path to where you want the output kernels generated>” in your terminal window and try again.");
 
         if self.env_var == 'CUSTOM_KERNEL_PATH':
             self.kernels_header_extension = "";
