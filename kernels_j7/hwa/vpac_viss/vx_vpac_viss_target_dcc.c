@@ -950,41 +950,73 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
     glbceCfg = &vissObj->vissCfg.glbceCfg;
     if (NULL != vissObj)
     {
-        glbceCfg->irStrength = 255;
-        glbceCfg->blackLevel = 0;
-        glbceCfg->whiteLevel = 65535;
-        glbceCfg->intensityVariance = 0xC;
-        glbceCfg->spaceVariance = 7;
-        glbceCfg->brightAmplLimit = 6;
-        glbceCfg->darkAmplLimit = 6;
-        glbceCfg->dither = GLBCE_NO_DITHER;
-        glbceCfg->maxSlopeLimit = 72;
-        glbceCfg->minSlopeLimit = 62;
-        memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4U);
-
-        vissObj->vissCfgRef.glbceCfg = glbceCfg;
-
-        prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
-        prcptCfg->enable = (uint32_t)FALSE;
-
-        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt ++)
+        if (0 == vissObj->dcc_out_prms.useVissGlbceCfg)
         {
-            prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
+            glbceCfg->irStrength = 255;
+            glbceCfg->blackLevel = 0;
+            glbceCfg->whiteLevel = 65535;
+            glbceCfg->intensityVariance = 0xC;
+            glbceCfg->spaceVariance = 7;
+            glbceCfg->brightAmplLimit = 6;
+            glbceCfg->darkAmplLimit = 6;
+            glbceCfg->dither = GLBCE_NO_DITHER;
+            glbceCfg->maxSlopeLimit = 72;
+            glbceCfg->minSlopeLimit = 62;
+            memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE * 4U);
+
+            vissObj->vissCfgRef.glbceCfg = glbceCfg;
+
+            prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
+            prcptCfg->enable = (uint32_t)FALSE;
+
+            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
+            {
+                prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
+            }
+
+            prcptCfg = &vissObj->vissCfg.revPrcpCfg;
+            prcptCfg->enable = (uint32_t)FALSE;
+
+            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
+            {
+                prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
+            }
         }
-
-        prcptCfg = &vissObj->vissCfg.revPrcpCfg;
-        prcptCfg->enable = (uint32_t)FALSE;
-
-        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt ++)
+        else
         {
-            prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
+            vissObj->vissCfgRef.glbceCfg = glbceCfg;
+
+            viss_glbce_dcc_cfg_t *dcc_cfg = NULL;
+            dcc_cfg = &vissObj->dcc_out_prms.vissGlbceCfg;
+
+            glbceCfg->irStrength = dcc_cfg->strength;
+            glbceCfg->intensityVariance = dcc_cfg->intensity_var;
+            glbceCfg->spaceVariance = dcc_cfg->space_var;
+            glbceCfg->maxSlopeLimit = dcc_cfg->slope_max_lim;
+            glbceCfg->minSlopeLimit = dcc_cfg->slope_min_lim;
+
+            glbceCfg->blackLevel = 0;
+            glbceCfg->whiteLevel = 65535;
+            glbceCfg->brightAmplLimit = 6;
+            glbceCfg->darkAmplLimit = 6;
+            glbceCfg->dither = GLBCE_NO_DITHER;
+
+            memcpy(glbceCfg->asymLut, dcc_cfg->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE*4U);
+
+            prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
+            prcptCfg->enable = dcc_cfg->fwd_prcpt_en;
+            memcpy(prcptCfg->table, dcc_cfg->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+            prcptCfg = &vissObj->vissCfg.revPrcpCfg;
+            prcptCfg->enable = (uint32_t) dcc_cfg->rev_prcpt_en;
+            memcpy(prcptCfg->table, dcc_cfg->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
         }
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
         vissObj->isConfigUpdated = 1U;
-
     }
+
 }
 
 static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
