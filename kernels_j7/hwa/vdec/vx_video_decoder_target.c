@@ -244,7 +244,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     tivx_obj_desc_user_data_object_t *input_bitstream_desc;
     tivx_obj_desc_image_t            *output_image_desc;
     void                             *input_bitstream_target_ptr;
-    void                             *output_image_target_ptr;
+    void                             *output_image_target_ptr_y;
+    void                             *output_image_target_ptr_uv;
 
     if ( (num_params != TIVX_KERNEL_VIDEO_DECODER_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_DECODER_CONFIGURATION_IDX])
@@ -282,11 +283,16 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         output_image_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VIDEO_DECODER_OUTPUT_IMAGE_IDX];
 
         input_bitstream_target_ptr = tivxMemShared2TargetPtr(&input_bitstream_desc->mem_ptr);
-        output_image_target_ptr = tivxMemShared2TargetPtr(&output_image_desc->mem_ptr[0]);
+        output_image_target_ptr_y = tivxMemShared2TargetPtr(&output_image_desc->mem_ptr[0]);
+        output_image_target_ptr_uv = tivxMemShared2TargetPtr(&output_image_desc->mem_ptr[1]);
 
         tivxMemBufferMap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(output_image_target_ptr, output_image_desc->mem_size[0],
+
+        tivxMemBufferMap(output_image_target_ptr_y, output_image_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+
+        tivxMemBufferMap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         bitstream = (uint8_t*) input_bitstream_target_ptr;
@@ -356,6 +362,13 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+
+	    uint32_t padded_size_y = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
+                                * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN);
+
+	    uint32_t padded_size_uv = (ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
+                                * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN) * 1U )/ 2U;
+
         tivxEventWait(decoder_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         if (0U != decoder_obj->first_process)
@@ -370,7 +383,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
             {
                 decoder_obj->which_buff = 1;
             }
-            memset(output_image_target_ptr, 0, decoder_obj->internal_size);
+            memset(output_image_target_ptr_y, 0, padded_size_y);
+            memset(output_image_target_ptr_uv, 0, padded_size_uv);
         }
         else
         {
@@ -378,16 +392,25 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
             {
                 decoder_obj->which_buff = 2;
 
-                memcpyDMA((uint8_t *) output_image_target_ptr,
-                    (uint8_t *)decoder_obj->internal_buff_2,
-                    decoder_obj->internal_size);
+                memcpyDMA((uint8_t *) output_image_target_ptr_y,
+                        (uint8_t *)decoder_obj->internal_buff_2,
+                        output_image_desc->mem_size[0]);
+
+                memcpyDMA((uint8_t *) output_image_target_ptr_uv,
+                        (uint8_t *)decoder_obj->internal_buff_2 + padded_size_y,
+                        output_image_desc->mem_size[1]);
             }
             else
             {
                 decoder_obj->which_buff = 1;
-                memcpyDMA((uint8_t *) output_image_target_ptr,
-                    (uint8_t *)decoder_obj->internal_buff_1,
-                    decoder_obj->internal_size);
+
+                memcpyDMA((uint8_t *) output_image_target_ptr_y,
+                        (uint8_t *)decoder_obj->internal_buff_1,
+                        output_image_desc->mem_size[0]);
+
+                memcpyDMA((uint8_t *) output_image_target_ptr_uv,
+                        (uint8_t *)decoder_obj->internal_buff_1 + padded_size_y,
+                        output_image_desc->mem_size[1]);
             }
         }
     }
@@ -397,7 +420,9 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     {
         tivxMemBufferUnmap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-        tivxMemBufferUnmap(output_image_target_ptr, output_image_desc->mem_size[0],
+        tivxMemBufferUnmap(output_image_target_ptr_y, output_image_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxMemBufferUnmap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
@@ -452,8 +477,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
     {
         decoder_obj->first_process = 1;
         decoder_obj->which_buff = 1;
-        decoder_obj->internal_size = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
-            * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN) * 3U / 2U;
+        decoder_obj->internal_size = (ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
+            * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN) * 3U) / 2U;
 
         decoder_obj->internal_buff_1 = (uint8_t*)appMemAlloc(APP_MEM_HEAP_DDR, decoder_obj->internal_size, 4096);
 
