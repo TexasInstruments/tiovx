@@ -78,12 +78,14 @@
  *
  * \param image [in] input image
  *
+ * \param plane_id [in] plane number for multi plane image format
+ *
  * \param rect [in] rectangular region to generate the checksum for
  *
  * \return sum of words in the specified region
  * 
  * \ingroup group_tivx_ext_host_utils
  */
-uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect);
+uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_rectangle_t rect);
 
 #endif

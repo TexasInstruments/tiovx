@@ -64,7 +64,7 @@
 #include <TI/tivx_debug.h>
 #include <tivx_utils_checksum.h>
 
-uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
+uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_rectangle_t rect)
 {
     vx_status                   status = (vx_status)VX_FAILURE;
     vx_imagepatch_addressing_t  image_addr;
@@ -79,7 +79,7 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, vx_rectangle_t rect)
     {
         status = vxMapImagePatch(image,
             &rect,
-            0,
+            plane_id,
             &map_id,
             &image_addr,
             (void**) &data_ptr,
