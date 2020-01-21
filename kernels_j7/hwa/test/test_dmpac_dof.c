@@ -558,7 +558,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
 
         checksum_expected = get_checksum(arg_->median_filter, arg_->motion_smoothness, arg_->vertical_range,
             arg_->horizontal_range, arg_->iir_filter, arg_->enable_lk, arg_->enable_sof);
-        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, 0, rect);
         ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node_dof));
@@ -884,7 +884,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
 
         checksum_expected = get_predictor_checksum(arg_->base_predictor1, arg_->base_predictor2,
             arg_->inter_predictor1, arg_->inter_predictor2);
-        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, 0, rect);
         ASSERT(checksum_expected == checksum_actual);
 
         if(temporal_pred_flag == 1)
@@ -893,7 +893,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
             VX_CALL(vxProcessGraph(graph));
             checksum_expected = get_predictor2_checksum(arg_->base_predictor1, arg_->base_predictor2,
                 arg_->inter_predictor1, arg_->inter_predictor2);
-            checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, rect);
+            checksum_actual = tivx_utils_simple_image_checksum(flow_vector_out, 0, rect);
             ASSERT(checksum_expected == checksum_actual);
             VX_CALL(vxReleaseImage(&flow_vector_in));
         }

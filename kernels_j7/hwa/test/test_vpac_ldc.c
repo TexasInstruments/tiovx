@@ -797,7 +797,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
             ASSERT_NO_FAILURE(output = ct_image_from_vx_image(output_image));
             checksum_expected = get_checksum(arg_->out_width, arg_->interp_type,
                 arg_->matrix_type, arg_->output_mode, arg_->mesh_mode);
-            checksum_actual = tivx_utils_simple_image_checksum(output_image, rect);
+            checksum_actual = tivx_utils_simple_image_checksum(output_image, 0, rect);
             ASSERT(checksum_expected == checksum_actual);
         }
 
@@ -1001,7 +1001,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
             VX_CALL(vxVerifyGraph(graph));
             VX_CALL(vxProcessGraph(graph));
             checksum_expected = get_formats_checksum(arg_->input_data_format, arg_->output_data_format);
-            checksum_actual = tivx_utils_simple_image_checksum(output_image, rect);
+            checksum_actual = tivx_utils_simple_image_checksum(output_image, 0, rect);
             ASSERT(checksum_expected == checksum_actual);
         }
 

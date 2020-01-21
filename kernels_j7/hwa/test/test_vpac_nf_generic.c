@@ -468,7 +468,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(convolve_check(src, dst, border, arg_->cols, arg_->rows, data, arg_->shift, arg_->dst_format));
 
         checksum_expected = get_checksum(arg_->cols, arg_->rows, arg_->shift, arg_->convolution_data_generator);
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
         ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));

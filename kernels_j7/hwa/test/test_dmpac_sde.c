@@ -593,7 +593,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
 #endif
 
         checksum_expected = get_checksum(arg_->dispMin, arg_->dispMax, arg_->median, arg_->texture, arg_->hist_output);
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
         ASSERT(checksum_expected == checksum_actual);
 
         if(arg_->hist_output) {

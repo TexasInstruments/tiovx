@@ -858,7 +858,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern
         rect.end_x = dst_width;
         rect.end_y = dst_height;
 
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
         printf("0x%08x\n", checksum_actual);
         //printf("end_x = %d\n", dst_width);
         //printf("end_y = %d\n", dst_height);
@@ -1090,7 +1090,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
         rect.end_x = dst_width;
         rect.end_y = dst_height;
 
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
         printf("0x%08x\n", checksum_actual);
         //printf("end_x = %d\n", dst_width);
         //printf("end_y = %d\n", dst_height);

@@ -285,7 +285,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
             VX_CALL(vxProcessGraph(graph));
 
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
-            checksum_actual = tivx_utils_simple_image_checksum(output_image, rect_y);
+            checksum_actual = tivx_utils_simple_image_checksum(output_image, 0, rect_y);
             ASSERT(checksum_expected[i] == checksum_actual);
 
             rect_uv = rect_uv; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
@@ -621,8 +621,8 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
             VX_CALL(vxProcessGraph(graph));
 
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
-            checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, rect_y_s);
-            checksum_actual_l = tivx_utils_simple_image_checksum(output_image_l, rect_y_l);
+            checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, 0, rect_y_s);
+            checksum_actual_l = tivx_utils_simple_image_checksum(output_image_l, 0, rect_y_l);
             ASSERT(checksum_expected_s[i] == checksum_actual_s);
             ASSERT(checksum_expected_l[i] == checksum_actual_l);
 

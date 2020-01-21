@@ -357,7 +357,7 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
         VX_CALL(vxProcessGraph(graph));
 
         checksum_expected = get_checksum(arg_->numTables, arg_->shift);
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, rect);
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
         ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
