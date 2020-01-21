@@ -1841,7 +1841,7 @@ class KernelExportCode :
                                     self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                     elif prm.type != Type.THRESHOLD:
-                        self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s[i]->mem_ptr);" % (prm.name_lower, desc))
+                        self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr);" % (prm.name_lower, desc))
                         if prm.do_map :
                             self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                             self.target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
