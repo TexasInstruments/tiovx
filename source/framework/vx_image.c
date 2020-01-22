@@ -558,7 +558,7 @@ static vx_image ownCreateImageInt(vx_context context,
             }
             else
             {
-                vxAddLogEntry((vx_reference)image, (vx_status)VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
+                vxAddLogEntry((vx_reference)context, (vx_status)VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
                 image = (vx_image)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_DIMENSION);
             }
         }
