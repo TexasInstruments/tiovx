@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoEncoderValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Encoder param 'bitstream_format' should be:\n TIVX_BITSTREAM_FORMAT_H264 \n");
         }
     }
-    VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelVideoEncoderValidate: Exit\n");
+    VX_PRINT(VX_ZONE_INFO, "tivxAddKernelVideoEncoderValidate: Exit\n");
 
     return status;
 }
@@ -177,7 +177,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoEncoderInitialize(vx_node node,
 {
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
-    VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelVideoEncoderInitialize entry\n");
+    VX_PRINT(VX_ZONE_INFO, "tivxAddKernelVideoEncoderInitialize entry\n");
 
     if ( (num_params != TIVX_KERNEL_VIDEO_ENCODER_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VIDEO_ENCODER_CONFIGURATION_IDX])
@@ -205,7 +205,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoEncoderInitialize(vx_node node,
 
         status = tivxKernelConfigValidRect(&prms);
     }
-    VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelVideoEncoderInitialize exit\n");
+    VX_PRINT(VX_ZONE_INFO, "tivxAddKernelVideoEncoderInitialize exit\n");
 
     return status;
 }

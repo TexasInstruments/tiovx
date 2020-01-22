@@ -74,6 +74,8 @@ TESTCASE(tivxHwaVideoEncoder, CT_VXContext, ct_setup_vx_context, 0)
 #define MAX_ABS_FILENAME   (1024u)
 #define NUM_ITERATIONS     (100u)
 
+#define NUM_FRAMES_IN_IPFILE (5u)
+
 /*
 * Utility API used to add a graph parameter from a node, node parameter index
 */
@@ -200,7 +202,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         tivxHwaLoadKernels(context);
 
         seek[0] = 0;
-        for(i = 1; i < NUM_ITERATIONS; i++)
+        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
         {
             seek[i] = seek[i - 1] + ((width * height * 3) / 2 );
         }
@@ -237,7 +239,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 
         for (i = 0; i < NUM_ITERATIONS; i++)
         {
-            snprintf(input_file, MAX_ABS_FILENAME, "%s/output/oldtowncross_1280x720_nv12.yuv", ct_get_test_file_path());
+            snprintf(input_file, MAX_ABS_FILENAME, "%s/tivx/video_encoder/720p_nv12_images_5num.yuv", ct_get_test_file_path());
 
             VX_CALL(vxMapImagePatch(input_image,
                                     &rect_y,
@@ -265,7 +267,8 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         num_read = 0;
         if (NULL != in_fp)
         {
-            seek_status = fseek(in_fp, seek[i], SEEK_SET);
+            seek_status = fseek(in_fp, seek[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+
             if (0 == seek_status)
             {
                 for(j = 0; j < (height ); j++)
@@ -282,7 +285,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                 in_fp = NULL;
                 if (((width * height * 3) / 2)!= num_read)
                 {
-                    printf(" ERROR: %s: Read less than expected!!!\n", input_file);
+                    VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file);
                 }
             }
         }
@@ -304,13 +307,13 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
             out_fp = NULL;
             if (bitstream_size != num_read)
             {
-                printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file, (uint32_t)num_read, (uint32_t)bitstream_size);
+                VX_PRINT(VX_ZONE_ERROR, "%s: Wrote less than expected (%d < %d)!!!\n", output_file, (uint32_t)num_read, (uint32_t)bitstream_size);
                 ASSERT(bitstream_size == num_read);
             }
         }
         else
         {
-            printf(" ERROR: %s: Input file not found!!!\n", output_file);
+            VX_PRINT(VX_ZONE_ERROR, "%s: Output file not found!!!\n", output_file);
             ASSERT(NULL != out_fp);
         }
 
@@ -350,10 +353,10 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
     vx_map_id map_id_l;
     vx_user_data_object bitstream_obj_s;
     vx_user_data_object bitstream_obj_l;
-    uint32_t width_s = 640;
-    uint32_t width_l = 1280;
-    uint32_t height_s = 480;
-    uint32_t height_l = 720;
+    uint32_t width_s = 1280;
+    uint32_t width_l = 1920;
+    uint32_t height_s = 720;
+    uint32_t height_l = 1080;
     vx_graph graph = 0;
     vx_node node_encode_s = 0;
     vx_node node_encode_l = 0;
@@ -427,13 +430,13 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
 
         seek_s[0] = 0;
-        for(i = 1; i < NUM_ITERATIONS; i++)
+        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
         {
             seek_s[i] = seek_s[i - 1] + ((width_s * height_s * 3) / 2 );
         }
 
         seek_l[0] = 0;
-        for(i = 1; i < NUM_ITERATIONS; i++)
+        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
         {
             seek_l[i] = seek_l[i - 1] + ((width_l * height_l * 3) / 2 );
         }
@@ -490,8 +493,8 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
         for (i = 0; i < NUM_ITERATIONS; i++)
         {
-            snprintf(input_file_s, MAX_ABS_FILENAME, "%s/output/concert_640x480_nv12.yuv", ct_get_test_file_path());
-            snprintf(input_file_l, MAX_ABS_FILENAME, "%s/output/oldtowncross_1280x720_nv12.yuv", ct_get_test_file_path());
+            snprintf(input_file_s, MAX_ABS_FILENAME, "%s/tivx/video_encoder/720p_nv12_images_5num.yuv", ct_get_test_file_path());
+            snprintf(input_file_l, MAX_ABS_FILENAME, "%s/tivx/video_encoder/1080p_nv12_images_5num.yuv", ct_get_test_file_path());
 
             VX_CALL(vxMapImagePatch(input_image_s,
                                     &rect_s_y,
@@ -541,7 +544,9 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
             num_read = 0;
             if (NULL != in_fp_s)
             {
-                seek_status = fseek(in_fp_s, seek_s[i], SEEK_SET);
+
+                seek_status = fseek(in_fp_s, seek_s[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+
                 if (0 == seek_status)
                 {
                     for(j = 0; j < height_s; j++)
@@ -557,7 +562,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                     in_fp_s = NULL;
                     if (((width_s * height_s * 3) / 2)!= num_read)
                     {
-                        printf(" ERROR: %s: Read less than expected!!!\n", input_file_s);
+                        VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
                     }
                 }
             }
@@ -566,7 +571,8 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
             num_read = 0;
             if (NULL != in_fp_l)
             {
-                seek_status = fseek(in_fp_l, seek_l[i], SEEK_SET);
+                seek_status = fseek(in_fp_l, seek_l[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+
                 if (0 == seek_status)
                 {
                     for(j = 0; j < height_l; j++)
@@ -582,7 +588,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                     in_fp_l = NULL;
                     if (((width_l * height_l * 3) / 2)!= num_read)
                     {
-                        printf(" ERROR: %s: Read less than expected!!!\n", input_file_l);
+                        VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
                     }
                 }
             }
@@ -608,13 +614,13 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                 out_fp_s = NULL;
                 if (bitstream_size_s != num_read_s)
                 {
-                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_s, (uint32_t)num_read_s, (uint32_t)bitstream_size_s);
+                    VX_PRINT(VX_ZONE_ERROR, "%s: Wrote less than expected (%d < %d)!!!\n", output_file_s, (uint32_t)num_read_s, (uint32_t)bitstream_size_s);
                     ASSERT(bitstream_size_s == num_read_s);
                 }
             }
             else
             {
-                printf(" ERROR: %s: Input file not found!!!\n", output_file_s);
+                VX_PRINT(VX_ZONE_ERROR, "%s: Output file not found!!!\n", output_file_s);
                 ASSERT(NULL != out_fp_s);
             }
 
@@ -626,13 +632,13 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                 out_fp_l = NULL;
                 if (bitstream_size_l != num_read_l)
                 {
-                    printf(" ERROR: %s: Wrote less than expected (%d < %d)!!!\n", output_file_l, (uint32_t)num_read_l, (uint32_t)bitstream_size_l);
+                    VX_PRINT(VX_ZONE_ERROR, "%s: Wrote less than expected (%d < %d)!!!\n", output_file_l, (uint32_t)num_read_l, (uint32_t)bitstream_size_l);
                     ASSERT(bitstream_size_l == num_read_l);
                 }
             }
             else
             {
-                printf(" ERROR: %s: Input file not found!!!\n", output_file_l);
+                VX_PRINT(VX_ZONE_ERROR, "%s: Output file not found!!!\n", output_file_l);
                 ASSERT(NULL != out_fp_l);
             }
 
