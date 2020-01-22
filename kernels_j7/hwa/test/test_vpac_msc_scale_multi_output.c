@@ -1011,7 +1011,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
             dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
         ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
 
-        scale_set_coeff(&coeffs, arg_->interpolation);
+        tivx_vpac_msc_coefficients_params_init(&coeffs, arg_->interpolation);
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -1091,7 +1091,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
         rect.end_y = dst_height;
 
         checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-        printf("0x%08x\n", checksum_actual);
+        //printf("0x%08x\n", checksum_actual);
         //printf("end_x = %d\n", dst_width);
         //printf("end_y = %d\n", dst_height);
 

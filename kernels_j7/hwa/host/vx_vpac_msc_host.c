@@ -70,7 +70,6 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
-#include "tivx_vpac_msc_mp_coeffs.h"
 #include "tivx_hwa_host_priv.h"
 
 /* ========================================================================== */
@@ -320,35 +319,108 @@ vx_status tivxRemoveKernelVpacMscPyramid(vx_context context)
     return status;
 }
 
-static uint32_t tivx_vpac_msc_mp_coeff[4u*32u*5u] = {TIVX_VPAC_MSC_MP_COEFF};
-
-void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *prms)
+void tivx_vpac_msc_coefficients_params_init(
+    tivx_vpac_msc_coefficients_t *coeff,
+    vx_enum interpolation)
 {
-    vx_uint32 i, j;
-    vx_uint32 idx = 0u;
+    uint32_t i;
+    uint32_t idx;
+    uint32_t weight;
 
-    if (NULL != prms)
+    /* Passthrough if using single phase */
+    idx = 0;
+    coeff->single_phase[0][idx++] = 0;
+    coeff->single_phase[0][idx++] = 0;
+    coeff->single_phase[0][idx++] = 256;
+    coeff->single_phase[0][idx++] = 0;
+    coeff->single_phase[0][idx++] = 0;
+    idx = 0;
+    coeff->single_phase[1][idx++] = 0;
+    coeff->single_phase[1][idx++] = 0;
+    coeff->single_phase[1][idx++] = 256;
+    coeff->single_phase[1][idx++] = 0;
+    coeff->single_phase[1][idx++] = 0;
+
+    if((vx_enum)VX_INTERPOLATION_BILINEAR == interpolation)
     {
-        memset(prms, 0x0, sizeof(tivx_vpac_msc_coefficients_t));
-
-        prms->single_phase[0u][0u] = 16;
-        prms->single_phase[0u][1u] = 48;
-        prms->single_phase[0u][2u] = 128;
-        prms->single_phase[0u][3u] = 48;
-        prms->single_phase[0u][4u] = 16;
-
-        prms->single_phase[1u][0u] = 32;
-        prms->single_phase[1u][1u] = 32;
-        prms->single_phase[1u][2u] = 128;
-        prms->single_phase[1u][3u] = 32;
-        prms->single_phase[1u][4u] = 32;
-
-        for (i = 0u; i < 4u; i ++)
+        idx = 0;
+        for(i = 0; i < 32u; i++)
         {
-            for (j = 0u; j < (32u*5u); j ++)
-            {
-                prms->multi_phase[i][j] = (int32_t)tivx_vpac_msc_mp_coeff[idx ++];
-            }
+            weight = i<<2;
+            coeff->multi_phase[0][idx++] = 0;
+            coeff->multi_phase[0][idx++] = 0;
+            coeff->multi_phase[0][idx++] = 256-(int32_t)weight;
+            coeff->multi_phase[0][idx++] = (int32_t)weight;
+            coeff->multi_phase[0][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            weight = (i+32u)<<2;
+            coeff->multi_phase[1][idx++] = 0;
+            coeff->multi_phase[1][idx++] = 0;
+            coeff->multi_phase[1][idx++] = 256-(int32_t)weight;
+            coeff->multi_phase[1][idx++] = (int32_t)weight;
+            coeff->multi_phase[1][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            weight = i<<2;
+            coeff->multi_phase[2][idx++] = 0;
+            coeff->multi_phase[2][idx++] = 0;
+            coeff->multi_phase[2][idx++] = 256-(int32_t)weight;
+            coeff->multi_phase[2][idx++] = (int32_t)weight;
+            coeff->multi_phase[2][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            weight = (i+32u)<<2;
+            coeff->multi_phase[3][idx++] = 0;
+            coeff->multi_phase[3][idx++] = 0;
+            coeff->multi_phase[3][idx++] = 256-(int32_t)weight;
+            coeff->multi_phase[3][idx++] = (int32_t)weight;
+            coeff->multi_phase[3][idx++] = 0;
+        }
+    }
+    else /* VX_INTERPOLATION_NEAREST_NEIGHBOR */
+    {
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            coeff->multi_phase[0][idx++] = 0;
+            coeff->multi_phase[0][idx++] = 0;
+            coeff->multi_phase[0][idx++] = 256;
+            coeff->multi_phase[0][idx++] = 0;
+            coeff->multi_phase[0][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            coeff->multi_phase[1][idx++] = 0;
+            coeff->multi_phase[1][idx++] = 0;
+            coeff->multi_phase[1][idx++] = 0;
+            coeff->multi_phase[1][idx++] = 256;
+            coeff->multi_phase[1][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            coeff->multi_phase[2][idx++] = 0;
+            coeff->multi_phase[2][idx++] = 0;
+            coeff->multi_phase[2][idx++] = 256;
+            coeff->multi_phase[2][idx++] = 0;
+            coeff->multi_phase[2][idx++] = 0;
+        }
+        idx = 0;
+        for(i = 0; i < 32u; i++)
+        {
+            coeff->multi_phase[3][idx++] = 0;
+            coeff->multi_phase[3][idx++] = 0;
+            coeff->multi_phase[3][idx++] = 0;
+            coeff->multi_phase[3][idx++] = 256;
+            coeff->multi_phase[3][idx++] = 0;
         }
     }
 }

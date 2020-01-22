@@ -431,7 +431,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
         /* Set Scaler Coefficients, can be called only after verify Graph */
-        tivx_vpac_msc_coefficients_params_init(&sc_coeffs);
+        tivx_vpac_msc_coefficients_params_init(&sc_coeffs, VX_INTERPOLATION_BILINEAR);
 
         ASSERT_VX_OBJECT(sc_coeff_obj = vxCreateUserDataObject(context,
             "tivx_vpac_msc_coefficients_t",

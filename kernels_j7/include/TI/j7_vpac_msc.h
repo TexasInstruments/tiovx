@@ -450,11 +450,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscPyramidNode(vx_graph graph,
  * \brief Function to initialize MSC Coefficients Parameters
  *        This initializes Coefficients to default values.
  *
- * \param prms  [IN] Pointer to MSC coefficient structure
+ * \param coeff          [IN] Pointer to MSC coefficient structure
+ * \param interpolation  [IN] Indicates interpolation method to initialize coefficients to
+ *                            ( \ref VX_INTERPOLATION_BILINEAR or \ref VX_INTERPOLATION_NEAREST_NEIGHBOR)
  *
  * \ingroup group_vision_function_vpac_msc
  */
-void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *prms);
+void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *coeff, vx_enum interpolation);
 
 /*!
  * \brief Function to initialize MSC input Parameters
