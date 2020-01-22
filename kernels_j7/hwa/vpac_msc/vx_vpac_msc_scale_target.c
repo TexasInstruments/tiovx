@@ -166,10 +166,10 @@ static tivxVpacMscHsgObj *tivxVpacMscScaleAllocObject(
 static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
     tivxVpacMscHsgObj *msc_obj);
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc,
+    const tivx_obj_desc_image_t *in_img_desc, const tivx_obj_desc_image_t *out_img_desc,
     uint32_t target_type);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 
 /* Driver Callback */
 int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData);
@@ -919,7 +919,7 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
 }
 
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -965,7 +965,7 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc,
+    const tivx_obj_desc_image_t *in_img_desc, const tivx_obj_desc_image_t *out_img_desc,
     uint32_t target_type)
 {
     if ((NULL != in_img_desc) && (NULL != out_img_desc))

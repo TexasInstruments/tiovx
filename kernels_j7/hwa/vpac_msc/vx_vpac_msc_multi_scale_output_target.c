@@ -172,13 +172,13 @@ static tivxVpacMscScaleObj *tivxVpacMscScaleAllocObject(
 static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
     tivxVpacMscScaleObj *msc_obj);
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc);
+    const tivx_obj_desc_image_t *in_img_desc,
+    const tivx_obj_desc_image_t *out_img_desc);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
-    tivx_vpac_msc_output_params_t *out_prms);
-static void tivxVpacMscScaleUpdateStartPhases(tivxVpacMscScaleObj *msc_obj,
+    const tivx_vpac_msc_output_params_t *out_prms);
+static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj,
     Msc_ScConfig *sc_cfg, uint32_t cnt);
 
 /* Driver Callback */
@@ -873,7 +873,7 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
 }
 
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -919,8 +919,8 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc)
+    const tivx_obj_desc_image_t *in_img_desc,
+    const tivx_obj_desc_image_t *out_img_desc)
 {
     if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
@@ -935,7 +935,7 @@ static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
 }
 
 static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
-    tivx_vpac_msc_output_params_t *out_prms)
+    const tivx_vpac_msc_output_params_t *out_prms)
 {
     sc_cfg->isSignedData = out_prms->signed_data;
 
@@ -1065,7 +1065,7 @@ static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     }
 }
 
-static void tivxVpacMscScaleUpdateStartPhases(tivxVpacMscScaleObj *msc_obj,
+static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj,
     Msc_ScConfig *sc_cfg, uint32_t cnt)
 {
     float temp_horzAccInit, temp_vertAccInit;

@@ -66,7 +66,7 @@
 #include "tivx_kernels_target_utils.h"
 #include "vx_kernels_hwa_target.h"
 
-void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch, uint8_t out_bit_alignment)
+void lse_reformat_in(const tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch, uint8_t out_bit_alignment)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -144,7 +144,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     }
 }
 
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t ch)
+void lse_reformat_out(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t ch)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -217,7 +217,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     }
 }
 
-void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
+void lse_interleave_422(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -255,7 +255,7 @@ void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, 
     }
 }
 
-void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16_0[], uint16_t src16_1[], uint16_t input_bits)
+void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16_0[], uint16_t src16_1[], uint16_t input_bits)
 {
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
@@ -291,7 +291,7 @@ void lse_deinterleave_422(tivx_obj_desc_image_t *src, void *src_target_ptr, uint
     }
 }
 
-void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32)
+void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -376,7 +376,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *
     }
 }
 
-void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, int32_t *dst32)
+void lse_reformat_out_dof(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, const int32_t *dst32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -424,7 +424,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
     }
 }
 
-void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exposure)
+void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exposure)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -499,7 +499,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     }
 }
 
-void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst0_target_ptr, void *dst1_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
+void lse_reformat_out_viss(const tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst0_target_ptr, void *dst1_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
 {
     uint32_t format;
     tivx_obj_desc_image_t tmp;

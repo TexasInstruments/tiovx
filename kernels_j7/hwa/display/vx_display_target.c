@@ -133,16 +133,16 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_img,
+static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_desc_img,
                                                Fvid2_Format *format);
 static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData);
 static uint32_t tivxDisplayGetPipeType(uint32_t drvId);
-static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
+static int32_t tivxDisplayGetImageSize(const tivx_obj_desc_image_t *obj_desc_image,
                                        uint32_t *copySize0,
                                        uint32_t *copySize1);
 static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
-                                            Fvid2_Format *fmt,
-                                            tivx_obj_desc_image_t *obj_desc_img);
+                                            const Fvid2_Format *fmt,
+                                            const tivx_obj_desc_image_t *obj_desc_img);
 static vx_status VX_CALLBACK tivxDisplayControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
@@ -191,7 +191,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     return (status);
 }
 
-static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_img,
+static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_desc_img,
                                                Fvid2_Format *format)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -245,8 +245,8 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
 }
 
 static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
-                                            Fvid2_Format *fmt,
-                                            tivx_obj_desc_image_t *obj_desc_img)
+                                            const Fvid2_Format *fmt,
+                                            const tivx_obj_desc_image_t *obj_desc_img)
 {
     int32_t status = (vx_status)VX_SUCCESS;
     uint32_t cnt;
@@ -332,7 +332,7 @@ static uint32_t tivxDisplayGetPipeType(uint32_t drvId)
     return pipeType;
 }
 
-static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
+static int32_t tivxDisplayGetImageSize(const tivx_obj_desc_image_t *obj_desc_image,
                                        uint32_t *copySize0,
                                        uint32_t *copySize1)
 {

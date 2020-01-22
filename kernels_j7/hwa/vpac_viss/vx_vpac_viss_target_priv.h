@@ -314,12 +314,12 @@ void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj);
 
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_obj_desc_user_data_object_t *dcc_buf_desc,
-    tivx_obj_desc_user_data_object_t *h3a_out_desc,
+    const tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res);
 
 /*! Initializes DCC parameters to default values */
 vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms);
+    const tivx_vpac_viss_params_t *vissPrms);
 
 /*! Initializes DCC parameters to default values */
 void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj);
@@ -331,7 +331,7 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj);
  *  Can be used to runtime change h3a input source.
  */
 void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms);
+    const tivx_vpac_viss_params_t *vissPrms);
 
 /*! This is mainly used to set/change H3a LUT.
  *  Can be used to runtime change h3a Lut

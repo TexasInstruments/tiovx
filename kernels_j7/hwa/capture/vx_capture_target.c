@@ -170,11 +170,11 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
     tivx_capture_statistics_t *capt_status_prms);
-static void tivxCaptureGetChannelIndices(tivxCaptureParams *prms,
+static void tivxCaptureGetChannelIndices(const tivxCaptureParams *prms,
                                          uint32_t instId,
                                          uint32_t *startChIdx,
                                          uint32_t *endChIdx);
-static uint32_t tivxCaptureGetNodeChannelNum(tivxCaptureParams *prms,
+static uint32_t tivxCaptureGetNodeChannelNum(const tivxCaptureParams *prms,
                                              uint32_t instId,
                                              uint32_t chId);
 static uint32_t tivxCaptureMapInstId(uint32_t instId);
@@ -1230,7 +1230,7 @@ void tivxRemoveTargetKernelCapture(void)
     }
 }
 
-static void tivxCaptureGetChannelIndices(tivxCaptureParams *prms,
+static void tivxCaptureGetChannelIndices(const tivxCaptureParams *prms,
                                          uint32_t instId,
                                          uint32_t *startChIdx,
                                          uint32_t *endChIdx)
@@ -1258,7 +1258,7 @@ static void tivxCaptureGetChannelIndices(tivxCaptureParams *prms,
     }
 }
 
-static uint32_t tivxCaptureGetNodeChannelNum(tivxCaptureParams *prms,
+static uint32_t tivxCaptureGetNodeChannelNum(const tivxCaptureParams *prms,
                                              uint32_t instId,
                                              uint32_t chId)
 {

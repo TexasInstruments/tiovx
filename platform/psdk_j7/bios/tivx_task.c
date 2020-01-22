@@ -39,7 +39,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
     }
 }
 
-vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
+vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     TaskP_Handle tskHndl;

@@ -103,9 +103,9 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj);
 static void tivxVpacVissFreeObject(tivxVpacVissInstObj *instObj,
     tivxVpacVissObj *vissObj);
 static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
-    tivx_obj_desc_raw_image_t *raw_img_desc);
+    const tivx_obj_desc_raw_image_t *raw_img_desc);
 static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms,
+    const tivx_vpac_viss_params_t *vissPrms,
     tivx_obj_desc_image_t *obj_desc[]);
 static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
     uint32_t out_id, uint32_t vxFmt, uint32_t mux_val);
@@ -115,12 +115,12 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
 static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     tivx_obj_desc_user_data_object_t *desc, uint32_t size);
 static void tivxVpacVissUnmapUserDesc(void **target_ptr,
-    tivx_obj_desc_user_data_object_t *desc);
+    const tivx_obj_desc_user_data_object_t *desc);
 static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms);
+    const tivx_vpac_viss_params_t *vissPrms);
 static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj);
-static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj);
-static void vhwaVissSaveCtx(tivxVpacVissObj *vissObj);
+static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj);
+static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj);
 
 int32_t tivxVpacVissFrameComplCb(Fvid2_Handle handle, void *appData);
 
@@ -1044,7 +1044,7 @@ static void tivxVpacVissFreeObject(tivxVpacVissInstObj *instObj,
 }
 
 static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms,
+    const tivx_vpac_viss_params_t *vissPrms,
     tivx_obj_desc_image_t *obj_desc[])
 {
     vx_status                 status = (vx_status)VX_SUCCESS;
@@ -1131,7 +1131,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
 }
 
 static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
-    tivx_obj_desc_raw_image_t *raw_img_desc)
+    const tivx_obj_desc_raw_image_t *raw_img_desc)
 {
     Fvid2_Format        *fmt;
     Vhwa_M2mVissParams  *vissDrvPrms;
@@ -1443,7 +1443,7 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
 }
 
 static void tivxVpacVissUnmapUserDesc(void **target_ptr,
-    tivx_obj_desc_user_data_object_t *desc)
+    const tivx_obj_desc_user_data_object_t *desc)
 {
     tivxMemBufferUnmap(*target_ptr, desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
         (vx_enum)VX_READ_ONLY);
@@ -1505,7 +1505,7 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
 }
 
 static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms)
+    const tivx_vpac_viss_params_t *vissPrms)
 {
     vx_status           status = (vx_status)VX_SUCCESS;
     int32_t             fvid2_status = FVID2_SOK;
@@ -1571,7 +1571,7 @@ static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj)
     }
 }
 
-static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj)
+static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
 {
     int32_t status;
     app_udma_copy_1d_prms_t prms;
@@ -1591,7 +1591,7 @@ static void vhwaVissRestoreCtx(tivxVpacVissObj *vissObj)
     }
 }
 
-static void vhwaVissSaveCtx(tivxVpacVissObj *vissObj)
+static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj)
 {
     int32_t status;
     app_udma_copy_1d_prms_t prms;

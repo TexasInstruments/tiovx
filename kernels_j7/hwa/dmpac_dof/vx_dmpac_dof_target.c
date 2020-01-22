@@ -133,20 +133,20 @@ static void tivxDmpacDofFreeObject(tivxDmpacDofInstObj *instObj,
                                                 tivxDmpacDofObj *dof_obj);
 
 static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
-    tivx_dmpac_dof_params_t *dofAppPrms, tivx_dmpac_dof_sof_params_t *sofAppPrms,
+    const tivx_dmpac_dof_params_t *dofAppPrms, const tivx_dmpac_dof_sof_params_t *sofAppPrms,
     tivx_obj_desc_t *obj_desc[]);
 static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
-                                    tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format);
-static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
+                                    const tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format);
+static vx_status tivxDmpacDofGetErrStatusCmd(const tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
                                 tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_dmpac_dof_sof_params_t *sofAppPrms);
+                        const tivx_dmpac_dof_sof_params_t *sofAppPrms);
 
 int32_t tivxDmpacDofFrameComplCb(Fvid2_Handle handle, void *appData);
 void tivxDmpacDofErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
@@ -995,7 +995,7 @@ static void tivxDmpacDofFreeObject(tivxDmpacDofInstObj *instObj,
 
 
 static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -1032,7 +1032,7 @@ static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
-    tivx_dmpac_dof_params_t *dofAppPrms, tivx_dmpac_dof_sof_params_t *sofAppPrms,
+    const tivx_dmpac_dof_params_t *dofAppPrms, const tivx_dmpac_dof_sof_params_t *sofAppPrms,
     tivx_obj_desc_t *obj_desc[])
 {
     uint32_t                  pyr_cnt;
@@ -1225,7 +1225,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
 }
 
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format)
+                        const tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format)
 {
     vx_status                    status = (vx_status)VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
@@ -1301,7 +1301,7 @@ static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
 }
 
 static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_dmpac_dof_sof_params_t *sofAppPrms)
+                        const tivx_dmpac_dof_sof_params_t *sofAppPrms)
 {
     vx_status                    status = (vx_status)VX_SUCCESS;
     int32_t                      fvid2_status = FVID2_SOK;
@@ -1415,7 +1415,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
     return (status);
 }
 
-static vx_status tivxDmpacDofGetErrStatusCmd(tivxDmpacDofObj *dof_obj,
+static vx_status tivxDmpacDofGetErrStatusCmd(const tivxDmpacDofObj *dof_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
     vx_status                           status = (vx_status)VX_SUCCESS;

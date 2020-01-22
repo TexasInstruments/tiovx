@@ -139,13 +139,13 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
 static void tivxVpacNfBilateralFreeObject(
        tivxVpacNfBilateralInstObj *instObj, tivxVpacNfBilateralObj *nf_bilateral_obj);
 static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
-static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, double *sigma_s,
-    double *sigma_r, uint32_t *i_lut);
+    const tivx_obj_desc_image_t *img_desc);
+static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const double *sigma_s,
+    const double *sigma_r, uint32_t *i_lut);
 static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bitw,
     uint8_t filtSize, double sigma_s, double sigma_r, double *f_wt_lut, uint8_t out_bitw,
     uint32_t *i_wt_lut_spatial, uint32_t *i_wt_lut_full);
-static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTables,
+static void tivxVpacNfBilateralInterleaveTables(const uint32_t * const *i_lut, uint8_t numTables,
     uint32_t rangeLutEntries);
 static uint32_t getSubRangeBits(uint16_t i);
 static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
@@ -153,7 +153,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilateral_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
-static vx_status tivxVpacNfBilateralGetErrStatusCmd(tivxVpacNfBilateralObj *nf_bilateral_obj,
+static vx_status tivxVpacNfBilateralGetErrStatusCmd(const tivxVpacNfBilateralObj *nf_bilateral_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 
 int32_t tivxVpacNfBilateralFrameComplCb(Fvid2_Handle handle, void *appData);
@@ -740,7 +740,7 @@ static void tivxVpacNfBilateralFreeObject(tivxVpacNfBilateralInstObj *instObj,
 }
 
 static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -784,8 +784,8 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
     }
 }
 
-static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, double *sigma_s,
-    double *sigma_r, uint32_t *i_lut)
+static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const double *sigma_s,
+    const double *sigma_r, uint32_t *i_lut)
 {
     uint32_t numTables = (uint32_t)1U << (uint32_t)subRangeBits;
     uint8_t tableNum;
@@ -986,10 +986,10 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     return returnVal;
 }
 
-static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTables,
+static void tivxVpacNfBilateralInterleaveTables(const uint32_t * const *i_lut, uint8_t numTables,
     uint32_t rangeLutEntries)
 {
-    uint32_t *oldLut = *i_lut;
+    const uint32_t *oldLut = *i_lut;
     uint32_t newLut[LUT_ROWS*256] = {0};
     uint32_t i, j;
 
@@ -1001,7 +1001,7 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t **i_lut, uint8_t numTab
         }
     }
 
-    memcpy(oldLut, newLut, (uint32_t)LUT_ROWS*256U*sizeof(uint32_t));
+    memcpy((uint32_t *)oldLut, newLut, (uint32_t)LUT_ROWS*256U*sizeof(uint32_t));
 }
 
 static uint32_t getSubRangeBits(uint16_t i)
@@ -1131,7 +1131,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
     return (status);
 }
 
-static vx_status tivxVpacNfBilateralGetErrStatusCmd(tivxVpacNfBilateralObj *nf_bilateral_obj,
+static vx_status tivxVpacNfBilateralGetErrStatusCmd(const tivxVpacNfBilateralObj *nf_bilateral_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
     vx_status                           status = (vx_status)VX_SUCCESS;

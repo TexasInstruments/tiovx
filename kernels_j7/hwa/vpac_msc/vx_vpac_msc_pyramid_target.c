@@ -214,18 +214,18 @@ static tivxVpacMscPmdObj *tivxVpacMscPmdAllocObject(tivxVpacMscPmdInstObj *instO
 static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
     tivxVpacMscPmdObj *msc_obj);
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc,
+    const tivx_obj_desc_image_t *in_img_desc,
+    const tivx_obj_desc_image_t *out_img_desc,
     uint32_t level,
     tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
     tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct,
     tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
-    tivx_vpac_msc_output_params_t *out_prms);
+    const tivx_vpac_msc_output_params_t *out_prms);
 
 /* Control Command Implementation */
 static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
@@ -1096,7 +1096,7 @@ static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
 }
 
 static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -1142,8 +1142,8 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc,
+    const tivx_obj_desc_image_t *in_img_desc,
+    const tivx_obj_desc_image_t *out_img_desc,
     uint32_t level,
     tivx_target_kernel_instance kernel)
 {
@@ -1376,7 +1376,7 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
 }
 
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
-    tivx_vpac_msc_output_params_t *out_prms)
+    const tivx_vpac_msc_output_params_t *out_prms)
 {
     sc_cfg->isSignedData = out_prms->signed_data;
 

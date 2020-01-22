@@ -139,13 +139,13 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
 static void tivxVpacNfGenericFreeObject(
        tivxVpacNfGenericInstObj *instObj, tivxVpacNfGenericObj *nf_generic_obj);
 static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
-static vx_status tivxVpacNfGenericGetErrStatusCmd(tivxVpacNfGenericObj *nf_generic_obj,
+static vx_status tivxVpacNfGenericGetErrStatusCmd(const tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 
 int32_t tivxVpacNfGenericFrameComplCb(Fvid2_Handle handle, void *appData);
@@ -822,7 +822,7 @@ static void tivxVpacNfGenericFreeObject(tivxVpacNfGenericInstObj *instObj,
 }
 
 static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -978,7 +978,7 @@ static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
     return (status);
 }
 
-static vx_status tivxVpacNfGenericGetErrStatusCmd(tivxVpacNfGenericObj *nf_generic_obj,
+static vx_status tivxVpacNfGenericGetErrStatusCmd(const tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
     vx_status                           status = (vx_status)VX_SUCCESS;

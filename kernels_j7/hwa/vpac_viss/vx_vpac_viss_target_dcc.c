@@ -84,7 +84,7 @@
 static void tivxVpacVissDccMapH3aParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res);
+    const tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
@@ -188,7 +188,7 @@ int32_t yee_lut[] =
 /* ========================================================================== */
 
 vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms)
+    const tivx_vpac_viss_params_t *vissPrms)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -226,7 +226,7 @@ void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj)
 
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_obj_desc_user_data_object_t *dcc_buf_desc,
-    tivx_obj_desc_user_data_object_t *h3a_out_desc,
+    const tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res)
 {
     vx_status                   status = (vx_status)VX_SUCCESS;
@@ -336,7 +336,7 @@ void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj)
 }
 
 void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
-    tivx_vpac_viss_params_t *vissPrms)
+    const tivx_vpac_viss_params_t *vissPrms)
 {
     Rfe_H3aInConfig     *inCfg;
 
@@ -484,7 +484,7 @@ static void tivxVpacVissDccMapH3aParams(tivxVpacVissObj *vissObj,
 }
 
 static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res)
+    const tivx_ae_awb_params_t *ae_awb_res)
 {
     uint32_t            cnt1, cnt2;
     Nsf4v_Config       *nsf4Cfg = NULL;

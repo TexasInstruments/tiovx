@@ -144,16 +144,16 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxVpacLdcObj *ldc_obj);
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
     tivx_obj_desc_user_data_object_t *reg_prms_desc);
-static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
-    Fvid2_Format *fmt, tivx_obj_desc_image_t *img_desc);
+static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
+    Fvid2_Format *fmt, const tivx_obj_desc_image_t *img_desc);
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
 static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     tivx_obj_desc_user_data_object_t *mesh_prms_desc,
-    tivx_obj_desc_image_t *mesh_img_desc);
+    const tivx_obj_desc_image_t *mesh_img_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_lut_t *luma_lut_desc, tivx_obj_desc_lut_t *chroma_lut_desc);
-static vx_status tivxVpacLdcGetErrStatusCmd(tivxVpacLdcObj *ldc_obj,
+static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
@@ -868,8 +868,8 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxMutexUnlock(instObj->lock);
 }
 
-static vx_status tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
-    Fvid2_Format *fmt, tivx_obj_desc_image_t *img_desc)
+static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
+    Fvid2_Format *fmt, const tivx_obj_desc_image_t *img_desc)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -1077,7 +1077,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 
 static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     tivx_obj_desc_user_data_object_t *mesh_prms_desc,
-    tivx_obj_desc_image_t *mesh_img_desc)
+    const tivx_obj_desc_image_t *mesh_img_desc)
 {
     vx_status                    status = (vx_status)VX_SUCCESS;
     tivx_vpac_ldc_mesh_params_t *mesh_prms = NULL;
@@ -1262,7 +1262,7 @@ static vx_status tivxVpacLdcSetLutParamsCmd(tivxVpacLdcObj *ldc_obj,
     return ((vx_status)VX_SUCCESS);
 }
 
-static vx_status tivxVpacLdcGetErrStatusCmd(tivxVpacLdcObj *ldc_obj,
+static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
     vx_status                           status = (vx_status)VX_SUCCESS;

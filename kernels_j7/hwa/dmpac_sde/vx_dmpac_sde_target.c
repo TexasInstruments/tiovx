@@ -141,9 +141,9 @@ static void tivxDmpacSdeFreeObject(
        tivxDmpacSdeInstObj *instObj,
        tivxDmpacSdeObj *sde_obj);
 static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc);
 static vx_status tivxDmpacSdeGetErrStatusCmd(
-       tivxDmpacSdeObj *sde_obj,
+       const tivxDmpacSdeObj *sde_obj,
        tivx_obj_desc_scalar_t *scalar_obj_desc);
 
 int32_t tivxDmpacSdeFrameComplCb(Fvid2_Handle handle, void *appData);
@@ -793,7 +793,7 @@ static void tivxDmpacSdeFreeObject(tivxDmpacSdeInstObj *instObj,
 }
 
 static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc)
 {
     if (NULL != img_desc)
     {
@@ -839,7 +839,7 @@ static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
 /*                    Control Command Implementation                          */
 /* ========================================================================== */
 
-static vx_status tivxDmpacSdeGetErrStatusCmd(tivxDmpacSdeObj *sde_obj,
+static vx_status tivxDmpacSdeGetErrStatusCmd(const tivxDmpacSdeObj *sde_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc)
 {
     vx_status                           status = (vx_status)VX_SUCCESS;

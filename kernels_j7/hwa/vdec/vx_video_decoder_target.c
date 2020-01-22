@@ -139,7 +139,7 @@ static tivxVideoDecoderObj *tivxVideoDecoderAllocObject(
 static void tivxVideoDecoderFreeObject(
        tivxVideoDecoderInstObj *instObj,
        tivxVideoDecoderObj *decoder_obj);
-static void memcpyDMA(uint8_t *pOut, uint8_t *pIn, uint32_t length);
+static void memcpyDMA(const uint8_t *pOut, const uint8_t *pIn, uint32_t length);
 void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_dec_process_cb cb_type);
 
 /* ========================================================================== */
@@ -363,10 +363,10 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
 
-	    uint32_t padded_size_y = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
+        uint32_t padded_size_y = ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
                                 * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN);
 
-	    uint32_t padded_size_uv = (ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
+        uint32_t padded_size_uv = (ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_x, (uint32_t)HW_ALIGN)
                                 * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN) * 1U )/ 2U;
 
         tivxEventWait(decoder_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -731,7 +731,7 @@ static void tivxVideoDecoderFreeObject(tivxVideoDecoderInstObj *instObj,
     tivxMutexUnlock(instObj->lock);
 }
 
-static void memcpyDMA(uint8_t *pOut, uint8_t *pIn, uint32_t length)
+static void memcpyDMA(const uint8_t *pOut, const uint8_t *pIn, uint32_t length)
 {
     app_udma_copy_1d_prms_t prms_1d;
 
