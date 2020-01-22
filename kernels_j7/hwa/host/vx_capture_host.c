@@ -298,10 +298,11 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
 {
     uint32_t cnt, loopCnt;
 
-    prms->numInst = 1u;
-    prms->numCh   = 0u;
     if (NULL != prms)
     {
+        prms->numInst = 1u;
+        prms->numCh   = 0u;
+
         for (loopCnt = 0U ; loopCnt < TIVX_CAPTURE_MAX_INST ; loopCnt++)
         {
             prms->instId[loopCnt]                       = loopCnt;
