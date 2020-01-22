@@ -110,14 +110,14 @@ void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc);
+void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc);
 
 /*!
  * \brief Log trace on target execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceTargetExeEnd(tivx_target target, tivx_obj_desc_t *obj_desc);
+void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc);
 
 
 #ifdef __cplusplus

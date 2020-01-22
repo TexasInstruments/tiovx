@@ -307,7 +307,7 @@ static vx_status tivxDataRefQueueDestruct(vx_reference ref)
     return (vx_status)VX_SUCCESS;
 }
 
-tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_create_params_t *prms)
+tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_queue_create_params_t *prms)
 {
     tivx_data_ref_queue ref = NULL;
     vx_status status = (vx_status)VX_SUCCESS;

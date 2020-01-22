@@ -327,7 +327,7 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context, tivx_s
  * \pre \ref ownGraphCalcEdgeList should be run
  * \ingroup group_vx_graph
  */
-void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
+void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context, const vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
 
 /*! \brief Configure Supernode
  *
@@ -493,7 +493,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, void *parameter);
+vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, const void *parameter);
 
 /*! \brief Waits for user event from graph event queue
  *

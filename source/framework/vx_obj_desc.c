@@ -205,7 +205,7 @@ tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id)
     return obj_desc;
 }
 
-vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
+vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
 {
     vx_bool is_valid = (vx_bool)vx_false_e;
 

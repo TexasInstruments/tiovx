@@ -190,7 +190,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context)
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 app_value, void *parameter)
+VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 app_value, const void *parameter)
 {
     vx_status status;
 

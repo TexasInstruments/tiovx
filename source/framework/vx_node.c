@@ -32,7 +32,7 @@
 
 static vx_status ownDestructNode(vx_reference ref);
 static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id);
-static vx_status ownRemoveNodeInt(vx_node *n);
+static vx_status ownRemoveNodeInt(const vx_node *n);
 static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
 static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id);
 
@@ -149,7 +149,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     return status;
 }
 
-static vx_status ownRemoveNodeInt(vx_node *n)
+static vx_status ownRemoveNodeInt(const vx_node *n)
 {
     vx_node node;
 
@@ -1065,7 +1065,7 @@ void ownNodeSetObjDescParamDirection(vx_node node)
     node->obj_desc[0]->is_prm_input = is_prm_input;
 }
 
-void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
+void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 
@@ -1090,7 +1090,7 @@ void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uin
     }
 }
 
-void ownNodeCheckAndSendErrorEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status)
+void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status)
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 

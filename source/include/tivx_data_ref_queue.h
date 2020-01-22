@@ -153,7 +153,7 @@ typedef struct _tivx_data_ref_queue_create_params {
  *
  * \ingroup group_tivx_data_ref_queue
  */
-tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_create_params_t *prms);
+tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_queue_create_params_t *prms);
 
 /*!
  * \brief Release data reference queue

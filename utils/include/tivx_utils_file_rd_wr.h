@@ -201,7 +201,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
  * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_bmp_file_read(
-            char *filename,
+            const char *filename,
             vx_bool convert_to_gray_scale,
             uint32_t *width,
             uint32_t *height,
@@ -218,7 +218,7 @@ vx_status tivx_utils_bmp_file_read(
  * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_bmp_file_read_from_memory(
-            void *buf,
+            const void *buf,
             uint32_t buf_size,
             vx_bool convert_to_gray_scale,
             uint32_t *width,
@@ -246,7 +246,7 @@ void tivx_utils_bmp_file_read_release(void *png_file_context);
  * \ingroup group_tivx_ext_host_utils
  */
 int32_t tivx_utils_bmp_file_write(
-            char *filename,
+            const char *filename,
             uint32_t width,
             uint32_t height,
             uint32_t stride,
@@ -260,7 +260,7 @@ int32_t tivx_utils_bmp_file_write(
  *
  * \ingroup group_tivx_ext_host_utils
  */
-vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filename, vx_bool convert_to_gray_scale);
+vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char *filename, vx_bool convert_to_gray_scale);
 
 /**
  * \brief Save data from image object to PNG file
@@ -269,7 +269,7 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
  *
  * \ingroup group_tivx_ext_host_utils
  */
-vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image);
+vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image image);
 
 /**
  * \brief Load data from BMP file into a previously created vx_image object

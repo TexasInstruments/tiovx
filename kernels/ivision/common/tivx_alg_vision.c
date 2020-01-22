@@ -269,7 +269,7 @@ static vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
     return status;
 }
 
-void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
+void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms)
 {
     vx_uint32 numMemRec;
     IALG_MemRec *memRec;

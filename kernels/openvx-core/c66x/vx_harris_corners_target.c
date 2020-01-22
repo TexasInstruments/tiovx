@@ -111,7 +111,7 @@ typedef struct
     vx_float32 rad;
 } tivxHarrisCornersParams;
 
-static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
+static vx_status tivxHarrisCCalcSobel(const tivxHarrisCornersParams *prms,
     const uint8_t *src_addr, int32_t gs);
 static vx_status tivxHarrisCCalcScore(tivxHarrisCornersParams *prms,
     vx_float32 sensitivity, int32_t gs, int32_t bs);
@@ -683,7 +683,7 @@ static void tivxHarrisCFreeMem(tivxHarrisCornersParams *prms)
     }
 }
 
-static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
+static vx_status tivxHarrisCCalcSobel(const tivxHarrisCornersParams *prms,
     const uint8_t *src_addr, int32_t gs)
 {
     vx_status status = (vx_status)VX_FAILURE;

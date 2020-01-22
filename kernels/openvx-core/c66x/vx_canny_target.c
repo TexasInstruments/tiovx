@@ -98,11 +98,11 @@ typedef struct
     VXLIB_bufParams2D_t vxlib_dst;
 } tivxCannyParams;
 
-static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
+static vx_status tivxCannyCalcSobel(const tivxCannyParams *prms,
     const uint8_t *src_addr, int32_t gs);
-static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm,
+static vx_status tivxCannyCalcNorm(const tivxCannyParams *prms, vx_enum norm,
     int32_t gs);
-static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs);
+static vx_status tivxCannyCalcNms(const tivxCannyParams *prms, int32_t gs);
 static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
     uint32_t *num_items, int32_t lower, int32_t upper, int32_t gs);
 static vx_status VX_CALLBACK tivxKernelCannyProcess(
@@ -493,7 +493,7 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
     }
 }
 
-static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
+static vx_status tivxCannyCalcSobel(const tivxCannyParams *prms,
     const uint8_t *src_addr, int32_t gs)
 {
     vx_status status = (vx_status)VX_FAILURE;
@@ -549,7 +549,7 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
     return (status);
 }
 
-static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
+static vx_status tivxCannyCalcNorm(const tivxCannyParams *prms, vx_enum norm_enm,
     int32_t gs)
 {
     vx_status status = (vx_status)VX_FAILURE;
@@ -585,7 +585,7 @@ static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm_enm,
     return (status);
 }
 
-static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs)
+static vx_status tivxCannyCalcNms(const tivxCannyParams *prms, int32_t gs)
 {
     vx_status status = (vx_status)VX_FAILURE;
     int16_t *sobx, *soby;

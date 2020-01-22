@@ -300,13 +300,13 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
  *
  * \ingroup group_vx_node
  */
-void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
+void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
 
 /*! \brief Send node error event if node failed
  *
  * \ingroup group_vx_node
  */
-void ownNodeCheckAndSendErrorEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status);
+void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status);
 
 
 /*! \brief Alloc additional node obj desc's for pipelining

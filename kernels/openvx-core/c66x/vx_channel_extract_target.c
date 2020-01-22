@@ -82,7 +82,7 @@ static vx_status tivxChannelExtractRgbRgbxInput(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst);
+            const VXLIB_bufParams2D_t *vxlib_dst);
 static vx_status VX_CALLBACK tivxChannelExtractCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -96,13 +96,13 @@ static vx_status tivxChannelExtractIyuvYuv4Input(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst);
+            const VXLIB_bufParams2D_t *vxlib_dst);
 static vx_status tivxChannelExtractNv12Nv21Input(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst);
+            const VXLIB_bufParams2D_t *vxlib_dst);
 static vx_status tivxChannelExtractYuyvUyvyInput(
             tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
@@ -115,7 +115,7 @@ static vx_status tivxChannelExtractRgbRgbxInput(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst)
+            const VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -282,7 +282,7 @@ static vx_status tivxChannelExtractNv12Nv21Input(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst)
+            const VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
@@ -387,7 +387,7 @@ static vx_status tivxChannelExtractIyuvYuv4Input(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst)
+            const VXLIB_bufParams2D_t *vxlib_dst)
 {
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;

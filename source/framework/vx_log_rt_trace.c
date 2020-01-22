@@ -114,7 +114,7 @@ void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_
     }
 }
 
-void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc)
+void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc)
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
@@ -124,7 +124,7 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc)
     }
 }
 
-void tivxLogRtTraceTargetExeEnd(tivx_target target, tivx_obj_desc_t *obj_desc)
+void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc)
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {

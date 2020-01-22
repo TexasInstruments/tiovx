@@ -75,7 +75,7 @@ extern "C" {
 #endif
 
 
-void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms);
+void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms);
 
 vx_int32 tivxAlgiVisionDelete(void *algHandle);
 

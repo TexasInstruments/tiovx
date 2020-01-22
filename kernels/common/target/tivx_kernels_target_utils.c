@@ -68,7 +68,7 @@
 #include <tivx_kernels_target_utils.h>
 
 
-void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
+void tivxRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
 {
     vx_uint32 i;
 
@@ -81,7 +81,7 @@ void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t nu
     }
 }
 
-void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
+void tivxUnRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
 {
     vx_uint32 i;
 
@@ -96,7 +96,7 @@ void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t 
 
 
 void tivxInitBufParams(
-    tivx_obj_desc_image_t *obj_desc,
+    const tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[])
 {
     uint32_t i;
@@ -154,8 +154,8 @@ void tivxInitBufParams(
 }
 
 void tivxInitTwoBufParams(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
+    const tivx_obj_desc_image_t *obj_desc0,
+    const tivx_obj_desc_image_t *obj_desc1,
     VXLIB_bufParams2D_t buf_params0[],
     VXLIB_bufParams2D_t buf_params1[])
 {
@@ -283,7 +283,7 @@ void tivxInitTwoBufParams(
 }
 
 void tivxSetPointerLocation(
-    tivx_obj_desc_image_t *obj_desc,
+    const tivx_obj_desc_image_t *obj_desc,
     void *target_ptr[],
     uint8_t *addr[])
 {
@@ -299,8 +299,8 @@ void tivxSetPointerLocation(
 }
 
 void tivxSetTwoPointerLocation(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
+    const tivx_obj_desc_image_t *obj_desc0,
+    const tivx_obj_desc_image_t *obj_desc1,
     void *target_ptr0[],
     void *target_ptr1[],
     uint8_t *addr0[],

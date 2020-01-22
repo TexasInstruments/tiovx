@@ -65,7 +65,7 @@
 
 static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph);
 static void ownGraphEnqueueFreeObjDesc(vx_graph graph,
-                        tivx_obj_desc_graph_t *obj_desc);
+                        const tivx_obj_desc_graph_t *obj_desc);
 static tivx_obj_desc_graph_t *ownGraphGetObjDesc(vx_graph graph, uint32_t pipeline_id);
 static vx_status ownGraphPipelineValidateRefsList(
                      const vx_graph_parameter_queue_params_t graph_parameters_queue_param);
@@ -487,7 +487,7 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
     return obj_desc;
 }
 
-static void ownGraphEnqueueFreeObjDesc(vx_graph graph, tivx_obj_desc_graph_t *obj_desc)
+static void ownGraphEnqueueFreeObjDesc(vx_graph graph, const tivx_obj_desc_graph_t *obj_desc)
 {
     if((obj_desc != NULL) && (obj_desc->pipeline_id < graph->pipeline_depth))
     {

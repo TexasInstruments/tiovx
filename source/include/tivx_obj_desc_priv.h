@@ -505,7 +505,7 @@ tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id);
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
+vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
 
 /*!
  * \brief Init object descriptor module

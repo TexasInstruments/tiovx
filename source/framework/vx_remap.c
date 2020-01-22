@@ -31,7 +31,7 @@
 #include <vx_internal.h>
 
 static vx_status ownDestructRemap(vx_reference ref);
-static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y);
+static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y);
 static vx_status ownAllocRemapBuffer(vx_reference ref);
 
 static vx_status ownDestructRemap(vx_reference ref)
@@ -55,7 +55,7 @@ static vx_status ownDestructRemap(vx_reference ref)
     return (vx_status)VX_SUCCESS;
 }
 
-static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
+static tivx_remap_point_t *ownGetRemapPoint(const tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
 {
     return (tivx_remap_point_t*)(uintptr_t)obj_desc->mem_ptr.host_ptr
                  + (dst_y*obj_desc->dst_width)

@@ -28,7 +28,7 @@
 
 #include <vx_internal.h>
 
-static vx_bool ownIsValidCreateParams(tivx_raw_image_create_params_t *params);
+static vx_bool ownIsValidCreateParams(const tivx_raw_image_create_params_t *params);
 static vx_bool ownIsValidRawImage(tivx_raw_image image);
 static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t* addr);
 static vx_status ownDestructRawImage(vx_reference ref);
@@ -45,7 +45,7 @@ static vx_status ownCopyAndMapCheckParams(
     vx_enum usage,
     vx_uint32 buffer_select);
 
-static vx_bool ownIsValidCreateParams(tivx_raw_image_create_params_t *params)
+static vx_bool ownIsValidCreateParams(const tivx_raw_image_create_params_t *params)
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
 

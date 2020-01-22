@@ -309,7 +309,7 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params);
  *
  * \ingroup group_tivx_target
  */
-vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *params);
+vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t *params);
 
 
 /*!

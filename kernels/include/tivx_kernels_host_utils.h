@@ -86,13 +86,13 @@ typedef struct {
  * \brief Publishes the kernels list on the host side
  * \ingroup group_tivx_ext_host_kernel
  */
-vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
+vx_status tivxPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Unpublishes the kernels list on the host side
  * \ingroup group_tivx_ext_host_kernel
  */
-vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
+vx_status tivxUnPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
 
 
 /*!

@@ -79,7 +79,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeControl(
-    tivx_obj_desc_cmd_t *cmd_obj_desc,
+    const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
@@ -90,7 +90,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static void VX_CALLBACK tivxTargetTaskMain(void *app_var);
 static vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id);
-static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
+static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc);
 
 static tivx_target tivxTargetAllocHandle(vx_enum target_id)
@@ -928,7 +928,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
     return status;
 }
 
-static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
+static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -961,7 +961,7 @@ static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
 }
 
 static vx_status tivxTargetNodeDescNodeControl(
-    tivx_obj_desc_cmd_t *cmd_obj_desc,
+    const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1248,7 +1248,7 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
     target->targetExitDone = (vx_bool)vx_true_e;
 }
 
-vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *params)
+vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t *params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_target target;

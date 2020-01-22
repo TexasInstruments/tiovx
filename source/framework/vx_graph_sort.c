@@ -242,7 +242,7 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
 }
 
 void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
-    vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
+    const vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
 {
     uint16_t cur_node_idx, out_node_idx, num_out_nodes, i=0;
     vx_node cur_node, next_node;

@@ -91,14 +91,14 @@ typedef struct  {
  *
  * \ingroup group_tivx_target_utils
  */
-void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
+void tivxRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Unregisters the kernels list on the target side
  *
  * \ingroup group_tivx_target_utils
  */
-void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
+void tivxUnRegisterTargetKernels(const Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Computes the patch offset into the image
@@ -149,7 +149,7 @@ static inline vx_status tivxCheckNullParams(
  * \ingroup group_tivx_target_utils
  */
 void tivxInitBufParams(
-    tivx_obj_desc_image_t *obj_desc,
+    const tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[]);
 
 /*!
@@ -160,8 +160,8 @@ void tivxInitBufParams(
  * \ingroup group_tivx_target_utils
  */
 void tivxInitTwoBufParams(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
+    const tivx_obj_desc_image_t *obj_desc0,
+    const tivx_obj_desc_image_t *obj_desc1,
     VXLIB_bufParams2D_t buf_params0[],
     VXLIB_bufParams2D_t buf_params1[]);
 
@@ -172,7 +172,7 @@ void tivxInitTwoBufParams(
  * \ingroup group_tivx_target_utils
  */
 void tivxSetPointerLocation(
-    tivx_obj_desc_image_t *obj_desc,
+    const tivx_obj_desc_image_t *obj_desc,
     void *target_ptr[],
     uint8_t *addr[]);
 
@@ -183,8 +183,8 @@ void tivxSetPointerLocation(
  * \ingroup group_tivx_target_utils
  */
 void tivxSetTwoPointerLocation(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
+    const tivx_obj_desc_image_t *obj_desc0,
+    const tivx_obj_desc_image_t *obj_desc1,
     void *target_ptr0[],
     void *target_ptr1[],
     uint8_t *addr0[],

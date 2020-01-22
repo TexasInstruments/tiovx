@@ -68,7 +68,7 @@
 #include <VX/vx_types.h>
 #include <tivx_kernels_host_utils.h>
 
-vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
+vx_status tivxPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;
@@ -89,7 +89,7 @@ vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_l
     return status;
 }
 
-vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
+vx_status tivxUnPublishKernels(vx_context context, const Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_uint32 i;

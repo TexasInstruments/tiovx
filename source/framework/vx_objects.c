@@ -74,7 +74,7 @@ static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele);
 static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele);
 static vx_status ownFreeObject(
     const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
-    uint32_t max_objects, uint32_t size, char *resource_name);
+    uint32_t max_objects, uint32_t size, const char *resource_name);
 static uint8_t *ownAllocObject(
     uint8_t *obj_start_ptr, vx_bool inUse[], uint32_t max_objects,
     uint32_t size, char *resource_name);
@@ -768,7 +768,7 @@ static uint8_t *ownAllocObject(
 
 static vx_status ownFreeObject(
     const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
-    uint32_t max_objects, uint32_t size, char *resource_name)
+    uint32_t max_objects, uint32_t size, const char *resource_name)
 {
     uint32_t i;
     vx_status status = (vx_status)VX_FAILURE;
