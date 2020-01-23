@@ -156,7 +156,7 @@ static void ownInitTensorObject(
         obj_desc->stride[number_of_dimensions - 1U] * obj_desc->dimensions[number_of_dimensions - 1U];
 
     /* Clear the dimensions beyond what the user is creating */
-    for (i = (vx_uint32)number_of_dimensions; (vx_int32)i < TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+    for (i = (vx_uint32)number_of_dimensions; i < (vx_uint32)TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
     {
         obj_desc->dimensions[i] = 0;
         obj_desc->stride[i] = 0;
@@ -247,22 +247,23 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
     vx_int8 fixed_point_position)
 {
     vx_tensor tensor = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if ((number_of_dims < 1U) || ((vx_int32)number_of_dims > TIVX_CONTEXT_MAX_TENSOR_DIMS))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid dims for the tensor.\n");
-            tensor = (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_DIMENSION);
+            status = (vx_status)VX_ERROR_INVALID_DIMENSION;
         }
 
         if ((vx_bool)vx_false_e == ownIsValidTensorFormat(data_type, (vx_uint8)fixed_point_position))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid data_type for the tensor.\n");
-            tensor =  (vx_tensor)ownGetErrorObject((vx_context)context, (vx_status)VX_ERROR_INVALID_TYPE);
+            status = (vx_status)VX_ERROR_INVALID_TYPE;
         }
 
-        if( NULL == tensor )
+        if( (vx_status)VX_SUCCESS == status )
         {
             tensor = (vx_tensor)ownCreateReference(context, (vx_enum)VX_TYPE_TENSOR, (vx_enum)VX_EXTERNAL, &context->base);
 
@@ -283,14 +284,18 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate tensor object descriptor\n");
-                    tensor = (vx_tensor)ownGetErrorObject(
-                        context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
                 else
                 {
                     ownInitTensorObject(tensor, dims, number_of_dims, data_type, fixed_point_position);
                 }
             }
+        }
+
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            tensor = (vx_tensor)ownGetErrorObject((vx_context)context, status);
         }
     }
 

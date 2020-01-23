@@ -287,25 +287,25 @@ static vx_status ownInitObjArrayFromObject(
     {
         ref = ownCreateReferenceFromExemplar(context, exemplar);
 
-        status = (vx_status)VX_SUCCESS;
-        if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"ownInitObjArrayFromObject: Invalid reference type\n");
-            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-        }
+        status = vxGetStatus(ref);
+
         if(status == (vx_status)VX_SUCCESS)
         {
             status = ownAddRefToObjArray(context, objarr, ref, i);
         }
-        if(status!=(vx_status)VX_SUCCESS)
+        else
         {
+            VX_PRINT(VX_ZONE_ERROR,"ownCreateReferenceFromExemplar Failed\n");
             break;
         }
     }
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        ownReleaseRefFromObjArray(objarr, i);
+        for (; i > 0u; i--)
+        {
+            ownReleaseRefFromObjArray(objarr, i);
+        }
     }
 
     return (status);

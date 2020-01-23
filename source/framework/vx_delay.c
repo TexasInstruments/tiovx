@@ -374,18 +374,16 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     for(i=0; i<count; i++)
                     {
                         ref = ownCreateReferenceFromExemplar(context, exemplar);
-                        status = (vx_status)VX_SUCCESS;
-                        if(ownIsValidReference(ref)==(vx_bool)vx_false_e)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference type\n");
-                            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-                        }
+
+                        status = vxGetStatus(ref);
+
                         if(status == (vx_status)VX_SUCCESS)
                         {
                             status = ownAddRefToDelay(context, delay, ref, i);
                         }
-                        if(status!=(vx_status)VX_SUCCESS)
+                        else
                         {
+                            VX_PRINT(VX_ZONE_ERROR,"ownCreateReferenceFromExemplar Failed\n");
                             break;
                         }
                     }
