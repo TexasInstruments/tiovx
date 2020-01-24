@@ -234,26 +234,36 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
     {
         if((NULL != node->kernel) && (node->is_kernel_created == (vx_bool)vx_true_e))
         {
-            for (cnt = 0u; cnt < num_refs; cnt ++)
+            if (num_refs > TIVX_CMD_MAX_OBJ_DESCS)
             {
-                if (ownIsValidReference(ref[cnt]) == (vx_bool)vx_true_e)
-                {
-                    obj_desc_id[cnt] = ref[cnt]->obj_desc->obj_desc_id;
-                }
-                else
-                {
-                    /* Invalid Desc ID */
-                    obj_desc_id[cnt] = (uint16_t)-1;
-                    VX_PRINT(VX_ZONE_INFO,
-                        "tivxNodeSendCommand: ref[%d] is not valid\n", cnt);
-                }
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR,
+                    "num_refs exceeds TIVX_CMD_MAX_OBJ_DESCS\n");
+                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CMD_MAX_OBJ_DESCS in tiovx/source/include/tivx_obj_desc_priv.h\n");
             }
+            else
+            {
+                for (cnt = 0u; cnt < num_refs; cnt ++)
+                {
+                    if (ownIsValidReference(ref[cnt]) == (vx_bool)vx_true_e)
+                    {
+                        obj_desc_id[cnt] = ref[cnt]->obj_desc->obj_desc_id;
+                    }
+                    else
+                    {
+                        /* Invalid Desc ID */
+                        obj_desc_id[cnt] = (uint16_t)-1;
+                        VX_PRINT(VX_ZONE_INFO,
+                            "tivxNodeSendCommand: ref[%d] is not valid\n", cnt);
+                    }
+                }
 
-            status = ownContextSendControlCmd(node->base.context,
-                node->obj_desc[0]->base.obj_desc_id,
-                node->obj_desc[0]->target_id,
-                replicated_node_idx, node_cmd_id,
-                obj_desc_id, num_refs);
+                status = ownContextSendControlCmd(node->base.context,
+                    node->obj_desc[0]->base.obj_desc_id,
+                    node->obj_desc[0]->target_id,
+                    replicated_node_idx, node_cmd_id,
+                    obj_desc_id, num_refs);
+            }
         }
         else
         {

@@ -181,7 +181,7 @@ void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
     vx_node cur_node, next_node;
     vx_node *nodes = super_node->nodes;
 
-    if (num_nodes < TIVX_GRAPH_MAX_NODES)
+    if (num_nodes < TIVX_SUPER_NODE_MAX_NODES)
     {
         tivxGraphSortStackReset(context, (uint16_t)num_nodes);
 
