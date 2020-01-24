@@ -1001,7 +1001,7 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
             glbceCfg->darkAmplLimit = 6;
             glbceCfg->dither = GLBCE_NO_DITHER;
 
-            memcpy(glbceCfg->asymLut, dcc_cfg->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE*4U);
+            memcpy(glbceCfg->asymLut, dcc_cfg->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
 
             prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
             prcptCfg->enable = dcc_cfg->fwd_prcpt_en;
