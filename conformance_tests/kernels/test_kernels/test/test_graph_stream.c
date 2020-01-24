@@ -530,6 +530,11 @@ TEST(tivxGraphStreaming, testScalarCtrlCmd)
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    /* Negative test for sending control command before vxVerify (should fail) */
+    status = tivxNodeSendCommand(n1, 0u, TIVX_SCALAR_SRC_NODE_INC_SCALAR,
+        (vx_reference *)scalar, 1u);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, status);
+
     VX_CALL(vxVerifyGraph(graph));
 
     for (i = 1; i <= 5; i ++)

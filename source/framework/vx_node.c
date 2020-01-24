@@ -232,7 +232,21 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
     if ((NULL != node) &&
         (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE)))
     {
-        if((NULL != node->kernel) && (node->is_kernel_created == (vx_bool)vx_true_e))
+        if(NULL == node->kernel)
+        {
+            status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "Node Kernel Not Valid\n");
+        }
+
+        if( (node->is_kernel_created == (vx_bool)vx_false_e) ||
+            (node->graph->verified == (vx_bool)vx_false_e) )
+        {
+            status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR,
+                    "vxVerifyGraph should be called before tivxNodeSendCommand can be called on a node in the same graph\n");
+        }
+
+        if((vx_status)VX_SUCCESS == status)
         {
             if (num_refs > TIVX_CMD_MAX_OBJ_DESCS)
             {
@@ -253,8 +267,7 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
                     {
                         /* Invalid Desc ID */
                         obj_desc_id[cnt] = (uint16_t)-1;
-                        VX_PRINT(VX_ZONE_INFO,
-                            "tivxNodeSendCommand: ref[%d] is not valid\n", cnt);
+                        VX_PRINT(VX_ZONE_INFO, "ref[%d] is not valid\n", cnt);
                     }
                 }
 
@@ -265,18 +278,11 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
                     obj_desc_id, num_refs);
             }
         }
-        else
-        {
-            status = (vx_status)VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxNodeSendCommand: Node Kernel Not Valid\n");
-        }
     }
     else
     {
         status = (vx_status)VX_ERROR_INVALID_NODE;
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxNodeSendCommand: Node Not Valid\n");
+        VX_PRINT(VX_ZONE_ERROR, "Node Not Valid\n");
     }
 
     return (status);
