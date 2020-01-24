@@ -1028,7 +1028,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
             tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
-            refs, 1u));
+            refs, sizeof(refs)/sizeof(refs[0])));
 
         VX_CALL(vxReleaseUserDataObject(&coeff_obj));
 
