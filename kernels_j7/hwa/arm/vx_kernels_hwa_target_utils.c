@@ -291,7 +291,7 @@ void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr
     }
 }
 
-void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32)
+void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int32_t *src32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */

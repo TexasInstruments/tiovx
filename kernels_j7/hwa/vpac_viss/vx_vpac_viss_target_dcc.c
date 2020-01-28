@@ -225,12 +225,12 @@ void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj)
 }
 
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
-    tivx_obj_desc_user_data_object_t *dcc_buf_desc,
+    const tivx_obj_desc_user_data_object_t *dcc_buf_desc,
     const tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res)
 {
     vx_status                   status = (vx_status)VX_SUCCESS;
-    int                         dcc_status;
+    int32_t                         dcc_status;
     dcc_parser_input_params_t  *dcc_in_prms;
     dcc_parser_output_params_t *dcc_out_prms;
 
@@ -365,7 +365,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result)
 {
     vx_status                        status = (vx_status)VX_SUCCESS;
-    int                              dcc_status;
+    int32_t                              dcc_status;
     tivxVpacVissConfig              *vsCfg;
     Rfe_GainOfstConfig              *wbCfg;
     dcc_parser_input_params_t       *dcc_in_prms;
@@ -1556,7 +1556,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 
             if (1U == vissObj->dcc_out_prms.issRfeDecompand.enable)
             {
-                int i;
+                int32_t i;
                 dcc_parser_output_params_t  *dcc_out_prms = &vissObj->dcc_out_prms;
                 lutCfg->enable    = dcc_out_prms->issRfeDecompand.enable;
                 pwlCfg->mask      = dcc_out_prms->issRfeDecompand.mask;

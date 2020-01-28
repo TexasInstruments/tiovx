@@ -80,7 +80,7 @@ extern "C" {
 
 void lse_reformat_in(const tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16[], uint8_t ch, uint8_t out_bit_alignment);
 void lse_reformat_out(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t ch);
-void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32);
+void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int32_t *src32);
 void lse_reformat_out_dof(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, const int32_t *dst32);
 void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exposure);
 void lse_reformat_out_viss(const tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst0_target_ptr, void *dst1_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits);

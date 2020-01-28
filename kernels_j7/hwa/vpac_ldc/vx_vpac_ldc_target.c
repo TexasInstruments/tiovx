@@ -143,20 +143,20 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj);
 static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxVpacLdcObj *ldc_obj);
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
-    tivx_obj_desc_user_data_object_t *reg_prms_desc);
+    const tivx_obj_desc_user_data_object_t *reg_prms_desc);
 static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
     Fvid2_Format *fmt, const tivx_obj_desc_image_t *img_desc);
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
-    tivx_obj_desc_matrix_t *warp_matrix_desc);
+    const tivx_obj_desc_matrix_t *warp_matrix_desc);
 static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
-    tivx_obj_desc_user_data_object_t *mesh_prms_desc,
+    const tivx_obj_desc_user_data_object_t *mesh_prms_desc,
     const tivx_obj_desc_image_t *mesh_img_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_lut_t *luma_lut_desc, tivx_obj_desc_lut_t *chroma_lut_desc);
 static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 
 int32_t tivxVpacLdcFrameComplCb(Fvid2_Handle handle, void *appData);
 void tivxVpacLdcErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
@@ -585,7 +585,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
                 uint8_t * dcc_ldc_buf = (uint8_t *)target_ptr_dcc;
-                int dcc_buf_size = (int)dcc_buf_desc->mem_size;
+                int32_t dcc_buf_size = (int32_t)dcc_buf_desc->mem_size;
 
                 dcc_parser_input_params_t parser_input = {
                     dcc_ldc_buf,
@@ -620,7 +620,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                     if (1U == ldc_cfg->enableMultiRegions)
                     {
-                        int cnt1, cnt2;
+                        int32_t cnt1, cnt2;
                         for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_HORZ_REGIONS; cnt1 ++)
                         {
                             ldc_cfg->regCfg.width[cnt1] = params->ld_sf_width[cnt1];
@@ -970,10 +970,10 @@ static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
 }
 
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
-    tivx_obj_desc_matrix_t *warp_matrix_desc)
+    const tivx_obj_desc_matrix_t *warp_matrix_desc)
 {
     void *warp_matrix_target_ptr;
-    float *mat_addr;
+    vx_float32 *mat_addr;
 
     if (NULL != warp_matrix_desc)
     {
@@ -1016,41 +1016,41 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
         }
         else /* Compute HW registers from floating point warp matrix */
         {
-            mat_addr = (float *)((uintptr_t)warp_matrix_target_ptr);
+            mat_addr = (vx_float32 *)((uintptr_t)warp_matrix_target_ptr);
 
             if(3u == warp_matrix_desc->columns)
             {
-                float temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
                 cfg->coeffA       = (int16_t)temp_coeffA;
-                float temp_coeffB = (mat_addr[3] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffB = (mat_addr[3] / mat_addr[9]) * 4096.0f;
                 cfg->coeffB       = (int16_t)temp_coeffB;
-                float temp_coeffC = (mat_addr[6] / mat_addr[9]) * 8.0f;
+                vx_float32 temp_coeffC = (mat_addr[6] / mat_addr[9]) * 8.0f;
                 cfg->coeffC       = (int16_t)temp_coeffC;
-                float temp_coeffD = (mat_addr[1] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffD = (mat_addr[1] / mat_addr[9]) * 4096.0f;
                 cfg->coeffD       = (int16_t)temp_coeffD;
-                float temp_coeffE = (mat_addr[4] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffE = (mat_addr[4] / mat_addr[9]) * 4096.0f;
                 cfg->coeffE       = (int16_t)temp_coeffE;
-                float temp_coeffF = (mat_addr[7] / mat_addr[9]) * 8.0f;
+                vx_float32 temp_coeffF = (mat_addr[7] / mat_addr[9]) * 8.0f;
                 cfg->coeffF       = (int16_t)temp_coeffF;
-                float temp_coeffG = (mat_addr[2] / mat_addr[9]) * 8388608.0f;
+                vx_float32 temp_coeffG = (mat_addr[2] / mat_addr[9]) * 8388608.0f;
                 cfg->coeffG       = (int16_t)temp_coeffG;
-                float temp_coeffH = (mat_addr[5] / mat_addr[9]) * 8388608.0f;
+                vx_float32 temp_coeffH = (mat_addr[5] / mat_addr[9]) * 8388608.0f;
                 cfg->coeffH       = (int16_t)temp_coeffH;
                 cfg->enableWarp   = 1;
             }
             else
             {
-                float temp_coeffA = mat_addr[0] * 4096.0f;
+                vx_float32 temp_coeffA = mat_addr[0] * 4096.0f;
                 cfg->coeffA       = (int16_t)temp_coeffA;
-                float temp_coeffB = mat_addr[2] * 4096.0f;
+                vx_float32 temp_coeffB = mat_addr[2] * 4096.0f;
                 cfg->coeffB       = (int16_t)temp_coeffB;
-                float temp_coeffC = mat_addr[4] * 8.0f;
+                vx_float32 temp_coeffC = mat_addr[4] * 8.0f;
                 cfg->coeffC       = (int16_t)temp_coeffC;
-                float temp_coeffD = mat_addr[1] * 4096.0f;
+                vx_float32 temp_coeffD = mat_addr[1] * 4096.0f;
                 cfg->coeffD       = (int16_t)temp_coeffD;
-                float temp_coeffE = mat_addr[3] * 4096.0f;
+                vx_float32 temp_coeffE = mat_addr[3] * 4096.0f;
                 cfg->coeffE       = (int16_t)temp_coeffE;
-                float temp_coeffF = mat_addr[5] * 8.0f;
+                vx_float32 temp_coeffF = mat_addr[5] * 8.0f;
                 cfg->coeffF       = (int16_t)temp_coeffF;
                 cfg->coeffG       = 0;
                 cfg->coeffH       = 0;
@@ -1076,7 +1076,7 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 }
 
 static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
-    tivx_obj_desc_user_data_object_t *mesh_prms_desc,
+    const tivx_obj_desc_user_data_object_t *mesh_prms_desc,
     const tivx_obj_desc_image_t *mesh_img_desc)
 {
     vx_status                    status = (vx_status)VX_SUCCESS;
@@ -1127,7 +1127,7 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
 }
 
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
-    tivx_obj_desc_user_data_object_t *reg_prms_desc)
+    const tivx_obj_desc_user_data_object_t *reg_prms_desc)
 {
     void                                *target_ptr;
     uint32_t                             cnt1, cnt2;
@@ -1199,7 +1199,7 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
 
 
 static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     tivx_vpac_ldc_bandwidth_params_t *bwPrms = NULL;

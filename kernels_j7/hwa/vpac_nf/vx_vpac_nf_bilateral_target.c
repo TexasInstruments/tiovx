@@ -140,19 +140,19 @@ static void tivxVpacNfBilateralFreeObject(
        tivxVpacNfBilateralInstObj *instObj, tivxVpacNfBilateralObj *nf_bilateral_obj);
 static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
     const tivx_obj_desc_image_t *img_desc);
-static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const double *sigma_s,
-    const double *sigma_r, uint32_t *i_lut);
+static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const vx_float64 *sigma_s,
+    const vx_float64 *sigma_r, uint32_t *i_lut);
 static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bitw,
-    uint8_t filtSize, double sigma_s, double sigma_r, double *f_wt_lut, uint8_t out_bitw,
+    uint8_t filtSize, vx_float64 sigma_s, vx_float64 sigma_r, vx_float64 *f_wt_lut, uint8_t out_bitw,
     uint32_t *i_wt_lut_spatial, uint32_t *i_wt_lut_full);
 static void tivxVpacNfBilateralInterleaveTables(const uint32_t * const *i_lut, uint8_t numTables,
     uint32_t rangeLutEntries);
 static uint32_t getSubRangeBits(uint16_t i);
 static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
     tivxVpacNfBilateralObj *nf_bilateral_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilateral_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfBilateralGetErrStatusCmd(const tivxVpacNfBilateralObj *nf_bilateral_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 
@@ -784,18 +784,18 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
     }
 }
 
-static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const double *sigma_s,
-    const double *sigma_r, uint32_t *i_lut)
+static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const vx_float64 *sigma_s,
+    const vx_float64 *sigma_r, uint32_t *i_lut)
 {
     uint32_t numTables = (uint32_t)1U << (uint32_t)subRangeBits;
     uint8_t tableNum;
     uint32_t rangeLutEntries = (uint32_t)256 >> (uint32_t)subRangeBits;
-    double   f_lut[LUT_ROWS * 256];
+    vx_float64   f_lut[LUT_ROWS * 256];
 
     for (tableNum = 0; tableNum < numTables; tableNum++)
     {
-        double s_sigma = sigma_s[tableNum];
-        double r_sigma = sigma_r[tableNum];
+        vx_float64 s_sigma = sigma_s[tableNum];
+        vx_float64 r_sigma = sigma_r[tableNum];
 
         /*-----------------------------------------------------------------*/
         /* Generate fixed point LUT values, with index to LUT being        */
@@ -822,20 +822,20 @@ static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const double *s
 }
 
 static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bitw,
-    uint8_t filtSize, double sigma_s, double sigma_r, double *f_wt_lut, uint8_t out_bitw,
+    uint8_t filtSize, vx_float64 sigma_s, vx_float64 sigma_r, vx_float64 *f_wt_lut, uint8_t out_bitw,
     uint32_t *i_wt_lut_spatial, uint32_t *i_wt_lut_full)
 {
-    int row, col;
-    int lut_w, lut_h;
-    int lutSize = 1 << inp_bitw;
-    int referenceSize = 12;
+    int32_t row, col;
+    int32_t lut_w, lut_h;
+    int32_t lutSize = 1 << inp_bitw;
+    int32_t referenceSize = 12;
     uint8_t numspatialDistances;
     uint32_t returnVal = 0U;
 
-    double wt_s;
-    double wt_r;
-    double wt_sum;
-    double max = 0.0f;
+    vx_float64 wt_s;
+    vx_float64 wt_r;
+    vx_float64 wt_sum;
+    vx_float64 max = 0.0f;
 
     /* Translate filter size (5x5, 3x3, 1x1) into spatialDistances */
     if (filtSize == 3U)
@@ -854,7 +854,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     /*---------------------------------------------------------------------*/
     /* Compute LUT width and height.                                       */
     /*---------------------------------------------------------------------*/
-    memset(f_wt_lut, 0, (uint32_t)LUT_ROWS * (uint32_t)lutSize * sizeof(double));
+    memset(f_wt_lut, 0, (uint32_t)LUT_ROWS * (uint32_t)lutSize * sizeof(vx_float64));
 
     lut_w = (1 << inp_bitw);
     lut_h = (int32_t)numspatialDistances;
@@ -874,7 +874,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                                                 4, 3, 2, 3, 4  };
 
         /* This distance-squared mapping of each index (above) in a 5x5 to the center pixel */
-        const double distanceValuesSquared[] =
+        const vx_float64 distanceValuesSquared[] =
         {
             1.0, // 0: 1^2 + 0^2
             2.0, // 1: 1^2 + 1^2
@@ -912,9 +912,9 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                 for (col = 0; col < lut_w; col++)
                 {
                     // Only generate the lut values across the range that are needed
-                    int col_mod = col*(1 << (referenceSize - (int)inp_bitw));
+                    int32_t col_mod = col*(1 << (referenceSize - (int32_t)inp_bitw));
                     // gaussian_r = exp(-(x^2 / (2*sigma_r^2))
-                    wt_r = ((double)col_mod * (double)col_mod) / (2.0f * sigma_r * sigma_r);
+                    wt_r = ((vx_float64)col_mod * (vx_float64)col_mod) / (2.0f * sigma_r * sigma_r);
 
                     for (row = 0; row < lut_h; row++)
                     {
@@ -956,7 +956,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     if(returnVal != 1U)
     {
         if (i_wt_lut_full != NULL){
-            int i;
+            int32_t i;
             memset(i_wt_lut_full, 0, (uint32_t)LUT_ROWS * (uint32_t)lutSize * sizeof(uint32_t));
             if (mode == 2u)
             {
@@ -967,7 +967,7 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                     if (0.0f != max)
                     {
                         int32_t one_lsl_out_bitw_minus_one = (1 << out_bitw) - 1;
-                        double temp = ((f_wt_lut[i] / max) * (double)one_lsl_out_bitw_minus_one) + 0.5f;
+                        vx_float64 temp = ((f_wt_lut[i] / max) * (vx_float64)one_lsl_out_bitw_minus_one) + 0.5f;
                         i_wt_lut_full[i] = (uint32_t)temp;
                     }
                 }
@@ -1020,7 +1020,7 @@ static uint32_t getSubRangeBits(uint16_t i)
 
 static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
     tivxVpacNfBilateralObj *nf_bilateral_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                                status = (vx_status)VX_SUCCESS;
     int32_t                                  fvid2_status = FVID2_SOK;
@@ -1084,7 +1084,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
 }
 
 static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilateral_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;

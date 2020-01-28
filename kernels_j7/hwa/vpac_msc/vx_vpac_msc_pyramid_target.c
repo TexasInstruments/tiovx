@@ -229,9 +229,9 @@ static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
 
 /* Control Command Implementation */
 static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj[]);
 
@@ -1153,7 +1153,7 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
 
     if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
-        float temp;
+        vx_float32 temp;
         sc_cfg->enable = TRUE;
         sc_cfg->filtMode = MSC_FILTER_MODE_SINGLE_PHASE;
 
@@ -1176,9 +1176,9 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->inRoi.cropStartY = 0u;
         sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
-        temp = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        temp = (((((vx_float32)sc_cfg->inRoi.cropWidth/(vx_float32)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
         sc_cfg->horzAccInit = (uint32_t)temp;
-        temp = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        temp = (((((vx_float32)sc_cfg->inRoi.cropHeight/(vx_float32)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
         sc_cfg->vertAccInit = (uint32_t)temp;
     }
 }
@@ -1517,7 +1517,7 @@ static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
 /* ========================================================================== */
 
 static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
@@ -1663,7 +1663,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
 }
 
 static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          cnt;

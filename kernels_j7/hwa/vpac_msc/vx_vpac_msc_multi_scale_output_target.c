@@ -158,9 +158,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleControl(
        uint16_t num_params, void *priv_arg);
 
 static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params);
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxVpacMscScaleObj *msc_obj,
@@ -1068,14 +1068,14 @@ static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
 static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj,
     Msc_ScConfig *sc_cfg, uint32_t cnt)
 {
-    float temp_horzAccInit, temp_vertAccInit;
+    vx_float32 temp_horzAccInit, temp_vertAccInit;
     uint32_t int_horzAccInit, int_vertAccInit;
     uint32_t temp_cropStartX, temp_cropStartY;
 
     if((TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_x[cnt]) ||
        (TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_x[cnt]))
     {
-        temp_horzAccInit = (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        temp_horzAccInit = (((((vx_float32)sc_cfg->inRoi.cropWidth/(vx_float32)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
         int_horzAccInit = (uint32_t)temp_horzAccInit;
         temp_cropStartX = 0;
         if(int_horzAccInit > 4095U)
@@ -1111,7 +1111,7 @@ static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj
     if((TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_offset_y[cnt]) ||
        (TIVX_VPAC_MSC_AUTOCOMPUTE == msc_obj->user_init_phase_y[cnt]))
     {
-        temp_vertAccInit = (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        temp_vertAccInit = (((((vx_float32)sc_cfg->inRoi.cropHeight/(vx_float32)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
         int_vertAccInit = (uint32_t)temp_vertAccInit;
         temp_cropStartY = 0;
         if(int_vertAccInit > 4095U)
@@ -1150,7 +1150,7 @@ static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj
 /* ========================================================================== */
 
 static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
@@ -1287,7 +1287,7 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj
 }
 
 static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     tivx_vpac_msc_input_params_t     *in_prms = NULL;

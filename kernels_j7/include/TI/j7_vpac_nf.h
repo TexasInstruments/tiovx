@@ -175,8 +175,8 @@ typedef struct {
      *     - The tradeoff is that the more tables that are used, the less the precision of lookup tables.
      */
     uint16_t  num_sigmas;
-    double  sigma_space[8];  /*!< Array of space sigmas used to generate a 5x5 gaussian filter around the center pixel */
-    double  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
+    vx_float64  sigma_space[8];  /*!< Array of space sigmas used to generate a 5x5 gaussian filter around the center pixel */
+    vx_float64  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
 } tivx_vpac_nf_bilateral_sigmas_t;
 
 /*!
