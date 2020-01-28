@@ -679,12 +679,12 @@ void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr)
 void ownPrintImage(vx_image image)
 {
     vx_uint32 p = 0;
-    vx_char df_image[5];
+    volatile vx_char df_image[5];
     tivx_obj_desc_image_t *obj_desc = NULL;
 
     obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
-    tivx_obj_desc_strncpy(df_image, (char *)&obj_desc->format, 4);
+    tivx_obj_desc_strncpy(df_image, (volatile char *)&obj_desc->format, 4);
     df_image[4] = '\0';
     ownPrintReference(&image->base);
     VX_PRINT(VX_ZONE_IMAGE,
@@ -1626,7 +1626,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     ((tivx_obj_desc_image_t *)image->base.obj_desc)->
-                        color_space = (uint32_t)*(vx_enum *)ptr;
+                        color_space = (uint32_t)*(const vx_enum *)ptr;
                 }
                 else
                 {

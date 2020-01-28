@@ -150,7 +150,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 {
                     if (VX_CHECK_PARAM(ptr, size, vx_kernel_image_valid_rectangle_f, 0x0U))
                     {
-                        meta->valid_rect_callback = *(vx_kernel_image_valid_rectangle_f *)ptr;
+                        meta->valid_rect_callback = *(const vx_kernel_image_valid_rectangle_f *)ptr;
                     }
                     else
                     {
@@ -167,7 +167,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_IMAGE_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
-                    meta->img.format = *(vx_df_image *)ptr;
+                    meta->img.format = *(const vx_df_image *)ptr;
                 }
                 else
                 {
@@ -179,7 +179,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_IMAGE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->img.height = *(vx_uint32 *)ptr;
+                    meta->img.height = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -191,7 +191,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_IMAGE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->img.width = *(vx_uint32 *)ptr;
+                    meta->img.width = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -203,7 +203,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_ARRAY_CAPACITY:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->arr.capacity = *(vx_size *)ptr;
+                    meta->arr.capacity = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -215,7 +215,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->arr.item_type = *(vx_enum *)ptr;
+                    meta->arr.item_type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -227,7 +227,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_PYRAMID_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
-                    meta->pmd.format = *(vx_df_image *)ptr;
+                    meta->pmd.format = *(const vx_df_image *)ptr;
                 }
                 else
                 {
@@ -239,7 +239,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_PYRAMID_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->pmd.height = *(vx_uint32 *)ptr;
+                    meta->pmd.height = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -251,7 +251,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_PYRAMID_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->pmd.width = *(vx_uint32 *)ptr;
+                    meta->pmd.width = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -263,7 +263,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_PYRAMID_LEVELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->pmd.levels = *(vx_size *)ptr;
+                    meta->pmd.levels = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -275,7 +275,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_PYRAMID_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3U))
                 {
-                    meta->pmd.scale = *(vx_float32 *)ptr;
+                    meta->pmd.scale = *(const vx_float32 *)ptr;
                 }
                 else
                 {
@@ -287,7 +287,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_SCALAR_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->sc.type = *(vx_enum *)ptr;
+                    meta->sc.type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -299,7 +299,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_MATRIX_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->mat.type = *(vx_enum *)ptr;
+                    meta->mat.type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -311,7 +311,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)(vx_enum)VX_MATRIX_ROWS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->mat.rows = *(vx_size *)ptr;
+                    meta->mat.rows = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -323,7 +323,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_MATRIX_COLUMNS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->mat.cols = *(vx_size *)ptr;
+                    meta->mat.cols = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -335,7 +335,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_DISTRIBUTION_BINS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->dist.bins = *(vx_size *)ptr;
+                    meta->dist.bins = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -347,7 +347,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_DISTRIBUTION_OFFSET:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
-                    meta->dist.offset = *(vx_int32 *)ptr;
+                    meta->dist.offset = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -359,7 +359,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_DISTRIBUTION_RANGE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->dist.range = *(vx_uint32 *)ptr;
+                    meta->dist.range = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -371,7 +371,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_REMAP_SOURCE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->remap.src_width = *(vx_uint32 *)ptr;
+                    meta->remap.src_width = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -383,7 +383,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_REMAP_SOURCE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->remap.src_height = *(vx_uint32 *)ptr;
+                    meta->remap.src_height = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -395,7 +395,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_REMAP_DESTINATION_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->remap.dst_width = *(vx_uint32 *)ptr;
+                    meta->remap.dst_width = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_REMAP_DESTINATION_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->remap.dst_height = *(vx_uint32 *)ptr;
+                    meta->remap.dst_height = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -419,7 +419,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_LUT_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->lut.type = *(vx_enum *)ptr;
+                    meta->lut.type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -431,7 +431,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_LUT_COUNT:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->lut.count = *(vx_size *)ptr;
+                    meta->lut.count = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -443,7 +443,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_THRESHOLD_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->thres.type = *(vx_enum *)ptr;
+                    meta->thres.type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -455,7 +455,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->objarr.item_type = *(vx_enum *)ptr;
+                    meta->objarr.item_type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -467,7 +467,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_OBJECT_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->objarr.num_items = *(vx_size *)ptr;
+                    meta->objarr.num_items = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -479,7 +479,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_TENSOR_NUMBER_OF_DIMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->tensor.number_of_dimensions = *(vx_size *)ptr;
+                    meta->tensor.number_of_dimensions = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -491,12 +491,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_TENSOR_DIMS:
                 if ((size <= (sizeof(vx_size)*(vx_size)TIVX_CONTEXT_MAX_TENSOR_DIMS)) && (((vx_size)ptr & 0x3U) == 0U))
                 {
-                    int i;
+                    int32_t i;
                     const vx_size *p = ptr;
                     vx_size num_dims = size / sizeof(vx_size);
 
                     /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
-                    for(i=0; i<(int)num_dims; i++)
+                    for(i=0; i<(int32_t)num_dims; i++)
                     {
                         meta->tensor.dimensions[i] = p[i];
                     }
@@ -515,7 +515,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_TENSOR_DATA_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    meta->tensor.data_type = *(vx_enum *)ptr;
+                    meta->tensor.data_type = *(const vx_enum *)ptr;
                 }
                 else
                 {
@@ -527,7 +527,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
-                    meta->tensor.fixed_point_position = *(vx_int8 *)ptr;
+                    meta->tensor.fixed_point_position = *(const vx_int8 *)ptr;
                 }
                 else
                 {
@@ -551,7 +551,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)VX_USER_DATA_OBJECT_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    meta->user_data_object.size = *(vx_size *)ptr;
+                    meta->user_data_object.size = *(const vx_size *)ptr;
                 }
                 else
                 {
@@ -563,7 +563,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.width = *(vx_uint32 *)ptr;
+                    meta->raw_image.width = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -575,7 +575,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.height = *(vx_uint32 *)ptr;
+                    meta->raw_image.height = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -587,7 +587,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.num_exposures = *(vx_uint32 *)ptr;
+                    meta->raw_image.num_exposures = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -599,7 +599,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED:
                 if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
-                    meta->raw_image.line_interleaved =  *(vx_bool *)ptr;
+                    meta->raw_image.line_interleaved =  *(const vx_bool *)ptr;
                 }
                 else
                 {
@@ -625,7 +625,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.meta_height_before = *(vx_uint32 *)ptr;
+                    meta->raw_image.meta_height_before = *(const vx_uint32 *)ptr;
                 }
                 else
                 {
@@ -637,7 +637,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    meta->raw_image.meta_height_after = *(vx_uint32 *)ptr;
+                    meta->raw_image.meta_height_after = *(const vx_uint32 *)ptr;
                 }
                 else
                 {

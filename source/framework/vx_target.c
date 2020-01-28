@@ -82,7 +82,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
+static vx_action tivxTargetCmdDescHandleUserCallback(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
 static void tivxTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
@@ -623,7 +623,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
             if ( ((vx_enum)VX_NODE_STATE_PIPEUP == kernel_instance_state) &&
                  (num_bufs > 1U) )
             {
-                int buf_idx;
+                int32_t buf_idx;
 
                 for (buf_idx = 0; buf_idx < ((int32_t)num_bufs - 1); buf_idx++)
                 {
@@ -1033,7 +1033,7 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
+static vx_action tivxTargetCmdDescHandleUserCallback(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_action action;
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;

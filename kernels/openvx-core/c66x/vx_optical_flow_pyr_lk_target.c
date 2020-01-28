@@ -268,7 +268,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             (vx_enum)VX_READ_ONLY);
 
         /* Set the scale for the lowest resolution level for first iteration */
-        scale = (float)pow((double)pyramid_scale, (double)((double)num_levels-(double)1.0f));
+        scale = (vx_float32)pow((vx_float64)pyramid_scale, (vx_float64)((vx_float64)num_levels-(vx_float64)1.0f));
 
         /* call kernel processing functions for each level of the pyramid */
         for( level = (vx_int32)num_levels-1; level >= 0; level-- )
@@ -355,8 +355,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         /* After all level processing, copy results back to output array */
         for(list_indx = 0; list_indx < list_length; list_indx++)
         {
-            float temp_x = _lof2(prms->newPoints[list_indx]) + 0.5f;
-            float temp_y = _hif2(prms->newPoints[list_indx]) + 0.5f;
+            vx_float32 temp_x = _lof2(prms->newPoints[list_indx]) + 0.5f;
+            vx_float32 temp_y = _hif2(prms->newPoints[list_indx]) + 0.5f;
             newPts_addr[list_indx].x = (int32_t)temp_x;
             newPts_addr[list_indx].y = (int32_t)temp_y;
             newPts_addr[list_indx].tracking_status = (int32_t)prms->tracking[list_indx];

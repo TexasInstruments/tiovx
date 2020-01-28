@@ -996,7 +996,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
             case (vx_enum)VX_CONTEXT_IMMEDIATE_BORDER:
                 if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
-                    vx_border_t *config = (vx_border_t *)ptr;
+                    const vx_border_t *config = (const vx_border_t *)ptr;
                     if (ownIsValidBorderMode(config->mode) == (vx_bool)vx_false_e)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"invalid border mode\n");

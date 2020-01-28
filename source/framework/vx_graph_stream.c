@@ -335,9 +335,9 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
         if((NULL != trigger_node) &&
            (ownIsValidSpecificReference((vx_reference)trigger_node, (vx_enum)VX_TYPE_NODE)))
         {
-            int i;
+            int32_t i;
 
-            for (i = 0; i < (int)graph->num_nodes; i++)
+            for (i = 0; i < (int32_t)graph->num_nodes; i++)
             {
                 if (graph->nodes[i] == trigger_node)
                 {

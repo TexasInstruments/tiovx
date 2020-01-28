@@ -157,7 +157,7 @@ static vx_status ownInitUserDataObjectObject(
 
     if (type_name != NULL)
     {
-        tivx_obj_desc_strncpy(obj_desc->type_name, (void*)type_name, VX_MAX_REFERENCE_NAME);
+        tivx_obj_desc_strncpy(obj_desc->type_name, (volatile void*)type_name, VX_MAX_REFERENCE_NAME);
     }
 
     obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
@@ -353,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
             case (vx_enum)TIVX_USER_DATA_OBJECT_VALID_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    obj_desc->valid_mem_size = (vx_uint32)*(vx_size *)ptr;
+                    obj_desc->valid_mem_size = (vx_uint32)*(const vx_size *)ptr;
                 }
                 else
                 {

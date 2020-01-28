@@ -295,8 +295,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             {
                 for (j = 0U; j < columns; j ++)
                 {
-                    ref = (((((((float)i - ((float)rows / 2.0f)) + 0.5f) * (((float)i - ((float)rows / 2.0f) ) + 0.5f)) / (((float)rows / 2.0f) * ((float)rows / 2.0f))) +
-                        (((((float)j - ((float)columns / 2.0f)) + 0.5f) * (((float)j - ((float)columns / 2.0f)) + 0.5f)) / (((float)columns / 2.0f) * ((float)columns / 2.0f))))
+                    ref = (((((((vx_float32)i - ((vx_float32)rows / 2.0f)) + 0.5f) * (((vx_float32)i - ((vx_float32)rows / 2.0f) ) + 0.5f)) / (((vx_float32)rows / 2.0f) * ((vx_float32)rows / 2.0f))) +
+                        (((((vx_float32)j - ((vx_float32)columns / 2.0f)) + 0.5f) * (((vx_float32)j - ((vx_float32)columns / 2.0f)) + 0.5f)) / (((vx_float32)columns / 2.0f) * ((vx_float32)columns / 2.0f))))
                         <= 1.0f) ? 255 : 0;
 
                     mask[j + (i * columns)] = (vx_uint8)ref;

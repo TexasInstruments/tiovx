@@ -293,8 +293,8 @@ void tivxGetObjDescList(volatile uint16_t obj_desc_id[],
 
 void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size)
 {
-    volatile uint8_t *d=(uint8_t*)dst;
-    volatile uint8_t *s=(uint8_t*)src;
+    volatile uint8_t *d=(volatile uint8_t*)dst;
+    volatile uint8_t *s=(volatile uint8_t*)src;
     uint32_t i;
 
     for(i=0; i<(size-1U); i++)
@@ -310,8 +310,8 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
 
 void tivx_obj_desc_memcpy(volatile void *dst, volatile void *src, uint32_t size)
 {
-    volatile uint8_t *d=(uint8_t*)dst;
-    volatile uint8_t *s=(uint8_t*)src;
+    volatile uint8_t *d=(volatile uint8_t*)dst;
+    volatile uint8_t *s=(volatile uint8_t*)src;
     uint32_t i;
 
     for(i=0; i<size; i++)
@@ -322,7 +322,7 @@ void tivx_obj_desc_memcpy(volatile void *dst, volatile void *src, uint32_t size)
 
 void tivx_obj_desc_memset(volatile void *dst, uint8_t val, uint32_t size)
 {
-    volatile uint8_t *d=(uint8_t*)dst;
+    volatile uint8_t *d=(volatile uint8_t*)dst;
     uint32_t i;
 
     for(i=0; i<size; i++)
@@ -333,8 +333,8 @@ void tivx_obj_desc_memset(volatile void *dst, uint8_t val, uint32_t size)
 
 int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t size)
 {
-    volatile uint8_t *d=(uint8_t*)dst;
-    volatile uint8_t *s=(uint8_t*)src;
+    volatile uint8_t *d=(volatile uint8_t*)dst;
+    volatile uint8_t *s=(volatile uint8_t*)src;
     uint32_t i;
     int32_t ret = 0;
 

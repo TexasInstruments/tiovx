@@ -135,7 +135,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
             case (vx_enum)VX_KERNEL_LOCAL_DATA_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    kernel->local_data_size = *(vx_size*)ptr;
+                    kernel->local_data_size = *(const vx_size*)ptr;
                 }
                 else
                 {
@@ -146,8 +146,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
             case (vx_enum)VX_KERNEL_PIPEUP_OUTPUT_DEPTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    kernel->num_pipeup_bufs = *(vx_uint32*)ptr;
-                    kernel->pipeup_buf_idx  = *(vx_uint32*)ptr;
+                    kernel->num_pipeup_bufs = *(const vx_uint32*)ptr;
+                    kernel->pipeup_buf_idx  = *(const vx_uint32*)ptr;
                     if (kernel->num_pipeup_bufs > 1U)
                     {
                         kernel->state = (vx_enum)VX_NODE_STATE_PIPEUP;

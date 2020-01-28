@@ -297,7 +297,7 @@ vx_status VX_API_CALL vxAddArrayItems(
     vx_status status = (vx_status)VX_SUCCESS;
     vx_size offset, i;
     vx_uint8 *temp_ptr;
-    vx_uint8 *user_ptr = (vx_uint8 *)ptr;
+    const vx_uint8 *user_ptr = (const vx_uint8 *)ptr;
     tivx_obj_desc_array_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&arr->base, (vx_enum)VX_TYPE_ARRAY) == (vx_bool)vx_true_e)

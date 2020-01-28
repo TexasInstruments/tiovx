@@ -211,7 +211,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
             case (vx_enum)VX_CONVOLUTION_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    vx_uint32 scale = *(vx_uint32 *)ptr;
+                    vx_uint32 scale = *(const vx_uint32 *)ptr;
                     if (vxIsPowerOfTwo(scale) == (vx_bool)vx_true_e)
                     {
                         obj_desc->scale = scale;

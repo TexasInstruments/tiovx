@@ -67,11 +67,11 @@
 #include <test_engine/test_image.h>
 #include <test_engine/test_bmp.h>
 
-static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int dcn);
-static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int bufsize, int dcn);
+static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int32_t dcn);
+static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int32_t bufsize, int32_t dcn);
 static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image);
 
-static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int dcn)
+static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int32_t dcn)
 {
     FILE* f = 0;
     size_t sz;
@@ -107,7 +107,7 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
                 {
                     if( fread(buf, 1, sz, f) == sz )
                     {
-                        image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+                        image = ct_read_bmp((uint8_t*)buf, (int32_t)sz, dcn);
                         returnVal = image;
                     }
                 }
@@ -134,11 +134,11 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
     return returnVal;
 }
 
-static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int bufsize, int dcn)
+static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int32_t bufsize, int32_t dcn)
 {
     CT_Image image = 0;
 
-    image = ct_read_bmp((unsigned char*)buf, bufsize, dcn);
+    image = ct_read_bmp((const uint8_t*)buf, bufsize, dcn);
 
     return image;
 }
@@ -146,7 +146,7 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, in
 static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image)
 {
     char* dotpos;
-    int result = -1;
+    int32_t result = -1;
     size_t size;
     char file[MAXPATHLENGTH];
 
@@ -184,7 +184,7 @@ vx_status tivx_utils_bmp_file_read(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
+    int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 
@@ -244,7 +244,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             void **bmp_file_context)
 {
     CT_Image image = NULL;
-    int dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
+    int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     uint32_t bpp;
     vx_status status;
 

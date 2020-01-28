@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             {
                 kp->x = (int32_t)prms->corners[i] & 0xFFFF;
                 kp->y = (int32_t)(((int32_t)prms->corners[i] & (int32_t)0xFFFF0000U) >> 16);
-                kp->strength = (float)prms->strength[i];
+                kp->strength = (vx_float32)prms->strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;
                 kp->tracking_status = 1;

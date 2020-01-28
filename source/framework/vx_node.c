@@ -1459,7 +1459,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                         }
                         else
                         {
-                            node->local_data_size = *(vx_size*)ptr;
+                            node->local_data_size = *(const vx_size*)ptr;
                         }
                     }
                     else
@@ -1482,7 +1482,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                         }
                         else
                         {
-                            node->local_data_ptr = (void*)(*(uintptr_t*)ptr);
+                            node->local_data_ptr = (void*)(*(const uintptr_t*)ptr);
                         }
                     }
                     else
@@ -1495,7 +1495,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                     {
                         /* set for pipeline index 0, assumed to be called before graph verify */
-                        tivx_obj_desc_memcpy(&node->obj_desc[0]->border_mode, (vx_border_t *)ptr, (uint32_t)sizeof(vx_border_t));
+                        tivx_obj_desc_memcpy(&node->obj_desc[0]->border_mode, (volatile vx_border_t *)ptr, (uint32_t)sizeof(vx_border_t));
                     }
                     else
                     {

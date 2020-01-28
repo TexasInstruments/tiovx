@@ -612,7 +612,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = obj_desc->params.width;
+                    *(volatile vx_uint32 *)ptr = obj_desc->params.width;
                 }
                 else
                 {
@@ -623,7 +623,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = obj_desc->params.height;
+                    *(volatile vx_uint32 *)ptr = obj_desc->params.height;
                 }
                 else
                 {
@@ -634,7 +634,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = obj_desc->params.num_exposures;
+                    *(volatile vx_uint32 *)ptr = obj_desc->params.num_exposures;
                 }
                 else
                 {
@@ -645,7 +645,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED:
                 if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
-                    *(vx_bool *)ptr = obj_desc->params.line_interleaved;
+                    *(volatile vx_bool *)ptr = obj_desc->params.line_interleaved;
                 }
                 else
                 {
@@ -669,7 +669,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE :
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = obj_desc->params.meta_height_before;
+                    *(volatile vx_uint32 *)ptr = obj_desc->params.meta_height_before;
                 }
                 else
                 {
@@ -680,7 +680,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
             case (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER :
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = obj_desc->params.meta_height_after;
+                    *(volatile vx_uint32 *)ptr = obj_desc->params.meta_height_after;
                 }
                 else
                 {
@@ -1159,7 +1159,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 end_addr = host_addr + map_size;
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-                vx_uint64 temp_map_size0 = ((uintptr_t)end_addr - (uintptr_t)host_addr);
+                uintptr_t temp_map_size0 = ((uintptr_t)end_addr - (uintptr_t)host_addr);
                 map_size = (vx_uint32)temp_map_size0;
                 tivxMemBufferMap(map_addr, map_size, mem_type, usage);
 
@@ -1231,7 +1231,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
             end_addr = map_addr + map_size;
             map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
             end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-            vx_uint64 temp_map_size1 = ((uintptr_t)end_addr - (uintptr_t)map_addr);
+            uintptr_t temp_map_size1 = ((uintptr_t)end_addr - (uintptr_t)map_addr);
             map_size = (vx_uint32)temp_map_size1;
 
             tivxMemBufferUnmap(

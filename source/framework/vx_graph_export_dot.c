@@ -82,7 +82,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 static void getNodeColor(vx_node node, char *node_color_name);
-static int exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename);
+static int32_t exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename);
 #ifndef PC
 static void exportTargetLegend(FILE *fp, vx_graph graph);
 #endif
@@ -245,7 +245,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
         }
-	else
+    else
         if(strncmp(target_name, "VENC1", TIVX_TARGET_MAX_NAME) == 0)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "Sienna");
@@ -262,9 +262,9 @@ static void getNodeColor(vx_node node, char *node_color_name)
     }
 }
 
-static int exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename)
+static int32_t exportAsJpg(const char *output_file_path, const char *output_file_prefix, const char *out_file_id_str, const char *in_filename)
 {
-    int status = 0;
+    int32_t status = 0;
     #if TIVX_EXPORT_GRAPH_AS_JPG
     char command[4096];
 

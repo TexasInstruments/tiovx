@@ -133,7 +133,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         tivxInitBufParams(src, &vxlib_src);
 
         status = (vx_status)VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
-            (float*)&sc[0U]->data.f32, (float*)&sc[1U]->data.f32, &pixelsProcessed,
+            (vx_float32*)&sc[0U]->data.f32, (vx_float32*)&sc[1U]->data.f32, &pixelsProcessed,
             &currentSum, &currentSqSum);
 
         if (status != (vx_status)VXLIB_SUCCESS)

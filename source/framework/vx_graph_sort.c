@@ -253,7 +253,7 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
 
         for(cur_node_idx=0; cur_node_idx<num_nodes; cur_node_idx++)
         {
-            cur_node = (vx_node)nodes[cur_node_idx];
+            cur_node = nodes[cur_node_idx];
 
             if((cur_node->super_node != NULL) && (cur_node->is_super_node == (vx_bool)vx_false_e))
             {

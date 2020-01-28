@@ -211,11 +211,11 @@ static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, c
     *tensor_pos = 0;
     *patch_pos = 0;
     vx_size index_leftover = index;
-    int divisor = 1;
+    int32_t divisor = 1;
     vx_size i;
     for (i = 0; i < number_of_dimensions; i++)
     {
-        divisor = (int)end[i] - (int)start[i];
+        divisor = (int32_t)end[i] - (int32_t)start[i];
         vx_size curr_dim_index = (vx_size)index_leftover%(vx_size)divisor;
         *tensor_pos += tensor_stride[i] * (curr_dim_index + start[i]);
         *patch_pos += patch_stride[i] * curr_dim_index ;
@@ -340,11 +340,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
             case (vx_enum)VX_TENSOR_DIMS:
                 if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3U) == 0U))
                 {
-                    int i;
+                    int32_t i;
                     vx_size *p = ptr;
 
                     /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
-                    for(i=0; i<(int)obj_desc->number_of_dimensions; i++)
+                    for(i=0; i<(int32_t)obj_desc->number_of_dimensions; i++)
                     {
                         p[i] = obj_desc->dimensions[i];
                     }
@@ -431,7 +431,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
             case (vx_enum)VX_TENSOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
                 {
-                    obj_desc->fixed_point_position = (vx_uint32)*(vx_int8 *)ptr;
+                    obj_desc->fixed_point_position = (vx_uint32)*(const vx_int8 *)ptr;
                 }
                 else
                 {
@@ -442,7 +442,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
             case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
-                    obj_desc->scaling_divisor = *(vx_uint8 *)ptr;
+                    obj_desc->scaling_divisor = *(const vx_uint8 *)ptr;
                 }
                 else
                 {
@@ -453,7 +453,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
             case (vx_enum)TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
                 {
-                    obj_desc->scaling_divisor_fixed_point_position = *(vx_uint8 *)ptr;
+                    obj_desc->scaling_divisor_fixed_point_position = *(const vx_uint8 *)ptr;
                 }
                 else
                 {

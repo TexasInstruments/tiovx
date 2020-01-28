@@ -113,24 +113,24 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
         obj_desc = (tivx_obj_desc_scalar_t *)scalar->base.obj_desc;
         switch (obj_desc->data_type)
         {
-            case (vx_enum)VX_TYPE_CHAR:     obj_desc->data.chr = *(vx_char*)user_ptr; break;
-            case (vx_enum)VX_TYPE_INT8:     obj_desc->data.s08 = *(vx_int8*)user_ptr; break;
-            case (vx_enum)VX_TYPE_UINT8:    obj_desc->data.u08 = *(vx_uint8*)user_ptr; break;
-            case (vx_enum)VX_TYPE_INT16:    obj_desc->data.s16 = *(vx_int16*)user_ptr; break;
-            case (vx_enum)VX_TYPE_UINT16:   obj_desc->data.u16 = *(vx_uint16*)user_ptr; break;
-            case (vx_enum)VX_TYPE_INT32:    obj_desc->data.s32 = *(vx_int32*)user_ptr; break;
-            case (vx_enum)VX_TYPE_UINT32:   obj_desc->data.u32 = *(vx_uint32*)user_ptr; break;
-            case (vx_enum)VX_TYPE_INT64:    obj_desc->data.s64 = *(vx_int64*)user_ptr; break;
-            case (vx_enum)VX_TYPE_UINT64:   obj_desc->data.u64 = *(vx_uint64*)user_ptr; break;
+            case (vx_enum)VX_TYPE_CHAR:     obj_desc->data.chr = *(const vx_char*)user_ptr; break;
+            case (vx_enum)VX_TYPE_INT8:     obj_desc->data.s08 = *(const vx_int8*)user_ptr; break;
+            case (vx_enum)VX_TYPE_UINT8:    obj_desc->data.u08 = *(const vx_uint8*)user_ptr; break;
+            case (vx_enum)VX_TYPE_INT16:    obj_desc->data.s16 = *(const vx_int16*)user_ptr; break;
+            case (vx_enum)VX_TYPE_UINT16:   obj_desc->data.u16 = *(const vx_uint16*)user_ptr; break;
+            case (vx_enum)VX_TYPE_INT32:    obj_desc->data.s32 = *(const vx_int32*)user_ptr; break;
+            case (vx_enum)VX_TYPE_UINT32:   obj_desc->data.u32 = *(const vx_uint32*)user_ptr; break;
+            case (vx_enum)VX_TYPE_INT64:    obj_desc->data.s64 = *(const vx_int64*)user_ptr; break;
+            case (vx_enum)VX_TYPE_UINT64:   obj_desc->data.u64 = *(const vx_uint64*)user_ptr; break;
         #ifdef OVX_SUPPORT_HALF_FLOAT
-            case (vx_enum)VX_TYPE_FLOAT16:  obj_desc->data.f16 = *(vx_float16*)user_ptr; break;
+            case (vx_enum)VX_TYPE_FLOAT16:  obj_desc->data.f16 = *(const vx_float16*)user_ptr; break;
         #endif
-            case (vx_enum)VX_TYPE_FLOAT32:  obj_desc->data.f32 = *(vx_float32*)user_ptr; break;
-            case (vx_enum)VX_TYPE_FLOAT64:  obj_desc->data.f64 = *(vx_float64*)user_ptr; break;
-            case (vx_enum)VX_TYPE_DF_IMAGE: obj_desc->data.fcc = *(vx_df_image*)user_ptr; break;
-            case (vx_enum)VX_TYPE_ENUM:     obj_desc->data.enm = *(vx_enum*)user_ptr; break;
-            case (vx_enum)VX_TYPE_SIZE:     obj_desc->data.size = *(vx_size*)user_ptr; break;
-            case (vx_enum)VX_TYPE_BOOL:     obj_desc->data.boolean = *(vx_bool*)user_ptr; break;
+            case (vx_enum)VX_TYPE_FLOAT32:  obj_desc->data.f32 = *(const vx_float32*)user_ptr; break;
+            case (vx_enum)VX_TYPE_FLOAT64:  obj_desc->data.f64 = *(const vx_float64*)user_ptr; break;
+            case (vx_enum)VX_TYPE_DF_IMAGE: obj_desc->data.fcc = *(const vx_df_image*)user_ptr; break;
+            case (vx_enum)VX_TYPE_ENUM:     obj_desc->data.enm = *(const vx_enum*)user_ptr; break;
+            case (vx_enum)VX_TYPE_SIZE:     obj_desc->data.size = *(const vx_size*)user_ptr; break;
+            case (vx_enum)VX_TYPE_BOOL:     obj_desc->data.boolean = *(const vx_bool*)user_ptr; break;
 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: data type is not supported\n");

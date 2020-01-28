@@ -220,7 +220,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U) &&
                     (obj_desc->type == (vx_enum)VX_THRESHOLD_TYPE_BINARY))
                 {
-                    obj_desc->value = *(vx_int32 *)ptr;
+                    obj_desc->value = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -232,7 +232,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U) &&
                     (obj_desc->type == (vx_enum)VX_THRESHOLD_TYPE_RANGE))
                 {
-                    obj_desc->lower = *(vx_int32 *)ptr;
+                    obj_desc->lower = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -244,7 +244,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U) &&
                     (obj_desc->type == (vx_enum)VX_THRESHOLD_TYPE_RANGE))
                 {
-                    obj_desc->upper = *(vx_int32 *)ptr;
+                    obj_desc->upper = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -255,7 +255,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
             case (vx_enum)VX_THRESHOLD_TRUE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
-                    obj_desc->true_value = *(vx_int32 *)ptr;
+                    obj_desc->true_value = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -266,7 +266,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
             case (vx_enum)VX_THRESHOLD_FALSE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
-                    obj_desc->false_value = *(vx_int32 *)ptr;
+                    obj_desc->false_value = *(const vx_int32 *)ptr;
                 }
                 else
                 {
@@ -277,7 +277,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
             case (vx_enum)VX_THRESHOLD_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    vx_enum type = *(vx_enum *)ptr;
+                    vx_enum type = *(const vx_enum *)ptr;
                     if (((vx_enum)VX_THRESHOLD_TYPE_BINARY == type) ||
                         ((vx_enum)VX_THRESHOLD_TYPE_RANGE == type))
                     {
