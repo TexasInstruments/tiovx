@@ -157,6 +157,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
 static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
 static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
+static void tivxVpacMscPmdMaskLSBs(uint16_t *ptr16, uint32_t w, uint32_t h);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -501,6 +502,15 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 prms->config.settings.G_inHeight[0u] = ih;
 
                 src_ptr = prms->dst16[in_idx];
+
+                /* Intermediate buffer between levels is 12 bit.  If output
+                 * is 8 bit, then 4 LSBs should be set to 0 before processing
+                 * next level */
+                if (((vx_df_image)VX_DF_IMAGE_U8 == out_img_desc->format) ||
+                    ((vx_df_image)VX_DF_IMAGE_NV12 == out_img_desc->format))
+                {
+                    tivxVpacMscPmdMaskLSBs(src_ptr, iw, ih);
+                }
             }
 
             out_img_idx = ss_info->out_start_idx;
@@ -1095,5 +1105,19 @@ static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_tar
     {
         prms->unitParams[0].sp_hs_coef_sel = 0;
         prms->unitParams[0].sp_vs_coef_sel = 0;
+    }
+}
+
+static void tivxVpacMscPmdMaskLSBs(uint16_t *ptr16, uint32_t w, uint32_t h)
+{
+    uint32_t i, j;
+
+    for(j = 0; j < h; j++)
+    {
+        for(i=0; i < w; i++)
+        {
+            /* Mask lower 4 bits */
+            ptr16[(j*w)+i] &= 0xFF0;
+        }
     }
 }

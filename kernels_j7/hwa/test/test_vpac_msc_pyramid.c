@@ -24,6 +24,8 @@
 #include <string.h>
 #include <math.h>
 #include "test_hwa_common.h"
+#include "tivx_utils_checksum.h"
+#include "tivx_utils_file_rd_wr.h"
 
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
 #define CHECK_OUTPUT
@@ -31,7 +33,7 @@
 TESTCASE(tivxHwaVpacMscPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
 
-TEST(tivxHwaVpacMscPyramid, testVpacMscPyramidNodeCreation)
+TEST(tivxHwaVpacMscPyramid, testNodeCreation)
 {
     vx_context context = context_->vx_context_;
     vx_image input = 0;
@@ -561,7 +563,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET_MODIFIED, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
 
-TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
+TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -628,9 +630,125 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
     }
 }
 
+static vx_status save_image_from_msc(vx_image y8, char *filename_prefix)
+{
+    char filename[MAXPATHLENGTH];
+    vx_status status;
+
+    snprintf(filename, MAXPATHLENGTH, "%s/%s.bmp",
+        ct_get_test_file_path(), filename_prefix);
+
+    status = tivx_utils_save_vximage_to_bmpfile(filename, y8);
+
+    return status;
+}
+
+static uint32_t expected_cksm[] = {
+    0xb7fe2010,
+    0x6d1f12be,
+    0xca0d7926,
+    0x681a4134,
+    0xb94a2c2d
+};
+
+#define PARAMETERS_CKSUM \
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
+
+TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
+    PARAMETERS_CKSUM
+)
+{
+    vx_size levels;
+
+    vx_context context = context_->vx_context_;
+    vx_image input_image = 0;
+    vx_pyramid pyr = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_uint32 width, height, level;
+    vx_reference refs[1];
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    {
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        ASSERT(arg_->scale < 1.0);
+
+        ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+        ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+        width = (vx_uint32)((vx_float32)input->width * arg_->scale);
+        height = (vx_uint32)((vx_float32)input->height * arg_->scale);
+        levels = gaussian_pyramid_calc_max_levels_count(width, height, arg_->scale);
+
+        ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxVpacMscPyramidNode(graph, input_image, pyr), VX_TYPE_NODE);
+
+        if (border.mode != VX_BORDER_UNDEFINED)
+        {
+            VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+        }
+
+        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        VX_CALL(vxProcessGraph(graph));
+
+        #ifdef CHECK_OUTPUT
+        CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
+        #endif
+
+        for(level = 0; level < levels; level++)
+        {
+            vx_image dst_image = vxGetPyramidLevel(pyr, level);
+            vx_uint32 w, h;
+            vx_rectangle_t rect;
+            vx_uint32 checksum_actual = 0;
+            vx_char temp[256];
+
+            vxQueryImage(dst_image, VX_IMAGE_WIDTH, &w, sizeof(w));
+            vxQueryImage(dst_image, VX_IMAGE_HEIGHT, &h, sizeof(h));
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = w;
+            rect.end_y = h;
+
+            checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
+            //printf("0x%08x\n", checksum_actual);
+            //sprintf(temp, "output/lena_msc_%d", level);
+            //save_image_from_msc(dst_image, temp);
+
+            ASSERT(expected_cksm[level] == checksum_actual);
+            vxReleaseImage(&dst_image);
+        }
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleasePyramid(&pyr));
+        VX_CALL(vxReleaseImage(&input_image));
+        ASSERT(pyr == 0);
+        ASSERT(input_image == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
 TESTCASE_TESTS(tivxHwaVpacMscPyramid,
-        testVpacMscPyramidNodeCreation,
-        testVpacMscPyramidGraphProcessing)
+        testNodeCreation,
+        testGraphProcessing,
+        testGraphProcessingChecksum)
 
 
 

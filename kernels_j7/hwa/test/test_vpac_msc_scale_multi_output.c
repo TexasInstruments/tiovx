@@ -865,7 +865,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern
 
         //ASSERT(arg_->checksum == checksum_actual);
 
-        save_image_from_msc(dst_image, "output/lena_msc");
+        //save_image_from_msc(dst_image, "output/lena_msc");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -885,7 +885,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern
 
 
 #define SCALE_TEST_ONE_OUTPUT(interpolation, inputDataGenerator, inputDataFile, scale, crop_mode, checksum, nextmacro, ...) \
-    CT_EXPAND(nextmacro(STR_##interpolation "/" inputDataFile "/" #scale, __VA_ARGS__, \
+    CT_EXPAND(nextmacro(STR_##interpolation "/" inputDataFile "/" #scale "/crop=" #crop_mode, __VA_ARGS__, \
             interpolation, inputDataGenerator, inputDataFile, dst_size_generator_ ## scale, crop_mode, checksum))
 
 #define ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY(testArgName, nextmacro, ...) \
@@ -1097,7 +1097,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
 
         ASSERT(arg_->checksum == checksum_actual);
 
-        save_image_from_msc(dst_image, "output/lena_msc");
+        //save_image_from_msc(dst_image, "output/lena_msc");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
