@@ -263,24 +263,25 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                                     VX_NOGAP_X
                                     ));
 
-        in_fp = fopen(input_file, "r");
-        num_read = 0;
-        if (NULL != in_fp)
-        {
-            seek_status = fseek(in_fp, seek[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
-
-            if (0 == seek_status)
+            in_fp = fopen(input_file, "r");
+            num_read = 0;
+            if (NULL != in_fp)
             {
-                for(j = 0; j < (height ); j++)
-                {
-                    num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), width, in_fp);
-                }
+                seek_status = fseek(in_fp, seek[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
 
-                for(j = 0; j < (height / 2); j++)
+                if (0 == seek_status)
                 {
-                    num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), width, in_fp);
-                }
+                    for(j = 0; j < (height ); j++)
+                    {
+                        num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), width, in_fp);
+                    }
 
+                    for(j = 0; j < (height / 2); j++)
+                    {
+                        num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), width, in_fp);
+                    }
+
+                }
                 fclose(in_fp);
                 in_fp = NULL;
                 if (((width * height * 3) / 2)!= num_read)
@@ -288,51 +289,50 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file);
                 }
             }
-        }
 
-        VX_CALL(vxUnmapImagePatch(input_image, map_id_image_y));
-        VX_CALL(vxUnmapImagePatch(input_image, map_id_image_uv));
+            VX_CALL(vxUnmapImagePatch(input_image, map_id_image_y));
+            VX_CALL(vxUnmapImagePatch(input_image, map_id_image_uv));
 
-        VX_CALL(vxProcessGraph(graph));
+            VX_CALL(vxProcessGraph(graph));
 
-        VX_CALL(vxQueryUserDataObject(bitstream_obj, TIVX_USER_DATA_OBJECT_VALID_SIZE, &bitstream_size, sizeof(vx_size)));
+            VX_CALL(vxQueryUserDataObject(bitstream_obj, TIVX_USER_DATA_OBJECT_VALID_SIZE, &bitstream_size, sizeof(vx_size)));
 
-        VX_CALL(vxMapUserDataObject(bitstream_obj, 0, bitstream_size, &map_id, (void*) &bitstream, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+            VX_CALL(vxMapUserDataObject(bitstream_obj, 0, bitstream_size, &map_id, (void*) &bitstream, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
-        out_fp = fopen(output_file, "ab");
-        if (NULL != out_fp)
-        {
-            num_read = fwrite(bitstream, sizeof(uint8_t), bitstream_size, out_fp);
-            fclose(out_fp);
-            out_fp = NULL;
-            if (bitstream_size != num_read)
+            out_fp = fopen(output_file, "ab");
+            if (NULL != out_fp)
             {
-                VX_PRINT(VX_ZONE_ERROR, "%s: Wrote less than expected (%d < %d)!!!\n", output_file, (uint32_t)num_read, (uint32_t)bitstream_size);
-                ASSERT(bitstream_size == num_read);
+                num_read = fwrite(bitstream, sizeof(uint8_t), bitstream_size, out_fp);
+                fclose(out_fp);
+                out_fp = NULL;
+                if (bitstream_size != num_read)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "%s: Wrote less than expected (%d < %d)!!!\n", output_file, (uint32_t)num_read, (uint32_t)bitstream_size);
+                    ASSERT(bitstream_size == num_read);
+                }
             }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "%s: Output file not found!!!\n", output_file);
+                ASSERT(NULL != out_fp);
+            }
+
+            VX_CALL(vxUnmapUserDataObject(bitstream_obj, map_id));
         }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "%s: Output file not found!!!\n", output_file);
-            ASSERT(NULL != out_fp);
-        }
 
-        VX_CALL(vxUnmapUserDataObject(bitstream_obj, map_id));
-    }
+        VX_CALL(vxReleaseNode(&node_encode));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseUserDataObject(&bitstream_obj));
+        VX_CALL(vxReleaseImage(&input_image));
+        VX_CALL(vxReleaseUserDataObject(&configuration_obj));
 
-    VX_CALL(vxReleaseNode(&node_encode));
-    VX_CALL(vxReleaseGraph(&graph));
-    VX_CALL(vxReleaseUserDataObject(&bitstream_obj));
-    VX_CALL(vxReleaseImage(&input_image));
-    VX_CALL(vxReleaseUserDataObject(&configuration_obj));
+        ASSERT(node_encode == 0);
+        ASSERT(graph == 0);
+        ASSERT(bitstream_obj == 0);
+        ASSERT(input_image == 0);
+        ASSERT(configuration_obj == 0);
 
-    ASSERT(node_encode == 0);
-    ASSERT(graph == 0);
-    ASSERT(bitstream_obj == 0);
-    ASSERT(input_image == 0);
-    ASSERT(configuration_obj == 0);
-
-    tivxHwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 
@@ -544,7 +544,6 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
             num_read = 0;
             if (NULL != in_fp_s)
             {
-
                 seek_status = fseek(in_fp_s, seek_s[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
 
                 if (0 == seek_status)
@@ -557,13 +556,13 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                     {
                     num_read  += fread(data_ptr_s_uv + (j * image_addr_s_uv.stride_y), sizeof(uint8_t), width_s, in_fp_s);
                     }
+                }
 
-                    fclose(in_fp_s);
-                    in_fp_s = NULL;
-                    if (((width_s * height_s * 3) / 2)!= num_read)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
-                    }
+                fclose(in_fp_s);
+                in_fp_s = NULL;
+                if (((width_s * height_s * 3) / 2)!= num_read)
+                {
+                    VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
                 }
             }
 
@@ -584,12 +583,13 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                     {
                         num_read  += fread(data_ptr_l_uv + (j * image_addr_l_uv.stride_y), sizeof(uint8_t), width_l, in_fp_l);
                     }
-                    fclose(in_fp_l);
-                    in_fp_l = NULL;
-                    if (((width_l * height_l * 3) / 2)!= num_read)
-                    {
-                        VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
-                    }
+                }
+
+                fclose(in_fp_l);
+                in_fp_l = NULL;
+                if (((width_l * height_l * 3) / 2)!= num_read)
+                {
+                    VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
                 }
             }
 
