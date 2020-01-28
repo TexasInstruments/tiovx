@@ -205,7 +205,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data);
+vx_status tivxQueuePeek(const tivx_queue *queue, uintptr_t *data);
 
 /*!
  * \brief Check if queue is empty
@@ -216,7 +216,7 @@ vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data);
  *
  * \ingroup group_tivx_queue
  */
-vx_bool tivxQueueIsEmpty(tivx_queue *queue);
+vx_bool tivxQueueIsEmpty(const tivx_queue *queue);
 
 #ifdef __cplusplus
 }

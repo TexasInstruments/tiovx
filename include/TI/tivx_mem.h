@@ -285,7 +285,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region);
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr);
+void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr);
 
 /*!
  * \brief Convert shared pointer to system physical memory location

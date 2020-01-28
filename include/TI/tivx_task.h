@@ -149,7 +149,7 @@ typedef struct _tivx_task_t
 
     /*! \brief private app object */
     void *app_var;
-    
+
     /*! \brief Task name */
     char  task_name[TIVX_MAX_TASK_NAME];
 } tivx_task;
@@ -218,7 +218,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params);
  *
  * \ingroup group_tivx_task
  */
-vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params);
+vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *params);
 
 /*!
  * \brief Delete a task

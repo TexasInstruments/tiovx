@@ -109,7 +109,7 @@ static void *tivxTaskMain(void *arg)
     return NULL;
 }
 
-vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
+vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -144,13 +144,13 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
                 {
                     struct sched_param schedprm;
                     uint32_t pri;
-    
+
                     if(task->stack_size>0)
                     {
                         status |= pthread_attr_setstacksize(&thread_attr, task->stack_size);
                     }
                     status |= pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
-    
+
                     pri = PRI_MIN;
                     if(task->priority==TIVX_TASK_PRI_HIGHEST)
                     {
@@ -161,7 +161,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
                     {
                         pri = PRI_MIN;
                     }
-    
+
                     schedprm.sched_priority = pri;
                     status |= pthread_attr_setschedparam(&thread_attr, &schedprm);
                 }
