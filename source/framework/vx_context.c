@@ -1094,7 +1094,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
         (size != 0U))
     {
-        ownContextLock(context);
+        (void)ownContextLock(context);
 
         for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
         {
@@ -1113,7 +1113,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
             VX_PRINT(VX_ZONE_WARNING, "vxRegisterUserStruct: May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/TI/tivx_config.h\n");
         }
 
-        ownContextUnlock(context);
+        (void)ownContextUnlock(context);
     }
     return type;
 }
@@ -1123,16 +1123,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != pKernelEnumId))
     {
-        ownContextLock(context);
+        (void)ownContextLock(context);
 
         status = (vx_status)VX_ERROR_NO_RESOURCES;
         if((int32_t)context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
-            *pKernelEnumId = VX_KERNEL_BASE((vx_enum)VX_ID_USER,(int32_t)0) + (int32_t)context->next_dynamic_user_kernel_id++;
+            *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)context->next_dynamic_user_kernel_id++;
             status = (vx_status)VX_SUCCESS;
         }
 
-        ownContextUnlock(context);
+        (void)ownContextUnlock(context);
     }
     return status;
 }
@@ -1215,7 +1215,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL))
+            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
                 )
@@ -1254,7 +1254,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
         {
             kernel = context->kerneltable[idx];
             if((NULL != kernel) &&
-               (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL))
+               (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
                 &&
                 ( kernel->enumeration == kernelenum )
                 )

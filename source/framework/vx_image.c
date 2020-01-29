@@ -134,11 +134,11 @@ static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_ima
 {
     vx_bool is_valid = (vx_bool)vx_true_e;
 
-    if ((ownIsOdd(width)) && ( (color == (vx_df_image)VX_DF_IMAGE_UYVY) || (color == (vx_df_image)VX_DF_IMAGE_YUYV)))
+    if ((ownIsOdd(width) != (vx_bool)vx_false_e) && ( (color == (vx_df_image)VX_DF_IMAGE_UYVY) || (color == (vx_df_image)VX_DF_IMAGE_YUYV)))
     {
         is_valid = (vx_bool)vx_false_e;
     }
-    else if (((ownIsOdd(width)) || (ownIsOdd(height))) &&
+    else if (((ownIsOdd(width) != (vx_bool)vx_false_e) || (ownIsOdd(height) != (vx_bool)vx_false_e)) &&
               ((color == (vx_df_image)VX_DF_IMAGE_IYUV) || (color == (vx_df_image)VX_DF_IMAGE_NV12) || (color == (vx_df_image)VX_DF_IMAGE_NV21)))
     {
         is_valid = (vx_bool)vx_false_e;
@@ -2147,7 +2147,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
                     if (new_ptrs == NULL)
                     {
-                        status = vxSwapImageHandle(subimage, NULL, NULL, si_obj_desc->planes);
+                        status = vxSwapImageHandle(subimage, (void**)NULL, (void**)NULL, si_obj_desc->planes);
                     }
                     else
                     {
@@ -2160,14 +2160,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                                 ptrs[p] = (vx_uint8*)new_ptrs[p] + subimage->mem_offset[p];
                             }
 
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, si_obj_desc->planes);
+                            status = vxSwapImageHandle(subimage, (void**)ptrs, (void**)NULL, si_obj_desc->planes);
                         }
                         else
                         if((vx_enum)si_obj_desc->create_type==(vx_enum)TIVX_IMAGE_FROM_CHANNEL)
                         {
                             ptrs[0] = new_ptrs[subimage->channel_plane];
 
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, si_obj_desc->planes);
+                            status = vxSwapImageHandle(subimage, (void**)ptrs, (void**)NULL, si_obj_desc->planes);
                         }
                         else
                         {

@@ -60,6 +60,9 @@
  *
  */
 
+#ifndef TIVX_CORE_HOST_PRIV_H_
+#define TIVX_CORE_HOST_PRIV_H_
+
 #include <TI/tivx.h>
 
 vx_status tivxAddKernelAbsdiff(vx_context context);
@@ -154,3 +157,4 @@ vx_status tivxRemoveKernelWarpPerspective(vx_context context);
 vx_status tivxRemoveKernelXor(vx_context context);
 vx_status tivxRemoveKernelSuperNode(vx_context context);
 
+#endif /* TIVX_CORE_HOST_PRIV_H_ */

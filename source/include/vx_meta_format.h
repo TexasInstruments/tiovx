@@ -61,7 +61,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about image
                 used when type is set to VX_TYPE_IMAGE */
-    struct image {
+    struct {
         /*!< \brief The width of the image in pixels */
         vx_uint32 width;
         /*!< \brief The height of the image in pixels */
@@ -72,7 +72,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about pyramid
                 used when type is set to VX_TYPE_PYRAMID */
-    struct pyramid {
+    struct {
         /*!< \brief The width of the 0th image in pixels. */
         vx_uint32 width;
         /*!< \brief The height of the 0th image in pixels. */
@@ -87,14 +87,14 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about scalar
                 used when type is set to VX_TYPE_SCALAR */
-    struct scalar {
+    struct {
         /*!< \brief The type of the scalar */
         vx_enum type;
     } sc;
 
     /*!< \brief structure containing information about array
                 used when type is set to VX_TYPE_ARRAY */
-    struct array {
+    struct {
         /*!< \brief The type of the Array items */
         vx_enum item_type;
         /*!< \brief The capacity of the Array */
@@ -103,7 +103,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about matrix
                 used when type is set to VX_TYPE_MATRIX */
-    struct matrix {
+    struct {
         /*! The value type of the matrix */
         vx_enum type;
         /*! The M dimension of the matrix */
@@ -114,7 +114,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about distribution
                 used when type is set to VX_TYPE_DISTRIBUTION */
-    struct distribution {
+    struct {
         /*! Indicates the number of bins. */
         vx_size bins;
         /*! Indicates the start of the values to use (inclusive). */
@@ -125,7 +125,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about remap
                 used when type is set to VX_TYPE_REMAP */
-    struct _remap {
+    struct {
         /*! The source width */
         vx_uint32 src_width;
         /*! The source height */
@@ -138,7 +138,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about lut
                 used when type is set to VX_TYPE_LUT */
-    struct _lut {
+    struct {
         /*! Indicates the value type of the LUT. */
         vx_enum type;
         /*! Indicates the number of elements in the LUT */
@@ -147,14 +147,14 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about threshold
                 used when type is set to VX_TYPE_THRESHOLD */
-    struct threshold {
+    struct {
         /*! The value type of the threshold */
         vx_enum type;
     } thres;
 
     /*!< \brief structure containing information about object array
                 used when type is set to VX_TYPE_OBJECT_ARRAY */
-    struct object_array {
+    struct {
         /*! The type of the ObjectArray items */
         vx_enum item_type;
         /*! The number of items in the ObjectArray */
@@ -163,7 +163,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about tensor
                 used when type is set to VX_TYPE_TENSOR */
-    struct _tensor {
+    struct {
         /*! \brief The number of dimensions in the tensor */
         vx_size number_of_dimensions;
         /*! \brief The size of all dimensions */
@@ -176,7 +176,7 @@ typedef struct _vx_meta_format
 
     /*!< \brief structure containing information about user data object
                 used when type is set to VX_TYPE_USER_DATA_OBJECT */
-    struct _user_data_object {
+    struct {
         /*!< \brief The type name of the user data object. */
         vx_char type_name[VX_MAX_REFERENCE_NAME];
         /*!< \brief The size in bytes of the user data object */

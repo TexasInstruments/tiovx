@@ -508,14 +508,14 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
  * the base value of the enumeration.
  * \ingroup group_basic_features
  */
-#define VX_ATTRIBUTE_BASE(vendor, object)   (((vendor) << 20) | (object << 8))
+#define VX_ATTRIBUTE_BASE(vendor, object)   ((vx_int32)((((vx_uint32)vendor) << 20) | ((vx_uint32)object << 8)))
 
 /*! \def VX_KERNEL_BASE
  * \brief Defines the manner in which to combine the Vendor and Library IDs to get
  * the base value of the enumeration.
  * \ingroup group_basic_features
  */
-#define VX_KERNEL_BASE(vendor, lib)         (((vendor) << 20) | (lib << 12))
+#define VX_KERNEL_BASE(vendor, lib)         ((vx_int32)((((vx_uint32)vendor) << 20) | ((vx_uint32)lib << 12)))
 
 /*! \def VX_ENUM_BASE
  * \brief Defines the manner in which to combine the Vendor and Object IDs to get
@@ -525,7 +525,7 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
  * <tt>\ref vx_vendor_id_e</tt>, <tt>\ref vx_type_e</tt>, <tt>\ref vx_enum_e</tt>, <tt>\ref vx_df_image_e</tt>, and \c vx_bool.
  * \ingroup group_basic_features
  */
-#define VX_ENUM_BASE(vendor, id)            (((vendor) << 20) | (id << 12))
+#define VX_ENUM_BASE(vendor, id)            ((vx_int32)((((vx_uint32)vendor) << 20) | ((vx_uint32)id << 12)))
 
 /*! \brief The set of supported enumerations in OpenVX.
  * \details These can be extracted from enumerated values using <tt>\ref VX_ENUM_TYPE</tt>.

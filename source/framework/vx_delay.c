@@ -363,7 +363,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
     {
         if (count <= TIVX_DELAY_MAX_OBJECT)
         {
-            if ((ownIsValidReference(exemplar)) && (ownIsValidObject(exemplar->type)) )
+            if ((ownIsValidReference(exemplar) != (vx_bool)vx_false_e) && (ownIsValidObject(exemplar->type) != (vx_bool)vx_false_e))
             {
                 delay = (vx_delay)ownCreateReference(
                                         context, (vx_enum)VX_TYPE_DELAY, (vx_enum)VX_EXTERNAL, &context->base);

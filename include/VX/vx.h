@@ -64,12 +64,12 @@
 /*! Defines the major version number macro.
  * \ingroup group_basic_features
  */
-#define VX_VERSION_MAJOR(x) ((int32_t)(x & 0xFF) << 8)
+#define VX_VERSION_MAJOR(x) ((uint32_t)((uint32_t)x & 0xFFU) << 8)
 
 /*! Defines the minor version number macro.
  * \ingroup group_basic_features
  */
-#define VX_VERSION_MINOR(x) ((x & 0xFF) << 0)
+#define VX_VERSION_MINOR(x) ((uint32_t)((uint32_t)x & 0xFFU) << 0)
 
 /*! \brief Defines the predefined version number for 1.0 and 1.1.
  * \ingroup group_basic_features

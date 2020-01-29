@@ -223,11 +223,11 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
     {
         if (NULL != metas[i])
         {
-            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_FORMAT, &fmt,
+            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_FORMAT, &fmt,
                 sizeof(fmt));
-            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_WIDTH, &width,
+            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_WIDTH, &width,
                 sizeof(width));
-            vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_HEIGHT, &height,
+            (void)vxSetMetaFormatAttribute(metas[i], (vx_enum)VX_IMAGE_HEIGHT, &height,
                 sizeof(height));
         }
     }

@@ -67,7 +67,7 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
 
-typedef struct IM_Fxns
+typedef struct
 {
     IVISION_Fxns * fxns;
 }IM_Fxns;

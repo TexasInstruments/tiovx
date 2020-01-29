@@ -78,7 +78,7 @@ static vx_status VX_CALLBACK tivxChannelExtract(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static vx_status tivxChannelExtractRgbRgbxInput(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
@@ -92,26 +92,26 @@ static vx_status VX_CALLBACK tivxChannelExtractDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static vx_status tivxChannelExtractIyuvYuv4Input(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
             const VXLIB_bufParams2D_t *vxlib_dst);
 static vx_status tivxChannelExtractNv12Nv21Input(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
             const VXLIB_bufParams2D_t *vxlib_dst);
 static vx_status tivxChannelExtractYuyvUyvyInput(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
             const VXLIB_bufParams2D_t *vxlib_dst);
 
 static vx_status tivxChannelExtractRgbRgbxInput(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
@@ -195,7 +195,7 @@ static vx_status tivxChannelExtractRgbRgbxInput(
 }
 
 static vx_status tivxChannelExtractYuyvUyvyInput(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
@@ -278,7 +278,7 @@ static vx_status tivxChannelExtractYuyvUyvyInput(
 }
 
 static vx_status tivxChannelExtractNv12Nv21Input(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
@@ -383,7 +383,7 @@ static vx_status tivxChannelExtractNv12Nv21Input(
 }
 
 static vx_status tivxChannelExtractIyuvYuv4Input(
-            tivx_obj_desc_image_t *in_desc,
+            const tivx_obj_desc_image_t *in_desc,
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
