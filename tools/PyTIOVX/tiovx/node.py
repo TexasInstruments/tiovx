@@ -1403,7 +1403,7 @@ class NodeOpticalFlowPyrLK (Node) :
     # \param pyr_in2                 [in] Second input pyramid
     # \param array_in3               [in] First input points array
     # \param array_in4               [in] Second input points array
-    # \param array_out5              [in] Output points array
+    # \param array_out5              [out] Output points array
     # \param termination6            [in] Input scalar termination value
     # \param epsilon7                [in] Input scalar epsilon value
     # \param num_iters8              [in] Number of iterations scalar input
@@ -1417,7 +1417,7 @@ class NodeOpticalFlowPyrLK (Node) :
         num_iters8 = Scalar(Type.UINT32, num_iters8)
         use_initial_estimate9 = Scalar(Type.BOOL, use_initial_estimate9)
         scalar10 = Scalar(Type.SIZE, window_dim10)
-        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, array_in5, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10)
+        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, array_out5, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10)
         self.setParams(9, 1, Type.PYRAMID, Type.PYRAMID, Type.ARRAY, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_OPTICAL_FLOW_PYR_LK");
