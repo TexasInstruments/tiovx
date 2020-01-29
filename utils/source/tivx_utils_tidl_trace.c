@@ -60,8 +60,9 @@
 *
 */
 #include <TI/tivx.h>
-#include <TI/tivx_debug.h>
 #include <tivx_utils_tidl_trace.h>
+#include <tivx_tidl_trace.h>
+#include <stdio.h>
 
 vx_status tivx_utils_tidl_trace_write(vx_user_data_object traceData, char *prefix)
 {
@@ -69,15 +70,19 @@ vx_status tivx_utils_tidl_trace_write(vx_user_data_object traceData, char *prefi
 
     void *trace_buffer = NULL;
     vx_map_id map_id;
-    vx_uint32 capacity;
+    vx_size capacity;
 
     status = vxGetStatus((vx_reference)traceData);
 
     if((vx_status)VX_SUCCESS == status)
     {
-        capacity = TIVX_TIDL_TRACE_DATA_SIZE;
-        status = vxMapUserDataObject(traceData, 0, capacity, &map_id,
-            (void **)&trace_buffer, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
+        status = vxQueryUserDataObject(traceData, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &capacity, sizeof(capacity));
+
+        if((vx_status)VX_SUCCESS == status)
+        {
+            status = vxMapUserDataObject(traceData, 0, capacity, &map_id,
+                (void **)&trace_buffer, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST, 0);
+        }
 
         if((vx_status)VX_SUCCESS == status)
         {
@@ -85,10 +90,10 @@ vx_status tivx_utils_tidl_trace_write(vx_user_data_object traceData, char *prefi
             tivxTIDLTraceHeader *header;
             uint64_t offset;
 
-            tivxTIDLTraceDataInit(&mgr, trace_buffer, TIVX_TIDL_TRACE_DATA_SIZE);
+            tivxTIDLTraceDataInit(&mgr, (uint8_t *)trace_buffer, (uint64_t)capacity);
 
             offset = 0;
-            header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, sizeof(tivxTIDLTraceHeader));
+            header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, (uint64_t)sizeof(tivxTIDLTraceHeader));
             offset += sizeof(tivxTIDLTraceHeader);
             while(strncmp(header->fileName, "EOB", 3) != 0)
             {
@@ -120,15 +125,15 @@ vx_status tivx_utils_tidl_trace_write(vx_user_data_object traceData, char *prefi
                 header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, sizeof(tivxTIDLTraceHeader));
                 offset += sizeof(tivxTIDLTraceHeader);
             }
+
+            vxUnmapUserDataObject(traceData, map_id);
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to map trace_buffer!\n");
             status = (vx_status)VX_FAILURE;
         }
-        vxUnmapUserDataObject(traceData, map_id);
     }
-    vxReleaseUserDataObject(&traceData);
 
-  return(status);
+    return(status);
 }

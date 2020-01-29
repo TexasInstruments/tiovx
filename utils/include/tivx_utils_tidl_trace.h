@@ -71,17 +71,15 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
 #include <VX/vx.h>
 #include <VX/vx_khr_user_data_object.h>
-#include <tivx_tidl_trace.h>
 
 /**
  * \brief Parses the traceData buffer and writes the payload to files on the host
  *
- * \param traceData [in] vx_user_data_object of size TIVX_TIDL_TRACE_DATA_SIZE
+ * \param traceData [in] vx_user_data_object of size required from network configuration
  *
- * \param prefix [in] string which will be prefixed to all file names
+ * \param prefix [in] string which will be prefixed to all output trace file names
  *
  * \return status
  *
