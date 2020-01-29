@@ -60,6 +60,9 @@
  *
  */
 
+#ifndef TIVX_HWA_HOST_PRIV_H_
+#define TIVX_HWA_HOST_PRIV_H_
+
 #include <TI/tivx.h>
 
 vx_status tivxAddKernelVpacNfGeneric(vx_context context);
@@ -91,3 +94,5 @@ vx_status tivxRemoveKernelCapture(vx_context context);
 vx_status tivxRemoveKernelCsitx(vx_context context);
 vx_status tivxRemoveKernelVideoDecoder(vx_context context);
 vx_status tivxRemoveKernelVideoEncoder(vx_context context);
+
+#endif /* TIVX_HWA_HOST_PRIV_H_ */

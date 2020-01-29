@@ -60,9 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_VDEC_PRIV_H_
+#define TIVX_HWA_VDEC_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelVideoDecoder(void);
 
 void tivxRemoveTargetKernelVideoDecoder(void);
 
+#endif /* TIVX_HWA_VDEC_PRIV_H_ */

@@ -113,7 +113,7 @@ static vx_status tivxVpacVissMapStorageFormat(uint32_t *ccsFmt, uint32_t vxFmt);
 static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     tivx_obj_desc_t *obj_desc[]);
 static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
-    tivx_obj_desc_user_data_object_t *desc, uint32_t size);
+    const tivx_obj_desc_user_data_object_t *desc, uint32_t size);
 static void tivxVpacVissUnmapUserDesc(void **target_ptr,
     const tivx_obj_desc_user_data_object_t *desc);
 static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
@@ -1421,7 +1421,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
 }
 
 static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
-    tivx_obj_desc_user_data_object_t *desc, uint32_t size)
+    const tivx_obj_desc_user_data_object_t *desc, uint32_t size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 

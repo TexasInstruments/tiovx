@@ -60,9 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_ARM_PRIV_H_
+#define TIVX_HWA_ARM_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelDofVisualize(void);
 
 void tivxRemoveTargetKernelDofVisualize(void);
 
+#endif /* TIVX_HWA_ARM_PRIV_H_ */

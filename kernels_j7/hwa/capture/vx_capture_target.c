@@ -149,7 +149,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
        tivxCaptureParams *prms);
 static void tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
-       tivx_obj_desc_user_data_object_t *obj_desc);
+       const tivx_obj_desc_user_data_object_t *obj_desc);
 static vx_status VX_CALLBACK tivxCaptureProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -167,7 +167,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
     tivx_capture_statistics_t *capt_status_prms);
 static void tivxCaptureGetChannelIndices(const tivxCaptureParams *prms,
@@ -365,7 +365,7 @@ static uint32_t tivxCaptureExtractDataFormat(uint32_t format)
 
 static void tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
-       tivx_obj_desc_user_data_object_t *obj_desc)
+       const tivx_obj_desc_user_data_object_t *obj_desc)
 {
     uint32_t loopCnt = 0U, i, format, width, height, planes, stride[TIVX_IMAGE_MAX_PLANES];
     void *capture_config_target_ptr;
@@ -1046,7 +1046,7 @@ static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
 }
 
 static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                             status = (vx_status)VX_SUCCESS;
     tivx_capture_statistics_t                 *capt_status_prms = NULL;

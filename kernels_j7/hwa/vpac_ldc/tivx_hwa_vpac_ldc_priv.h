@@ -60,9 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_VPAC_LDC_PRIV_H_
+#define TIVX_HWA_VPAC_LDC_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelVpacLdc(void);
 
 void tivxRemoveTargetKernelVpacLdc(void);
 
+#endif /* TIVX_HWA_VPAC_LDC_PRIV_H_ */

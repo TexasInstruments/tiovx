@@ -138,13 +138,13 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     const tivx_dmpac_dof_params_t *dofAppPrms, const tivx_dmpac_dof_sof_params_t *sofAppPrms,
     tivx_obj_desc_t *obj_desc[]);
 static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_obj_desc_user_data_object_t *usr_data_obj);
+                        const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
                                     const tivx_dmpac_dof_params_t *dofAppPrms, uint32_t output_format);
 static vx_status tivxDmpacDofGetErrStatusCmd(const tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
-                                tivx_obj_desc_user_data_object_t *usr_data_obj);
+                                const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
                         const tivx_dmpac_dof_sof_params_t *sofAppPrms);
 
@@ -1341,7 +1341,7 @@ static vx_status tivxDmpacDofUpdateSofPrms(tivxDmpacDofObj *dof_obj,
 /* ========================================================================== */
 
 static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
-                        tivx_obj_desc_user_data_object_t *usr_data_obj)
+                        const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     uint32_t                            idx;
     uint32_t                            cnt;
@@ -1435,7 +1435,7 @@ static vx_status tivxDmpacDofGetErrStatusCmd(const tivxDmpacDofObj *dof_obj,
 }
 
 static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
-                               tivx_obj_desc_user_data_object_t *usr_data_obj)
+                               const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                                status = (vx_status)VX_SUCCESS;
     int32_t                                  fvid2_status = FVID2_SOK;

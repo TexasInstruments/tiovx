@@ -60,6 +60,9 @@
  *
  */
 
+#ifndef TIVX_HWA_VPAC_NF_PRIV_H_
+#define TIVX_HWA_VPAC_NF_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelVpacNfGeneric(void);
@@ -68,3 +71,4 @@ void tivxAddTargetKernelVpacNfBilateral(void);
 void tivxRemoveTargetKernelVpacNfGeneric(void);
 void tivxRemoveTargetKernelVpacNfBilateral(void);
 
+#endif /* TIVX_HWA_VPAC_NF_PRIV_H_ */

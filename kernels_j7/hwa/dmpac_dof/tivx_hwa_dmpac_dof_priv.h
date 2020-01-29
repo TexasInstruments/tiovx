@@ -60,9 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_DMPAC_DOF_PRIV_H_
+#define TIVX_HWA_DMPAC_DOF_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelDmpacDof(void);
 
 void tivxRemoveTargetKernelDmpacDof(void);
 
+#endif /* TIVX_HWA_DMPAC_DOF_PRIV_H_ */

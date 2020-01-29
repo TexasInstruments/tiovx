@@ -60,9 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_VPAC_VISS_PRIV_H_
+#define TIVX_HWA_VPAC_VISS_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelVpacViss(void);
 
 void tivxRemoveTargetKernelVpacViss(void);
 
+#endif /* TIVX_HWA_VPAC_VISS_PRIV_H_ */

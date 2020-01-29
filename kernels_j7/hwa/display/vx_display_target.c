@@ -149,10 +149,10 @@ static vx_status VX_CALLBACK tivxDisplayControl(
        uint16_t num_params, void *priv_arg);
 static void tivxDisplayFreeChromaBuff(tivxDisplayParams *dispPrms);
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                             status = (vx_status)VX_SUCCESS;
     tivx_display_select_channel_params_t *ch_prms = NULL;

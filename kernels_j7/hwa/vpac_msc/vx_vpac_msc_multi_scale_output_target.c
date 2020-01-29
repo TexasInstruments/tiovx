@@ -1361,7 +1361,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxVpacMscScaleObj *msc_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params)
 {
-    vx_status                         status = VX_SUCCESS;
+    vx_status                         status = (vx_status)VX_SUCCESS;
     uint32_t                          cnt, idx;
     tivx_vpac_msc_crop_params_t      *out_prms = NULL;
     void                             *target_ptr;

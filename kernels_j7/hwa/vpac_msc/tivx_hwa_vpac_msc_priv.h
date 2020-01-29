@@ -60,6 +60,9 @@
  *
  */
 
+#ifndef TIVX_HWA_VPAC_MSC_PRIV_H_
+#define TIVX_HWA_VPAC_MSC_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelVpacMscGaussianPyramid(void);
@@ -74,3 +77,4 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
 void tivxRemoveTargetKernelVpacMscScale(void);
 void tivxRemoveTargetKernelVpacMscMultiScale(void);
 
+#endif /* TIVX_HWA_VPAC_MSC_PRIV_H_ */

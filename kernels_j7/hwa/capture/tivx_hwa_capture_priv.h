@@ -60,10 +60,13 @@
  *
  */
 
+#ifndef TIVX_HWA_CAPTURE_PRIV_H_
+#define TIVX_HWA_CAPTURE_PRIV_H_
+
 #include <TI/tivx.h>
 
 void tivxAddTargetKernelCapture(void);
 
 void tivxRemoveTargetKernelCapture(void);
 
-
+#endif /* #ifndef TIVX_HWA_CAPTURE_PRIV_H_ */

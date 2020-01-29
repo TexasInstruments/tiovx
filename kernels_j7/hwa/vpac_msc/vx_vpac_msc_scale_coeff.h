@@ -1,3 +1,7 @@
+
+#ifndef VX_VPAC_MSC_SCALE_COEFF_H_
+#define VX_VPAC_MSC_SCALE_COEFF_H_
+
 #define TIVX_VPAC_MSC_SP_SCALE_COEFFICIENTS                                    \
 {                                                                              \
     {0, 0, 256, 0, 0},                                                         \
@@ -140,3 +144,5 @@
         0, 0, 0, 256, 0                                                        \
     }                                                                          \
 }
+
+#endif /* VX_VPAC_MSC_SCALE_COEFF_H_ */

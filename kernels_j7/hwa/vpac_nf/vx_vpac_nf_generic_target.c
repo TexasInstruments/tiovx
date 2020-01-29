@@ -142,9 +142,9 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
     const tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     tivxVpacNfGenericObj *nf_generic_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj);
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxVpacNfGenericGetErrStatusCmd(const tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 
@@ -872,7 +872,7 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
 
 static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     tivxVpacNfGenericObj *nf_generic_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                                status = (vx_status)VX_SUCCESS;
     int32_t                                  fvid2_status = FVID2_SOK;
@@ -931,7 +931,7 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
 }
 
 static vx_status tivxVpacNfGenericSetCoeff(tivxVpacNfGenericObj *nf_generic_obj,
-    tivx_obj_desc_user_data_object_t *usr_data_obj)
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
 {
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;

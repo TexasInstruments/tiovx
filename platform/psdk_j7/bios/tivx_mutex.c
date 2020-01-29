@@ -30,6 +30,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         if (NULL == handle)
         {
             status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore create returned NULL\n");
         }
         else
         {
@@ -44,14 +45,23 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
     vx_status status = (vx_status)VX_FAILURE;
+    SemaphoreP_Status retVal;
     SemaphoreP_Handle handle;
 
     if ((NULL != mutex) && (*mutex != NULL))
     {
         handle = (tivx_mutex)*mutex;
-        SemaphoreP_delete(handle);
-        *mutex = NULL;
-        status = (vx_status)VX_SUCCESS;
+        retVal = SemaphoreP_delete(handle);
+
+        if (SemaphoreP_OK != retVal)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore delete returned an error\n");
+        }
+        else
+        {
+            *mutex = NULL;
+            status = (vx_status)VX_SUCCESS;
+        }
     }
 
     return (status);
@@ -60,22 +70,22 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
 vx_status tivxMutexLock(tivx_mutex mutex)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    uint32_t retVal;
+    SemaphoreP_Status retVal;
 
     if (NULL != mutex)
     {
-        retVal = (uint32_t)SemaphoreP_pend((SemaphoreP_Handle)mutex,
+        retVal = SemaphoreP_pend((SemaphoreP_Handle)mutex,
             SemaphoreP_WAIT_FOREVER);
 
-        if (SemaphoreP_OK != (int32_t)retVal)
+        if (SemaphoreP_OK != retVal)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Semaphore wait failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore wait failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Mutex is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Mutex is NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -84,13 +94,18 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
 vx_status tivxMutexUnlock(tivx_mutex mutex)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+    SemaphoreP_Status retVal;
+
     if (NULL != mutex)
     {
-        SemaphoreP_post((SemaphoreP_Handle)mutex);
+        retVal = SemaphoreP_post((SemaphoreP_Handle)mutex);
+        if (SemaphoreP_OK != retVal)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore post returned an error\n");
+            status = (vx_status)VX_FAILURE;
+        }
     }
 
-    return ((vx_status)VX_SUCCESS);
+    return (status);
 }
-
-
-

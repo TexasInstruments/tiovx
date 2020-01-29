@@ -958,7 +958,7 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
     glbceCfg = &vissObj->vissCfg.glbceCfg;
     if (NULL != vissObj)
     {
-        if (0 == vissObj->dcc_out_prms.useVissGlbceCfg)
+        if (0U == vissObj->dcc_out_prms.useVissGlbceCfg)
         {
             glbceCfg->irStrength = 255;
             glbceCfg->blackLevel = 0;
