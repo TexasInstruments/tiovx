@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017 Texas Instruments Incorporated
+# Copyright (c) 2020 Texas Instruments Incorporated
 #
 # All rights reserved not granted herein.
 #
@@ -59,59 +59,25 @@
 #
 #
 
-from .utils import *
-from .enums import *
-from .reference import *
-from .scalar import *
-from .image import *
-from .tensor import *
-from .user_data_object import *
-from .node import *
-from .graph import *
-from .context import *
-from .reference_code import *
-from .image_code import *
-from .tensor_code import *
-from .user_data_object_code import *
-from .node_code import *
-from .graph_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .convolution_code import *
-from .distribution_code import *
-from .matrix_code import *
-from .threshold_code import *
-from .remap_code import *
-from .pyramid_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .array_code import *
-from .lut_code import *
-from .null_code import *
-from .context_code import *
-from .code_generate import *
-from .code_modify import *
-from .usecase_code import *
-from .lut import *
-from .convolution import *
-from .distribution import *
-from .matrix import *
-from .threshold import *
-from .remap import *
-from .pyramid import *
-from .objectarray import *
-from .export import *
-from .export_image import *
-from .export_code import *
-from .null import *
-from .attribute import *
-from .core import *
-from .module import *
-from .kernel_code import *
-from .kernel import *
+from . import *
 
-from .array import *
+class UserDataObjectCode (ReferenceCode) :
+    def __init__(self, ref) :
+        ReferenceCode.__init__(self, ref)
 
+    def declare_var(self, code_gen) :
+        code_gen.write_line('vx_user_data_object %s;' % self.ref.name)
 
-
-
+    def call_create(self, code_gen) :
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
+        code_gen.write_line("usecase->%s = vxCreateUserDataObject(context, \"%s\", %s, NULL);" % (self.ref.name, self.ref.type_name, self.ref.size))
+        code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
+        code_gen.write_open_brace()
+        code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
+        code_gen.write_close_brace()
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
+        self.set_ref_name(code_gen)
+        code_gen.write_close_brace()
+        code_gen.write_close_brace()

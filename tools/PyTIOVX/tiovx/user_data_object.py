@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017 Texas Instruments Incorporated
+# Copyright (c) 2020 Texas Instruments Incorporated
 #
 # All rights reserved not granted herein.
 #
@@ -59,59 +59,34 @@
 #
 #
 
-from .utils import *
-from .enums import *
-from .reference import *
-from .scalar import *
-from .image import *
-from .tensor import *
-from .user_data_object import *
-from .node import *
-from .graph import *
-from .context import *
-from .reference_code import *
-from .image_code import *
-from .tensor_code import *
-from .user_data_object_code import *
-from .node_code import *
-from .graph_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .convolution_code import *
-from .distribution_code import *
-from .matrix_code import *
-from .threshold_code import *
-from .remap_code import *
-from .pyramid_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .array_code import *
-from .lut_code import *
-from .null_code import *
-from .context_code import *
-from .code_generate import *
-from .code_modify import *
-from .usecase_code import *
-from .lut import *
-from .convolution import *
-from .distribution import *
-from .matrix import *
-from .threshold import *
-from .remap import *
-from .pyramid import *
-from .objectarray import *
-from .export import *
-from .export_image import *
-from .export_code import *
-from .null import *
-from .attribute import *
-from .core import *
-from .module import *
-from .kernel_code import *
-from .kernel import *
+from . import *
 
-from .array import *
+## User data object (OpenVX equivalent = \ref vx_user_data_object)
+#
+# \par Example Usage: Create a User data object object
+#
+# \code
+# from tiovx import *
+#
+# my_user_data_type1 = UserDataObject("uint32_t", "sizeof(uint32_t)", name="myuserdataobject")
+# my_user_data_type2 = UserDataObject("dcc_data", 1024)
+# my_user_data_type3 = UserDataObject("tivx_custom_struct_t", "sizeof(tivx_custom_struct_t)")
+# \endcode
+#
+# \ingroup DATA
+class UserDataObject (Reference) :
+    ## Constructor used to create this object
+    #
+    # \see vxCreateUserDataObject for more details about the parameters
+    #
+    # \param type_name [in] String that identifies the type of object
+    # \param size [in] The number of bytes required to store this instance of the user data object,
+    #                  This can be a number, or a string that will be taken "as is" to c code.
+    # \param name [in] [optional] Name of the object
+    def __init__(self, type_name, size, name="default") :
+        Reference.__init__(self, Type.USER_DATA_OBJECT, name)
+        self.type_name = type_name
+        self.size = size
 
-
-
-
+    def __str__(self):
+        return Reference.__str__(self) + ' [ ' + self.type_name + ' ]'

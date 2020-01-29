@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017 Texas Instruments Incorporated
+# Copyright (c) 2020 Texas Instruments Incorporated
 #
 # All rights reserved not granted herein.
 #
@@ -59,59 +59,44 @@
 #
 #
 
-from .utils import *
-from .enums import *
-from .reference import *
-from .scalar import *
-from .image import *
-from .tensor import *
-from .user_data_object import *
-from .node import *
-from .graph import *
-from .context import *
-from .reference_code import *
-from .image_code import *
-from .tensor_code import *
-from .user_data_object_code import *
-from .node_code import *
-from .graph_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .convolution_code import *
-from .distribution_code import *
-from .matrix_code import *
-from .threshold_code import *
-from .remap_code import *
-from .pyramid_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .array_code import *
-from .lut_code import *
-from .null_code import *
-from .context_code import *
-from .code_generate import *
-from .code_modify import *
-from .usecase_code import *
-from .lut import *
-from .convolution import *
-from .distribution import *
-from .matrix import *
-from .threshold import *
-from .remap import *
-from .pyramid import *
-from .objectarray import *
-from .export import *
-from .export_image import *
-from .export_code import *
-from .null import *
-from .attribute import *
-from .core import *
-from .module import *
-from .kernel_code import *
-from .kernel import *
+from . import *
 
-from .array import *
+## Tensor object (OpenVX equivalent = \ref vx_tensor, specifically returned from \ref vxCreateTensor)
+#
+# \par Example Usage: Create a tensor object of 640x480x3
+#
+# \code
+# from tiovx import *
+#
+# my_tensor1 = Tensor(3, [640, 480, 3], Type.UINT8, 0, name="mytensor")
+# \endcode
+#
+# \ingroup DATA
+class Tensor (Reference) :
+    ## Constructor used to create this object
+    #
+    # \see vxCreateTensor for more details about the parameters
+    #
+    # \param number_of_dims [in] Number of dimensions
+    # \param dims [in] Comma separated list of dimensions in brackets
+    # \param data_type [in] Data type. tiovx::enums::Type
+    # \param fixed_point_position [in] Specifies the fixed point position when the input element type is integer. if 0, calculations are performed in integer math.
+    # \param access_type [in] [optional] Memory access type
+    # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
+    # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file
+    # \param name [in] [optional] Name of the object
+    def __init__(self, number_of_dims, dims, data_type, fixed_point_position, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
+        Reference.__init__(self, Type.TENSOR, name)
+        self.number_of_dims = number_of_dims
+        self.dims = dims
+        self.data_type = data_type
+        self.fixed_point_position = fixed_point_position
+        self.access_type = access_type
+        self.in_file = in_file_addr
+        self.out_file = out_file_addr
+        assert len(dims) == number_of_dims, "Length of 'dims' parameter does not match 'number_of_dims' parameter"
 
-
+    def __str__(self):
+        return Reference.__str__(self) + ' [ndims: ' + str(self.number_of_dims) + ', ' + str(self.dims[0]) + 'x' + ':' + Type.get_vx_enum_name(self.data_type) + ' ]'
 
 

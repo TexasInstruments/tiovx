@@ -93,6 +93,10 @@ class ContextCode (ReferenceCode) :
             return PyramidCode(ref)
         if ref.type == Type.OBJECT_ARRAY :
             return ObjectArrayCode(ref)
+        if ref.type == Type.TENSOR :
+            return TensorCode(ref)
+        if ref.type == Type.USER_DATA_OBJECT :
+            return UserDataObjectCode(ref)
         if ref.type == Type.SCALAR :
             return ScalarCode(ref)
         if ref.type == Type.GRAPH :
