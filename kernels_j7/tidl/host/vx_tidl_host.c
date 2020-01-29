@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
     vx_uint32 i;
 
-    if (num_params < 7U)
+    if (num_params < TIVX_KERNEL_TIDL_NUM_MIN_PARAMETERS)
     {
         /* Number of parameters should be a minimum of 7 */
         /* config, network, createParams, inArgs, outArgs, mininum 1-input, minimum 1-output */
@@ -91,8 +91,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
     for (i = 0U; i < num_params; i ++)
     {
-        /* Check for NULL */
-        if (NULL == parameters[i])
+        /* Check for NULL for all except 5th index as traceData is optional*/
+        if ((i != TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX) && (NULL == parameters[i]))
         {
             status = (vx_status)VX_ERROR_NO_MEMORY;
             break;
@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char config_name[VX_MAX_REFERENCE_NAME];
         vx_size config_size;
 
-        config = (vx_user_data_object)parameters[0];
+        config = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(config, (vx_enum)VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(config, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
@@ -124,7 +124,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char network_name[VX_MAX_REFERENCE_NAME];
         vx_size network_size;
 
-        network = (vx_user_data_object)parameters[1];
+        network = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(network, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
@@ -143,7 +143,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char createParams_name[VX_MAX_REFERENCE_NAME];
         vx_size createParams_size;
 
-        createParams = (vx_user_data_object)parameters[2];
+        createParams = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(createParams, (vx_enum)VX_USER_DATA_OBJECT_NAME, &createParams_name, sizeof(createParams_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(createParams, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &createParams_size, sizeof(createParams_size)));
@@ -162,7 +162,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char inArgs_name[VX_MAX_REFERENCE_NAME];
         vx_size inArgs_size;
 
-        inArgs = (vx_user_data_object)parameters[3];
+        inArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_IN_ARGS_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, (vx_enum)VX_USER_DATA_OBJECT_NAME, &inArgs_name, sizeof(inArgs_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &inArgs_size, sizeof(inArgs_size)));
@@ -181,7 +181,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char outArgs_name[VX_MAX_REFERENCE_NAME];
         vx_size outArgs_size;
 
-        outArgs = (vx_user_data_object)parameters[4];
+        outArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_OUT_ARGS_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, (vx_enum)VX_USER_DATA_OBJECT_NAME, &outArgs_name, sizeof(outArgs_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &outArgs_size, sizeof(outArgs_size)));
@@ -191,6 +191,27 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'outArgs' should be a user_data_object of name:\n TIDL_outArgs \n");
+        }
+    }
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        vx_user_data_object traceData = NULL;
+        vx_char traceData_name[VX_MAX_REFERENCE_NAME];
+        vx_size traceData_size;
+
+        traceData = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX];
+
+        if(traceData != NULL)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(traceData, (vx_enum)VX_USER_DATA_OBJECT_NAME, &traceData_name, sizeof(traceData_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(traceData, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &traceData_size, sizeof(traceData_size)));
+
+            if ((traceData_size < 1) ||
+                (strncmp(traceData_name, "TIDL_traceData", sizeof(traceData_name)) != 0))
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'traceData' should be a user_data_object of name:\n TIDL_traceData \n");
+            }
         }
     }
 
@@ -215,8 +236,8 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        /* Number of parameters are config + network + createParams + inArgs + outArgs + input tensors + output tensors */
-        uint32_t num_params = 5U + num_input_tensors + num_output_tensors;
+        /* Number of parameters are config + network + createParams + inArgs + outArgs + traceData + input tensors + output tensors */
+        uint32_t num_params = TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
 
         if ( (num_params <= TIVX_KERNEL_MAX_PARAMS) &&
              (num_input_tensors != 0U) &&
@@ -293,6 +314,16 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             index++;
         }
         if (status == (vx_status)VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                (vx_enum)VX_OUTPUT,
+                VX_TYPE_USER_DATA_OBJECT,
+                (vx_enum)VX_PARAMETER_STATE_OPTIONAL
+                );
+            index++;
+        }
+        if (status == VX_SUCCESS)
         {
             for(i = 0; i < num_input_tensors; i++)
             {

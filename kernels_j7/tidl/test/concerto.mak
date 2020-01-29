@@ -9,6 +9,8 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
+IDIRS       += $(TIOVX_PATH)/utils/include
+IDIRS       += $(CUSTOM_KERNEL_PATH)/tidl/include
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

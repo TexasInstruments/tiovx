@@ -60,68 +60,130 @@
  *
  */
 
-#ifndef J7_TIDL_H_
-#define J7_TIDL_H_
+ /**
+  * \file tivx_utils_tidl_trace.h Utility APIs to set and get TIDL trace data
+  */
+
+#ifndef TIVX_TIDL_TRACE_H_
+#define TIVX_TIDL_TRACE_H_
 
 #include <VX/vx.h>
-#include <VX/vx_kernels.h>
-#include "itidl_ti.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define TIVX_TIDL_J7_CHECKSUM_SIZE (64)
-
-#define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
-#define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
-#define TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX           (2U)
-#define TIVX_KERNEL_TIDL_IN_IN_ARGS_IDX                 (3U)
-#define TIVX_KERNEL_TIDL_IN_OUT_ARGS_IDX                (4U)
-#define TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX              (5U)
-#define TIVX_KERNEL_TIDL_IN_FIRST_TENSOR                (6U)
-#define TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS            (6U)
-#define TIVX_KERNEL_TIDL_NUM_MIN_PARAMETERS             (TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2)
+/* IMPORTANT! Change in size requires a rebuild of TIOVX and application.
+ * This is the size of trace buffer allocated in host memory and
+ * shared with target.
+ */
+#define TIVX_TIDL_TRACE_DATA_SIZE  (256 * 1024 * 1024)
+#define TIVX_TIDL_TRACE_FILE_NAME_SIZE (512)
 
 /*!
- * \brief TIDL params structure
- * \ingroup group_vision_function_tidl
+ * \brief TIDL trace params structure
+ * \ingroup group_vision_function_tidl_trace
  */
-typedef struct{
-  /** Checksum placeholder for TIDL config params */
-  vx_uint8 config_checksum[TIVX_TIDL_J7_CHECKSUM_SIZE];
-
-  /** Checksum placeholder for TIDL network params */
-  vx_uint8 network_checksum[TIVX_TIDL_J7_CHECKSUM_SIZE];
-
-  /** Flag to indicate if config params checksum is to be computed or not */
-  vx_uint32 compute_config_checksum;
-
-  /** Flag to indicate if network params checksum is to be computed or not */
-  vx_uint32 compute_network_checksum;
-
-  /**TIDL input/output buffer descriptor*/
-  sTIDL_IOBufDesc_t ioBufDesc;
-
-}tivxTIDLJ7Params;
-
-/*!
- * \brief TIDL params initialization
- * \ingroup group_vision_function_tidl
- */
-static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams)
+typedef struct
 {
-  memset(&tidlParams->config_checksum[0], 0, TIVX_TIDL_J7_CHECKSUM_SIZE);
-  memset(&tidlParams->network_checksum[0], 0, TIVX_TIDL_J7_CHECKSUM_SIZE);
+  /** File name for intermediate layer data */
+  char fileName[TIVX_TIDL_TRACE_FILE_NAME_SIZE];
+  /** Offset in the trace buffer where data is present */
+  uint32_t offset;
+  /** Size of the trace data */
+  uint32_t size;
 
-  tidlParams->compute_config_checksum = 0;
-  tidlParams->compute_network_checksum = 0;
+} tivxTIDLTraceHeader;
 
-  memset(&tidlParams->ioBufDesc, 0, sizeof(sTIDL_IOBufDesc_t));
+/*!
+ * \brief TIDL trace params structure
+ * \ingroup group_vision_function_tidl_trace
+ */
+typedef struct
+{
+  /** Base pointer of trace buffer */
+  uint8_t *base;
+  /** Current pointer in trace buffer */
+  uint8_t *current;
+  /** Total capacity of the buffer */
+  uint32_t buffer_capacity;
+  /** Current capacity of the buffer */
+  uint32_t current_capacity;
+
+} tivxTIDLTraceDataManager;
+
+/*!
+ * \brief TIDL trace clear - clears out trace manager variables
+ * \ingroup group_vision_function_tidl_trace
+ */
+static inline void tivxTIDLTraceDataClear(tivxTIDLTraceDataManager *mgr)
+ {
+     mgr->base = NULL;
+     mgr->current = NULL;
+     mgr->buffer_capacity = 0;
+     mgr->current_capacity = 0;
+ }
+
+/*!
+ * \brief TIDL trace init - initializes trace manager variables with provided buffer capacity.
+ * \ingroup group_vision_function_tidl_trace
+ */
+ static inline void tivxTIDLTraceDataInit(tivxTIDLTraceDataManager *mgr, uint8_t *base, uint64_t buffer_capacity)
+ {
+     mgr->base = base;
+     mgr->current = base;
+     mgr->buffer_capacity = buffer_capacity;
+     mgr->current_capacity = 0;
+ }
+
+/*!
+ * \brief TIDL trace set - writes trace header/payload to the trace buffer.
+ * \ingroup group_vision_function_tidl_trace
+ */
+ static inline void tivxTIDLTraceSetData(tivxTIDLTraceDataManager *mgr, uint8_t *data_ptr, uint64_t data_size)
+ {
+   if((mgr->current_capacity + data_size) < mgr->buffer_capacity)
+   {
+     memcpy(mgr->current, data_ptr, data_size);
+     mgr->current += data_size;
+     mgr->current_capacity += data_size;
+   }
+ }
+
+/*!
+ * \brief TIDL trace set - provides a pointer to the requested header/paylaod by byte offset
+ * \ingroup group_vision_function_tidl_trace
+ */
+ static inline uint8_t *tivxTIDLTraceGetData(tivxTIDLTraceDataManager *mgr, uint64_t offset, uint64_t data_size)
+ {
+   uint8_t *data_ptr = NULL;
+
+   if((offset + data_size) < mgr->buffer_capacity)
+   {
+     data_ptr =  mgr->base + offset;
+   }
+
+   return data_ptr;
+ }
+
+ /*!
+  * \brief TIDL trace EOB - indicates End Of Buffer
+  * \ingroup group_vision_function_tidl_trace
+  */
+static inline void tivxTIDLTraceWriteEOB(tivxTIDLTraceDataManager *mgr)
+{
+ tivxTIDLTraceHeader header;
+
+ strcpy(header.fileName, "EOB");
+ header.size   = 0x00000E0B;
+ header.offset = 0x00000E0B;
+
+ tivxTIDLTraceSetData(mgr, (uint8_t *)&header, sizeof(tivxTIDLTraceHeader));
 }
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* J7_TIDL_H_ */
+#endif /* TIVX_TIDL_TRACE_H_ */

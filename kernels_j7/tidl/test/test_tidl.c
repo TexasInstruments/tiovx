@@ -69,6 +69,7 @@
 #include <float.h>
 #include <math.h>
 #include "itidl_ti.h"
+#include "tivx_utils_tidl_trace.h"
 
 #define DEBUG_TEST_TIDL
 
@@ -228,7 +229,7 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
     return network;
 }
 
-static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw_padded)
+static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw_padded, uint32_t trace_write_flag)
 {
     vx_status status;
 
@@ -263,6 +264,16 @@ static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw
               prms->quantRangeExpansionFactor     = 1.0;
               prms->quantRangeUpdateFactor        = 0.0;
 
+              if(trace_write_flag == 1)
+              {
+                prms->traceLogLevel                 = 1;
+                prms->traceWriteLevel               = 1;
+              }
+              else
+              {
+                prms->traceLogLevel                 = 0;
+                prms->traceWriteLevel               = 0;
+              }
             }
             else
             {
@@ -674,18 +685,12 @@ typedef struct {
     const char* testName;
     const char* network;
     uint32_t read_raw_padded;
+    uint32_t trace_write_flag;
 } Arg;
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0), \
-
-#if 0
-    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2", 0), \
-    CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1", 0), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0), \
-    CT_GENERATE_PARAMETERS("resnet10", ARG, "resnet10", 0), \
-    CT_GENERATE_PARAMETERS("squeez1", ARG, "squeez1", 0)
-#endif
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0, 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0, 1)
 
 static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
 {
@@ -714,6 +719,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     vx_user_data_object  createParams;
     vx_user_data_object  inArgs;
     vx_user_data_object  outArgs;
+    vx_user_data_object  traceData;
 
     vx_tensor input_tensor[1];
     vx_tensor output_tensor[1];
@@ -761,7 +767,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ASSERT_VX_OBJECT(createParams = setCreateParams(context, arg_->read_raw_padded), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(createParams = setCreateParams(context, arg_->read_raw_padded, arg_->trace_write_flag), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         ASSERT_VX_OBJECT(inArgs = setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         ASSERT_VX_OBJECT(outArgs = setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -769,12 +775,23 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         ASSERT_VX_OBJECT(output_tensor[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
+		    /* This is an optional parameter can be NULL as well. */
+        if(arg_->trace_write_flag == 1)
+        {
+          ASSERT_VX_OBJECT(traceData = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        }
+        else
+        {
+          traceData = NULL;
+        }
+
         vx_reference params[] = {
                 (vx_reference)config,
                 (vx_reference)network,
                 (vx_reference)createParams,
                 (vx_reference)inArgs,
-                (vx_reference)outArgs
+                (vx_reference)outArgs,
+				        (vx_reference)traceData
         };
 
         ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, input_tensor, output_tensor), VX_TYPE_NODE);
@@ -817,6 +834,11 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         VX_CALL(displayOutput(config, &output_tensor[0], refid[network_id], refscore[network_id]));
 
+        if(arg_->trace_write_flag == 1)
+        {
+            tivx_utils_tidl_trace_write(traceData, "airshow_256x256.");
+        }
+
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
 
@@ -828,6 +850,12 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         VX_CALL(vxReleaseUserDataObject(&createParams));
         VX_CALL(vxReleaseUserDataObject(&inArgs));
         VX_CALL(vxReleaseUserDataObject(&outArgs));
+
+        if(arg_->trace_write_flag == 1)
+        {
+           VX_CALL(vxReleaseUserDataObject(&traceData));
+        }
+
         VX_CALL(vxReleaseTensor(&input_tensor[0]));
         VX_CALL(vxReleaseTensor(&output_tensor[0]));
 
@@ -836,6 +864,12 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         ASSERT(createParams == 0);
         ASSERT(inArgs == 0);
         ASSERT(outArgs == 0);
+
+        if(arg_->trace_write_flag == 1)
+        {
+            ASSERT(outArgs == 0);
+        }
+
         ASSERT(input_tensor[0]  == 0);
         ASSERT(output_tensor[0] == 0);
 

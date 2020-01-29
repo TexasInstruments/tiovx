@@ -67,14 +67,6 @@
 #include <TI/j7.h>
 #include <TI/j7_tidl.h>
 
-#define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
-#define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
-#define TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX           (2U)
-#define TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX          (3U)
-#define TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX         (4U)
-#define TIVX_KERNEL_TIDL_IN_FIRST_TENSOR                (5U)
-#define TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS            (5U)
-
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
                                               vx_reference appParams[],
@@ -113,8 +105,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
         params[0]=  (vx_reference)config;
         params[1]=  appParams[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
         params[2]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
-        params[3]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
-        params[4]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
+        params[3]=  appParams[TIVX_KERNEL_TIDL_IN_IN_ARGS_IDX];
+        params[4]=  appParams[TIVX_KERNEL_TIDL_IN_OUT_ARGS_IDX];
+        params[5]=  appParams[TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX];
 
         for (i= 0; i < (int32_t)num_input_tensors; i++) {
           params[(int32_t)TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];

@@ -69,13 +69,11 @@
 #include <tivx_alg_ivision_if.h>
 #include "tivx_platform.h"
 #include "itidl_ti.h"
-
-
+#include "tivx_tidl_trace.h"
 
 #ifndef x86_64
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
-//#define TIDL_C7X_CLEAR_L1D_SRAM
 //#define DISABLE_INTERRUPTS_DURING_PROCESS
 #define DISABLE_IPC_INTERRUPTS_DURING_PROCESS
 #endif
@@ -113,88 +111,7 @@ static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj);
 static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size, uint32_t loc);
 static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize);
 
-#ifdef TIDL_C7X_CLEAR_L1D_SRAM
-
-#define MEMORY_ELEM_8BIT  (1)
-#define MEMORY_ELEM_16BIT (2)
-#define MEMORY_ELEM_32BIT (4)
-
-#define TIDL_C7X_L1D_SRAM_SIZE (16 * 1024)
-#define TIDL_C7X_L1D_SRAM_ADDR (0x64E00000)
-
-void memsetFast(void *array, uint32_t value, int32_t size, uint8_t elementSize)
-{
-   __STRM_TEMPLATE saTemplate;
-   __SA_FLAGS saFlags;
-
-    uint32_t ctr;
-
-   //Initialize SA flags to default
-   saFlags = __SA_FLAGS_default();
-
-   //Update necessary flags
-   saFlags.DIMFMT  = __SA_DIMFMT_3D;
-
-   //Initialize template
-   saTemplate = (0);
-
-   //Set SE_PARAMS
-   saTemplate = __set_ICNT0(saTemplate, size);
-   saTemplate = __set_ICNT1_DIM1(saTemplate, 1, 0);
-   saTemplate = __set_ICNT2_DIM2(saTemplate, 1, 0);
-
-    if( elementSize == MEMORY_ELEM_8BIT )
-    {
-        uint8_t *restrict pData = (uint8_t *)array;
-        uchar64 vVal = (uchar64)(value);
-
-        saFlags.VECLEN  = __SA_VECLEN_64ELEMS;
-        saTemplate = __set_SA_FLAGS(saTemplate, &saFlags);
-
-        __SA0_OPEN(saTemplate);
-        for( ctr = 0; ctr < size; ctr+=64 )
-        {
-            __vpred vpStore = __SA0_VPRED(uchar64);
-            __vstore_pred(vpStore, __SA0ADV(uchar64, pData), vVal);
-        }
-        __SA0_CLOSE();
-
-    }
-    else if( elementSize == MEMORY_ELEM_16BIT )
-    {
-        uint16_t *restrict pData = (uint16_t *)array;
-        ushort32 vVal = (ushort32)(value);
-
-        saFlags.VECLEN  = __SA_VECLEN_32ELEMS;
-        saTemplate = __set_SA_FLAGS(saTemplate, &saFlags);
-
-        __SA0_OPEN(saTemplate);
-        for( ctr = 0; ctr < size; ctr+=32 )
-        {
-            __vpred vpStore = __SA0_VPRED(ushort32);
-            __vstore_pred(vpStore, __SA0ADV(ushort32, pData), vVal);
-        }
-        __SA0_CLOSE();
-
-    }
-    else if( elementSize == MEMORY_ELEM_32BIT )
-    {
-        uint32_t *restrict pData = (uint32_t *)array;
-        uint16 vVal = (uint16)(value);
-
-        saFlags.VECLEN  = __SA_VECLEN_16ELEMS;
-        saTemplate = __set_SA_FLAGS(saTemplate, &saFlags);
-
-        __SA0_OPEN(saTemplate);
-        for( ctr = 0; ctr < size; ctr+=16 )
-        {
-            __vpred vpStore = __SA0_VPRED(uint16);
-            __vstore_pred(vpStore, __SA0ADV(uint16, pData), vVal);
-        }
-        __SA0_CLOSE();
-    }
-}
-#endif
+static tivxTIDLTraceDataManager mgr;
 
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig)
 {
@@ -287,7 +204,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     for (i = 0U; i < num_params; i ++)
     {
-        if (NULL == obj_desc[i])
+        /* The parameter at i == 5 is optional and is used to provide a buffer for trace data */
+        if ((i != TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX) && (NULL == obj_desc[i]))
         {
             status = (vx_status)VX_FAILURE;
             break;
@@ -310,7 +228,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         void *network_target_ptr = NULL;
 
         /* IMPORTANT! Network data is assumed to be available at index 1 */
-        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[1];
+        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
         network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
         tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
@@ -330,14 +248,16 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         tivx_obj_desc_tensor_t *outTensor;
         tivx_obj_desc_user_data_object_t *inArgs;
         tivx_obj_desc_user_data_object_t *outArgs;
+        tivx_obj_desc_user_data_object_t *traceData;
 
         void *in_tensor_target_ptr;
         void *out_tensor_target_ptr;
         void *in_args_target_ptr;
         void *out_args_target_ptr;
+        void *trace_data_target_ptr;
 
         /* IMPORTANT! inArgs is assumed to be available at index 3 */
-        inArgs   = (tivx_obj_desc_user_data_object_t *)obj_desc[3];
+        inArgs   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_IN_ARGS_IDX];
 
         in_args_target_ptr = tivxMemShared2TargetPtr(&inArgs->mem_ptr);
         tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
@@ -345,20 +265,32 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         tidlObj->inArgs = in_args_target_ptr;
 
         /* IMPORTANT! outArgs is assumed to be available at index 4 */
-        outArgs  = (tivx_obj_desc_user_data_object_t *)obj_desc[4];
+        outArgs  = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_OUT_ARGS_IDX];
 
         out_args_target_ptr = tivxMemShared2TargetPtr(&outArgs->mem_ptr);
         tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         tidlObj->outArgs = out_args_target_ptr;
 
+        tivxTIDLTraceDataClear(&mgr);
+
+        traceData  = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX];
+        if((tidlObj->createParams.traceWriteLevel > 0) && (traceData != NULL))
+        {
+          trace_data_target_ptr = tivxMemShared2TargetPtr(&traceData->mem_ptr);
+          tivxMemBufferMap(trace_data_target_ptr, traceData->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+          tivxTIDLTraceDataInit(&mgr, trace_data_target_ptr, TIVX_TIDL_TRACE_DATA_SIZE);
+        }
+
         /* Idx 0 - config data,
            Idx 1 - network data,
            Idx 2 - create parameters,
            Idx 3 - inArgs,
            Idx 4 - outArgs,
-           Idx 5 - input tensor */
-        uint32_t in_tensor_idx = 5;
+           Idx 5 - traceData,
+           Idx 6 - input tensor */
+        uint32_t in_tensor_idx = TIVX_KERNEL_TIDL_IN_FIRST_TENSOR;
 
         /* Idx N - output tensors, where N = Idx 2 + number of input tensors */
         uint32_t out_tensor_idx = in_tensor_idx + tidlObj->inBufs.numBufs;
@@ -378,10 +310,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
             tidlObj->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
         }
 
-#ifdef TIDL_C7X_CLEAR_L1D_SRAM
-        memsetFast((void *)TIDL_C7X_L1D_SRAM_ADDR, 0, TIDL_C7X_L1D_SRAM_SIZE, MEMORY_ELEM_8BIT);
-#endif
-
         status = tivxAlgiVisionProcess
                  (
                     tidlObj->algHandle,
@@ -393,6 +321,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
         tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+
+        if((tidlObj->createParams.traceWriteLevel > 0) && (traceData != NULL))
+        {
+           tivxTIDLTraceWriteEOB(&mgr);
+
+           tivxMemBufferUnmap(trace_data_target_ptr, traceData->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        }
 
         for(id = 0; id < tidlObj->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
@@ -423,11 +358,7 @@ int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
 {
     static char buf[1024];
 
-    #ifndef x86_64
-    va_start(va_args_ptr, format);
     vsnprintf(buf, 1024, format, va_args_ptr);
-    va_end(va_args_ptr);
-    #endif
 
     printf(buf);
 
@@ -436,15 +367,18 @@ int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
 
 int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size)
 {
-    volatile uint32_t i=0;
 
-    printf("saveRaw(0, 0x%08x, \"/ti/j7presi/%s\", %d/4, 32, false);\n",
-        (uint32_t)(uintptr_t)addr,
-        fileName,
-        ((size+3)/4)*4 /* align to 4 bytes for saveRaw */
-        );
+    if(mgr.current != NULL)
+    {
+      tivxTIDLTraceHeader header;
 
-    i=i; /* to put a break point */
+      strcpy(header.fileName, fileName);
+      header.size   = size;
+      header.offset = mgr.current_capacity + sizeof(tivxTIDLTraceHeader);
+
+      tivxTIDLTraceSetData(&mgr, (uint8_t *)&header, sizeof(tivxTIDLTraceHeader));
+      tivxTIDLTraceSetData(&mgr, addr, size);
+    }
 
     return 0;
 }
@@ -482,7 +416,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     for (i = 0U; i < num_params; i ++)
     {
-        if (NULL == obj_desc[i])
+        /* The parameter at i == 5 is optional and is used to provide a buffer for trace data */
+        if ((i != TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX) && (NULL == obj_desc[i]))
         {
             status = (vx_status)VX_FAILURE;
             break;
@@ -495,13 +430,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     if ((vx_status)VX_SUCCESS == status)
     {
         /* IMPORTANT! Config data is assumed to be available at index 0 */
-        config    = (tivx_obj_desc_user_data_object_t *)obj_desc[0];
+        config    = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
 
         /* IMPORTANT! Network data is assumed to be available at index 1 */
-        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[1];
+        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
         /* IMPORTANT! Create params is assumed to be available at index 2 */
-        createParams   = (tivx_obj_desc_user_data_object_t *)obj_desc[2];
+        createParams   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
 
         tidlObj = tivxMemAlloc(sizeof(tivxTIDLObj), (vx_enum)TIVX_MEM_EXTERNAL);
 
@@ -593,12 +528,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
             tidlObj->createParams.net = (sTIDL_Network_t *)tidlObj->tidlNet;
 
-            tidlObj->createParams.traceLogLevel = 0;
-            tidlObj->createParams.traceWriteLevel = 0;
-            #ifdef TIVX_TIDL_TARGET_DEBUG
-            tidlObj->createParams.traceLogLevel = 1;
-            tidlObj->createParams.traceWriteLevel = 1;
-            #endif
             tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
             tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
 
@@ -681,7 +610,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
 
     for (i = 0U; i < num_params; i ++)
     {
-        if (NULL == obj_desc[i])
+        if((i != TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX) && (NULL == obj_desc[i]))
         {
             status = (vx_status)VX_FAILURE;
             break;
