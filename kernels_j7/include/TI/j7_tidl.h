@@ -73,6 +73,9 @@ extern "C" {
 
 #define TIVX_TIDL_J7_CHECKSUM_SIZE (64)
 
+/* These correspond to parameter indices of the TIDL node
+ * They can be useful to aid in setting replicate parameters if
+ * vxReplicateNode is used. */
 #define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
 #define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
 #define TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX           (2U)

@@ -69,16 +69,10 @@
 
 #include <VX/vx.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* IMPORTANT! Change in size requires a rebuild of TIOVX and application.
- * This is the size of trace buffer allocated in host memory and
- * shared with target.
- */
-#define TIVX_TIDL_TRACE_DATA_SIZE  (256 * 1024 * 1024)
 #define TIVX_TIDL_TRACE_FILE_NAME_SIZE (512)
 
 /*!

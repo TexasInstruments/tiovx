@@ -254,7 +254,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         void *out_tensor_target_ptr;
         void *in_args_target_ptr;
         void *out_args_target_ptr;
-        void *trace_data_target_ptr;
+        void *trace_data_target_ptr = NULL;
 
         /* IMPORTANT! inArgs is assumed to be available at index 3 */
         inArgs   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_IN_ARGS_IDX];
@@ -280,7 +280,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
           trace_data_target_ptr = tivxMemShared2TargetPtr(&traceData->mem_ptr);
           tivxMemBufferMap(trace_data_target_ptr, traceData->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-          tivxTIDLTraceDataInit(&mgr, trace_data_target_ptr, TIVX_TIDL_TRACE_DATA_SIZE);
+          tivxTIDLTraceDataInit(&mgr, trace_data_target_ptr, traceData->mem_size);
         }
 
         /* Idx 0 - config data,

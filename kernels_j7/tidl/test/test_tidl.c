@@ -73,6 +73,12 @@
 
 #define DEBUG_TEST_TIDL
 
+/*
+ * This is the size of trace buffer allocated in host memory and
+ * shared with target.
+ */
+#define TIVX_TIDL_TRACE_DATA_SIZE  (256 * 1024 * 1024)
+
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
@@ -775,14 +781,14 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         ASSERT_VX_OBJECT(output_tensor[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-		    /* This is an optional parameter can be NULL as well. */
+        /* This is an optional parameter can be NULL as well. */
         if(arg_->trace_write_flag == 1)
         {
-          ASSERT_VX_OBJECT(traceData = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(traceData = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         }
         else
         {
-          traceData = NULL;
+            traceData = NULL;
         }
 
         vx_reference params[] = {
@@ -791,7 +797,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
                 (vx_reference)createParams,
                 (vx_reference)inArgs,
                 (vx_reference)outArgs,
-				        (vx_reference)traceData
+                (vx_reference)traceData
         };
 
         ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, input_tensor, output_tensor), VX_TYPE_NODE);
@@ -836,7 +842,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         if(arg_->trace_write_flag == 1)
         {
-            tivx_utils_tidl_trace_write(traceData, "airshow_256x256.");
+            sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/airshow_256x256.", ct_get_test_file_path());
+            ASSERT(sz < MAXPATHLENGTH);
+            VX_CALL(tivx_utils_tidl_trace_write(traceData, filepath));
         }
 
         VX_CALL(vxReleaseNode(&node));
