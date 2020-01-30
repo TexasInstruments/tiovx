@@ -69,8 +69,8 @@
 
 
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelCsitx, &tivxRemoveTargetKernelCsitx},
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[1] = {
+    {&tivxAddTargetKernelCsitx, &tivxRemoveTargetKernelCsitx}
 };
 
 void tivxRegisterHwaTargetCsitxKernels(void)

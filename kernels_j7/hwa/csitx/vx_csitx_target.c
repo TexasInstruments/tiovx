@@ -894,7 +894,7 @@ static vx_status VX_CALLBACK tivxCsitxDelete(
     }
     else
     {
-        tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
+        status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
 
         if ((vx_status)VX_SUCCESS != status)
         {
@@ -1129,7 +1129,7 @@ static vx_status VX_CALLBACK tivxCsitxControl(
                     {
                         status = tivxCsitxGetStatistics(prms,
                             (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
-                        if (FVID2_SOK != fvid2_status)
+                        if ((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                 "tivxCsitxControl: Get status failed\n");

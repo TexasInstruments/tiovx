@@ -201,7 +201,7 @@ static void VX_CALLBACK tivxTask_capture(void *app_var)
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
     {
         uint32_t num_refs;
-        vx_object_array captured_frames;
+        vx_object_array captured_frames = NULL;
         //tivx_raw_image captured_frames_array_item;
 
         /* Get captured frame reference, waits until a reference is available */
@@ -227,7 +227,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
 {
     vx_node csitx_node = 0;
     tivx_raw_image tx_frame_array_item=0;
-    vx_object_array tx_frame;
+    vx_object_array tx_frame = 0;
     vx_user_data_object csitx_config;
     tivx_csitx_params_t local_csitx_config;
     uint32_t buf_id, loop_id, loopCnt;
@@ -319,7 +319,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
     {
         uint32_t num_refs;
-        vx_object_array transmitted_frames;
+        vx_object_array transmitted_frames = NULL;
 
         /* Get tramsnitted frame reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(csitx_graph, 0, (vx_reference*)&transmitted_frames, 1, &num_refs);
