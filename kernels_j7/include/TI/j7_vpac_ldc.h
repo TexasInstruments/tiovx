@@ -358,7 +358,7 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *                  - [31:19] Signed integer offset in horizontal direction
  *             If set to null, back mapping is disabled.
  * \param [in] dcc_db (optional) DCC tuning database for the given sensor
- *             <tt>\ref vx_user_data_object </tt> Note: Not supported yet.
+ *             <tt>\ref vx_user_data_object </tt>
  * \param [in] in_img The input image in
  *             <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *             <tt>\ref TIVX_DF_IMAGE_NV12_P12</tt>,
