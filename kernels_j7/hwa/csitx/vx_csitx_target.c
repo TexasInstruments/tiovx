@@ -174,7 +174,7 @@ static void tivxCsitxGetChannelIndices(tivxCsitxParams *prms,
                                          uint32_t *endChIdx);
 static uint32_t tivxCsitxGetNodeChannelNum(tivxCsitxParams *prms,
                                              uint32_t instId,
-                                             uint32_t chId);        
+                                             uint32_t chId);
 static uint32_t tivxCsitxMapInstId(uint32_t instId);
 static void tivxCsitxPrintStatus(tivxCsitxInstParams *prms);
 
@@ -230,7 +230,7 @@ static vx_status tivxCsitxEnqueueFrameToDriver(
         frmList.numFrames = instParams->numCh;
         for (chId = startChIdx ; chId < endChIdx ; chId++)
         {
-            if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+            if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
             {
                 tivx_obj_desc_raw_image_t *raw_image;
 
@@ -361,6 +361,7 @@ static uint32_t tivxCsitxExtractDataFormat(uint32_t format)
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
             dataFormat = FVID2_DF_YUV422I_UYVY;
+            break;
         case (vx_df_image)VX_DF_IMAGE_YUYV:
             dataFormat = FVID2_DF_YUV422I_YUYV;
             break;
@@ -433,7 +434,7 @@ static void tivxCsitxSetCreateParams(
         Csitx_createParamsInit(createParams);
         /* Initialize transmit instance status */
         Csitx_instStatusInit(&prms->instParams[instIdx].csitxStatus);
-        
+
         /* set module configuration parameters */
         createParams->instCfg.rxCompEnable = params->instCfg[instIdx].rxCompEnable;
         createParams->instCfg.rxv1p3MapEnable = params->instCfg[instIdx].rxv1p3MapEnable;
@@ -452,7 +453,7 @@ static void tivxCsitxSetCreateParams(
             createParams->chCfg[loopCnt].chType = CSITX_CH_TYPE_TX;
             createParams->chCfg[loopCnt].vcNum = prms->instParams[instIdx].chVcMap[loopCnt];
 
-            if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+            if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
             {
                 createParams->chCfg[loopCnt].outCsiDataType =
                     FVID2_CSI2_DF_RAW12;
@@ -480,9 +481,9 @@ static void tivxCsitxSetCreateParams(
             createParams->chCfg[loopCnt].vBlank = params->instCfg[instIdx].vBlank;
             createParams->chCfg[loopCnt].hBlank = params->instCfg[instIdx].hBlank;
             createParams->chCfg[loopCnt].startDelayPeriod = params->instCfg[instIdx].startDelayPeriod;
-    
+
         }
-        
+
         /* set instance to be used for csitx */
         prms->instParams[instIdx].instId = tivxCsitxMapInstId(params->instId[instIdx]);
         prms->numOfInstUsed++;
@@ -510,7 +511,7 @@ static vx_status VX_CALLBACK tivxCsitxProcess(
     vx_uint32 size, frmIdx = 0U, chId = 0U;
     uint32_t instIdx;
     vx_enum state;
-    
+
     if ( (num_params != TIVX_KERNEL_CSITX_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_CSITX_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CSITX_INPUT_IDX])
@@ -704,7 +705,7 @@ static vx_status VX_CALLBACK tivxCsitxCreate(
         {
             /* Initialize steady_state_started to 0 */
             prms->steady_state_started = 0;
-            
+
             /* Set number of channels to number of items in input object array */
             prms->numCh = (uint8_t)input_desc->num_items;
 
@@ -884,7 +885,7 @@ static vx_status VX_CALLBACK tivxCsitxDelete(
     static Fvid2_FrameList frmList;
     uint32_t size, chId, instIdx;
     tivxCsitxInstParams *instParams;
-    
+
     if ( (num_params != TIVX_KERNEL_CSITX_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_CSITX_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CSITX_INPUT_IDX])
@@ -909,7 +910,7 @@ static vx_status VX_CALLBACK tivxCsitxDelete(
 
         if ((vx_status)VX_SUCCESS == status)
         {
-           
+
             for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
             {
                 instParams = &prms->instParams[instIdx];
@@ -1169,7 +1170,7 @@ void tivxAddTargetKernelCsitx(void)
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_CSITX, TIVX_TARGET_MAX_NAME);
-    
+
         vx_csitx_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_CSITX_NAME,
                             target_name,
