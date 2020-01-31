@@ -1148,11 +1148,11 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                             break;
                         }
                     }
-                    if (FVID2_SOK == fvid2_status)
+                    if ((vx_status)VX_SUCCESS == status)
                     {
                         status = tivxCaptureGetStatistics(prms,
                             (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
-                        if (FVID2_SOK != fvid2_status)
+                        if ((vx_status)VX_SUCCESS != status)
                         {
                             VX_PRINT(VX_ZONE_ERROR,
                                 "tivxCaptureControl: Get status failed\n");
