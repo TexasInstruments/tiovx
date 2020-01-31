@@ -358,7 +358,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
     return (status);
 }
 
-vx_bool tivxQueueIsEmpty(tivx_queue *queue)
+vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
 {
     vx_bool is_empty = (vx_bool)vx_true_e;
     tivx_queue_context context = NULL;
@@ -386,7 +386,7 @@ vx_bool tivxQueueIsEmpty(tivx_queue *queue)
     return (is_empty);
 }
 
-vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data)
+vx_status tivxQueuePeek(const tivx_queue *queue, uintptr_t *data)
 {
     vx_status status = (vx_status)VX_FAILURE;/* init status to error */
     tivx_queue_context context = NULL;
