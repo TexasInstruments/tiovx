@@ -865,152 +865,116 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
 
-        if (0 == arg_->mux0)
+        if (TIVX_VPAC_VISS_MUX2_YUV422 != arg_->mux2)
         {
-            ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        }
-        else if (1 == arg_->mux0)
-        {
-            y12 = NULL;
-        }
-        else if (2 == arg_->mux0)
-        {
-            y12 = NULL;
-        }
-        else if (3 == arg_->mux0)
-        {
-            ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        }
-        else if (4 == arg_->mux0)
-        {
-            ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, TIVX_DF_IMAGE_NV12_P12), VX_TYPE_IMAGE);
-        }
-        else if (5 == arg_->mux0)
-        {
-            y12 = NULL;
-        }
-
-        if (4 == arg_->mux0)
-        {
-            uv12_c1 = NULL;
-        }
-        else
-        {
-            if (0 == arg_->mux1)
+            if (TIVX_VPAC_VISS_MUX0_Y12 == arg_->mux0)
             {
-                ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+                ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
             }
-            else if (1 == arg_->mux1)
+            else if (TIVX_VPAC_VISS_MUX0_VALUE12 == arg_->mux0)
             {
-                uv12_c1 = NULL;
+                ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
             }
-            else if (2 == arg_->mux1)
+            else if (TIVX_VPAC_VISS_MUX0_NV12_P12 == arg_->mux0)
             {
-                ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-            }
-            else if (3 == arg_->mux1)
-            {
-                uv12_c1 = NULL;
-            }
-            else if (4 == arg_->mux1)
-            {
-                uv12_c1 = NULL;
-            }
-            else if (5 == arg_->mux1)
-            {
-                uv12_c1 = NULL;
-            }
-        }
-
-        if (0 == arg_->mux2)
-        {
-            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        }
-        else if (1 == arg_->mux2)
-        {
-            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        }
-        else if (2 == arg_->mux2)
-        {
-            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        }
-        else if (3 == arg_->mux2)
-        {
-            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        }
-        else if (4 == arg_->mux2)
-        {
-            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        }
-        else if (5 == arg_->mux2)
-        {
-            if (4 == arg_->mux0)
-            {
-                y8_r8_c2 = NULL;
+                ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, TIVX_DF_IMAGE_NV12_P12), VX_TYPE_IMAGE);
             }
             else
             {
-                ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_YUYV), VX_TYPE_IMAGE);
+                y12 = NULL;
+            }
+
+            if (TIVX_VPAC_VISS_MUX0_NV12_P12 == arg_->mux0)
+            {
+                uv12_c1 = NULL;
+            }
+            else
+            {
+                if (TIVX_VPAC_VISS_MUX1_UV12 == arg_->mux1)
+                {
+                    ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+                }
+                else if (TIVX_VPAC_VISS_MUX1_C1 == arg_->mux1)
+                {
+                    ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+                }
+                else
+                {
+                    uv12_c1 = NULL;
+                }
             }
         }
 
-        if ( (4 == arg_->mux2))
+        if (TIVX_VPAC_VISS_MUX2_Y8 == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+        else if (TIVX_VPAC_VISS_MUX2_RED == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+        else if (TIVX_VPAC_VISS_MUX2_C2 == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+        }
+        else if (TIVX_VPAC_VISS_MUX2_VALUE8 == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+        else if (TIVX_VPAC_VISS_MUX2_NV12 == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        }
+        else if (TIVX_VPAC_VISS_MUX2_YUV422 == arg_->mux2)
+        {
+            ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_YUYV), VX_TYPE_IMAGE);
+        }
+        else
+        {
+            y8_r8_c2 = NULL;
+        }
+
+        if ((TIVX_VPAC_VISS_MUX2_NV12 == arg_->mux2) ||
+            (TIVX_VPAC_VISS_MUX2_YUV422 == arg_->mux2))
         {
             uv8_g8_c3 = NULL;
         }
         else
         {
-            if (0 == arg_->mux3)
+            if (TIVX_VPAC_VISS_MUX3_UV8 == arg_->mux3)
             {
                 ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
             }
-            else if (1 == arg_->mux3)
+            else if (TIVX_VPAC_VISS_MUX3_GREEN == arg_->mux3)
             {
                 ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
             }
-            else if (2 == arg_->mux3)
+            else if (TIVX_VPAC_VISS_MUX3_C3 == arg_->mux3)
             {
                 ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
             }
-            else if (3 == arg_->mux3)
-            {
-                uv8_g8_c3 = NULL;
-            }
-            else if (4 == arg_->mux3)
-            {
-                uv8_g8_c3 = NULL;
-            }
-            else if (5 == arg_->mux3)
+            else
             {
                 uv8_g8_c3 = NULL;
             }
         }
 
-        if (0 == arg_->mux4)
-        {
-            s8_b8_c4 = NULL;
-        }
-        else if (1 == arg_->mux4)
+        if (TIVX_VPAC_VISS_MUX4_BLUE == arg_->mux4)
         {
             ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         }
-        else if (2 == arg_->mux4)
+        else if (TIVX_VPAC_VISS_MUX4_C4 == arg_->mux4)
         {
             ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         }
-        else if (3 == arg_->mux4)
+        else if (TIVX_VPAC_VISS_MUX4_SAT == arg_->mux4)
         {
             ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         }
-        else if (4 == arg_->mux4)
+        else
         {
             s8_b8_c4 = NULL;
         }
-        else if (5 == arg_->mux4)
-        {
-            s8_b8_c4 = NULL;
-        }
-
 
         //ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
@@ -1035,6 +999,11 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         params.bypass_nsf4 = 1;
         params.h3a_in = 0;
 
+        if (TIVX_VPAC_VISS_MUX2_YUV422 == arg_->mux2)
+        {
+            params.chroma_mode = 1;
+        }
+
         VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -1055,33 +1024,31 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         VX_CALL(vxReleaseGraph(&graph));
         //VX_CALL(vxReleaseDistribution(&histogram));
 
-        if ( (1 == arg_->mux4) || (2 == arg_->mux4) || (3 == arg_->mux4) )
+        if (NULL != s8_b8_c4)
         {
             VX_CALL(vxReleaseImage(&s8_b8_c4));
             ASSERT(s8_b8_c4 == 0);
         }
 
-        if ( ((0 == arg_->mux3) || (1 == arg_->mux3) || (2 == arg_->mux3)) &&
-             !((4 == arg_->mux2)) )
+        if ( NULL != uv8_g8_c3 )
         {
             VX_CALL(vxReleaseImage(&uv8_g8_c3));
             ASSERT(uv8_g8_c3 == 0);
         }
 
-        if (!( (4 == arg_->mux0) && (5 == arg_->mux2)))
+        if (NULL != y8_r8_c2)
         {
             VX_CALL(vxReleaseImage(&y8_r8_c2));
             ASSERT(y8_r8_c2 == 0);
         }
 
-        if ( ((0 == arg_->mux1) || (2 == arg_->mux1)) &&
-             (4 != arg_->mux0) )
+        if ( NULL != uv12_c1 )
         {
             VX_CALL(vxReleaseImage(&uv12_c1));
             ASSERT(uv12_c1 == 0);
         }
 
-        if ( (0 == arg_->mux0) || (3 == arg_->mux0) || (4 == arg_->mux0) )
+        if ( NULL != y12 )
         {
             VX_CALL(vxReleaseImage(&y12));
             ASSERT(y12 == 0);
