@@ -54,14 +54,32 @@ SYS_SHARED_LIBS += rt dl png z
 
 LDIRS+=$(J7_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(CGT7X_ROOT)/host_emulation
-LDIRS+=$(MMALIB_PATH)/lib
+LDIRS+=$(MMALIB_PATH)/lib/$(TARGET_BUILD)
 LDIRS+=$(TIDL_PATH)/lib/PC/dsp/algo/$(TARGET_BUILD)
-LDIRS+=$(PDK_PATH)/packages/ti/drv/udma/lib/j721e_hostemu/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+=$(PDK_PATH)/packages/ti/drv/sciclient/lib/j721e/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+=$(PDK_PATH)/packages/ti/csl/lib/j721e/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+=$(PDK_PATH)/packages/ti/osal/lib/nonos/j721e/c7x-hostemu/$(TARGET_BUILD)
+
+LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/j721e_hostemu/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/csl/lib/j721e/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/drv/sciclient/lib/j721e_hostemu/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/j721e/c7x-hostemu/$(TARGET_BUILD)
+
 
 LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += ti_imaging_dcc
+
+PDK_LIBS =
+PDK_LIBS += dmautils.lib
+PDK_LIBS += udma.lib
+PDK_LIBS += sciclient.lib
+PDK_LIBS += ti.csl.lib
+PDK_LIBS += ti.osal.lib
+
+MMA_LIBS =
+MMA_LIBS += mmalib_cn_x86_64
+MMA_LIBS += mmalib_x86_64
+MMA_LIBS += common_x86_64
+
+ADDITIONAL_STATIC_LIBS += $(PDK_LIBS)
+
+STATIC_LIBS += $(MMA_LIBS)
 
 endif
