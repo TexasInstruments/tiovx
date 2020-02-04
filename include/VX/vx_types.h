@@ -441,14 +441,14 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
  * the 4 bytes of an enumeration.
  * \ingroup group_basic_features
  */
-#define VX_VENDOR_MASK                      (0xFFF00000)
+#define VX_VENDOR_MASK                      (0xFFF00000U)
 
 /*! \brief A type mask removes the scalar/object type from the attribute.
  * It is 3 nibbles in size and is contained between the third and second byte.
  * \see vx_type_e
  * \ingroup group_basic_features
  */
-#define VX_TYPE_MASK                        (0x000FFF00)
+#define VX_TYPE_MASK                        (0x000FFF00U)
 
 /*! \brief A library is a set of vision kernels with its own ID supplied by a vendor.
  * The vendor defines the library ID. The range is \f$ [0,2^{8}-1] \f$ inclusive.
@@ -459,22 +459,22 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
 /*! \brief An individual kernel in a library has its own unique ID within \f$ [0,2^{12}-1] \f$ (inclusive).
  * \ingroup group_basic_features
  */
-#define VX_KERNEL_MASK                      (0x00000FFF)
+#define VX_KERNEL_MASK                      (0x00000FFFU)
 
 /*! \brief An object's attribute ID is within the range of \f$ [0,2^{8}-1] \f$ (inclusive).
  * \ingroup group_basic_features
  */
-#define VX_ATTRIBUTE_ID_MASK                (0x000000FF)
+#define VX_ATTRIBUTE_ID_MASK                (0x000000FFU)
 
 /*! \brief A type of enumeration. The valid range is between \f$ [0,2^{8}-1] \f$ (inclusive).
  * \ingroup group_basic_features
  */
-#define VX_ENUM_TYPE_MASK                   (0x000FF000)
+#define VX_ENUM_TYPE_MASK                   (0x000FF000U)
 
 /*! \brief A generic enumeration list can have values between \f$ [0,2^{12}-1] \f$ (inclusive).
  * \ingroup group_basic_features
  */
-#define VX_ENUM_MASK                        (0x00000FFF)
+#define VX_ENUM_MASK                        (0x00000FFFU)
 
 /*! \brief A macro to extract the vendor ID from the enumerated value.
  * \ingroup group_basic_features
@@ -484,7 +484,7 @@ typedef vx_action (VX_CALLBACK *vx_nodecomplete_f)(vx_node node);
 /*! \brief A macro to extract the type from an enumerated attribute value.
  * \ingroup group_basic_features
  */
-#define VX_TYPE(e)                          ((vx_int32)((vx_int32)e & VX_TYPE_MASK) >> 8)
+#define VX_TYPE(e)                          (((vx_uint32)e & VX_TYPE_MASK) >> 8)
 
 /*! \brief A macro to extract the enum type from an enumerated value.
  * \ingroup group_basic_features

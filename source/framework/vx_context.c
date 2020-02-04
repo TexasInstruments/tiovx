@@ -1126,7 +1126,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
         (void)ownContextLock(context);
 
         status = (vx_status)VX_ERROR_NO_RESOURCES;
-        if((int32_t)context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
+        if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
             *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)context->next_dynamic_user_kernel_id++;
             status = (vx_status)VX_SUCCESS;

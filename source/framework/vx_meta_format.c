@@ -126,7 +126,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
 
     if(attribute != (vx_enum)VX_VALID_RECT_CALLBACK)
     {
-        if (VX_TYPE(attribute) != meta->type)
+        if (VX_TYPE(attribute) != (vx_uint32)meta->type)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid meta format type\n");
             status = (vx_status)VX_ERROR_INVALID_TYPE;
