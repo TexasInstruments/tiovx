@@ -815,14 +815,22 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
 {
     uint32_t            cnt1, cnt2;
     Fcp_CcmConfig      *ccmCfg = NULL;
-    iss_ipipe_rgb2rgb  *rgb2rgb = NULL;
-
     ccmCfg = &vissObj->vissCfg.ccmCfg;
-    rgb2rgb = vissObj->dcc_out_prms.ipipeRgb2Rgb1Cfg;
 
-    if (NULL != rgb2rgb)
+    if (vissObj->dcc_out_prms.useCcmCfg != 0)
     {
-        /* Map DCC Output Config to FVID2 Driver Config */
+        int color_temp = ae_awb_res->color_temperature; 
+        int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
+        iss_ipipe_rgb2rgb ccm_int;
+        iss_ipipe_rgb2rgb *rgb2rgb = &ccm_int;
+
+        dcc_interp_CCM(
+            vissObj->dcc_out_prms.phPrmsRgb2Rgb1,
+            n_regions,
+            color_temp,
+            vissObj->dcc_out_prms.ipipeRgb2Rgb1Cfg,
+            rgb2rgb);
+
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
         {
             for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)

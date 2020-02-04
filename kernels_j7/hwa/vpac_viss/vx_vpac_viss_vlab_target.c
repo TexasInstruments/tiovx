@@ -435,7 +435,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             if(1u == prms->use_dcc)
             {
-                if(prms->dcc_output_params->useRgb2Rgb1Cfg)
+                if(prms->dcc_output_params->useCcmCfg)
                 {
                     tivxVpacVissParseCCMParams(&prms->config.flexcc_params.CCM1,
                         prms->dcc_output_params);
