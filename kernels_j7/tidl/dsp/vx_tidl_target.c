@@ -74,9 +74,11 @@
 #ifndef x86_64
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
-//#define DISABLE_INTERRUPTS_DURING_PROCESS
+/* #define DISABLE_INTERRUPTS_DURING_PROCESS */
 #define DISABLE_IPC_INTERRUPTS_DURING_PROCESS
 #endif
+
+/* #define TIVX_TIDL_TARGET_DEBUG */
 
 #define TIDL_COPY_NETWORK_BUF
 
@@ -404,10 +406,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     void *network_target_ptr = NULL;
     void *create_params_target_ptr = NULL;
 
-    tivx_mem_stats l1_stats;
-    tivx_mem_stats l2_stats;
-    tivx_mem_stats l3_stats;
-
     uint32_t i;
 
     #ifdef TIVX_TIDL_TARGET_DEBUG
@@ -505,6 +503,11 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
         if ((vx_status)VX_SUCCESS == status)
         {
+
+            tivx_mem_stats l1_stats;
+            tivx_mem_stats l2_stats;
+            tivx_mem_stats l3_stats;
+
             /* reset scratch heap offset to zero by doing a dummy free */
             tivxMemFree(NULL, 0, (vx_enum)TIVX_MEM_INTERNAL_L1);
             tivxMemFree(NULL, 0, (vx_enum)TIVX_MEM_INTERNAL_L2);
@@ -530,6 +533,11 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
             tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
             tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
+
+            VX_PRINT(VX_ZONE_INFO, "Network version - 0x%08X, Expected version - 0x%08X\n",
+                tidlObj->createParams.net->netVersion,
+                TIDL_NET_VERSION
+                );
 
             tidlObj->algHandle = tivxAlgiVisionCreate
                               (
