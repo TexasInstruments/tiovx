@@ -206,36 +206,59 @@ static void VX_CALLBACK tivxTask_capture(void *app_var)
     {
         uint32_t num_refs;
         vx_object_array captured_frames = NULL;
-        tivx_raw_image captured_frame_array_item=0;
-        vx_map_id map_id;
-        vx_int32 i,j;
-        vx_imagepatch_addressing_t addr;
-        uint16_t *ptr2 = NULL;
-
+        
         /* Get captured frame reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(csirx_graph, 0, (vx_reference*)&captured_frames, 1, &num_refs);
-
-        /* Check data in captured image for running pattern*/
-        ASSERT_VX_OBJECT(captured_frame_array_item = (tivx_raw_image)vxGetObjectArrayItem(captured_frames , 0), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
-
-        VX_CALL(tivxMapRawImagePatch(captured_frame_array_item, &rect, 0, &map_id, &addr, (void **)&ptr2,
-                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
-        for (i = 0; i <height; i++)
-        {
-            for(j=0; j<width; j++)
-            {
-                ASSERT(ptr2[(i*width)+j] == (j + loop_id));
-            }
-        }
-
-        VX_CALL(tivxUnmapRawImagePatch(captured_frame_array_item, map_id));
-        VX_CALL(tivxReleaseRawImage(&captured_frame_array_item));
 
         vxGraphParameterEnqueueReadyRef(csirx_graph, 0, (vx_reference*)&captured_frames, 1);
 
     }
     /* ensure all csirx_graph processing is complete */
     vxWaitGraph(csirx_graph);
+
+    tivx_raw_image captured_frame_array_item=0;
+    vx_map_id map_id;
+    vx_int32 i,j;
+    vx_imagepatch_addressing_t addr;
+    uint16_t *ptr2 = NULL;
+    uint16_t frame_cnt = 0;
+
+    /* Check data in captured image*/
+    /* Find which frame is present in the first buffer, by comparing the starting data for each frame*/
+    ASSERT_VX_OBJECT(captured_frame_array_item = (tivx_raw_image)vxGetObjectArrayItem(capture_frames[0] , 0), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+    VX_CALL(tivxMapRawImagePatch(captured_frame_array_item, &rect, 0, &map_id, &addr, (void **)&ptr2,
+                                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    for(frame_cnt=0; frame_cnt<num_buf; frame_cnt++)
+    {
+        if(ptr2[0]==frame_cnt)
+        {
+            break;
+        }
+    }
+    VX_CALL(tivxUnmapRawImagePatch(captured_frame_array_item, map_id));   
+    VX_CALL(tivxReleaseRawImage(&captured_frame_array_item));
+    /*Check if the starting data in first buffer dosent correspond to any frame*/
+    ASSERT(frame_cnt < num_buf);
+    /* Check data in all buffers*/
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(captured_frame_array_item = (tivx_raw_image)vxGetObjectArrayItem(capture_frames[buf_id] , 0), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+        VX_CALL(tivxMapRawImagePatch(captured_frame_array_item, &rect, 0, &map_id, &addr, (void **)&ptr2,
+                                    VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        for (i = 0; i <height; i++)
+        {
+            for(j=0; j<width; j++)
+            {
+                ASSERT(ptr2[(i*width)+j] == (j + frame_cnt));
+            }
+        }
+        frame_cnt++;
+        frame_cnt = (frame_cnt  == num_buf)? 0 : frame_cnt;
+        VX_CALL(tivxUnmapRawImagePatch(captured_frame_array_item, map_id));   
+        VX_CALL(tivxReleaseRawImage(&captured_frame_array_item));
+    }
+    
 
     VX_CALL(vxReleaseNode(&csirx_node));
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -261,6 +284,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     vx_int32 i,j;
     vx_imagepatch_addressing_t addr;
     uint16_t *ptr = NULL;
+    uint16_t frame_cnt = 0;
 
     vx_graph csitx_graph = (vx_graph)app_var;
 
@@ -277,9 +301,10 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     {
         for(j=0; j<width; j++)
         {
-            ptr[(i*width)+j] = j;
+            ptr[(i*width)+j] = j + frame_cnt;
         }
     }
+    frame_cnt++;
     VX_CALL(tivxUnmapRawImagePatch(tx_frame_array_item, map_id));
 
     /* CSITX Config initialization */
@@ -336,7 +361,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
 
     /* wait for csitx_graph instances to complete, schedule again */
     /* loop_id limit is loop_count + no.of capture buffers - num.of pipeup capture buffers*/
-    for(loop_id=0; loop_id<(loop_cnt + num_buf - CAPTURE_MIN_PIPEUP_BUFS); loop_id++)
+    for(loop_id=0; loop_id<(loop_cnt + num_buf - CAPTURE_MIN_PIPEUP_BUFS) ; loop_id++)
     {
         uint32_t num_refs;
         vx_object_array transmitted_frames = NULL;
@@ -344,7 +369,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
         /* Get tramsnitted frame reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(csitx_graph, 0, (vx_reference*)&transmitted_frames, 1, &num_refs);
 
-        /* Update each frame to be transmitted with running pattern as a function of loop_id, such that each successive frame differs*/
+        /*To transmit 4(num_buf) different frames,Update each frame to be transmitted*/
         VX_CALL(tivxMapRawImagePatch(tx_frame_array_item, &rect, 0, &map_id, &addr, (void **)&ptr,
                                         VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
         ASSERT(ptr != NULL);
@@ -353,9 +378,11 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
         {
             for(j=0; j<width; j++)
             {
-                ptr[(i*width)+j] = (j + loop_id + 1);
+                ptr[(i*width)+j] = (j + frame_cnt);
             }
         }
+        frame_cnt++;
+        frame_cnt = (frame_cnt  == num_buf)? 0 : frame_cnt;
         VX_CALL(tivxUnmapRawImagePatch(tx_frame_array_item, map_id));
 
         vxGraphParameterEnqueueReadyRef(csitx_graph, 0, (vx_reference*)&transmitted_frames, 1);
@@ -467,12 +494,4 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
 
 TESTCASE_TESTS(tivxHwaCsitxCsirx,
                testCsitxCsirxloopback)
-
-
-
-
-
-
-
-
 
