@@ -295,7 +295,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
  *
  * \param [in] graph Graph reference
  * \param [in] graph_parameter_index Graph parameter index
- * \param [out] num_refs Number of references that can be dequeued using
+ * \param [out] num_refs Number of references that can be dequeued using <tt>\ref vxGraphParameterDequeueDoneRef</tt>
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
