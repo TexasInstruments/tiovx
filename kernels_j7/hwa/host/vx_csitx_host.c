@@ -307,6 +307,7 @@ void tivx_csitx_params_init(tivx_csitx_params_t *prms)
             prms->instId[loopCnt]                       = loopCnt;
             prms->instCfg[loopCnt].rxCompEnable         = (uint32_t)vx_true_e;
             prms->instCfg[loopCnt].rxv1p3MapEnable      = (uint32_t)vx_true_e;
+            prms->instCfg[loopCnt].laneBandSpeed        = TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS;
             prms->instCfg[loopCnt].numDataLanes         = 5u;
             for (cnt = 0u; cnt < prms->instCfg[loopCnt].numDataLanes; cnt ++)
             {

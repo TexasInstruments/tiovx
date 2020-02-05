@@ -118,6 +118,32 @@ extern "C" {
  */
 #define TIVX_CSITX_MAX_INST                               (1U)
 
+/*! \brief Lane Band Speed: 770 Mbps to 870 Mbps 
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS             ((uint32_t) 0x0DU)
+/*! \brief Lane Band Speed: 1000 Mbps to 1200 Mbps 
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_1000_TO_1200_MBPS           ((uint32_t) 0x10U)
+/*! \brief Lane Band Speed: 1400 Mbps to 1600 Mbps 
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_1400_TO_1600_MBPS           ((uint32_t) 0x12U)
+/*! \brief Lane Band Speed: 2200 Mbps to 2500 Mbps 
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_2200_TO_2500_MBPS           ((uint32_t) 0x16U)
+/*! \brief Lane Band Speed: Reserved 
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_RESERVED                    ((uint32_t) 0x17U)
+
 /*********************************
  *      CSITX STRUCTURES
  *********************************/
@@ -135,6 +161,7 @@ typedef struct
     uint32_t vBlank;                /*!< Vertical blanking in terms of number of line. */
     uint32_t hBlank;                /*!< Horizontal blanking in terms of number of pixels */
     uint32_t startDelayPeriod;      /*!< Delay in terms of micro-seconds before sending first line after enabling. Note: This is only applicable if chType is CSITX_CH_TYPE_COLORBAR. */
+    uint32_t laneBandSpeed;         /*!< Data rates for lane band control.*/
 } tivx_csitx_inst_params_t;
 
 /*!

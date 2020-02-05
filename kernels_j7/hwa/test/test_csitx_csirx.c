@@ -314,6 +314,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     local_csitx_config.instId[0U]                       = CSITX_INST_ID;
     local_csitx_config.instCfg[0U].rxCompEnable         = (uint32_t)vx_true_e;
     local_csitx_config.instCfg[0U].rxv1p3MapEnable      = (uint32_t)vx_true_e;
+    local_csitx_config.instCfg[0U].laneBandSpeed        = TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS;
     local_csitx_config.instCfg[0U].numDataLanes         = 4U;
     for (loopCnt = 0U ;
         loopCnt < local_csitx_config.instCfg[0U].numDataLanes ;
