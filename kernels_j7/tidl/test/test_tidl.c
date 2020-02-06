@@ -598,7 +598,7 @@ static vx_status readInputRawPadded(vx_context context, vx_user_data_object conf
     return status;
 }
 
-static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_tensors, vx_int32 refid, vx_float32 refscore)
+static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_tensors, vx_int32 refid)
 {
     vx_status status = VX_SUCCESS;
     float score[5];
@@ -689,14 +689,15 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 
 typedef struct {
     const char* testName;
+    const char* config;
     const char* network;
     uint32_t read_raw_padded;
     uint32_t trace_write_flag;
 } Arg;
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0, 0), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0, 1)
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
 
 static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
 {
@@ -730,20 +731,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     vx_tensor input_tensor[1];
     vx_tensor output_tensor[1];
 
-    vx_int32    network_id = 0;
-    vx_int32    refid[] = {896, 895, 895, 895, 895};
-    vx_float32  refscore[] = {1672.485962f, 650.004700f, 824.762573f, 542.191040f, 4.546313};
-
-    if(strcmp(arg_->network, "inception_v1") == 0)
-        network_id = 0;
-    if(strcmp(arg_->network, "jacintonet11v2") == 0)
-        network_id = 1;
-    if(strcmp(arg_->network, "resnet10") == 0)
-        network_id = 2;
-    if(strcmp(arg_->network, "mobilenetv1") == 0)
-        network_id = 3;
-    if(strcmp(arg_->network, "squeez1") == 0)
-        network_id = 4;
+    vx_int32    refid = 895;
 
     vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
     char filepath[MAXPATHLENGTH];
@@ -759,7 +747,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         tivxTIDLLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_tidl_kernels, CT_GC_OBJECT);
 
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->config);
         ASSERT(sz < MAXPATHLENGTH);
 
         ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -768,7 +756,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->network);
         ASSERT(sz < MAXPATHLENGTH);
 
         ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -838,7 +826,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         printf("Showing output ...\n");
         #endif
 
-        VX_CALL(displayOutput(config, &output_tensor[0], refid[network_id], refscore[network_id]));
+        VX_CALL(displayOutput(config, &output_tensor[0], refid));
 
         if(arg_->trace_write_flag == 1)
         {
