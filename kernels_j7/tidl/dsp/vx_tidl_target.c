@@ -75,7 +75,6 @@
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
 #define DISABLE_INTERRUPTS_DURING_PROCESS
-#define DISABLE_IPC_INTERRUPTS_DURING_PROCESS
 #endif
 
 /* #define TIVX_TIDL_TARGET_DEBUG */
@@ -197,11 +196,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
      * until stability issue is root caused disabling interrupts
      * */
     oldIntState = HwiP_disable();
-    #endif
-    #ifdef DISABLE_IPC_INTERRUPTS_DURING_PROCESS
-    HwiP_disableInterrupt(51);
-    HwiP_disableInterrupt(52);
-    HwiP_disableInterrupt(53);
     #endif
 
     for (i = 0U; i < num_params; i ++)
@@ -346,11 +340,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
     HwiP_restore(oldIntState);
-    #endif
-    #ifdef DISABLE_IPC_INTERRUPTS_DURING_PROCESS
-    HwiP_enableInterrupt(51);
-    HwiP_enableInterrupt(52);
-    HwiP_enableInterrupt(53);
     #endif
 
     return (status);
@@ -612,12 +601,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     #ifdef DISABLE_INTERRUPTS_DURING_PROCESS
     VX_PRINT(VX_ZONE_WARNING, "All Interrupts DISABLED during TIDL process\n");
-    #else
-        #ifdef DISABLE_IPC_INTERRUPTS_DURING_PROCESS
-        VX_PRINT(VX_ZONE_WARNING, "IPC Interrupts DISABLED during TIDL process\n");
-        #else
-        VX_PRINT(VX_ZONE_WARNING, "All Interrupts ENABLED during TIDL process\n");
-        #endif
     #endif
 
     return (status);
