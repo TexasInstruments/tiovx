@@ -792,7 +792,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         if(arg_->read_raw_padded)
         {
-            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/%s/airshow_256x256.y", arg_->network);
+            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.y");
             ASSERT(sz < MAXPATHLENGTH);
 
             #ifdef DEBUG_TEST_TIDL
@@ -803,7 +803,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         }
         else
         {
-            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/%s/airshow_256x256.bmp", arg_->network);
+            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.bmp");
             ASSERT(sz < MAXPATHLENGTH);
 
             #ifdef DEBUG_TEST_TIDL
