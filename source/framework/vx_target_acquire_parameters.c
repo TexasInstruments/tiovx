@@ -397,7 +397,7 @@ static void tivxTargetNodeDescReleaseParameter(
         /* this is a output and is used as input but some other node */
         data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
     }
-    if(do_release_ref || do_release_ref_to_queue)
+    if((do_release_ref != (vx_bool)vx_false_e) || (do_release_ref_to_queue != (vx_bool)vx_false_e))
     {
         if(do_release_ref_to_queue != (vx_bool)vx_false_e)
         {

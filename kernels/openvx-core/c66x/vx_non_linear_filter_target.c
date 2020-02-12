@@ -149,15 +149,19 @@ static vx_status VX_CALLBACK tivxNonLinearFilter(
 
         if ((vx_enum)VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
         {
-            status |= (vx_status)VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
+            vx_uint32 temp_status = (vx_uint32)status;
+            temp_status |= (vx_uint32)VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                   dst_addr, &vxlib_dst,
                                                   mask_addr, &mask_params);
+            status = (vx_status)temp_status;
         }
         else if ((vx_enum)VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
         {
-            status |= (vx_status)VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
+            vx_uint32 temp_status = (vx_uint32)status;
+            temp_status |= (vx_uint32)VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
                                                    dst_addr, &vxlib_dst,
                                                    mask_addr, &mask_params);
+            status = (vx_status)temp_status;
         }
         else
         {
@@ -169,11 +173,13 @@ static vx_status VX_CALLBACK tivxNonLinearFilter(
 
             if(status==(vx_status)VX_SUCCESS)
             {
-                status |= (vx_status)VXLIB_median_MxN_i8u_i8u_o8u(
+                vx_uint32 temp_status = (vx_uint32)status;
+                temp_status |= (vx_uint32)VXLIB_median_MxN_i8u_i8u_o8u(
                                         src_addr, &vxlib_src,
                                         dst_addr, &vxlib_dst,
                                         mask_addr, &mask_params,
                                         (int64_t*)scratch, scratch_size);
+                status = (vx_status)temp_status;
             }
         }
 

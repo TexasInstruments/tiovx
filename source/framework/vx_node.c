@@ -164,7 +164,7 @@ static vx_status ownRemoveNodeInt(const vx_node *n)
 
     vx_status status =  (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE)))
+    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
     {
         if (node->graph != NULL)
         {
@@ -184,7 +184,7 @@ static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32
 
     for(i=0; i<num_params ; i++)
     {
-        if( (params[i] != NULL) && (params[i]->is_virtual))
+        if( (params[i] != NULL) && (params[i]->is_virtual != (vx_bool)vx_false_e))
         {
             params[i]->is_accessible = is_accessible;
         }
@@ -230,7 +230,7 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
     uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
 
     if ((NULL != node) &&
-        (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE)))
+        (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
     {
         if(NULL == node->kernel)
         {
@@ -453,7 +453,7 @@ vx_status ownNodeKernelInit(vx_node node)
                             }
                         }
 
-                        status |= node->kernel->initialize(node, params, num_params);
+                        tivxCheckStatus(&status, node->kernel->initialize(node, params, num_params));
                     }
                 }
                 else
@@ -578,7 +578,7 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE)))
+    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
     {
         if((NULL != node->kernel) && (node->is_kernel_created == (vx_bool)vx_true_e))
         {
@@ -636,7 +636,7 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 
                         ownNodeUserKernelSetParamsAccesible(params, num_params, (vx_bool)vx_true_e);
 
-                        status |= node->kernel->function(node, params, num_params);
+                        tivxCheckStatus(&status, node->kernel->function(node, params, num_params));
 
                         ownNodeUserKernelSetParamsAccesible(params, num_params, (vx_bool)vx_false_e);
                     }
@@ -1042,7 +1042,7 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
     {
         if( (tivxFlagIsBitSet( node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_REPLICATED) == (vx_bool)vx_true_e)
             &&
-            (node->replicated_flags[prm_idx]))
+            (node->replicated_flags[prm_idx] != (vx_bool)vx_false_e))
         {
             is_replicated = (vx_bool)vx_true_e;
         }
@@ -1532,7 +1532,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
     }
 
     vx_status status =  (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE)))
+    if ((NULL != node) && (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
     {
         status = ownRemoveNodeInt(n);
         if(status == (vx_status)VX_SUCCESS) {

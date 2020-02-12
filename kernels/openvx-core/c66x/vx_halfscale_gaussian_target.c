@@ -134,11 +134,13 @@ static vx_status VX_CALLBACK tivxHalfscaleGaussian(
 
         if(gsize_value == 1)
         {
+            vx_uint32 temp_status = (vx_uint32)status;
             tivxInitBufParams(src_desc, &vxlib_src);
             tivxInitBufParams(dst_desc, &vxlib_dst);
-            status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
+            temp_status |= (vx_uint32)VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                                                       dst_addr, &vxlib_dst,
                                                       2.0f, 2.0f, 0, 0, 0, 0);
+            status = (vx_status)temp_status;
         }
         else if ((gsize_value == 3) || (gsize_value == 5))
         {
@@ -158,16 +160,21 @@ static vx_status VX_CALLBACK tivxHalfscaleGaussian(
                 status = tivxGetTargetKernelInstanceContext(kernel, &gaussOut, &gaussOut_size);
                 if ((vx_status)VX_SUCCESS == status)
                 {
+                    vx_uint32 temp_status = (vx_uint32)status;
                     pGauss = (uint8_t*)(gaussOut);
-                    status |= (vx_status)VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
+                    temp_status |= (vx_uint32)VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
                                                      pGauss, &gauss_params);
-                    status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u((uint8_t*)gaussOut, &gauss_params,
+                    temp_status |= (vx_uint32)VXLIB_scaleImageNearest_i8u_o8u((uint8_t*)gaussOut, &gauss_params,
                                                           dst_addr, &vxlib_dst,
                                                           2.0f, 2.0f, 0, 0, 0, 0);
+                    status = (vx_status)temp_status;
                 }
-            } else {
-                status |= (vx_status)VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
+            } else
+            {
+                vx_uint32 temp_status = (vx_uint32)status;
+                temp_status |= (vx_uint32)VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
                                                               dst_addr, &vxlib_dst);
+                status = (vx_status)temp_status;
             }
         }
         else

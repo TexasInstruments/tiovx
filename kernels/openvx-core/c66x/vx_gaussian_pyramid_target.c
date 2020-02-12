@@ -240,6 +240,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                 }
                 else
                 {
+                    vx_uint32 temp_status;
                     vxlib_gauss.dim_x = vxlib_src.dim_x;
                     vxlib_gauss.dim_y = vxlib_src.dim_y - 4U;
                     vxlib_gauss.stride_y = src->imagepatch_addr[0].stride_y;
@@ -251,12 +252,14 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                         src_addr, &vxlib_src, temp_buf, &vxlib_gauss, 8);
 
                     vxlib_gauss.dim_y = vxlib_src.dim_y;
-                    status |= (vx_status)VXLIB_scaleImageNearest_i8u_o8u(
+                    temp_status = (vx_uint32)status;
+                    temp_status |= (vx_uint32)VXLIB_scaleImageNearest_i8u_o8u(
                         prms->interm_output, &vxlib_gauss,
                         dst_addr, &vxlib_dst,
                         (VXLIB_F32)vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
                         (VXLIB_F32)vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
                         0, 0, 0, 0);
+                    status = (vx_status)temp_status;
                 }
             }
 

@@ -106,7 +106,7 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
 
     if ( (0 <= zone) && (zone < (vx_enum)VX_ZONE_MAX) )
     {
-        zone_enabled = (((vx_bool)g_debug_zonemask & (vx_bool)zone) != (vx_bool)vx_false_e) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
+        zone_enabled = (((vx_uint32)g_debug_zonemask & (vx_uint32)zone) != (vx_uint32)vx_false_e) ? (vx_bool)vx_true_e : (vx_bool)vx_false_e;
     }
     else
     {

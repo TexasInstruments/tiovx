@@ -792,16 +792,16 @@ static vx_status ownInitMetaFormatWithPyramid(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_WIDTH, &meta->pmd.width,
-        sizeof(meta->pmd.width));
-    status |= vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_HEIGHT, &meta->pmd.height,
-        sizeof(meta->pmd.height));
-    status |= vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_FORMAT, &meta->pmd.format,
-        sizeof(meta->pmd.format));
-    status |= vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_LEVELS, &meta->pmd.levels,
-        sizeof(meta->pmd.levels));
-    status |= vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_SCALE, &meta->pmd.scale,
-        sizeof(meta->pmd.scale));
+    tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_WIDTH, &meta->pmd.width,
+        sizeof(meta->pmd.width)));
+    tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_HEIGHT, &meta->pmd.height,
+        sizeof(meta->pmd.height)));
+    tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_FORMAT, &meta->pmd.format,
+        sizeof(meta->pmd.format)));
+    tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_LEVELS, &meta->pmd.levels,
+        sizeof(meta->pmd.levels)));
+    tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_SCALE, &meta->pmd.scale,
+        sizeof(meta->pmd.scale)));
 
     return (status);
 }
@@ -811,12 +811,12 @@ static vx_status ownInitMetaFormatWithImage(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryImage(exemplar, (vx_enum)VX_IMAGE_WIDTH, &meta->img.width,
-        sizeof(meta->img.width));
-    status |= vxQueryImage(exemplar, (vx_enum)VX_IMAGE_HEIGHT, &meta->img.height,
-        sizeof(meta->img.height));
-    status |= vxQueryImage(exemplar, (vx_enum)VX_IMAGE_FORMAT, &meta->img.format,
-        sizeof(meta->img.format));
+    tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_WIDTH, &meta->img.width,
+        sizeof(meta->img.width)));
+    tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_HEIGHT, &meta->img.height,
+        sizeof(meta->img.height)));
+    tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_FORMAT, &meta->img.format,
+        sizeof(meta->img.format)));
 
     return (status);
 }
@@ -826,10 +826,10 @@ static vx_status ownInitMetaFormatWithArray(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryArray(exemplar, (vx_enum)VX_ARRAY_ITEMTYPE, &meta->arr.item_type,
-        sizeof(meta->arr.item_type));
-    status |= vxQueryArray(exemplar, (vx_enum)VX_ARRAY_CAPACITY, &meta->arr.capacity,
-        sizeof(meta->arr.capacity));
+    tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_ITEMTYPE, &meta->arr.item_type,
+        sizeof(meta->arr.item_type)));
+    tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_CAPACITY, &meta->arr.capacity,
+        sizeof(meta->arr.capacity)));
 
     return (status);
 }
@@ -839,8 +839,8 @@ static vx_status ownInitMetaFormatWithScalar(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryScalar(exemplar, (vx_enum)VX_SCALAR_TYPE, &meta->sc.type,
-        sizeof(meta->sc.type));
+    tivxCheckStatus(&status, vxQueryScalar(exemplar, (vx_enum)VX_SCALAR_TYPE, &meta->sc.type,
+        sizeof(meta->sc.type)));
 
     return (status);
 }
@@ -850,12 +850,12 @@ static vx_status ownInitMetaFormatWithMatrix(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_TYPE, &meta->mat.type,
-        sizeof(meta->mat.type));
-    status |= vxQueryMatrix(exemplar, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
-        sizeof(meta->mat.rows));
-    status |= vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_COLUMNS, &meta->mat.cols,
-        sizeof(meta->mat.cols));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_TYPE, &meta->mat.type,
+        sizeof(meta->mat.type)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)(vx_enum)VX_MATRIX_ROWS, &meta->mat.rows,
+        sizeof(meta->mat.rows)));
+    tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_COLUMNS, &meta->mat.cols,
+        sizeof(meta->mat.cols)));
 
     return status;
 }
@@ -865,12 +865,12 @@ static vx_status ownInitMetaFormatWithDistribution(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_BINS, &meta->dist.bins,
-        sizeof(meta->dist.bins));
-    status |= vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_OFFSET, &meta->dist.offset,
-        sizeof(meta->dist.offset));
-    status |= vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_RANGE, &meta->dist.range,
-        sizeof(meta->dist.range));
+    tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_BINS, &meta->dist.bins,
+        sizeof(meta->dist.bins)));
+    tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_OFFSET, &meta->dist.offset,
+        sizeof(meta->dist.offset)));
+    tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_RANGE, &meta->dist.range,
+        sizeof(meta->dist.range)));
 
     return status;
 }
@@ -880,14 +880,14 @@ static vx_status ownInitMetaFormatWithRemap(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryRemap(exemplar, (vx_enum)VX_REMAP_SOURCE_WIDTH, &meta->remap.src_width,
-        sizeof(meta->remap.src_width));
-    status |= vxQueryRemap(exemplar, (vx_enum)VX_REMAP_SOURCE_HEIGHT, &meta->remap.src_height,
-        sizeof(meta->remap.src_height));
-    status |= vxQueryRemap(exemplar, (vx_enum)VX_REMAP_DESTINATION_WIDTH, &meta->remap.dst_width,
-        sizeof(meta->remap.dst_width));
-    status |= vxQueryRemap(exemplar, (vx_enum)VX_REMAP_DESTINATION_HEIGHT, &meta->remap.dst_height,
-        sizeof(meta->remap.dst_height));
+    tivxCheckStatus(&status, vxQueryRemap(exemplar, (vx_enum)VX_REMAP_SOURCE_WIDTH, &meta->remap.src_width,
+        sizeof(meta->remap.src_width)));
+    tivxCheckStatus(&status, vxQueryRemap(exemplar, (vx_enum)VX_REMAP_SOURCE_HEIGHT, &meta->remap.src_height,
+        sizeof(meta->remap.src_height)));
+    tivxCheckStatus(&status, vxQueryRemap(exemplar, (vx_enum)VX_REMAP_DESTINATION_WIDTH, &meta->remap.dst_width,
+        sizeof(meta->remap.dst_width)));
+    tivxCheckStatus(&status, vxQueryRemap(exemplar, (vx_enum)VX_REMAP_DESTINATION_HEIGHT, &meta->remap.dst_height,
+        sizeof(meta->remap.dst_height)));
 
     return status;
 }
@@ -897,10 +897,10 @@ static vx_status ownInitMetaFormatWithLut(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryLUT(exemplar, (vx_enum)VX_LUT_TYPE, &meta->lut.type,
-        sizeof(meta->lut.type));
-    status |= vxQueryLUT(exemplar, (vx_enum)VX_LUT_COUNT, &meta->lut.count,
-        sizeof(meta->lut.count));
+    tivxCheckStatus(&status, vxQueryLUT(exemplar, (vx_enum)VX_LUT_TYPE, &meta->lut.type,
+        sizeof(meta->lut.type)));
+    tivxCheckStatus(&status, vxQueryLUT(exemplar, (vx_enum)VX_LUT_COUNT, &meta->lut.count,
+        sizeof(meta->lut.count)));
 
     return status;
 }
@@ -910,8 +910,8 @@ static vx_status ownInitMetaFormatWithThreshold(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryThreshold(exemplar, (vx_enum)VX_THRESHOLD_TYPE, &meta->thres.type,
-        sizeof(meta->thres.type));
+    tivxCheckStatus(&status, vxQueryThreshold(exemplar, (vx_enum)VX_THRESHOLD_TYPE, &meta->thres.type,
+        sizeof(meta->thres.type)));
 
     return status;
 }
@@ -921,10 +921,10 @@ static vx_status ownInitMetaFormatWithObjectArray(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE, &meta->objarr.item_type,
-        sizeof(meta->objarr.item_type));
-    status |= vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &meta->objarr.num_items,
-        sizeof(meta->objarr.num_items));
+    tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_ITEMTYPE, &meta->objarr.item_type,
+        sizeof(meta->objarr.item_type)));
+    tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &meta->objarr.num_items,
+        sizeof(meta->objarr.num_items)));
 
     return status;
 }
@@ -934,14 +934,14 @@ static vx_status ownInitMetaFormatWithTensor(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_NUMBER_OF_DIMS, &meta->tensor.number_of_dimensions,
-        sizeof(meta->tensor.number_of_dimensions));
-    status |= vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_DIMS, &meta->tensor.dimensions,
-        sizeof(meta->tensor.dimensions));
-    status |= vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_DATA_TYPE, &meta->tensor.data_type,
-        sizeof(meta->tensor.data_type));
-    status |= vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_FIXED_POINT_POSITION, &meta->tensor.fixed_point_position,
-        sizeof(meta->tensor.fixed_point_position));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_NUMBER_OF_DIMS, &meta->tensor.number_of_dimensions,
+        sizeof(meta->tensor.number_of_dimensions)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_DIMS, &meta->tensor.dimensions,
+        sizeof(meta->tensor.dimensions)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_DATA_TYPE, &meta->tensor.data_type,
+        sizeof(meta->tensor.data_type)));
+    tivxCheckStatus(&status, vxQueryTensor(exemplar, (vx_enum)VX_TENSOR_FIXED_POINT_POSITION, &meta->tensor.fixed_point_position,
+        sizeof(meta->tensor.fixed_point_position)));
 
     return (status);
 }
@@ -951,10 +951,10 @@ static vx_status ownInitMetaFormatWithUserDataObject(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_NAME, &meta->user_data_object.type_name,
-        sizeof(meta->user_data_object.type_name));
-    status |= vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &meta->user_data_object.size,
-        sizeof(meta->user_data_object.size));
+    tivxCheckStatus(&status, vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_NAME, &meta->user_data_object.type_name,
+        sizeof(meta->user_data_object.type_name)));
+    tivxCheckStatus(&status, vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &meta->user_data_object.size,
+        sizeof(meta->user_data_object.size)));
 
     return (status);
 }
@@ -964,20 +964,20 @@ static vx_status ownInitMetaFormatWithRawImage(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &meta->raw_image.width,
-        sizeof(meta->raw_image.width));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &meta->raw_image.height,
-        sizeof(meta->raw_image.height));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES, &meta->raw_image.num_exposures,
-        sizeof(meta->raw_image.num_exposures));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED, &meta->raw_image.line_interleaved,
-        sizeof(meta->raw_image.line_interleaved));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &meta->raw_image.format,
-        sizeof(meta->raw_image.format));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &meta->raw_image.meta_height_before,
-        sizeof(meta->raw_image.meta_height_before));
-    status |= tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &meta->raw_image.meta_height_after,
-        sizeof(meta->raw_image.meta_height_after));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &meta->raw_image.width,
+        sizeof(meta->raw_image.width)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &meta->raw_image.height,
+        sizeof(meta->raw_image.height)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_NUM_EXPOSURES, &meta->raw_image.num_exposures,
+        sizeof(meta->raw_image.num_exposures)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_LINE_INTERLEAVED, &meta->raw_image.line_interleaved,
+        sizeof(meta->raw_image.line_interleaved)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_FORMAT, &meta->raw_image.format,
+        sizeof(meta->raw_image.format)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &meta->raw_image.meta_height_before,
+        sizeof(meta->raw_image.meta_height_before)));
+    tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &meta->raw_image.meta_height_after,
+        sizeof(meta->raw_image.meta_height_after)));
 
     return (status);
 }

@@ -99,7 +99,8 @@ static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
 
 static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload)
 {
-    return ((vx_enum)payload >> (vx_enum)TIVX_TARGET_ID_SHIFT) & (vx_enum)TIVX_TARGET_ID_MASK;
+    vx_uint32 returnVal = (payload >> (uint32_t)TIVX_TARGET_ID_SHIFT) & (uint32_t)TIVX_TARGET_ID_MASK;
+    return (vx_enum)returnVal;
 }
 
 static void tivxObjDescIpcHandler(uint32_t payload)

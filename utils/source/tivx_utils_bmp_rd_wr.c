@@ -617,7 +617,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
 
         if(df!=img_df)
         {
-            if((df==(vx_df_image)VX_DF_IMAGE_RGB) && (img_df==(vx_df_image)VX_DF_IMAGE_U8) && convert_to_gray_scale)
+            if((df==(vx_df_image)VX_DF_IMAGE_RGB) && (img_df==(vx_df_image)VX_DF_IMAGE_U8) && (convert_to_gray_scale != (vx_bool)vx_false_e))
             {
                 enable_rgb2gray = (vx_bool)vx_true_e;
             }

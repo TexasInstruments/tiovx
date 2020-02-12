@@ -85,6 +85,7 @@
 #include <tivx_objects.h>
 #include <tivx_log_rt_trace.h>
 #include <tivx_log_resource.h>
+#include <tivx_kernels_host_utils.h>
 
 
 #ifdef __cplusplus

@@ -186,8 +186,11 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
-                kp->x = (int32_t)prms->corners[i] & 0xFFFF;
-                kp->y = (int32_t)(((int32_t)prms->corners[i] & (int32_t)0xFFFF0000U) >> 16);
+                uint32_t temp_x, temp_y;
+                temp_x = (uint32_t)prms->corners[i] & 0xFFFFU;
+                kp->x = (int32_t)temp_x;
+                temp_y = (((uint32_t)prms->corners[i] & (uint32_t)0xFFFF0000U) >> 16);
+                kp->y = (int32_t)temp_y;
                 kp->strength = (vx_float32)prms->strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;

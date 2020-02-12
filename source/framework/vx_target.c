@@ -185,7 +185,7 @@ static void tivxTargetNodeDescSendComplete(
 {
     uint16_t cmd_obj_desc_id;
 
-    if( (tivxFlagIsBitSet(node_obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK))
+    if( (tivxFlagIsBitSet(node_obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK) != (vx_bool)vx_false_e)
             ||
         (node_obj_desc->num_out_nodes == 0U)
         )
@@ -641,7 +641,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
                 node_obj_desc->source_state = (vx_enum)VX_NODE_STATE_STEADY;
 
-                if( (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL)) &&
+                if( (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != (vx_bool)vx_false_e) &&
                     (NULL != target_kernel_instance))
                 {
                     target_kernel_instance->state = (vx_enum)VX_NODE_STATE_STEADY;
@@ -912,12 +912,12 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
                 {
                     params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
 
-                    status |= tivxTargetKernelDelete(target_kernel_instance, params, 1);
+                    tivxCheckStatus(&status, tivxTargetKernelDelete(target_kernel_instance, params, 1));
                 }
                 else
                 {
-                    status |= tivxTargetKernelDelete(target_kernel_instance,
-                        params, (uint16_t)node_obj_desc->num_params);
+                    tivxCheckStatus(&status, tivxTargetKernelDelete(target_kernel_instance,
+                        params, (uint16_t)node_obj_desc->num_params));
                 }
             }
 
@@ -1382,7 +1382,8 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params)
 
 vx_enum tivxTargetGetCpuId(vx_enum target_id)
 {
-    return TIVX_GET_CPU_ID(target_id);
+    vx_uint32 returnVal = TIVX_GET_CPU_ID(target_id);
+    return ((vx_enum)returnVal);
 }
 
 void tivxTargetInit(void)

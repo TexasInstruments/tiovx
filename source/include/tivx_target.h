@@ -113,7 +113,7 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)(((((uint32_t)cpu)&TIVX_CPU_ID_MASK) << TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&TIVX_TARGET_INST_MASK) << TIVX_TARGET_INST_SHIFT)))
+#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((((((uint32_t)cpu) & (uint32_t)TIVX_CPU_ID_MASK) << (uint32_t)TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&TIVX_TARGET_INST_MASK) << (uint32_t)TIVX_TARGET_INST_SHIFT)))
 
 /*! \brief Get CPU Id from given target
  *
@@ -121,7 +121,7 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_GET_CPU_ID(target)                ((vx_enum)(((target)>>(vx_enum)TIVX_CPU_ID_SHIFT)&(vx_enum)TIVX_CPU_ID_MASK))
+#define TIVX_GET_CPU_ID(target)                ((((uint32_t)(target) >> (uint32_t)TIVX_CPU_ID_SHIFT) & (uint32_t)TIVX_CPU_ID_MASK))
 
 /*! \brief Get the target instances from target
  *
@@ -129,7 +129,7 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_GET_TARGET_INST(target)           ((uint16_t)(((uint16_t)(target)>>TIVX_TARGET_INST_SHIFT)) & TIVX_TARGET_INST_MASK)
+#define TIVX_GET_TARGET_INST(target)           ((uint16_t)(((uint16_t)(target) >> TIVX_TARGET_INST_SHIFT)) & TIVX_TARGET_INST_MASK)
 
 
 /*! \brief Const to denote invalid ID's

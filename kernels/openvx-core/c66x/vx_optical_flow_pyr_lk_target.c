@@ -276,6 +276,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             vx_uint32 width;
             vx_uint32 height;
             vx_rectangle_t rect;
+            vx_uint32 temp_status;
             void *old_image_target_ptr;
             void *new_image_target_ptr;
 
@@ -317,7 +318,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->scharrGrad_params.stride_y = (int32_t)width*2;
             prms->scharrGrad_params.data_type = (uint32_t)VXLIB_INT16;
 
-            status |= (vx_status)VXLIB_scharr_3x3_i8u_o16s_o16s(old_image_addr, &prms->old_params,
+            temp_status = (vx_uint32)status;
+            temp_status |= (vx_uint32)VXLIB_scharr_3x3_i8u_o16s_o16s(old_image_addr, &prms->old_params,
                                                      &prms->pSchX[width+1U], &prms->scharrGrad_params,
                                                      &prms->pSchY[width+1U], &prms->scharrGrad_params);
 
@@ -335,13 +337,14 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 scale = 1.0f/pyramid_scale;
             }
 
-            status |= (vx_status)VXLIB_trackFeaturesLK_i8u(old_image_addr, &prms->old_params,
+            temp_status |= (vx_uint32)VXLIB_trackFeaturesLK_i8u(old_image_addr, &prms->old_params,
                                                  new_image_addr, &prms->new_params,
                                                  prms->pSchX, &prms->scharrGrad_params,
                                                  prms->pSchY, &prms->scharrGrad_params,
                                                  prms->oldPoints, prms->newPoints, prms->tracking, list_length,
                                                  num_iterations_value, epsilon_value, scale, (uint8_t)window_dimension_value, (uint8_t)level,
                                                  termination_value, prms->scratch, prms->scratch_buff_size);
+            status = (vx_status)temp_status;
 
             tivxMemBufferUnmap(old_image_target_ptr,
                old_image->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,

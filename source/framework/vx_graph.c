@@ -44,7 +44,7 @@ static vx_status ownDestructGraph(vx_reference ref)
 
         for(i=0; i<graph->num_params; i++)
         {
-            if((graph->parameters[i].queue_enable) && (graph->parameters[i].data_ref_queue != NULL))
+            if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
             {
                 tivxDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
             }
@@ -611,10 +611,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
     vx_bool is_full = (vx_bool)vx_true_e;
 
     if((NULL != delay) &&
-       (ownIsValidSpecificReference((vx_reference)delay, (vx_enum)VX_TYPE_DELAY)))
+       (ownIsValidSpecificReference((vx_reference)delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
     {
         if((NULL != graph) &&
-           (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
+           (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e))
         {
             /* check if this particular delay is already registered in the graph */
             for (i = 0; i < TIVX_GRAPH_MAX_DELAYS; i++)
@@ -669,7 +669,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e))
     {
         status = vxScheduleGraph(graph);
         if(status == (vx_status)VX_SUCCESS)
@@ -754,7 +754,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if((NULL != graph) &&
-       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)))
+       (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e))
     {
         if (graph->is_streaming_enabled != 0)
         {
