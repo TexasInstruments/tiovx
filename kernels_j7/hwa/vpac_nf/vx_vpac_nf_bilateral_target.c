@@ -827,7 +827,9 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
 {
     int32_t row, col;
     int32_t lut_w, lut_h;
-    int32_t lutSize = 1 << inp_bitw;
+    uint32_t temp_lut_w;
+    uint32_t temp_lutSize = (uint32_t)1U << inp_bitw;
+    int32_t lutSize = (int32_t)temp_lutSize;
     int32_t referenceSize = 12;
     uint8_t numspatialDistances;
     uint32_t returnVal = 0U;
@@ -856,7 +858,8 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     /*---------------------------------------------------------------------*/
     memset(f_wt_lut, 0, (uint32_t)LUT_ROWS * (uint32_t)lutSize * sizeof(vx_float64));
 
-    lut_w = (1 << inp_bitw);
+    temp_lut_w = (uint32_t)1U << inp_bitw;
+    lut_w = (int32_t)temp_lut_w;
     lut_h = (int32_t)numspatialDistances;
 
     /*---------------------------------------------------------------------*/
@@ -912,7 +915,8 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                 for (col = 0; col < lut_w; col++)
                 {
                     // Only generate the lut values across the range that are needed
-                    int32_t col_mod = col*(1 << (referenceSize - (int32_t)inp_bitw));
+                    uint32_t temp = (uint32_t)1U << ((uint32_t)referenceSize - (uint32_t)inp_bitw);
+                    int32_t col_mod = col * (int32_t)temp;
                     // gaussian_r = exp(-(x^2 / (2*sigma_r^2))
                     wt_r = ((vx_float64)col_mod * (vx_float64)col_mod) / (2.0f * sigma_r * sigma_r);
 
@@ -966,9 +970,10 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
                 for (i = 0; i < (LUT_ROWS * lutSize); i++) {
                     if (0.0f != max)
                     {
-                        int32_t one_lsl_out_bitw_minus_one = (1 << out_bitw) - 1;
-                        vx_float64 temp = ((f_wt_lut[i] / max) * (vx_float64)one_lsl_out_bitw_minus_one) + 0.5f;
-                        i_wt_lut_full[i] = (uint32_t)temp;
+                        uint32_t temp_u32 = ((uint32_t)1U << out_bitw) - 1U;
+                        int32_t one_lsl_out_bitw_minus_one = (int32_t)temp_u32;
+                        vx_float64 temp_f64 = ((f_wt_lut[i] / max) * (vx_float64)one_lsl_out_bitw_minus_one) + 0.5f;
+                        i_wt_lut_full[i] = (uint32_t)temp_f64;
                     }
                 }
             }

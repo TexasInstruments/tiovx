@@ -433,10 +433,10 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             {
                 lse_reformat_in_dof(img_current_desc[i],
                                     img_current_target_ptr[i],
-                                    prms->input_current[i]);
+                                    (uint32_t *)prms->input_current[i]);
                 lse_reformat_in_dof(img_reference_desc[i],
                                     img_reference_target_ptr[i],
-                                    prms->input_reference[i]);
+                                    (uint32_t *)prms->input_reference[i]);
             }
             else
             {
@@ -444,19 +444,19 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 {
                     lse_reformat_in_dof(input_current_base_desc,
                                     img_curr_base_target_ptr,
-                                    prms->input_current[i]);
+                                    (uint32_t *)prms->input_current[i]);
                     lse_reformat_in_dof(input_reference_base_desc,
                                     img_ref_base_target_ptr,
-                                    prms->input_reference[i]);
+                                    (uint32_t *)prms->input_reference[i]);
                 }
                 else
                 {
                     lse_reformat_in_dof(img_current_desc[i-1],
                                     img_current_target_ptr[i-1],
-                                    prms->input_current[i]);
+                                    (uint32_t *)prms->input_current[i]);
                     lse_reformat_in_dof(img_reference_desc[i-1],
                                     img_reference_target_ptr[i-1],
-                                    prms->input_reference[i]);
+                                    (uint32_t *)prms->input_reference[i]);
                 }
             }
         }
@@ -464,7 +464,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         past_prediction = NULL;
         if(flow_vector_in_desc != NULL)
         {
-            lse_reformat_in_dof(flow_vector_in_desc, flow_vector_in_target_ptr, prms->past_prediction);
+            lse_reformat_in_dof(flow_vector_in_desc, flow_vector_in_target_ptr, (uint32_t *)prms->past_prediction);
             past_prediction = prms->past_prediction;
         }
 

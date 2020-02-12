@@ -732,9 +732,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     if (((vx_status)VX_SUCCESS == status) &&
         ((vx_bool)vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
     {
-        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
-        status |= vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
-        status |= vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
+        tivxCheckStatus(&status, vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_WIDTH, &p_w, sizeof(p_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt)));
 
         /* Check for frame sizes */
         if (((w / TIVX_VPAC_MSC_MAX_DS_FACTOR) > p_w) ||
@@ -765,14 +765,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_SCALE, &scale,
-            sizeof(scale));
-    }
-
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        status = vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_LEVELS, &num_levels,
-            sizeof(num_levels));
+        tivxCheckStatus(&status, vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_SCALE, &scale, sizeof(scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(pmd, (vx_enum)VX_PYRAMID_LEVELS, &num_levels, sizeof(num_levels)));
     }
 
     if ((vx_status)VX_SUCCESS == status)

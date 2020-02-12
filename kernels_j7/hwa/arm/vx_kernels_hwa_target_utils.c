@@ -291,7 +291,7 @@ void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr
     }
 }
 
-void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, int32_t *src32)
+void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, uint32_t *src32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -312,7 +312,7 @@ void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr,
             for(i=0; i < w; i++)
             {
                 /* Put 8 bits to 12 and then into 32b container */
-                src32[(j*w)+i] = (int32_t)src_addr8[(j*stride)+i] << 4;
+                src32[(j*w)+i] = (uint32_t)src_addr8[(j*stride)+i] << 4;
             }
         }
     }
@@ -328,7 +328,7 @@ void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr,
             for(i=0; i < w; i++)
             {
                 /* Take 16 as is */
-                src32[(j*w)+i] = (int32_t)src_addr16[(j*stride)+i];
+                src32[(j*w)+i] = (uint32_t)src_addr16[(j*stride)+i];
             }
         }
     }
@@ -344,7 +344,7 @@ void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr,
             for(i=0; i < w; i++)
             {
                 /* Take 32 as is */
-                src32[(j*w)+i] = (int32_t)src_addr32[(j*stride)+i];
+                src32[(j*w)+i] = src_addr32[(j*stride)+i];
             }
         }
     }
@@ -362,14 +362,14 @@ void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr,
             for(i=0; i < w; i+=8)
             {
                 /* 8 pixels are packed among 3 32-bit words */
-                src32[(j*w)+i+0]  = (int32_t)src_addr32[(j*stride)+k] & 0xFFF;
-                src32[(j*w)+i+1]  = ((int32_t)src_addr32[(j*stride)+k] >> 12) & 0xFFF;
-                src32[(j*w)+i+2]  = ((int32_t)src_addr32[(j*stride)+k] >> 24) | (((int32_t)src_addr32[(j*stride)+k+1] & 0xF) << 8);
-                src32[(j*w)+i+3]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 4) & 0xFFF;
-                src32[(j*w)+i+4]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 16) & 0xFFF;
-                src32[(j*w)+i+5]  = ((int32_t)src_addr32[(j*stride)+k+1] >> 28) | (((int32_t)src_addr32[(j*stride)+k+2] & 0xFF) << 4);
-                src32[(j*w)+i+6]  = ((int32_t)src_addr32[(j*stride)+k+2] >> 8) & 0xFFF;
-                src32[(j*w)+i+7]  = ((int32_t)src_addr32[(j*stride)+k+2] >> 20);
+                src32[(j*w)+i+0]  = src_addr32[(j*stride)+k] & 0xFFFU;
+                src32[(j*w)+i+1]  = (src_addr32[(j*stride)+k] >> 12) & 0xFFFU;
+                src32[(j*w)+i+2]  = (src_addr32[(j*stride)+k] >> 24) | ((src_addr32[(j*stride)+k+1] & 0xFU) << 8);
+                src32[(j*w)+i+3]  = (src_addr32[(j*stride)+k+1] >> 4) & 0xFFFU;
+                src32[(j*w)+i+4]  = (src_addr32[(j*stride)+k+1] >> 16) & 0xFFFU;
+                src32[(j*w)+i+5]  = (src_addr32[(j*stride)+k+1] >> 28) | ((src_addr32[(j*stride)+k+2] & 0xFFU) << 4);
+                src32[(j*w)+i+6]  = (src_addr32[(j*stride)+k+2] >> 8) & 0xFFFU;
+                src32[(j*w)+i+7]  = src_addr32[(j*stride)+k+2] >> 20;
                 k+=3;
             }
         }
