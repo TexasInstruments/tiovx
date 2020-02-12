@@ -112,7 +112,7 @@ static void tivxEdgeSortQuick(BAM_EdgeParams edge_list[], tivx_edge_sort_indices
 static inline void tivxEdgeSortStackReset(tivx_edge_sort_context *context, uint16_t max_elems);
 static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tivx_edge_sort_indices indices);
 static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx_edge_sort_indices *indices);
-static inline vx_bool tivxEdgeSortStackIsEmpty(tivx_edge_sort_context *context);
+static inline vx_bool tivxEdgeSortStackIsEmpty(const tivx_edge_sort_context *context);
 
 static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -126,11 +126,11 @@ static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static void tivxSupernodeDestruct(tivxSupernodeParams *prms, tivx_obj_desc_super_node_t *super_node);
+static void tivxSupernodeDestruct(tivxSupernodeParams *prms, const tivx_obj_desc_super_node_t *super_node);
 
 static uint8_t tivxGetNodeIndexFromNodeList(
     uint16_t node_obj_desc_id,
-    uint16_t *node_obj_desc_id_list, uint8_t num_nodes);
+    const uint16_t *node_obj_desc_id_list, uint8_t num_nodes);
 
 static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSupernodeParams *prms,
     BAM_EdgeParams edge_list[], uint8_t node_index, int32_t bam_edge_cnt, int32_t i, int32_t plane, int32_t src_dst);
@@ -689,8 +689,11 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         skip_port = 0;
                         for (j = 0; j < (int32_t)src->planes; j++)
                         {
-                            status |= tivxGetNodePort(super_node, prms, edge_list, src_node_index, bam_edge_cnt, i, j, 0);
-                            status |= tivxGetNodePort(super_node, prms, edge_list, dst_node_index, bam_edge_cnt, i, j, 1);
+                            vx_uint32 temp_status = (vx_uint32)status;
+                            temp_status |= (vx_uint32)tivxGetNodePort(super_node, prms, edge_list, src_node_index, bam_edge_cnt, i, j, 0);
+                            temp_status |= (vx_uint32)tivxGetNodePort(super_node, prms, edge_list, dst_node_index, bam_edge_cnt, i, j, 1);
+                            status = (vx_status)temp_status;
+
                             if ((vx_status)VX_SUCCESS != status)
                             {
                                 break;
@@ -935,7 +938,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeDelete(
     return (status);
 }
 
-static void tivxSupernodeDestruct(tivxSupernodeParams *prms, tivx_obj_desc_super_node_t *super_node)
+static void tivxSupernodeDestruct(tivxSupernodeParams *prms, const tivx_obj_desc_super_node_t *super_node)
 {
     uint32_t i, j;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -1026,7 +1029,7 @@ void tivxRemoveTargetKernelBamSupernode(void)
     tivxRemoveTargetKernel(vx_supernode_target_kernel);
 }
 
-static uint8_t tivxGetNodeIndexFromNodeList(uint16_t node_obj_desc_id, uint16_t *node_obj_desc_id_list, uint8_t num_nodes)
+static uint8_t tivxGetNodeIndexFromNodeList(uint16_t node_obj_desc_id, const uint16_t *node_obj_desc_id_list, uint8_t num_nodes)
 {
     uint8_t i;
     uint8_t node_index = 0;
@@ -1210,7 +1213,7 @@ static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx
     return status;
 }
 
-static inline vx_bool tivxEdgeSortStackIsEmpty(tivx_edge_sort_context *context)
+static inline vx_bool tivxEdgeSortStackIsEmpty(const tivx_edge_sort_context *context)
 {
     vx_bool returnVal = (vx_bool)vx_true_e;
 

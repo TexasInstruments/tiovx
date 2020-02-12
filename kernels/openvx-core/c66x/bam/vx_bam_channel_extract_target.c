@@ -92,40 +92,40 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     uint16_t num_params, void *priv_arg);
 static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch);
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch);
 static vx_status tivxBamChannelExtractNv12Nv21Input(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch);
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch);
 static vx_status tivxBamChannelExtractYuyvUyvyInput(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch);
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch);
 static vx_status tivxBamChannelExtractRgbRgbxInput(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch);
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch);
 static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+    const int32_t * bam_node_cnt, void * scratch, int32_t *size);
 static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size);
 static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size);
 static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size);
 
 /* Supernode Callbacks */
 static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
@@ -139,8 +139,8 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
 
 static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch)
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx;
@@ -191,8 +191,8 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
 
 static vx_status tivxBamChannelExtractNv12Nv21Input(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch)
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
@@ -297,8 +297,8 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
 
 static vx_status tivxBamChannelExtractYuyvUyvyInput(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch)
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
@@ -402,8 +402,8 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
 
 static vx_status tivxBamChannelExtractRgbRgbxInput(
     tivx_target_kernel_instance kernel, tivxBamChannelExtractParams *prms,
-    tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst,
-    tivx_obj_desc_scalar_t *ch)
+    const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst,
+    const tivx_obj_desc_scalar_t *ch)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
@@ -503,10 +503,10 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
 }
 
 static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
@@ -577,10 +577,10 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
 }
 
 static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
@@ -678,10 +678,10 @@ static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
 }
 
 static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;
@@ -786,10 +786,10 @@ static vx_status tivxBamChannelExtractInBamGraphYuyvUyvyInput(
 }
 
 static vx_status tivxBamChannelExtractInBamGraphRgbRgbxInput(
-    tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
-    tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
+    tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
+    const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint8_t channel_offset = 0;

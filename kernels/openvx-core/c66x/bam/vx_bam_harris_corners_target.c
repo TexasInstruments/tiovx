@@ -256,9 +256,11 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
             kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
-                kp->x = (int32_t)rect.start_x + ((int32_t)prms->nms_corners[i] & (int32_t)0xFFFFU);
-                kp->y = (int32_t)rect.start_y + (((int32_t)prms->nms_corners[i] & (int32_t)0xFFFF0000U) >>
-                    16);
+                uint32_t temp_x, temp_y;
+                temp_x = rect.start_x + ((uint32_t)prms->nms_corners[i] & (uint32_t)0xFFFFU);
+                kp->x = (int32_t)temp_x;
+                temp_y = rect.start_y + (((uint32_t)prms->nms_corners[i] & (uint32_t)0xFFFF0000U) >> 16);
+                kp->y = (int32_t)temp_y;
                 kp->strength = prms->nms_strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;
