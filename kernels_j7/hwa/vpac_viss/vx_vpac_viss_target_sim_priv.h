@@ -71,7 +71,7 @@ void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
     dcc_parser_output_params_t *dcc_out_prms);
 void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
     dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseGlbceParams(nsf4_settings *nsf4_prms,
+void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
     dcc_parser_output_params_t *dcc_out_prms);
 void tivxVpacVissParseH3aParams(h3a_settings *h3a_settings,
     dcc_parser_output_params_t *dcc_out_prms);

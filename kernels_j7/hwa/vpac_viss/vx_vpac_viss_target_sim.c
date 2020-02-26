@@ -72,6 +72,7 @@
 #include "vx_kernels_hwa_target.h"
 #include "rawfe.h"
 #include "nsf4.h"
+#include "glbce.h"
 #include "h3a_ovx.h"
 #include "h3a_utils.h"
 #include "FLXD_demosaic.h"
@@ -106,6 +107,7 @@ typedef struct
     uint32_t *scratch_aew_result;
     uint32_t *scratch_af_result;
     uint16_t *scratch_nsf4v_out;
+    uint16_t *scratch_glbce_out;
     uint32_t *scratch_cfa_in;
     uint16_t *scratch_cfa_out[FLXD_NUM_FIR];
     uint16_t *scratch_cc_out[8];
@@ -123,6 +125,7 @@ typedef struct
     uint16_t *out_s8_b8_c4_16;
     uint16_t *scratch_ee_shift_in;
     uint16_t *pScratch_nsf4v_out;
+    uint16_t *pScratch_glbce_out;
 
     uint16_t out_y8_r8_c2_bit_align;
     uint16_t out_uv8_g8_c3_bit_align;
@@ -141,6 +144,8 @@ typedef struct
 
     cfg_rawfe rawfe_params;
     nsf4_settings nsf4_params;
+    glbce_settings glbce_params;
+    glbce_handle hGlbce;
     h3a_settings h3a_params;
     h3a_image h3a_in;
     tivx_h3a_aew_config aew_config;
@@ -514,12 +519,23 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
 
         /* GLBCE */
-        /* Missing for now */
+        if(0 == prms->bypass_glbce)
+        {
+            int retval;
 
-        /* Convert nsf4 16-bit output to 32-bit input to CFA */
+            retval = glbce_process(prms->hGlbce, prms->pScratch_nsf4v_out, prms->scratch_glbce_out);
+
+            if(retval < 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "glbce_process returned failure\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+
+        /* Convert glbce 16-bit output to 32-bit input to CFA */
         for(i=0; i < (prms->buffer_size/2); i++)
         {
-            prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_nsf4v_out[i];
+            prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_glbce_out[i];
         }
 
         /* FLEXCFA */
@@ -826,6 +842,15 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
+                prms->scratch_glbce_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->scratch_glbce_out)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
+            }
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
                 prms->scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_cfa_in)
                 {
@@ -1087,7 +1112,26 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 }
 
                 /* GLBCE */
-                /* Missing for now */
+                prms->pScratch_glbce_out = prms->pScratch_nsf4v_out;
+                if(0 == params->bypass_glbce)
+                {
+                    int retval;
+                    tivxVpacVissParseGlbceParams(&prms->glbce_params, prms->dcc_output_params);
+                    prms->glbce_params.iw = width;
+                    prms->glbce_params.ih = height;
+                    prms->pScratch_glbce_out = prms->scratch_glbce_out;
+                    retval = glbce_get_handle(&prms->glbce_params, &prms->hGlbce);
+
+                    if(retval < 0)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "glbce_get_handle returned failure\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else
+                {
+                    prms->bypass_glbce = 1;
+                }
 
                 /* FLEXCFA */
                 tivxVpacVissParseFlxCfaParams(&prms->flexcfa_params, prms->dcc_output_params);
@@ -1389,6 +1433,8 @@ void tivxRemoveTargetKernelVpacViss(void)
 
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
 {
+    int retval;
+
     if (NULL != prms)
     {
         uint32_t i;
@@ -1432,6 +1478,11 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
         {
             tivxMemFree(prms->scratch_nsf4v_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->scratch_nsf4v_out = NULL;
+        }
+        if (NULL != prms->scratch_glbce_out)
+        {
+            tivxMemFree(prms->scratch_glbce_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            prms->scratch_glbce_out = NULL;
         }
         if (NULL != prms->scratch_cfa_in)
         {
@@ -1500,6 +1551,16 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
         prms->out_s8_b8_c4_16 = NULL;
         prms->scratch_ee_shift_in = NULL;
         prms->pScratch_nsf4v_out = NULL;
+
+        if(prms->hGlbce != NULL)
+        {
+            retval = glbce_delete_handle(prms->hGlbce);
+
+            if(retval < 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "glbce_delete_handle returned failure\n");
+            }
+        }
 
         tivxMemFree(prms, sizeof(tivxVpacVissParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }

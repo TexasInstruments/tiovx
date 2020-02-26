@@ -71,6 +71,7 @@
 #include "vx_kernels_hwa_target.h"
 
 #include "rawfe.h"
+#include "glbce.h"
 #include "nsf4.h"
 #include "h3a_ovx.h"
 #include "h3a_utils.h"
@@ -153,6 +154,21 @@ uint32_t grawfe_lut_20to16[] =
 int32_t grawfe_lsc_tbl[] =
 {
     #include "rawfe_lsc_tbl_0.txt"
+};
+
+uint32_t gGlbceAsymTbl[] =
+{
+    0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
+};
+
+uint32_t gGlbceFwdPrcptTbl[] =
+{
+    #include "glbce_fwd_percept_lut.txt"
+};
+
+uint32_t gGlbceRevPrcptTbl[] =
+{
+    #include "glbce_rev_percept_lut.txt"
 };
 
 /* ========================================================================== */
@@ -421,9 +437,79 @@ void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
     }
 }
 
-void tivxVpacVissParseGlbceParams(nsf4_settings *nsf4_prms,
+void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
     dcc_parser_output_params_t *dcc_out_prms)
 {
+    uint32_t cnt;
+    uint8_t use_defaults = 1;
+    viss_glbce_dcc_cfg_t *dcc_glbce = NULL;
+
+    if (NULL != glbce_prms)
+    {
+        if (NULL != dcc_out_prms)
+        {
+            dcc_glbce = &(dcc_out_prms->vissGlbceCfg);
+            if(1U == dcc_out_prms->useVissGlbceCfg)
+            {
+                use_defaults = 0;
+            }
+        }
+
+        if (0U == use_defaults)
+        {
+            glbce_prms->irStrength = 255;
+            glbce_prms->blackLevel = 0;
+            glbce_prms->whiteLevel = 65535;
+            glbce_prms->intensityVariance = 0xC;
+            glbce_prms->spaceVariance = 7;
+            glbce_prms->brightAmplLimit = 6;
+            glbce_prms->darkAmplLimit = 6;
+            glbce_prms->dither = GLBCE_NO_DITHER;
+            glbce_prms->maxSlopeLimit = 72;
+            glbce_prms->minSlopeLimit = 62;
+            memcpy(glbce_prms->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE * 4U);
+
+            glbce_prms->fwd_percept_enable = 0;
+            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
+            {
+                glbce_prms->fwd_percept_table[cnt] = gGlbceFwdPrcptTbl[cnt];
+            }
+
+            glbce_prms->rev_percept_enable = 0;
+            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
+            {
+                glbce_prms->rev_percept_table[cnt] = gGlbceFwdPrcptTbl[cnt];
+            }
+
+            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
+            glbce_prms->wdr_enable = 0;
+
+        }
+        else
+        {
+            glbce_prms->irStrength = dcc_glbce->strength;
+            glbce_prms->intensityVariance = dcc_glbce->intensity_var;
+            glbce_prms->spaceVariance = dcc_glbce->space_var;
+            glbce_prms->maxSlopeLimit = dcc_glbce->slope_max_lim;
+            glbce_prms->minSlopeLimit = dcc_glbce->slope_min_lim;
+
+            glbce_prms->blackLevel = 0;
+            glbce_prms->whiteLevel = 65535;
+            glbce_prms->brightAmplLimit = 6;
+            glbce_prms->darkAmplLimit = 6;
+            glbce_prms->dither = GLBCE_NO_DITHER;
+
+            memcpy(glbce_prms->asymLut, dcc_glbce->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
+
+            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
+            memcpy(glbce_prms->fwd_percept_table, dcc_glbce->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
+            memcpy(glbce_prms->rev_percept_table, dcc_glbce->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
+        }
+    }
 }
 
 void tivxVpacVissParseH3aParams(h3a_settings *h3a_prms,
