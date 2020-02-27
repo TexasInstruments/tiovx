@@ -385,15 +385,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
          */
 
         /* RAWFE */
-        if(0 == params->h3a_in)
+        if(TIVX_VPAC_VISS_H3A_IN_RAW0 == params->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 2;
         }
-        else if(1 == params->h3a_in)
+        else if(TIVX_VPAC_VISS_H3A_IN_RAW1 == params->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 1;
         }
-        else if(2 == params->h3a_in)
+        else if(TIVX_VPAC_VISS_H3A_IN_RAW2 == params->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 0;
         }
@@ -1140,24 +1140,24 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 /* FLEXCC */
                 if( ( NULL != y12_desc ) ||
-                   (( NULL != uv12_c1_desc )   && (2 != params->mux_output1)) ||
-                   (( NULL != y8_r8_c2_desc )  && (2 != params->mux_output2)) ||
-                   (( NULL != uv8_g8_c3_desc ) && (2 != params->mux_output3)) ||
-                   (( NULL != s8_b8_c4_desc )  && (2 != params->mux_output4)) ||
+                   (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != params->mux_output1)) ||
+                   (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != params->mux_output2)) ||
+                   (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != params->mux_output3)) ||
+                   (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != params->mux_output4)) ||
                     ( NULL != histogram_desc))
                 {
                     tivxVpacVissParseFlxCCParams(&prms->flexcc_params, prms->dcc_output_params);
                     prms->flexcc_params.inWidth = width;
                     prms->flexcc_params.inHeight = height;
 
-                    if( (( NULL != y12_desc )      && (4 == params->mux_output0)) ||
-                        (( NULL != y8_r8_c2_desc ) && (4 == params->mux_output2)) )
+                    if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == params->mux_output0)) ||
+                        (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == params->mux_output2)) )
                     {
-                        prms->flexcc_params.ChromaMode = 0; /* NV12 format is chosen on at least 1 output port */
+                        prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
                     }
-                    else if (( NULL != y8_r8_c2_desc ) && (5 == params->mux_output2))
+                    else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == params->mux_output2))
                     {
-                        prms->flexcc_params.ChromaMode = 1; /* YUV422 interleaved is chosen */
+                        prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
                     }
                     else
                     {
@@ -1174,8 +1174,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 {
                     if((( NULL != y12_desc )       && (1 == params->ee_mode)) ||
                        (( NULL != y8_r8_c2_desc )  && (2 == params->ee_mode) &&
-                        ((0u == params->mux_output2) || (4u == params->mux_output2) ||
-                            (5u == params->mux_output2))))
+                        ((TIVX_VPAC_VISS_MUX2_Y8 == params->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == params->mux_output2) ||
+                         (TIVX_VPAC_VISS_MUX2_YUV422 == params->mux_output2))))
                     {
                         tivxVpacVissParseYeeParams(&prms->ee_params, prms->dcc_output_params);
                         prms->ee_params.width = width;
@@ -1195,8 +1195,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 if( NULL != y12_desc )
                 {
-                    if(((0 == prms->bypass_ee) && (params->ee_mode == 1)) &&
-                        (3u != params->mux_output0))
+                    if(((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
+                        (TIVX_VPAC_VISS_MUX0_VALUE12 != params->mux_output0))
                     {
                         prms->scratch_ee_shift_in = prms->scratch_cc_out[0]; /* y12 */
                         prms->out_y12_16 = prms->scratch_ee_shift_out;       /* y12 */
@@ -1208,12 +1208,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         prms->out_y12_16 = prms->scratch_cc_out[0];    /* y12 */
                     }
 
-                    if (4u == params->mux_output0)  /* NV12_P12 Format */
+                    if (TIVX_VPAC_VISS_MUX0_NV12_P12 == params->mux_output0)  /* NV12_P12 Format */
                     {
                         prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
                     }
 
-                    if (3u == params->mux_output0)  /* Value Format */
+                    if (TIVX_VPAC_VISS_MUX0_VALUE12 == params->mux_output0)  /* Value Format */
                     {
                         prms->flexcc_params.MuxY12Out = 2; /* HSV value */
                     }
@@ -1225,7 +1225,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 if( NULL != uv12_c1_desc )
                 {
-                    if(params->mux_output1 == 0)
+                    if(params->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
                     {
                         prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
                     }
@@ -1238,9 +1238,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != y8_r8_c2_desc )
                 {
                     prms->out_y8_r8_c2_bit_align = 8;
-                    if(params->mux_output2 == 0)
+                    if(params->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
                     {
-                        if((0 == prms->bypass_ee) && (params->ee_mode == 2U))
+                        if((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
                         {
                             prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
                             prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
@@ -1252,22 +1252,22 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
                         }
                     }
-                    else if (params->mux_output2 == 1U)
+                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cc_out[5]; /* r8 */
                     }
-                    else if (params->mux_output2 == 2U)
+                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cfa_out[1]; /* c2 */
                         prms->out_y8_r8_c2_bit_align = 12;
                     }
-                    else if (params->mux_output2 == 3U)
+                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 (value) */
                     }
-                    else if((params->mux_output2 == 4U) || (params->mux_output2 == 5U))
+                    else if((params->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (params->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
                     {
-                        if((0 == prms->bypass_ee) && (params->ee_mode == 2U))
+                        if((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
                         {
                             prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
                             prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
@@ -1287,7 +1287,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         /* Not valid input */
                     }
 
-                    if (3u == params->mux_output2)  /* Value Format */
+                    if (TIVX_VPAC_VISS_MUX2_VALUE8 == params->mux_output2)  /* Value Format */
                     {
                         prms->flexcc_params.MuxY8Out = 2; /* HSV value */
                     }
@@ -1300,11 +1300,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != uv8_g8_c3_desc )
                 {
                     prms->out_uv8_g8_c3_bit_align = 8;
-                    if(params->mux_output3 == 0)
+                    if(params->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
                     {
                         prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* uv8 */
                     }
-                    else if (params->mux_output3 == 1U)
+                    else if (params->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
                     {
                         prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[6]; /* g8 */
                     }
@@ -1318,11 +1318,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != s8_b8_c4_desc )
                 {
                     prms->out_s8_b8_c4_bit_align = 8;
-                    if(params->mux_output4 == 0)
+                    if(params->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
                     {
                         prms->out_s8_b8_c4_16 = prms->scratch_cc_out[4]; /* s8 */
                     }
-                    else if (params->mux_output4 == 1U)
+                    else if (params->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
                     {
                         prms->out_s8_b8_c4_16 = prms->scratch_cc_out[7]; /* b8 */
                     }
