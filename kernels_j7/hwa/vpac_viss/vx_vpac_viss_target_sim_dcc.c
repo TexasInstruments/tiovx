@@ -448,7 +448,6 @@ void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
     {
         if (NULL != dcc_out_prms)
         {
-            dcc_glbce = &(dcc_out_prms->vissGlbceCfg);
             if(1U == dcc_out_prms->useVissGlbceCfg)
             {
                 use_defaults = 0;
@@ -456,6 +455,33 @@ void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
         }
 
         if (0U == use_defaults)
+        {
+            dcc_glbce = &(dcc_out_prms->vissGlbceCfg);
+
+            glbce_prms->irStrength = dcc_glbce->strength;
+            glbce_prms->intensityVariance = dcc_glbce->intensity_var;
+            glbce_prms->spaceVariance = dcc_glbce->space_var;
+            glbce_prms->maxSlopeLimit = dcc_glbce->slope_max_lim;
+            glbce_prms->minSlopeLimit = dcc_glbce->slope_min_lim;
+
+            glbce_prms->blackLevel = 0;
+            glbce_prms->whiteLevel = 65535;
+            glbce_prms->brightAmplLimit = 6;
+            glbce_prms->darkAmplLimit = 6;
+            glbce_prms->dither = GLBCE_NO_DITHER;
+
+            memcpy(glbce_prms->asymLut, dcc_glbce->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
+
+            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
+            memcpy(glbce_prms->fwd_percept_table, dcc_glbce->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
+            memcpy(glbce_prms->rev_percept_table, dcc_glbce->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+            glbce_prms->wdr_enable = 0;
+            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
+        }
+        else
         {
             glbce_prms->irStrength = 255;
             glbce_prms->blackLevel = 0;
@@ -483,31 +509,6 @@ void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
 
             /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
             glbce_prms->wdr_enable = 0;
-
-        }
-        else
-        {
-            glbce_prms->irStrength = dcc_glbce->strength;
-            glbce_prms->intensityVariance = dcc_glbce->intensity_var;
-            glbce_prms->spaceVariance = dcc_glbce->space_var;
-            glbce_prms->maxSlopeLimit = dcc_glbce->slope_max_lim;
-            glbce_prms->minSlopeLimit = dcc_glbce->slope_min_lim;
-
-            glbce_prms->blackLevel = 0;
-            glbce_prms->whiteLevel = 65535;
-            glbce_prms->brightAmplLimit = 6;
-            glbce_prms->darkAmplLimit = 6;
-            glbce_prms->dither = GLBCE_NO_DITHER;
-
-            memcpy(glbce_prms->asymLut, dcc_glbce->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
-
-            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
-            memcpy(glbce_prms->fwd_percept_table, dcc_glbce->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
-
-            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
-            memcpy(glbce_prms->rev_percept_table, dcc_glbce->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
-
-            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
         }
     }
 }
