@@ -539,7 +539,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
 
         /* FLEXCFA */
-        FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, prms->nsf4_params.iw, prms->nsf4_params.ih, 12, &prms->flexcfa_params);
+        FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params);
 
         /* FLEXCC */
         if(0 == prms->bypass_cc)
