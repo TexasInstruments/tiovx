@@ -67,24 +67,80 @@
 extern "C" {
 #endif
 
-void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseH3aParams(h3a_settings *h3a_settings,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseH3aLutParams(uint32_t idx, cfg_lut *lut,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseFlxCCParams(Flexcc_Config *cc_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseYeeParams(ee_Config *cc_prms,
-    dcc_parser_output_params_t *dcc_out_prms);
-void tivxVpacVissParseCCMParams(Flexcc_ccm1 *ccm,
-    dcc_parser_output_params_t *dcc_out_prms);
+#include <vx_vpac_viss_target_priv.h>
+
+typedef struct
+{
+    uint32_t width;
+    uint32_t height;
+
+    /* Pointers to buffers allocated at create time */
+    uint16_t *raw0_16;
+    uint16_t *raw1_16;
+    uint16_t *raw2_16;
+    uint16_t *scratch_rawfe_raw_out;
+    uint16_t *scratch_rawfe_h3a_out;
+    uint32_t *scratch_aew_result;
+    uint32_t *scratch_af_result;
+    uint16_t *scratch_nsf4v_out;
+    uint16_t *scratch_glbce_out;
+    uint32_t *scratch_cfa_in;
+    uint16_t *scratch_cfa_out[FLXD_NUM_FIR];
+    uint16_t *scratch_cc_out[8];
+    uint32_t *scratch_hist;
+    uint16_t *scratch_ee_in;
+    uint16_t *scratch_ee_out;
+    uint16_t *scratch_ee_shift_out;
+
+    /* Secondary pointers to buffers allocated in above list
+     * (used for multiplexer assignments) */
+    uint16_t *out_y12_16;
+    uint16_t *out_uv12_c1_16;
+    uint16_t *out_y8_r8_c2_16;
+    uint16_t *out_uv8_g8_c3_16;
+    uint16_t *out_s8_b8_c4_16;
+    uint16_t *scratch_ee_shift_in;
+    uint16_t *pScratch_nsf4v_out;
+    uint16_t *pScratch_glbce_out;
+
+    uint16_t out_y8_r8_c2_bit_align;
+    uint16_t out_uv8_g8_c3_bit_align;
+    uint16_t out_s8_b8_c4_bit_align;
+
+    uint32_t buffer_size;
+    uint32_t aew_buffer_size;
+    uint32_t af_buffer_size;
+    uint16_t pre_copy;
+    uint16_t post_copy;
+
+    uint16_t bypass_glbce;
+    uint16_t bypass_nsf4;
+    uint16_t bypass_cc;
+    uint16_t bypass_ee;
+
+    cfg_rawfe rawfe_params;
+    nsf4_settings nsf4_params;
+    glbce_settings glbce_params;
+    glbce_handle hGlbce;
+    h3a_settings h3a_params;
+    h3a_image h3a_in;
+    tivx_h3a_aew_config aew_config;
+    FLXD_Config flexcfa_params;
+    Flexcc_Config flexcc_params;
+    ee_Config ee_params;
+    vx_uint32 use_dcc;
+    uint8_t * dcc_out_buf;
+    vx_uint32 dcc_out_numbytes;
+    dcc_parser_input_params_t * dcc_input_params;
+    dcc_parser_output_params_t * dcc_output_params;
+
+    uint32_t viss_frame_count;
+
+    tivxVpacVissObj vissObj;    /* Same context structure from driver version */
+
+} tivxVpacVissParams;
+
+vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms);
 
 #ifdef __cplusplus
 }

@@ -95,72 +95,6 @@
 
 #define VISS_MAX_PATH_SIZE 256
 
-
-typedef struct
-{
-    /* Pointers to buffers allocated at create time */
-    uint16_t *raw0_16;
-    uint16_t *raw1_16;
-    uint16_t *raw2_16;
-    uint16_t *scratch_rawfe_raw_out;
-    uint16_t *scratch_rawfe_h3a_out;
-    uint32_t *scratch_aew_result;
-    uint32_t *scratch_af_result;
-    uint16_t *scratch_nsf4v_out;
-    uint16_t *scratch_glbce_out;
-    uint32_t *scratch_cfa_in;
-    uint16_t *scratch_cfa_out[FLXD_NUM_FIR];
-    uint16_t *scratch_cc_out[8];
-    uint32_t *scratch_hist;
-    uint16_t *scratch_ee_in;
-    uint16_t *scratch_ee_out;
-    uint16_t *scratch_ee_shift_out;
-
-    /* Secondary pointers to buffers allocated in above list
-     * (used for multiplexer assignments) */
-    uint16_t *out_y12_16;
-    uint16_t *out_uv12_c1_16;
-    uint16_t *out_y8_r8_c2_16;
-    uint16_t *out_uv8_g8_c3_16;
-    uint16_t *out_s8_b8_c4_16;
-    uint16_t *scratch_ee_shift_in;
-    uint16_t *pScratch_nsf4v_out;
-    uint16_t *pScratch_glbce_out;
-
-    uint16_t out_y8_r8_c2_bit_align;
-    uint16_t out_uv8_g8_c3_bit_align;
-    uint16_t out_s8_b8_c4_bit_align;
-
-    uint32_t buffer_size;
-    uint32_t aew_buffer_size;
-    uint32_t af_buffer_size;
-    uint16_t pre_copy;
-    uint16_t post_copy;
-
-    uint16_t bypass_glbce;
-    uint16_t bypass_nsf4;
-    uint16_t bypass_cc;
-    uint16_t bypass_ee;
-
-    cfg_rawfe rawfe_params;
-    nsf4_settings nsf4_params;
-    glbce_settings glbce_params;
-    glbce_handle hGlbce;
-    h3a_settings h3a_params;
-    h3a_image h3a_in;
-    tivx_h3a_aew_config aew_config;
-    FLXD_Config flexcfa_params;
-    Flexcc_Config flexcc_params;
-    ee_Config ee_params;
-    vx_uint32 use_dcc;
-    uint8_t * dcc_out_buf;
-    vx_uint32 dcc_out_numbytes;
-    dcc_parser_input_params_t * dcc_input_params;
-    dcc_parser_output_params_t * dcc_output_params;
-
-    uint32_t viss_frame_count;
-} tivxVpacVissParams;
-
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
@@ -175,6 +109,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms);
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
 static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, uint16_t shift_policy);
 
@@ -196,7 +131,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_distribution_t *histogram_desc;
     tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
     tivxVpacVissParams *prms = NULL;
-    tivx_vpac_viss_params_t *params;
+    tivxVpacVissObj    *vissObj = NULL;
+    tivx_vpac_viss_params_t *vissPrms;
 
     if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -253,6 +189,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         raw_mem_target_ptr[0] = NULL;
         raw_mem_target_ptr[1] = NULL;
         raw_mem_target_ptr[2] = NULL;
+
+        vissObj = &prms->vissObj;
 
         configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
         tivxMemBufferMap(configuration_target_ptr,
@@ -361,7 +299,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 (vx_enum)VX_WRITE_ONLY);
         }
 
-        params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
+        vissPrms = (tivx_vpac_viss_params_t *)configuration_target_ptr;
 
         /* call kernel processing function */
 
@@ -385,15 +323,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
          */
 
         /* RAWFE */
-        if(TIVX_VPAC_VISS_H3A_IN_RAW0 == params->h3a_in)
+        if(TIVX_VPAC_VISS_H3A_IN_RAW0 == vissPrms->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 2;
         }
-        else if(TIVX_VPAC_VISS_H3A_IN_RAW1 == params->h3a_in)
+        else if(TIVX_VPAC_VISS_H3A_IN_RAW1 == vissPrms->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 1;
         }
-        else if(TIVX_VPAC_VISS_H3A_IN_RAW2 == params->h3a_in)
+        else if(TIVX_VPAC_VISS_H3A_IN_RAW2 == vissPrms->h3a_in)
         {
             prms->rawfe_params.h3a_mux_sel = 0;
         }
@@ -408,7 +346,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             /* apply AWB gains in RAWFE when NSF4 is bypassed */
             if ((NULL != ae_awb_result_desc) &&
-                (1u == params->bypass_nsf4) &&
+                (1u == vissPrms->bypass_nsf4) &&
                 (1u == aewb_result->awb_valid))
             {
                 prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
@@ -418,7 +356,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             if(1u == prms->use_dcc)
             {
-                prms->dcc_input_params->cameraId = params->sensor_dcc_id;
+                prms->dcc_input_params->cameraId = vissPrms->sensor_dcc_id;
 
                 if ( NULL != ae_awb_result_desc )
                 {
@@ -453,11 +391,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 if (prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num > 1)
                 {
                     int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
-                    tivxVpacVissParseH3aLutParams(cnt,
-                        &prms->rawfe_params.lut_h3a, prms->dcc_output_params);
+                    /* TODO: call the DCC function for updating the H3A lut below, then before processing, sweep all settings into Cmodel tables */
+                    //tivxVpacVissParseH3aLutParams(cnt,
+                    //    &prms->rawfe_params.lut_h3a, prms->dcc_output_params);
                 }
             }
         }
+        FILE *fout = fopen("memDump2.txt", "wb");
+        fwrite(&prms->rawfe_params, sizeof(prms->rawfe_params), 1, fout);
+        fclose(fout);
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
 
@@ -468,13 +410,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 /* Update H3A params using DCC config */
                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
-                tivxVpacVissParseH3aParams(&prms->h3a_params,
-                        prms->dcc_output_params);
+
+                /* TODO: Call the DCC version of this*/
+                //tivxVpacVissParseH3aParams(prms);
             }
             else
             {
-                tivxVpacVissParseH3aParams(&prms->h3a_params,
-                        NULL);
+                /* TODO: Call the DCC version of this*/
+                //tivxVpacVissParseH3aParams(prms);
             }
 
             h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
@@ -487,12 +430,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             if(1u == prms->use_dcc)
             {
-                tivxVpacVissParseNsf4Params(&prms->nsf4_params,
-                    prms->dcc_output_params);
-                prms->nsf4_params.iw = raw_desc->params.width;
-                prms->nsf4_params.ih = raw_desc->params.height;
-                prms->nsf4_params.ow = raw_desc->params.width;
-                prms->nsf4_params.oh = raw_desc->params.height;
+                /* TODO: Call the DCC version of this*/
+                //tivxVpacVissParseNsf4Params(prms);
 
                 if ((NULL == ae_awb_result_desc) ||
                     (0 == aewb_result->awb_valid))
@@ -548,8 +487,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 if(prms->dcc_output_params->useCcmCfg)
                 {
-                    tivxVpacVissParseCCMParams(&prms->flexcc_params.CCM1,
-                        prms->dcc_output_params);
+                    /* TODO: Call the DCC version of this*/
+                    //tivxVpacVissParseCCMParams(&prms->flexcc_params.CCM1,
+                    //    prms->dcc_output_params);
                 }
             }
 
@@ -609,10 +549,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         if( h3a_aew_af_desc != NULL)
         {
             tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
-            pH3a_buf->aew_af_mode = params->h3a_aewb_af_mode;
-            pH3a_buf->h3a_source_data = params->h3a_in;
+            pH3a_buf->aew_af_mode = vissPrms->h3a_aewb_af_mode;
+            pH3a_buf->h3a_source_data = vissPrms->h3a_in;
 
-            if(0 == params->h3a_aewb_af_mode)
+            if(0 == vissPrms->h3a_aewb_af_mode)
             {
                 /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
                  * in case third party 2A nodes which don't use DCC can easily see this information */
@@ -620,7 +560,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 pH3a_buf->size = prms->aew_buffer_size;
                 memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
             }
-            else if(1 == params->h3a_aewb_af_mode)
+            else if(1 == vissPrms->h3a_aewb_af_mode)
             {
                 pH3a_buf->size = prms->af_buffer_size;
                 memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
@@ -752,7 +692,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     if((vx_status)VX_SUCCESS == status)
     {
         tivxVpacVissParams *prms = NULL;
-        tivx_vpac_viss_params_t *params;
+        tivxVpacVissObj    *vissObj = NULL;
+        tivx_vpac_viss_params_t *vissPrms;
 
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
@@ -773,150 +714,37 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             uint32_t i;
 
             memset(prms, 0, sizeof(tivxVpacVissParams));
-            prms->dcc_input_params = (dcc_parser_input_params_t *)tivxMemAlloc(sizeof(dcc_parser_input_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-            if(NULL == prms->dcc_input_params)
+
+            prms->width = width;
+            prms->height = height;
+
+            vissObj = &prms->vissObj;
+
+            /* Only allocate dcc input params if dcc file is provided on interface */
+            if(NULL != dcc_desc)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                status = (vx_status)VX_ERROR_NO_MEMORY;
+                prms->dcc_input_params = (dcc_parser_input_params_t *)tivxMemAlloc(sizeof(dcc_parser_input_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                if(NULL == prms->dcc_input_params)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
             }
 
-            prms->dcc_output_params = (dcc_parser_output_params_t *)tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-            if(NULL == prms->dcc_output_params)
+            if ((vx_status)VX_SUCCESS == status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                status = (vx_status)VX_ERROR_NO_MEMORY;
+                prms->dcc_output_params = (dcc_parser_output_params_t *)tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                if(NULL == prms->dcc_output_params)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
             }
+            memset(prms->dcc_output_params, 0, sizeof(dcc_parser_output_params_t));
 
             prms->buffer_size = (width * height) * 2;
 
-            prms->raw0_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->raw0_16)
-            {
-                status = (vx_status)VX_ERROR_NO_MEMORY;
-            }
-
-            if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
-            {
-                prms->raw1_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->raw1_16)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
-            {
-                prms->raw2_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->raw2_16)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_rawfe_raw_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_rawfe_raw_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_rawfe_h3a_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_rawfe_h3a_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_nsf4v_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_nsf4v_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_glbce_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_glbce_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_cfa_in)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            for (i = 0; i < FLXD_NUM_FIR; i++)
-            {
-                if ((vx_status)VX_SUCCESS == status)
-                {
-                    prms->scratch_cfa_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                    if (NULL == prms->scratch_cfa_out[i])
-                    {
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                    }
-                }
-            }
-
-            for (i = 0; i < 8; i++)
-            {
-                if ((vx_status)VX_SUCCESS == status)
-                {
-                    prms->scratch_cc_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                    if (NULL == prms->scratch_cc_out[i])
-                    {
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                    }
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_hist = tivxMemAlloc(256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_hist)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_ee_in = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_ee_in)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_ee_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_ee_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                prms->scratch_ee_shift_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_ee_shift_out)
-                {
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
+            status = tivxVpacVissAllocMem(prms);
 
             if ((vx_status)VX_SUCCESS == status)
             {
@@ -927,7 +755,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-                params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
+                vissPrms = (tivx_vpac_viss_params_t *)configuration_target_ptr;
+            }
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = tivxVpacVissSetDefaultParams(vissObj, vissPrms, NULL);
             }
 
             if ((vx_status)VX_SUCCESS == status)
@@ -936,7 +769,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 {
                     prms->use_dcc = 1u;
                     prms->dcc_input_params->analog_gain = 1000;
-                    prms->dcc_input_params->cameraId = params->sensor_dcc_id;
+                    prms->dcc_input_params->cameraId = vissPrms->sensor_dcc_id;
                     prms->dcc_input_params->color_temparature = 5000;
                     prms->dcc_input_params->exposure_time = 33333;
 
@@ -969,7 +802,27 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 {
                     VX_PRINT(VX_ZONE_WARNING, "No DCC buffer passed. Using defaults \n");
                 }
+            }
 
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                /* In one shot, syncronize the drv data structures to the sim data structures */
+                status = tivxVpacVissSetConfigInSim(prms);
+
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    /* Reset this flag, as the config is already applied to simulator */
+                    vissObj->isConfigUpdated = 0U;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "Failed to Parse and Set viss Params to simulator data structures\n");
+                }
+            }
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
                 /*                                  |-------------------->
                  *                                  |        |----------->
                  * RAWFE -> NSF4 -> GLBCE -> FLEXCFA -> FLEXCC -> EE ---->
@@ -977,10 +830,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                  */
 
                 /* RAWFE */
-                tivxVpacVissParseRfeParams(&prms->rawfe_params, prms->dcc_output_params);
-                prms->rawfe_params.width = width;
-                prms->rawfe_params.height = height;
-                prms->rawfe_params.h3a_mux_sel = params->h3a_in;
+                prms->rawfe_params.h3a_mux_sel = vissPrms->h3a_in;
 
                 /* TODO: Use shift when H3A Lut is not enabled */
                 prms->rawfe_params.h3a_mux_shift = 2u;
@@ -992,16 +842,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     uint32_t max_h3a_out_buffer_size;
                     int16_t temp_num_aew_windows;
 
-                    if(1u == prms->use_dcc)
-                    {
-                        tivxVpacVissParseH3aParams(&prms->h3a_params,
-                            prms->dcc_output_params);
-                    }
-                    else
-                    {
-                        tivxVpacVissParseH3aParams(&prms->h3a_params,
-                            NULL);
-                    }
                     prms->h3a_in.image_width = width;
                     prms->h3a_in.image_height = height;
                     prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out;
@@ -1098,12 +938,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 /* NSF4 */
                 prms->pScratch_nsf4v_out = prms->scratch_rawfe_raw_out;
-                if(0 == params->bypass_nsf4)
+                if(0 == vissPrms->bypass_nsf4)
                 {
-                    tivxVpacVissParseNsf4Params(&prms->nsf4_params, prms->dcc_output_params);
-                    prms->nsf4_params.iw = width;
-                    prms->nsf4_params.ih = height;
-                    nsf4_check_parameters(&prms->nsf4_params);
                     prms->pScratch_nsf4v_out = prms->scratch_nsf4v_out;
                 }
                 else
@@ -1113,12 +949,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 /* GLBCE */
                 prms->pScratch_glbce_out = prms->pScratch_nsf4v_out;
-                if(0 == params->bypass_glbce)
+                if(0 == vissPrms->bypass_glbce)
                 {
                     int retval;
-                    tivxVpacVissParseGlbceParams(&prms->glbce_params, prms->dcc_output_params);
-                    prms->glbce_params.iw = width;
-                    prms->glbce_params.ih = height;
                     prms->pScratch_glbce_out = prms->scratch_glbce_out;
                     retval = glbce_get_handle(&prms->glbce_params, &prms->hGlbce);
 
@@ -1134,34 +967,27 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 }
 
                 /* FLEXCFA */
-                tivxVpacVissParseFlxCfaParams(&prms->flexcfa_params, prms->dcc_output_params);
-                prms->flexcfa_params.imgWidth = width;
-                prms->flexcfa_params.imgHeight = height;
 
                 /* FLEXCC */
                 if( ( NULL != y12_desc ) ||
-                   (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != params->mux_output1)) ||
-                   (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != params->mux_output2)) ||
-                   (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != params->mux_output3)) ||
-                   (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != params->mux_output4)) ||
+                   (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->mux_output1)) ||
+                   (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->mux_output2)) ||
+                   (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->mux_output3)) ||
+                   (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != vissPrms->mux_output4)) ||
                     ( NULL != histogram_desc))
                 {
-                    tivxVpacVissParseFlxCCParams(&prms->flexcc_params, prms->dcc_output_params);
-                    prms->flexcc_params.inWidth = width;
-                    prms->flexcc_params.inHeight = height;
-
-                    if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == params->mux_output0)) ||
-                        (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == params->mux_output2)) )
+                    if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)) ||
+                        (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == vissPrms->mux_output2)) )
                     {
                         prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
                     }
-                    else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == params->mux_output2))
+                    else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))
                     {
                         prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
                     }
                     else
                     {
-                        prms->flexcc_params.ChromaMode = params->chroma_mode;
+                        prms->flexcc_params.ChromaMode = vissPrms->chroma_mode;
                     }
                 }
                 else
@@ -1170,16 +996,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 }
 
                 /* EE */
-                if(0 != params->ee_mode)
+                if(0 != vissPrms->ee_mode)
                 {
-                    if((( NULL != y12_desc )       && (1 == params->ee_mode)) ||
-                       (( NULL != y8_r8_c2_desc )  && (2 == params->ee_mode) &&
-                        ((TIVX_VPAC_VISS_MUX2_Y8 == params->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == params->mux_output2) ||
-                         (TIVX_VPAC_VISS_MUX2_YUV422 == params->mux_output2))))
+                    if((( NULL != y12_desc )       && (1 == vissPrms->ee_mode)) ||
+                       (( NULL != y8_r8_c2_desc )  && (2 == vissPrms->ee_mode) &&
+                        ((TIVX_VPAC_VISS_MUX2_Y8 == vissPrms->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->mux_output2) ||
+                         (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))))
                     {
-                        tivxVpacVissParseYeeParams(&prms->ee_params, prms->dcc_output_params);
-                        prms->ee_params.width = width;
-                        prms->ee_params.height = height;
+                        prms->bypass_ee = 0;
                     }
                     else
                     {
@@ -1195,8 +1019,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 if( NULL != y12_desc )
                 {
-                    if(((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
-                        (TIVX_VPAC_VISS_MUX0_VALUE12 != params->mux_output0))
+                    if(((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
+                        (TIVX_VPAC_VISS_MUX0_VALUE12 != vissPrms->mux_output0))
                     {
                         prms->scratch_ee_shift_in = prms->scratch_cc_out[0]; /* y12 */
                         prms->out_y12_16 = prms->scratch_ee_shift_out;       /* y12 */
@@ -1208,12 +1032,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         prms->out_y12_16 = prms->scratch_cc_out[0];    /* y12 */
                     }
 
-                    if (TIVX_VPAC_VISS_MUX0_NV12_P12 == params->mux_output0)  /* NV12_P12 Format */
+                    if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)  /* NV12_P12 Format */
                     {
                         prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
                     }
 
-                    if (TIVX_VPAC_VISS_MUX0_VALUE12 == params->mux_output0)  /* Value Format */
+                    if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->mux_output0)  /* Value Format */
                     {
                         prms->flexcc_params.MuxY12Out = 2; /* HSV value */
                     }
@@ -1225,7 +1049,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 if( NULL != uv12_c1_desc )
                 {
-                    if(params->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
+                    if(vissPrms->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
                     {
                         prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
                     }
@@ -1238,9 +1062,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != y8_r8_c2_desc )
                 {
                     prms->out_y8_r8_c2_bit_align = 8;
-                    if(params->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
+                    if(vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
                     {
-                        if((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                        if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
                         {
                             prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
                             prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
@@ -1252,22 +1076,22 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
                         }
                     }
-                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
+                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cc_out[5]; /* r8 */
                     }
-                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
+                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cfa_out[1]; /* c2 */
                         prms->out_y8_r8_c2_bit_align = 12;
                     }
-                    else if (params->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
+                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
                     {
                         prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 (value) */
                     }
-                    else if((params->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (params->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
+                    else if((vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
                     {
-                        if((0 == prms->bypass_ee) && (params->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                        if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
                         {
                             prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
                             prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
@@ -1287,7 +1111,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         /* Not valid input */
                     }
 
-                    if (TIVX_VPAC_VISS_MUX2_VALUE8 == params->mux_output2)  /* Value Format */
+                    if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->mux_output2)  /* Value Format */
                     {
                         prms->flexcc_params.MuxY8Out = 2; /* HSV value */
                     }
@@ -1300,11 +1124,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != uv8_g8_c3_desc )
                 {
                     prms->out_uv8_g8_c3_bit_align = 8;
-                    if(params->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
+                    if(vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
                     {
                         prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* uv8 */
                     }
-                    else if (params->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
+                    else if (vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
                     {
                         prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[6]; /* g8 */
                     }
@@ -1318,11 +1142,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( NULL != s8_b8_c4_desc )
                 {
                     prms->out_s8_b8_c4_bit_align = 8;
-                    if(params->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
+                    if(vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
                     {
                         prms->out_s8_b8_c4_16 = prms->scratch_cc_out[4]; /* s8 */
                     }
-                    else if (params->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
+                    else if (vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
                     {
                         prms->out_s8_b8_c4_16 = prms->scratch_cc_out[7]; /* b8 */
                     }
@@ -1429,6 +1253,154 @@ void tivxRemoveTargetKernelVpacViss(void)
     {
         vx_vpac_viss_target_kernel = NULL;
     }
+}
+
+static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (NULL != prms)
+    {
+        uint32_t i;
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->raw0_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->raw0_16)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
+        {
+            prms->raw1_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->raw1_16)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status) /* always allocate as per cmodel */
+        {
+            prms->raw2_16 = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->raw2_16)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_rawfe_raw_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_rawfe_raw_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_rawfe_h3a_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_rawfe_h3a_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_nsf4v_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_nsf4v_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_glbce_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_glbce_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_cfa_in)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        for (i = 0; i < FLXD_NUM_FIR; i++)
+        {
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                prms->scratch_cfa_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->scratch_cfa_out[i])
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
+            }
+        }
+
+        for (i = 0; i < 8; i++)
+        {
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                prms->scratch_cc_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->scratch_cc_out[i])
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_hist = tivxMemAlloc(256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_hist)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_ee_in = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_ee_in)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_ee_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_ee_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_ee_shift_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_ee_shift_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    return status;
 }
 
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)

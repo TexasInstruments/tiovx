@@ -311,6 +311,9 @@ void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj);
 void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj);
 void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj);
 
+vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
+    const tivx_vpac_viss_params_t *vissPrms, tivx_ae_awb_params_t *ae_awb_res);
+
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     const tivx_obj_desc_user_data_object_t *dcc_buf_desc,
     const tivx_obj_desc_user_data_object_t *h3a_out_desc,
@@ -320,7 +323,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
 vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
     const tivx_vpac_viss_params_t *vissPrms);
 
-/*! Initializes DCC parameters to default values */
+/*! Deinitializes DCC parameters */
 void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj);
 
 /*! Sets entire VISS config in DRV */

@@ -83,1189 +83,827 @@
 #include "idcc.h"
 
 #include "vx_vpac_viss_target_sim_priv.h"
+#include <vx_vpac_viss_target_priv.h>
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static void tivxVpacVissParseWB2Params(cfg_wb2 *wb,
-    dcc_parser_output_params_t *dcc_out_prms);
-static void tivxVpacVissParseLscParams(cfg_lsc *lsc,
-    dcc_parser_output_params_t *dcc_out_prms);
-static void tivxVpacVissParseDpcParams(cfg_dpc *dpc,
-    dcc_parser_output_params_t *dcc_out_prms);
-static void tivxVpacVissParseRfeLutParams(uint32_t lut_id, cfg_lut *lut,
-    dcc_parser_output_params_t *dcc_out_prms);
-static void tivxVpacVissParseMergeParams(uint32_t merge_id, cfg_merge *merge,
-    dcc_parser_output_params_t *dcc_out_prms);
-static void tivxVpacVissParsePwlParams(uint32_t lut_id, cfg_pwl_lut *pwl,
-    dcc_parser_output_params_t *dcc_out_prms);
+static void tivxVpacVissParseWB2Params(cfg_wb2 *wb, Rfe_GainOfstConfig **wbCfg_p);
+static void tivxVpacVissParseLscParams(cfg_lsc *lsc, Rfe_LscConfig **lscCfg_p);
+static void tivxVpacVissParseDpcParams(cfg_dpc *dpc, Rfe_DpcLutConfig **dpcLutCfg_p, Rfe_DpcOtfConfig **dpcOtfCfg_p);
+static void tivxVpacVissParseRfeLutParams(cfg_lut *lut, Vhwa_LutConfig **lutCfg_p);
+static void tivxVpacVissParseMergeParams(cfg_merge *merge, Rfe_WdrConfig **mergeCfg_p);
+static void tivxVpacVissParsePwlParams(cfg_pwl_lut *pwl, Rfe_PwlConfig **pwlCfg_p, Vhwa_LutConfig **lutCfg_p);
 
+static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms);
+static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-uint32_t gcfa_lut_20to16[] =
-{
-    #include "flexcfa_lut_20to16_0.txt"
-};
-
-int32_t gcfa_coeff[] =
-{
-    #include "flexcfa_cfa_0.txt"
-};
-
-uint32_t gflexcc_contrast_lut[] =
-{
-    #include "flexcc_contrast_lut_0.txt"
-};
-
-uint32_t gflexcc_lut_12to8[] =
-{
-    #include "flexcc_lut_12to8_0.txt"
-};
-
-int32_t gflexcc_yee_lut[] =
-{
-    #include "flexcc_yee_lut_0.txt"
-};
-
-uint32_t grawfe_pwl_long_lut[] =
-{
-    #include "rawfe_pwl_lut_long_0.txt"
-};
-
-uint32_t grawfe_pwl_short_lut[] =
-{
-    #include "rawfe_pwl_lut_short_0.txt"
-};
-
-uint32_t grawfe_pwl_vshort_lut[] =
-{
-    #include "rawfe_pwl_lut_vshort_0.txt"
-};
-
-uint32_t grawfe_lut_20to16[] =
-{
-    #include "rawfe_lut_20to16_0.txt"
-};
-
-int32_t grawfe_lsc_tbl[] =
-{
-    #include "rawfe_lsc_tbl_0.txt"
-};
-
-uint32_t gGlbceAsymTbl[] =
-{
-    0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
-};
-
-uint32_t gGlbceFwdPrcptTbl[] =
-{
-    #include "glbce_fwd_percept_lut.txt"
-};
-
-uint32_t gGlbceRevPrcptTbl[] =
-{
-    #include "glbce_rev_percept_lut.txt"
-};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
+vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms)
 {
-    if (NULL != rfe_prms)
-    {
-        rfe_prms->width             = 1280u;
-        rfe_prms->height            = 720u;
-        rfe_prms->lut_shadow_en     = 0u;
-
-        /* Parse Long exposure PWL Parameters */
-        tivxVpacVissParsePwlParams(0, &rfe_prms->pwl_lut_long, dcc_out_prms);
-        /* Parse Long exposure PWL Parameters */
-        tivxVpacVissParsePwlParams(1, &rfe_prms->pwl_lut_short, dcc_out_prms);
-        /* Parse Long exposure PWL Parameters */
-        tivxVpacVissParsePwlParams(2, &rfe_prms->pwl_lut_vshort, dcc_out_prms);
-
-        /* Parse Merge block 1 */
-        tivxVpacVissParseMergeParams(0u, &rfe_prms->merge_1, dcc_out_prms);
-        /* Parse Merge block 2 */
-        tivxVpacVissParseMergeParams(1u, &rfe_prms->merge_2, dcc_out_prms);
-
-        /* Parse Lut for 20 to 16 conversion */
-        tivxVpacVissParseRfeLutParams(0u, &rfe_prms->lut_20to16, dcc_out_prms);
-
-        /* Parse DPC Parameters */
-        tivxVpacVissParseDpcParams(&rfe_prms->dpc, dcc_out_prms);
-        /* Parse LSC Parameters */
-        tivxVpacVissParseLscParams(&rfe_prms->lsc, dcc_out_prms);
-        /* Parse WB2 Parameters */
-        tivxVpacVissParseWB2Params(&rfe_prms->wb2, dcc_out_prms);
-
-        /* Parse H3A Source Parameters */
-        tivxVpacVissParseRfeLutParams(1u, &rfe_prms->lut_h3a, dcc_out_prms);
-    }
-
-    if(1U == dcc_out_prms->useRfeDcmpCfg)
-    {
-        if (1 == dcc_out_prms->issRfeDecompand.enable)
-        {
-            rfe_prms->pwl_lut_vshort.lutEn = 1;
-            rfe_prms->pwl_lut_vshort.mask = dcc_out_prms->issRfeDecompand.mask;
-            rfe_prms->pwl_lut_vshort.inShift = dcc_out_prms->issRfeDecompand.shift;
-            rfe_prms->pwl_lut_vshort.lutBitDepth = dcc_out_prms->issRfeDecompand.bit_depth;
-            rfe_prms->pwl_lut_vshort.lutClip = dcc_out_prms->issRfeDecompand.clip;
-
-            for (int k = 0; k < 639; k++)
-            {
-                rfe_prms->pwl_lut_vshort.lut[k] = dcc_out_prms->issRfeDecompand.lut[k];
-            }
-        }
-    }
-}
-
-void tivxVpacVissParseH3aLutParams(uint32_t idx, cfg_lut *lut,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-    if(1U == dcc_out_prms->useH3aMuxCfg)
-    {
-        for (cnt = 0; cnt < PWL_LUT_SIZE; cnt ++)
-        {
-            lut->lut[cnt] = dcc_out_prms->issH3aMuxLuts.h3a_mux_lut[idx][cnt];
-        }
-    }
-}
-
-void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-    uint8_t use_defaults = 1;
-    viss_nsf4 * dcc_nsf4;
-
-    if (NULL != nsf4_prms)
-    {
-        if (NULL != dcc_out_prms)
-        {
-            dcc_nsf4 = &(dcc_out_prms->vissNSF4Cfg);
-            if(1U == dcc_out_prms->useNsf4Cfg)
-            {
-                use_defaults = 0;
-            }
-        }
-
-        if (0U == use_defaults)
-        {
-            nsf4_prms->mode             = dcc_nsf4->mode;
-            nsf4_prms->shd_en           = dcc_nsf4->shading_gain;
-            nsf4_prms->iw               = 0;/*Input width must be set by the node*/
-            nsf4_prms->ih               = 0;/*Input height must be set by the node*/
-
-            nsf4_prms->knee_u1          = dcc_nsf4->u1_knee;
-            nsf4_prms->thr_scale_tn1    = dcc_nsf4->tn1;
-            nsf4_prms->thr_scale_tn2    = dcc_nsf4->tn2;
-            nsf4_prms->thr_scale_tn3    = dcc_nsf4->tn3;
-
-            memcpy(nsf4_prms->noise_thr_x, dcc_nsf4->noise_thr_x, 48*sizeof(int));
-            memcpy(nsf4_prms->noise_thr_y, dcc_nsf4->noise_thr_y, 48*sizeof(int));
-            memcpy(nsf4_prms->noise_thr_s, dcc_nsf4->noise_thr_s, 48*sizeof(int));
-            nsf4_prms->shd_x                = dcc_nsf4->shd_x;
-            nsf4_prms->shd_y                = dcc_nsf4->shd_y;
-            nsf4_prms->shd_T                = dcc_nsf4->shd_t;
-            nsf4_prms->shd_kh               = dcc_nsf4->shd_kh;
-            nsf4_prms->shd_kv               = dcc_nsf4->shd_kv;
-            nsf4_prms->shd_gmax             = dcc_nsf4->shd_gmax;
-            nsf4_prms->shd_set_sel          = dcc_nsf4->shd_set_sel;
-
-            memcpy(nsf4_prms->shd_lut_x, dcc_nsf4->shd_lut_x, 32*sizeof(int));
-            memcpy(nsf4_prms->shd_lut_y, dcc_nsf4->shd_lut_y, 32*sizeof(int));
-            memcpy(nsf4_prms->shd_lut_s, dcc_nsf4->shd_lut_s, 32*sizeof(int));
-            memcpy(nsf4_prms->wb_gain, dcc_nsf4->wb_gains, 4*sizeof(int));
-
-        }
-        else
-        {
-            nsf4_prms->mode                 = 16u;
-            nsf4_prms->shd_en               = 0U;
-            nsf4_prms->iw                   = 1280u;
-            nsf4_prms->ih                   = 720u;
-
-            nsf4_prms->knee_u1              = 32u;
-            nsf4_prms->thr_scale_tn1        = 64u;
-            nsf4_prms->thr_scale_tn2        = 32u;
-            nsf4_prms->thr_scale_tn3        = 16u;
-
-            for (cnt = 0u; cnt < 4u; cnt ++)
-            {
-                nsf4_prms->noise_thr_x[cnt][0u]  = 0u;
-                nsf4_prms->noise_thr_x[cnt][1u]  = 64u;
-                nsf4_prms->noise_thr_x[cnt][2u]  = 256u;
-                nsf4_prms->noise_thr_x[cnt][3u]  = 1024u;
-                nsf4_prms->noise_thr_x[cnt][4u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][5u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][6u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][7u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][8u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][9u]  = 4096u;
-                nsf4_prms->noise_thr_x[cnt][10u] = 4096u;
-                nsf4_prms->noise_thr_x[cnt][11u] = 4096u;
-
-                nsf4_prms->noise_thr_y[cnt][0u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][1u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][2u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][3u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][4u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][5u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][6u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][7u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][8u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][9u]  = 0u;
-                nsf4_prms->noise_thr_y[cnt][10u] = 0u;
-                nsf4_prms->noise_thr_y[cnt][11u] = 0u;
-
-                nsf4_prms->noise_thr_s[cnt][0u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][1u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][2u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][3u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][4u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][5u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][6u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][7u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][8u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][9u]  = 0u;
-                nsf4_prms->noise_thr_s[cnt][10u] = 0u;
-                nsf4_prms->noise_thr_s[cnt][11u] = 0u;
-            }
-
-            nsf4_prms->shd_x                = 0u;
-            nsf4_prms->shd_y                = 0u;
-            nsf4_prms->shd_T                = 0u;
-            nsf4_prms->shd_kh               = 0u;
-            nsf4_prms->shd_kv               = 0u;
-            nsf4_prms->shd_gmax             = 0u;
-            nsf4_prms->shd_set_sel          = 0u;
-
-            for (cnt = 0u; cnt < 2u; cnt ++)
-            {
-                nsf4_prms->shd_lut_x[cnt][0u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][1u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][2u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][3u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][4u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][5u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][6u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][7u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][8u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][9u]  = 0U;
-                nsf4_prms->shd_lut_x[cnt][10u] = 0U;
-                nsf4_prms->shd_lut_x[cnt][11u] = 0U;
-                nsf4_prms->shd_lut_x[cnt][12u] = 0U;
-                nsf4_prms->shd_lut_x[cnt][13u] = 0U;
-                nsf4_prms->shd_lut_x[cnt][14u] = 0U;
-                nsf4_prms->shd_lut_x[cnt][15u] = 0U;
-
-                nsf4_prms->shd_lut_y[cnt][0u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][1u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][2u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][3u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][4u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][5u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][6u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][7u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][8u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][9u]  = 0U;
-                nsf4_prms->shd_lut_y[cnt][10u] = 0U;
-                nsf4_prms->shd_lut_y[cnt][11u] = 0U;
-                nsf4_prms->shd_lut_y[cnt][12u] = 0U;
-                nsf4_prms->shd_lut_y[cnt][13u] = 0U;
-                nsf4_prms->shd_lut_y[cnt][14u] = 0U;
-                nsf4_prms->shd_lut_y[cnt][15u] = 0U;
-
-                nsf4_prms->shd_lut_s[cnt][0u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][1u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][2u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][3u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][4u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][5u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][6u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][7u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][8u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][9u]  = 0U;
-                nsf4_prms->shd_lut_s[cnt][10u] = 0U;
-                nsf4_prms->shd_lut_s[cnt][11u] = 0U;
-                nsf4_prms->shd_lut_s[cnt][12u] = 0U;
-                nsf4_prms->shd_lut_s[cnt][13u] = 0U;
-                nsf4_prms->shd_lut_s[cnt][14u] = 0U;
-                nsf4_prms->shd_lut_s[cnt][15u] = 0U;
-            }
-
-            for (cnt = 0u; cnt < 4u; cnt ++)
-            {
-                nsf4_prms->wb_gain[cnt] = 512U;
-            }
-        }
-
-        /* Following configuration is not exposed in registers, but the
-         * cmodel requires these defaults, so setting it here. */
-        nsf4_prms->lborder_rep            = 1;
-        nsf4_prms->rborder_rep            = 1;
-        nsf4_prms->tborder_rep            = 1;
-        nsf4_prms->bborder_rep            = 1;
-        nsf4_prms->supprs_all             = 0;
-        nsf4_prms->bypass                 = 0;
-
-        for (cnt = 0u; cnt < 4u; cnt ++)
-        {
-            nsf4_prms->supprs_max[cnt][0] = 128u;
-            nsf4_prms->supprs_max[cnt][1] = 128u;
-            nsf4_prms->supprs_max[cnt][2] = 128u;
-            nsf4_prms->supprs_max[cnt][3] = 128u;
-            nsf4_prms->supprs_max[cnt][4] = 128u;
-            nsf4_prms->supprs_max[cnt][5] = 128u;
-        }
-        nsf4_prms->cfaw                 = 0;
-        nsf4_prms->cfah                 = 0;
-        nsf4_prms->ow                   = 0;
-        nsf4_prms->oh                   = 0;
-        nsf4_prms->ostart_x             = 0;
-        nsf4_prms->ostart_y             = 0;
-    }
-}
-
-void tivxVpacVissParseGlbceParams(glbce_settings *glbce_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-    uint8_t use_defaults = 1;
-    viss_glbce_dcc_cfg_t *dcc_glbce = NULL;
-
-    if (NULL != glbce_prms)
-    {
-        if (NULL != dcc_out_prms)
-        {
-            if(1U == dcc_out_prms->useVissGlbceCfg)
-            {
-                use_defaults = 0;
-            }
-        }
-
-        if (0U == use_defaults)
-        {
-            dcc_glbce = &(dcc_out_prms->vissGlbceCfg);
-
-            glbce_prms->irStrength = dcc_glbce->strength;
-            glbce_prms->intensityVariance = dcc_glbce->intensity_var;
-            glbce_prms->spaceVariance = dcc_glbce->space_var;
-            glbce_prms->maxSlopeLimit = dcc_glbce->slope_max_lim;
-            glbce_prms->minSlopeLimit = dcc_glbce->slope_min_lim;
-
-            glbce_prms->blackLevel = 0;
-            glbce_prms->whiteLevel = 65535;
-            glbce_prms->brightAmplLimit = 6;
-            glbce_prms->darkAmplLimit = 6;
-            glbce_prms->dither = GLBCE_NO_DITHER;
-
-            memcpy(glbce_prms->asymLut, dcc_glbce->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
-
-            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
-            memcpy(glbce_prms->fwd_percept_table, dcc_glbce->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
-
-            glbce_prms->fwd_percept_enable = dcc_glbce->fwd_prcpt_en;
-            memcpy(glbce_prms->rev_percept_table, dcc_glbce->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
-
-            glbce_prms->wdr_enable = 0;
-            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
-        }
-        else
-        {
-            glbce_prms->irStrength = 255;
-            glbce_prms->blackLevel = 0;
-            glbce_prms->whiteLevel = 65535;
-            glbce_prms->intensityVariance = 0xC;
-            glbce_prms->spaceVariance = 7;
-            glbce_prms->brightAmplLimit = 6;
-            glbce_prms->darkAmplLimit = 6;
-            glbce_prms->dither = GLBCE_NO_DITHER;
-            glbce_prms->maxSlopeLimit = 72;
-            glbce_prms->minSlopeLimit = 62;
-            memcpy(glbce_prms->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE * 4U);
-
-            glbce_prms->fwd_percept_enable = 0;
-            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
-            {
-                glbce_prms->fwd_percept_table[cnt] = gGlbceFwdPrcptTbl[cnt];
-            }
-
-            glbce_prms->rev_percept_enable = 0;
-            for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
-            {
-                glbce_prms->rev_percept_table[cnt] = gGlbceFwdPrcptTbl[cnt];
-            }
-
-            /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
-            glbce_prms->wdr_enable = 0;
-        }
-    }
-}
-
-void tivxVpacVissParseH3aParams(h3a_settings *h3a_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint8_t use_defaults = 1;
-
-    if (NULL != h3a_prms)
-    {
-        if (NULL != dcc_out_prms)
-        {
-            if(1U == dcc_out_prms->useH3aCfg)
-            {
-                use_defaults = 0;
-            }
-        }
-
-        if (0U == use_defaults)
-        {
-            h3a_prms->pcr_AEW_EN        = dcc_out_prms->ipipeH3A_AEWBCfg.enable;
-            h3a_prms->aew_cfg_AEFMT     = dcc_out_prms->ipipeH3A_AEWBCfg.mode;
-            h3a_prms->aewinstart_WINSV  = dcc_out_prms->ipipeH3A_AEWBCfg.v_start;
-            h3a_prms->aewinstart_WINSH  = dcc_out_prms->ipipeH3A_AEWBCfg.h_start;
-            h3a_prms->aewwin1_WINH      = dcc_out_prms->ipipeH3A_AEWBCfg.v_size;
-            h3a_prms->aewwin1_WINW      = dcc_out_prms->ipipeH3A_AEWBCfg.h_size;
-            h3a_prms->aewwin1_WINVC     = dcc_out_prms->ipipeH3A_AEWBCfg.v_count;
-            h3a_prms->aewwin1_WINHC     = dcc_out_prms->ipipeH3A_AEWBCfg.h_count;
-            h3a_prms->aewsubwin_AEWINCV = dcc_out_prms->ipipeH3A_AEWBCfg.v_skip;
-            h3a_prms->aewsubwin_AEWINCH = dcc_out_prms->ipipeH3A_AEWBCfg.h_skip;
-            h3a_prms->pcr_AVE2LMT       = dcc_out_prms->ipipeH3A_AEWBCfg.saturation_limit;
-            h3a_prms->aewinblk_WINH     = dcc_out_prms->ipipeH3A_AEWBCfg.blk_win_numlines;
-            h3a_prms->aewinblk_WINSV    = dcc_out_prms->ipipeH3A_AEWBCfg.blk_row_vpos;
-            h3a_prms->aew_cfg_SUMSFT    = dcc_out_prms->ipipeH3A_AEWBCfg.sum_shift;
-            h3a_prms->pcr_AEW_ALAW_EN   = dcc_out_prms->ipipeH3A_AEWBCfg.ALaw_En;
-            h3a_prms->pcr_AEW_MED_EN    = dcc_out_prms->ipipeH3A_AEWBCfg.MedFilt_En;
-        }
-        else
-        {
-            h3a_prms->pcr_AEW_EN = 1;
-            h3a_prms->aew_cfg_AEFMT = 2;
-            h3a_prms->aewinstart_WINSV = 2;
-            h3a_prms->aewinstart_WINSH = 32;
-            h3a_prms->aewwin1_WINH = 64;
-            h3a_prms->aewwin1_WINW = 58;
-            h3a_prms->aewwin1_WINVC = 16;
-            h3a_prms->aewwin1_WINHC = 32;
-            h3a_prms->aewsubwin_AEWINCV = 8;
-            h3a_prms->aewsubwin_AEWINCH = 8;
-            h3a_prms->pcr_AVE2LMT = 1000;
-            h3a_prms->aewinblk_WINH = 2;
-            h3a_prms->aewinblk_WINSV = 1078;
-            h3a_prms->aew_cfg_SUMSFT = 2;
-            h3a_prms->pcr_AEW_ALAW_EN = 0;
-            h3a_prms->pcr_AEW_MED_EN = 0;
-        }
-    }
-}
-
-void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt, cnt1, cnt2, cfa_cnt;
-    viss_ipipe_cfa_flxd   * dcc_cfa_cfg = NULL;
-    uint8_t use_defaults = 1;
-
-    if(NULL != dcc_out_prms)
-    {
-        if (NULL != dcc_out_prms)
-        {
-            if(1U == dcc_out_prms->useCfaCfg)
-            {
-                use_defaults = 0;
-                dcc_cfa_cfg = &(dcc_out_prms->vissCFACfg);
-            }
-        }
-    }
-
-    if (0U == use_defaults)
-    {
-        fcfa_prms->bitWidth               = dcc_cfa_cfg->bitWidth;
-        fcfa_prms->lut_enable             = dcc_cfa_cfg->lut_enable;
-
-        for (cnt = 0u; cnt < 4u; cnt ++)
-        {
-            fcfa_prms->Set0GradHzMask[cnt]     = dcc_cfa_cfg->Set0GradHzMask[cnt];
-            fcfa_prms->Set0GradVtMask[cnt]     = dcc_cfa_cfg->Set0GradVtMask[cnt];
-            fcfa_prms->Set0IntensityMask[cnt]  = dcc_cfa_cfg->Set0IntensityMask[cnt];
-            fcfa_prms->Set0IntensityShift[cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
-
-            fcfa_prms->Set1GradHzMask[cnt]     = dcc_cfa_cfg->Set1GradHzMask[cnt];
-            fcfa_prms->Set1GradVtMask[cnt]     = dcc_cfa_cfg->Set1GradVtMask[cnt];
-            fcfa_prms->Set1IntensityMask[cnt]  = dcc_cfa_cfg->Set1IntensityMask[cnt];
-            fcfa_prms->Set1IntensityShift[cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
-
-            fcfa_prms->blendMode[cnt]          = dcc_cfa_cfg->blendMode[cnt];
-            fcfa_prms->bitMaskSel[cnt]          = dcc_cfa_cfg->bitMaskSel[cnt];
-        }
-        for (cnt = 0u; cnt < 7u; cnt ++)
-        {
-            fcfa_prms->Set0Thr[cnt]     = dcc_cfa_cfg->Set0Thr[cnt];
-            fcfa_prms->Set1Thr[cnt]     = dcc_cfa_cfg->Set1Thr[cnt];
-        }
-
-        for (cnt = 0u; cnt < 639u; cnt ++)
-        {
-            fcfa_prms->ToneLut[cnt] = dcc_cfa_cfg->ToneLut[cnt];
-        }
-
-        for (cnt = 0u; cnt < 12u; cnt ++)
-        {
-            for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
-            {
-                for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
-                {
-                    fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = dcc_cfa_cfg->FirCoefs[cnt].matrix[cnt1][cnt2];
-                }
-            }
-        }
-    }
-    else
-    {
-        fcfa_prms->imgWidth               = 1280u;
-        fcfa_prms->imgHeight              = 720u;
-        fcfa_prms->bitWidth               = 12u;
-        fcfa_prms->lut_enable             = 0u;
-
-        fcfa_prms->Set0GradHzMask[0u]     = 175u;
-        fcfa_prms->Set0GradHzMask[1u]     = 95u;
-        fcfa_prms->Set0GradHzMask[2u]     = 95u;
-        fcfa_prms->Set0GradHzMask[3u]     = 175u;
-
-        fcfa_prms->Set0GradVtMask[0u]     = 175u;
-        fcfa_prms->Set0GradVtMask[1u]     = 95u;
-        fcfa_prms->Set0GradVtMask[2u]     = 95u;
-        fcfa_prms->Set0GradVtMask[3u]     = 175u;
-
-        fcfa_prms->Set0IntensityMask[0u]  = 0u;
-        fcfa_prms->Set0IntensityMask[1u]  = 1u;
-        fcfa_prms->Set0IntensityMask[2u]  = 2u;
-        fcfa_prms->Set0IntensityMask[3u]  = 3u;
-
-        fcfa_prms->Set0IntensityShift[0u] = 4u;
-        fcfa_prms->Set0IntensityShift[1u] = 5u;
-        fcfa_prms->Set0IntensityShift[2u] = 6u;
-        fcfa_prms->Set0IntensityShift[3u] = 7u;
-
-        fcfa_prms->Set0Thr[0u]            = 500u;
-        fcfa_prms->Set0Thr[1u]            = 600u;
-        fcfa_prms->Set0Thr[2u]            = 700u;
-        fcfa_prms->Set0Thr[3u]            = 800u;
-        fcfa_prms->Set0Thr[4u]            = 900u;
-        fcfa_prms->Set0Thr[5u]            = 1000u;
-        fcfa_prms->Set0Thr[6u]            = 1100u;
-
-        fcfa_prms->Set1GradHzMask[0u]     = 175u;
-        fcfa_prms->Set1GradHzMask[1u]     = 195u;
-        fcfa_prms->Set1GradHzMask[2u]     = 195u;
-        fcfa_prms->Set1GradHzMask[3u]     = 175u;
-
-        fcfa_prms->Set1GradVtMask[0u]     = 276u;
-        fcfa_prms->Set1GradVtMask[1u]     = 196u;
-        fcfa_prms->Set1GradVtMask[2u]     = 196u;
-        fcfa_prms->Set1GradVtMask[3u]     = 276u;
-
-        fcfa_prms->Set1IntensityMask[0u]  = 8u;
-        fcfa_prms->Set1IntensityMask[1u]  = 9u;
-        fcfa_prms->Set1IntensityMask[2u]  = 10u;
-        fcfa_prms->Set1IntensityMask[3u]  = 11u;
-
-        fcfa_prms->Set1IntensityShift[0u] = 12u;
-        fcfa_prms->Set1IntensityShift[1u] = 13u;
-        fcfa_prms->Set1IntensityShift[2u] = 14u;
-        fcfa_prms->Set1IntensityShift[3u] = 15u;
-
-        fcfa_prms->Set1Thr[0u]            = 0u;
-        fcfa_prms->Set1Thr[1u]            = 100u;
-        fcfa_prms->Set1Thr[2u]            = 200u;
-        fcfa_prms->Set1Thr[3u]            = 300u;
-        fcfa_prms->Set1Thr[4u]            = 400u;
-        fcfa_prms->Set1Thr[5u]            = 500u;
-        fcfa_prms->Set1Thr[6u]            = 600u;
-
-        for (cnt = 0u; cnt < 639u; cnt ++)
-        {
-            fcfa_prms->ToneLut[cnt] = gcfa_lut_20to16[cnt];
-        }
-
-        cfa_cnt = 0u;
-        for (cnt = 0u; cnt < 12u; cnt ++)
-        {
-            for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
-            {
-                for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
-                {
-                    fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = gcfa_coeff[cfa_cnt];
-                    cfa_cnt ++;
-                }
-            }
-        }
-
-        fcfa_prms->blendMode[0u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[1u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[2u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[3u]          = FLXD_BLEND_SELECTHVN;
-
-        fcfa_prms->bitMaskSel[0u]         = 0u;
-        fcfa_prms->bitMaskSel[1u]         = 0u;
-        fcfa_prms->bitMaskSel[2u]         = 0u;
-        fcfa_prms->bitMaskSel[3u]         = 0u;
-    }
-}
-
-void tivxVpacVissParseCCMParams(Flexcc_ccm1 *ccm,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint8_t use_defaults = 1;
-
-    if (NULL != dcc_out_prms)
-    {
-        if(1U == dcc_out_prms->useCcmCfg)
-        {
-            use_defaults = 0;
-        }
-    }
-
-    if (NULL != ccm)
-    {
-        if (0U == use_defaults)
-        {
-            ccm->W11 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][0];
-            ccm->W12 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][1];
-            ccm->W13 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][2];
-            ccm->W14 = 0;
-            ccm->W21 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][0];
-            ccm->W22 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][1];
-            ccm->W23 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][2];
-            ccm->W24 = 0;
-            ccm->W31 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][0];
-            ccm->W32 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][1];
-            ccm->W33 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][2];
-            ccm->W34 = 0;
-
-            ccm->Offset_1 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[0];
-            ccm->Offset_2 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[1];
-            ccm->Offset_3 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[2];
-        }
-        else
-        {
-            ccm->W11 = 256;
-            ccm->W12 = 0;
-            ccm->W13 = 0;
-            ccm->W14 = 0;
-            ccm->W21 = 0;
-            ccm->W22 = 256;
-            ccm->W23 = 0;
-            ccm->W24 = 0;
-            ccm->W31 = 0;
-            ccm->W32 = 0;
-            ccm->W33 = 256;
-            ccm->W34 = 0;
-
-            ccm->Offset_1 = 0;
-            ccm->Offset_2 = 0;
-            ccm->Offset_3 = 0;
-        }
-    }
-}
-
-void tivxVpacVissParseFlxCCParams(Flexcc_Config *cc_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-
-    if (NULL != cc_prms)
-    {
-        cc_prms->inWidth                    = 1280u;
-        cc_prms->inHeight                   = 720u;
-        cc_prms->MuxC1_4                    = 0u;
-        cc_prms->MuxY12Out                  = 1u;
-        cc_prms->MuxY8Out                   = 1u;
-        cc_prms->MuxRGBHSV                  = 0u;
-        cc_prms->HistMode                   = 0u;
-
-        cc_prms->HistEn                     = 0u;
-        cc_prms->HistStartX                 = 0u;
-        cc_prms->HistStartY                 = 0u;
-        cc_prms->HistSizeX                  = 500u;
-        cc_prms->HistSizeY                  = 500u;
-
-        cc_prms->CCM1.W11                   = 256;
-        cc_prms->CCM1.W12                   = 0;
-        cc_prms->CCM1.W13                   = 0;
-        cc_prms->CCM1.W14                   = 0;
-        cc_prms->CCM1.W21                   = 0;
-        cc_prms->CCM1.W22                   = 256;
-        cc_prms->CCM1.W23                   = 0;
-        cc_prms->CCM1.W24                   = 0;
-        cc_prms->CCM1.W31                   = 0;
-        cc_prms->CCM1.W32                   = 0;
-        cc_prms->CCM1.W33                   = 256;
-        cc_prms->CCM1.W34                   = 0;
-
-        cc_prms->CCM1.Offset_1              = 0;
-        cc_prms->CCM1.Offset_2              = 0;
-        cc_prms->CCM1.Offset_3              = 0;
-
-        cc_prms->RGB2YUV.W11                = 77;
-        cc_prms->RGB2YUV.W12                = 150;
-        cc_prms->RGB2YUV.W13                = 29;
-        cc_prms->RGB2YUV.W21                = -44;
-        cc_prms->RGB2YUV.W22                = -84;
-        cc_prms->RGB2YUV.W23                = 128;
-        cc_prms->RGB2YUV.W31                = 128;
-        cc_prms->RGB2YUV.W32                = -108;
-        cc_prms->RGB2YUV.W33                = -20;
-
-        cc_prms->RGB2YUV.Offset_1           = 0;
-        cc_prms->RGB2YUV.Offset_2           = 128;
-        cc_prms->RGB2YUV.Offset_3           = 128;
-
-        cc_prms->RGB2HSV.MuxH1              = 0u;
-        cc_prms->RGB2HSV.MuxH2              = 0u;
-        cc_prms->RGB2HSV.GrayW11            = 64u; /* S10Q8 */
-        cc_prms->RGB2HSV.GrayW12            = 64u;
-        cc_prms->RGB2HSV.GrayW13            = 128u;
-        cc_prms->RGB2HSV.GrayOffset_1       = 0u;
-
-        cc_prms->RGB2HSV.SatMode            = 0u;
-
-        cc_prms->RGB2HSV.SatDiv             = 2u;
-
-        cc_prms->RGB2HSV.SatDivShift        = 0u; /* No Register field*/
-
-        cc_prms->RGB2HSV.SatLutEn           = 0u;
-
-        cc_prms->RGB2HSV.RGBLutEn           = 0u;
-
-        cc_prms->RGB2HSV.LinLogThr_0        = 0u;
-        cc_prms->RGB2HSV.LinLogThr_1        = 0u;
-        cc_prms->RGB2HSV.LinLogThr_2        = 0u;
-        cc_prms->RGB2HSV.Offset_0           = 0u;
-        cc_prms->RGB2HSV.Offset_1           = 0u;
-        cc_prms->RGB2HSV.Offset_2           = 0u;
-        cc_prms->RGB2HSV.SatMinThr          = 0u;
-
-        cc_prms->RGB2HSV.Mux_V              = 0u;
-
-        cc_prms->ContrastEn                 = 1u;
-        cc_prms->ContrastBitClip            = 10u;
-
-        for (cnt = 0; cnt < 513; cnt ++)
-        {
-            cc_prms->ContrastLut[0u][cnt] = gflexcc_contrast_lut[cnt];
-            cc_prms->ContrastLut[1u][cnt] = gflexcc_contrast_lut[cnt];
-            cc_prms->ContrastLut[2u][cnt] = gflexcc_contrast_lut[cnt];
-        }
-
-        cc_prms->Y8LutEn                    = 0u;
-        cc_prms->Y8inBitWidth               = 10u;
-        cc_prms->C8LutEn                    = 0u;
-
-        for (cnt = 0; cnt < 513; cnt ++)
-        {
-            cc_prms->Y8R8Lut[cnt]           = gflexcc_lut_12to8[cnt];
-            cc_prms->C8G8Lut[cnt]           = gflexcc_lut_12to8[cnt];
-            cc_prms->S8B8Lut[cnt]           = gflexcc_lut_12to8[cnt];
-        }
-
-        cc_prms->Y12OutEn                   = 0u;
-        cc_prms->C12OutEn                   = 0u;
-        cc_prms->Y8R8OutEn                  = 0u;
-        cc_prms->C8G8OutEn                  = 0u;
-        cc_prms->S8B8OutEn                  = 0u;
-
-
-        cc_prms->ChromaMode                 = 0u;
-    }
-}
-
-void tivxVpacVissParseYeeParams(ee_Config *ee_prms,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-
-    if (NULL != ee_prms)
-    {
-        ee_prms->width              = 1280u;
-        ee_prms->height             = 720u;
-        ee_prms->yee_en             = 1u;
-        ee_prms->yee_shf            = 4u;
-        ee_prms->yee_mul[0][0]      = -1;
-        ee_prms->yee_mul[0][1]      = -3;
-        ee_prms->yee_mul[0][2]      = -5;
-        ee_prms->yee_mul[0][3]      = -3;
-        ee_prms->yee_mul[0][4]      = -1;
-        ee_prms->yee_mul[1][0]      = -3;
-        ee_prms->yee_mul[1][1]      = -2;
-        ee_prms->yee_mul[1][2]      = 2;
-        ee_prms->yee_mul[1][3]      = -2;
-        ee_prms->yee_mul[1][4]      = -3;
-        ee_prms->yee_mul[2][0]      = -5;
-        ee_prms->yee_mul[2][1]      = 2;
-        ee_prms->yee_mul[2][2]      = 48;
-        ee_prms->yee_mul[2][3]      = 2;
-        ee_prms->yee_mul[2][4]      = -5;
-        ee_prms->yee_mul[3][0]      = -3;
-        ee_prms->yee_mul[3][1]      = -2;
-        ee_prms->yee_mul[3][2]      = 2;
-        ee_prms->yee_mul[3][3]      = -2;
-        ee_prms->yee_mul[3][4]      = -3;
-        ee_prms->yee_mul[4][0]      = -1;
-        ee_prms->yee_mul[4][1]      = -3;
-        ee_prms->yee_mul[4][2]      = -5;
-        ee_prms->yee_mul[4][3]      = -3;
-        ee_prms->yee_mul[4][4]      = -1;
-        ee_prms->yee_thr            = 200u;
-        ee_prms->yes_sel            = 0u;
-        ee_prms->yes_hal            = 1u;
-        ee_prms->yes_g_gain         = 0u;
-        ee_prms->yes_g_ofst         = 0u;
-        ee_prms->yes_e_gain         = 0u;
-        ee_prms->yes_e_thr1         = 0u;
-        ee_prms->yes_e_thr2         = 0u;
-
-        for (cnt = 0u; cnt < 4096u; cnt ++)
-        {
-            ee_prms->yee_table_s13[cnt] = gflexcc_yee_lut[cnt];
-        }
-    }
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxVpacVissParseRfeParams(prms);
+    tivxVpacVissParseH3aParams(prms);
+    tivxVpacVissParseNsf4Params(prms);
+    tivxVpacVissParseGlbceParams(prms);
+    tivxVpacVissParseFlxCfaParams(prms);
+    tivxVpacVissParseFlxCCParams(prms);
+    tivxVpacVissParseYeeParams(prms);
+
+    return (status);
 }
 
 /* ========================================================================== */
 /*                          Local Functions                                   */
 /* ========================================================================== */
 
-static void tivxVpacVissParsePwlParams(uint32_t lut_id, cfg_pwl_lut *pwl,
-    dcc_parser_output_params_t *dcc_out_prms)
+static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms)
 {
-    uint32_t cnt;
-
-    /* Long Exposure */
-    if (0 == lut_id)
+    if (NULL != prms)
     {
-        pwl->mask                       = 4095u;
-        pwl->inShift                    = 0u;     /* 3 bits  */
-        pwl->pwlEn                      = 0u;
-        pwl->thrX1                      = 128u;       /* 16 bits */
-        pwl->thrX2                      = 256u;
-        pwl->thrX3                      = 512u;
-        pwl->thrY1                      = 2048u;       /* 24 bits */
-        pwl->thrY2                      = 4096u;
-        pwl->thrY3                      = 8192u;
-        pwl->slope1                     = 16u;      /* 16 bits */
-        pwl->slope2                     = 16u;
-        pwl->slope3                     = 16u;
-        pwl->slope4                     = 16u;
-        pwl->slopeShift                 = 0u;  /* Shift for Q point of slope */
-        pwl->offset[0u]                 = 0u;   //S16
-        pwl->offset[1u]                 = 0u;   //S16
-        pwl->offset[2u]                 = 0u;   //S16
-        pwl->offset[3u]                 = 0u;   //S16
-        pwl->gain[0u]                   = 512u;     //U13Q9
-        pwl->gain[1u]                   = 512u;     //U13Q9
-        pwl->gain[2u]                   = 512u;     //U13Q9
-        pwl->gain[3u]                   = 512u;     //U13Q9
-        pwl->pwlClip                    = 65535;     /* 24 bits */
-        pwl->lutEn                      = 1u;
-        pwl->lutBitDepth                = 20u; /*  5 bits */
-        pwl->lutClip                    = 65535;     /* 16 bits */
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        cfg_rawfe              *rfe_prms = &prms->rawfe_params;
 
-        for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
-        {
-            pwl->lut[cnt]               = grawfe_pwl_long_lut[cnt];
-        }
-    }
-    else if (1u == lut_id) /* Short Exposure */
-    {
-        pwl->mask                       = 4095u;
-        pwl->inShift                    = 0u;     /* 3 bits  */
-        pwl->pwlEn                      = 0u;
-        pwl->thrX1                      = 128u;       /* 16 bits */
-        pwl->thrX2                      = 128u;
-        pwl->thrX3                      = 512u;
-        pwl->thrY1                      = 2048u;       /* 24 bits */
-        pwl->thrY2                      = 4096u;
-        pwl->thrY3                      = 8192u;
-        pwl->slope1                     = 16u;      /* 16 bits */
-        pwl->slope2                     = 16u;
-        pwl->slope3                     = 16u;
-        pwl->slope4                     = 16u;
-        pwl->slopeShift                 = 0u;  /* Shift for Q point of slope */
-        pwl->offset[0u]                 = 0u;   //S16
-        pwl->offset[1u]                 = 0u;   //S16
-        pwl->offset[2u]                 = 0u;   //S16
-        pwl->offset[3u]                 = 0u;   //S16
-        pwl->gain[0u]                   = 512u;     //U13Q9
-        pwl->gain[1u]                   = 512u;     //U13Q9
-        pwl->gain[2u]                   = 512u;     //U13Q9
-        pwl->gain[3u]                   = 512u;     //U13Q9
-        pwl->pwlClip                    = 65535;     /* 24 bits */
-        pwl->lutEn                      = 0u;
-        pwl->lutBitDepth                = 20u; /*  5 bits */
-        pwl->lutClip                    = 65535;     /* 16 bits */
+        rfe_prms->width             = prms->width;
+        rfe_prms->height            = prms->height;
+        rfe_prms->lut_shadow_en     = 0u;
 
-        for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
-        {
-            pwl->lut[cnt]               = grawfe_pwl_short_lut[cnt];
-        }
-    }
-    else if (2u == lut_id) /* Very Short Exposure */
-    {
-        pwl->mask                       = 4095u;
-        pwl->inShift                    = 0u;     /* 3 bits  */
-        pwl->pwlEn                      = 0u;
-        pwl->thrX1                      = 512u;       /* 16 bits */
-        pwl->thrX2                      = 1408u;
-        pwl->thrX3                      = 2176u;
-        pwl->thrY1                      = 2048u;       /* 24 bits */
-        pwl->thrY2                      = 16384u;
-        pwl->thrY3                      = 65536u;
-        pwl->slope1                     = 4u;      /* 16 bits */
-        pwl->slope2                     = 16u;
-        pwl->slope3                     = 64u;
-        pwl->slope4                     = 512u;
-        pwl->slopeShift                 = 0u;  /* Shift for Q point of slope */
-        pwl->offset[0u]                 = -127;   //S16
-        pwl->offset[1u]                 = -127;   //S16
-        pwl->offset[2u]                 = -127;   //S16
-        pwl->offset[3u]                 = -127;   //S16
-        pwl->gain[0u]                   = 512u;     //U13Q9
-        pwl->gain[1u]                   = 512u;     //U13Q9
-        pwl->gain[2u]                   = 512u;     //U13Q9
-        pwl->gain[3u]                   = 512u;     //U13Q9
-        pwl->pwlClip                    = 1048575;     /* 24 bits */
-        pwl->lutEn                      = 0u;
-        pwl->lutBitDepth                = 20u; /*  5 bits */
-        pwl->lutClip                    = 65535;     /* 16 bits */
+        /* Parse Long exposure PWL Parameters */
+        tivxVpacVissParsePwlParams(&rfe_prms->pwl_lut_long, &vissObj->vissCfgRef.lPwlCfg, &vissObj->vissCfgRef.lLutCfg);
+        /* Parse Short exposure PWL Parameters */
+        tivxVpacVissParsePwlParams(&rfe_prms->pwl_lut_short, &vissObj->vissCfgRef.sPwlCfg, &vissObj->vissCfgRef.sLutCfg);
+        /* Parse V Short exposure PWL Parameters */
+        tivxVpacVissParsePwlParams(&rfe_prms->pwl_lut_vshort, &vissObj->vissCfgRef.vsPwlCfg, &vissObj->vissCfgRef.vsLutCfg);
 
-        for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
-        {
-            pwl->lut[cnt]               = grawfe_pwl_vshort_lut[cnt];
-        }
-    }
-    else
-    {
+        /* Parse Merge block 1 */
+        tivxVpacVissParseMergeParams(&rfe_prms->merge_1, &vissObj->vissCfgRef.wdr1Cfg);
+        /* Parse Merge block 2 */
+        tivxVpacVissParseMergeParams(&rfe_prms->merge_2, &vissObj->vissCfgRef.wdr2Cfg);
+
+        /* Parse Lut for 20 to 16 conversion */
+        tivxVpacVissParseRfeLutParams(&rfe_prms->lut_20to16, &vissObj->vissCfgRef.comp20To16LutCfg);
+
+        /* Parse DPC Parameters */
+        tivxVpacVissParseDpcParams(&rfe_prms->dpc, &vissObj->vissCfgRef.dpcLut, &vissObj->vissCfgRef.dpcOtf);
+        /* Parse LSC Parameters */
+        tivxVpacVissParseLscParams(&rfe_prms->lsc, &vissObj->vissCfgRef.lscCfg);
+        /* Parse WB2 Parameters */
+        tivxVpacVissParseWB2Params(&rfe_prms->wb2, &vissObj->vissCfgRef.wbCfg);
+
+        /* Parse H3A Source Parameters */
+        tivxVpacVissParseRfeLutParams(&rfe_prms->lut_h3a, &vissObj->vissCfgRef.h3aLutCfg);
     }
 }
 
-static void tivxVpacVissParseMergeParams(uint32_t merge_id, cfg_merge *merge,
-    dcc_parser_output_params_t *dcc_out_prms)
+static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms)
 {
-    if (0U == merge_id)
+    if (NULL != prms)
     {
-        merge->en                   = 0u;                 // CFG4.EN
-        merge->bit_dst_u5           = 15u;         // CFG4.DST
-        merge->bit_long_u4          = 4u;        // CFG4.LBIT
-        merge->bit_short_u4         = 4u;       // CFG4.SBIT
-        merge->wgt_sel              = 0u;            // CFG4.WGT_SEL
-        merge->gain_long_u16        = 2048u;      // WDRGAIN.GLONG
-        merge->gain_short_u16       = 32768u;     // WDRGAIN.SLONG
+        uint32_t cnt, cnt1, cnt2;
 
-        merge->wdrbk_LBK[0u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[1u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[2u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[3u]        = 0u;       // WDRLBK
-        merge->wdrbk_SBK[0u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[1u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[2u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[3u]        = 0u;       // WDRSBK
-        merge->wdrwb_LWB[0u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[1u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[2u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[3u]        = 512u;       // LWDRWB
-        merge->wdrwb_SWB[0u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[1u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[2u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[3u]        = 512u;       // SWDRWB
+        nsf4_settings          *nsf4_prms = &prms->nsf4_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Nsf4v_Config           *nsf4Cfg =  vissCfgRef->nsf4Cfg;
+        Nsf4_LsccConfig        *lsccCfg = &nsf4Cfg->lsccCfg;
 
-        merge->threshold_u16        = 4094u;      // WDRTHR.THR
-        merge->af_m_s16             = 0u;           // WDRAF.AF_M
-        merge->af_e_u5              = 0u;            // WDRAF.AF_E
-        merge->bf_s16               = 0u;             // WDRBF.BF
-        merge->ma_d_u16             = 65535u;           // WDRMA.MAD
-        merge->ma_s_u16             = 0u;           // WDRMA.MAS
-        merge->wt_sft               = 0u;             // WDRMRGCFG.MRGWTSFT
-        merge->wdr_clip             = 262143u;           // WDRMRGCFG.WDRCLIP
-    }
-    else if (1u == merge_id)
-    {
-        merge->en                   = 0u;                 // CFG4.EN
-        merge->bit_dst_u5           = 15u;         // CFG4.DST
-        merge->bit_long_u4          = 8u;        // CFG4.LBIT
-        merge->bit_short_u4         = 8u;       // CFG4.SBIT
-        merge->wgt_sel              = 0u;            // CFG4.WGT_SEL
-        merge->gain_long_u16        = 128u;      // WDRGAIN.GLONG
-        merge->gain_short_u16       = 32768u;     // WDRGAIN.SLONG
-
-        merge->wdrbk_LBK[0u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[1u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[2u]        = 0u;       // WDRLBK
-        merge->wdrbk_LBK[3u]        = 0u;       // WDRLBK
-        merge->wdrbk_SBK[0u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[1u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[2u]        = 0u;       // WDRSBK
-        merge->wdrbk_SBK[3u]        = 0u;       // WDRSBK
-        merge->wdrwb_LWB[0u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[1u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[2u]        = 512u;       // LWDRWB
-        merge->wdrwb_LWB[3u]        = 512u;       // LWDRWB
-        merge->wdrwb_SWB[0u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[1u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[2u]        = 512u;       // SWDRWB
-        merge->wdrwb_SWB[3u]        = 512u;       // SWDRWB
-
-        merge->threshold_u16        = 65504u;      // WDRTHR.THR
-        merge->af_m_s16             = 0u;           // WDRAF.AF_M
-        merge->af_e_u5              = 0u;            // WDRAF.AF_E
-        merge->bf_s16               = 0u;             // WDRBF.BF
-        merge->ma_d_u16             = 65535u;           // WDRMA.MAD
-        merge->ma_s_u16             = 0u;           // WDRMA.MAS
-        merge->wt_sft               = 0u;             // WDRMRGCFG.MRGWTSFT
-        merge->wdr_clip             = 262143u;           // WDRMRGCFG.WDRCLIP
-    }
-    else
-    {
-    }
-}
-
-static void tivxVpacVissParseRfeLutParams(uint32_t lut_id, cfg_lut *lut,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    uint32_t cnt;
-
-    /* lut for 20 to 16 bit conversion */
-    if (0u == lut_id)
-    {
-        lut->en                 = 0u;
-        lut->nbits              = 16u;
-        lut->clip               = 4095u;
-
-        for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+        if (NULL != nsf4_prms)
         {
-            lut->lut[cnt]       = grawfe_lut_20to16[cnt];
-        }
-    }
-    else if (1u == lut_id) /* H3A Lut */
-    {
-        if (1u == dcc_out_prms->issH3aMuxLuts.enable)
-        {
-            lut->en             = 1u;
-            lut->nbits          = 16u;
-            lut->clip           = 1023u;
-
-            for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+            if(NULL != nsf4Cfg)
             {
-                lut->lut[cnt] =
-                    dcc_out_prms->issH3aMuxLuts.h3a_mux_lut[0u][cnt];
+                nsf4_prms->iw               = prms->width;
+                nsf4_prms->ih               = prms->height;
+                nsf4_prms->ow               = prms->width;
+                nsf4_prms->oh               = prms->height;
+
+                nsf4_prms->mode             = nsf4Cfg->mode;
+
+                nsf4_prms->knee_u1          = nsf4Cfg->tKnee;
+                nsf4_prms->thr_scale_tn1    = nsf4Cfg->tnScale[0U];
+                nsf4_prms->thr_scale_tn2    = nsf4Cfg->tnScale[1U];
+                nsf4_prms->thr_scale_tn3    = nsf4Cfg->tnScale[2U];
+
+                for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+                {
+                    for (cnt2 = 0U; cnt2 < NSF4_TN_MAX_SEGMENT; cnt2 ++)
+                    {
+                        nsf4_prms->noise_thr_x[cnt1][cnt2] = nsf4Cfg->tnCurve[cnt1][cnt2].posX;
+                        nsf4_prms->noise_thr_y[cnt1][cnt2] = nsf4Cfg->tnCurve[cnt1][cnt2].posY;
+                        nsf4_prms->noise_thr_s[cnt1][cnt2] = nsf4Cfg->tnCurve[cnt1][cnt2].slope;
+                    }
+                }
+
+                nsf4_prms->shd_en               = lsccCfg->enable;
+                nsf4_prms->shd_x                = lsccCfg->lensCenterX;
+                nsf4_prms->shd_y                = lsccCfg->lensCenterY;
+                nsf4_prms->shd_T                = lsccCfg->tCfg;
+                nsf4_prms->shd_kh               = lsccCfg->khCfg;
+                nsf4_prms->shd_kv               = lsccCfg->kvCfg;
+                nsf4_prms->shd_gmax             = lsccCfg->gMaxCfg;
+                nsf4_prms->shd_set_sel          = lsccCfg->setSel;
+
+                for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+                {
+                    for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
+                    {
+                         nsf4_prms->shd_lut_x[cnt1][cnt2] = lsccCfg->pwlCurve[cnt1][cnt2].posX;
+                         nsf4_prms->shd_lut_y[cnt1][cnt2] = lsccCfg->pwlCurve[cnt1][cnt2].posY;
+                         nsf4_prms->shd_lut_s[cnt1][cnt2] = lsccCfg->pwlCurve[cnt1][cnt2].slope;
+                     }
+                }
+
+                memcpy(nsf4_prms->wb_gain, nsf4Cfg->gains, 4*sizeof(int));
+
+                /* Following configuration is not exposed in registers, but the
+                 * cmodel requires these defaults, so setting it here. */
+                nsf4_prms->lborder_rep            = 1;
+                nsf4_prms->rborder_rep            = 1;
+                nsf4_prms->tborder_rep            = 1;
+                nsf4_prms->bborder_rep            = 1;
+                nsf4_prms->supprs_all             = 0;
+                nsf4_prms->bypass                 = 0;
+
+                for (cnt = 0u; cnt < 4u; cnt ++)
+                {
+                    nsf4_prms->supprs_max[cnt][0] = 128u;
+                    nsf4_prms->supprs_max[cnt][1] = 128u;
+                    nsf4_prms->supprs_max[cnt][2] = 128u;
+                    nsf4_prms->supprs_max[cnt][3] = 128u;
+                    nsf4_prms->supprs_max[cnt][4] = 128u;
+                    nsf4_prms->supprs_max[cnt][5] = 128u;
+                }
+                nsf4_prms->cfaw                 = 0;
+                nsf4_prms->cfah                 = 0;
+                nsf4_prms->ow                   = 0;
+                nsf4_prms->oh                   = 0;
+                nsf4_prms->ostart_x             = 0;
+                nsf4_prms->ostart_y             = 0;
+
+                nsf4_check_parameters(nsf4_prms);
+
+                vissCfgRef->nsf4Cfg = NULL;
             }
         }
         else
         {
-            lut->en             = 0u;
+            VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
         }
     }
-}
-
-static void tivxVpacVissParseDpcParams(cfg_dpc *dpc,
-    dcc_parser_output_params_t *dcc_out_prms)
-{
-    if (NULL != dpc)
+    else
     {
-        dpc->lut_en             = 0u;
-        dpc->lut_bw             = 0u;
-        dpc->lut_size           = 1u;
-
-        dpc->otf_en             = 1u;
-        dpc->otf_thr[0u]        = 200u;
-        dpc->otf_slp[0u]        = 0u;
-        dpc->otf_thr[1u]        = 200u;
-        dpc->otf_slp[1u]        = 50u;
-        dpc->otf_thr[2u]        = 300u;
-        dpc->otf_slp[2u]        = 50u;
-        dpc->otf_thr[3u]        = 500u;
-        dpc->otf_slp[3u]        = 37u;
-        dpc->otf_thr[4u]        = 800u;
-        dpc->otf_slp[4u]        = 50u;
-        dpc->otf_thr[5u]        = 1600u;
-        dpc->otf_slp[5u]        = 50u;
-        dpc->otf_thr[6u]        = 3200u;
-        dpc->otf_slp[6u]        = 50u;
-        dpc->otf_thr[7u]        = 6400u;
-        dpc->otf_slp[7u]        = 50u;
-
-        dpc->lut_vpos[0u]       = 10;
-        dpc->lut_hpos[0u]       = 1494u;
-        dpc->lut_method[0u]     = 0u;
-
-        dpc->lut_vpos[1u]       = 236;
-        dpc->lut_hpos[1u]       = 1107;
-        dpc->lut_method[1u]     = 1u;
-
-        dpc->lut_vpos[2u]       = 254;
-        dpc->lut_hpos[2u]       = 1454;
-        dpc->lut_method[2u]     = 2u;
-
-        dpc->lut_vpos[3u]       = 444;
-        dpc->lut_hpos[3u]       = 1105u;
-        dpc->lut_method[3u]     = 3u;
-
-        dpc->lut_vpos[4u]       = 488;
-        dpc->lut_hpos[4u]       = 1650u;
-        dpc->lut_method[4u]     = 4u;
-
-        dpc->lut_vpos[5u]       = 772;
-        dpc->lut_hpos[5u]       = 1398u;
-        dpc->lut_method[5u]     = 5u;
-
-        dpc->lut_vpos[6u]       = 870;
-        dpc->lut_hpos[6u]       = 967u;
-        dpc->lut_method[6u]     = 6u;
-
-        dpc->lut_vpos[7u]       = 936;
-        dpc->lut_hpos[7u]       = 712u;
-        dpc->lut_method[7u]     = 7u;
-
-        dpc->lut_vpos[8u]       = 1074;
-        dpc->lut_hpos[8u]       = 358u;
-        dpc->lut_method[8u]     = 7u;
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
     }
 }
 
-static void tivxVpacVissParseLscParams(cfg_lsc *lsc,
-    dcc_parser_output_params_t *dcc_out_prms)
+static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms)
 {
-    lsc->enable                 = 0u;
-    lsc->gain_mode_m            = 5u;
-    lsc->gain_mode_n            = 4u;
-    lsc->gain_format            = 0u;
-    lsc->gain_table             = grawfe_lsc_tbl;
-    lsc->gain_table_len         = 0u;
+    if (NULL != prms)
+    {
+        glbce_settings         *glbce_prms = &prms->glbce_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Glbce_Config           *glbceCfg = vissCfgRef->glbceCfg;
+        Glbce_PerceptConfig    *prcptCfg = NULL;
+
+        if (NULL != glbce_prms)
+        {
+            if(NULL != glbceCfg)
+            {
+                glbce_prms->iw = prms->width;
+                glbce_prms->ih = prms->height;
+
+                glbce_prms->irStrength        = glbceCfg->irStrength;
+                glbce_prms->intensityVariance = glbceCfg->intensityVariance;
+                glbce_prms->spaceVariance     = glbceCfg->spaceVariance;
+                glbce_prms->maxSlopeLimit     = glbceCfg->maxSlopeLimit;
+                glbce_prms->minSlopeLimit     = glbceCfg->minSlopeLimit;
+
+                glbce_prms->blackLevel        = glbceCfg->blackLevel;
+                glbce_prms->whiteLevel        = glbceCfg->whiteLevel;
+                glbce_prms->brightAmplLimit   = glbceCfg->brightAmplLimit;
+                glbce_prms->darkAmplLimit     = glbceCfg->darkAmplLimit;
+                glbce_prms->dither            = glbceCfg->dither;
+
+                memcpy(glbce_prms->asymLut, glbceCfg->asymLut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
+
+                prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
+                glbce_prms->fwd_percept_enable = prcptCfg->enable;
+                memcpy(glbce_prms->fwd_percept_table, prcptCfg->table, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+                prcptCfg = &vissObj->vissCfg.revPrcpCfg;
+                glbce_prms->rev_percept_enable = prcptCfg->enable;
+                memcpy(glbce_prms->rev_percept_table, prcptCfg->table, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+
+                glbce_prms->wdr_enable = 0;
+                /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
+
+                vissCfgRef->glbceCfg = NULL;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
 }
 
-static void tivxVpacVissParseWB2Params(cfg_wb2 *wb,
-    dcc_parser_output_params_t *dcc_out_prms)
+static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms)
 {
-    if (NULL != wb)
+    if (NULL != prms)
     {
-        wb->offset[0u]              = 0u;
-        wb->offset[1u]              = 0u;
-        wb->offset[2u]              = 0u;
-        wb->offset[3u]              = 0u;
+        h3a_settings           *h3a_prms = &prms->h3a_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        H3a_Config             *h3aCfg = vissCfgRef->h3aCfg;
+        H3a_AewbConfig         *aewbCfg = &h3aCfg->aewbCfg;
 
-        wb->gain[0u]                = 512u;
-        wb->gain[1u]                = 512u;
-        wb->gain[2u]                = 512u;
-        wb->gain[3u]                = 512u;
+        if ((NULL != h3a_prms) && (NULL != h3aCfg))
+        {
+            /* Cmodel doesn't use thse
+                ??? = h3aCfg->pos.startX;
+                ??? = h3aCfg->pos.startY;
+            * */
+
+            h3a_prms->pcr_AEW_EN        = (h3aCfg->module == H3A_MODULE_AEWB) ? 1u : 0u;
+            h3a_prms->pcr_AEW_ALAW_EN   = aewbCfg->enableALowComp;
+            h3a_prms->pcr_AEW_MED_EN    = aewbCfg->enableMedFilt;
+            h3a_prms->pcr_AVE2LMT       = aewbCfg->satLimit;
+            h3a_prms->aew_cfg_AEFMT     = aewbCfg->outMode;
+            h3a_prms->aew_cfg_SUMSFT    = aewbCfg->sumShift;
+            h3a_prms->aewinstart_WINSV  = aewbCfg->winCfg.pos.startY;
+            h3a_prms->aewinstart_WINSH  = aewbCfg->winCfg.pos.startX;
+            h3a_prms->aewwin1_WINH      = aewbCfg->winCfg.height;
+            h3a_prms->aewwin1_WINW      = aewbCfg->winCfg.width;
+            h3a_prms->aewwin1_WINVC     = aewbCfg->winCfg.vertCount;
+            h3a_prms->aewwin1_WINHC     = aewbCfg->winCfg.horzCount;
+            h3a_prms->aewsubwin_AEWINCV = aewbCfg->winCfg.vertIncr;
+            h3a_prms->aewsubwin_AEWINCH = aewbCfg->winCfg.horzIncr;
+            h3a_prms->aewinblk_WINH     = aewbCfg->blackLineHeight;
+            h3a_prms->aewinblk_WINSV    = aewbCfg->blackLineVertStart;
+
+            vissCfgRef->h3aCfg = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)
+{
+    if (NULL != prms)
+    {
+        uint32_t cnt, cnt1, cnt2, cfa_cnt;
+
+        FLXD_Config            *fcfa_prms = &prms->flexcfa_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Fcp_CfaConfig          *cfaCfg =  vissCfgRef->cfaCfg;
+        Vhwa_LutConfig         *lut16to12Cfg = vissCfgRef->cfaLut16to12Cfg;
+
+        if (NULL != fcfa_prms)
+        {
+            if(NULL != cfaCfg)
+            {
+                fcfa_prms->imgWidth = prms->width;
+                fcfa_prms->imgWidth = prms->height;
+
+                for (cnt = 0u; cnt < 4u; cnt ++)
+                {
+                    fcfa_prms->Set0GradHzMask[cnt]     = cfaCfg->gradHzPh[0u][cnt];
+                    fcfa_prms->Set0GradVtMask[cnt]     = cfaCfg->gradVtPh[0u][cnt];
+                    fcfa_prms->Set0IntensityMask[cnt]  = cfaCfg->intsBitField[0u][cnt];
+                    fcfa_prms->Set0IntensityShift[cnt] = cfaCfg->intsShiftPh[0u][cnt];
+
+                    fcfa_prms->Set1GradHzMask[cnt]     = cfaCfg->gradHzPh[1u][cnt];
+                    fcfa_prms->Set1GradVtMask[cnt]     = cfaCfg->gradVtPh[1u][cnt];
+                    fcfa_prms->Set1IntensityMask[cnt]  = cfaCfg->intsBitField[1u][cnt];
+                    fcfa_prms->Set1IntensityShift[cnt] = cfaCfg->intsShiftPh[1u][cnt];
+
+                    fcfa_prms->blendMode[cnt]          = cfaCfg->coreBlendMode[cnt];
+                    fcfa_prms->bitMaskSel[cnt]         = cfaCfg->coreSel[cnt];
+                }
+
+                for (cnt = 0u; cnt < 7u; cnt ++)
+                {
+                    fcfa_prms->Set0Thr[cnt]     = cfaCfg->thr[0u][cnt];
+                    fcfa_prms->Set1Thr[cnt]     = cfaCfg->thr[1u][cnt];
+                }
+
+                cfa_cnt = 0u;
+                for (cnt = 0u; cnt < 12u; cnt ++)
+                {
+                    for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
+                    {
+                        for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
+                        {
+                            fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = cfaCfg->coeff[cfa_cnt];
+                            cfa_cnt ++;
+                        }
+                    }
+                }
+
+                vissCfgRef->cfaCfg = NULL;
+            }
+
+            if(NULL != lut16to12Cfg)
+            {
+                fcfa_prms->bitWidth               = lut16to12Cfg->inputBits;
+                fcfa_prms->lut_enable             = lut16to12Cfg->enable;
+
+                for (cnt = 0u; cnt < 639u; cnt ++)
+                {
+                    fcfa_prms->ToneLut[cnt] = lut16to12Cfg->tableAddr[cnt];
+                }
+
+                vissCfgRef->cfaLut16to12Cfg = NULL;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
+{
+    if (NULL != prms)
+    {
+        uint32_t cnt;
+
+        Flexcc_Config          *cc_prms = &prms->flexcc_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Fcp_CcmConfig          *ccmCfg =  vissCfgRef->ccm;
+        Fcp_Rgb2YuvConfig      *r2y = vissCfgRef->rgb2yuv;
+        Fcp_Rgb2HsvConfig      *r2h = vissCfgRef->rgb2Hsv;
+        Fcp_GammaConfig        *gamma = vissCfgRef->gamma;
+        Fcp_YuvSatLutConfig    *yuvSatLutCfg = vissCfgRef->yuvSatLutCfg;
+        Fcp_HistConfig         *histCfg = vissCfgRef->histCfg;
+
+        if (NULL != cc_prms)
+        {
+            cc_prms->inWidth = prms->width;
+            cc_prms->inHeight = prms->height;
+
+            cc_prms->MuxC1_4                    = 0u; /* JGV No mapping to drv? */
+            cc_prms->MuxY12Out                  = 1u; /* JGV No mapping to drv? */
+            cc_prms->MuxY8Out                   = 1u; /* JGV No mapping to drv? */
+            //cc_prms->ChromaMode                 = 0u; /* JGV Set externally in node */
+
+            if (NULL != ccmCfg)
+            {
+                cc_prms->CCM1.W11                   = ccmCfg->weights[0][0];
+                cc_prms->CCM1.W12                   = ccmCfg->weights[0][1];
+                cc_prms->CCM1.W13                   = ccmCfg->weights[0][2];
+                cc_prms->CCM1.W14                   = ccmCfg->weights[0][3];
+                cc_prms->CCM1.W21                   = ccmCfg->weights[1][0];
+                cc_prms->CCM1.W22                   = ccmCfg->weights[1][1];
+                cc_prms->CCM1.W23                   = ccmCfg->weights[1][2];
+                cc_prms->CCM1.W24                   = ccmCfg->weights[1][3];
+                cc_prms->CCM1.W31                   = ccmCfg->weights[2][0];
+                cc_prms->CCM1.W32                   = ccmCfg->weights[2][1];
+                cc_prms->CCM1.W33                   = ccmCfg->weights[2][2];
+                cc_prms->CCM1.W34                   = ccmCfg->weights[2][3];
+
+                cc_prms->CCM1.Offset_1              = ccmCfg->offsets[0];
+                cc_prms->CCM1.Offset_2              = ccmCfg->offsets[1];
+                cc_prms->CCM1.Offset_3              = ccmCfg->offsets[2];
+
+                vissCfgRef->ccm = NULL;
+            }
+
+            if (NULL != r2y)
+            {
+                cc_prms->RGB2YUV.W11                = r2y->weights[0u][0u];
+                cc_prms->RGB2YUV.W12                = r2y->weights[0u][1u];
+                cc_prms->RGB2YUV.W13                = r2y->weights[0u][2u];
+                cc_prms->RGB2YUV.W21                = r2y->weights[1u][0u];
+                cc_prms->RGB2YUV.W22                = r2y->weights[1u][1u];
+                cc_prms->RGB2YUV.W23                = r2y->weights[1u][2u];
+                cc_prms->RGB2YUV.W31                = r2y->weights[2u][0u];
+                cc_prms->RGB2YUV.W32                = r2y->weights[2u][1u];
+                cc_prms->RGB2YUV.W33                = r2y->weights[2u][2u];
+
+                cc_prms->RGB2YUV.Offset_1           = r2y->offsets[0u];
+                cc_prms->RGB2YUV.Offset_2           = r2y->offsets[1u];
+                cc_prms->RGB2YUV.Offset_3           = r2y->offsets[2u];
+
+                vissCfgRef->rgb2yuv = NULL;
+            }
+
+            if (NULL != r2h)
+            {
+                cc_prms->RGB2HSV.MuxH1              = r2h->h1Input;
+                cc_prms->RGB2HSV.MuxH2              = r2h->h2Input;
+                cc_prms->RGB2HSV.GrayW11            = r2h->weights[0u]; /* S10Q8 */
+                cc_prms->RGB2HSV.GrayW12            = r2h->weights[1u];
+                cc_prms->RGB2HSV.GrayW13            = r2h->weights[2u];
+                cc_prms->RGB2HSV.GrayOffset_1       = r2h->offset;
+
+                cc_prms->RGB2HSV.SatMode            = r2h->satMode;
+
+                cc_prms->RGB2HSV.SatDiv             = r2h->satDiv;
+
+                cc_prms->RGB2HSV.SatDivShift        = 0u; /* No Register field*/
+
+                cc_prms->RGB2HSV.SatLutEn           = 0u; /* JGV No mapping to drv? */
+
+                cc_prms->RGB2HSV.RGBLutEn           = 0u; /* JGV No mapping to drv? */
+
+                cc_prms->RGB2HSV.LinLogThr_0        = r2h->threshold[0u];
+                cc_prms->RGB2HSV.LinLogThr_1        = r2h->threshold[1u];
+                cc_prms->RGB2HSV.LinLogThr_2        = r2h->threshold[2u];
+                cc_prms->RGB2HSV.Offset_0           = r2h->wbOffset[0u];
+                cc_prms->RGB2HSV.Offset_1           = r2h->wbOffset[1u];
+                cc_prms->RGB2HSV.Offset_2           = r2h->wbOffset[2u];
+                cc_prms->RGB2HSV.SatMinThr          = r2h->satMinThr;
+
+                cc_prms->RGB2HSV.Mux_V              = r2h->useWbDataForGreyCalc;
+
+                cc_prms->MuxRGBHSV                  = r2h->inputSelect;
+
+                vissCfgRef->rgb2Hsv = NULL;
+            }
+
+            if (NULL != gamma)
+            {
+                cc_prms->ContrastEn                 = gamma->enable;
+                cc_prms->ContrastBitClip            = gamma->outClip;
+
+                for (cnt = 0; cnt < 513; cnt ++)
+                {
+                    cc_prms->ContrastLut[0u][cnt] = gamma->tableC1[cnt];
+                    cc_prms->ContrastLut[1u][cnt] = gamma->tableC2[cnt];
+                    cc_prms->ContrastLut[2u][cnt] = gamma->tableC3[cnt];
+                }
+
+                vissCfgRef->gamma = NULL;
+            }
+
+            if (NULL != yuvSatLutCfg)
+            {
+                cc_prms->Y8LutEn                    = yuvSatLutCfg->enableLumaLut;
+                cc_prms->Y8inBitWidth               = yuvSatLutCfg->lumaInputBits;
+                cc_prms->C8LutEn                    = yuvSatLutCfg->enableChromaLut;
+                                                      //yuvSatLutCfg->enableSaturLut = (uint32_t) FALSE; /* JGV No mapping to sim? */
+
+                for (cnt = 0; cnt < 513; cnt ++)
+                {
+                    cc_prms->Y8R8Lut[cnt]           = yuvSatLutCfg->lumaLutAddr[cnt];
+                    cc_prms->C8G8Lut[cnt]           = yuvSatLutCfg->chromaLutAddr[cnt];
+                    cc_prms->S8B8Lut[cnt]           = yuvSatLutCfg->saturLutAddr[cnt];
+                }
+
+                vissCfgRef->yuvSatLutCfg = NULL;
+            }
+
+            if (NULL != histCfg)
+            {
+                cc_prms->HistEn                     = histCfg->enable;
+                cc_prms->HistMode                   = histCfg->input;
+                cc_prms->HistStartX                 = histCfg->roi.cropStartX;
+                cc_prms->HistStartY                 = histCfg->roi.cropStartY;
+                cc_prms->HistSizeX                  = histCfg->roi.cropWidth;
+                cc_prms->HistSizeY                  = histCfg->roi.cropHeight;
+
+                vissCfgRef->histCfg = NULL;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms)
+{
+    if (NULL != prms)
+    {
+        ee_Config              *ee_prms = &prms->ee_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Fcp_EeConfig           *eeCfg = vissCfgRef->eeCfg;
+
+        if ((NULL != ee_prms) && (NULL != eeCfg))
+        {
+            uint32_t cnt;
+
+            /* CMODEL doesn't support, these are handled by node muxing logic from node config params
+            eeCfg->alignY12withChroma = FALSE;
+            eeCfg->alignY8withChroma = FALSE;
+            eeCfg->eeForY12OrY8 = 0;
+            eeCfg->bypassY12 = FALSE;
+            eeCfg->bypassC12 = TRUE;
+            eeCfg->bypassY8 = TRUE;
+            eeCfg->bypassC8 = TRUE;
+            eeCfg->leftShift = 0;
+            eeCfg->rightShift = 0;
+            * */
+
+            ee_prms->width             = prms->width;
+            ee_prms->height            = prms->height;
+
+            ee_prms->yee_en             = eeCfg->enable;
+            ee_prms->yee_shf            = eeCfg->yeeShift;
+            ee_prms->yee_mul[0][0]      = eeCfg->coeff[0];
+            ee_prms->yee_mul[0][1]      = eeCfg->coeff[1];
+            ee_prms->yee_mul[0][2]      = eeCfg->coeff[2];
+            ee_prms->yee_mul[0][3]      = eeCfg->coeff[1];
+            ee_prms->yee_mul[0][4]      = eeCfg->coeff[0];
+            ee_prms->yee_mul[1][0]      = eeCfg->coeff[3];
+            ee_prms->yee_mul[1][1]      = eeCfg->coeff[4];
+            ee_prms->yee_mul[1][2]      = eeCfg->coeff[5];
+            ee_prms->yee_mul[1][3]      = eeCfg->coeff[4];
+            ee_prms->yee_mul[1][4]      = eeCfg->coeff[3];
+            ee_prms->yee_mul[2][0]      = eeCfg->coeff[6];
+            ee_prms->yee_mul[2][1]      = eeCfg->coeff[7];
+            ee_prms->yee_mul[2][2]      = eeCfg->coeff[8];
+            ee_prms->yee_mul[2][3]      = eeCfg->coeff[7];
+            ee_prms->yee_mul[2][4]      = eeCfg->coeff[6];
+            ee_prms->yee_mul[3][0]      = eeCfg->coeff[3];
+            ee_prms->yee_mul[3][1]      = eeCfg->coeff[4];
+            ee_prms->yee_mul[3][2]      = eeCfg->coeff[5];
+            ee_prms->yee_mul[3][3]      = eeCfg->coeff[4];
+            ee_prms->yee_mul[3][4]      = eeCfg->coeff[3];
+            ee_prms->yee_mul[4][0]      = eeCfg->coeff[0];
+            ee_prms->yee_mul[4][1]      = eeCfg->coeff[1];
+            ee_prms->yee_mul[4][2]      = eeCfg->coeff[2];
+            ee_prms->yee_mul[4][3]      = eeCfg->coeff[1];
+            ee_prms->yee_mul[4][4]      = eeCfg->coeff[0];
+
+            ee_prms->yee_thr            = eeCfg->yeeEThr;
+            ee_prms->yes_sel            = eeCfg->yeeMergeSel;
+            ee_prms->yes_hal            = eeCfg->haloReductionOn;
+            ee_prms->yes_g_gain         = eeCfg->yesGGain;
+            ee_prms->yes_g_ofst         = eeCfg->yesGOfset;
+            ee_prms->yes_e_gain         = eeCfg->yesEGain;
+            ee_prms->yes_e_thr1         = eeCfg->yesEThr1;
+            ee_prms->yes_e_thr2         = eeCfg->yesEThr2;
+
+            for (cnt = 0u; cnt < 4096u; cnt ++)
+            {
+                ee_prms->yee_table_s13[cnt] = eeCfg->lut[cnt];
+            }
+
+            vissCfgRef->eeCfg = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParsePwlParams(cfg_pwl_lut *pwl, Rfe_PwlConfig **pwlCfg_p, Vhwa_LutConfig **lutCfg_p)
+{
+    if ((NULL != pwl) && (NULL != pwlCfg_p) && (NULL != lutCfg_p))
+    {
+        uint32_t cnt;
+
+        Rfe_PwlConfig *pwlCfg = *pwlCfg_p;
+        Vhwa_LutConfig *lutCfg = *lutCfg_p;
+
+        if(NULL != pwlCfg)
+        {
+            pwl->mask                       = pwlCfg->mask;
+            pwl->inShift                    = pwlCfg->shift;        /* 3 bits  */
+            pwl->pwlEn                      = pwlCfg->enable;
+            pwl->thrX1                      = pwlCfg->xthr1;       /* 16 bits */
+            pwl->thrX2                      = pwlCfg->xthr2;
+            pwl->thrX3                      = pwlCfg->xthr3;
+            pwl->thrY1                      = pwlCfg->ythr1;       /* 24 bits */
+            pwl->thrY2                      = pwlCfg->ythr2;
+            pwl->thrY3                      = pwlCfg->ythr3;
+            pwl->slope1                     = pwlCfg->slope1;      /* 16 bits */
+            pwl->slope2                     = pwlCfg->slope2;
+            pwl->slope3                     = pwlCfg->slope3;
+            pwl->slope4                     = pwlCfg->slope4;
+            pwl->slopeShift                 = pwlCfg->slopeShift;  /* Shift for Q point of slope */
+            pwl->pwlClip                    = pwlCfg->outClip;     /* 24 bits */
+
+            for (cnt = 0u; cnt < RFE_MAX_COLOR_COMP; cnt ++)
+            {
+                pwl->offset[cnt]                 = pwlCfg->offset[cnt];   //S16
+                pwl->gain[cnt]                   = pwlCfg->gain[cnt];     //U13Q9
+            }
+
+            *pwlCfg_p = NULL;
+        }
+
+        if(NULL != lutCfg)
+        {
+            pwl->lutEn                      = lutCfg->enable;
+            pwl->lutBitDepth                = lutCfg->inputBits; /*  5 bits */
+            pwl->lutClip                    = lutCfg->clip;      /* 16 bits */
+
+            for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+            {
+                pwl->lut[cnt]               = lutCfg->tableAddr[cnt];
+            }
+
+            *lutCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseMergeParams(cfg_merge *merge, Rfe_WdrConfig **mergeCfg_p)
+{
+    if ((NULL != merge) && (NULL != mergeCfg_p))
+    {
+        Rfe_WdrConfig *mergeCfg = *mergeCfg_p;
+
+        if(NULL != mergeCfg)
+        {
+            uint32_t cnt;
+
+            merge->en                   = mergeCfg->enable;                 // CFG4.EN
+            merge->bit_dst_u5           = mergeCfg->dst;         // CFG4.DST
+            merge->bit_long_u4          = mergeCfg->lbit;        // CFG4.LBIT
+            merge->bit_short_u4         = mergeCfg->sbit;       // CFG4.SBIT
+            merge->wgt_sel              = mergeCfg->useShortExpForWgtCalc;            // CFG4.WGT_SEL
+            merge->gain_long_u16        = mergeCfg->glong;      // WDRGAIN.GLONG
+            merge->gain_short_u16       = mergeCfg->gshort;     // WDRGAIN.SLONG
+
+            for (cnt = 0u; cnt < RFE_MAX_COLOR_COMP; cnt ++)
+            {
+                merge->wdrbk_LBK[cnt] = mergeCfg->lbk[cnt];
+                merge->wdrbk_SBK[cnt] = mergeCfg->sbk[cnt];
+                merge->wdrwb_LWB[cnt] = mergeCfg->lwb[cnt];
+                merge->wdrwb_SWB[cnt] = mergeCfg->swb[cnt];
+            }
+
+            merge->threshold_u16        = mergeCfg->wdrThr;      // WDRTHR.THR
+            merge->af_m_s16             = mergeCfg->afm;         // WDRAF.AF_M
+            merge->af_e_u5              = mergeCfg->afe;         // WDRAF.AF_E
+            merge->bf_s16               = mergeCfg->bf;          // WDRBF.BF
+            merge->ma_d_u16             = mergeCfg->mad;         // WDRMA.MAD
+            merge->ma_s_u16             = mergeCfg->mas;         // WDRMA.MAS
+            merge->wt_sft               = mergeCfg->mergeShift;  // WDRMRGCFG.MRGWTSFT
+            merge->wdr_clip             = mergeCfg->mergeClip;   // WDRMRGCFG.WDRCLIP
+
+            *mergeCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseRfeLutParams(cfg_lut *lut, Vhwa_LutConfig **lutCfg_p)
+{
+    if ((NULL != lut) && (NULL != lutCfg_p))
+    {
+        Vhwa_LutConfig *lutCfg = *lutCfg_p;
+
+        if(NULL != lutCfg)
+        {
+            uint32_t cnt;
+
+            lut->en                 = lutCfg->enable;
+            lut->nbits              = lutCfg->inputBits;
+            lut->clip               = lutCfg->clip;
+
+            for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+            {
+                lut->lut[cnt]       = lutCfg->tableAddr[cnt];
+            }
+            *lutCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseDpcParams(cfg_dpc *dpc, Rfe_DpcLutConfig **dpcLutCfg_p, Rfe_DpcOtfConfig **dpcOtfCfg_p)
+{
+    if ((NULL != dpc) && (NULL != dpcLutCfg_p) && (NULL != dpcOtfCfg_p))
+    {
+        uint32_t cnt;
+
+        Rfe_DpcLutConfig *dpcLutCfg = *dpcLutCfg_p;
+        Rfe_DpcOtfConfig *dpcOtfCfg = *dpcOtfCfg_p;
+
+        if(NULL != dpcLutCfg)
+        {
+            dpc->lut_en             = dpcLutCfg->enable;
+            dpc->lut_bw             = dpcLutCfg->isReplaceWhite;
+            dpc->lut_size           = dpcLutCfg->maxDefectPixels;
+
+            /* TODO: Driver not set to same as default */
+            for (cnt = 0u; cnt < dpc->lut_size; cnt ++)
+            {
+                dpc->lut_hpos[cnt]       = dpcLutCfg->table[3*cnt+0];
+                dpc->lut_vpos[cnt]       = dpcLutCfg->table[3*cnt+1];
+                dpc->lut_method[cnt]     = dpcLutCfg->table[3*cnt+2];
+            }
+            *dpcLutCfg_p = NULL;
+        }
+
+        if(NULL != dpcOtfCfg)
+        {
+            dpc->otf_en                 = dpcOtfCfg->enable;
+            for (cnt = 0u; cnt < RFE_DPC_OTF_LUT_SIZE; cnt ++)
+            {
+                dpc->otf_thr[cnt]       = dpcOtfCfg->threshold[cnt];
+                dpc->otf_slp[cnt]       = dpcOtfCfg->slope[cnt];
+            }
+            *dpcOtfCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseLscParams(cfg_lsc *lsc, Rfe_LscConfig **lscCfg_p)
+{
+    if ((NULL != lsc) && (NULL != lscCfg_p))
+    {
+        Rfe_LscConfig *lscCfg = *lscCfg_p;
+
+        if(NULL != lscCfg)
+        {
+            uint32_t cnt;
+
+            lsc->enable                 = lscCfg->enable;
+            lsc->gain_mode_m            = lscCfg->horzDsFactor;
+            lsc->gain_mode_n            = lscCfg->vertDsFactor;
+            lsc->gain_format            = lscCfg->gainFmt;
+            lsc->gain_table_len         = lscCfg->numTblEntry;
+
+            for (cnt = 0u; cnt < lsc->gain_table_len; cnt ++)
+            {
+                lsc->gain_table[cnt] = lscCfg->tableAddr[cnt];
+            }
+
+            *lscCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseWB2Params(cfg_wb2 *wb, Rfe_GainOfstConfig **wbCfg_p)
+{
+    if ((NULL != wb) && (NULL != wbCfg_p))
+    {
+        Rfe_GainOfstConfig *wbCfg = *wbCfg_p;
+
+        if(NULL != wbCfg)
+        {
+            uint32_t cnt;
+
+            for (cnt = 0u; cnt < 4; cnt ++)
+            {
+                wb->gain[cnt]   = wbCfg->gain[cnt];
+                wb->offset[cnt] = wbCfg->offset[cnt];
+            }
+            *wbCfg_p = NULL;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
     }
 }
