@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Texas Instruments Incorporated
+ * Copyright (c) 2018-2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -69,6 +69,7 @@
 #include <string.h>
 #include <utils/iss/include/app_iss.h>
 #include "test_hwa_common.h"
+#include "tivx_utils_checksum.h"
 
 #define APP_MAX_FILE_PATH           (512u)
 
@@ -76,6 +77,7 @@
     CT_EXPAND(nextmacro(testArgName "/sz=64x48", __VA_ARGS__, 64, 48))
 
 static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack);
+static vx_status save_image_from_viss(vx_image y8, char *filename_prefix);
 
 TESTCASE(tivxHwaVpacViss, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -380,14 +382,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 2;
-        params.mux_output0 = 0;
-        params.mux_output1 = 0;
-        params.mux_output2 = 0;
-        params.mux_output3 = 0;
-        params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
+        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
+        params.mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
+        params.mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
+        params.mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
+        params.mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
+        params.mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
+        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
+        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
@@ -499,14 +501,14 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 0;
-        params.mux_output0 = 4;
+        params.ee_mode     = TIVX_VPAC_VISS_EE_MODE_OFF;
+        params.mux_output0 = TIVX_VPAC_VISS_MUX0_NV12_P12;
         params.mux_output1 = 0;
-        params.mux_output2 = 4;
+        params.mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
         params.mux_output3 = 0;
         params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
+        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
+        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 1; // Note: default glbce still giving issues when enabled
         params.bypass_nsf4 = 1; // TODO: untested
 
@@ -530,6 +532,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
 
         snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_out.yuv");
         write_output_image_nv12_8bit(file, y8_r8_c2);
+        //save_image_from_viss(y8_r8_c2, "output/out_y8");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -610,6 +613,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
     vx_map_id dcc_viss_buf_map_id;
     uint8_t * dcc_viss_buf;
     int32_t dcc_status;
+    uint32_t checksum_actual = 0;
+    vx_rectangle_t rect;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
@@ -682,15 +687,15 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
         tivx_vpac_viss_params_init(&params);
         params.sensor_dcc_id = 390;
-        params.ee_mode = 0;
+        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
         params.mux_output0 = 0;
         params.mux_output1 = 0;
-        params.mux_output2 = 4;
+        params.mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
         params.mux_output3 = 0;
         params.mux_output4 = 3;
-        params.h3a_in = 3;
-        params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
+        params.h3a_in = TIVX_VPAC_VISS_H3A_IN_LSC;
+        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
+        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 1;
         params.bypass_nsf4 = 1;
 
@@ -713,6 +718,19 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
         snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_dcc_out.yuv");
         write_output_image_nv12_8bit(file, y8_r8_c2);
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = raw_params.width;
+        rect.end_y = raw_params.height;
+
+        checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
+        printf("0x%08x\n", checksum_actual);
+        rect.end_x = raw_params.width/2;
+        rect.end_y = raw_params.height/2;
+        checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 1, rect);
+        printf("0x%08x\n", checksum_actual);
+//        ASSERT(0x4517babb == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -1723,6 +1741,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
     void *h3a_output;
+    uint32_t checksum_actual = 0;
+    vx_rectangle_t rect;
 
     vx_graph graph = 0;
     vx_node node = 0;
@@ -1767,15 +1787,15 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 2;
-        params.mux_output0 = 0;
-        params.mux_output1 = 0;
-        params.mux_output2 = 0;
-        params.mux_output3 = 0;
-        params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
-        params.bypass_glbce = 0;
+        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
+        params.mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
+        params.mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
+        params.mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
+        params.mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
+        params.mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
+        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
+        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        params.bypass_glbce = 1;
         params.bypass_nsf4 = 0;
 
         VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
@@ -1802,6 +1822,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ct_read_raw_image(raw, "tivx/bayer_1280x720.raw", 2);
 
         VX_CALL(vxProcessGraph(graph));
+        //VX_CALL(vxProcessGraph(graph));
 
         /* Check output */
 
@@ -1872,8 +1893,17 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         VX_CALL(vxReleaseImage(&y12_ref));
 #endif
 
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = raw_params.width;
+        rect.end_y = raw_params.height;
+
         /* For visual verification */
         save_image_from_viss(y8_r8_c2, "output/out_y8");
+
+        checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
+        printf("0x%08x\n", checksum_actual);
+        ASSERT(0x4517babb == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -2454,9 +2484,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
+               testGraphProcessingRaw,
                testGraphProcessingFileDcc,
                testNegativeGraph/*,
                testMuxNegative ,
                testMux,
                testGraphProcessing,
-               testGraphProcessingRaw*/)
+               */)
