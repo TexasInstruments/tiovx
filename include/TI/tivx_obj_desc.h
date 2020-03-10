@@ -309,6 +309,8 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
     volatile uint32_t host_cpu_id;
 
+    /*! \brief reference timestamp */
+    volatile uint64_t timestamp;
 
 } tivx_obj_desc_t;
 

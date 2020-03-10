@@ -141,6 +141,7 @@ typedef struct _vx_reference {
 
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
+
 } tivx_reference_t;
 
 /**

@@ -154,6 +154,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             tmp_obj_desc->host_port_id = tivxIpcGetSelfPortId();
             tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
+            tmp_obj_desc->timestamp = 0;
 
             g_obj_desc_table.last_alloc_index
                 = (idx+1U)%g_obj_desc_table.num_entries;

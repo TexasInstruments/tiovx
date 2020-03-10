@@ -548,6 +548,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_REFERENCE_TIMESTAMP:
+                if ((VX_CHECK_PARAM(ptr, size, vx_uint64, 0x3U) && (NULL != ref->obj_desc)))
+                {
+                    *(vx_uint64 *)ptr = ref->obj_desc->timestamp;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference timestamp failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;

@@ -82,5 +82,6 @@ TESTCASE(tivxMaxNodes)
 TESTCASE(tivxGraphPipeline)
 TESTCASE(tivxPackedDataFormat)
 TESTCASE(tivxRawImage)
+TESTCASE(tivxReference)
 #endif
 
