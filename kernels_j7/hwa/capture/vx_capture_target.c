@@ -129,11 +129,15 @@ struct tivxCaptureParams_t
     /**< Internal FVID2 queue */
     tivx_queue pendingFrameQ[TIVX_CAPTURE_MAX_CH];
     /**< Internal pending frame queue */
+    tivx_queue pendingFrameTimestampQ[TIVX_CAPTURE_MAX_CH];
+    /**< Internal queue tracking time stamp of pending frames */
     uintptr_t fvid2_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< FVID2 queue mem */
     Fvid2_Frame fvid2Frames[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< FVID2 frame structs */
     uintptr_t pending_frame_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
+    /**< pending frame queue mem */
+    uintptr_t pending_frame_timestamp_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< pending frame queue mem */
 };
 
@@ -497,6 +501,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
     Fvid2_Frame *fvid2Frame;
     tivx_obj_desc_object_array_t *desc;
     uint32_t instIdx;
+    uint64_t timestamp = 0, tmp_timestamp;
     tivxCaptureInstParams *instParams;
 
     if ( (num_params != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
@@ -609,9 +614,11 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                                                         instIdx,
                                                         fvid2Frame->chNum);
                                     desc = (tivx_obj_desc_object_array_t *)fvid2Frame->appData;
+                                    tmp_timestamp = fvid2Frame->timeStamp64;
 
                                     tivxQueuePut(&prms->freeFvid2FrameQ[chId], (uintptr_t)fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
                                     tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)desc, TIVX_EVENT_TIMEOUT_NO_WAIT);
+                                    tivxQueuePut(&prms->pendingFrameTimestampQ[chId], tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
                                 }
                             }
                             else if (fvid2_status == FVID2_ENO_MORE_BUFFERS)
@@ -637,9 +644,15 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                 for(chId = 0U ; chId < prms->numCh ; chId++)
                 {
                     tivxQueueGet(&prms->pendingFrameQ[chId], (uintptr_t*)&tmp_desc[chId], TIVX_EVENT_TIMEOUT_NO_WAIT);
+                    tivxQueueGet(&prms->pendingFrameTimestampQ[chId], (uintptr_t*)&tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
+                    if (tmp_timestamp > timestamp)
+                    {
+                        timestamp = tmp_timestamp;
+                    }
                 }
                 /* all values in tmp_desc[] should be same */
                 obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX] = (tivx_obj_desc_t *)tmp_desc[0];
+                //obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
             }
         }
         /* Pipe-up state: only receives a buffer; does not return a buffer */
@@ -795,6 +808,21 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             for(chId = 0U ; chId < prms->numCh ; chId++)
             {
                 status = tivxQueueCreate(&prms->pendingFrameQ[chId], TIVX_CAPTURE_MAX_NUM_BUFS, prms->pending_frame_free_q_mem[chId], 0);
+
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, ": Capture create failed!!!\r\n");
+                    break;
+                }
+            }
+        }
+
+        /* Creating pending timestamp Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            for(chId = 0U ; chId < prms->numCh ; chId++)
+            {
+                status = tivxQueueCreate(&prms->pendingFrameTimestampQ[chId], TIVX_CAPTURE_MAX_NUM_BUFS, prms->pending_frame_timestamp_free_q_mem[chId], 0);
 
                 if ((vx_status)VX_SUCCESS != status)
                 {
@@ -1000,6 +1028,15 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
             for(chId= 0U ; chId < prms->numCh ; chId++)
             {
                 tivxQueueDelete(&prms->pendingFrameQ[chId]);
+            }
+        }
+
+        /* Deleting pending frame Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            for(chId= 0U ; chId < prms->numCh ; chId++)
+            {
+                tivxQueueDelete(&prms->pendingFrameTimestampQ[chId]);
             }
         }
 
