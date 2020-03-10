@@ -98,8 +98,6 @@ void tivxTargetKernelDeInit(void)
     tivxMutexDelete(&g_target_kernel_lock);
 }
 
-
-
 static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                              vx_enum kernel_id,
                              const char *kernel_name,
