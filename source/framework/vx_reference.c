@@ -501,6 +501,42 @@ vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
     return ref;
 }
 
+VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, vx_enum attribute, const void *ptr, vx_size size)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((ownIsValidReference(ref) == (vx_bool)vx_false_e) &&
+        (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e))
+    {
+
+        VX_PRINT(VX_ZONE_ERROR,"tivxSetReferenceAttribute: Invalid reference\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        switch (attribute)
+        {
+            case (vx_enum)TIVX_REFERENCE_TIMESTAMP:
+                if ((VX_CHECK_PARAM(ptr, size, vx_uint64, 0x3U) && (NULL != ref->obj_desc)))
+                {
+                    ref->obj_desc->timestamp = (vx_uint64)*(const vx_uint64 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxSetReferenceAttribute: error setting reference timestamp\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxSetReferenceAttribute: Invalid attribute\n");
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+
+    return status;
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;

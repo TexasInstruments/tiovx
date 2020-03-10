@@ -753,6 +753,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_o
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 block_width, vx_uint32 block_height);
 
+
+/*! \brief Sets reference attributes for the below enums:
+ *         TIVX_REFERENCE_TIMESTAMP
+ * \param [in] ref       The reference object.
+ * \param [in] attribute The attribute of the reference to be set.
+ * \param [in] ptr       The value of the reference attribute to be set.
+ * \param [in] size      The size of the value of the reference attribute to be set.
+ * \ingroup group_tivx_ext_host
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS if the attribute was set correctly.
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, vx_enum attribute, const void *ptr, vx_size size);
+
 #ifdef __cplusplus
 }
 #endif

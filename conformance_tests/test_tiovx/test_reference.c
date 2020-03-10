@@ -39,6 +39,24 @@ TEST(tivxReference, testQueryTimestamp)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxReference, testSetTimestamp)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_uint64 timestamp, set_timestamp = 10;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    VX_CALL(tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &set_timestamp, sizeof(set_timestamp)));
+
+    VX_CALL(vxQueryReference((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
+
+    ASSERT(timestamp==set_timestamp);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TESTCASE_TESTS(tivxReference,
-        testQueryTimestamp
+        testQueryTimestamp,
+        testSetTimestamp
 )
