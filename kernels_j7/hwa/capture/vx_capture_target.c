@@ -652,7 +652,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                 }
                 /* all values in tmp_desc[] should be same */
                 obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX] = (tivx_obj_desc_t *)tmp_desc[0];
-                //obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
+                obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
             }
         }
         /* Pipe-up state: only receives a buffer; does not return a buffer */
@@ -779,6 +779,24 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                         VX_PRINT(VX_ZONE_ERROR, ": Failed to set PHY Parameters!!!\r\n");
                     }
                 }
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            Fvid2_TimeStampParams tsParams;
+
+            tsParams.timeStampFxn = (Fvid2_TimeStampFxn)&tivxPlatformGetTimeInUsecs;
+            /* register time stamping function */
+            fvid2_status = Fvid2_control(instParams->drvHandle,
+                                   FVID2_REGISTER_TIMESTAMP_FXN,
+                                   &tsParams,
+                                   NULL);
+
+            if (FVID2_SOK != fvid2_status)
+            {
+                status = (vx_status)VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR, ": Failed to set PHY Parameters!!!\r\n");
             }
         }
 
