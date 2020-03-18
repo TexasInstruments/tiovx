@@ -61,28 +61,10 @@
  */
 
 #include <stdio.h>
-#include "TI/tivx.h"
-#include "TI/j7.h"
-#include "VX/vx.h"
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernel_vpac_viss.h"
-#include "TI/tivx_target_kernel.h"
-#include "tivx_kernels_target_utils.h"
+#include "vx_vpac_viss_target_sim_priv.h"
+
 #include "tivx_hwa_vpac_viss_priv.h"
 #include "vx_kernels_hwa_target.h"
-#include "rawfe.h"
-#include "nsf4.h"
-#include "glbce.h"
-#include "h3a_ovx.h"
-#include "h3a_utils.h"
-#include "FLXD_demosaic.h"
-#include "FLXD_config_reader.h"
-#include "flexcc_core.h"
-#include "flexcc_config_reader.h"
-#include "ee.h"
-#include "idcc.h"
-
-#include "vx_vpac_viss_target_sim_priv.h"
 
 #define NO_SHIFT 0
 #define UP_SHIFT 1
