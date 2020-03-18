@@ -14,7 +14,7 @@ ifeq ($(TARGET_CPU),R5F)
     CSOURCES    += vx_vpac_viss_target.c vx_vpac_viss_target_dcc.c vx_vpac_viss_target_drv.c
   endif
 else
-  CSOURCES    += vx_vpac_viss_target_sim_dcc.c vx_vpac_viss_target_sim.c
+  CSOURCES    += vx_vpac_viss_target_sim.c vx_vpac_viss_target_sim_priv.c
   IDIRS       += $(J7_C_MODELS_PATH)/include
   DEFS        += __aarch64__
 endif
