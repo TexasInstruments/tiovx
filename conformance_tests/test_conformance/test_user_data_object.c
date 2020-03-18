@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             break;
         case VX_TYPE_USER_DATA_OBJECT:
             {
-                char actual_name[VX_REFERENCE_NAME];
+                char actual_name[VX_MAX_REFERENCE_NAME];
                 vx_size actual_size;
 
                 VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
@@ -167,7 +167,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         {
             vx_size actual_size;
             vx_size user_data_size = sizeof(wb_t);
-            char actual_name[VX_REFERENCE_NAME];
+            char actual_name[VX_MAX_REFERENCE_NAME];
 
             VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
             VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
@@ -599,7 +599,7 @@ TEST(UserDataObject, testOutDelay)
 TEST(UserDataObject, test_vxCreateUserDataObject)
 {
     vx_context context = context_->vx_context_;
-    char actual_name[VX_REFERENCE_NAME];
+    char actual_name[VX_MAX_REFERENCE_NAME];
     vx_size actual_size = 0;
     vx_user_data_object user_data_object = 0;
 
@@ -608,7 +608,7 @@ TEST(UserDataObject, test_vxCreateUserDataObject)
 
     /* 2. check if user data object actual name is a string with a null termination */
     VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-    ASSERT(strncmp("", actual_name, VX_REFERENCE_NAME) == 0);
+    ASSERT(strncmp("", actual_name, VX_MAX_REFERENCE_NAME) == 0);
 
     /* 3. check if user data object actual size corresponds to requested size */
     VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));

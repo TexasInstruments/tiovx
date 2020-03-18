@@ -35,7 +35,7 @@ typedef struct
 TEST(tivxUserDataObject, testValidSize)
 {
     vx_context context = context_->vx_context_;
-    char actual_name[VX_REFERENCE_NAME];
+    char actual_name[VX_MAX_REFERENCE_NAME];
     vx_size actual_size = 0;
     vx_size valid_size, valid_size_query;
     vx_user_data_object user_data_object = 0;
