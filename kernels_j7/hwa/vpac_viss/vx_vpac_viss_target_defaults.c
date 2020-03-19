@@ -251,6 +251,10 @@ vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
     return (status);
 }
 
+/* ========================================================================== */
+/*                          Local Functions                                   */
+/* ========================================================================== */
+
 static void tivxVpacVissDefaultMapH3aLutParams(tivxVpacVissObj *vissObj)
 {
     uint32_t            cnt;
@@ -278,10 +282,6 @@ static void tivxVpacVissDefaultMapH3aLutParams(tivxVpacVissObj *vissObj)
         vissObj->vissCfgRef.h3aLutCfg = h3aLutCfg;
     }
 }
-
-/* ========================================================================== */
-/*                          Local Functions                                   */
-/* ========================================================================== */
 
 static void tivxVpacVissDefaultMapH3aParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res)
