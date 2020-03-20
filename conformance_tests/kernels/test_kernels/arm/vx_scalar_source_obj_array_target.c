@@ -158,6 +158,8 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
                 }
             }
         }
+
+        obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX]->timestamp = tivxPlatformGetTimeInUsecs();
     }
 
     return status;

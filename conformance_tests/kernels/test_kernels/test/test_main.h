@@ -63,6 +63,7 @@
 TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
 TESTCASE(tivxSourceNode)
+TESTCASE(tivxTimestamp)
 TESTCASE(tivxTestSinkNode)
 TESTCASE(GraphStreaming)
 TESTCASE(tivxPyramidNode)
