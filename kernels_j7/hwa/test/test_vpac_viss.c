@@ -593,8 +593,6 @@ static vx_int32 read_dcc_file(char * file_name, uint8_t * buf, uint32_t num_byte
     return num_bytes_read_from_file;
 }
 
-#ifdef J7
-
 TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 {
     vx_context context = context_->vx_context_;
@@ -740,8 +738,6 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         tivxHwaUnLoadKernels(context);
     }
 }
-
-#endif
 
 typedef struct {
     const char* testName;
@@ -2458,9 +2454,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
-#ifdef J7
                testGraphProcessingFileDcc,
-#endif
                testNegativeGraph/*,
                testMuxNegative ,
                testMux,

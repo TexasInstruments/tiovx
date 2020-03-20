@@ -67,6 +67,9 @@ LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/j721e/c7x-hostemu/$(TARGET_BUILD)
 LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += ti_imaging_dcc
 
+LDIRS       += $(VISION_APPS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+STATIC_LIBS += app_utils_iss
+
 PDK_LIBS =
 PDK_LIBS += dmautils.lib
 PDK_LIBS += udma.lib

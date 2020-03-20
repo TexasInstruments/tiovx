@@ -93,7 +93,7 @@ include $(CONCERTO_ROOT)/rules.mak
 # Project specific rules
 
 .PHONY: all
-all:
+all: vision_apps_utils
 
 doxy_docs:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_j7_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
