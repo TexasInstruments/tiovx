@@ -114,6 +114,8 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
 static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms);
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
 static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, uint16_t shift_policy);
+static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vpac_viss_params_t *vissPrms,
+                                               tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -179,17 +181,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_status dcc_status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivxVpacVissObj           *vissObj = NULL;
+    tivx_vpac_viss_params_t   *vissPrms = NULL;
     tivx_obj_desc_raw_image_t *raw_desc;
-    tivx_obj_desc_image_t *y12_desc;
-    tivx_obj_desc_image_t *uv12_c1_desc;
-    tivx_obj_desc_image_t *y8_r8_c2_desc;
-    tivx_obj_desc_image_t *uv8_g8_c3_desc;
-    tivx_obj_desc_image_t *s8_b8_c4_desc;
-    tivx_obj_desc_distribution_t *histogram_desc;
-    tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
-    tivx_obj_desc_user_data_object_t *dcc_desc;
+    tivx_ae_awb_params_t      *ae_awb_result = NULL;
+    tivx_obj_desc_user_data_object_t *config_desc = NULL;
+    tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
+    tivx_obj_desc_user_data_object_t *h3a_out_desc = NULL;
+    tivx_obj_desc_user_data_object_t *dcc_buf_desc = NULL;
 
     if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -202,476 +201,213 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     if((vx_status)VX_SUCCESS == status)
     {
         tivxVpacVissParams *prms = NULL;
-        tivxVpacVissObj    *vissObj = NULL;
-        tivx_vpac_viss_params_t *vissPrms;
 
-        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        config_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        aewb_res_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+        dcc_buf_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
-        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
-        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
-        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
-        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
-        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
-        histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
-        dcc_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
+        h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+
+        /* Allocate node instance handle */
 
         prms = tivxMemAlloc(sizeof(tivxVpacVissParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
-            uint32_t width = raw_desc->imagepatch_addr[0].dim_x;
-            uint32_t height = raw_desc->imagepatch_addr[0].dim_y;
-            uint32_t i;
-
             memset(prms, 0, sizeof(tivxVpacVissParams));
 
-            prms->width = width;
-            prms->height = height;
+            prms->width = raw_desc->imagepatch_addr[0].dim_x;
+            prms->height = raw_desc->imagepatch_addr[0].dim_y;
+            prms->buffer_size = (prms->width * prms->height) * 2;
 
             vissObj = &prms->vissObj;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCreate: Alloc Failed for Viss Object\n");
+            status = (vx_status)VX_ERROR_NO_MEMORY;
+        }
 
-            /* Only allocate dcc input params if dcc file is provided on interface */
-            if(NULL != dcc_desc)
+        /* Error checking for if the user data object sizes match between host and target side */
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if(config_desc->mem_size != sizeof(tivx_vpac_viss_params_t))
             {
-                prms->dcc_input_params = (dcc_parser_input_params_t *)tivxMemAlloc(sizeof(dcc_parser_input_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-                if(NULL == prms->dcc_input_params)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
-            }
+                status = (vx_status)VX_FAILURE;
 
-            if ((vx_status)VX_SUCCESS == status)
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_vpac_viss_params_t, host size (%d) != target size (%d)\n",
+                    config_desc->mem_size, sizeof(tivx_vpac_viss_params_t));
+            }
+        }
+        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        {
+            if(aewb_res_desc->mem_size != sizeof(tivx_ae_awb_params_t))
             {
-                prms->dcc_output_params = (dcc_parser_output_params_t *)tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-                if(NULL == prms->dcc_output_params)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
-                    status = (vx_status)VX_ERROR_NO_MEMORY;
-                }
+                status = (vx_status)VX_FAILURE;
+
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_ae_awb_params_t, host size (%d) != target size (%d)\n",
+                    aewb_res_desc->mem_size, sizeof(tivx_ae_awb_params_t));
             }
-            memset(prms->dcc_output_params, 0, sizeof(dcc_parser_output_params_t));
+        }
+        if (((vx_status)VX_SUCCESS == status) && (NULL != h3a_out_desc))
+        {
+            if(h3a_out_desc->mem_size != sizeof(tivx_h3a_data_t))
+            {
+                status = (vx_status)VX_FAILURE;
 
-            prms->buffer_size = (width * height) * 2;
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
+                    h3a_out_desc->mem_size, sizeof(tivx_h3a_data_t));
+            }
+            if (NULL != dcc_buf_desc)
+            {
+                vissObj->h3a_out_enabled = (vx_bool)vx_true_e; //TODO: Check if this is used in sim version
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_WARNING,
+                    "VISS H3A output is not generated due to DCC not being enabled\n");
+            }
+        }
 
+        /* VISS modules are divided into different simulators and intermediate buffer storage
+         * is required for PC simulator because of this. Allocate intermediate data buffers here. */
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
             status = tivxVpacVissAllocMem(prms);
+        }
 
-            if ((vx_status)VX_SUCCESS == status)
+        /* Map and dereference the config and aewb results data structures from the node input params */
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            void *configuration_target_ptr;
+
+            configuration_target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
+
+            tivxMemBufferMap(configuration_target_ptr, config_desc->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
+            vissPrms = (tivx_vpac_viss_params_t *)configuration_target_ptr;
+        }
+        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        {
+            void *aewb_res_target_ptr;
+
+            aewb_res_target_ptr = tivxMemShared2TargetPtr(&aewb_res_desc->mem_ptr);
+
+            tivxMemBufferMap(aewb_res_target_ptr, aewb_res_desc->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
+            ae_awb_result = (tivx_ae_awb_params_t *)aewb_res_target_ptr;
+        }
+
+        /* Set default values for ALL viss configuration parameters */
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            status = tivxVpacVissSetDefaultParams(vissObj, vissPrms, NULL);
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            /* Set H3A Source parameters, this mainly sets up the
+             * input source to the h3a. */
+            tivxVpacVissSetH3aSrcParams(vissObj, vissPrms);
+        }
+
+        /* Extract individual module specific parameters from the DCC data
+         * base and set it in the driver */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if (NULL != dcc_buf_desc)
             {
-                void *configuration_target_ptr;
+                vissObj->use_dcc = 1u;
 
-                configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
-
-                tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-
-                vissPrms = (tivx_vpac_viss_params_t *)configuration_target_ptr;
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                status = tivxVpacVissSetDefaultParams(vissObj, vissPrms, NULL);
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                if(NULL != dcc_desc)
-                {
-                    prms->use_dcc = 1u;
-                    prms->dcc_input_params->analog_gain = 1000;
-                    prms->dcc_input_params->cameraId = vissPrms->sensor_dcc_id;
-                    prms->dcc_input_params->color_temparature = 5000;
-                    prms->dcc_input_params->exposure_time = 33333;
-
-                    prms->dcc_input_params->dcc_buf_size = dcc_desc->mem_size;
-                    prms->dcc_input_params->dcc_buf = tivxMemShared2TargetPtr(&dcc_desc->mem_ptr);
-                    if(NULL != prms->dcc_input_params->dcc_buf)
-                    {
-                        tivxMemBufferMap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-
-                        prms->dcc_out_numbytes = calc_dcc_outbuf_size();
-                        prms->dcc_out_buf = (uint8_t *)tivxMemAlloc(prms->dcc_out_numbytes, (vx_enum)TIVX_MEM_EXTERNAL);
-                        if(NULL != prms->dcc_out_buf)
-                        {
-                            dcc_status |= Dcc_Create(prms->dcc_output_params, prms->dcc_out_buf);
-                            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
-                        }
-                        else
-                        {
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                        }
-
-                        tivxMemBufferUnmap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-                    }
-                    else
-                    {
-                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    }
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_WARNING, "No DCC buffer passed. Using defaults \n");
-                }
-            }
-
-            if ((vx_status)VX_SUCCESS == status)
-            {
-                /* In one shot, syncronize the drv data structures to the sim data structures */
-                status = tivxVpacVissSetConfigInSim(prms);
+                status = tivxVpacVissInitDcc(vissObj, vissPrms);
 
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    /* Reset this flag, as the config is already applied to simulator */
-                    vissObj->isConfigUpdated = 0U;
+                    /* Parse DCC Database and store the output in local variables */
+                    status = tivxVpacVissSetParamsFromDcc(
+                        vissObj, dcc_buf_desc, h3a_out_desc, ae_awb_result);
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
+                    }
                 }
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,
-                        "Failed to Parse and Set viss Params to simulator data structures\n");
+                        "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
                 }
             }
+            else //TODO: Maybe don't do this since it is defaults
+            {
+#if 0
+                /* set defaults */
+                tivxVpacVissDccMapRfeParams(vissObj);
+                tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
+                tivxVpacVissDccMapFlexCCParams(vissObj);
+                tivxVpacVissDccMapEeParams(vissObj);
+#endif
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            /* In one shot, syncronize the drv data structures to the sim data structures */
+            status = tivxVpacVissSetConfigInSim(prms);
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                /*                                  |-------------------->
-                 *                                  |        |----------->
-                 * RAWFE -> NSF4 -> GLBCE -> FLEXCFA -> FLEXCC -> EE ---->
-                 *     '--> H3A --->                         '--> HIST -->
-                 */
-
-                /* RAWFE */
-                prms->rawfe_params.h3a_mux_sel = vissPrms->h3a_in;
-
-                /* TODO: Use shift when H3A Lut is not enabled */
-                prms->rawfe_params.h3a_mux_shift = 2u;
-
-                /* H3A */
-                if( h3a_aew_af_desc != NULL)
-                {
-                    int32_t num_aew_windows, ae_size, af_pad;
-                    uint32_t max_h3a_out_buffer_size;
-                    int16_t temp_num_aew_windows;
-
-                    prms->h3a_in.image_width = width;
-                    prms->h3a_in.image_height = height;
-                    prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out;
-
-                    prms->aew_config.aewwin1_WINH = prms->h3a_params.aewwin1_WINH;
-                    prms->aew_config.aewwin1_WINW = prms->h3a_params.aewwin1_WINW;
-                    prms->aew_config.aewwin1_WINVC = prms->h3a_params.aewwin1_WINVC;
-                    prms->aew_config.aewwin1_WINHC = prms->h3a_params.aewwin1_WINHC;
-                    prms->aew_config.aewsubwin_AEWINCV = prms->h3a_params.aewsubwin_AEWINCV;
-                    prms->aew_config.aewsubwin_AEWINCH = prms->h3a_params.aewsubwin_AEWINCH;
-
-                    /* Compute AEW buffer size */
-                    temp_num_aew_windows = (prms->h3a_params.aewwin1_WINVC+1)*(prms->h3a_params.aewwin1_WINHC);
-                    num_aew_windows = (int32_t)temp_num_aew_windows;
-                    ae_size = 0;
-                    for (i = 0; i < num_aew_windows; i++)
-                    {
-                        if ( (prms->h3a_params.aew_cfg_AEFMT == 0) || (prms->h3a_params.aew_cfg_AEFMT == 1))
-                        {
-                            ae_size += 8;
-                        }
-                        else
-                        {
-                            ae_size += 4;
-                        }
-                        if (((i%8) == 7) && (i > 0))
-                        {
-                            ae_size += 4;
-                        }
-                        if (((i%prms->h3a_params.aewwin1_WINHC) == (prms->h3a_params.aewwin1_WINHC -1)) && ((ae_size%8) == 4) && (i != (num_aew_windows-1)))
-                        {
-                            ae_size += 4;
-                        }
-                    }
-                    if ((num_aew_windows%8) != 0)
-                    {
-                        ae_size += 4;
-                    }
-                    if ((ae_size%8) != 0)
-                    {
-                        ae_size+= 4;
-                    }
-                    prms->aew_buffer_size = ae_size * sizeof(uint32_t);
-
-                    /* Compute AF buffer size */
-                    if (prms->h3a_params.pcr_AF_VF_EN)
-                    {
-                        int16_t temp_af_buffer_size = ((int16_t)16 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * (int16_t)sizeof(uint32_t);
-                        prms->af_buffer_size = (uint32_t)temp_af_buffer_size;
-                    }
-                    else
-                    {
-                        int16_t temp0 = prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC;
-                        int32_t temp1;
-                        af_pad = 0;
-                        if ((int16_t)1 == (prms->h3a_params.afpax2_PAXHC%2))
-                        {
-                            int16_t temp_af_pad = 4*prms->h3a_params.afpax2_PAXVC;
-                            af_pad = (int32_t)temp_af_pad;
-                        }
-                        temp1 = ((12 * (int32_t)temp0) + af_pad) * (int32_t)sizeof(uint32_t);
-                        prms->af_buffer_size = (uint32_t)temp1;
-                    }
-
-                    /* H3A can operate in AF or AEWB mode. */
-                    /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
-                    max_h3a_out_buffer_size = ((prms->aew_buffer_size > prms->af_buffer_size) ?
-                                               prms->aew_buffer_size : prms->af_buffer_size);
-                    if(max_h3a_out_buffer_size > TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
-                                                 max_h3a_out_buffer_size, TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES);
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                    }
-
-                    if ((vx_status)VX_SUCCESS == status)
-                    {
-                        prms->scratch_aew_result = tivxMemAlloc(prms->aew_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                        if (NULL == prms->scratch_aew_result)
-                        {
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                        }
-                    }
-
-                    if ((vx_status)VX_SUCCESS == status)
-                    {
-                        prms->scratch_af_result = tivxMemAlloc(prms->af_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                        if (NULL == prms->scratch_af_result)
-                        {
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                        }
-                    }
-                }
-
-                /* NSF4 */
-                prms->pScratch_nsf4v_out = prms->scratch_rawfe_raw_out;
-                if(0 == vissPrms->bypass_nsf4)
-                {
-                    prms->pScratch_nsf4v_out = prms->scratch_nsf4v_out;
-                }
-                else
-                {
-                    prms->bypass_nsf4 = 1;
-                }
-
-                /* GLBCE */
-                prms->pScratch_glbce_out = prms->pScratch_nsf4v_out;
-                if(0 == vissPrms->bypass_glbce)
-                {
-                    int retval;
-                    prms->pScratch_glbce_out = prms->scratch_glbce_out;
-                    retval = glbce_get_handle(&prms->glbce_params, &prms->hGlbce);
-
-                    if(retval < 0)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR, "glbce_get_handle returned failure\n");
-                        status = (vx_status)VX_FAILURE;
-                    }
-                }
-                else
-                {
-                    prms->bypass_glbce = 1;
-                }
-
-                /* FLEXCFA */
-
-                /* FLEXCC */
-                if( ( NULL != y12_desc ) ||
-                   (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->mux_output1)) ||
-                   (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->mux_output2)) ||
-                   (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->mux_output3)) ||
-                   (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != vissPrms->mux_output4)) ||
-                    ( NULL != histogram_desc))
-                {
-                    if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)) ||
-                        (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == vissPrms->mux_output2)) )
-                    {
-                        prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
-                    }
-                    else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))
-                    {
-                        prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
-                    }
-                    else
-                    {
-                        prms->flexcc_params.ChromaMode = vissPrms->chroma_mode;
-                    }
-                }
-                else
-                {
-                    prms->bypass_cc = 1;
-                }
-
-                /* EE */
-                if(0 != vissPrms->ee_mode)
-                {
-                    if((( NULL != y12_desc )       && (1 == vissPrms->ee_mode)) ||
-                       (( NULL != y8_r8_c2_desc )  && (2 == vissPrms->ee_mode) &&
-                        ((TIVX_VPAC_VISS_MUX2_Y8 == vissPrms->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->mux_output2) ||
-                         (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))))
-                    {
-                        prms->bypass_ee = 0;
-                    }
-                    else
-                    {
-                        prms->bypass_ee = 1;
-                    }
-                }
-                else
-                {
-                    prms->bypass_ee = 1;
-                }
-
-                /* Configure output muxes */
-
-                if( NULL != y12_desc )
-                {
-                    if(((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
-                        (TIVX_VPAC_VISS_MUX0_VALUE12 != vissPrms->mux_output0))
-                    {
-                        prms->scratch_ee_shift_in = prms->scratch_cc_out[0]; /* y12 */
-                        prms->out_y12_16 = prms->scratch_ee_shift_out;       /* y12 */
-                        prms->pre_copy = Y12_PRE_COPY;
-                        prms->post_copy = Y12_POST_COPY;
-                    }
-                    else
-                    {
-                        prms->out_y12_16 = prms->scratch_cc_out[0];    /* y12 */
-                    }
-
-                    if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)  /* NV12_P12 Format */
-                    {
-                        prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
-                    }
-
-                    if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->mux_output0)  /* Value Format */
-                    {
-                        prms->flexcc_params.MuxY12Out = 2; /* HSV value */
-                    }
-                    else
-                    {
-                        prms->flexcc_params.MuxY12Out = 1; /* YUV Luma */
-                    }
-                }
-
-                if( NULL != uv12_c1_desc )
-                {
-                    if(vissPrms->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
-                    {
-                        prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
-                    }
-                    else
-                    {
-                        prms->out_uv12_c1_16 = prms->scratch_cfa_out[0]; /* c1 */
-                    }
-                }
-
-                if( NULL != y8_r8_c2_desc )
-                {
-                    prms->out_y8_r8_c2_bit_align = 8;
-                    if(vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
-                    {
-                        if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
-                        {
-                            prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
-                            prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
-                            prms->pre_copy = Y8_PRE_COPY;
-                            prms->post_copy = Y8_POST_COPY;
-                        }
-                        else
-                        {
-                            prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
-                        }
-                    }
-                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
-                    {
-                        prms->out_y8_r8_c2_16 = prms->scratch_cc_out[5]; /* r8 */
-                    }
-                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
-                    {
-                        prms->out_y8_r8_c2_16 = prms->scratch_cfa_out[1]; /* c2 */
-                        prms->out_y8_r8_c2_bit_align = 12;
-                    }
-                    else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
-                    {
-                        prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 (value) */
-                    }
-                    else if((vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
-                    {
-                        if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
-                        {
-                            prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
-                            prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
-                            prms->pre_copy = Y8_PRE_COPY;
-                            prms->post_copy = Y8_POST_COPY;
-                        }
-                        else
-                        {
-                            prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
-                        }
-
-                        prms->out_uv8_g8_c3_bit_align = 8;
-                        prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* UV8 */
-                    }
-                    else
-                    {
-                        /* Not valid input */
-                    }
-
-                    if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->mux_output2)  /* Value Format */
-                    {
-                        prms->flexcc_params.MuxY8Out = 2; /* HSV value */
-                    }
-                    else
-                    {
-                        prms->flexcc_params.MuxY8Out = 1; /* YUV Luma */
-                    }
-                }
-
-                if( NULL != uv8_g8_c3_desc )
-                {
-                    prms->out_uv8_g8_c3_bit_align = 8;
-                    if(vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
-                    {
-                        prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* uv8 */
-                    }
-                    else if (vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
-                    {
-                        prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[6]; /* g8 */
-                    }
-                    else
-                    {
-                        prms->out_uv8_g8_c3_16 = prms->scratch_cfa_out[2]; /* c3 */
-                        prms->out_uv8_g8_c3_bit_align = 12;
-                    }
-                }
-
-                if( NULL != s8_b8_c4_desc )
-                {
-                    prms->out_s8_b8_c4_bit_align = 8;
-                    if(vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
-                    {
-                        prms->out_s8_b8_c4_16 = prms->scratch_cc_out[4]; /* s8 */
-                    }
-                    else if (vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
-                    {
-                        prms->out_s8_b8_c4_16 = prms->scratch_cc_out[7]; /* b8 */
-                    }
-                    else
-                    {
-                        prms->out_s8_b8_c4_16 = prms->scratch_cfa_out[3]; /* c4 */
-                        prms->out_s8_b8_c4_bit_align = 12;
-                    }
-                }
+                /* Reset this flag, as the config is already applied to simulator */
+                vissObj->isConfigUpdated = 0U;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "Failed to Parse and Set viss Params to simulator data structures\n");
             }
         }
-        else
+
+        /* Configure the data path parameters and connections between the VISS submodules
+         * based on the node parameter configurations (config input, as well as the data
+         * formats and existance of optional parameters) */
+
+        if ((vx_status)VX_SUCCESS == status)
         {
-            status = (vx_status)VX_ERROR_NO_MEMORY;
+            status = tivxVpacVissConfigSimDataPath(prms, vissPrms, obj_desc, num_params);
         }
+
+        /* Unmap descriptor memories */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            /* If the target pointer is non null, descriptor is also non null,
+             * Even if there is any error, if this pointer is non-null,
+             * unmap must be called */
+            if ((NULL != aewb_res_desc) && (NULL != ae_awb_result))
+            {
+                tivxMemBufferUnmap((void *)ae_awb_result, aewb_res_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            }
+
+            /* If the target pointer is non null, descriptor is also non null
+             * Even if there is any error, if this pointer is non-null,
+             * unmap must be called */
+            if (NULL != vissPrms)
+            {
+                tivxMemBufferUnmap((void *)vissPrms, config_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            }
+        }
+
+        /* Save node instance handle, or if any failures, free memory allocations */
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -682,6 +418,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             if (NULL != prms)
             {
+                tivxVpacVissDeInitDcc(&prms->vissObj);
                 tivxVpacVissFreeMem(prms);
             }
         }
@@ -716,6 +453,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
         if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxVpacVissParams) == size))
         {
+            tivxVpacVissDeInitDcc(&prms->vissObj);
             tivxVpacVissFreeMem(prms);
         }
     }
@@ -729,8 +467,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    vx_status dcc_status = (vx_status)VX_SUCCESS;
-    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *config_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
     tivx_obj_desc_image_t *y12_desc;
@@ -739,7 +476,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_image_t *uv8_g8_c3_desc;
     tivx_obj_desc_image_t *s8_b8_c4_desc;
     tivx_obj_desc_distribution_t *histogram_desc;
-    tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
+    tivx_obj_desc_user_data_object_t *h3a_out_desc;
     tivxVpacVissParams *prms = NULL;
     tivxVpacVissObj    *vissObj = NULL;
     tivx_vpac_viss_params_t *vissPrms;
@@ -756,7 +493,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     {
         uint32_t size;
 
-        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        config_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
@@ -765,7 +502,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
         s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
         histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -792,6 +529,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         void *histogram_target_ptr = NULL;
         void *h3a_aew_af_target_ptr = NULL;
         uint32_t num_exposures = raw_desc->params.num_exposures;
+        tivx_ae_awb_params_t * ae_awb_result = NULL;
 
         raw_target_ptr[0] = NULL;
         raw_target_ptr[1] = NULL;
@@ -802,9 +540,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         vissObj = &prms->vissObj;
 
-        configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
+        configuration_target_ptr = tivxMemShared2TargetPtr(&config_desc->mem_ptr);
         tivxMemBufferMap(configuration_target_ptr,
-           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+           config_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_READ_ONLY);
 
         if( NULL != ae_awb_result_desc)
@@ -813,6 +551,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivxMemBufferMap(ae_awb_result_target_ptr,
                ae_awb_result_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_READ_ONLY);
+
+            ae_awb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
         }
 
         /* Get image pointer(s) */
@@ -901,11 +641,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 (vx_enum)VX_WRITE_ONLY);
         }
 
-        if( h3a_aew_af_desc != NULL)
+        if( h3a_out_desc != NULL)
         {
-            h3a_aew_af_target_ptr = tivxMemShared2TargetPtr(&h3a_aew_af_desc->mem_ptr);
+            h3a_aew_af_target_ptr = tivxMemShared2TargetPtr(&h3a_out_desc->mem_ptr);
             tivxMemBufferMap(h3a_aew_af_target_ptr,
-               h3a_aew_af_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+               h3a_out_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY);
         }
 
@@ -933,256 +673,161 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
          */
 
         /* RAWFE */
-        if(TIVX_VPAC_VISS_H3A_IN_RAW0 == vissPrms->h3a_in)
-        {
-            prms->rawfe_params.h3a_mux_sel = 2;
-        }
-        else if(TIVX_VPAC_VISS_H3A_IN_RAW1 == vissPrms->h3a_in)
-        {
-            prms->rawfe_params.h3a_mux_sel = 1;
-        }
-        else if(TIVX_VPAC_VISS_H3A_IN_RAW2 == vissPrms->h3a_in)
-        {
-            prms->rawfe_params.h3a_mux_sel = 0;
-        }
-        else
-        {
-            prms->rawfe_params.h3a_mux_sel = 3;
-        }
 
-        /*Apply AWB Gains and get DCC parameters for the relevant photospace*/
-        {
-            tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
+        /* Check if there is any change in H3A Input Source */
+        tivxVpacVissSetH3aSrcParams(vissObj, vissPrms);
 
-            /* apply AWB gains in RAWFE when NSF4 is bypassed */
-            if ((NULL != ae_awb_result_desc) &&
-                (1u == vissPrms->bypass_nsf4) &&
-                (1u == aewb_result->awb_valid))
+        if (NULL != ae_awb_result)
+        {
+            status = tivxVpacVissApplyAEWBParams(vissObj, ae_awb_result);
+            if ((vx_status)VX_SUCCESS != status)
             {
-                prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
-                prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
-                prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
-                prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissProcess: Failed to apply AEWB Result\n");
             }
-            if(1u == prms->use_dcc)
-            {
-                prms->dcc_input_params->cameraId = vissPrms->sensor_dcc_id;
+        }
 
-                if ( NULL != ae_awb_result_desc )
+        if (((vx_status)VX_SUCCESS == status) && (1u == vissObj->isConfigUpdated))
+        {
+            status = tivxVpacVissSetConfigInSim(prms);
+            //prms->rawfe_params.h3a_mux_shift = 2u; // temporary override
+
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissProcess: Failed to Set Config in Simulator\n");
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            FILE *fout = fopen("memDump2.txt", "wb");
+            fwrite(&prms->rawfe_params, sizeof(prms->rawfe_params), 1, fout);
+            fclose(fout);
+            rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
+
+            /* H3A */
+            if( h3a_out_desc != NULL)
+            {
+                h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
+            }
+
+            /* NSF4 */
+            if(0 == prms->bypass_nsf4)
+            {
+                nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
+            }
+
+            /* GLBCE */
+            if(0 == prms->bypass_glbce)
+            {
+                int retval;
+
+                retval = glbce_process(prms->hGlbce, prms->pScratch_nsf4v_out, prms->scratch_glbce_out);
+
+                if(retval < 0)
                 {
-                    prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
-                    prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
-                    prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
-                    prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
-                }
-                prms->dcc_output_params->useAwbCalbCfg = 0U;
-                prms->dcc_output_params->useH3aCfg = 0U;
-                prms->dcc_output_params->useNsf4Cfg = 0U;
-                prms->dcc_output_params->useBlcCfg = 0U;
-                prms->dcc_output_params->useCfaCfg = 0U;
-                prms->dcc_output_params->useCcmCfg = 0U;
-                prms->dcc_output_params->useH3aMuxCfg = 0U;
-                prms->dcc_output_params->useRfeDcmpCfg = 0U;
-                dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
-            }
-        }
-
-        if(1u == prms->use_dcc)
-        {
-            vx_uint8 count;
-            for(count=0;count<4U;count++)
-            {
-                prms->rawfe_params.pwl_lut_long.offset[count] = prms->dcc_output_params->vissBLC.l_dcoffset[count];
-                prms->rawfe_params.pwl_lut_short.offset[count] = prms->dcc_output_params->vissBLC.s_dcoffset[count];
-                prms->rawfe_params.pwl_lut_vshort.offset[count] = prms->dcc_output_params->vissBLC.vs_dcoffset[count];
-            }
-            if (1 == prms->dcc_output_params->issH3aMuxLuts.enable)
-            {
-                if (prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num > 1)
-                {
-                    int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
-                    /* TODO: call the DCC function for updating the H3A lut below, then before processing, sweep all settings into Cmodel tables */
-                    //tivxVpacVissParseH3aLutParams(cnt,
-                    //    &prms->rawfe_params.lut_h3a, prms->dcc_output_params);
+                    VX_PRINT(VX_ZONE_ERROR, "glbce_process returned failure\n");
+                    status = (vx_status)VX_FAILURE;
                 }
             }
         }
-        FILE *fout = fopen("memDump2.txt", "wb");
-        fwrite(&prms->rawfe_params, sizeof(prms->rawfe_params), 1, fout);
-        fclose(fout);
-        rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
-
-        /* H3A */
-        if( h3a_aew_af_desc != NULL)
+        if ((vx_status)VX_SUCCESS == status)
         {
-            if(1u == prms->use_dcc)
+            /* Convert glbce 16-bit output to 32-bit input to CFA */
+            for(i=0; i < (prms->buffer_size/2); i++)
             {
-                /* Update H3A params using DCC config */
-                /* TODO: Add an update flag so that the params are updated only when a change is detected */
-
-                /* TODO: Call the DCC version of this*/
-                //tivxVpacVissParseH3aParams(prms);
-            }
-            else
-            {
-                /* TODO: Call the DCC version of this*/
-                //tivxVpacVissParseH3aParams(prms);
+                prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_glbce_out[i];
             }
 
-            h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
-        }
+            /* FLEXCFA */
+            FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params);
 
-        /* NSF4 */
-        if(0 == prms->bypass_nsf4)
-        {
-            tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
-
-            if(1u == prms->use_dcc)
+            /* FLEXCC */
+            if(0 == prms->bypass_cc)
             {
-                /* TODO: Call the DCC version of this*/
-                //tivxVpacVissParseNsf4Params(prms);
+                flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params);
+            }
 
-                if ((NULL == ae_awb_result_desc) ||
-                    (0 == aewb_result->awb_valid))
+            /* EE */
+            if(0 == prms->bypass_ee)
+            {
+                tivxVpacVissCopyShift(prms->scratch_ee_shift_in, prms->scratch_ee_in, prms->buffer_size, prms->pre_copy);
+                ee_top(&prms->ee_params, prms->scratch_ee_in, prms->scratch_ee_out);
+                tivxVpacVissCopyShift(prms->scratch_ee_out, prms->scratch_ee_shift_out, prms->buffer_size, prms->post_copy);
+            }
+
+            /* Fill non-NULL output buffers (up to 7) */
+
+            if( y12_desc != NULL)
+            {
+                if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
                 {
-                    prms->nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
-                    prms->nsf4_params.wb_gain[1] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[1];
-                    prms->nsf4_params.wb_gain[2] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[2];
-                    prms->nsf4_params.wb_gain[3] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[3];
+                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->out_y12_16, prms->out_uv12_c1_16, 12);
+                }
+                else
+                {
+                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, NULL, prms->out_y12_16, NULL, 12);
+                }
+            }
+            if( uv12_c1_desc != NULL)
+            {
+                lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, NULL, prms->out_uv12_c1_16, NULL, 12);
+            }
+            if( y8_r8_c2_desc != NULL)
+            {
+                if (((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
+                    ((vx_df_image)VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
+                    ((vx_df_image)VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
+                {
+                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->out_y8_r8_c2_16, prms->out_uv8_g8_c3_16, prms->out_y8_r8_c2_bit_align);
+                }
+                else
+                {
+                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, NULL, prms->out_y8_r8_c2_16, NULL, prms->out_y8_r8_c2_bit_align);
+                }
+            }
+            if( uv8_g8_c3_desc != NULL)
+            {
+                lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, NULL, prms->out_uv8_g8_c3_16, NULL, prms->out_uv8_g8_c3_bit_align);
+            }
+            if( s8_b8_c4_desc != NULL)
+            {
+                lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, NULL, prms->out_s8_b8_c4_16, NULL, prms->out_s8_b8_c4_bit_align);
+            }
+            if( histogram_desc != NULL)
+            {
+                memcpy(histogram_target_ptr, prms->scratch_hist, 256*sizeof(uint32_t));
+            }
+            if( h3a_out_desc != NULL)
+            {
+                tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
+                pH3a_buf->aew_af_mode = vissPrms->h3a_aewb_af_mode;
+                pH3a_buf->h3a_source_data = vissPrms->h3a_in;
+
+                if(0 == vissPrms->h3a_aewb_af_mode)
+                {
+                    /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
+                     * in case third party 2A nodes which don't use DCC can easily see this information */
+                    memcpy(&pH3a_buf->aew_config, &prms->aew_config, sizeof(tivx_h3a_aew_config));
+                    pH3a_buf->size = prms->aew_buffer_size;
+                    memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
+                }
+                else if(1 == vissPrms->h3a_aewb_af_mode)
+                {
+                    pH3a_buf->size = prms->af_buffer_size;
+                    memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
                 }
             }
 
-            if (NULL != ae_awb_result_desc)
-            {
-                if (1 == aewb_result->awb_valid)
-                {
-                    prms->nsf4_params.wb_gain[0] = aewb_result->wb_gains[0];
-                    prms->nsf4_params.wb_gain[1] = aewb_result->wb_gains[1];
-                    prms->nsf4_params.wb_gain[2] = aewb_result->wb_gains[2];
-                    prms->nsf4_params.wb_gain[3] = aewb_result->wb_gains[3];
-                }
-            }
-
-            nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
+            prms->viss_frame_count++;
         }
-
-        /* GLBCE */
-        if(0 == prms->bypass_glbce)
-        {
-            int retval;
-
-            retval = glbce_process(prms->hGlbce, prms->pScratch_nsf4v_out, prms->scratch_glbce_out);
-
-            if(retval < 0)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "glbce_process returned failure\n");
-                status = (vx_status)VX_FAILURE;
-            }
-        }
-
-        /* Convert glbce 16-bit output to 32-bit input to CFA */
-        for(i=0; i < (prms->buffer_size/2); i++)
-        {
-            prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_glbce_out[i];
-        }
-
-        /* FLEXCFA */
-        FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params);
-
-        /* FLEXCC */
-        if(0 == prms->bypass_cc)
-        {
-            if(1u == prms->use_dcc)
-            {
-                if(prms->dcc_output_params->useCcmCfg)
-                {
-                    /* TODO: Call the DCC version of this*/
-                    //tivxVpacVissParseCCMParams(&prms->flexcc_params.CCM1,
-                    //    prms->dcc_output_params);
-                }
-            }
-
-            flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params);
-        }
-
-        /* EE */
-        if(0 == prms->bypass_ee)
-        {
-            tivxVpacVissCopyShift(prms->scratch_ee_shift_in, prms->scratch_ee_in, prms->buffer_size, prms->pre_copy);
-            ee_top(&prms->ee_params, prms->scratch_ee_in, prms->scratch_ee_out);
-            tivxVpacVissCopyShift(prms->scratch_ee_out, prms->scratch_ee_shift_out, prms->buffer_size, prms->post_copy);
-        }
-
-        /* Fill non-NULL output buffers (up to 7) */
-
-        if( y12_desc != NULL)
-        {
-            if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
-            {
-                lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->out_y12_16, prms->out_uv12_c1_16, 12);
-            }
-            else
-            {
-                lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, NULL, prms->out_y12_16, NULL, 12);
-            }
-        }
-        if( uv12_c1_desc != NULL)
-        {
-            lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, NULL, prms->out_uv12_c1_16, NULL, 12);
-        }
-        if( y8_r8_c2_desc != NULL)
-        {
-            if (((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
-                ((vx_df_image)VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
-                ((vx_df_image)VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
-            {
-                lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->out_y8_r8_c2_16, prms->out_uv8_g8_c3_16, prms->out_y8_r8_c2_bit_align);
-            }
-            else
-            {
-                lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, NULL, prms->out_y8_r8_c2_16, NULL, prms->out_y8_r8_c2_bit_align);
-            }
-        }
-        if( uv8_g8_c3_desc != NULL)
-        {
-            lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, NULL, prms->out_uv8_g8_c3_16, NULL, prms->out_uv8_g8_c3_bit_align);
-        }
-        if( s8_b8_c4_desc != NULL)
-        {
-            lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, NULL, prms->out_s8_b8_c4_16, NULL, prms->out_s8_b8_c4_bit_align);
-        }
-        if( histogram_desc != NULL)
-        {
-            memcpy(histogram_target_ptr, prms->scratch_hist, 256*sizeof(uint32_t));
-        }
-        if( h3a_aew_af_desc != NULL)
-        {
-            tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
-            pH3a_buf->aew_af_mode = vissPrms->h3a_aewb_af_mode;
-            pH3a_buf->h3a_source_data = vissPrms->h3a_in;
-
-            if(0 == vissPrms->h3a_aewb_af_mode)
-            {
-                /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
-                 * in case third party 2A nodes which don't use DCC can easily see this information */
-                memcpy(&pH3a_buf->aew_config, &prms->aew_config, sizeof(tivx_h3a_aew_config));
-                pH3a_buf->size = prms->aew_buffer_size;
-                memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
-            }
-            else if(1 == vissPrms->h3a_aewb_af_mode)
-            {
-                pH3a_buf->size = prms->af_buffer_size;
-                memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
-            }
-        }
-
-        prms->viss_frame_count++;
 
         /* kernel processing function complete */
 
         tivxMemBufferUnmap(configuration_target_ptr,
-           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+           config_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_READ_ONLY);
 
         if( NULL != ae_awb_result_desc)
@@ -1262,10 +907,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 (vx_enum)VX_WRITE_ONLY);
         }
 
-        if( h3a_aew_af_desc != NULL)
+        if( h3a_out_desc != NULL)
         {
             tivxMemBufferUnmap(h3a_aew_af_target_ptr,
-               h3a_aew_af_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+               h3a_out_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY);
         }
     }
@@ -1308,9 +953,9 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
         {
             case TIVX_VPAC_VISS_CMD_SET_DCC_PARAMS:
             {
-                /* Update Configuration in Driver */
-                //status = tivxVpacVissSetParamsFromDcc(prms->vissObj,
-                //    (tivx_obj_desc_user_data_object_t *)obj_desc[0U], NULL, NULL);
+                /* Update Configuration in Simulator */
+                status = tivxVpacVissSetParamsFromDcc(&prms->vissObj,
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U], NULL, NULL);
                 break;
             }
             default:
@@ -1637,3 +1282,370 @@ static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, 
     }
 }
 
+static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vpac_viss_params_t *vissPrms,
+                                               tivx_obj_desc_t *obj_desc[], uint16_t num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivx_obj_desc_image_t *y12_desc;
+    tivx_obj_desc_image_t *uv12_c1_desc;
+    tivx_obj_desc_image_t *y8_r8_c2_desc;
+    tivx_obj_desc_image_t *uv8_g8_c3_desc;
+    tivx_obj_desc_image_t *s8_b8_c4_desc;
+    tivx_obj_desc_distribution_t *histogram_desc;
+    tivx_obj_desc_user_data_object_t *h3a_out_desc;
+
+    if((NULL != prms) && (NULL != vissPrms))
+    {
+        uint32_t i;
+
+        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
+        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
+        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
+        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
+        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
+        histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
+        h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+
+        /*                                  |-------------------->
+         *                                  |        |----------->
+         * RAWFE -> NSF4 -> GLBCE -> FLEXCFA -> FLEXCC -> EE ---->
+         *     '--> H3A --->                         '--> HIST -->
+         */
+
+        /* RAWFE */
+        prms->rawfe_params.h3a_mux_sel = vissPrms->h3a_in;
+
+        /* TODO: Use shift when H3A Lut is not enabled */
+        prms->rawfe_params.h3a_mux_shift = 2u;
+
+        /* H3A */
+        if( h3a_out_desc != NULL)
+        {
+            int32_t num_aew_windows, ae_size, af_pad;
+            uint32_t max_h3a_out_buffer_size;
+            int16_t temp_num_aew_windows;
+
+            prms->h3a_in.image_width = prms->width;
+            prms->h3a_in.image_height = prms->height;
+            prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out;
+
+            prms->aew_config.aewwin1_WINH = prms->h3a_params.aewwin1_WINH;
+            prms->aew_config.aewwin1_WINW = prms->h3a_params.aewwin1_WINW;
+            prms->aew_config.aewwin1_WINVC = prms->h3a_params.aewwin1_WINVC;
+            prms->aew_config.aewwin1_WINHC = prms->h3a_params.aewwin1_WINHC;
+            prms->aew_config.aewsubwin_AEWINCV = prms->h3a_params.aewsubwin_AEWINCV;
+            prms->aew_config.aewsubwin_AEWINCH = prms->h3a_params.aewsubwin_AEWINCH;
+
+            /* Compute AEW buffer size */
+            temp_num_aew_windows = (prms->h3a_params.aewwin1_WINVC+1)*(prms->h3a_params.aewwin1_WINHC);
+            num_aew_windows = (int32_t)temp_num_aew_windows;
+            ae_size = 0;
+            for (i = 0; i < num_aew_windows; i++)
+            {
+                if ( (prms->h3a_params.aew_cfg_AEFMT == 0) || (prms->h3a_params.aew_cfg_AEFMT == 1))
+                {
+                    ae_size += 8;
+                }
+                else
+                {
+                    ae_size += 4;
+                }
+                if (((i%8) == 7) && (i > 0))
+                {
+                    ae_size += 4;
+                }
+                if (((i%prms->h3a_params.aewwin1_WINHC) == (prms->h3a_params.aewwin1_WINHC -1)) && ((ae_size%8) == 4) && (i != (num_aew_windows-1)))
+                {
+                    ae_size += 4;
+                }
+            }
+            if ((num_aew_windows%8) != 0)
+            {
+                ae_size += 4;
+            }
+            if ((ae_size%8) != 0)
+            {
+                ae_size+= 4;
+            }
+            prms->aew_buffer_size = ae_size * sizeof(uint32_t);
+
+            /* Compute AF buffer size */
+            if (prms->h3a_params.pcr_AF_VF_EN)
+            {
+                int16_t temp_af_buffer_size = ((int16_t)16 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) * (int16_t)sizeof(uint32_t);
+                prms->af_buffer_size = (uint32_t)temp_af_buffer_size;
+            }
+            else
+            {
+                int16_t temp0 = prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC;
+                int32_t temp1;
+                af_pad = 0;
+                if ((int16_t)1 == (prms->h3a_params.afpax2_PAXHC%2))
+                {
+                    int16_t temp_af_pad = 4*prms->h3a_params.afpax2_PAXVC;
+                    af_pad = (int32_t)temp_af_pad;
+                }
+                temp1 = ((12 * (int32_t)temp0) + af_pad) * (int32_t)sizeof(uint32_t);
+                prms->af_buffer_size = (uint32_t)temp1;
+            }
+
+            /* H3A can operate in AF or AEWB mode. */
+            /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
+            max_h3a_out_buffer_size = ((prms->aew_buffer_size > prms->af_buffer_size) ?
+                                       prms->aew_buffer_size : prms->af_buffer_size);
+            if(max_h3a_out_buffer_size > TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
+                                         max_h3a_out_buffer_size, TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES);
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                prms->scratch_aew_result = tivxMemAlloc(prms->aew_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->scratch_aew_result)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
+            }
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                prms->scratch_af_result = tivxMemAlloc(prms->af_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->scratch_af_result)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
+            }
+        }
+
+        /* NSF4 */
+        prms->pScratch_nsf4v_out = prms->scratch_rawfe_raw_out;
+        if(0 == vissPrms->bypass_nsf4)
+        {
+            prms->pScratch_nsf4v_out = prms->scratch_nsf4v_out;
+        }
+        else
+        {
+            prms->bypass_nsf4 = 1;
+        }
+
+        /* GLBCE */
+        prms->pScratch_glbce_out = prms->pScratch_nsf4v_out;
+        if(0 == vissPrms->bypass_glbce)
+        {
+            int retval;
+            prms->pScratch_glbce_out = prms->scratch_glbce_out;
+            retval = glbce_get_handle(&prms->glbce_params, &prms->hGlbce);
+
+            if(retval < 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "glbce_get_handle returned failure\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+        else
+        {
+            prms->bypass_glbce = 1;
+        }
+
+        /* FLEXCFA */
+
+        /* FLEXCC */
+        if( ( NULL != y12_desc ) ||
+           (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->mux_output1)) ||
+           (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->mux_output2)) ||
+           (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->mux_output3)) ||
+           (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != vissPrms->mux_output4)) ||
+            ( NULL != histogram_desc))
+        {
+            if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)) ||
+                (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == vissPrms->mux_output2)) )
+            {
+                prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
+            }
+            else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))
+            {
+                prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
+            }
+            else
+            {
+                prms->flexcc_params.ChromaMode = vissPrms->chroma_mode;
+            }
+        }
+        else
+        {
+            prms->bypass_cc = 1;
+        }
+
+        /* EE */
+        if(0 != vissPrms->ee_mode)
+        {
+            if((( NULL != y12_desc )       && (1 == vissPrms->ee_mode)) ||
+               (( NULL != y8_r8_c2_desc )  && (2 == vissPrms->ee_mode) &&
+                ((TIVX_VPAC_VISS_MUX2_Y8 == vissPrms->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->mux_output2) ||
+                 (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))))
+            {
+                prms->bypass_ee = 0;
+            }
+            else
+            {
+                prms->bypass_ee = 1;
+            }
+        }
+        else
+        {
+            prms->bypass_ee = 1;
+        }
+
+        /* Configure output muxes */
+
+        if( NULL != y12_desc )
+        {
+            if(((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
+                (TIVX_VPAC_VISS_MUX0_VALUE12 != vissPrms->mux_output0))
+            {
+                prms->scratch_ee_shift_in = prms->scratch_cc_out[0]; /* y12 */
+                prms->out_y12_16 = prms->scratch_ee_shift_out;       /* y12 */
+                prms->pre_copy = Y12_PRE_COPY;
+                prms->post_copy = Y12_POST_COPY;
+            }
+            else
+            {
+                prms->out_y12_16 = prms->scratch_cc_out[0];    /* y12 */
+            }
+
+            if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)  /* NV12_P12 Format */
+            {
+                prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
+            }
+
+            if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->mux_output0)  /* Value Format */
+            {
+                prms->flexcc_params.MuxY12Out = 2; /* HSV value */
+            }
+            else
+            {
+                prms->flexcc_params.MuxY12Out = 1; /* YUV Luma */
+            }
+        }
+
+        if( NULL != uv12_c1_desc )
+        {
+            if(vissPrms->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
+            {
+                prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
+            }
+            else
+            {
+                prms->out_uv12_c1_16 = prms->scratch_cfa_out[0]; /* c1 */
+            }
+        }
+
+        if( NULL != y8_r8_c2_desc )
+        {
+            prms->out_y8_r8_c2_bit_align = 8;
+            if(vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
+            {
+                if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                {
+                    prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
+                    prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
+                    prms->pre_copy = Y8_PRE_COPY;
+                    prms->post_copy = Y8_POST_COPY;
+                }
+                else
+                {
+                    prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
+                }
+            }
+            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
+            {
+                prms->out_y8_r8_c2_16 = prms->scratch_cc_out[5]; /* r8 */
+            }
+            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
+            {
+                prms->out_y8_r8_c2_16 = prms->scratch_cfa_out[1]; /* c2 */
+                prms->out_y8_r8_c2_bit_align = 12;
+            }
+            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
+            {
+                prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 (value) */
+            }
+            else if((vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
+            {
+                if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                {
+                    prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
+                    prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
+                    prms->pre_copy = Y8_PRE_COPY;
+                    prms->post_copy = Y8_POST_COPY;
+                }
+                else
+                {
+                    prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
+                }
+
+                prms->out_uv8_g8_c3_bit_align = 8;
+                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* UV8 */
+            }
+            else
+            {
+                /* Not valid input */
+            }
+
+            if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->mux_output2)  /* Value Format */
+            {
+                prms->flexcc_params.MuxY8Out = 2; /* HSV value */
+            }
+            else
+            {
+                prms->flexcc_params.MuxY8Out = 1; /* YUV Luma */
+            }
+        }
+
+        if( NULL != uv8_g8_c3_desc )
+        {
+            prms->out_uv8_g8_c3_bit_align = 8;
+            if(vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
+            {
+                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* uv8 */
+            }
+            else if (vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
+            {
+                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[6]; /* g8 */
+            }
+            else
+            {
+                prms->out_uv8_g8_c3_16 = prms->scratch_cfa_out[2]; /* c3 */
+                prms->out_uv8_g8_c3_bit_align = 12;
+            }
+        }
+
+        if( NULL != s8_b8_c4_desc )
+        {
+            prms->out_s8_b8_c4_bit_align = 8;
+            if(vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
+            {
+                prms->out_s8_b8_c4_16 = prms->scratch_cc_out[4]; /* s8 */
+            }
+            else if (vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
+            {
+                prms->out_s8_b8_c4_16 = prms->scratch_cc_out[7]; /* b8 */
+            }
+            else
+            {
+                prms->out_s8_b8_c4_16 = prms->scratch_cfa_out[3]; /* c4 */
+                prms->out_s8_b8_c4_bit_align = 12;
+            }
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    return status;
+}

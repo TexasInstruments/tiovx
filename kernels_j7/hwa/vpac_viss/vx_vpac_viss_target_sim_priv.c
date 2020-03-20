@@ -75,6 +75,7 @@ static void tivxVpacVissParseMergeParams(cfg_merge *merge, Rfe_WdrConfig **merge
 static void tivxVpacVissParsePwlParams(cfg_pwl_lut *pwl, Rfe_PwlConfig **pwlCfg_p, Vhwa_LutConfig **lutCfg_p);
 
 static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseH3aSrcParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms);
 static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms);
@@ -144,6 +145,7 @@ static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms)
         tivxVpacVissParseWB2Params(&rfe_prms->wb2, &vissObj->vissCfgRef.wbCfg);
 
         /* Parse H3A Source Parameters */
+        tivxVpacVissParseH3aSrcParams(prms);
         tivxVpacVissParseRfeLutParams(&rfe_prms->lut_h3a, &vissObj->vissCfgRef.h3aLutCfg);
     }
 }
@@ -301,6 +303,41 @@ static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+}
+
+static void tivxVpacVissParseH3aSrcParams(tivxVpacVissParams *prms)
+{
+    if (NULL != prms)
+    {
+        cfg_rawfe              *rfe_prms = &prms->rawfe_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Rfe_H3aInConfig        *inCfg = vissCfgRef->rfeH3aInCfg;
+
+        if ((NULL != rfe_prms) && (NULL != inCfg))
+        {
+            if(TIVX_VPAC_VISS_H3A_IN_RAW0 == inCfg->inSel)
+            {
+                rfe_prms->h3a_mux_sel = 2;
+            }
+            else if(TIVX_VPAC_VISS_H3A_IN_RAW1 == inCfg->inSel)
+            {
+                rfe_prms->h3a_mux_sel = 1;
+            }
+            else if(TIVX_VPAC_VISS_H3A_IN_RAW2 == inCfg->inSel)
+            {
+                rfe_prms->h3a_mux_sel = 0;
+            }
+            else
+            {
+                rfe_prms->h3a_mux_sel = 3;
+            }
+
+            rfe_prms->h3a_mux_shift = inCfg->shift;
+
+            vissCfgRef->rfeH3aInCfg = NULL;
+        }
     }
 }
 

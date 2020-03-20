@@ -4,14 +4,14 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F))
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vpac_viss
 TARGETTYPE  := library
-CSOURCES    := vx_kernels_hwa_target.c vx_vpac_viss_target_defaults.c
+CSOURCES    := vx_kernels_hwa_target.c vx_vpac_viss_target_defaults.c vx_vpac_viss_target_dcc.c
 
 ifeq ($(TARGET_CPU),R5F)
   ifeq ($(BUILD_VLAB),yes)
     CSOURCES    += vx_vpac_viss_target_sim_dcc.c vx_vpac_viss_vlab_target.c
     IDIRS       += $(J7_C_MODELS_PATH)/include
   else
-    CSOURCES    += vx_vpac_viss_target.c vx_vpac_viss_target_dcc.c vx_vpac_viss_target_drv.c
+    CSOURCES    += vx_vpac_viss_target.c vx_vpac_viss_target_drv.c
   endif
 else
   CSOURCES    += vx_vpac_viss_target_sim.c vx_vpac_viss_target_sim_priv.c
