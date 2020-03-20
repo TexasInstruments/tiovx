@@ -307,7 +307,8 @@ typedef struct
  *      Function Prototypes
  *********************************/
 
-void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj);
+void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj,
+     tivx_ae_awb_params_t *ae_awb_res);
 void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj);
 void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj);
 void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj);

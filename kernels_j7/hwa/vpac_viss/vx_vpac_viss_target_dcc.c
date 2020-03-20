@@ -295,7 +295,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             tivxVpacVissDccMapH3aLutParams(vissObj);
             tivxVpacVissDccMapGlbceParams(vissObj);
             tivxVpacVissDccMapFlexCFAParams(vissObj);
-            tivxVpacVissDccMapFlexCCParams(vissObj);
+            tivxVpacVissDccMapFlexCCParams(vissObj, ae_awb_res);
 
             tivxVpacVissDccMapBlc(vissObj, ae_awb_res);
         }
@@ -817,7 +817,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     Fcp_CcmConfig      *ccmCfg = NULL;
     ccmCfg = &vissObj->vissCfg.ccmCfg;
 
-    if (vissObj->dcc_out_prms.useCcmCfg != 0)
+    if ((vissObj->dcc_out_prms.useCcmCfg != 0) && (NULL != ae_awb_res))
     {
         int color_temp = ae_awb_res->color_temperature; 
         int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
@@ -839,6 +839,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
             }
             ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
         }
+
         vissObj->vissCfgRef.ccm = ccmCfg;
 
         /* Setting config flag to 1,
@@ -1203,11 +1204,12 @@ void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj)
     }
 }
 
-void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj)
+void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj,
+     tivx_ae_awb_params_t *ae_awb_res)
 {
     if (NULL != vissObj)
     {
-        tivxVpacVissDccMapCCMParams(vissObj, NULL);
+        tivxVpacVissDccMapCCMParams(vissObj, ae_awb_res);
         tivxVpacVissDccMapRGB2YUVParams(vissObj);
         tivxVpacVissDccMapRGB2HSVParams(vissObj);
         tivxVpacVissDccMapGammaParams(vissObj);

@@ -496,7 +496,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             /* set defaults */
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
-            tivxVpacVissDccMapFlexCCParams(vissObj);
+            tivxVpacVissDccMapFlexCCParams(vissObj, ae_awb_result);
             tivxVpacVissDccMapEeParams(vissObj);
         }
     }
