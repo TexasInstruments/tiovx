@@ -274,8 +274,9 @@ static void tivxTargetSetTimestamp(
     const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[])
 {
     uint16_t prm_id;
-    uint64_t timestamp = 0;
+    uint64_t timestamp = 0, obj_timestamp = 0;
     uint32_t is_prm_input_flag;
+    tivx_obj_desc_t *parent_obj_desc;
 
     is_prm_input_flag = node_obj_desc->is_prm_input;
 
@@ -286,9 +287,24 @@ static void tivxTargetSetTimestamp(
         {
             if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
             {
-                if (obj_desc[prm_id]->timestamp > timestamp)
+                obj_timestamp = obj_desc[prm_id]->timestamp;
+
+                /* Handle case of parent objects */
+                parent_obj_desc = tivxObjDescGet(
+                        obj_desc[prm_id]->scope_obj_desc_id);
+
+                if(parent_obj_desc!=NULL)
                 {
-                    timestamp = obj_desc[prm_id]->timestamp;
+                    if (parent_obj_desc->timestamp > obj_timestamp)
+                    {
+                        obj_timestamp = parent_obj_desc->timestamp;
+                        obj_desc[prm_id]->timestamp = obj_timestamp;
+                    }
+                }
+
+                if (obj_timestamp > timestamp)
+                {
+                    timestamp = obj_timestamp;
                 }
             }
         }
@@ -302,6 +318,15 @@ static void tivxTargetSetTimestamp(
             if (!tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
             {
                 obj_desc[prm_id]->timestamp = timestamp;
+
+                /* Handle case of parent objects */
+                parent_obj_desc = tivxObjDescGet(
+                        obj_desc[prm_id]->scope_obj_desc_id);
+
+                if(parent_obj_desc!=NULL)
+                {
+                    parent_obj_desc->timestamp = timestamp;
+                }
             }
         }
     }
