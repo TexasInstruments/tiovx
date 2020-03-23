@@ -265,8 +265,6 @@ typedef struct
     uint32_t                            lastH3aInSrc;
     /*! Locally keeps track NSF bypass flag for easy access */
     uint32_t                            bypass_nsf4;
-    /*! Locally storing camera id for easy access */
-    uint32_t                            sensor_dcc_id;
 
     /* Few temporary flags, used by the code for unmapping buffers
      * Allocated here, so that Api does not have to create local variables.

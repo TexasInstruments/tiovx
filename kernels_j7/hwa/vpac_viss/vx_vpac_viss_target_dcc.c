@@ -395,10 +395,8 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     if(1u == vissObj->use_dcc)
     {
         dcc_in_prms->analog_gain = aewb_result->analog_gain;
-        dcc_in_prms->cameraId = vissObj->sensor_dcc_id;
         dcc_in_prms->color_temparature = aewb_result->color_temperature;
         dcc_in_prms->exposure_time = aewb_result->exposure_time;
-        dcc_in_prms->analog_gain = aewb_result->analog_gain;
 
         dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
 

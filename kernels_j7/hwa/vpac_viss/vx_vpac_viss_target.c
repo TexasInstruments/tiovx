@@ -578,7 +578,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         vissObj->outFrmList.numFrames = VHWA_M2M_VISS_MAX_OUTPUTS;
 
         vissObj->bypass_nsf4 = vissPrms->bypass_nsf4;
-        vissObj->sensor_dcc_id = vissPrms->sensor_dcc_id;
     }
 
     if ((vx_status)VX_SUCCESS != status)
