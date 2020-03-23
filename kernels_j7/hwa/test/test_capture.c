@@ -77,29 +77,14 @@
 #include <utils/remote_service/include/app_remote_service.h>
 #include <utils/ipc/include/app_ipc.h>
 #include "test_hwa_common.h"
-
+#include <utils/iss/include/app_iss.h>
 
 #define MAX_NUM_BUF         (8u)
-#define MAX_ABS_FILENAME    (1024u)
 
 #define NUM_CHANNELS        (4U)
-#define CAPT_INST_ID       (0U)
-
-#define IMAGE_WIDTH         (1936)
-#define IMAGE_HEIGHT        (1100)
-#define IMAGE_FORMAT        (VX_DF_IMAGE_U16)
+#define CAPT_INST_ID        (0U)
 
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
-
-/*
- * Utility API to set number of buffers at a node parameter
- * The parameter MUST be a output or bidirectonal parameter for the setting
- * to take effect
- */
-static vx_status set_num_buf_by_node_index(vx_node node, vx_uint32 node_parameter_index, vx_uint32 num_buf)
-{
-    return tivxSetNodeParameterNumBufByIndex(node, node_parameter_index, num_buf);
-}
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -112,80 +97,34 @@ static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node, vx_u
     vxReleaseParameter(&parameter);
 }
 
-/*
- * Utility API to set pipeline depth for a graph
- */
-static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_depth)
+static uint32_t initSensorParams(uint32_t sensor_features_supported)
 {
-    return tivxSetGraphPipelineDepth(graph, pipeline_depth);
-}
+    uint32_t sensor_features_enabled = 0;
 
-/*
- * Utility API to set trigger node for a graph
- */
-static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
-{
-    return vxEnableGraphStreaming(graph, node);
-}
-
-/*
- * Utility API to export graph information to file for debug and visualization
- */
-static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
-{
-    size_t sz = 0;
-    void* buf = 0;
-    char filepath[MAXPATHLENGTH];
-
-    sz = snprintf(filepath, MAXPATHLENGTH, "%s/output", ct_get_test_file_path());
-    ASSERT_(return 0, (sz < MAXPATHLENGTH));
-    return tivxExportGraphToDot(graph, filepath, filename_prefix);
-}
-
-static void printGraphPipelinePerformance(vx_graph graph,
-            vx_node nodes[], uint32_t num_nodes,
-            uint64_t exe_time, uint32_t loop_cnt, uint32_t numPixels)
-{
-    #define MAX_TEST_NAME (8u)
-
-    vx_perf_t perf_ref;
-    char ref_name[MAX_TEST_NAME];
-    uint32_t i;
-    uint64_t avg_exe_time;
-
-    avg_exe_time = exe_time / loop_cnt;
-
-    for(i=0; i<num_nodes; i++)
+    if(ISS_SENSOR_FEATURE_COMB_COMP_WDR_MODE == (sensor_features_supported & ISS_SENSOR_FEATURE_COMB_COMP_WDR_MODE))
     {
-         vxQueryNode(nodes[i], VX_NODE_PERFORMANCE, &perf_ref, sizeof(perf_ref));
-         snprintf(ref_name,MAX_TEST_NAME, "N%d ", i);
-         printPerformance(perf_ref, numPixels, ref_name);
+        sensor_features_enabled |= ISS_SENSOR_FEATURE_COMB_COMP_WDR_MODE;
+    }else
+    {
+        sensor_features_enabled |= ISS_SENSOR_FEATURE_LINEAR_MODE;
     }
 
-    #if 0
-    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_ref, sizeof(perf_ref));
-    snprintf(ref_name,MAX_TEST_NAME, "G0 ");
-    printPerformance(perf_ref, numPixels, ref_name);
-    #endif
+    if(ISS_SENSOR_FEATURE_MANUAL_EXPOSURE == (sensor_features_supported & ISS_SENSOR_FEATURE_MANUAL_EXPOSURE))
+    {
+        sensor_features_enabled |= ISS_SENSOR_FEATURE_MANUAL_EXPOSURE;
+    }
 
-    printf("[ SYS ] Execution time (avg = %4d.%03d ms, sum = %4d.%03d ms, num = %d)\n",
-        (uint32_t)(avg_exe_time/1000u), (uint32_t)(avg_exe_time%1000u),
-        (uint32_t)(exe_time/1000u), (uint32_t)(exe_time%1000u),
-        loop_cnt
-        );
-}
+    if(ISS_SENSOR_FEATURE_MANUAL_GAIN == (sensor_features_supported & ISS_SENSOR_FEATURE_MANUAL_GAIN))
+    {
+        sensor_features_enabled |= ISS_SENSOR_FEATURE_MANUAL_GAIN;
+    }
 
-/*
- * Utility API to log graph run-time trace
- */
-static vx_status log_graph_rt_trace(vx_graph graph)
-{
-    vx_status status = VX_SUCCESS;
+    if(ISS_SENSOR_FEATURE_DCC_SUPPORTED == (sensor_features_supported & ISS_SENSOR_FEATURE_DCC_SUPPORTED))
+    {
+        sensor_features_enabled |= ISS_SENSOR_FEATURE_DCC_SUPPORTED;
+    }
 
-    #if LOG_RT_TRACE_ENABLE
-    status = tivxLogRtTrace(graph);
-    #endif
-    return status;
+    return sensor_features_enabled;
 }
 
 TESTCASE(tivxHwaCapture, CT_VXContext, ct_setup_vx_context, 0)
@@ -199,300 +138,139 @@ typedef struct {
 #define CAPTURE_PARAMETERS \
     CT_GENERATE_PARAMETERS("capture", ARG, 1000, 0)
 
-TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETERS)
-{
-    vx_context context = context_->vx_context_;
-    vx_graph graph;
-    vx_node n0;
-    vx_object_array capture_frames[MAX_NUM_BUF];
-    vx_user_data_object capture_config;
-    tivx_capture_params_t local_capture_config;
-    vx_image img_exemplar;
-    uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT;
-    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS;
-    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
-    CT_Image tst_img;
-    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
-    uint64_t exe_time;
-    char filename[MAX_ABS_FILENAME];
-    AppSensorCmdParams cmdPrms;
-    vx_reference refs[1];
-    vx_user_data_object capture_stats_obj;
-    tivx_capture_statistics_t *capture_stats_struct;
-    vx_map_id capture_stats_map_id;
-    uint32_t *data_ptr;
-    uint8_t i;
-
-    /* Setting to num buf of capture node */
-    num_buf = 3;
-    loop_cnt = arg_->loop_cnt;
-
-    tivxHwaLoadKernels(context);
-    CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
-
-    tivx_clr_debug_zone(VX_ZONE_INFO);
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    /* Hardcoding since reading from sample image */
-    ASSERT_VX_OBJECT(img_exemplar = vxCreateImage(context, width, height, IMAGE_FORMAT), VX_TYPE_IMAGE);
-
-    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
-    for(buf_id=0; buf_id<num_buf; buf_id++)
-    {
-        ASSERT_VX_OBJECT(capture_frames[buf_id] = vxCreateObjectArray(context, (vx_reference)img_exemplar, num_capture_frames), VX_TYPE_OBJECT_ARRAY);
-    }
-
-    /* Config initialization */
-    tivx_capture_params_init(&local_capture_config);
-    local_capture_config.numInst                          = 1U;
-    local_capture_config.numCh                            = NUM_CHANNELS;
-    local_capture_config.instId[0U]                       = CAPT_INST_ID;
-    local_capture_config.instCfg[0U].enableCsiv2p0Support = (uint32_t)vx_true_e;
-    local_capture_config.instCfg[0U].numDataLanes         = 4U;
-    for (loopCnt = 0U ;
-         loopCnt < local_capture_config.instCfg[0U].numDataLanes ;
-         loopCnt++)
-    {
-        local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
-    }
-    for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
-    {
-        local_capture_config.chVcNum[loopCnt]   = loopCnt;
-        local_capture_config.chInstMap[loopCnt] = CAPT_INST_ID;
-    }
-
-    ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-    ASSERT_VX_OBJECT(n0 = tivxCaptureNode(graph, capture_config, capture_frames[0]), VX_TYPE_NODE);
-
-    /* input @ node index 0, becomes graph parameter 1 */
-    add_graph_parameter_by_node_index(graph, n0, 1);
-
-    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
-    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
-    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
-    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&capture_frames[0];
-
-    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
-     * Graph gets scheduled automatically as refs are enqueued to it
-     */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            1,
-            graph_parameters_queue_params_list
-            );
-
-
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-
-    exe_time = tivxPlatformGetTimeInUsecs();
-
-    cmdPrms.numSensors = num_capture_frames;
-    /*cmdPrms.portNum = 1U;
-    for (loop_id = 0U; loop_id < cmdPrms.portNum; loop_id++)
-    {
-        cmdPrms.portIdMap[loop_id] = CAPT_INST_ID;
-    }*/
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
-        APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
-
-    /* enqueue buf for pipeup but dont trigger graph execution */
-    for(buf_id=0; buf_id<num_buf-1; buf_id++)
-    {
-        tivxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1, TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP);
-    }
-
-    /* after pipeup, now enqueue a buffer to trigger graph scheduling */
-    vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1);
-
-    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
-    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
-    {
-        uint32_t num_refs;
-        vx_object_array out_capture_frames;
-
-        /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_capture_frames, 1, &num_refs);
-
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
-
-    }
-
-    /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
-
-    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
-
-    capture_stats_obj =
-        vxCreateUserDataObject(context, "tivx_capture_statistics_t" ,
-        sizeof(tivx_capture_statistics_t), NULL);
-
-    refs[0] = (vx_reference)capture_stats_obj;
-    tivxNodeSendCommand(n0, 0,
-        TIVX_CAPTURE_GET_STATISTICS, refs, 1u);
-
-    vxMapUserDataObject(
-            (vx_user_data_object)refs[0],
-            0,
-            sizeof(tivx_capture_statistics_t),
-            &capture_stats_map_id,
-            (void **)&data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            0
-        );
-
-    capture_stats_struct = (tivx_capture_statistics_t*)data_ptr;
-
-    /* As this is single instance app, array index to access status will be always '0U' */
-    printf("\n\r==========================================================\r\n");
-    printf(": Capture Status:\r\n");
-    printf("==========================================================\r\n");
-    printf(": FIFO Overflow Count: %d\r\n",
-              capture_stats_struct->overflowCount[0U]);
-    printf(": Spurious UDMA interrupt count: %d\r\n",
-              capture_stats_struct->spuriousUdmaIntrCount[0U]);
-    printf("  [Channel No] | Frame Queue Count |"
-        " Frame De-queue Count | Frame Drop Count |\n");
-    for(i = 0U ; i < num_capture_frames ; i ++)
-    {
-        printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
-              i,
-              capture_stats_struct->queueCount[0U][i],
-              capture_stats_struct->dequeueCount[0U][i],
-              capture_stats_struct->dropCount[0U][i]);
-    }
-    vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
-
-    VX_CALL(vxReleaseNode(&n0));
-    VX_CALL(vxReleaseGraph(&graph));
-
-    VX_CALL(vxReleaseImage(&img_exemplar));
-    for(buf_id=0; buf_id<num_buf; buf_id++)
-    {
-        VX_CALL(vxReleaseObjectArray(&capture_frames[buf_id]));
-    }
-    VX_CALL(vxReleaseUserDataObject(&capture_config));
-    VX_CALL(vxReleaseUserDataObject(&capture_stats_obj));
-
-    tivxHwaUnLoadKernels(context);
-
-    tivx_clr_debug_zone(VX_ZONE_INFO);
-}
-
 TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETERS)
 {
+    /* Graph objects */
     vx_context context = context_->vx_context_;
     vx_graph graph;
     vx_node n0;
+
+    /* Data objects for graph */
     vx_object_array capture_frames[MAX_NUM_BUF];
     vx_user_data_object capture_config;
-    tivx_capture_params_t local_capture_config;
     tivx_raw_image raw_image = 0;
-    uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT, i;
-    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS;
-    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
-    CT_Image tst_img;
+
+    /* Local objects */
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
-    uint64_t exe_time;
-    char filename[MAX_ABS_FILENAME];
-    tivx_raw_image_create_params_t params;
+    tivx_capture_params_t local_capture_config;
+    uint32_t num_capture_channels = NUM_CHANNELS;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, instIdx, chIdx;
+    uint64_t exe_time, timestamp = 0, prev_timestamp = 0;
+
+    /* Image objects */
     vx_reference refs[1];
     vx_user_data_object capture_stats_obj;
     tivx_capture_statistics_t *capture_stats_struct;
     vx_map_id capture_stats_map_id;
     uint32_t *data_ptr;
-
-    tivx_raw_image out_img;
-
     vx_imagepatch_addressing_t addr;
     vx_rectangle_t rect;
 
-    uint16_t img[1];
-
-    AppSensorCmdParams cmdPrms;
+    /* Sensor Parameters */
+    char* sensor_list[ISS_SENSORS_MAX_SUPPORTED_SENSOR];
+    vx_uint8 num_sensors_found, count = 0;
+    IssSensor_CreateParams sensorParams;
+    char availableSensorNames[ISS_SENSORS_MAX_SUPPORTED_SENSOR][ISS_SENSORS_MAX_NAME];
+    char *sensor_name;
+    uint32_t sensor_features_enabled = 0, sensor_features_supported = 0;
 
     /* Setting to num buf of capture node */
     num_buf = 3;
     loop_cnt = arg_->loop_cnt;
 
+    /* Init for test case */
     tivxHwaLoadKernels(context);
     CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
-
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    params.width = width;
-    params.height = height;
-    params.num_exposures = 1;
-    params.line_interleaved = vx_true_e;
-    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
-    params.format[0].msb = 12;
-    params.meta_height_before = 0;
-    params.meta_height_after = 0;
-
-    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
-
-    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
-    for(buf_id=0; buf_id<num_buf; buf_id++)
+    /* Imaging Initialization */
     {
-        ASSERT_VX_OBJECT(capture_frames[buf_id] = vxCreateObjectArray(context, (vx_reference)raw_image, num_capture_frames), VX_TYPE_OBJECT_ARRAY);
+        memset(availableSensorNames, 0, ISS_SENSORS_MAX_SUPPORTED_SENSOR*ISS_SENSORS_MAX_NAME);
+        for(count=0;count<ISS_SENSORS_MAX_SUPPORTED_SENSOR;count++)
+        {
+            sensor_list[count] = availableSensorNames[count];
+        }
+        VX_CALL(appEnumerateImageSensor(sensor_list, &num_sensors_found));
+
+        sensor_name = sensor_list[0]; /* Note: hardcoding to IMX390 */
+
+        memset(&sensorParams, 0, sizeof(sensorParams));
+        VX_CALL(appQueryImageSensor(sensor_name, &sensorParams));
+
+        sensor_features_supported = sensorParams.sensorInfo.features;
+
+        sensor_features_enabled = initSensorParams(sensor_features_supported);
+
+        VX_CALL(appInitImageSensor(sensor_name, sensor_features_enabled, (1<<(num_capture_channels))-1)); /*Mask = 0xF for 4 cameras*/
     }
 
-    /* Config initialization */
-    tivx_capture_params_init(&local_capture_config);
-    local_capture_config.numInst                          = 1U;
-    local_capture_config.numCh                            = NUM_CHANNELS;
-    local_capture_config.instId[0U]                       = CAPT_INST_ID;
-    local_capture_config.instCfg[0U].enableCsiv2p0Support = (uint32_t)vx_true_e;
-    local_capture_config.instCfg[0U].numDataLanes         = 4U;
-    for (loopCnt = 0U ;
-         loopCnt < local_capture_config.instCfg[0U].numDataLanes ;
-         loopCnt++)
+    /* Creating objects for graph */
     {
-        local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
+        ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &(sensorParams.sensorInfo.raw_params)), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+
+        /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(capture_frames[buf_id] = vxCreateObjectArray(context, (vx_reference)raw_image, num_capture_channels), VX_TYPE_OBJECT_ARRAY);
+        }
+
+        /* Config initialization */
+        tivx_capture_params_init(&local_capture_config);
+        local_capture_config.numInst = 1;
+        local_capture_config.numCh   = num_capture_channels;
+        chIdx = 0U;
+        for (instIdx = 0U ; instIdx < 1 ; instIdx++)
+        {
+            local_capture_config.instId[instIdx] = instIdx;
+            local_capture_config.instCfg[instIdx].enableCsiv2p0Support = (uint32_t)vx_true_e;
+            local_capture_config.instCfg[instIdx].numDataLanes         = 4U;
+            for (loop_id = 0U; loop_id < local_capture_config.instCfg[0U].numDataLanes ; loop_id++)
+            {
+                local_capture_config.instCfg[instIdx].dataLanesMap[loop_id] = (loop_id + 1u);
+            }
+            for (loop_id = 0U; loop_id < num_capture_channels; loop_id++)
+            {
+                local_capture_config.chVcNum[chIdx]   = loop_id;
+                local_capture_config.chInstMap[chIdx] = instIdx;
+                chIdx++;
+            }
+        }
+
+        ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(n0 = tivxCaptureNode(graph, capture_config, capture_frames[0]), VX_TYPE_NODE);
     }
-    for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
+
+    /* Pipelining and graph verification */
     {
-        local_capture_config.chVcNum[loopCnt]   = loopCnt;
-        local_capture_config.chInstMap[loopCnt] = CAPT_INST_ID;
+        /* input @ node index 0, becomes graph parameter 1 */
+        add_graph_parameter_by_node_index(graph, n0, 1);
+
+        /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+        graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+        graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&capture_frames[0];
+
+        /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+         * Graph gets scheduled automatically as refs are enqueued to it
+         */
+        vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                1,
+                graph_parameters_queue_params_list
+                );
+
+        VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     }
 
-    ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-    ASSERT_VX_OBJECT(n0 = tivxCaptureNode(graph, capture_config, capture_frames[0]), VX_TYPE_NODE);
-
-    /* input @ node index 0, becomes graph parameter 1 */
-    add_graph_parameter_by_node_index(graph, n0, 1);
-
-    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
-    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
-    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
-    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&capture_frames[0];
-
-    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
-     * Graph gets scheduled automatically as refs are enqueued to it
-     */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            1,
-            graph_parameters_queue_params_list
-            );
-
-
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    /* iniitalizing sensor */
+    VX_CALL(appStartImageSensor(sensor_name, (1<<(num_capture_channels))-1));/*Mask for 4 cameras*/
 
     exe_time = tivxPlatformGetTimeInUsecs();
-
-    cmdPrms.numSensors = num_capture_frames;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
-        APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* enqueue buf for pipeup but dont trigger graph execution */
     for(buf_id=0; buf_id<num_buf-1; buf_id++)
@@ -512,6 +290,13 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
         /* Get output reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_capture_frames, 1, &num_refs);
 
+        vxQueryReference((vx_reference)out_capture_frames, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp));
+
+        /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
+        ASSERT(timestamp > (prev_timestamp+33000));
+
+        prev_timestamp = timestamp;
+
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
 
     }
@@ -521,46 +306,51 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
-    capture_stats_obj =
-        vxCreateUserDataObject(context, "tivx_capture_statistics_t" ,
-        sizeof(tivx_capture_statistics_t), NULL);
+    VX_CALL(appStopImageSensor(sensor_name, (1<<(num_capture_channels))-1)); /*Mask for 4 cameras*/
 
-    refs[0] = (vx_reference)capture_stats_obj;
-    tivxNodeSendCommand(n0, 0,
-        TIVX_CAPTURE_GET_STATISTICS, refs, 1u);
-
-    vxMapUserDataObject(
-            (vx_user_data_object)refs[0],
-            0,
-            sizeof(tivx_capture_statistics_t),
-            &capture_stats_map_id,
-            (void **)&data_ptr,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            0
-        );
-
-    capture_stats_struct = (tivx_capture_statistics_t*)data_ptr;
-
-    /* As this is single instance app, array index to access status will be always '0U' */
-    printf("\n\r==========================================================\r\n");
-    printf(": Capture Status:\r\n");
-    printf("==========================================================\r\n");
-    printf(": FIFO Overflow Count: %d\r\n",
-              capture_stats_struct->overflowCount[0U]);
-    printf(": Spurious UDMA interrupt count: %d\r\n",
-              capture_stats_struct->spuriousUdmaIntrCount[0U]);
-    printf("  [Channel No] | Frame Queue Count |"
-        " Frame De-queue Count | Frame Drop Count |\n");
-    for(i = 0U ; i < num_capture_frames ; i ++)
+    /* Querying node for sensor stats */
     {
-        printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
-              i,
-              capture_stats_struct->queueCount[0U][i],
-              capture_stats_struct->dequeueCount[0U][i],
-              capture_stats_struct->dropCount[0U][i]);
+        capture_stats_obj =
+            vxCreateUserDataObject(context, "tivx_capture_statistics_t" ,
+            sizeof(tivx_capture_statistics_t), NULL);
+
+        refs[0] = (vx_reference)capture_stats_obj;
+        tivxNodeSendCommand(n0, 0,
+            TIVX_CAPTURE_GET_STATISTICS, refs, 1u);
+
+        vxMapUserDataObject(
+                (vx_user_data_object)refs[0],
+                0,
+                sizeof(tivx_capture_statistics_t),
+                &capture_stats_map_id,
+                (void **)&data_ptr,
+                VX_READ_ONLY,
+                VX_MEMORY_TYPE_HOST,
+                0
+            );
+
+        capture_stats_struct = (tivx_capture_statistics_t*)data_ptr;
+
+        /* As this is single instance app, array index to access status will be always '0U' */
+        printf("\n\r==========================================================\r\n");
+        printf(": Capture Status:\r\n");
+        printf("==========================================================\r\n");
+        printf(": FIFO Overflow Count: %d\r\n",
+                  capture_stats_struct->overflowCount[0U]);
+        printf(": Spurious UDMA interrupt count: %d\r\n",
+                  capture_stats_struct->spuriousUdmaIntrCount[0U]);
+        printf("  [Channel No] | Frame Queue Count |"
+            " Frame De-queue Count | Frame Drop Count |\n");
+        for(chIdx = 0U ; chIdx < num_capture_channels ; chIdx ++)
+        {
+            printf("\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
+                  chIdx,
+                  capture_stats_struct->queueCount[0U][chIdx],
+                  capture_stats_struct->dequeueCount[0U][chIdx],
+                  capture_stats_struct->dropCount[0U][chIdx]);
+        }
+        vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
     }
-    vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
 
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseGraph(&graph));
@@ -575,11 +365,12 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
     tivxHwaUnLoadKernels(context);
 
+    appDeInitImageSensor(sensor_name);
+
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
 
 TESTCASE_TESTS(tivxHwaCapture,
-               testRawImageCapture
-               /* testGraphProcessing */)
+               testRawImageCapture)
 
