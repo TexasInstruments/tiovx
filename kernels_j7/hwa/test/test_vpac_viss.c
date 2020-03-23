@@ -88,8 +88,10 @@ static vx_int32 write_output_image_fp(FILE * fp, vx_image out_image)
     vx_rectangle_t rect;
     vx_map_id map_id1, map_id2;
     void *data_ptr1, *data_ptr2;
+    uint8_t *temp_ptr = NULL;
     vx_uint32 num_bytes_per_pixel = 1;
-    vx_uint32 num_luma_bytes_written_to_file, num_chroma_bytes_written_to_file, num_bytes_written_to_file;
+    vx_uint32 num_luma_bytes_written_to_file = 0, num_chroma_bytes_written_to_file = 0, num_bytes_written_to_file = 0;
+    vx_int32 i;
 
     vxQueryImage(out_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
     vxQueryImage(out_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
@@ -122,7 +124,12 @@ static vx_int32 write_output_image_fp(FILE * fp, vx_image out_image)
         return -1;
     }
 
-    num_luma_bytes_written_to_file = fwrite(data_ptr1, 1, width*height*num_bytes_per_pixel, fp);
+    temp_ptr = (uint8_t *)data_ptr1;
+    for(i=0; i<height; i++)
+    {
+        num_luma_bytes_written_to_file += fwrite(temp_ptr, 1, width*num_bytes_per_pixel, fp);
+        temp_ptr += image_addr.stride_y;
+    }
 
     vxMapImagePatch(out_image,
         &rect,
@@ -142,7 +149,12 @@ static vx_int32 write_output_image_fp(FILE * fp, vx_image out_image)
         return -1;
     }
 
-    num_chroma_bytes_written_to_file = fwrite(data_ptr2, 1, width*(height/2)*num_bytes_per_pixel, fp);
+    temp_ptr = (uint8_t *)data_ptr2;
+    for(i=0; i<height/2; i++)
+    {
+        num_chroma_bytes_written_to_file += fwrite(temp_ptr, 1, width*num_bytes_per_pixel, fp);
+        temp_ptr += image_addr.stride_y;
+    }
 
     num_bytes_written_to_file = num_luma_bytes_written_to_file + num_chroma_bytes_written_to_file;
 
@@ -1420,16 +1432,27 @@ static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16
 
             if(file_byte_pack == num_bytes)
             {
-                memcpy(data_ptr, buf, width*height*num_bytes);
+                int i;
+                uint8_t *dst = data_ptr;
+                uint8_t *src = (uint8_t*)buf;
+                for(i = 0; i < height; i++)
+                {
+                    memcpy((void*)&dst[image_addr.stride_y*i], (void*)&src[width*num_bytes*i], width*num_bytes);
+                }
             }
             else if((file_byte_pack == 2) && (num_bytes == 1))
             {
-                int i;
+                int i, j;
                 uint8_t *dst = data_ptr;
                 uint16_t *src = (uint16_t*)buf;
-                for(i = 0; i < width*height; i++)
+                for(j = 0; j < height; j++)
                 {
-                    dst[i] = src[i];
+                    for(i = 0; i < width*height; i++)
+                    {
+                        dst[i] = src[i];
+                    }
+                    dst += image_addr.stride_y;
+                    src += width;
                 }
             }
             else
