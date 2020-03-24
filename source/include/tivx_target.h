@@ -342,6 +342,14 @@ void tivxTargetInit(void);
 void tivxTargetDeInit(void);
 
 
+/*!
+ * \brief Propagates time stamp of input parameters of a kernel to output parameters
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetSetTimestamp(
+    const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[]);
+
 #ifdef __cplusplus
 }
 #endif

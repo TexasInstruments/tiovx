@@ -92,8 +92,6 @@ static vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *nod
 static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id);
 static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetSetTimestamp(
-    const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[]);
 
 static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 {
@@ -264,69 +262,6 @@ static void tivxTargetNodeDescTriggerNextNodes(
             if(can_execute == (vx_bool)vx_true_e)
             {
                 tivxObjDescSend( next_node_obj_desc->target_id, next_node_obj_desc_id);
-            }
-        }
-    }
-}
-
-/* Propagation of time stamp */
-static void tivxTargetSetTimestamp(
-    const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[])
-{
-    uint16_t prm_id;
-    uint64_t timestamp = 0, obj_timestamp = 0;
-    uint32_t is_prm_input_flag;
-    tivx_obj_desc_t *parent_obj_desc;
-
-    is_prm_input_flag = node_obj_desc->is_prm_input;
-
-    /* Reading all input timestamps, taking the most recent of the timestamps to pass along */
-    for (prm_id = 0U; prm_id < node_obj_desc->num_params; prm_id++)
-    {
-        if (NULL != obj_desc[prm_id])
-        {
-            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
-            {
-                obj_timestamp = obj_desc[prm_id]->timestamp;
-
-                /* Handle case of parent objects */
-                parent_obj_desc = tivxObjDescGet(
-                        obj_desc[prm_id]->scope_obj_desc_id);
-
-                if(parent_obj_desc!=NULL)
-                {
-                    if (parent_obj_desc->timestamp > obj_timestamp)
-                    {
-                        obj_timestamp = parent_obj_desc->timestamp;
-                        obj_desc[prm_id]->timestamp = obj_timestamp;
-                    }
-                }
-
-                if (obj_timestamp > timestamp)
-                {
-                    timestamp = obj_timestamp;
-                }
-            }
-        }
-    }
-
-    /* Setting all outputs to use most recent of the timestamps */
-    for (prm_id = 0U; prm_id < node_obj_desc->num_params; prm_id++)
-    {
-        if (NULL != obj_desc[prm_id])
-        {
-            if (!tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
-            {
-                obj_desc[prm_id]->timestamp = timestamp;
-
-                /* Handle case of parent objects */
-                parent_obj_desc = tivxObjDescGet(
-                        obj_desc[prm_id]->scope_obj_desc_id);
-
-                if(parent_obj_desc!=NULL)
-                {
-                    parent_obj_desc->timestamp = timestamp;
-                }
             }
         }
     }
@@ -531,7 +466,6 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
             else
             {
-                /* TODO: need to decide how to handle supernode */
                 tivxTargetSetTimestamp(node_obj_desc, params);
                 node_obj_desc->exe_status |= (uint32_t)tivxTargetKernelExecute(target_kernel_instance, params,
                     (uint16_t)node_obj_desc->num_params);
@@ -1473,4 +1407,65 @@ void tivxTargetDeInit(void)
 
 }
 
+void tivxTargetSetTimestamp(
+    const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[])
+{
+    uint16_t prm_id;
+    uint64_t timestamp = 0, obj_timestamp = 0;
+    uint32_t is_prm_input_flag;
+    tivx_obj_desc_t *parent_obj_desc;
+
+    is_prm_input_flag = node_obj_desc->is_prm_input;
+
+    /* Reading all input timestamps, taking the most recent of the timestamps to pass along */
+    for (prm_id = 0U; prm_id < node_obj_desc->num_params; prm_id++)
+    {
+        if (NULL != obj_desc[prm_id])
+        {
+            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
+            {
+                obj_timestamp = obj_desc[prm_id]->timestamp;
+
+                /* Handle case of parent objects */
+                parent_obj_desc = tivxObjDescGet(
+                        obj_desc[prm_id]->scope_obj_desc_id);
+
+                if(parent_obj_desc!=NULL)
+                {
+                    if (parent_obj_desc->timestamp > obj_timestamp)
+                    {
+                        obj_timestamp = parent_obj_desc->timestamp;
+                        obj_desc[prm_id]->timestamp = obj_timestamp;
+                    }
+                }
+
+                if (obj_timestamp > timestamp)
+                {
+                    timestamp = obj_timestamp;
+                }
+            }
+        }
+    }
+
+    /* Setting all outputs to use most recent of the timestamps */
+    for (prm_id = 0U; prm_id < node_obj_desc->num_params; prm_id++)
+    {
+        if (NULL != obj_desc[prm_id])
+        {
+            if (!tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
+            {
+                obj_desc[prm_id]->timestamp = timestamp;
+
+                /* Handle case of parent objects */
+                parent_obj_desc = tivxObjDescGet(
+                        obj_desc[prm_id]->scope_obj_desc_id);
+
+                if(parent_obj_desc!=NULL)
+                {
+                    parent_obj_desc->timestamp = timestamp;
+                }
+            }
+        }
+    }
+}
 
