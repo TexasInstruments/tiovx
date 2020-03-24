@@ -199,9 +199,10 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
                 params[j] = tivxObjDescGet(node_obj_desc->data_id[j]);
             }
 
+            tivxTargetSetTimestamp(node_obj_desc, params);
+
             if ((NULL != prms->knl[i]) && (NULL != prms->knl[i]->preprocess_func))
             {
-                tivxTargetSetTimestamp(node_obj_desc, params);
                 status = prms->knl[i]->preprocess_func(
                     prms->target_kernel_instance[i], params, node_obj_desc->num_params, &prms->graph_handle, prms->knl[i]->caller_priv_arg);
             }

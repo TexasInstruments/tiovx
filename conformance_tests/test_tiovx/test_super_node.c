@@ -1582,6 +1582,67 @@ TEST(tivxSuperNode, testSuperNodeNegativeQuery)
 
 }
 
+TEST(tivxSuperNode, testSuperNodeTimeStamp)
+{
+    vx_context context = context_->vx_context_;
+    vx_status super_node_status;
+    vx_bool is_test_success;
+    tivx_super_node super_node = 0;
+    vx_image src, dst, intermediate_1, intermediate_2, intermediate_3;
+    CT_Image ref_src, ref_dst;
+    vx_graph graph;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+    vx_node node_list[4];
+    int widthHardCoded = 640, heightHardCoded = 480;
+    vx_uint64 timestamp = 0, set_timestamp = 10;
+
+    ASSERT_VX_OBJECT(src = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_1 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_2 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(intermediate_3 = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, widthHardCoded, heightHardCoded, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_NO_FAILURE(ct_fill_image_random(src, &CT()->seed_));
+
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, src, intermediate_1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, intermediate_1, intermediate_2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxNotNode(graph, intermediate_2, intermediate_3), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxNotNode(graph, intermediate_3, dst), VX_TYPE_NODE);
+
+    node_list[0]   = node1;
+    node_list[1]   = node2;
+    node_list[2]   = node3;
+    node_list[3]   = node4;
+
+    VX_CALL(tivxSetReferenceAttribute((vx_reference)src, TIVX_REFERENCE_TIMESTAMP, &set_timestamp, sizeof(set_timestamp)));
+
+    /* check if super node can be created */
+    super_node = tivxCreateSuperNode(graph, node_list, 4);
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxQueryReference((vx_reference)dst, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
+
+    printf("timestamp = %llu\n", timestamp);
+
+    ASSERT(timestamp==set_timestamp);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&intermediate_1));
+    VX_CALL(vxReleaseImage(&intermediate_2));
+    VX_CALL(vxReleaseImage(&intermediate_3));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 /* On PC, targets get mapped to same target, so this test will fail */
 #ifdef PLATFORM_PC
 #define testSuperNodeTargetConstraint1 DISABLED_testSuperNodeTargetConstraint1
@@ -1597,7 +1658,8 @@ TESTCASE_TESTS(tivxSuperNode,
         testSuperNodeEdgeCompliance4,
         testSuperNodeTargetConstraint1,
         testSuperNodeTargetConstraint2,
-        testSuperNodeNegativeQuery
+        testSuperNodeNegativeQuery,
+        testSuperNodeTimeStamp
         )
 
 #endif
