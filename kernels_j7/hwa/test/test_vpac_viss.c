@@ -1447,7 +1447,7 @@ static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16
                 uint16_t *src = (uint16_t*)buf;
                 for(j = 0; j < height; j++)
                 {
-                    for(i = 0; i < width*height; i++)
+                    for(i = 0; i < width; i++)
                     {
                         dst[i] = src[i];
                     }
