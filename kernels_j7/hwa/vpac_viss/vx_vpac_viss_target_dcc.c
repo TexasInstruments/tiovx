@@ -192,6 +192,8 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+    vissObj->bypass_nsf4 = vissPrms->bypass_nsf4;
+
     vissObj->dcc_in_prms.analog_gain = 1000;
     vissObj->dcc_in_prms.cameraId = vissPrms->sensor_dcc_id;
     vissObj->dcc_in_prms.color_temparature = 5000;
@@ -365,7 +367,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result)
 {
     vx_status                        status = (vx_status)VX_SUCCESS;
-    int32_t                              dcc_status;
+    int32_t                          dcc_status = 0;
     tivxVpacVissConfig              *vsCfg;
     Rfe_GainOfstConfig              *wbCfg;
     dcc_parser_input_params_t       *dcc_in_prms;
@@ -378,25 +380,35 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     wbCfg = &vsCfg->wbCfg;
 
     /* apply AWB gains in RAWFE when NSF4 is bypassed */
-    if (1u == vissObj->bypass_nsf4)
+    if ((1u == vissObj->bypass_nsf4) && (1u == aewb_result->awb_valid))
     {
         wbCfg->gain[0U] = aewb_result->wb_gains[0U];
         wbCfg->gain[1U] = aewb_result->wb_gains[1U];
         wbCfg->gain[2U] = aewb_result->wb_gains[2U];
         wbCfg->gain[3U] = aewb_result->wb_gains[3U];
-
-        vissObj->vissCfgRef.wbCfg = wbCfg;
-
-        /* Setting config flag to 1,
-         * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;
     }
 
-    if(1u == vissObj->use_dcc)
+    /* Set even if wbCfg is not updated so that driver updates in
+     * case of multi-instance */
+    vissObj->vissCfgRef.wbCfg = wbCfg;
+
+    /* Setting config flag to 1,
+     * assumes caller protects this flag */
+    vissObj->isConfigUpdated = 1U;
+
+    if((1u == vissObj->use_dcc) &&
+       ((1u == aewb_result->awb_valid) || (1u == aewb_result->ae_valid)))
     {
-        dcc_in_prms->analog_gain = aewb_result->analog_gain;
-        dcc_in_prms->color_temparature = aewb_result->color_temperature;
-        dcc_in_prms->exposure_time = aewb_result->exposure_time;
+        if (1u == aewb_result->awb_valid)
+        {
+            dcc_in_prms->color_temparature = aewb_result->color_temperature;
+        }
+
+        if (1u == aewb_result->ae_valid)
+        {
+            dcc_in_prms->analog_gain = aewb_result->analog_gain;
+            dcc_in_prms->exposure_time = aewb_result->exposure_time;
+        }
 
         dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
 
@@ -426,6 +438,19 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
              * TODO: H3A LUT Update.
              */
         }
+    }
+    else
+    {
+        /* In case of multi-instance, these need to be updated in
+         * driver (required until there is better ctx restore mechanism)*/
+        vissObj->vissCfgRef.ccm = &vissObj->vissCfg.ccmCfg;
+        if (0u == vissObj->bypass_nsf4)
+        {
+            vissObj->vissCfgRef.nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
+        }
+        vissObj->vissCfgRef.lPwlCfg = &vissObj->vissCfg.pwlCfg1;
+        vissObj->vissCfgRef.sPwlCfg = &vissObj->vissCfg.pwlCfg2;
+        vissObj->vissCfgRef.vsPwlCfg = &vissObj->vissCfg.pwlCfg3;
     }
 
     return (status);
