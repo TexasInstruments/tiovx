@@ -18,7 +18,11 @@ endif
 endif
 endif
 
-CSOURCES += tivx_utils_bmp_rd_wr.c tivx_utils_graph_perf.c tivx_utils_checksum.c tivx_utils_tidl_trace.c
+CSOURCES += tivx_utils_bmp_rd_wr.c tivx_utils_graph_perf.c tivx_utils_checksum.c
+
+ifneq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+CSOURCES += tivx_utils_tidl_trace.c
+endif
 
 ifneq ($(TARGET_PLATFORM),PC)
 CSOURCES += tivx_utils_png_rd_wr_null.c

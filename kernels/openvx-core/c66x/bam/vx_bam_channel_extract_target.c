@@ -110,7 +110,7 @@ static vx_status tivxBamChannelExtractInBamGraphIyuvYuv4Input(
     tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
     const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    const int32_t * bam_node_cnt, void * scratch, int32_t *size);
+    const int32_t * bam_node_cnt, void * scratch, const int32_t *size);
 static vx_status tivxBamChannelExtractInBamGraphNv12Nv21Input(
     tivxBamChannelExtractParams *prms, const tivx_obj_desc_image_t *src,
     const tivx_obj_desc_scalar_t *ch, BAM_NodeParams node_list[],
