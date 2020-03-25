@@ -446,6 +446,15 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         vissObj->vissCfgRef.ccm = &vissObj->vissCfg.ccmCfg;
         if (0u == vissObj->bypass_nsf4)
         {
+            if(1u == aewb_result->awb_valid)
+            {
+                int i;
+                for (i = 0; i < 4; i ++)
+                {
+                    vissObj->vissCfg.nsf4Cfg.gains[i] = aewb_result->wb_gains[i];
+                }
+            }
+
             vissObj->vissCfgRef.nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
         }
         vissObj->vissCfgRef.lPwlCfg = &vissObj->vissCfg.pwlCfg1;
