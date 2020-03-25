@@ -82,7 +82,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static vx_action tivxTargetCmdDescHandleUserCallback(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
 static void tivxTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
@@ -1034,7 +1034,7 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static vx_action tivxTargetCmdDescHandleUserCallback(const tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_action action;
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
@@ -1063,6 +1063,9 @@ static vx_action tivxTargetCmdDescHandleUserCallback(const tivx_obj_desc_node_t 
     {
         ownNodeCheckAndSendErrorEvent(node_obj_desc, timestamp, (vx_status)node_obj_desc->exe_status);
     }
+
+    /* Clearing node status now that it has been sent as an error event */
+    node_obj_desc->exe_status = 0;
 
     /* first we let any node events to go thru before sending graph events */
     if(is_send_graph_complete_event!= 0)

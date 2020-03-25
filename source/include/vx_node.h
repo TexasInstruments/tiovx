@@ -89,6 +89,9 @@ typedef struct _vx_node {
     /*! \brief when true a event is sent when a node execution is completed */
     vx_bool is_enable_send_complete_event;
 
+    /*! \brief when true a event is sent when a node execution is completed and is an error */
+    vx_bool is_enable_send_error_event;
+
     /*! \brief flag to indicate whether event is using graph event queue */
     vx_bool is_graph_event;
 

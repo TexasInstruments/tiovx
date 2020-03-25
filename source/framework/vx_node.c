@@ -1087,7 +1087,7 @@ void ownNodeCheckAndSendCompletionEvent(const tivx_obj_desc_node_t *node_obj_des
 
     if((node!=NULL) && (node->base.context!=NULL))
     {
-        if(node->is_enable_send_complete_event != 0)
+        if(node->is_enable_send_complete_event != (vx_bool)vx_false_e)
         {
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
@@ -1112,7 +1112,7 @@ void ownNodeCheckAndSendErrorEvent(const tivx_obj_desc_node_t *node_obj_desc, ui
 
     if((node!=NULL) && (node->base.context!=NULL))
     {
-        if(node->is_enable_send_complete_event != 0)
+        if(node->is_enable_send_error_event != (vx_bool)vx_false_e)
         {
             if ((vx_bool)vx_true_e == node->is_context_event)
             {
@@ -1181,6 +1181,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->node_completed_app_value = 0;
                     node->node_error_app_value = 0;
                     node->is_enable_send_complete_event = (vx_bool)vx_false_e;
+                    node->is_enable_send_error_event    = (vx_bool)vx_false_e;
                     node->is_super_node = (vx_bool)vx_false_e;
                     node->super_node = NULL;
 
@@ -1966,14 +1967,15 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
             {
                 tivxFlagBitSet(&node->obj_desc[i]->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
             }
-            node->is_enable_send_complete_event = (vx_bool)vx_true_e;
 
             if ((vx_enum)VX_EVENT_NODE_COMPLETED == event_type)
             {
+                node->is_enable_send_complete_event = (vx_bool)vx_true_e;
                 node->node_completed_app_value = app_value;
             }
             else if ((vx_enum)VX_EVENT_NODE_ERROR == event_type)
             {
+                node->is_enable_send_error_event = (vx_bool)vx_true_e;
                 node->node_error_app_value = app_value;
             }
             else
