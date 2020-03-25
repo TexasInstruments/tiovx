@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -568,9 +568,12 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         /* Override gains from AWB results */
         if (NULL != ae_awb_res)
         {
-            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+            if(1u == ae_awb_res->awb_valid)
             {
-                nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+                for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+                {
+                    nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+                }
             }
         }
         else
@@ -842,7 +845,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
 
     if ((vissObj->dcc_out_prms.useCcmCfg != 0) && (NULL != ae_awb_res))
     {
-        int color_temp = ae_awb_res->color_temperature; 
+        int color_temp = ae_awb_res->color_temperature;
         int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
         iss_ipipe_rgb2rgb ccm_int;
         iss_ipipe_rgb2rgb *rgb2rgb = &ccm_int;
