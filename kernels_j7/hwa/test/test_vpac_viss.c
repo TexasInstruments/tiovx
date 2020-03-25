@@ -596,7 +596,58 @@ static vx_int32 read_dcc_file(char * file_name, uint8_t * buf, uint32_t num_byte
     return num_bytes_read_from_file;
 }
 
-TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
+typedef struct {
+    const char* testName;
+    int dcc;
+    int results_2a;
+    int bypass_glbce;
+    int bypass_nsf4;
+} ArgDcc;
+
+static uint32_t viss_checksums_luma_ref[24] = {
+    (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
+    (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
+    (uint32_t) 0x781f7630, (uint32_t) 0xe7d95550, (uint32_t) 0xeaed49e2, (uint32_t) 0x60b695a7,
+    (uint32_t) 0xf4a92a65, (uint32_t) 0x4bed2b15, (uint32_t) 0x202982fd, (uint32_t) 0xdca1c62f,
+    (uint32_t) 0xf4a92a65, (uint32_t) 0x4bed2b15, (uint32_t) 0x202982fd, (uint32_t) 0xdca1c62f,
+    (uint32_t) 0x908a52ee, (uint32_t) 0x271d8c34, (uint32_t) 0xa9deaf7a, (uint32_t) 0xcfbdbebe
+};
+static uint32_t viss_checksums_chroma_ref[24] = {
+    (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
+    (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
+    (uint32_t) 0xe6675cfa, (uint32_t) 0x7ad6fa84, (uint32_t) 0x83e22b06, (uint32_t) 0xfef94919,
+    (uint32_t) 0x60a42511, (uint32_t) 0x7184a2bb, (uint32_t) 0xb639e94f, (uint32_t) 0xdaa40f92,
+    (uint32_t) 0x60a42511, (uint32_t) 0x7184a2bb, (uint32_t) 0xb639e94f, (uint32_t) 0xdaa40f92,
+    (uint32_t) 0xab4f9b81, (uint32_t) 0xd7bec916, (uint32_t) 0xabc8c431, (uint32_t) 0x795a3126
+};
+
+static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a, vx_int32 bypass_glbce, vx_int32 bypass_nsf4)
+{
+    return table[(2*2*3)*dcc + (2*2)*results_2a + (2)*bypass_glbce + bypass_nsf4];
+}
+
+
+#define ADD_GLBCE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/glbce=on", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/glbce=bypass", __VA_ARGS__, 1))
+
+#define ADD_NSF4(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/nsf4=on", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/nsf4=bypass", __VA_ARGS__, 1))
+
+#define ADD_2A(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/2a=NULL", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/2a=invalid", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/2a=valid", __VA_ARGS__, 2))
+
+#define ADD_DCC(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dcc=off", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/dcc=imx390", __VA_ARGS__, 1))
+
+#define PARAMETERS_DCC \
+    CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ARG)
+
+TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DCC)
 {
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
@@ -607,13 +658,13 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
     vx_user_data_object h3a_aew_af = NULL;
     char file[MAXPATHLENGTH];
     /* Dcc objects */
-    vx_user_data_object dcc_param_viss;
+    vx_user_data_object dcc_param_viss = NULL;
     const vx_char dcc_viss_user_data_object_name[] = "dcc_viss";
     vx_size dcc_buff_size = 1;
     vx_map_id dcc_viss_buf_map_id;
     uint8_t * dcc_viss_buf;
     int32_t dcc_status;
-    uint32_t checksum_actual = 0;
+    uint32_t checksum_actual = 0, checksum_expected = 0;
     vx_rectangle_t rect;
 
     tivx_vpac_viss_params_t params;
@@ -635,7 +686,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
-        vx_uint32 width, height;
+        vx_uint32 width, height, i;
 
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -649,43 +700,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
-        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
-        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        /* Creating DCC */
-        dcc_buff_size = appIssGetDCCSizeVISS(SENSOR_SONY_IMX390_UB953_D3, 0U);
-
-        dcc_param_viss = vxCreateUserDataObject(
-            context,
-            (const vx_char*)&dcc_viss_user_data_object_name,
-            dcc_buff_size,
-            NULL
-        );
-
-        vxMapUserDataObject(
-            dcc_param_viss,
-            0,
-            dcc_buff_size,
-            &dcc_viss_buf_map_id,
-            (void **)&dcc_viss_buf,
-            VX_WRITE_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            0
-        );
-        memset(dcc_viss_buf, 0xAB, dcc_buff_size);
-
-        dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
-        ASSERT(dcc_status == 0);
-
-        vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id);
-        /* Done w/ DCC */
-
         tivx_vpac_viss_params_init(&params);
+
         params.sensor_dcc_id = 390;
         params.ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
         params.mux_output0 = 0;
@@ -696,11 +712,65 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         params.h3a_in = TIVX_VPAC_VISS_H3A_IN_LSC;
         params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
         params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
-        params.bypass_glbce = 1;
-        params.bypass_nsf4 = 1;
+        params.bypass_glbce = arg_->bypass_glbce;
+        params.bypass_nsf4 = arg_->bypass_nsf4;
 
-        VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-        VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                            sizeof(tivx_vpac_viss_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        /* Create/Configure ae_awb_params input structure */
+        if(0 != arg_->results_2a)
+        {
+            tivx_ae_awb_params_init(&ae_awb_params);
+
+            if(2 == arg_->results_2a)
+            {
+                ae_awb_params.ae_valid = 1;
+                ae_awb_params.exposure_time = 16666;
+                ae_awb_params.analog_gain = 1030;
+                ae_awb_params.awb_valid = 1;
+                ae_awb_params.color_temperature = 3000;
+                for (i=0; i<4; i++)
+                {
+                    ae_awb_params.wb_gains[i] = 525;
+                    ae_awb_params.wb_offsets[i] = 2;
+                }
+            }
+
+            ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                                sizeof(tivx_ae_awb_params_t), &ae_awb_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        }
+
+        if(0 != arg_->dcc)
+        {
+            /* Creating DCC */
+            dcc_buff_size = appIssGetDCCSizeVISS(SENSOR_SONY_IMX390_UB953_D3, 0U);
+
+            dcc_param_viss = vxCreateUserDataObject(
+                context,
+                (const vx_char*)&dcc_viss_user_data_object_name,
+                dcc_buff_size,
+                NULL
+            );
+
+            vxMapUserDataObject(
+                dcc_param_viss,
+                0,
+                dcc_buff_size,
+                &dcc_viss_buf_map_id,
+                (void **)&dcc_viss_buf,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST,
+                0
+            );
+            memset(dcc_viss_buf, 0xAB, dcc_buff_size);
+
+            dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
+            ASSERT(dcc_status == 0);
+
+            vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id);
+            /* Done w/ DCC */
+        }
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -715,30 +785,44 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         VX_CALL(vxVerifyGraph(graph));
 
         VX_CALL(vxProcessGraph(graph));
+        if(arg_->bypass_glbce == 0)
+        {
+            VX_CALL(vxProcessGraph(graph));
+        }
 
         snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_dcc_out.yuv");
-        write_output_image_nv12_8bit(file, y8_r8_c2);
+        //write_output_image_nv12_8bit(file, y8_r8_c2);
 
         rect.start_x = 0;
         rect.start_y = 0;
         rect.end_x = raw_params.width;
         rect.end_y = raw_params.height;
 
+        checksum_expected = get_checksum(viss_checksums_luma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
         printf("0x%08x\n", checksum_actual);
+        ASSERT(checksum_expected == checksum_actual);
+
         rect.end_x = raw_params.width/2;
         rect.end_y = raw_params.height/2;
+        checksum_expected = get_checksum(viss_checksums_chroma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 1, rect);
         printf("0x%08x\n", checksum_actual);
-//        ASSERT(0x4517babb == checksum_actual);
+        ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseImage(&y8_r8_c2));
         VX_CALL(tivxReleaseRawImage(&raw));
-        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
-        VX_CALL(vxReleaseUserDataObject(&dcc_param_viss));
+        if(0 != arg_->results_2a)
+        {
+            VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
+        }
+        if(0 != arg_->dcc)
+        {
+            VX_CALL(vxReleaseUserDataObject(&dcc_param_viss));
+        }
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
