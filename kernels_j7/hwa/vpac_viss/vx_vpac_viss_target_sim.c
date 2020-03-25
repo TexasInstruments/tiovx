@@ -264,7 +264,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
             if (NULL != dcc_buf_desc)
             {
-                vissObj->h3a_out_enabled = (vx_bool)vx_true_e; //TODO: Check if this is used in sim version
+                vissObj->h3a_out_enabled = (vx_bool)vx_true_e;
             }
             else
             {
@@ -346,16 +346,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
                 }
-            }
-            else //TODO: Maybe don't do this since it is defaults
-            {
-#if 0
-                /* set defaults */
-                tivxVpacVissDccMapRfeParams(vissObj);
-                tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
-                tivxVpacVissDccMapFlexCCParams(vissObj);
-                tivxVpacVissDccMapEeParams(vissObj);
-#endif
             }
         }
 

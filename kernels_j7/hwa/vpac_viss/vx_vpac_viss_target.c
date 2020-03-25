@@ -446,6 +446,13 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
+    /* Set default values for ALL viss configuration parameters */
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxVpacVissSetDefaultParams(vissObj, vissPrms, NULL);
+    }
+
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Set H3A Source parameters, this mainly sets up the
@@ -490,14 +497,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 vissDrvPrms->enableDpc = (uint32_t)FALSE;
             }
-        }
-        else
-        {
-            /* set defaults */
-            tivxVpacVissDccMapRfeParams(vissObj);
-            tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
-            tivxVpacVissDccMapFlexCCParams(vissObj, ae_awb_result);
-            tivxVpacVissDccMapEeParams(vissObj);
         }
     }
 

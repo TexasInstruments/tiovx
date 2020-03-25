@@ -192,8 +192,6 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    vissObj->bypass_nsf4 = vissPrms->bypass_nsf4;
-
     vissObj->dcc_in_prms.analog_gain = 1000;
     vissObj->dcc_in_prms.cameraId = vissPrms->sensor_dcc_id;
     vissObj->dcc_in_prms.color_temparature = 5000;
@@ -250,14 +248,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
                 dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
             dcc_status = Dcc_Create(dcc_out_prms, vissObj->dcc_out_buf);
-            dcc_out_prms->useAwbCalbCfg = 0U;
-            dcc_out_prms->useH3aCfg = 0U;
-            dcc_out_prms->useNsf4Cfg = 0U;
-            dcc_out_prms->useBlcCfg = 0U;
-            dcc_out_prms->useCfaCfg = 0U;
-            dcc_out_prms->useCcmCfg = 0U;
-            dcc_out_prms->useH3aMuxCfg = 0U;
-            dcc_out_prms->useRfeDcmpCfg = 0U;
+
             if (0 == dcc_status)
             {
                 dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
