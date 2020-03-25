@@ -345,7 +345,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
         lsccCfg = &nsf4Cfg->lsccCfg;
 
         nsf4Cfg->mode = 16u;
-        nsf4Cfg->tKnee = 32u; // 0u;  /*SIMDRVDIFF*/
+        nsf4Cfg->tKnee = 0u;
         nsf4Cfg->tnScale[0U] = 64u;
         nsf4Cfg->tnScale[1U] = 32u;
         nsf4Cfg->tnScale[2U] = 16u;
@@ -654,7 +654,7 @@ static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj)
         eeCfg->coeff[6] = -5;
         eeCfg->coeff[7] =  2;
         eeCfg->coeff[8] = 48;
-        eeCfg->yeeEThr = 200; //0;   /*SIMDRVDIFF*/
+        eeCfg->yeeEThr = 0;
         eeCfg->yeeMergeSel = 0;
         eeCfg->haloReductionOn = 1;
         eeCfg->yesGGain = 0;
@@ -969,7 +969,7 @@ static void tivxVpacVissDefaultMapDpcOtfParams(tivxVpacVissObj *vissObj)
     {
         dpcOtfCfg = &vissObj->vissCfg.dpcOtfCfg;
 
-        dpcOtfCfg->enable           = (uint32_t)TRUE; /*SIMDRVDIFF*/
+        dpcOtfCfg->enable           = (uint32_t)FALSE;
         dpcOtfCfg->threshold[0u]    = 200u;
         dpcOtfCfg->slope[0u]        = 0u;
         dpcOtfCfg->threshold[1u]    = 200u;
@@ -1102,7 +1102,7 @@ static void tivxVpacVissDefaultMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg->slopeShift   = 0u;
             pwlCfg->outClip      = 65535;
 
-            lutCfg->enable       = 1u;      /*SIMDRVDIFF*/
+            lutCfg->enable       = 0u;
             lutCfg->inputBits    = 20u;
             lutCfg->clip         = 65535;
             lutCfg->tableAddr    = grawfe_pwl_long_lut;
@@ -1155,10 +1155,10 @@ static void tivxVpacVissDefaultMapPwlParams(tivxVpacVissObj *vissObj,
 
             pwlCfg->mask        = 4095u;
             pwlCfg->shift       = 0u;     /* 3 bits  */
-            pwlCfg->offset[0u]  = -127;//0;   //S16  /*SIMDRVDIFF*/
-            pwlCfg->offset[1u]  = -127;//0;   //S16  /*SIMDRVDIFF*/
-            pwlCfg->offset[2u]  = -127;//0;   //S16  /*SIMDRVDIFF*/
-            pwlCfg->offset[3u]  = -127;//0;   //S16  /*SIMDRVDIFF*/
+            pwlCfg->offset[0u]  = 0;
+            pwlCfg->offset[1u]  = 0;
+            pwlCfg->offset[2u]  = 0;
+            pwlCfg->offset[3u]  = 0;
             pwlCfg->gain[0u]    = 512u;     //U13Q9
             pwlCfg->gain[1u]    = 512u;     //U13Q9
             pwlCfg->gain[2u]    = 512u;     //U13Q9

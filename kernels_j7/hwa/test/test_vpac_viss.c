@@ -1903,7 +1903,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
         printf("0x%08x\n", checksum_actual);
-        ASSERT(0x4517babb == checksum_actual);
+        ASSERT(0xd45afbd4 == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
