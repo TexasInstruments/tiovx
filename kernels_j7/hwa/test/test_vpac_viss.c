@@ -800,14 +800,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
 
         checksum_expected = get_checksum(viss_checksums_luma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
-        printf("0x%08x\n", checksum_actual);
+        //printf("0x%08x\n", checksum_actual);
         ASSERT(checksum_expected == checksum_actual);
 
         rect.end_x = raw_params.width/2;
         rect.end_y = raw_params.height/2;
         checksum_expected = get_checksum(viss_checksums_chroma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 1, rect);
-        printf("0x%08x\n", checksum_actual);
+        //printf("0x%08x\n", checksum_actual);
         ASSERT(checksum_expected == checksum_actual);
 
         VX_CALL(vxReleaseNode(&node));

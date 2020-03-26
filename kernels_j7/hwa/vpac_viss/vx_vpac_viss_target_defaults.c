@@ -591,39 +591,13 @@ static void tivxVpacVissDefaultMapCCMParams(tivxVpacVissObj *vissObj,
 static void tivxVpacVissDefaultMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res)
 {
-#if 0
-    uint32_t                    cnt;
-    dcc_parser_output_params_t *dcc_out_prms;
-    Rfe_PwlConfig              *pwlCfg;
-
-    /* DCCONLY */
-    dcc_out_prms = &vissObj->dcc_out_prms;
-
-    pwlCfg = &vissObj->vissCfg.pwlCfg1;
-    for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
-    {
-        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.l_dcoffset[cnt];
-    }
-    vissObj->vissCfgRef.lPwlCfg = pwlCfg;
-
-    pwlCfg = &vissObj->vissCfg.pwlCfg2;
-    for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
-    {
-        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.s_dcoffset[cnt];
-    }
-    vissObj->vissCfgRef.sPwlCfg = pwlCfg;
-
-    pwlCfg = &vissObj->vissCfg.pwlCfg3;
-    for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
-    {
-        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.vs_dcoffset[cnt];
-    }
-    vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
+    vissObj->vissCfgRef.lPwlCfg = &vissObj->vissCfg.pwlCfg1;
+    vissObj->vissCfgRef.sPwlCfg = &vissObj->vissCfg.pwlCfg2;
+    vissObj->vissCfgRef.vsPwlCfg = &vissObj->vissCfg.pwlCfg2;
 
     /* Setting config flag to 1,
      * assumes caller protects this flag */
     vissObj->isConfigUpdated = 1U;
-#endif
 }
 
 static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj)

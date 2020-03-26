@@ -192,7 +192,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    vissObj->dcc_in_prms.analog_gain = 1000;
+    vissObj->dcc_in_prms.analog_gain = 1024;
     vissObj->dcc_in_prms.cameraId = vissPrms->sensor_dcc_id;
     vissObj->dcc_in_prms.color_temparature = 5000;
     vissObj->dcc_in_prms.exposure_time = 33333;
@@ -208,7 +208,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
     if (NULL == vissObj->dcc_out_buf)
     {
         VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacVissInitDcc: dcc_update Failed !!!\n");
+            "tivxVpacVissInitDcc: failed to allocate %d bytes !!!\n", vissObj->dcc_out_numbytes);
         status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 

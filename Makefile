@@ -95,6 +95,8 @@ include $(CONCERTO_ROOT)/rules.mak
 .PHONY: all
 all: vision_apps_utils
 
+vision_apps_utils:
+
 doxy_docs:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_j7_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
 	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra.html $(TIOVX_PATH)/tiovx_release_notes.html
