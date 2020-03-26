@@ -219,6 +219,10 @@ static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_
             format->dataFormat = FVID2_DF_YUV422I_UYVY;
             format->pitch[FVID2_YUV_INT_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             break;
+        case (vx_df_image)VX_DF_IMAGE_YUYV:
+            format->dataFormat = FVID2_DF_YUV422I_YUYV;
+            format->pitch[FVID2_YUV_INT_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            break;
         case (vx_df_image)VX_DF_IMAGE_NV12:
             format->dataFormat = FVID2_DF_YUV420SP_UV;
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
@@ -345,6 +349,7 @@ static int32_t tivxDisplayGetImageSize(const tivx_obj_desc_image_t *obj_desc_ima
         case (vx_df_image)VX_DF_IMAGE_RGBX:
             *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
             break;
+        case (vx_df_image)VX_DF_IMAGE_YUYV:
         case (vx_df_image)VX_DF_IMAGE_UYVY:
             *copySize0 = (uint32_t)obj_desc_image->imagepatch_addr[0].stride_y * obj_desc_image->height;
             break;
