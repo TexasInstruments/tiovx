@@ -31,10 +31,5 @@ endif
 
 include $(FINALE)
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
-vision_apps_utils:
-	BUILD_TARGET_MODE=no $(MAKE) -C $(VISION_APPS_PATH) app_utils_iss cp_to_lib
-endif
-
 endif
 endif
