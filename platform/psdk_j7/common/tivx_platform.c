@@ -10,7 +10,6 @@
 #include <vx_internal.h>
 
 #include <utils/console_io/include/app_log.h>
-#include <utils/console_io/src/app_log_priv.h>
 
 char *tivxPlatformGetEnv(const char *env_var);
 
