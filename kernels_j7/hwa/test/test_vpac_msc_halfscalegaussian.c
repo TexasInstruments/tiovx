@@ -30,7 +30,7 @@
 
 TESTCASE(tivxHwaVpacMscHalfScaleGaussian, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaVpacMscHalfScaleGaussian, testNodeCreation)
+TEST(tivxHwaVpacMscHalfScaleGaussian, testNodeCreation1)
 {
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
@@ -64,6 +64,39 @@ TEST(tivxHwaVpacMscHalfScaleGaussian, testNodeCreation)
     }
 }
 
+TEST(tivxHwaVpacMscHalfScaleGaussian, testNodeCreation2)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    {
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 64, 64, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = vxHalfScaleGaussianNode(graph, src_image, dst_image, 3), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&src_image));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(dst_image == 0);
+        ASSERT(src_image == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
 
 static CT_Image halfScaleGaussian_generate_random(const char* fileName, int width, int height)
 {
@@ -237,6 +270,7 @@ typedef struct {
     CT_Image (*generator)(const char* fileName, int width, int height);
     const char* fileName;
     int width, height;
+    int msc;
     vx_int32 kernel_size;
     vx_border_t border;
 } Arg;
@@ -247,9 +281,13 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/k=3", __VA_ARGS__, 3)), \
     CT_EXPAND(nextmacro(testArgName "/k=5", __VA_ARGS__, 5))
 
+#define ADD_MSC(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/MSC_2", __VA_ARGS__, 2))
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_SMALL_SET, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_NONE, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_read_image, "lena.bmp"), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_SMALL_SET, ADD_MSC, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_NONE, ADD_MSC, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_read_image, "lena.bmp"), \
 
 TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testGraphProcessing, Arg,
     PARAMETERS
@@ -263,7 +301,8 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testGraphProcessing, Arg,
 
     CT_Image src = NULL, dst = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
+        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -279,7 +318,14 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = vxHalfScaleGaussianNode(graph, src_image, dst_image, arg_->kernel_size), VX_TYPE_NODE);
-        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        if (1 == arg_->msc)
+        {
+            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        }
+        else
+        {
+            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        }
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
 
@@ -318,7 +364,8 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testImmediateProcessing, Arg,
 
     CT_Image src = NULL, dst = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
+        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -333,8 +380,14 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testImmediateProcessing, Arg,
 
         VX_CALL(vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER, &arg_->border, sizeof(arg_->border)));
 
-        VX_CALL(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-
+        if (1 == arg_->msc)
+        {
+            ASSERT_NO_FAILURE(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        }
+        else
+        {
+            ASSERT_NO_FAILURE(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        }
         VX_CALL(vxuHalfScaleGaussian(context, src_image, dst_image, arg_->kernel_size));
 
         ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
@@ -354,6 +407,7 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testImmediateProcessing, Arg,
 }
 
 TESTCASE_TESTS(tivxHwaVpacMscHalfScaleGaussian,
-        testNodeCreation,
+        testNodeCreation1,
+        testNodeCreation2,
         testGraphProcessing,
         testImmediateProcessing)

@@ -31,7 +31,7 @@
 TESTCASE(tivxHwaVpacMscGaussianPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
 
-TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
+TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation1)
 {
     vx_context context = context_->vx_context_;
     vx_image input = 0;
@@ -113,6 +113,94 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
         tivxHwaUnLoadKernels(context);
     }
 }
+
+/* Leaving enabled only for J7 b/c in PC emulation there is a conflict of CPU ID names */
+#ifdef J7
+
+TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation2)
+{
+    vx_context context = context_->vx_context_;
+    vx_image input = 0;
+    vx_pyramid pyr = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    const vx_size levels     = 4;
+    const vx_float32 scale   = VX_SCALE_PYRAMID_HALF;
+    const vx_uint32 width    = 640;
+    const vx_uint32 height   = 480;
+    const vx_df_image format = VX_DF_IMAGE_U8;
+    char nodeTarget[TIVX_TARGET_MAX_NAME];
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    {
+
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, scale, width, height, format), VX_TYPE_PYRAMID);
+
+        {
+            vx_size ch_levels;
+            vx_float32 ch_scale;
+            vx_uint32 ch_width, ch_height;
+            vx_df_image ch_format;
+
+            VX_CALL(vxQueryPyramid(pyr, VX_PYRAMID_LEVELS, &ch_levels, sizeof(ch_levels)));
+            if (levels != ch_levels)
+            {
+                CT_FAIL("check for pyramid attribute VX_PYRAMID_LEVELS failed\n");
+            }
+            VX_CALL(vxQueryPyramid(pyr, VX_PYRAMID_SCALE, &ch_scale, sizeof(ch_scale)));
+            if (scale != ch_scale)
+            {
+                CT_FAIL("check for pyramid attribute VX_PYRAMID_SCALE failed\n");
+            }
+            VX_CALL(vxQueryPyramid(pyr, VX_PYRAMID_WIDTH, &ch_width, sizeof(ch_width)));
+            if (width != ch_width)
+            {
+                CT_FAIL("check for pyramid attribute VX_PYRAMID_WIDTH failed\n");
+            }
+            VX_CALL(vxQueryPyramid(pyr, VX_PYRAMID_HEIGHT, &ch_height, sizeof(ch_height)));
+            if (height != ch_height)
+            {
+                CT_FAIL("check for pyramid attribute VX_PYRAMID_HEIGHT failed\n");
+            }
+            VX_CALL(vxQueryPyramid(pyr, VX_PYRAMID_FORMAT, &ch_format, sizeof(ch_format)));
+            if (format != ch_format)
+            {
+                CT_FAIL("check for pyramid attribute VX_PYRAMID_FORMAT failed\n");
+            }
+        }
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = vxGaussianPyramidNode(graph, input, pyr), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+
+        VX_CALL(vxQueryNode(node, TIVX_NODE_TARGET_STRING, &nodeTarget, sizeof(nodeTarget)));
+
+        ASSERT(strncmp(nodeTarget, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME) == 0);
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleasePyramid(&pyr));
+        VX_CALL(vxReleaseImage(&input));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(pyr == 0);
+        ASSERT(input == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+#endif
 
 #define LEVELS_COUNT_MAX    7
 
@@ -541,6 +629,7 @@ typedef struct {
     const char* fileName;
     vx_border_t border;
     int width, height;
+    int msc;
     vx_float32 scale;
 } Arg;
 
@@ -548,9 +637,13 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF))/*, \
     CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))*/
 
+#define ADD_MSC(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/MSC_2", __VA_ARGS__, 2))
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_MSC, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp"), \
 
 TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
     PARAMETERS
@@ -568,7 +661,8 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
 
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
+        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -589,7 +683,14 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
         if (border.mode != VX_BORDER_UNDEFINED)
             VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
-        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        if (1 == arg_->msc)
+        {
+            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        }
+        else
+        {
+            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        }
 
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
@@ -627,7 +728,8 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testImmediateProcessing, Arg,
 
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
+        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -642,7 +744,14 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testImmediateProcessing, Arg,
 
         VX_CALL(vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
 
-        VX_CALL(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        if (1 == arg_->msc)
+        {
+            ASSERT_NO_FAILURE(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        }
+        else
+        {
+            ASSERT_NO_FAILURE(vxSetImmediateModeTarget(context, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        }
         VX_CALL(vxuGaussianPyramid(context, input_image, pyr));
 
         #ifdef CHECK_OUTPUT
@@ -690,7 +799,10 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testReference, Arg,
 }
 
 TESTCASE_TESTS(tivxHwaVpacMscGaussianPyramid,
-        testNodeCreation,
+        testNodeCreation1,
+        #ifdef J7
+        testNodeCreation2,
+        #endif
         testGraphProcessing,
         testImmediateProcessing,
         testReference
