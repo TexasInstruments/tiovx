@@ -235,10 +235,11 @@ vx_status tivxMemBufferAlloc(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_e
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size);
 
 /*!
- * \brief Map a allocated buffer address
+ * \brief Map an allocated buffer address
  *
  *        This is to ensure the memory pointed by the buffer is
- *        accesible to the caller and brought to a coherent state wrt caller.
+ *        accesible to the caller and brought to a coherent state wrt caller
+ *        by performing a cahce invalidate when necessary.
  *
  * \param [in] host_ptr Buffer memory to map
  * \param [in] size Size of memory to map in units of bytes
@@ -254,6 +255,9 @@ void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum m
  *
  *        This is to ensure the memory pointed by the buffer pointer is
  *        made coherent with other possible readers of this buffer
+ *
+ *        Performs a cache writeback of host_ptr when maptype is \ref VX_WRITE_ONLY or
+ *        \ref VX_READ_AND_WRITE and the CPU is not cache coherent.
  *
  * \param [in] host_ptr Buffer memory to unmap
  * \param [in] size Size of memory to unmap in units of bytes
