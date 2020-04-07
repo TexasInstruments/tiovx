@@ -238,10 +238,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     vx_status                         status = (vx_status)VX_SUCCESS;
     int32_t                           fvid2_status = FVID2_SOK;
     uint32_t                          size;
-    void                             *left_target_ptr;
-    void                             *right_target_ptr;
     void                             *confidence_histogram_target_ptr = NULL;
-    void                             *output_target_ptr;
     tivxDmpacSdeObj                  *sde_obj = NULL;
     tivx_obj_desc_image_t            *left_desc;
     tivx_obj_desc_image_t            *right_desc;
@@ -291,25 +288,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
-        left_target_ptr = tivxMemShared2TargetPtr(&left_desc->mem_ptr[0]);
-        right_target_ptr = tivxMemShared2TargetPtr(&right_desc->mem_ptr[0]);
-        output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
         if( confidence_histogram_desc != NULL)
         {
             confidence_histogram_target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
-        }
-
-        tivxMemBufferMap(left_target_ptr,
-            left_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(right_target_ptr,
-            right_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(output_target_ptr,
-            output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
-        if( confidence_histogram_desc != NULL)
-        {
             tivxMemBufferMap(confidence_histogram_target_ptr,
                 confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY);
@@ -322,14 +303,20 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
         inFrmList->numFrames = 2U;
 
-        sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) left_target_ptr;
-        sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) right_target_ptr;
+        sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = tivxMemShared2PhysPtr(
+                left_desc->mem_ptr[0].shared_ptr,
+                (int32_t)left_desc->mem_ptr[0].mem_heap_region);
+        sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = tivxMemShared2PhysPtr(
+                right_desc->mem_ptr[0].shared_ptr,
+                (int32_t)right_desc->mem_ptr[0].mem_heap_region);
 
         /* Initialize SDE Output Frame List */
         outFrmList->frames[0U] = &sde_obj->outFrm;
         outFrmList->numFrames = 1U;
 
-        sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
+        sde_obj->outFrm.addr[0] = tivxMemShared2PhysPtr(
+                output_desc->mem_ptr[0].shared_ptr,
+                (int32_t)output_desc->mem_ptr[0].mem_heap_region);
 
         cur_time = tivxPlatformGetTimeInUsecs();
 
@@ -392,15 +379,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxMemBufferUnmap(left_target_ptr,
-            left_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(right_target_ptr,
-            right_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(output_target_ptr,
-            output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
         if( confidence_histogram_desc != NULL)
         {
             tivxMemBufferUnmap(confidence_histogram_target_ptr,

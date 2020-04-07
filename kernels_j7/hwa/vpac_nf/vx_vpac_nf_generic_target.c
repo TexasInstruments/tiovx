@@ -250,8 +250,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
     int32_t                      m;
     int16_t                      temp_lut[25];
     int16_t                     *pConv;
-    void                        *src_target_ptr;
-    void                        *dst_target_ptr;
     void                        *conv_target_ptr;
     tivxVpacNfGenericObj        *nf_generic_obj = NULL;
     tivx_obj_desc_convolution_t *conv;
@@ -297,16 +295,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
 
-        src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
-        dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
         conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
-        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferMap(conv_target_ptr, conv->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
 
         pConv = conv_target_ptr;
 
@@ -382,13 +374,17 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             &nf_generic_obj->inFrm;
         inFrmList->numFrames = 1U;
 
-        nf_generic_obj->inFrm.addr[0U] = (uint64_t) src_target_ptr;
+        nf_generic_obj->inFrm.addr[0U] = tivxMemShared2PhysPtr(
+            src->mem_ptr[0].shared_ptr,
+            (int32_t)src->mem_ptr[0].mem_heap_region);
 
         /* Initialize NF Output Frame List */
         outFrmList->frames[0U] = &nf_generic_obj->outFrm;
         outFrmList->numFrames = 1U;
 
-        nf_generic_obj->outFrm.addr[0U] = (uint64_t) dst_target_ptr;
+        nf_generic_obj->outFrm.addr[0U] = tivxMemShared2PhysPtr(
+            dst->mem_ptr[0].shared_ptr,
+            (int32_t)dst->mem_ptr[0].mem_heap_region);
 
         /* Submit NF Request*/
         fvid2_status = Fvid2_processRequest(nf_generic_obj->handle, inFrmList,
@@ -428,12 +424,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
     return status;
@@ -628,6 +620,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         }
 
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
