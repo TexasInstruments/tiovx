@@ -549,6 +549,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                         "tivxVpacMscScaleCreate: Fvid2_create failed\n");
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
+                else
+                {
+                    Fvid2Frame_init(&msc_obj->inFrm);
+                    Fvid2Frame_init(&msc_obj->outFrm);
+                }
             }
             else
             {
@@ -605,7 +610,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             /* Set up Frame List */
             msc_obj->inFrmList.numFrames = 1U;
             msc_obj->inFrmList.frames[0u] = &msc_obj->inFrm;
-            msc_obj->outFrmList.numFrames = 1U;
+            msc_obj->outFrmList.numFrames = MSC_MAX_OUTPUT;
             msc_obj->outFrmList.frames[idx] = &msc_obj->outFrm;
         }
     }

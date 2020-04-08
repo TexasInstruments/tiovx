@@ -620,6 +620,14 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
                     "tivxVpacMscPmdCreate: Fvid2_create failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
+            else
+            {
+                Fvid2Frame_init(&msc_obj->inFrm);
+                for (cnt = 0u; cnt < MSC_MAX_OUTPUT; cnt ++)
+                {
+                    Fvid2Frame_init(&msc_obj->outFrm[cnt]);
+                }
+            }
         }
         else
         {
@@ -907,7 +915,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     }
                 }
 
-                outFrmList->numFrames = 0u;
+                outFrmList->numFrames = MSC_MAX_OUTPUT;
                 out_img_idx = ss_info->out_start_idx;
                 for (out_cnt = 0u; out_cnt < ss_info->num_levels; out_cnt ++)
                 {
@@ -923,7 +931,6 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                             (int32_t)img_desc->mem_ptr[plane_cnt].
                             mem_heap_region);
                     }
-                    outFrmList->numFrames ++;
                     out_img_idx ++;
                 }
 

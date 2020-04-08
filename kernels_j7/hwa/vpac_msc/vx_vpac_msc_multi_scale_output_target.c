@@ -421,6 +421,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                         "tivxVpacMscScaleCreate: Fvid2_create failed\n");
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
+                else
+                {
+                    Fvid2Frame_init(&msc_obj->inFrm);
+                    for (cnt = 0u; cnt < MSC_MAX_OUTPUT; cnt ++)
+                    {
+                        Fvid2Frame_init(&msc_obj->outFrm[cnt]);
+                    }
+                }
             }
             else
             {
@@ -447,9 +455,6 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
         for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
-            /* Overwrite to multi */
-            msc_prms->mscCfg.scCfg[cnt].filtMode = MSC_FILTER_MODE_MULTI_PHASE; //MSC_FILTER_MODE_SINGLE_PHASE;
-
             if (NULL != out_img_desc[cnt])
             {
                 if (1U == inst_obj->alloc_sc_fwd_dir)
@@ -466,6 +471,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                     sc_cfg = &msc_prms->mscCfg.scCfg[idx];
                     msc_obj->sc_map_idx[cnt] = idx;
                 }
+
+                /* Overwrite to multi */
+                sc_cfg->filtMode = MSC_FILTER_MODE_MULTI_PHASE; //MSC_FILTER_MODE_SINGLE_PHASE;
 
                 tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
@@ -680,7 +688,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
                 (int32_t)in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
-        outFrmList->numFrames = 0u;
+        outFrmList->numFrames = MSC_MAX_OUTPUT;
         for (cnt = 0u; cnt < msc_obj->num_outputs; cnt ++)
         {
             idx = msc_obj->sc_map_idx[cnt];
@@ -696,7 +704,6 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
                     (int32_t)out_img_desc[idx]->mem_ptr[plane_cnt].
                     mem_heap_region);
             }
-            outFrmList->numFrames ++;
         }
 
         cur_time = tivxPlatformGetTimeInUsecs();
