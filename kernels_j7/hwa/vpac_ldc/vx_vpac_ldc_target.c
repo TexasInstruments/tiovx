@@ -157,6 +157,8 @@ static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
     const tivx_obj_desc_user_data_object_t *usr_data_obj);
+static vx_status tivxVpacLdcSetParams(tivxVpacLdcObj *ldc_obj,
+    tivx_obj_desc_t *obj_desc[]);
 
 int32_t tivxVpacLdcFrameComplCb(Fvid2_Handle handle, void *appData);
 void tivxVpacLdcErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
@@ -787,6 +789,11 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);
                 break;
             }
+            case TIVX_VPAC_LDC_CMD_SET_LDC_PARAMS:
+            {
+                status = tivxVpacLdcSetParams(ldc_obj, obj_desc);
+                break;
+            }
             default:
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Node Cmd Id\n");
@@ -1251,6 +1258,39 @@ static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     {
         VX_PRINT(VX_ZONE_ERROR, "Null argument\n");
         status = (vx_status)VX_FAILURE;
+    }
+
+    return (status);
+}
+
+static vx_status tivxVpacLdcSetParams(tivxVpacLdcObj *ldc_obj,
+    tivx_obj_desc_t *obj_desc[])
+{
+    int32_t fvid2_status;
+    vx_status status = VX_FAILURE;
+    tivx_obj_desc_matrix_t *warp_matrix_desc = NULL;
+
+    if (NULL != obj_desc[TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX])
+    {
+        warp_matrix_desc = (tivx_obj_desc_matrix_t *)
+            obj_desc[TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX];
+
+        tivxVpacLdcSetAffineConfig(&ldc_obj->ldc_cfg.perspTrnsformCfg,
+                warp_matrix_desc);
+
+        status = VX_SUCCESS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        fvid2_status = Fvid2_control(ldc_obj->handle,
+            IOCTL_VHWA_M2M_LDC_SET_PARAMS, &ldc_obj->ldc_cfg, NULL);
+        if (FVID2_SOK != fvid2_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcSetParams: Fvid2_control Failed: Set Params \n");
+            status = (vx_status)VX_FAILURE;
+        }
     }
 
     return (status);

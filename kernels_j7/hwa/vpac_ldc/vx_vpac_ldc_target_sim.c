@@ -693,6 +693,16 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
                 (tivx_obj_desc_lut_t *)obj_desc[0U],
                 (tivx_obj_desc_lut_t *)obj_desc[1U]);
             break;
+        case TIVX_VPAC_LDC_CMD_SET_LDC_PARAMS:
+        {
+            if (NULL != obj_desc[TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX])
+            {
+                tivxVpacLdcSetWarpParams(&prms->config.settings,
+                    (tivx_obj_desc_matrix_t *)obj_desc
+                        [TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX]);
+            }
+            break;
+        }
     }
     return status;
 }

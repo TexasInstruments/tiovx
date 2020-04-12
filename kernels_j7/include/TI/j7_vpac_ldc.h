@@ -102,7 +102,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS                   (0x10000001u)
+#define TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS                    (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -113,7 +113,18 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_CMD_GET_ERR_STATUS                   (0x10000002u)
+#define TIVX_VPAC_LDC_CMD_GET_ERR_STATUS                    (0x10000002u)
+
+/*! \brief Control Command to set the LDC Parameters
+ *         Returns the error status of the last processed frame.
+ *         Reference to vx_scalar is passed as argument with
+ *         this control command.
+ *         Node returns bit-mask of error status in u32 variable of vx_scalar.
+ *
+ *
+ *  \ingroup group_vision_function_vpac_ldc
+ */
+#define TIVX_VPAC_LDC_CMD_SET_LDC_PARAMS                    (0x10000003u)
 
 /*********************************
  *      VPAC_LDC Defines
@@ -147,6 +158,7 @@ extern "C" {
 /*! Error on Input VBUSM Read interface */
 #define TIVX_VPAC_LDC_RD_ERR_STATUS                    (0x100u)
 
+#define TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX        (0u)
 
 #define TIVX_VPAC_LDC_DEF_BLOCK_WIDTH                  (64u)
 #define TIVX_VPAC_LDC_DEF_BLOCK_HEIGHT                 (64u)
