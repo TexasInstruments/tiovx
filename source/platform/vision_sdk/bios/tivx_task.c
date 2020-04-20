@@ -37,7 +37,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
     }
 }
 
-vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
+vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     BspOsal_TaskHandle tskHndl;
@@ -53,7 +53,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 
         tskHndl = (void *)BspOsal_taskCreate(
             tivxTaskDefHandle,
-            params->task_name,
+            (char*)params->task_name,
             params->priority,
             params->stack_ptr,
             params->stack_size,

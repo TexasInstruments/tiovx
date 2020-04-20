@@ -378,7 +378,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     return (host_ptr);
 }
 
-void* tivxMemShared2TargetPtr(tivx_shared_mem_ptr_t *shared_ptr)
+void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 {
     /* For Bios implementation, host and shared pointers are same
      * However when used in Linux+BIOS mode, a translation maybe required
