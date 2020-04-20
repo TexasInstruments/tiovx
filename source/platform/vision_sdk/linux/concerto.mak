@@ -64,6 +64,10 @@ ifeq ($(TARGET_CPU),M4)
 SKIPBUILD=1
 endif
 
+ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+DEFS += J6_VSDK
+endif
+
 include $(FINALE)
 
 endif

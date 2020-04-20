@@ -79,7 +79,11 @@ extern "C" {
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
+#if defined(J6_VSDK)
 #define TIVX_TARGET_INST_MASK (0xFu)
+#else
+#define TIVX_TARGET_INST_MASK (0x3Fu)
+#endif
 
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
@@ -89,17 +93,29 @@ extern "C" {
 /*! \brief CPU ID bit mask
  * \ingroup group_tivx_target
  */
+#if defined(J6_VSDK)
 #define TIVX_CPU_ID_MASK    (0xFu)
+#else
+#define TIVX_CPU_ID_MASK    (0x3Fu)
+#endif
 
 /*! \brief CPU ID bit shift
  * \ingroup group_tivx_target
  */
+#if defined(J6_VSDK)
 #define TIVX_CPU_ID_SHIFT   (0x4)
+#else
+#define TIVX_CPU_ID_SHIFT   (0x6)
+#endif
 
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
+#if defined(J6_VSDK)
 #define TIVX_TARGET_ID_MASK     (0xFFu)
+#else
+#define TIVX_TARGET_ID_MASK     (0xFFFu)
+#endif
 
 /*! \brief Target ID bit shift
  * \ingroup group_tivx_target

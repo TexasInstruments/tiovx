@@ -43,6 +43,10 @@ CSOURCES += tivx_target_config_ipu1_0.c
 SKIPBUILD=0
 endif
 
+ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+DEFS += J6_VSDK
+endif
+
 include $(FINALE)
 
 endif

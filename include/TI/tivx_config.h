@@ -288,7 +288,11 @@ extern "C" {
  * \brief Max number of Target that can exist on a CPU
  * \ingroup group_tivx_target_cfg
  */
+#if defined(J6_VSDK)
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
+#else
+#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (64u)
+#endif
 
 /*!
  * \brief Max depth of queue associated with target
