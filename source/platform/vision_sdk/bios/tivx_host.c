@@ -13,19 +13,28 @@
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
 
+static uint8_t g_init_status = 0U;
 
 void tivxHostInit(void)
 {
-    tivxObjectInit();
-    tivxRegisterOpenVXCoreKernels();
-    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
-    VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
+    if (0U == g_init_status)
+    {
+        tivxObjectInit();
+        tivxRegisterOpenVXCoreKernels();
+        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
+        g_init_status = 1U;
+        VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
+    }
 }
 
 void tivxHostDeInit(void)
 {
-    VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
-    tivxObjectDeInit();
-    tivxUnRegisterOpenVXCoreKernels();
+    if (1U == g_init_status)
+    {
+        VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
+        tivxObjectDeInit();
+        g_init_status = 0U;
+        tivxUnRegisterOpenVXCoreKernels();
+    }
 }
 

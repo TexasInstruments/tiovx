@@ -83,99 +83,111 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 void tivxRegisterTIDLTargetKernels(void);
 void tivxUnRegisterTIDLTargetKernels(void);
 
+static uint8_t g_init_status = 0U;
+
 void tivxInit(void)
 {
-    tivx_set_debug_zone(VX_ZONE_INIT);
-    tivx_set_debug_zone(VX_ZONE_ERROR);
-    tivx_set_debug_zone(VX_ZONE_WARNING);
+    if (0U == g_init_status)
+    {
+        tivx_set_debug_zone(VX_ZONE_INIT);
+        tivx_set_debug_zone(VX_ZONE_ERROR);
+        tivx_set_debug_zone(VX_ZONE_WARNING);
 
-    /* Initialize resource logging */
-    tivxLogResourceInit();
+        /* Initialize resource logging */
+        tivxLogResourceInit();
 
-    /* Initialize platform */
-    tivxPlatformInit();
+        /* Initialize platform */
+        tivxPlatformInit();
 
-    /* Initialize Target */
-    tivxTargetInit();
+        /* Initialize Target */
+        tivxTargetInit();
 
-    /* trick target kernel used in DSP emulation mode to think
-     * they are being invoked from a DSP
-     */
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-    tivxRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxRegisterTutorialTargetKernels();
-    #endif
+        /* trick target kernel used in DSP emulation mode to think
+         * they are being invoked from a DSP
+         */
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
 
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-    tivxRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxRegisterTutorialTargetKernels();
-    #endif
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
 
-    #ifndef _DISABLE_TIDL
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE1);
-    tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE2);
-    tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE3);
-    tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE4);
-    tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-    tivxRegisterTIDLTargetKernels();
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-    tivxRegisterTIDLTargetKernels();
-    #endif
+        #ifndef _DISABLE_TIDL
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE1);
+        tivxRegisterTIDLTargetKernels();
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE2);
+        tivxRegisterTIDLTargetKernels();
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE3);
+        tivxRegisterTIDLTargetKernels();
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_EVE4);
+        tivxRegisterTIDLTargetKernels();
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        tivxRegisterTIDLTargetKernels();
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+        tivxRegisterTIDLTargetKernels();
+        #endif
 
-    #ifdef BUILD_CONFORMANCE_TEST
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
-    tivxRegisterCaptureTargetArmKernels();
-    tivxRegisterTestKernelsTargetC66Kernels();
+        #ifdef BUILD_CONFORMANCE_TEST
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        tivxRegisterCaptureTargetArmKernels();
+        tivxRegisterTestKernelsTargetC66Kernels();
 
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-    tivxRegisterCaptureTargetArmKernels();
-    tivxRegisterTestKernelsTargetC66Kernels();
-    #endif
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+        tivxRegisterCaptureTargetArmKernels();
+        tivxRegisterTestKernelsTargetC66Kernels();
+        #endif
 
-    /* let rest of system think it is running on DSP1 */
-    tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        /* let rest of system think it is running on DSP1 */
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
 
-    tivxHostInit();
+        tivxHostInit();
 
-    tivxObjDescInit();
+        tivxObjDescInit();
 
-    tivxPlatformCreateTargets();
+        tivxPlatformCreateTargets();
+
+        g_init_status = 1U;
+    }
 }
 
 void tivxDeInit(void)
 {
-    tivxPlatformDeleteTargets();
+    if (1U == g_init_status)
+    {
+        tivxPlatformDeleteTargets();
 
-    #ifdef BUILD_CONFORMANCE_TEST
-    tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetC66Kernels();
-    #endif
+        #ifdef BUILD_CONFORMANCE_TEST
+        tivxUnRegisterCaptureTargetArmKernels();
+        tivxUnRegisterTestKernelsTargetC66Kernels();
+        #endif
 
-    /* DeInitialize Host */
-    tivxUnRegisterOpenVXCoreTargetKernels();
+        /* DeInitialize Host */
+        tivxUnRegisterOpenVXCoreTargetKernels();
 
-    #ifdef BUILD_TUTORIAL
-    tivxUnRegisterTutorialTargetKernels();
-    #endif
+        #ifdef BUILD_TUTORIAL
+        tivxUnRegisterTutorialTargetKernels();
+        #endif
 
-    #ifndef _DISABLE_TIDL
-    tivxUnRegisterTIDLTargetKernels();
-    #endif
+        #ifndef _DISABLE_TIDL
+        tivxUnRegisterTIDLTargetKernels();
+        #endif
 
-    tivxHostDeInit();
+        tivxHostDeInit();
 
-    /* DeInitialize Target */
-    tivxTargetDeInit();
+        /* DeInitialize Target */
+        tivxTargetDeInit();
 
-    /* DeInitialize platform */
-    tivxPlatformDeInit();
+        /* DeInitialize platform */
+        tivxPlatformDeInit();
 
-    /* DeInitialize resource logging */
-    tivxLogResourceDeInit();
+        /* DeInitialize resource logging */
+        tivxLogResourceDeInit();
+
+        g_init_status = 0U;
+    }
 }

@@ -67,14 +67,24 @@
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
 
+static uint8_t g_init_status = 0U;
+
 void tivxHostInit(void)
 {
-    tivxObjectInit();
-    tivxRegisterOpenVXCoreKernels();
+    if (0U == g_init_status)
+    {
+        tivxObjectInit();
+        tivxRegisterOpenVXCoreKernels();
+        g_init_status = 1U;
+    }
 }
 
 void tivxHostDeInit(void)
 {
-    tivxObjectDeInit();
-    tivxUnRegisterOpenVXCoreKernels();
+    if (1U == g_init_status)
+    {
+        tivxObjectDeInit();
+        tivxUnRegisterOpenVXCoreKernels();
+        g_init_status = 0U;
+    }
 }

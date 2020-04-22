@@ -13,42 +13,54 @@
 void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 
+static uint8_t g_init_status = 0U;
+
 void tivxInit(void)
 {
-    tivx_set_debug_zone(VX_ZONE_INIT);
-    tivx_set_debug_zone(VX_ZONE_ERROR);
-    tivx_set_debug_zone(VX_ZONE_WARNING);
+    if (0U == g_init_status)
+    {
+        tivx_set_debug_zone(VX_ZONE_INIT);
+        tivx_set_debug_zone(VX_ZONE_ERROR);
+        tivx_set_debug_zone(VX_ZONE_WARNING);
 
-    /* Initialize resource logging */
-    tivxLogResourceInit();
+        /* Initialize resource logging */
+        tivxLogResourceInit();
 
-    /* Initialize platform */
-    tivxPlatformInit();
+        /* Initialize platform */
+        tivxPlatformInit();
 
-    /* Initialize Target */
-    tivxTargetInit();
+        /* Initialize Target */
+        tivxTargetInit();
 
-    /* Initialize Host */
-    tivxHostInit();
+        /* Initialize Host */
+        tivxHostInit();
 
-    tivxObjDescInit();
+        tivxObjDescInit();
 
-    tivxPlatformCreateTargets();
+        tivxPlatformCreateTargets();
+
+        g_init_status = 1U;
+    }
 }
 
 void tivxDeInit(void)
 {
-    tivxPlatformDeleteTargets();
+    if (1U == g_init_status)
+    {
+        tivxPlatformDeleteTargets();
 
-    /* DeInitialize Host */
-    tivxHostDeInit();
+        /* DeInitialize Host */
+        tivxHostDeInit();
 
-    /* DeInitialize Target */
-    tivxTargetDeInit();
+        /* DeInitialize Target */
+        tivxTargetDeInit();
 
-    /* DeInitialize platform */
-    tivxPlatformDeInit();
+        /* DeInitialize platform */
+        tivxPlatformDeInit();
 
-    /* DeInitialize resource logging */
-    tivxLogResourceDeInit();
+        /* DeInitialize resource logging */
+        tivxLogResourceDeInit();
+
+        g_init_status = 0U;
+    }
 }

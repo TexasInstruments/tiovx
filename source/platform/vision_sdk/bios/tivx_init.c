@@ -23,92 +23,104 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 void tivxRegisterTIDLTargetKernels(void);
 void tivxUnRegisterTIDLTargetKernels(void);
 
+static uint8_t g_init_status = 0U;
+
 void tivxInit(void)
 {
-    tivx_set_debug_zone(VX_ZONE_INIT);
-    tivx_set_debug_zone(VX_ZONE_ERROR);
-    tivx_set_debug_zone(VX_ZONE_WARNING);
-    tivx_clr_debug_zone(VX_ZONE_INFO);
+    if (0U == g_init_status)
+    {
+        tivx_set_debug_zone(VX_ZONE_INIT);
+        tivx_set_debug_zone(VX_ZONE_ERROR);
+        tivx_set_debug_zone(VX_ZONE_WARNING);
+        tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    /* Initialize resource logging */
-    tivxLogResourceInit();
+        /* Initialize resource logging */
+        tivxLogResourceInit();
 
-    /* Initialize platform */
-    tivxPlatformInit();
+        /* Initialize platform */
+        tivxPlatformInit();
 
-    /* Initialize Target */
-    tivxTargetInit();
+        /* Initialize Target */
+        tivxTargetInit();
 
-#if defined (C66)
-    tivxRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxRegisterTutorialTargetKernels();
+    #if defined (C66)
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
     #endif
-#endif
 
-#if (defined (C66) || defined (EVE))
-    tivxRegisterTIDLTargetKernels();
-#endif
+    #if (defined (C66) || defined (EVE))
+        tivxRegisterTIDLTargetKernels();
+    #endif
 
-#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
-    tivxRegisterIVisionTargetKernels();
-#endif
+    #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
+        tivxRegisterIVisionTargetKernels();
+    #endif
 
-#ifdef BUILD_CONFORMANCE_TEST
-#if defined (C66)
-    tivxRegisterCaptureTargetArmKernels();
-#endif
+    #ifdef BUILD_CONFORMANCE_TEST
+    #if defined (C66)
+        tivxRegisterCaptureTargetArmKernels();
+    #endif
 
-#if defined (C66)
-    tivxRegisterTestKernelsTargetC66Kernels();
-#endif
-#endif
+    #if defined (C66)
+        tivxRegisterTestKernelsTargetC66Kernels();
+    #endif
+    #endif
 
-    tivxObjDescInit();
+        tivxObjDescInit();
 
-    tivxPlatformCreateTargets();
+        tivxPlatformCreateTargets();
 
-    VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
+        g_init_status = 1U;
+
+        VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
+    }
 }
 
 void tivxDeInit(void)
 {
-    tivxPlatformDeleteTargets();
+    if (1U == g_init_status)
+    {
+        tivxPlatformDeleteTargets();
 
-#ifdef BUILD_CONFORMANCE_TEST
-#if defined (C66)
-    tivxUnRegisterCaptureTargetArmKernels();
-#endif
-
-#if defined (C66)
-    tivxUnRegisterTestKernelsTargetC66Kernels();
-#endif
-#endif
-
-    /* DeInitialize Host */
-#if defined (C66)
-    tivxUnRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxUnRegisterTutorialTargetKernels();
+    #ifdef BUILD_CONFORMANCE_TEST
+    #if defined (C66)
+        tivxUnRegisterCaptureTargetArmKernels();
     #endif
-#endif
 
-#if (defined (C66) || defined (EVE))
-    tivxUnRegisterTIDLTargetKernels();
-#endif
+    #if defined (C66)
+        tivxUnRegisterTestKernelsTargetC66Kernels();
+    #endif
+    #endif
 
-#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
-    tivxUnRegisterIVisionTargetKernels();
-#endif
+        /* DeInitialize Host */
+    #if defined (C66)
+        tivxUnRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxUnRegisterTutorialTargetKernels();
+        #endif
+    #endif
 
-    /* DeInitialize Target */
-    tivxTargetDeInit();
+    #if (defined (C66) || defined (EVE))
+        tivxUnRegisterTIDLTargetKernels();
+    #endif
 
-    /* DeInitialize platform */
-    tivxPlatformDeInit();
+    #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
+        tivxUnRegisterIVisionTargetKernels();
+    #endif
 
-    /* DeInitialize resource logging */
-    tivxLogResourceDeInit();
+        /* DeInitialize Target */
+        tivxTargetDeInit();
 
-    VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
+        /* DeInitialize platform */
+        tivxPlatformDeInit();
+
+        /* DeInitialize resource logging */
+        tivxLogResourceDeInit();
+
+        g_init_status = 0U;
+
+        VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
+    }
 }
