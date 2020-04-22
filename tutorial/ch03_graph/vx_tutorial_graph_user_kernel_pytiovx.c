@@ -228,7 +228,7 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
          * \code
          */
         printf(" Loading file %s ...\n", IN_FILE_NAME);
-        status = load_image_from_file(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
+        status = tivx_utils_load_vximage_from_bmpfile(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
         /** \endcode */
 
         /**
@@ -278,7 +278,7 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
             show_graph_attributes(uc.graph_0);
 
             printf(" Saving to file %s ...\n", out_file);
-            save_image_to_file(out_file, uc.phase_rgb);
+            tivx_utils_save_vximage_to_bmpfile(out_file, uc.phase_rgb);
             /** \endcode */
         }
 

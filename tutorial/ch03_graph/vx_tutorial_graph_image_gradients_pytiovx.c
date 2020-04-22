@@ -167,7 +167,7 @@ void vx_tutorial_graph_image_gradients_pytiovx()
      *       in the .py file
      * \code
      */
-    status = load_image_from_file(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
+    status = tivx_utils_load_vximage_from_bmpfile(uc.input, IN_FILE_NAME, (vx_bool)vx_true_e);
     /** \endcode */
 
    /**
@@ -226,16 +226,16 @@ void vx_tutorial_graph_image_gradients_pytiovx()
         show_node_attributes(uc.node_9);
 
         printf(" Saving to file %s ...\n", PHASE_FILE_NAME);
-        save_image_to_file(PHASE_FILE_NAME, uc.phase);
+        tivx_utils_save_vximage_to_bmpfile(PHASE_FILE_NAME, uc.phase);
 
         printf(" Saving to file %s ...\n", MAGNITUDE_FILE_NAME);
-        save_image_to_file(MAGNITUDE_FILE_NAME, uc.magnitude_img);
+        tivx_utils_save_vximage_to_bmpfile(MAGNITUDE_FILE_NAME, uc.magnitude_img);
 
         printf(" Saving to file %s ...\n", GRAD_X_FILE_NAME);
-        save_image_to_file(GRAD_X_FILE_NAME, uc.grad_x_img);
+        tivx_utils_save_vximage_to_bmpfile(GRAD_X_FILE_NAME, uc.grad_x_img);
 
         printf(" Saving to file %s ...\n", GRAD_Y_FILE_NAME);
-        save_image_to_file(GRAD_Y_FILE_NAME, uc.grad_y_img);
+        tivx_utils_save_vximage_to_bmpfile(GRAD_Y_FILE_NAME, uc.grad_y_img);
         /** \endcode */
     }
 

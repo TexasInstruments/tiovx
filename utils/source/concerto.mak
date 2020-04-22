@@ -1,5 +1,3 @@
-
-
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))
 
 include $(PRELUDE)
@@ -18,7 +16,7 @@ endif
 endif
 endif
 
-CSOURCES += tivx_utils_bmp_rd_wr.c tivx_utils_graph_perf.c tivx_utils_checksum.c
+CSOURCES += tivx_utils_bmp_rd_wr.c tivx_utils_graph_perf.c tivx_utils_checksum.c tivx_utils_bmp.c tivx_utils.c
 
 ifneq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
 CSOURCES += tivx_utils_tidl_trace.c
@@ -29,7 +27,6 @@ CSOURCES += tivx_utils_png_rd_wr_null.c
 endif
 
 IDIRS += $(TIOVX_PATH)/utils/include
-IDIRS += $(TIOVX_PATH)/conformance_tests
 IDIRS += $(CUSTOM_KERNEL_PATH)/tidl/include
 
 include $(FINALE)

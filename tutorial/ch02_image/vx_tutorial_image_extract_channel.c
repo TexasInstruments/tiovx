@@ -140,11 +140,11 @@ void vx_tutorial_image_extract_channel()
     /**
      * - Create image object.
      *
-     * Follow the comments in create_image_from_file() to see
+     * Follow the comments in tivx_utils_create_vximage_from_bmpfile() to see
      * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
-    in_image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e);
+    in_image = tivx_utils_create_vximage_from_bmpfile(context, IN_FILE_NAME, (vx_bool)vx_false_e);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)in_image, "INPUT");
@@ -268,12 +268,12 @@ void vx_tutorial_image_extract_channel()
     /**
      * - Save image object to bitmap file \ref OUT_FILE_NAME.
      *
-     * Follow the comments in save_image_to_file() to see
+     * Follow the comments in tivx_utils_save_vximage_to_bmpfile() to see
      * how data in vx_image object is accessed to store pixel values from the image object to
      * BMP file \ref OUT_FILE_NAME
      * \code
      */
-    save_image_to_file(OUT_FILE_NAME, out_image);
+    tivx_utils_save_vximage_to_bmpfile(OUT_FILE_NAME, out_image);
     /** \endcode */
 
     /**

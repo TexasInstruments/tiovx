@@ -227,7 +227,7 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
          *
          * \code
          */
-        in_image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_true_e);
+        in_image = tivx_utils_create_vximage_from_bmpfile(context, IN_FILE_NAME, (vx_bool)vx_true_e);
         vxSetReferenceName((vx_reference)in_image, "INPUT");
         show_image_attributes(in_image);
 
@@ -298,7 +298,7 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
             show_node_attributes(node);
 
             printf(" Saving to file %s ...\n", out_file);
-            save_image_to_file(out_file, out_image);
+            tivx_utils_save_vximage_to_bmpfile(out_file, out_image);
         }
         /** \endcode */
 

@@ -70,11 +70,8 @@
 
 #include <VX/vx.h>
 
-vx_image  create_image_from_file(vx_context context, char *filename, vx_bool convert_to_gray_scale);
-
-vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_to_gray_scale);
-
-vx_status save_image_to_file(char *filename, vx_image image);
+#include <tivx_utils_bmp.h>
+#include <tivx_utils_file_rd_wr.h>
 
 vx_node create_generic_node(vx_graph graph,
                             vx_enum kernelenum,

@@ -5,12 +5,11 @@ include $(PRELUDE)
 TARGET      := vx_tutorial
 TARGETTYPE  := library
 
+IDIRS       += $(TIOVX_PATH)/utils/include
 IDIRS       += $(TIOVX_PATH)/tutorial
-IDIRS       += $(TIOVX_PATH)/conformance_tests/
 IDIRS       += $(TIOVX_PATH)/tutorial/ch01_common
 
 CH01_SOURCES := \
-	ch01_common/bmp_rd_wr.c \
     ch01_common/vx_tutorial.c \
 
 CH02_SOURCES := \

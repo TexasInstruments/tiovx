@@ -62,320 +62,115 @@
 
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
+#include <tivx_utils.h>
+#include <tivx_utils_bmp.h>
 #include <tivx_utils_file_rd_wr.h>
-#include <test_engine/test.h>
-#include <test_engine/test_image.h>
-#include <test_engine/test_bmp.h>
-
-static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int32_t dcn);
-static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int32_t bufsize, int32_t dcn);
-static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image);
-
-static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int32_t dcn)
-{
-    FILE* f = 0;
-    size_t sz;
-    char* buf = 0;
-    CT_Image image = 0, returnVal = 0;
-    char file[MAXPATHLENGTH];
-
-    if (!fileName)
-    {
-        CT_ADD_FAILURE("Image file name not specified\n");
-        returnVal = 0;
-    }
-    else
-    {
-        sz = (uint32_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
-        ASSERT_(return 0, (sz < MAXPATHLENGTH));
-
-        f = fopen(file, "rb");
-        if (!f)
-        {
-            CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
-            returnVal = 0;
-        }
-        else
-        {
-            fseek(f, 0, SEEK_END);
-            sz = (size_t)ftell(f);
-            if( sz > 0U )
-            {
-                buf = (char*)ct_alloc_mem(sz);
-                fseek(f, 0, SEEK_SET);
-                if (NULL != buf)
-                {
-                    if( fread(buf, 1, sz, f) == sz )
-                    {
-                        image = ct_read_bmp((uint8_t*)buf, (int32_t)sz, dcn);
-                        returnVal = image;
-                    }
-                }
-                else
-                {
-                    fclose(f);
-                    returnVal = NULL;
-                }
-            }
-
-            if (returnVal != NULL)
-            {
-                ct_free_mem(buf);
-                fclose(f);
-
-                if(!image)
-                {
-                    CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
-                }
-            }
-        }
-    }
-
-    return returnVal;
-}
-
-static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int32_t bufsize, int32_t dcn)
-{
-    CT_Image image = 0;
-
-    image = ct_read_bmp((const uint8_t*)buf, bufsize, dcn);
-
-    return image;
-}
-
-static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image)
-{
-    char* dotpos;
-    int32_t result = -1;
-    size_t size;
-    char file[MAXPATHLENGTH];
-
-    if (fileName != NULL)
-    {
-        size = (size_t)snprintf(file, MAXPATHLENGTH, "%s", fileName);
-        ASSERT(size < MAXPATHLENGTH);
-
-        dotpos = strrchr(file, (int32_t)'.');
-        if((dotpos != NULL) &&
-           ((strcmp(dotpos, ".bmp") == 0) ||
-            (strcmp(dotpos, ".BMP") == 0)))
-        {
-            result = ct_write_bmp(file, image);
-        }
-        if( result < 0 )
-        {
-            CT_ADD_FAILURE("Can not write image to \"%s\"", fileName);
-        }
-    }
-    else
-    {
-        CT_ADD_FAILURE("Image name is not specified (NULL)");
-    }
-}
 
 vx_status tivx_utils_bmp_file_read(
             const char *filename,
             vx_bool convert_to_gray_scale,
-            uint32_t *width,
-            uint32_t *height,
-            uint32_t *stride,
-            vx_df_image *df,
-            void **data_ptr,
-            void **bmp_file_context)
+            void  *imgParams)
 {
-    CT_Image image = NULL;
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
-    uint32_t bpp;
-    vx_status status;
+    int32_t     status;
+    vx_status vxStatus;
 
-    /* workaround to enable CT context */
-    CT_SetHasRunningTest();
+    status = tivx_utils_bmp_read(filename, dcn, imgParams);
 
-    image = tivx_utils_load_ct_image_from_bmpfile(filename, dcn);
-
-    if(image != NULL)
+    if (status == 0)
     {
-        if( image->format == (vx_df_image)VX_DF_IMAGE_U8 )
-        {
-            bpp = 1;
-        }
-        else
-        if( image->format == (vx_df_image)VX_DF_IMAGE_RGB )
-        {
-            bpp = 3;
-        }
-        else
-        {
-            bpp = 4; /* RGBX */
-        }
-
-        *width = image->width;
-        *height = image->height;
-        *stride = image->stride * bpp;
-        *df = image->format;
-        *data_ptr = image->data.y;
-
-        *bmp_file_context = image;
-
-        status = (vx_status)VX_SUCCESS;
+        vxStatus = (vx_status)VX_SUCCESS;
     }
     else
     {
-        *width = 0;
-        *height = 0;
-        *stride = 0;
-        *data_ptr = NULL;
-
-        *bmp_file_context = NULL;
-        status = (vx_status)VX_FAILURE;
+        vxStatus = (vx_status)VX_FAILURE;
     }
-    return status;
+
+    return vxStatus;
 }
 
 vx_status tivx_utils_bmp_file_read_from_memory(
             const void *buf,
             uint32_t buf_size,
             vx_bool convert_to_gray_scale,
-            uint32_t *width,
-            uint32_t *height,
-            uint32_t *stride,
-            vx_df_image *df,
-            void **data_ptr,
-            void **bmp_file_context)
+            void *imgParams)
 {
-    CT_Image image = NULL;
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
-    uint32_t bpp;
-    vx_status status;
+    int32_t     status;
+    vx_status vxStatus;
 
-    /* workaround to enable CT context */
-    CT_SetHasRunningTest();
+    status = tivx_utils_bmp_read_mem(buf, (int32_t)buf_size, dcn, imgParams);
 
-    image = tivx_utils_load_ct_image_from_bmpfile_memory(buf, (int32_t)buf_size, dcn);
-
-    if(image != NULL)
+    if (status == 0)
     {
-        if( image->format == (vx_df_image)VX_DF_IMAGE_U8 )
-        {
-            bpp = 1;
-        }
-        else
-        if( image->format == (vx_df_image)VX_DF_IMAGE_RGB )
-        {
-            bpp = 3;
-        }
-        else
-        {
-            bpp = 4; /* RGBX */
-        }
-
-        *width = image->width;
-        *height = image->height;
-        *stride = image->stride * bpp;
-        *df = image->format;
-        *data_ptr = image->data.y;
-
-        *bmp_file_context = image;
-
-        status = (vx_status)VX_SUCCESS;
+        vxStatus = (vx_status)VX_SUCCESS;
     }
     else
     {
-        *width = 0;
-        *height = 0;
-        *stride = 0;
-        *data_ptr = NULL;
-
-        *bmp_file_context = NULL;
-        status = (vx_status)VX_FAILURE;
-    }
-    return status;
-}
-
-void tivx_utils_bmp_file_read_release(void *bmp_file_context)
-{
-    if(bmp_file_context != NULL)
-    {
-        CT_FreeObject(bmp_file_context);
-    }
-}
-
-int32_t tivx_utils_bmp_file_write(
-            const char *filename,
-            uint32_t width,
-            uint32_t height,
-            uint32_t stride,
-            vx_df_image df,
-            void *data_ptr)
-{
-
-    /* workaround to enable CT context */
-    CT_SetHasRunningTest();
-
-    CT_Image image = NULL;
-    uint32_t bpp;
-    vx_status status;
-
-    if( df == (vx_df_image)VX_DF_IMAGE_U8 )
-    {
-        bpp = 1;
-    }
-    else
-    if( df == (vx_df_image)VX_DF_IMAGE_RGB )
-    {
-        bpp = 3;
-    }
-    else
-    if( df == (vx_df_image)VX_DF_IMAGE_RGBX )
-    {
-        bpp = 4;
-    }
-    else
-    {
-        bpp = 0;
+        vxStatus = (vx_status)VX_FAILURE;
     }
 
-    status = (vx_status)VX_FAILURE;
-    if( bpp > 0U)
-    {
-        image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
-
-        tivx_utils_save_ct_image_to_bmpfile(filename, image);
-
-        CT_FreeObject(image);
-
-        status = (vx_status)VX_SUCCESS;
-    }
-    return status;
+    return vxStatus;
 }
 
 vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char *filename, vx_bool convert_to_gray_scale)
 {
+    tivx_utils_bmp_image_params_t   imgParams;
+    char                        file[TIOVX_UTILS_MAXPATHLENGTH];
     vx_image image = NULL;
+    const char *basePath;
     uint32_t width, height, stride;
     vx_df_image df;
     vx_status status;
-    void *data_ptr = NULL, *bmp_file_context;
+    void *data_ptr = NULL;
 
-    /**
-     * - Read BMP file.
-     *
-     * The BMP file pixel values are stored at location
-     * 'data_ptr'. The BMP file attributes are returned in variables
-     * 'width', 'heigth', 'df' (data format).
-     * 'bmp_file_context' holds the context of the BMP file which is free'ed
-     * after copying the pixel values from 'data_ptr' into a vx_image object.
-     * \code
-     */
-    status = tivx_utils_bmp_file_read(
-                filename,
-                convert_to_gray_scale,
-                &width, &height, &stride, &df, &data_ptr,
-                &bmp_file_context);
-    /** \endcode */
+    status   = (vx_status)VX_SUCCESS;
+    basePath = tivx_utils_get_test_file_path();
 
-    if(status==(vx_status)VX_SUCCESS)
+    if (basePath == NULL)
     {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        size_t  size;
+
+        size = snprintf(file, TIOVX_UTILS_MAXPATHLENGTH, "%s/%s", basePath, filename);
+
+        if (size > TIOVX_UTILS_MAXPATHLENGTH)
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        /**
+         * - Read BMP file.
+         *
+         * The BMP file pixel values are stored at location
+         * 'data_ptr'. The BMP file attributes are returned in variables
+         * 'width', 'heigth', 'df' (data format).
+         * 'bmp_file_context' holds the context of the BMP file which is free'ed
+         * after copying the pixel values from 'data_ptr' into a vx_image object.
+         * \code
+         */
+        status = tivx_utils_bmp_file_read(
+                    file,
+                    convert_to_gray_scale,
+                    &imgParams);
+        /** \endcode */
+    }
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        width    = imgParams.width;
+        height   = imgParams.height;
+        stride   = imgParams.stride_y;
+        df       = imgParams.format;
+        data_ptr = imgParams.data;
+
         /**
          * - Create OpenVX image object.
          *
@@ -391,8 +186,9 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char 
          */
         image = vxCreateImage(context, width, height, df);
         status = vxGetStatus((vx_reference)image);
+
         /** \endcode */
-        if(status==(vx_status)VX_SUCCESS)
+        if(status == (vx_status)VX_SUCCESS)
         {
 
             /**
@@ -467,33 +263,69 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char 
         /** - Release BMP file context.
          *
          *  Since pixel values are copied from 'data_ptr' to vx_image object
-         *  Now 'data_ptr' and any other resources allocted by bmp_file_read()
-         *  are free'ed by calling bmp_file_read_release()
+         *  Now 'data_ptr' and any other resources allocted by tivx_utils_bmp_file_read()
+         *  are free'ed by calling tivx_utils_bmp_read_release()
          *  \code
          */
-        tivx_utils_bmp_file_read_release(bmp_file_context);
+        tivx_utils_bmp_read_release(&imgParams);
         /** \endcode */
     }
     return image;
 }
 
+/**
+ * \brief Save data from image object to BMP file
+ *
+ * \param filename [in] BMP filename, MUST have extension of .bmp
+ * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
+ *
+ * \return VX_SUCCESS if BMP could be created and saved with data from image object
+ */
 vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image image)
 {
-    vx_uint32 width, height;
-    vx_imagepatch_addressing_t image_addr;
-    vx_rectangle_t rect;
-    vx_map_id map_id;
-    vx_df_image df;
-    void *data_ptr;
-    vx_status status;
+    char                        file[TIOVX_UTILS_MAXPATHLENGTH];
+    void                       *data_ptr;
+    const char                 *basePath;
+    char                       *dotpos;
+    vx_uint32                   width;
+    vx_uint32                   height;
+    vx_imagepatch_addressing_t  image_addr;
+    vx_rectangle_t              rect;
+    vx_map_id                   map_id;
+    vx_df_image                 df;
+    vx_status                   status;
+
+    status   = (vx_status)VX_SUCCESS;
+    basePath = tivx_utils_get_test_file_path();
+
+    if (basePath == NULL)
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        size_t  size;
+
+        size = snprintf(file, TIOVX_UTILS_MAXPATHLENGTH, "%s/%s", basePath, filename);
+
+        if (size > TIOVX_UTILS_MAXPATHLENGTH)
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+    }
 
     /** - Check if image object is valid
      *
      * \code
      */
-    status = vxGetStatus((vx_reference)image);
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        status = vxGetStatus((vx_reference)image);
+    }
+
     /** \endcode */
-    if(status==(vx_status)VX_SUCCESS)
+    if (status== (vx_status)VX_SUCCESS)
     {
         /** - Query image attributes.
          *
@@ -534,7 +366,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
             );
         /** \endcode */
 
-        if(status==(vx_status)VX_SUCCESS)
+        if (status== (vx_status)VX_SUCCESS)
         {
             /** - Write to BMP file using utility API
              *
@@ -543,7 +375,23 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
              * above
              * \code
              */
-            tivx_utils_bmp_file_write(filename, width, height, (uint32_t)image_addr.stride_y, df, data_ptr);
+            dotpos = strrchr(file, '.');
+            if(dotpos &&
+               (strcmp(dotpos, ".bmp") == 0 ||
+                strcmp(dotpos, ".BMP") == 0))
+            {
+                int32_t num_chans;
+
+                num_chans = tivx_utils_get_channels(df);
+
+                tivx_utils_bmp_write(file,
+                                     data_ptr,
+                                     (uint32_t)image_addr.stride_y,
+                                     width,
+                                     height,
+                                     num_chans);
+            }
+
             /** \endcode */
 
             /** - Unmapped a previously mapped image object
@@ -557,30 +405,71 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
             /** \endcode */
         }
     }
+
     return status;
 }
 
 vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {
+    char                            file[TIOVX_UTILS_MAXPATHLENGTH];
+    tivx_utils_bmp_image_params_t   imgParams;
+    const char                     *basePath;
     uint32_t width, height, stride;
     vx_df_image df;
     uint32_t img_width, img_height;
     vx_df_image img_df;
     vx_status status;
-    void *data_ptr = NULL, *bmp_file_context;
+    void *data_ptr = NULL;
     void *dst_data_ptr = NULL;
     uint32_t copy_width, copy_height, src_start_x, src_start_y, dst_start_x, dst_start_y;
     vx_bool enable_rgb2gray, enable_gray2rgb;
     vx_map_id map_id;
 
-    status = tivx_utils_bmp_file_read(
-                filename,
-                convert_to_gray_scale,
-                &width, &height, &stride, &df, &data_ptr,
-                &bmp_file_context);
+    status   = (vx_status)VX_SUCCESS;
+    basePath = tivx_utils_get_test_file_path();
 
-    if(status==(vx_status)VX_SUCCESS)
+    if (basePath == NULL)
     {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        size_t  size;
+
+        size = snprintf(file, TIOVX_UTILS_MAXPATHLENGTH, "%s/%s", basePath, filename);
+
+        if (size > TIOVX_UTILS_MAXPATHLENGTH)
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    /** - Check if image object is valid
+     *
+     * \code
+     */
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        status = vxGetStatus((vx_reference)image);
+    }
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        status = tivx_utils_bmp_file_read(
+                    file,
+                    convert_to_gray_scale,
+                    &imgParams);
+    }
+
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        width    = imgParams.width;
+        height   = imgParams.height;
+        stride   = imgParams.stride_y;
+        df       = imgParams.format;
+        data_ptr = imgParams.data;
+
         img_height = 0;
         img_width = 0;
 
@@ -629,7 +518,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, " BMP: Image data format mismatch [%s]\n", filename);
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                status = VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
@@ -737,7 +626,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
 
             vxUnmapImagePatch(image, map_id);
         }
-        tivx_utils_bmp_file_read_release(bmp_file_context);
+        tivx_utils_bmp_read_release(&imgParams);
     }
     return status;
 }

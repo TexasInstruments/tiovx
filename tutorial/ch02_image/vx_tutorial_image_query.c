@@ -99,7 +99,6 @@
 
 #include <stdio.h>
 #include <VX/vx.h>
-#include <bmp_rd_wr.h>
 #include <utility.h>
 
 /** \brief Input file name */
@@ -138,11 +137,11 @@ void vx_tutorial_image_query()
     /**
      * - Create image object.
      *
-     * Follow the comments in create_image_from_file() to see
+     * Follow the comments in tivx_utils_create_vximage_from_bmpfile() to see
      * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
-    image = create_image_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e);
+    image = tivx_utils_create_vximage_from_bmpfile(context, IN_FILE_NAME, (vx_bool)vx_false_e);
     /** \endcode */
 
     vxSetReferenceName((vx_reference)image, "MY_IMAGE");

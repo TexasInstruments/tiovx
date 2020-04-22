@@ -104,7 +104,6 @@
 
 #include <stdio.h>
 #include <VX/vx.h>
-#include <bmp_rd_wr.h>
 #include <utility.h>
 
 /** \brief Input file name */
@@ -117,7 +116,7 @@ vx_image  load_image_from_handle_from_file(
             vx_context context,
             char *filename,
             vx_bool convert_to_gray_scale,
-            void **bmp_file_context);
+            tivx_utils_bmp_image_params_t *imgParams);
 
 /**
  * \brief Tutorial Entry Point
@@ -135,8 +134,8 @@ void vx_tutorial_image_crop_roi()
     vx_image image, roi_image;
     vx_uint32 width, height;
     vx_rectangle_t rect;
+    tivx_utils_bmp_image_params_t   imgParams;
     /** \endcode */
-    void *bmp_file_context;
 
     printf(" vx_tutorial_image_crop_roi: Tutorial Started !!! \n");
 
@@ -152,7 +151,7 @@ void vx_tutorial_image_crop_roi()
 
     printf(" Loading file %s ...\n", IN_FILE_NAME);
 
-    image = load_image_from_handle_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e, &bmp_file_context);
+    image = load_image_from_handle_from_file(context, IN_FILE_NAME, (vx_bool)vx_false_e, &imgParams);
 
     vxSetReferenceName((vx_reference)image, "ORIGINAL");
 
@@ -199,12 +198,12 @@ void vx_tutorial_image_crop_roi()
     /**
      * - Save image object to bitmap file \ref OUT_FILE_NAME.
      *
-     * Follow the comments in save_image_to_file() to see
+     * Follow the comments in tivx_utils_save_vximage_to_bmpfile() to see
      * how data in vx_image object is accessed to store pixel values from the image object to
      * BMP file \ref OUT_FILE_NAME
      * \code
      */
-    save_image_to_file(OUT_FILE_NAME, roi_image);
+    tivx_utils_save_vximage_to_bmpfile(OUT_FILE_NAME, roi_image);
     /** \endcode */
 
     /**
@@ -223,7 +222,7 @@ void vx_tutorial_image_crop_roi()
      *       Hence memory passed to "image" should be freed after "roi_image"
      *       is released
      */
-    bmp_file_read_release(bmp_file_context);
+    tivx_utils_bmp_read_release(&imgParams);
 
     /**
      * - Release context object.
@@ -255,21 +254,55 @@ vx_image  load_image_from_handle_from_file(
             vx_context context,
             char *filename,
             vx_bool convert_to_gray_scale,
-            void **bmp_file_context)
+            tivx_utils_bmp_image_params_t *imgParams)
 {
+    char file[TIOVX_UTILS_MAXPATHLENGTH];
     vx_image image = NULL;
+    const char *basePath;
     uint32_t width, height, stride;
     vx_df_image df;
-    vx_status status;
+    vx_status vxStatus;
+    int32_t     status;
     void *data_ptr;
+    int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
 
-    status = bmp_file_read(
-                filename,
-                convert_to_gray_scale,
-                &width, &height, &stride, &df, &data_ptr,
-                bmp_file_context);
+    status   = (vx_status)VX_SUCCESS;
+    basePath = tivx_utils_get_test_file_path();
 
-    if(status==(vx_status)VX_SUCCESS)
+    if (basePath == NULL)
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        size_t  size;
+
+        size = snprintf(file, TIOVX_UTILS_MAXPATHLENGTH, "%s/%s", basePath, filename);
+
+        if (size > TIOVX_UTILS_MAXPATHLENGTH)
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    status = tivx_utils_bmp_read(file, dcn, imgParams);
+
+    if (status == 0)
+    {
+        vxStatus = (vx_status)VX_SUCCESS;
+        width    = imgParams->width;
+        height   = imgParams->height;
+        stride   = imgParams->stride_y;
+        df       = imgParams->format;
+        data_ptr = imgParams->data;
+    }
+    else
+    {
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if(vxStatus == (vx_status)VX_SUCCESS)
     {
         vx_imagepatch_addressing_t image_addr[1];
         void *ptrs[1];

@@ -107,7 +107,7 @@
  */
 
 #include <TI/tivx.h>
-#include <tivx_utils_file_rd_wr.h>
+#include <tivx_utils.h>
 
 #include <stdio.h>
 #include <stdint.h>
@@ -122,7 +122,6 @@
 
 #include "itidl_ti.h"
 #include "vx_tutorial_tidl.h"
-#include "test_engine/test_utils.h"
 
 #define MAX(_a,_b) (((_a) > (_b)) ? (_a) : (_b))
 
@@ -182,6 +181,7 @@ void vx_tutorial_tidl()
 
   size_t sizeFilePath;
   char filePath[MAXPATHLENGTH];
+  const char *basePath;
   const char *targetCore1[MAX_NUM_THREADS];
   const char *targetCore2[MAX_NUM_THREADS];
   vx_enum targetCpuId1[MAX_NUM_THREADS];
@@ -210,7 +210,14 @@ void vx_tutorial_tidl()
 
   vxDirective((vx_reference)context, (vx_enum)VX_DIRECTIVE_ENABLE_PERFORMANCE);
 
-  sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), CFG_FILE_NAME);
+  basePath = tivx_utils_get_test_file_path();
+
+  if (basePath == NULL)
+  {
+      goto exit;
+  }
+
+  sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", basePath, CFG_FILE_NAME);
 
   if (sizeFilePath > MAXPATHLENGTH) {
     printf("Error: path of config gile too long to fit in string\n");
@@ -638,9 +645,17 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
   FILE *fp = fopen(cfg_file_name, "r");
   char line_str[1024];
   char *token;
+  const char *basePath;
   size_t sizeFilePath;
   char filePath[MAXPATHLENGTH];
   vx_status status = (vx_status)VX_SUCCESS;
+
+  basePath = tivx_utils_get_test_file_path();
+
+  if (basePath == NULL)
+  {
+      goto exit;
+  }
 
   /* Set processing_core_mode to 0, which means network can be partitioned accross all cores */
   obj->processing_core_mode= 0;
@@ -672,7 +687,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
     {
       token = strtok(NULL, s);
       token[strlen(token)-1]=0;
-      sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), token);
+      sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", basePath, token);
       if (sizeFilePath > MAXPATHLENGTH) {
         printf("Error in parse_cfg_file, path too long to fit in string\n");
       }
@@ -685,7 +700,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
       {
         token = strtok(NULL, s);
         token[strlen(token)-1]=0;
-        sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), token);
+        sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", basePath, token);
         if (sizeFilePath > MAXPATHLENGTH) {
           printf("Error in parse_cfg_file, path too long to fit in string\n");
         }
@@ -698,7 +713,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
         {
           token = strtok(NULL, s);
           token[strlen(token)-1]=0;
-          sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), token);
+          sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", basePath, token);
           if (sizeFilePath > MAXPATHLENGTH) {
             printf("Error in parse_cfg_file, path too long to fit in string\n");
           }
@@ -711,7 +726,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
           {
             token = strtok(NULL, s);
             token[strlen(token)-1]=0;
-            sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), token);
+            sizeFilePath = snprintf(filePath, MAXPATHLENGTH, "%s/%s", basePath, token);
             if (sizeFilePath > MAXPATHLENGTH) {
               printf("Error in parse_cfg_file, path too long to fit in string\n");
             }
