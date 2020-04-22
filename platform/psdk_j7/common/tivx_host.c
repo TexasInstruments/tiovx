@@ -14,41 +14,50 @@ void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
 void tivxPlatformResetObjDescTableInfo(void);
 
+static uint8_t g_init_status = 0U;
+
 void tivxHostInit(void)
 {
-    /* Dont init Obj Desc table here, since its done during system time by RTOS core
-     * This API will be called by each TIOVX linux process.
-     * So if obj desc are init every time a TIOVX process is created
-     * then some other TIOVX process running in background would lose its state and things will go wrong
-     */
-    /* tivxPlatformResetObjDescTableInfo(); */
-    tivxObjectInit();
-    tivxRegisterOpenVXCoreKernels();
-
-    if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_IPU1_0)
+    if (0U == g_init_status)
     {
-        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
-    }
-    else
-    if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_A72_0)
-    {
-        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
-    }
-    else
-    {
-        /* do nothing */
-    }
+        /* Dont init Obj Desc table here, since its done during system time by RTOS core
+         * This API will be called by each TIOVX linux process.
+         * So if obj desc are init every time a TIOVX process is created
+         * then some other TIOVX process running in background would lose its state and things will go wrong
+         */
+        /* tivxPlatformResetObjDescTableInfo(); */
+        tivxObjectInit();
+        tivxRegisterOpenVXCoreKernels();
 
-    /* Note: eventually register HWA kernels here (deferring for now) */
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_IPU1_0)
+        {
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
+        }
+        else
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_A72_0)
+        {
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
+        }
+        else
+        {
+            /* do nothing */
+        }
 
-    VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
+        g_init_status = 1U;
+
+        VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
+    }
 }
 
 void tivxHostDeInit(void)
 {
-    VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
-    tivxObjectDeInit();
-    tivxUnRegisterOpenVXCoreKernels();
-    /* Note: eventually unregister HWA kernels here (deferring for now) */
+    if (1U == g_init_status)
+    {
+        VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
+        tivxObjectDeInit();
+        tivxUnRegisterOpenVXCoreKernels();
+
+        g_init_status = 0U;
+    }
 }
 
