@@ -209,10 +209,18 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         (index < obj_desc->num_items) &&
         (objarr->base.is_virtual == (vx_bool)vx_false_e))
     {
-        ref = objarr->ref[index];
-        ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
-        /* set is_array_element flag */
-        ref->is_array_element = (vx_bool)vx_true_e;
+        ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
+
+        if (NULL != ref)
+        {
+            ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
+            /* set is_array_element flag */
+            ref->is_array_element = (vx_bool)vx_true_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"vxGetObjectArrayItem: Object array item is invalid\n");
+        }
     }
 
     return (ref);

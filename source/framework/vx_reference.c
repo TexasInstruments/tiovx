@@ -747,12 +747,15 @@ vx_bool tivxIsReferenceVirtual(vx_reference ref)
 vx_reference tivxGetReferenceParent(vx_reference child_ref)
 {
     vx_reference ref = NULL;
+    tivx_obj_desc_t *obj_desc =
+        (tivx_obj_desc_t *)child_ref->obj_desc;
 
-    if (ownIsValidReference(child_ref) == (vx_bool)vx_true_e)
+    if ( (ownIsValidReference(child_ref) == (vx_bool)vx_true_e) &&
+         (obj_desc != NULL) )
     {
         if ((vx_bool)vx_true_e == child_ref->is_array_element)
         {
-            ref = child_ref->scope;
+            ref = ownReferenceGetHandleFromObjDescId(obj_desc->scope_obj_desc_id);
         }
     }
 
