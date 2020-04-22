@@ -102,6 +102,11 @@ extern "C" {
  */
 #define TIVX_REF_FLAG_LOG_RT_TRACE            (0x00000001u)
 
+/*! \brief Flag to indicate if ref is invalid
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_REF_FLAG_IS_INVALID              (0x00000002u)
+
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
  */

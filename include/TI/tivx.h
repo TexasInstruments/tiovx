@@ -285,8 +285,10 @@ typedef enum _tivx_attribute_extensions_e {
     TIVX_USER_DATA_OBJECT_VALID_SIZE = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x1,
 
     /*! \brief Returns the timestamp in micro-seconds corresponding to the given reference */
-    TIVX_REFERENCE_TIMESTAMP = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x2
+    TIVX_REFERENCE_TIMESTAMP = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x2,
 
+    /*! \brief Returns a boolean indicating whether or not a reference is invalid */
+    TIVX_REFERENCE_INVALID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x3
 } tivx_attribute_extensions_e;
 
 

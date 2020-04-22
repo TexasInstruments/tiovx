@@ -595,6 +595,27 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_REFERENCE_INVALID:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    vx_bool is_ref_invalid;
+
+                    if (tivxFlagIsBitSet(ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID) != 0U)
+                    {
+                        is_ref_invalid = (vx_bool)vx_true_e;
+                    }
+                    else
+                    {
+                        is_ref_invalid = (vx_bool)vx_false_e;
+                    }
+                    *(vx_bool*)ptr = is_ref_invalid;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference invalid flag failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
