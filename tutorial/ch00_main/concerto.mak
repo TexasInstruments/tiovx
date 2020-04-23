@@ -13,10 +13,8 @@ LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 #LDIRS       += $(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
 IDIRS       += $(TIOVX_PATH)/tutorial
 IDIRS       += $(TIOVX_PATH)/tutorial/ch01_common
-IDIRS       += $(TIOVX_PATH)/conformance_tests/
 
 STATIC_LIBS := vx_tutorial
-STATIC_LIBS += vx_conformance_engine
 STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc vx_framework
 
@@ -36,7 +34,7 @@ STATIC_LIBS += vx_kernels_host_utils vx_kernels_target_utils
 
 # TDA2x/3x TI-DL host emulation only works in 32-bits version
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86))
-STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl tidl_algo_X86 vx_target_kernels_ivision_common dmautils_$(TARGET_CPU) 
+STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl tidl_algo_X86 vx_target_kernels_ivision_common dmautils_$(TARGET_CPU)
 endif
 
 STATIC_LIBS += vx_framework vx_platform_pc
