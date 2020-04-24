@@ -70,7 +70,6 @@
 
 #include <VX/vx.h>
 
-#include <tivx_utils_bmp.h>
 #include <tivx_utils_file_rd_wr.h>
 
 vx_node create_generic_node(vx_graph graph,

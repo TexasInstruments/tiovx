@@ -63,13 +63,12 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
 #include <tivx_utils.h>
-#include <tivx_utils_bmp.h>
 #include <tivx_utils_file_rd_wr.h>
 
 vx_status tivx_utils_bmp_file_read(
             const char *filename,
             vx_bool convert_to_gray_scale,
-            void  *imgParams)
+            tivx_utils_bmp_image_params_t  *imgParams)
 {
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     int32_t     status;
@@ -93,7 +92,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             const void *buf,
             uint32_t buf_size,
             vx_bool convert_to_gray_scale,
-            void *imgParams)
+            tivx_utils_bmp_image_params_t *imgParams)
 {
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
     int32_t     status;
@@ -380,16 +379,12 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
                (strcmp(dotpos, ".bmp") == 0 ||
                 strcmp(dotpos, ".BMP") == 0))
             {
-                int32_t num_chans;
-
-                num_chans = tivx_utils_get_channels(df);
-
                 tivx_utils_bmp_write(file,
                                      data_ptr,
-                                     (uint32_t)image_addr.stride_y,
                                      width,
                                      height,
-                                     num_chans);
+                                     (uint32_t)image_addr.stride_y,
+                                     df);
             }
 
             /** \endcode */

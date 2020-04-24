@@ -58,8 +58,6 @@ typedef struct
 
 } tivx_utils_bmp_image_params_t;
 
-int32_t tivx_utils_get_channels(vx_df_image format);
-
 int32_t tivx_utils_bmp_read_mem(const uint8_t                  *data,
                                 uint32_t                        dataSize,
                                 int32_t                         dcn,
@@ -73,10 +71,10 @@ int32_t tivx_utils_bmp_read_release(tivx_utils_bmp_image_params_t  *imgParams);
 
 int32_t tivx_utils_bmp_write(const char    *filename,
                              const uint8_t *data,
-                             int32_t        stride_y,
                              int32_t        width,
                              int32_t        height,
-                             int32_t        numChannels);
+                             int32_t        stride_y,
+                             vx_df_image    df);
 
 #ifdef __cplusplus
 }

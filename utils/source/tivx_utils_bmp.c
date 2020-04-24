@@ -737,8 +737,7 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
     return status;
 }
 
-/* Public APIs. */
-int32_t tivx_utils_get_channels(vx_df_image format)
+static int32_t tivx_utils_get_channels(vx_df_image format)
 {
     int32_t channels;
 
@@ -764,6 +763,7 @@ int32_t tivx_utils_get_channels(vx_df_image format)
     return channels;
 }
 
+/* Public APIs. */
 int32_t tivx_utils_bmp_read_mem(const uint8_t                  *data,
                                 uint32_t                        dataSize,
                                 int32_t                         dcn,
@@ -963,14 +963,15 @@ int32_t tivx_utils_bmp_read_release(tivx_utils_bmp_image_params_t  *imgParams)
 
 int32_t tivx_utils_bmp_write(const char    *filename,
                              const uint8_t *data,
-                             int32_t        stride_y,
                              int32_t        width,
                              int32_t        height,
-                             int32_t        numChannels)
+                             int32_t        stride_y,
+                             vx_df_image    df)
 {
     FILE       *f;
     uint8_t    *buf;
     uint8_t    *p;
+    int32_t     numChans;
     int32_t     channels;
     int32_t     width3;
     int32_t     fileStep;
@@ -1010,13 +1011,9 @@ int32_t tivx_utils_bmp_write(const char    *filename,
         VX_PRINT(VX_ZONE_ERROR, "Invalid height: %d\n", height);
         status = -1;
     }
-    else if ((numChannels != 1) && (numChannels != 3) && (numChannels != 4))
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid channel count: %d\n", numChannels);
-        status = -1;
-    }
 
-    channels   = numChannels == 4 ? 3 : numChannels;
+    numChans   = tivx_utils_get_channels(df);;
+    channels   = numChans == 4 ? 3 : numChans;
     width3     = width * channels;
     fileStep   = (width3 + 3) & -4;
     headerSize = TIVX_UTILS_BMP_HDR_SIZE + TIVX_UTILS_BMP_INFO_HDR_SIZE;
@@ -1133,7 +1130,7 @@ int32_t tivx_utils_bmp_write(const char    *filename,
 
         for (y = height - 1; y >= 0; y--, p += fileStep)
         {
-            if (numChannels == 1)
+            if (numChans == 1)
             {
                 memcpy(p, data + stride_y*y, width);
             }
@@ -1142,7 +1139,7 @@ int32_t tivx_utils_bmp_write(const char    *filename,
                 const uint8_t *imgrow = data + stride_y*y;
                 uint8_t       *dst = p;
 
-                for (i = 0; i < width; i++, imgrow += numChannels, dst += 3)
+                for (i = 0; i < width; i++, imgrow += numChans, dst += 3)
                 {
                     dst[0] = imgrow[2];
                     dst[1] = imgrow[1];

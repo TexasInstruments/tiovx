@@ -68,6 +68,7 @@
 #define TIVX_UTILS_FILE_RD_WR_H
 
 #include <tivx_utils.h>
+#include <tivx_utils_bmp.h>
 
 /**
  * \brief Read data from PNG file
@@ -203,7 +204,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 vx_status tivx_utils_bmp_file_read(
             const char *filename,
             vx_bool convert_to_gray_scale,
-            void  *imageParams);
+            tivx_utils_bmp_image_params_t  *imageParams);
 
 /**
  * \brief Read data from BMP file
@@ -216,7 +217,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             const void *buf,
             uint32_t buf_size,
             vx_bool convert_to_gray_scale,
-            void *imageParams);
+            tivx_utils_bmp_image_params_t *imageParams);
 
 /**
  * \brief Free memory allocated during bmp file read
