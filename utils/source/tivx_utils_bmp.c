@@ -599,6 +599,7 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
     int32_t                 height;
     int32_t                 stride_y;
     int32_t                 memBlkSize;
+    int32_t                 color;
     int32_t                 i;
 
     hdr      = &cntxt->hdr;
@@ -608,6 +609,7 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
     stride_y = imgParams->stride_y;
     palette  = hdr->palette;
     status   = 0;
+    color    = dcn > 1;
 
     /* Allocate the memory to hold the decoded BMP image data. */
     memBlkSize = imgParams->height * stride_y;
@@ -637,12 +639,12 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
             stride_y = -stride_y;
         }
 
-        if (cntxt->isColor && (bpp <= 8))
+        if (color && (bpp <= 8))
         {
             cvtRGBToGray(grayPalette, &palette[0].b, (1 << bpp), 4, 0);
         }
 
-        if (cntxt->isColor)
+        if (color)
         {
             switch (bpp)
             {
