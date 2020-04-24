@@ -278,15 +278,6 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         output_bitstream_target_ptr = tivxMemShared2TargetPtr(&output_bitstream_desc->mem_ptr);
 
-        tivxMemBufferMap(input_image_target_ptr_y, input_image_desc->mem_size[0],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        tivxMemBufferMap(input_image_target_ptr_uv, input_image_desc->mem_size[1],
-            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        tivxMemBufferMap(output_bitstream_target_ptr, output_bitstream_desc->mem_size,
-            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-
         bitstream = (uint8_t*) output_bitstream_target_ptr;
     }
 
@@ -296,15 +287,15 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         encoder_obj->in_buff.chId = encoder_obj->channel_id;
         encoder_obj->in_buff.type = MM_BUF_TYPE_VIDEO_INPUT;
-	encoder_obj->in_buff.num_planes = input_image_desc->planes;
+        encoder_obj->in_buff.num_planes = input_image_desc->planes;
         encoder_obj->in_buff.size[0] = input_image_desc->mem_size[0];
-	encoder_obj->in_buff.size[1] = input_image_desc->mem_size[1];
+        encoder_obj->in_buff.size[1] = input_image_desc->mem_size[1];
         encoder_obj->in_buff.buf_addr[0] = input_image_target_ptr_y;
-	encoder_obj->in_buff.buf_addr[1] = input_image_target_ptr_uv;
+        encoder_obj->in_buff.buf_addr[1] = input_image_target_ptr_uv;
 
         encoder_obj->out_buff.chId = encoder_obj->channel_id;
         encoder_obj->out_buff.type = MM_BUF_TYPE_VIDEO_OUTPUT;
-	encoder_obj->out_buff.num_planes = 1;
+        encoder_obj->out_buff.num_planes = 1;
         encoder_obj->out_buff.size[0] = output_bitstream_desc->mem_size;
         encoder_obj->out_buff.buf_addr[0] = bitstream;
 
@@ -345,16 +336,8 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
     if(VX_SUCCESS == status)
     {
         output_bitstream_desc->valid_mem_size = encoder_obj->out_buff.size[0];
-
-        tivxMemBufferUnmap(input_image_target_ptr_y, input_image_desc->mem_size[0],
-           VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        tivxMemBufferUnmap(input_image_target_ptr_uv, input_image_desc->mem_size[1],
-           VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        tivxMemBufferUnmap(output_bitstream_target_ptr, output_bitstream_desc->mem_size,
-           VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
+
     return status;
 }
 

@@ -289,12 +289,6 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         tivxMemBufferMap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        tivxMemBufferMap(output_image_target_ptr_y, output_image_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-
-        tivxMemBufferMap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-
         bitstream = (uint8_t*) input_bitstream_target_ptr;
     }
 
@@ -380,6 +374,12 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         {
             decoder_obj->first_process = 0;
 
+            tivxMemBufferMap(output_image_target_ptr_y, output_image_desc->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+
+            tivxMemBufferMap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+
             if (1U == decoder_obj->which_buff)
             {
                 decoder_obj->which_buff = 2;
@@ -390,6 +390,11 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
             }
             memset(output_image_target_ptr_y, 0, padded_size_y);
             memset(output_image_target_ptr_uv, 0, padded_size_uv);
+
+            tivxMemBufferUnmap(output_image_target_ptr_y, output_image_desc->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxMemBufferUnmap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
         else
         {
@@ -424,10 +429,6 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-        tivxMemBufferUnmap(output_image_target_ptr_y, output_image_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
-        tivxMemBufferUnmap(output_image_target_ptr_uv, output_image_desc->mem_size[1],
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
 
