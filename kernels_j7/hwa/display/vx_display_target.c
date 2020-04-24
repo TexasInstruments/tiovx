@@ -720,7 +720,6 @@ static vx_status VX_CALLBACK tivxDisplayControl(
     return (status);
 }
 
-
 static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -734,8 +733,6 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     uint32_t size;
     Fvid2_FrameList frmList;
     Fvid2_Frame *frm;
-    tivx_obj_desc_object_array_t *parent_obj_desc;
-    uint32_t active_channel;
 
     if((num_params != TIVX_KERNEL_DISPLAY_MAX_PARAMS) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
@@ -760,33 +757,22 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
 
     if((vx_status)VX_SUCCESS == status)
     {
+        uint32_t active_channel;
+
         active_channel = displayParams->active_channel;
-        if((vx_enum)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
+
+        obj_desc_image = (tivx_obj_desc_image_t *)
+            tivxGetObjDescElement(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX],
+                                  active_channel);
+
+        if (obj_desc_image == NULL)
         {
-            tivx_obj_desc_object_array_t *obj_desc_obj_array;
-
-            obj_desc_obj_array = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
-
-            tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[active_channel], (tivx_obj_desc_t**)&obj_desc_image, 1);
+            status = (vx_status)VX_FAILURE;
         }
-        else
-        {
-            if ((vx_enum)TIVX_OBJ_DESC_INVALID != (vx_enum)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
-            {
-                tivxGetObjDescList(
-                    &obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id,
-                    (tivx_obj_desc_t**)&parent_obj_desc, 1);
+    }
 
-                tivxGetObjDescList(
-                    &parent_obj_desc->obj_desc_id[active_channel],
-                    (tivx_obj_desc_t**)&obj_desc_image, 1);
-            }
-            else
-            {
-                obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
-            }
-        }
-
+    if((vx_status)VX_SUCCESS == status)
+    {
         image_target_ptr1 = tivxMemShared2TargetPtr(&obj_desc_image->mem_ptr[0]);
         if((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format)
         {
