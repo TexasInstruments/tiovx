@@ -875,6 +875,19 @@ typedef struct _tivx_obj_desc_tensor
 void tivxGetObjDescList(volatile uint16_t obj_desc_id[],
     tivx_obj_desc_t *obj_desc[], uint32_t num_desc_id);
 
+/*!
+ * \brief Function to get the pointer to an element of an object array. If the
+ *        object  being passed is a regular object descriptor then a pointer to
+ *        the object is returned.
+ *
+ * \param [in]  obj_desc     object descriptor pointer
+ * \param [in]  elem_idx     A valid index with in the object array. This is
+ *                           used only if obj_desc refers to an object
+ *                           descriptor array, otherwise it it ignored.
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+tivx_obj_desc_t *tivxGetObjDescElement(tivx_obj_desc_t *obj_desc, uint16_t elem_idx);
 
 /*!
  * \brief Utility function for memory/string copy/set operation on object descriptor pointers

@@ -293,6 +293,57 @@ void tivxGetObjDescList(volatile uint16_t obj_desc_id[],
     }
 }
 
+tivx_obj_desc_t *tivxGetObjDescElement(tivx_obj_desc_t *obj_desc, uint16_t elem_idx)
+{
+    tivx_obj_desc_t *elem = NULL;
+
+    /* Check the type of the object. */
+    if((vx_enum)obj_desc->type==(vx_enum)TIVX_OBJ_DESC_OBJARRAY)
+    {
+        tivx_obj_desc_object_array_t *obj_desc_obj_array;
+
+        obj_desc_obj_array = (tivx_obj_desc_object_array_t *)obj_desc;
+
+        /* Validate the element index requested. */
+        if (elem_idx < obj_desc_obj_array->num_items)
+        {
+            tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[elem_idx],
+                               (tivx_obj_desc_t**)&elem, 1);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                     "Requested element index [%d] out of range [0-%d]\n",
+                     elem_idx, obj_desc_obj_array->num_items-1);
+        }
+    }
+    else
+    {
+        if ((vx_enum)TIVX_OBJ_DESC_INVALID != (vx_enum)obj_desc->scope_obj_desc_id)
+        {
+            tivx_obj_desc_object_array_t *parent_obj_desc = NULL;
+
+            tivxGetObjDescList(
+                &obj_desc->scope_obj_desc_id,
+                (tivx_obj_desc_t**)&parent_obj_desc, 1);
+
+            if (parent_obj_desc != NULL)
+            {
+                tivxGetObjDescList(
+                    &parent_obj_desc->obj_desc_id[elem_idx],
+                    (tivx_obj_desc_t**)&elem, 1);
+            }
+        }
+        else
+        {
+            /* The object passed is of the type tivx_obj_desc_t. Just return it. */
+            elem = obj_desc;
+        }
+    }
+
+    return elem;
+}
+
 void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size)
 {
     volatile uint8_t *d=(volatile uint8_t*)dst;
