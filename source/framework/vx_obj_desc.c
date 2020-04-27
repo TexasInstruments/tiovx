@@ -175,6 +175,8 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+
     if((NULL != obj_desc) && (NULL != *obj_desc))
     {
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
@@ -191,6 +193,8 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
             VX_PRINT(VX_ZONE_ERROR,"tivxObjDescFree: object descriptor ID is greater than number of object descriptor table entries\n");
         }
     }
+
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return status;
 }
