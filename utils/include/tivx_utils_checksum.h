@@ -69,6 +69,7 @@
 
 
 #include <VX/vx.h>
+#include <VX/vx_khr_user_data_object.h>
 
 /**
  * \brief Returns a uint32_t of the sum of all words within a rect of an image's buffer.
@@ -83,9 +84,27 @@
  * \param rect [in] rectangular region to generate the checksum for
  *
  * \return sum of words in the specified region
- * 
+ *
  * \ingroup group_tivx_ext_host_utils
  */
 uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_rectangle_t rect);
+
+/**
+ * \brief Returns a uint32_t of the sum of all words within a range of the user data object buffer.
+ *
+ *        If the buffer size contains a number of bytes not divisible by 4, the last
+ *        1, 2, or 3 bytes are rightshifted so that the last byte aligns with the LSB.
+ *
+ * \param user_data_object [in] input user data object
+ *
+ * \param offset_byte [in] starting offset (in bytes)
+ *
+ * \param num_bytes [in] number of bytes to generate the checksum for
+ *
+ * \return sum of words in the specified range
+ *
+ * \ingroup group_tivx_ext_host_utils
+ */
+uint32_t tivx_utils_user_data_object_checksum(vx_user_data_object user_data_object, uint32_t offset_byte, uint32_t num_bytes);
 
 #endif

@@ -114,3 +114,43 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_r
 
     return sum;
 }
+
+uint32_t tivx_utils_user_data_object_checksum(vx_user_data_object user_data_object, uint32_t offset_byte, uint32_t num_bytes)
+{
+    vx_status                   status = (vx_status)VX_FAILURE;
+    vx_map_id                   map_id;
+    uint32_t                   *data_ptr;
+    uint32_t                    sum = 0U;
+    int32_t                    j;
+
+    if(NULL != user_data_object)
+    {
+        status = vxMapUserDataObject(user_data_object,
+            offset_byte,
+            num_bytes,
+            &map_id,
+            (void**) &data_ptr,
+            (vx_enum)VX_READ_ONLY,
+            (vx_enum)VX_MEMORY_TYPE_HOST,
+            (vx_enum)VX_NOGAP_X
+            );
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            for (j = 0; j < (num_bytes / 4); j++)
+            {
+                sum += data_ptr[j];
+            }
+
+            if (0 != (num_bytes % 4))
+            {
+                uint32_t bitshift = (4U - ((uint32_t)num_bytes % 4U)) * 8U;
+                sum += (data_ptr[j] << bitshift) >> bitshift;
+            }
+        }
+
+        vxUnmapUserDataObject(user_data_object, map_id);
+    }
+
+    return sum;
+}
