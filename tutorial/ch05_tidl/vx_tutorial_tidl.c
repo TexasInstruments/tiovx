@@ -210,7 +210,7 @@ void vx_tutorial_tidl()
 
   vxDirective((vx_reference)context, (vx_enum)VX_DIRECTIVE_ENABLE_PERFORMANCE);
 
-  basePath = tivx_utils_get_test_file_path();
+  basePath = tivx_utils_get_test_file_dir();
 
   if (basePath == NULL)
   {
@@ -650,7 +650,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
   char filePath[MAXPATHLENGTH];
   vx_status status = (vx_status)VX_SUCCESS;
 
-  basePath = tivx_utils_get_test_file_path();
+  basePath = tivx_utils_get_test_file_dir();
 
   if (basePath == NULL)
   {

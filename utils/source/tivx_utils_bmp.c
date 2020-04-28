@@ -603,7 +603,7 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
     int32_t                 i;
 
     hdr      = &cntxt->hdr;
-    bpp      = imgParams->bpp;
+    bpp      = hdr->bpp;
     height   = imgParams->height;
     width    = imgParams->width;
     stride_y = imgParams->stride_y;
@@ -805,7 +805,6 @@ int32_t tivx_utils_bmp_read_mem(const uint8_t                  *data,
     {
         imgParams->width  = hdr->width;
         imgParams->height = hdr->height;
-        imgParams->bpp    = hdr->bpp;
 
         if (dcn <= 0)
         {
@@ -815,14 +814,17 @@ int32_t tivx_utils_bmp_read_mem(const uint8_t                  *data,
         if (dcn == 1)
         {
             imgParams->format = VX_DF_IMAGE_U8;
+            imgParams->bpp    = 1; /* Out Image bpp. */
         }
         else if (dcn == 3)
         {
             imgParams->format = VX_DF_IMAGE_RGB;
+            imgParams->bpp    = 3; /* Out Image bpp. */
         }
         else
         {
             imgParams->format = VX_DF_IMAGE_RGBX;
+            imgParams->bpp    = 4; /* Out Image bpp. */
         }
 
         imgParams->stride_y =

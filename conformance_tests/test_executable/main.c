@@ -14,14 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <stdlib.h>
+#include <signal.h>
 #include <TI/tivx.h>
 
 int vx_conformance_test_main(int argc, char* argv[]);
 void TestModuleRegister();
 void TestModuleUnRegister();
 
+static void intSigHandler(int sig)
+{
+    exit(0);
+}
+
 int main(int argc, char* argv[])
 {
+    /* Register the signal handler. */
+    signal(SIGINT, intSigHandler);
+
     tivxInit();
     TestModuleRegister();
     vx_conformance_test_main(argc, argv);

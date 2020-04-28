@@ -106,19 +106,19 @@
 #include <ch03_graph/vx_tutorial_graph_image_gradients_pytiovx_uc.h>
 
 /** \brief Input file name */
-#define IN_FILE_NAME         "colors.bmp"
+#define IN_FILE_NAME         "${VX_TEST_DATA_PATH}/colors.bmp"
 
 /** \brief Phase file name */
-#define PHASE_FILE_NAME      "vx_tutorial_graph_image_gradients_pytiovx_phase_out.bmp"
+#define PHASE_FILE_NAME      "${VX_TEST_DATA_PATH}/vx_tutorial_graph_image_gradients_pytiovx_phase_out.bmp"
 
 /** \brief Magnitude file name */
-#define MAGNITUDE_FILE_NAME  "vx_tutorial_graph_image_gradients_pytiovx_magnitude_out.bmp"
+#define MAGNITUDE_FILE_NAME  "${VX_TEST_DATA_PATH}/vx_tutorial_graph_image_gradients_pytiovx_magnitude_out.bmp"
 
 /** \brief Gradient X file name */
-#define GRAD_X_FILE_NAME     "vx_tutorial_graph_image_gradients_pytiovx_grad_x_out.bmp"
+#define GRAD_X_FILE_NAME     "${VX_TEST_DATA_PATH}/vx_tutorial_graph_image_gradients_pytiovx_grad_x_out.bmp"
 
 /** \brief Gradient Y file name */
-#define GRAD_Y_FILE_NAME     "vx_tutorial_graph_image_gradients_pytiovx_grad_y_out.bmp"
+#define GRAD_Y_FILE_NAME     "${VX_TEST_DATA_PATH}/vx_tutorial_graph_image_gradients_pytiovx_grad_y_out.bmp"
 
 /**
  * \brief Tutorial Entry Point

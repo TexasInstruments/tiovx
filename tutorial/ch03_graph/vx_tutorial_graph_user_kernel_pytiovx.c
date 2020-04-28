@@ -121,13 +121,13 @@
 #include <ch03_graph/phase_rgb_user_kernel.h>
 
 /** \brief Input file name */
-#define IN_FILE_NAME                "colors.bmp"
+#define IN_FILE_NAME                "${VX_TEST_DATA_PATH}/colors.bmp"
 
 /** \brief Output file name when tutorial is run with user kernel */
-#define OUT_USER_KERNEL_FILE_NAME   "vx_tutorial_graph_user_kernel_pytiovx_out.bmp"
+#define OUT_USER_KERNEL_FILE_NAME   "${VX_TEST_DATA_PATH}/vx_tutorial_graph_user_kernel_pytiovx_out.bmp"
 
 /** \brief Output file name when tutorial is run with target kernel */
-#define OUT_TARGET_KERNEL_FILE_NAME "vx_tutorial_graph_target_kernel_pytiovx_out.bmp"
+#define OUT_TARGET_KERNEL_FILE_NAME "${VX_TEST_DATA_PATH}/vx_tutorial_graph_target_kernel_pytiovx_out.bmp"
 
 /**
  * \brief Tutorial Entry Point

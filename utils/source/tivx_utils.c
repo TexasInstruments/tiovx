@@ -61,9 +61,10 @@
  */
 #include <tivx_utils.h>
 
-const char *tivx_utils_get_test_file_path()
+extern char *tivxPlatformGetEnv(char *env_var);
+
+const char *tivx_utils_get_test_file_dir()
 {
-    extern char *tivxPlatformGetEnv(char *env_var);
     const char *env;
     
 #if defined(SYSBIOS)
@@ -74,10 +75,66 @@ const char *tivx_utils_get_test_file_path()
 
     if (env == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Please define the environment variable VX_TEST_DATA_PATH.\n");
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Please define the environment variable VX_TEST_DATA_PATH.\n");
     }
 
     return env;
 
+}
+
+vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename)
+{
+    char       *start;
+    char       *end;
+    vx_status  status;
+
+    status = (vx_status)VX_SUCCESS;
+    start  = strstr(filename, "${");
+    end    = strstr(filename, "}");
+
+    if ((start == NULL) || (end == NULL))
+    {
+        /* The path does not contain a reference to an environment variable. */
+        strncpy(abspath, filename, TIOVX_UTILS_MAXPATHLENGTH);
+    }
+    else
+    {
+        int32_t len = (int32_t)(end - start)-2;
+        char   *b = NULL;
+
+        if (len >= (TIOVX_UTILS_MAXPATHLENGTH/2))
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            memset(abspath, 0, TIOVX_UTILS_MAXPATHLENGTH);
+            strncpy(abspath, &start[2], len);
+
+#if defined(SYSBIOS)
+            b = tivxPlatformGetEnv(abspath);
+#else
+            b = getenv(abspath);
+#endif
+
+            if (!b)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "Please define the environment variable %s.\n", b);
+
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                snprintf(abspath,
+                         TIOVX_UTILS_MAXPATHLENGTH-1,
+                         "%s%s", b, &end[1]);
+            }
+        }
+    }
+
+    return status;
 }
 

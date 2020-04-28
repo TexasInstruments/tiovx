@@ -75,7 +75,44 @@ extern "C" {
 
 #define TIOVX_UTILS_MAXPATHLENGTH   (512u)
 
-const char *tivx_utils_get_test_file_path();
+/**
+ * \brief Returns the absolute path defined by the environment variable VX_TEST_DATA_PATH.
+ *
+ * \return A string if VX_TEST_DATA_PATH is defined. NULL, otherwise.
+ */
+const char *tivx_utils_get_test_file_dir();
+
+/**
+ * \brief Conditionally returns the absolute path of the 'filename'.
+ *
+ * \param filename [in] filename
+ * \param abspath [out] This shall contain the path to the filename as follows:
+ *                      - If the 'filename' contains reference to environment
+ *                        variable then it shall be expanded and an absolute
+ *                        file path is returned. If the environment variable
+ *                        is not defined then VX_FAILURE is returned. The
+ *                        content of 'abspath' will be undefined.
+ *                      - Otherwise, the 'filename' is copied to 'abspath' as
+ *                        is.
+ *                        ex:-
+ *                        1)- ${ENV_NAME} maps to /home/someone/test_dir
+ *                            filename = "${ENV_NAME}/colors.bmp"
+ *                            abspath = "/home/someone/test_dir/colors.bmp"
+ *                            return VX_SUCCESS
+ *                        2)- ${ENV_NAME} not defined
+ *                            filename = "${ENV_NAME}/colors.bmp"
+ *                            abspath = not defined
+ *                            return VX_FAILURE
+ *                        2)- filename = "/some/dir/name/colors.bmp"
+ *                            abspath = "/some/dir/name/colors.bmp"
+ *                            return VX_SUCCESS
+ *                        NOTE: The length of 'abspath' will be truncated to
+ *                              TIOVX_UTILS_MAXPATHLENGTH-1;
+ *
+ * \return  - VX_SUCCESS and the content of 'abspath' will be valid
+ *          - VX_FAILURE and the content of 'abspath' will be undefined
+ */
+vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename);
 
 #ifdef __cplusplus
 }

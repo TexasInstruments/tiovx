@@ -102,7 +102,7 @@
 #include <utility.h>
 
 /** \brief Input file name */
-#define IN_FILE_NAME       "colors.bmp"
+#define IN_FILE_NAME       "${VX_TEST_DATA_PATH}/colors.bmp"
 
 /**
  * \brief Tutorial Entry Point

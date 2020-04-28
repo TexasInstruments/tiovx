@@ -107,10 +107,10 @@
 #include <utility.h>
 
 /** \brief Input file name */
-#define IN_FILE_NAME       "colors.bmp"
+#define IN_FILE_NAME       "${VX_TEST_DATA_PATH}/colors.bmp"
 
 /** \brief Output file name */
-#define OUT_FILE_NAME      "vx_tutorial_image_crop_roi.bmp"
+#define OUT_FILE_NAME      "${VX_TEST_DATA_PATH}/vx_tutorial_image_crop_roi.bmp"
 
 vx_image  load_image_from_handle_from_file(
             vx_context context,
@@ -256,9 +256,8 @@ vx_image  load_image_from_handle_from_file(
             vx_bool convert_to_gray_scale,
             tivx_utils_bmp_image_params_t *imgParams)
 {
-    char file[TIOVX_UTILS_MAXPATHLENGTH];
+    char abspath[TIOVX_UTILS_MAXPATHLENGTH];
     vx_image image = NULL;
-    const char *basePath;
     uint32_t width, height, stride;
     vx_df_image df;
     vx_status vxStatus;
@@ -266,27 +265,9 @@ vx_image  load_image_from_handle_from_file(
     void *data_ptr;
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
 
-    status   = (vx_status)VX_SUCCESS;
-    basePath = tivx_utils_get_test_file_path();
+    status = tivx_utils_get_test_file_path(abspath, filename);
 
-    if (basePath == NULL)
-    {
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        size_t  size;
-
-        size = snprintf(file, TIOVX_UTILS_MAXPATHLENGTH, "%s/%s", basePath, filename);
-
-        if (size > TIOVX_UTILS_MAXPATHLENGTH)
-        {
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-
-    status = tivx_utils_bmp_read(file, dcn, imgParams);
+    status = tivx_utils_bmp_read(abspath, dcn, imgParams);
 
     if (status == 0)
     {

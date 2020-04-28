@@ -112,10 +112,10 @@
 #include <utility.h>
 
 /** \brief Input file name */
-#define IN_FILE_NAME       "colors.bmp"
+#define IN_FILE_NAME       "${VX_TEST_DATA_PATH}/colors.bmp"
 
 /** \brief Output file name */
-#define OUT_FILE_NAME      "vx_tutorial_image_histogram_out.bmp"
+#define OUT_FILE_NAME      "${VX_TEST_DATA_PATH}/vx_tutorial_image_histogram_out.bmp"
 
 
 vx_image convert_distribution_to_image(vx_distribution distribution,
