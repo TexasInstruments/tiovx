@@ -773,17 +773,20 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             if (NULL != h3a_out_desc)
             {
-                status = tivxVpacVissMapUserDesc(&vissObj->h3a_out_target_ptr,
-                    h3a_out_desc, sizeof(tivx_h3a_data_t));
-                if ((vx_status)VX_SUCCESS == status)
+                if (h3a_out_desc->mem_size == sizeof(tivx_h3a_data_t))
                 {
-                    h3a_out =
-                        (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
+                    vissObj->h3a_out_target_ptr = tivxMemShared2TargetPtr(&h3a_out_desc->mem_ptr);
+
+                    h3a_out = (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
+
+                    /* H3A output is special case, only need to map the header since rest is written by HW */
+                    tivxMemBufferMap(vissObj->h3a_out_target_ptr, sizeof(tivx_h3a_aew_config)+12U,
+                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacVissProcess: Failed to Map H3A Result Descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "tivxVpacVissProcess: Failed to Map H3A Result Descriptor\n");
+                    status = (vx_status)VX_FAILURE;
                 }
             }
         }
@@ -857,6 +860,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             vissObj->outFrm[VHWA_M2M_VISS_OUT_H3A_IDX].addr[0u] =
                 (uint64_t)h3a_out->data;
+
+            /* Unmap even before processing since the ARM is done, rest of buffer is HW */
+            tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, sizeof(tivx_h3a_aew_config)+12U, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY);
+            vissObj->h3a_out_target_ptr = NULL;
         }
     }
 
@@ -917,11 +925,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if (((vx_status)VX_SUCCESS == status) && (NULL != config_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr, config_desc);
-    }
-
-    if (((vx_status)VX_SUCCESS == status) && (NULL != h3a_out_desc))
-    {
-        tivxVpacVissUnmapUserDesc(&vissObj->h3a_out_target_ptr, h3a_out_desc);
     }
 
     return (status);
