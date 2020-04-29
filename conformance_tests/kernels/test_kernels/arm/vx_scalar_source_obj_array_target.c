@@ -100,10 +100,12 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
     tivx_obj_desc_object_array_t *out_object_array_desc;
     tivx_obj_desc_scalar_t *out_scalar_desc[4];
     tivx_obj_desc_scalar_t *scalar_out_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    tivx_obj_desc_t *out_object_array_desc_elem[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivxScalarSourceObjArrayParams *prms = NULL;
     uint32_t size, i;
     vx_enum state;
     vx_uint8 out_value;
+    uint64_t timestamp;
 
     if ( (num_params != TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX])
@@ -159,7 +161,15 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
             }
         }
 
-        obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX]->timestamp = tivxPlatformGetTimeInUsecs();
+        timestamp = tivxPlatformGetTimeInUsecs();
+
+        tivxGetObjDescList(out_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)out_object_array_desc_elem, out_object_array_desc->num_items);
+        for (i = 0; i < out_object_array_desc->num_items; i++)
+        {
+            out_object_array_desc_elem[i]->timestamp = timestamp;
+        }
+
+        obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX]->timestamp = timestamp;
     }
 
     return status;

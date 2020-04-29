@@ -1429,19 +1429,6 @@ void tivxTargetSetTimestamp(
             {
                 obj_timestamp = obj_desc[prm_id]->timestamp;
 
-                /* Handle case of parent objects */
-                parent_obj_desc = tivxObjDescGet(
-                        obj_desc[prm_id]->scope_obj_desc_id);
-
-                if(parent_obj_desc!=NULL)
-                {
-                    if (parent_obj_desc->timestamp > obj_timestamp)
-                    {
-                        obj_timestamp = parent_obj_desc->timestamp;
-                        obj_desc[prm_id]->timestamp = obj_timestamp;
-                    }
-                }
-
                 if (obj_timestamp > timestamp)
                 {
                     timestamp = obj_timestamp;
