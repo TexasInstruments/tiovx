@@ -63,9 +63,9 @@
 #include <VX/vx.h>
 #include <TI/tivx.h>
 #include <TI/j7.h>
-#include "test_engine/test.h"
 #include <string.h>
-#include "tivx_utils_file_rd_wr.h"
+#include "test_engine/test.h"
+#include "test_engine/test_utils_file_bmp_rd_wr.h"
 #include "tivx_utils_checksum.h"
 #include "test_hwa_common.h"
 
@@ -87,7 +87,7 @@ static vx_status load_image_into_pyramid_level(vx_pyramid pyr, uint32_t level, c
 
     make_filename(filename, filename_prefix, level);
     image = vxGetPyramidLevel(pyr, level);
-    status = tivx_utils_load_vximage_from_bmpfile(image, filename, vx_true_e);
+    status = test_utils_load_vximage_from_bmpfile(image, filename, vx_true_e);
     vxReleaseImage(&image);
     return status;
 }
@@ -100,13 +100,13 @@ static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confiden
     snprintf(filename, MAX_ABS_FILENAME, "%s/%s_flow_img.bmp",
         ct_get_test_file_path(), filename_prefix);
 
-    status = tivx_utils_save_vximage_to_bmpfile(filename, flow_vector_img);
+    status = test_utils_save_vximage_to_bmpfile(filename, flow_vector_img);
     if(status == VX_SUCCESS)
     {
         snprintf(filename, MAX_ABS_FILENAME, "%s/%s_confidence_img.bmp",
             ct_get_test_file_path(), filename_prefix);
 
-        status = tivx_utils_save_vximage_to_bmpfile(filename, confidence_img);
+        status = test_utils_save_vximage_to_bmpfile(filename, confidence_img);
     }
 
     return status;
