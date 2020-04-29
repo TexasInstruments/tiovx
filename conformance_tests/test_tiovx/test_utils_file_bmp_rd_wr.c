@@ -62,9 +62,9 @@
 
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
-#include <test.h>
-#include <test_image.h>
-#include <test_bmp.h>
+#include <test_engine/test.h>
+#include <test_engine/test_image.h>
+#include <test_engine/test_bmp.h>
 #include <test_utils_file_bmp_rd_wr.h>
 
 static CT_Image test_utils_load_ct_image_from_bmpfile(const char* fileName, int32_t dcn);

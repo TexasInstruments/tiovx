@@ -115,14 +115,14 @@ vx_status tivx_utils_bmp_file_read_from_memory(
 vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char *filename, vx_bool convert_to_gray_scale)
 {
     tivx_utils_bmp_image_params_t   imgParams;
-    char abspath[TIOVX_UTILS_MAXPATHLENGTH];
+    char outFilePath[TIOVX_UTILS_MAXPATHLENGTH];
     vx_image image = NULL;
     uint32_t width, height, stride;
     vx_df_image df;
     vx_status status;
     void *data_ptr = NULL;
 
-    status = tivx_utils_get_test_file_path(abspath, filename);
+    status = tivx_utils_expand_file_path(filename, outFilePath);
 
     if(status == (vx_status)VX_SUCCESS)
     {
@@ -137,7 +137,7 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char 
          * \code
          */
         status = tivx_utils_bmp_file_read(
-                    abspath,
+                    outFilePath,
                     convert_to_gray_scale,
                     &imgParams);
         /** \endcode */
@@ -263,7 +263,7 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, const char 
  */
 vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image image)
 {
-    char                        abspath[TIOVX_UTILS_MAXPATHLENGTH];
+    char                        outFilePath[TIOVX_UTILS_MAXPATHLENGTH];
     void                       *data_ptr;
     char                       *dotpos;
     vx_uint32                   width;
@@ -274,7 +274,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
     vx_df_image                 df;
     vx_status                   status;
 
-    status = tivx_utils_get_test_file_path(abspath, filename);
+    status = tivx_utils_expand_file_path(filename, outFilePath);
 
     /** - Check if image object is valid
      *
@@ -336,12 +336,12 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
              * above
              * \code
              */
-            dotpos = strrchr(abspath, '.');
+            dotpos = strrchr(outFilePath, '.');
             if(dotpos &&
                (strcmp(dotpos, ".bmp") == 0 ||
                 strcmp(dotpos, ".BMP") == 0))
             {
-                tivx_utils_bmp_write(abspath,
+                tivx_utils_bmp_write(outFilePath,
                                      data_ptr,
                                      width,
                                      height,
@@ -368,7 +368,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(const char *filename, vx_image imag
 
 vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {
-    char abspath[TIOVX_UTILS_MAXPATHLENGTH];
+    char outFilePath[TIOVX_UTILS_MAXPATHLENGTH];
     tivx_utils_bmp_image_params_t   imgParams;
     uint32_t width, height, stride;
     vx_df_image df;
@@ -381,7 +381,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
     vx_bool enable_rgb2gray, enable_gray2rgb;
     vx_map_id map_id;
 
-    status = tivx_utils_get_test_file_path(abspath, filename);
+    status = tivx_utils_expand_file_path(filename, outFilePath);
 
     /** - Check if image object is valid
      *
@@ -395,7 +395,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
     if(status == (vx_status)VX_SUCCESS)
     {
         status = tivx_utils_bmp_file_read(
-                    abspath,
+                    outFilePath,
                     convert_to_gray_scale,
                     &imgParams);
     }

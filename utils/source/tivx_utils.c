@@ -83,20 +83,20 @@ const char *tivx_utils_get_test_file_dir()
 
 }
 
-vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename)
+vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
 {
     char       *start;
     char       *end;
     vx_status  status;
 
     status = (vx_status)VX_SUCCESS;
-    start  = strstr(filename, "${");
-    end    = strstr(filename, "}");
+    start  = strstr(inFilePath, "${");
+    end    = strstr(inFilePath, "}");
 
     if ((start == NULL) || (end == NULL))
     {
         /* The path does not contain a reference to an environment variable. */
-        strncpy(abspath, filename, TIOVX_UTILS_MAXPATHLENGTH);
+        strncpy(outFilePath, inFilePath, TIOVX_UTILS_MAXPATHLENGTH);
     }
     else
     {
@@ -110,13 +110,13 @@ vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename)
 
         if (status == (vx_status)VX_SUCCESS)
         {
-            memset(abspath, 0, TIOVX_UTILS_MAXPATHLENGTH);
-            strncpy(abspath, &start[2], len);
+            memset(outFilePath, 0, TIOVX_UTILS_MAXPATHLENGTH);
+            strncpy(outFilePath, &start[2], len);
 
 #if defined(SYSBIOS)
-            b = tivxPlatformGetEnv(abspath);
+            b = tivxPlatformGetEnv(outFilePath);
 #else
-            b = getenv(abspath);
+            b = getenv(outFilePath);
 #endif
 
             if (!b)
@@ -128,7 +128,7 @@ vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename)
             }
             else
             {
-                snprintf(abspath,
+                snprintf(outFilePath,
                          TIOVX_UTILS_MAXPATHLENGTH-1,
                          "%s%s", b, &end[1]);
             }

@@ -256,7 +256,7 @@ vx_image  load_image_from_handle_from_file(
             vx_bool convert_to_gray_scale,
             tivx_utils_bmp_image_params_t *imgParams)
 {
-    char abspath[TIOVX_UTILS_MAXPATHLENGTH];
+    char outFilePath[TIOVX_UTILS_MAXPATHLENGTH];
     vx_image image = NULL;
     uint32_t width, height, stride;
     vx_df_image df;
@@ -265,9 +265,9 @@ vx_image  load_image_from_handle_from_file(
     void *data_ptr;
     int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
 
-    status = tivx_utils_get_test_file_path(abspath, filename);
+    status = tivx_utils_expand_file_path(filename, outFilePath);
 
-    status = tivx_utils_bmp_read(abspath, dcn, imgParams);
+    status = tivx_utils_bmp_read(outFilePath, dcn, imgParams);
 
     if (status == 0)
     {

@@ -83,36 +83,37 @@ extern "C" {
 const char *tivx_utils_get_test_file_dir();
 
 /**
- * \brief Conditionally returns the absolute path of the 'filename'.
+ * \brief Conditionally returns the absolute path of the 'inFilePath'.
  *
- * \param filename [in] filename
- * \param abspath [out] This shall contain the path to the filename as follows:
- *                      - If the 'filename' contains reference to environment
+ * \param inFilePath [in] inFilePath
+ *
+ * \param outFilePath [out] This shall contain the path to the inFilePath as follows:
+ *                      - If the 'inFilePath' contains reference to environment
  *                        variable then it shall be expanded and an absolute
  *                        file path is returned. If the environment variable
  *                        is not defined then VX_FAILURE is returned. The
- *                        content of 'abspath' will be undefined.
- *                      - Otherwise, the 'filename' is copied to 'abspath' as
+ *                        content of 'outFilePath' will be undefined.
+ *                      - Otherwise, the 'inFilePath' is copied to 'outFilePath' as
  *                        is.
  *                        ex:-
  *                        1)- ${ENV_NAME} maps to /home/someone/test_dir
- *                            filename = "${ENV_NAME}/colors.bmp"
- *                            abspath = "/home/someone/test_dir/colors.bmp"
+ *                            inFilePath = "${ENV_NAME}/colors.bmp"
+ *                            outFilePath = "/home/someone/test_dir/colors.bmp"
  *                            return VX_SUCCESS
  *                        2)- ${ENV_NAME} not defined
- *                            filename = "${ENV_NAME}/colors.bmp"
- *                            abspath = not defined
+ *                            inFilePath = "${ENV_NAME}/colors.bmp"
+ *                            outFilePath = not defined
  *                            return VX_FAILURE
- *                        2)- filename = "/some/dir/name/colors.bmp"
- *                            abspath = "/some/dir/name/colors.bmp"
+ *                        2)- inFilePath = "/some/dir/name/colors.bmp"
+ *                            outFilePath = "/some/dir/name/colors.bmp"
  *                            return VX_SUCCESS
- *                        NOTE: The length of 'abspath' will be truncated to
+ *                        NOTE: The length of 'outFilePath' will be truncated to
  *                              TIOVX_UTILS_MAXPATHLENGTH-1;
  *
- * \return  - VX_SUCCESS and the content of 'abspath' will be valid
- *          - VX_FAILURE and the content of 'abspath' will be undefined
+ * \return  - VX_SUCCESS and the content of 'outFilePath' will be valid
+ *          - VX_FAILURE and the content of 'outFilePath' will be undefined
  */
-vx_status tivx_utils_get_test_file_path(char *abspath, const char *filename);
+vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath);
 
 #ifdef __cplusplus
 }
