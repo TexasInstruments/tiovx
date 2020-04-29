@@ -77,6 +77,7 @@
     CT_EXPAND(nextmacro(testArgName "/sz=64x48", __VA_ARGS__, 64, 48))
 
 static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack);
+static void ct_write_user_data_object(vx_user_data_object user_data_object, const char* fileName);
 static vx_status save_image_from_viss(vx_image y8, char *filename_prefix);
 
 TESTCASE(tivxHwaVpacViss, CT_VXContext, ct_setup_vx_context, 0)
@@ -746,14 +747,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
             /* Creating DCC */
             dcc_buff_size = appIssGetDCCSizeVISS(SENSOR_SONY_IMX390_UB953_D3, 0U);
 
-            dcc_param_viss = vxCreateUserDataObject(
-                context,
-                (const vx_char*)&dcc_viss_user_data_object_name,
-                dcc_buff_size,
-                NULL
-            );
+            ASSERT_VX_OBJECT(dcc_param_viss = vxCreateUserDataObject( context, (const vx_char*)&dcc_viss_user_data_object_name,
+                dcc_buff_size, NULL),(enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-            vxMapUserDataObject(
+            VX_CALL(vxMapUserDataObject(
                 dcc_param_viss,
                 0,
                 dcc_buff_size,
@@ -762,14 +759,36 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
                 VX_WRITE_ONLY,
                 VX_MEMORY_TYPE_HOST,
                 0
-            );
+            ));
             memset(dcc_viss_buf, 0xAB, dcc_buff_size);
 
             dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
             ASSERT(dcc_status == 0);
 
-            vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id);
+            VX_CALL(vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id));
             /* Done w/ DCC */
+
+            /* Creating H3A output */
+            ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t", sizeof(tivx_h3a_data_t), NULL),
+                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            if(NULL != h3a_aew_af)
+            {
+                VX_CALL(vxMapUserDataObject(h3a_aew_af,
+                    0,
+                    sizeof(tivx_h3a_data_t),
+                    &dcc_viss_buf_map_id,
+                    (void **)&dcc_viss_buf,
+                    (vx_enum)VX_WRITE_ONLY,
+                    (vx_enum)VX_MEMORY_TYPE_HOST,
+                    0
+                    ));
+
+                memset(dcc_viss_buf, 0, sizeof(tivx_h3a_data_t));
+
+                VX_CALL(vxUnmapUserDataObject(h3a_aew_af, dcc_viss_buf_map_id));
+            }
+
         }
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -810,6 +829,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         //printf("0x%08x\n", checksum_actual);
         ASSERT(checksum_expected == checksum_actual);
 
+        if(0 != arg_->dcc)
+        {
+            checksum_actual = tivx_utils_user_data_object_checksum(h3a_aew_af, 0, sizeof(tivx_h3a_data_t));
+            //printf("0x%08x\n", checksum_actual);
+            ASSERT(0xccff4f2d == checksum_actual);
+            //ct_write_user_data_object(h3a_aew_af, "output/viss_dcc_h3a_out.bin");
+        }
+
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseImage(&y8_r8_c2));
@@ -821,6 +848,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         }
         if(0 != arg_->dcc)
         {
+            VX_CALL(vxReleaseUserDataObject(&h3a_aew_af));
             VX_CALL(vxReleaseUserDataObject(&dcc_param_viss));
         }
 
@@ -1645,7 +1673,7 @@ static void ct_read_user_data_object(vx_user_data_object user_data_object, const
         fseek(f, 0, SEEK_SET);
         if( fread(buf, 1, sz, f) == sz )
         {
-            uint32_t size;
+            vx_size size = 0;
             vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
             if (sz < size)
             {
@@ -1661,6 +1689,44 @@ static void ct_read_user_data_object(vx_user_data_object user_data_object, const
     ct_free_mem(buf);
     fclose(f);
 }
+
+static void ct_write_user_data_object(vx_user_data_object user_data_object, const char* fileName)
+{
+    FILE* f = 0;
+    size_t sz;
+    char* buf = 0;
+    char file[MAXPATHLENGTH];
+    vx_size size;
+
+    if (!fileName)
+    {
+        CT_ADD_FAILURE("User data object file name not specified\n");
+        return;
+    }
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return, (sz < MAXPATHLENGTH));
+
+    f = fopen(file, "wb");
+    if (!f)
+    {
+        CT_ADD_FAILURE("Can't open user data object file: %s\n", fileName);
+        return;
+    }
+
+    VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size)));
+
+    if( size > 0 )
+    {
+        buf = (char*)ct_alloc_mem(size);
+        VX_CALL(vxCopyUserDataObject(user_data_object, 0, size, buf, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        fwrite(buf, 1, size, f);
+    }
+
+    ct_free_mem(buf);
+    fclose(f);
+}
+
 
 static vx_status save_image_from_viss(vx_image y8, char *filename_prefix)
 {

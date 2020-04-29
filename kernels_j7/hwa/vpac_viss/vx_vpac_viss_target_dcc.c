@@ -341,6 +341,7 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
         inCfg->inSel = vissPrms->h3a_in;
 
         /* Fixing downshift factor to 0. Mapping to 10-bit expected to come from DCC H3A LUT for linear as well as WDR dataflow */
+        /* TODO: Use shift when H3A Lut is not enabled */
         inCfg->shift = 0U;
 
         vissObj->vissCfgRef.rfeH3aInCfg = inCfg;

@@ -680,7 +680,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         if (((vx_status)VX_SUCCESS == status) && (1u == vissObj->isConfigUpdated))
         {
             status = tivxVpacVissSetConfigInSim(prms);
-            //prms->rawfe_params.h3a_mux_shift = 2u; // temporary override
 
             if ((vx_status)VX_SUCCESS != status)
             {
@@ -1302,9 +1301,6 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
 
         /* RAWFE */
         prms->rawfe_params.h3a_mux_sel = vissPrms->h3a_in;
-
-        /* TODO: Use shift when H3A Lut is not enabled */
-        prms->rawfe_params.h3a_mux_shift = 2u;
 
         /* H3A */
         if( h3a_out_desc != NULL)
