@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -82,6 +82,7 @@ vx_status tivxAddKernelScalarSourceObjArray(vx_context context);
 vx_status tivxAddKernelScalarSinkObjArray(vx_context context);
 vx_status tivxAddKernelPyramidIntermediate(vx_context context);
 vx_status tivxAddKernelPyramidSource(vx_context context);
+vx_status tivxAddKernelCmdTimeoutTest(vx_context context);
 
 vx_status tivxRemoveKernelScalarSink(vx_context context);
 vx_status tivxRemoveKernelScalarSource(vx_context context);
@@ -94,6 +95,7 @@ vx_status tivxRemoveKernelScalarSourceObjArray(vx_context context);
 vx_status tivxRemoveKernelScalarSinkObjArray(vx_context context);
 vx_status tivxRemoveKernelPyramidIntermediate(vx_context context);
 vx_status tivxRemoveKernelPyramidSource(vx_context context);
+vx_status tivxRemoveKernelCmdTimeoutTest(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
@@ -107,6 +109,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelScalarSinkObjArray, &tivxRemoveKernelScalarSinkObjArray},
     {&tivxAddKernelPyramidIntermediate, &tivxRemoveKernelPyramidIntermediate},
     {&tivxAddKernelPyramidSource, &tivxRemoveKernelPyramidSource},
+    {&tivxAddKernelCmdTimeoutTest, &tivxRemoveKernelCmdTimeoutTest},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -136,6 +139,10 @@ void tivxTestKernelsLoadKernels(vx_context context)
         tivxRegisterTestKernelsKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
 
+#if defined(x86_64) || defined(A72) || defined(A15)
+        tivxRegisterTestKernelsTargetArmKernels();
+#endif
+
         gIsTestKernelsKernelsLoad = 1U;
     }
 }
@@ -146,6 +153,10 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     {
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
+
+#if defined(x86_64) || defined(A72) || defined(A15)
+        tivxUnRegisterTestKernelsTargetArmKernels();
+#endif
 
         gIsTestKernelsKernelsLoad = 0U;
     }

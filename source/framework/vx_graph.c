@@ -35,6 +35,8 @@ static vx_status ownResetGraphPerf(vx_graph graph);
 
 static vx_status ownDestructGraph(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     vx_graph graph = (vx_graph)ref;
 
     ownGraphFreeStreaming(graph);
@@ -90,7 +92,13 @@ static vx_status ownDestructGraph(vx_reference ref)
 
         for(i=0; i<graph->num_supernodes; i++)
         {
-            ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
+            status1 = ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, (vx_enum)VX_INTERNAL, NULL);
+
+            if (status1 != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+                status = status1;
+            }
 
             graph->supernodes[i] = NULL;
         }
@@ -101,14 +109,20 @@ static vx_status ownDestructGraph(vx_reference ref)
     {
         vx_node node = graph->nodes[0];
 
-        vxRemoveNode(&node);
+        status1 = vxRemoveNode(&node);
+
+        if (status1 != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+            status = status1;
+        }
     }
 
     ownGraphDeleteQueues(graph);
     ownGraphFreeObjDesc(graph);
     tivxEventDelete(&graph->all_graph_completed_event);
 
-    return (vx_status)VX_SUCCESS;
+    return (vx_status)status;
 }
 
 static vx_status ownResetGraphPerf(vx_graph graph)
@@ -260,7 +274,8 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
 
 vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 {
-    vx_status status = (vx_status)VX_FAILURE;
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     if ((NULL != graph) &&
@@ -299,8 +314,14 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->nodes[i] = graph->nodes[graph->num_nodes-1U];
                 graph->nodes[graph->num_nodes-1U] = NULL;
                 graph->num_nodes--;
-                ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
-                status = (vx_status)VX_SUCCESS;
+                status1 = ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
+
+                if (status1 != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+                    status = status1;
+                }
+
                 ownGraphSetReverify(graph);
                 break;
             }
@@ -360,7 +381,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_data_ref_q = 0;
             graph->num_delay_data_ref_q = 0;
             graph->num_supernodes = 0;
-
+            graph->timeout_val = TIVX_DEFAULT_GRAPH_TIMEOUT;
 
             ownResetGraphPerf(graph);
 
@@ -409,12 +430,41 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
     vx_status status = (vx_status)VX_SUCCESS;
     if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: not supported\n");
-        status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+        switch (attribute)
+        {
+            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    vx_uint32   timeout_val = *(vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Invalid timeout value specified: %d\n",
+                                 timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        graph->timeout_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_GRAPH_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
+                status = (vx_status)VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: invalid graph object\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph object\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -434,7 +484,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph performance failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query graph performance failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -445,7 +495,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph state failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query graph state failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -456,7 +506,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of nodes failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query graph number of nodes failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -467,7 +517,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of parameters failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query graph number of parameters failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -478,19 +528,30 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of streaming executions\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query graph number of streaming executions\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_GRAPH_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = graph->timeout_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -798,13 +859,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             /* wait for all previous graph executions to finish
              *
              */
-            status = tivxEventWait(graph->all_graph_completed_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            status = tivxEventWait(graph->all_graph_completed_event, graph->timeout_val);
             if(status == (vx_status)VX_SUCCESS)
             {
                 if(graph->state == (vx_enum)VX_GRAPH_STATE_ABANDONED)
                 {
                     status = (vx_status)VX_ERROR_GRAPH_ABANDONED;
                 }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
             }
         }
         else

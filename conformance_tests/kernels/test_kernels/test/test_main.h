@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -67,6 +67,7 @@ TESTCASE(tivxTimestamp)
 TESTCASE(tivxTestSinkNode)
 TESTCASE(GraphStreaming)
 TESTCASE(tivxPyramidNode)
+TESTCASE(tivxCmdTimeout)
 #endif
 
 

@@ -99,6 +99,17 @@ void tivxRegisterTestKernelsTargetC66Kernels(void);
  */
 void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 
+/*!
+ * \brief Function to register TEST_KERNELS Kernels on the arm Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterTestKernelsTargetArmKernels(void);
+
+/*!
+ * \brief Function to un-register TEST_KERNELS Kernels on the arm Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterTestKernelsTargetArmKernels(void);
 
 #ifdef __cplusplus
 }

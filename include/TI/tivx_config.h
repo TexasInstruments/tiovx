@@ -392,7 +392,6 @@ extern "C" {
  */
 #define TIVX_GRAPH_MAX_PARAMS              (8u)
 
-
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg
  */
@@ -402,7 +401,6 @@ extern "C" {
  * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DELAYS              (8u)
-
 
 /*! \brief Max possible data references in a graph
  * \ingroup group_vx_graph_cfg
@@ -476,6 +474,27 @@ extern "C" {
  * \ingroup group_tivx_target_cfg
  */
 #define TIVX_DEFAULT_TILE_HEIGHT  (48u)
+
+/*! \brief Default timeout value for kernel level control event ACK waits.
+ * This is the default timeout value used for all node instances of this kernel
+ * when calling the node CREATE and DELETE target kernel functions, which can be
+ * overwritten for specific node instances by setting TIVX_NODE_TIMEOUT attribute.
+ * \ingroup group_tivx_target_kernel_instance_cfg
+ */
+#define TIVX_DEFAULT_KERNAL_TIMEOUT (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+
+/*! \brief Default timeout value for graph level control event ACK waits.
+ * This is the default timeout value used within the following APIs
+ * - vxWaitGraph()
+ * - vxGraphParameterDequeueDoneRef()
+ * \ingroup group_vx_graph_cfg
+ */
+#define TIVX_DEFAULT_GRAPH_TIMEOUT  (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+
+/*! \brief Max size of control command objects
+ * \ingroup group_vx_event_cfg
+ */
+#define TIVX_MAX_CTRL_CMD_OBJECTS (4u)
 
 #ifdef __cplusplus
 }

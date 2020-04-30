@@ -62,7 +62,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel parameters failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query kernel parameters failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -73,7 +73,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel name failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query kernel name failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -84,7 +84,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel enum failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query kernel enum failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -95,7 +95,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel local data size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query kernel local data size failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -106,19 +106,30 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel local data size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query kernel local data size failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_KERNEL_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = kernel->timeout_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_KERNEL_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Invalid query attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid query attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -139,7 +150,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set local data size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Set local data size failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -155,19 +166,43 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set pipeup buffers failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Set pipeup buffers failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_KERNEL_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    vx_uint32   timeout_val = *(vx_uint32*)ptr;
+
+                    /* Validate the timeout. It cannot be zero. */
+                    if (timeout_val == 0)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Invalid timeout value specified: %d\n",
+                                 timeout_val);
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    else
+                    {
+                        kernel->timeout_val = timeout_val;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Set TIVX_KERNEL_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Invalid set kernel attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid set kernel attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -311,6 +346,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->signature.num_parameters = numParams;
                 kernel->local_data_size = 0;
                 kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
+                kernel->timeout_val = TIVX_DEFAULT_KERNAL_TIMEOUT;
                 if(kernel->function != NULL)
                 {
                     kernel->is_target_kernel = (vx_bool)vx_false_e;

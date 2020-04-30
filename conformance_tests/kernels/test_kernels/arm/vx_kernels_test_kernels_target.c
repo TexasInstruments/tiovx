@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,14 +60,25 @@
  *
  */
 
-#ifndef TIVX_TEST_KERNELS_H_
-#define TIVX_TEST_KERNELS_H_
-
 #include <TI/tivx.h>
-#include <TI/j7.h>
-#include <TI/tivx_test_kernels_kernels.h>
-#include <TI/tivx_test_kernels_nodes.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_kernels_target_utils.h"
 
-#endif /* TIVX_TEST_KERNELS_H_ */
+void tivxAddTargetKernelCmdTimeoutTest(void);
+void tivxRemoveTargetKernelBamCmdTimeoutTest(void);
+void tivxRemoveTargetKernelCmdTimeoutTest(void);
 
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelCmdTimeoutTest, &tivxRemoveTargetKernelCmdTimeoutTest},
+};
+
+void tivxRegisterTestKernelsTargetArmKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+
+void tivxUnRegisterTestKernelsTargetArmKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

@@ -104,6 +104,8 @@ typedef struct _vx_kernel
     vx_uint32               connected_sink_bufs;
     /*! \brief capture state (VX_NODE_STATE_PIPEUP or VX_NODE_STATE_STEADY)*/
     vx_enum                 state;
+    /*! \brief Control API processing Timeout value in milli-sec. */
+    vx_uint32               timeout_val;
 
 } tivx_kernel_t;
 

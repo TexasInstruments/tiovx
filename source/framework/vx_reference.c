@@ -268,7 +268,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 
             if (ownRemoveReferenceFromContext(ref->context, ref) == (vx_bool)vx_false_e)
             {
-                VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt: Invalid reference\n");
+                VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
                 status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
             else
@@ -282,7 +282,12 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 /* if there is a destructor, call it. */
                 if (destructor != NULL)
                 {
-                    destructor(ref);
+                    status = destructor(ref);
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"destructor() returned error.\n");
+                    }
                 }
 
                 if(ref->lock != NULL)
@@ -296,7 +301,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         }
         *pref = NULL;
     } else {
-        VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR,"Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;

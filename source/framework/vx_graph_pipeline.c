@@ -365,7 +365,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 {
                     /* wait for "ref available for dequeue" event */
                     status = tivxDataRefQueueWaitDoneRef(data_ref_q,
-                            TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                            graph->timeout_val);
                     if(status!=(vx_status)VX_SUCCESS)
                     {
                         /* some error in waiting for event, break loop with error */

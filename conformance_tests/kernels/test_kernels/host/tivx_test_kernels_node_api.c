@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -220,6 +220,23 @@ VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSinkNode(vx_graph graph,
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_PYRAMID_SINK_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxCmdTimeoutTestNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_scalar            in,
+                                      vx_scalar            out)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)in,
+            (vx_reference)out
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME,
                                            prms,
                                            dimof(prms));
     return node;

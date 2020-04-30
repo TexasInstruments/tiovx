@@ -117,6 +117,9 @@ typedef struct _vx_node {
     /*! \brief The pointer to the super node that this node references */
     tivx_super_node super_node;
 
+    /*! \brief Control API processing Timeout value in milli-sec. */
+    vx_uint32       timeout_val;
+
 } tivx_node_t;
 
 /**

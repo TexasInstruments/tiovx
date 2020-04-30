@@ -54,6 +54,7 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
     vx_event_t event;
     vx_bool done = (vx_bool)vx_false_e;
     vx_uint32 state = IDLE;
+    vx_status status;
 
     while((vx_bool)vx_false_e == done)
     {
@@ -107,7 +108,14 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
                 if(DELETE == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-                    vxWaitGraph(graph);
+
+                    status = vxWaitGraph(graph);
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                    }
+
                     state = IDLE;
                     done = (vx_bool)vx_true_e;
                 }
@@ -117,7 +125,14 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
                     /* Execute graph then trigger another graph execution */
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
                     ownGraphScheduleGraph(graph, 1);
-                    vxWaitGraph(graph);
+
+                    status = vxWaitGraph(graph);
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                    }
+
                     graph->streaming_executions++;
                     tivxSendUserGraphEvent(graph, RUN, NULL);
                 }
@@ -136,6 +151,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
     vx_event_t event;
     vx_bool done = (vx_bool)vx_false_e;
     vx_uint32 state = IDLE;
+    vx_status status;
 
     while((vx_bool)vx_false_e == done)
     {
@@ -188,7 +204,14 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
                     /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
                     state = IDLE;
-                    vxWaitGraph(graph);
+
+                    status = vxWaitGraph(graph);
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph() failed.\n");
+                    }
+
                     tivxEventPost(graph->stop_done);
                 }
 
@@ -233,22 +256,27 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
                 graph->is_streaming  = (vx_bool)vx_true_e;
 
                 status = tivxSendUserGraphEvent(graph, START, NULL);
+
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxSendUserGraphEvent() failed.\n");
+                }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: this graph is currently streaming\n");
+                VX_PRINT(VX_ZONE_ERROR, "this graph is currently streaming\n");
                 status = (vx_status)VX_ERROR_INVALID_REFERENCE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: streaming has not been enabled. Please enable streaming prior to verifying graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "streaming has not been enabled. Please enable streaming prior to verifying graph\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -266,19 +294,24 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
         {
             tivxEventClear(graph->stop_done);
             tivxSendUserGraphEvent(graph, STOP, NULL);
-            tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            status = tivxEventWait(graph->stop_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+            }
 
             graph->is_streaming  = (vx_bool)vx_false_e;
         }
         else
         {
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-            VX_PRINT(VX_ZONE_ERROR, "vxStopGraphStreaming: Streaming has not been started\n");
+            VX_PRINT(VX_ZONE_ERROR, "Streaming has not been started\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxStopGraphStreaming: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -314,7 +347,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxWaitGraphEvent: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR,"invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -349,14 +382,14 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
 
             if ((vx_bool)vx_false_e == graph->trigger_node_set)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: trigger_node does not belong to graph\n");
+                VX_PRINT(VX_ZONE_ERROR, "trigger_node does not belong to graph\n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -492,7 +525,7 @@ void ownGraphFreeStreaming(vx_graph graph)
         /* Clear event and send user event */
         tivxEventClear(graph->delete_done);
         tivxSendUserGraphEvent(graph, DELETE, NULL);
-        tivxEventWait(graph->delete_done, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        tivxEventWait(graph->delete_done, graph->timeout_val);
 
         tivxTaskDelete(&graph->streaming_task_handle);
 

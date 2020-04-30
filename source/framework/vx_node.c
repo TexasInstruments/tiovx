@@ -38,6 +38,8 @@ static uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id);
 
 static vx_status ownDestructNode(vx_reference ref)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     vx_node node = (vx_node)ref;
     uint32_t p, pipe_id;
 
@@ -45,7 +47,12 @@ static vx_status ownDestructNode(vx_reference ref)
     {
         if(node->kernel!=NULL)
         {
-            ownNodeKernelDeinit(node);
+            status = ownNodeKernelDeinit(node);
+
+            if (status != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "ownNodeKernelDeinit() failed.\n");
+            }
 
             /* remove, don't delete, all references from the node itself */
             for (p = 0; p < node->kernel->signature.num_parameters; p++)
@@ -61,12 +68,33 @@ static vx_status ownDestructNode(vx_reference ref)
                             VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
                         }
                     }
-                    ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
+                    status1 = ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+
+                        if (status == (vx_status)VX_SUCCESS)
+                        {
+                            status = status1;
+                        }
+                    }
+
                     node->parameters[p] = NULL;
                 }
             }
 
-            ownReleaseReferenceInt((vx_reference *)&node->kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
+            status1 = ownReleaseReferenceInt((vx_reference *)&node->kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
+
+            if (status1 != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "ownReleaseReferenceInt() failed.\n");
+
+                if (status == (vx_status)VX_SUCCESS)
+                {
+                    status = status1;
+                }
+            }
         }
         for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
         {
@@ -80,7 +108,7 @@ static vx_status ownDestructNode(vx_reference ref)
             }
         }
     }
-    return (vx_status)VX_SUCCESS;
+    return (vx_status)status;
 }
 
 static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id)
@@ -222,8 +250,8 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
     return status;
 }
 
-vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
-    uint32_t node_cmd_id, vx_reference ref[], uint32_t num_refs)
+vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
+    uint32_t node_cmd_id, vx_reference ref[], uint32_t num_refs, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t cnt;
@@ -275,7 +303,7 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
                     node->obj_desc[0]->base.obj_desc_id,
                     node->obj_desc[0]->target_id,
                     replicated_node_idx, node_cmd_id,
-                    obj_desc_id, num_refs);
+                    obj_desc_id, num_refs, timeout);
             }
         }
     }
@@ -286,6 +314,18 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
     }
 
     return (status);
+}
+
+vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
+    uint32_t node_cmd_id, vx_reference ref[], uint32_t num_refs)
+{
+    vx_status status;
+
+    status = tivxNodeSendCommandTimed(node, replicated_node_idx,
+                                      node_cmd_id, ref, num_refs,
+                                      TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+
+    return status;
 }
 
 vx_status ownNodeKernelInitKernelName(vx_node node)
@@ -478,7 +518,7 @@ vx_status ownNodeKernelInit(vx_node node)
                 {
                     status = ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_CREATE,
-                        1, obj_desc_id);
+                        1, obj_desc_id, node->timeout_val);
                 }
 
                 if(status!=(vx_status)VX_SUCCESS)
@@ -549,12 +589,18 @@ vx_status ownNodeKernelDeinit(vx_node node)
             if(((vx_bool)vx_true_e == node->is_super_node) ||
                (NULL == node->super_node))
             {
-                status = ownContextSendCmd(node->base.context, node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+                status = ownContextSendCmd(node->base.context,
+                        node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_DELETE,
+                        1, obj_desc_id, node->timeout_val);
             }
         }
         if(status==(vx_status)VX_SUCCESS)
         {
             node->is_kernel_created = (vx_bool)vx_false_e;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_DELETE failed\n");
         }
     }
     return status;
@@ -1184,6 +1230,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->is_enable_send_error_event    = (vx_bool)vx_false_e;
                     node->is_super_node = (vx_bool)vx_false_e;
                     node->super_node = NULL;
+                    node->timeout_val = kernel->timeout_val;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;
@@ -1257,7 +1304,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case (vx_enum)VX_NODE_PERFORMANCE:
                 if(node->super_node != NULL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: 'node' is part of super node so VX_NODE_PERFORMANCE query is not available. Try to query the supernode instead.\n");
+                    VX_PRINT(VX_ZONE_ERROR,"'node' is part of super node so VX_NODE_PERFORMANCE query is not available. Try to query the supernode instead.\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
                 }
@@ -1267,14 +1314,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node performance failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node performance failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             case (vx_enum)VX_NODE_STATUS:
                 if(node->super_node != NULL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: 'node' is part of super node so VX_NODE_STATUS query is not available. Try to query the supernode instead.\n");
+                    VX_PRINT(VX_ZONE_ERROR,"'node' is part of super node so VX_NODE_STATUS query is not available. Try to query the supernode instead.\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
                 }
@@ -1288,7 +1335,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node status failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node status failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1299,7 +1346,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node local data size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node local data size failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1310,7 +1357,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node local data pointer failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node local data pointer failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1321,7 +1368,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node border failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node border failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1334,7 +1381,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node parameters failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node parameters failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1357,7 +1404,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query 'is node replicated' failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query 'is node replicated' failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1375,7 +1422,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node replicate flage failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node replicate flage failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1389,7 +1436,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node valid rect reset failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node valid rect reset failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1400,7 +1447,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node target string failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query node target string failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1411,19 +1458,30 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query VX_NODE_STATE failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Query VX_NODE_STATE failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_NODE_TIMEOUT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = node->timeout_val;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_NODE_TIMEOUT failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Invalid query node attribute\n");
+                VX_PRINT(VX_ZONE_ERROR,"Invalid query node attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR,"Invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1438,7 +1496,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
     {
         if (node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Graph has been verified\n");
+            VX_PRINT(VX_ZONE_ERROR,"Graph has been verified\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -1455,7 +1513,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                             /* local data ptr is allocated or local data size cannot be set
                              * by user
                              */
-                            VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: local data ptr is allocated or local data size cannot be set by user\n");
+                            VX_PRINT(VX_ZONE_ERROR,"local data ptr is allocated or local data size cannot be set by user\n");
                             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         }
                         else
@@ -1465,7 +1523,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Set node local data size failed\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Set node local data size failed\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
@@ -1478,7 +1536,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                             /* local data ptr is allocated or local data ptr cannot be set
                              * by user
                              */
-                            VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: local data ptr is allocated or local data size cannot be set by user\n");
+                            VX_PRINT(VX_ZONE_ERROR,"local data ptr is allocated or local data size cannot be set by user\n");
                             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         }
                         else
@@ -1488,7 +1546,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Set node local data ptr failed\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Set node local data ptr failed\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
@@ -1500,12 +1558,37 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Set node border failed\n");
+                        VX_PRINT(VX_ZONE_ERROR,"Set node border failed\n");
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    break;
+                case (vx_enum)TIVX_NODE_TIMEOUT:
+                    if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U) &&
+                        (NULL != node->kernel))
+                    {
+                        vx_uint32   timeout_val = *(vx_uint32*)ptr;
+
+                        /* Validate the timeout. It cannot be zero. */
+                        if (timeout_val == 0)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                     "Invalid timeout value specified: %d\n",
+                                     timeout_val);
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        }
+                        else
+                        {
+                            node->timeout_val = timeout_val;
+                        }
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Set TIVX_NODE_TIMEOUT failed\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Invalid attribute\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Invalid attribute\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
             }
@@ -1513,7 +1596,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxSetNodeAttribute: Invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR,"Invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -1546,10 +1629,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
             if(node->base.external_count != 0U) {
                 status = ownReleaseReferenceInt((vx_reference *)&node,
                     (vx_enum)VX_TYPE_NODE, (vx_enum)VX_EXTERNAL, NULL);
+
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt() failed.\n");
+                }
             }
             if(status == (vx_status)VX_SUCCESS) {
                 *n = NULL;
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"ownReleaseReferenceInt() failed.\n");
         }
     }
     return status;

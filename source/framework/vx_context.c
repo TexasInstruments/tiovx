@@ -108,19 +108,98 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
 static vx_status ownContextCreateCmdObj(vx_context context)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t    i;
 
-    context->obj_desc_cmd = NULL;
-    context->cmd_ack_event = NULL;
+    /* Create the free and pend queues. */
+    status = tivxQueueCreate(&context->free_queue,
+                             TIVX_MAX_CTRL_CMD_OBJECTS,
+                             context->free_queue_memory,
+                             0); /* non-blocking */
 
-    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
-    if(context->obj_desc_cmd != NULL)
+    if (status == (vx_status)VX_SUCCESS)
     {
-        status = tivxEventCreate(&context->cmd_ack_event);
+        status = tivxQueueCreate(&context->pend_queue,
+                                 TIVX_MAX_CTRL_CMD_OBJECTS,
+                                 context->pend_queue_memory,
+                                 0); /* non-blocking */
+
+        if (status!=(vx_status)VX_SUCCESS)
+        {
+            tivxQueueDelete(&context->free_queue);
+        }
     }
-    else
+
+    if (status == (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR,"context object descriptor allocation failed\n");
-        status = (vx_status)VX_ERROR_NO_RESOURCES;
+        /* Allocate {control object, event} pair. */
+        for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
+        {
+            context->obj_desc_cmd[i] = NULL;
+            context->cmd_ack_event[i] = NULL;
+        }
+
+        for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
+        {
+            context->obj_desc_cmd[i] = (tivx_obj_desc_cmd_t*)
+                tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
+
+            if (context->obj_desc_cmd[i] != NULL)
+            {
+                status = tivxEventCreate(&context->cmd_ack_event[i]);
+
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "context object event [%d] allocation failed\n", i);
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                    break;
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "context object descriptor [%d] allocation failed\n", i);
+                status = (vx_status)VX_ERROR_NO_RESOURCES;
+                break;
+            }
+        }
+
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            /* Release any allocated resources. */
+            for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
+            {
+                if (context->obj_desc_cmd[i] != NULL)
+                {
+                    tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+                }
+
+                if (context->cmd_ack_event[i] != NULL)
+                {
+                    tivxEventDelete(&context->cmd_ack_event[i]);
+                }
+            }
+
+            /* Delete the queues. No error checks are being made since we know
+             * that the queues have been created successfully above.
+             */
+            tivxQueueDelete(&context->free_queue);
+            tivxQueueDelete(&context->pend_queue);
+        }
+    }
+
+    if (status==(vx_status)VX_SUCCESS)
+    {
+        /* Enqueue all event element index's to free queue */
+        for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
+        {
+            /* This call wont fail since number of elements being inserted are equal to
+             * queue depth, hence not doing any error checks
+             */
+            tivxQueuePut(&context->free_queue,
+                         i,
+                         TIVX_EVENT_TIMEOUT_NO_WAIT);
+        }
     }
 
     return status;
@@ -128,29 +207,107 @@ static vx_status ownContextCreateCmdObj(vx_context context)
 
 static vx_status ownContextDeleteCmdObj(vx_context context)
 {
-    vx_status status = (vx_status)VX_SUCCESS, status1 = (vx_status)VX_SUCCESS, status2 = (vx_status)VX_SUCCESS;
+    vx_status status  = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
+    uint32_t  i;
 
-    if(context->obj_desc_cmd != NULL)
+    /* Release any allocated resources. */
+    for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
     {
-        status1 = tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd);
+        if (context->obj_desc_cmd[i] != NULL)
+        {
+            status1 = tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+
+            if (status1 != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "Context control comand memory [%d] free-ing failed\n",
+                         i);
+                status = status1;
+            }
+        }
+
+        if (context->cmd_ack_event[i] != NULL)
+        {
+            status1 = tivxEventDelete(&context->cmd_ack_event[i]);
+
+            if (status1 != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "Context control comand event [%d] deletion failed\n",
+                         i);
+
+                if (status == (vx_status)VX_SUCCESS)
+                {
+                    status = status1;
+                }
+            }
+        }
     }
-    if(context->cmd_ack_event != NULL)
+
+    status1 = tivxQueueDelete(&context->free_queue);
+
+    if (status1 != (vx_status)VX_SUCCESS)
     {
-        status2 = tivxEventDelete(&context->cmd_ack_event);
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Context control command free queue deletion failed\n");
+
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            status = status1;
+        }
     }
-    if(status1 != (vx_status)VX_SUCCESS)
+
+    status1 = tivxQueueDelete(&context->pend_queue);
+
+    if (status1 != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR,"Context memory free-ing failed\n");
-        status = (vx_status)VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR,
+                 "Context control command pend queue deletion failed\n");
+
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            status = status1;
+        }
     }
-    else if (status2 != (vx_status)VX_SUCCESS)
+
+    return status;
+}
+
+vx_status ownContextFlushCmdPendQueue(vx_context context)
+{
+    vx_status   status = (vx_status)VX_SUCCESS;
+    vx_bool     isEmpty;
+    uint32_t    i;
+
+    isEmpty = tivxQueueIsEmpty(&context->pend_queue);
+
+    if (isEmpty == (vx_bool)vx_false_e)
     {
-        VX_PRINT(VX_ZONE_ERROR,"Context event deletion failed\n");
-        status = (vx_status)VX_FAILURE;
-    }
-    else
-    {
-        /* do nothing */
+        uintptr_t   obj_id;
+
+        while (status == (vx_status)VX_SUCCESS)
+        {
+            status = tivxQueueGet(&context->pend_queue,
+                                  &obj_id,
+                                  TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                vx_status   status1;
+
+                status1 = tivxQueuePut(&context->free_queue,
+                                       obj_id,
+                                       TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                if (status1 != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "tivxQueuePut(free_queue) failed\n");
+                    status = status1;
+                }
+            }
+        }
     }
 
     return status;
@@ -431,63 +588,113 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     return status;
 }
 
-
 vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
     uint32_t target_id, uint32_t replicated_node_idx, uint32_t node_cmd_id,
-    const uint16_t obj_desc_id[], uint32_t num_obj_desc)
+    const uint16_t obj_desc_id[], uint32_t num_obj_desc, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t i;
-    tivx_obj_desc_cmd_t *obj_desc_cmd;
 
     if((ownIsValidContext(context) == (vx_bool)vx_true_e) &&
        (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS))
     {
+        tivx_obj_desc_cmd_t *obj_desc_cmd;
+        tivx_event cmd_ack_event;
+        uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
         ownContextLock(context);
 
-        tivx_uint64_to_uint32(
-            timestamp,
-            &context->obj_desc_cmd->timestamp_h,
-            &context->obj_desc_cmd->timestamp_l
-        );
+        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-        /* alloc obj desc for kernel name */
-        obj_desc_cmd = context->obj_desc_cmd;
-
-        obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
-        obj_desc_cmd->dst_target_id = target_id;
-        obj_desc_cmd->src_target_id =
-            (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
-        obj_desc_cmd->num_obj_desc = 1u;
-        obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
-        obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-        obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
-
-        obj_desc_cmd->replicated_node_idx = (int32_t)replicated_node_idx;
-        obj_desc_cmd->node_cmd_id = node_cmd_id;
-        obj_desc_cmd->num_cmd_params = num_obj_desc;
-        for (i = 0; i < num_obj_desc; i ++)
+        if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {
-            obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
-        }
+            obj_desc_cmd  = context->obj_desc_cmd[obj_id];
+            cmd_ack_event = context->cmd_ack_event[obj_id];
 
-        status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+            tivx_uint64_to_uint32(
+                timestamp,
+                &obj_desc_cmd->timestamp_h,
+                &obj_desc_cmd->timestamp_l
+            );
 
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            status = tivxEventWait(context->cmd_ack_event,
-                TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-        }
+            obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
+            obj_desc_cmd->dst_target_id = target_id;
+            obj_desc_cmd->src_target_id =
+                (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+            obj_desc_cmd->num_obj_desc = 1u;
+            obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
+            obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+            obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
 
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+            obj_desc_cmd->replicated_node_idx = (int32_t)replicated_node_idx;
+            obj_desc_cmd->node_cmd_id = node_cmd_id;
+            obj_desc_cmd->num_cmd_params = num_obj_desc;
+
+            for (i = 0; i < num_obj_desc; i ++)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "ownContextSendControlCmd: Failed to send object desc\n");
-                status = (vx_status)VX_FAILURE;
+                obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
+            }
+
+            status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                status = tivxEventWait(cmd_ack_event, timeout);
+
+                if (status == (vx_status)VX_SUCCESS)
+                {
+                    if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Command ack message returned failure cmd_status: %d\n",
+                                 obj_desc_cmd->cmd_status);
+                        status = (vx_status)VX_FAILURE;
+                    }
+
+                    /* Put the object back in the free queue. */
+                    status1 = tivxQueuePut(&context->free_queue,
+                                           obj_id,
+                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Failed to release the object desc id.\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else if (timeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+                {
+                    /* Queue the object into the pend queue for later
+                     * action.
+                     */
+                    status1 = tivxQueuePut(&context->pend_queue,
+                                           obj_id,
+                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Failed to queue the object desc in pend queue.\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                }
+            }
+            else
+            {
+                if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Failed to send object desc\n");
+                    status = (vx_status)VX_FAILURE;
+                }
             }
         }
 
@@ -499,65 +706,117 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         if (num_obj_desc >= TIVX_CMD_MAX_OBJ_DESCS)
         {
             VX_PRINT(VX_ZONE_ERROR,
-                "ownContextSendControlCmd: Invalid Number of object desc\n");
+                "Invalid Number of object desc\n");
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
-                "ownContextSendControlCmd: Invalid Context\n");
+                "Invalid Context\n");
         }
     }
 
     return status;
 }
 
-vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id)
+vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status1 = (vx_status)VX_SUCCESS;
     uint32_t i;
 
     if( (ownIsValidContext(context) == (vx_bool)vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
     {
+        tivx_obj_desc_cmd_t *obj_desc_cmd;
+        tivx_event cmd_ack_event;
+        uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
         ownContextLock(context);
 
-        tivx_uint64_to_uint32(
-            timestamp,
-            &context->obj_desc_cmd->timestamp_h,
-            &context->obj_desc_cmd->timestamp_l
-        );
+        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
-        context->obj_desc_cmd->cmd_id = cmd;
-        context->obj_desc_cmd->dst_target_id = target_id;
-        context->obj_desc_cmd->src_target_id = (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
-        context->obj_desc_cmd->num_obj_desc = num_obj_desc;
-        context->obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-        context->obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
-
-        for(i=0; i<num_obj_desc; i++)
+        if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {
-            context->obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
-        }
+            obj_desc_cmd  = context->obj_desc_cmd[obj_id];
+            cmd_ack_event = context->cmd_ack_event[obj_id];
 
-        status = tivxObjDescSend(target_id, context->obj_desc_cmd->base.obj_desc_id);
+            tivx_uint64_to_uint32(
+                timestamp,
+                &obj_desc_cmd->timestamp_h,
+                &obj_desc_cmd->timestamp_l
+            );
 
-        if(status == (vx_status)VX_SUCCESS)
-        {
-            status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            obj_desc_cmd->cmd_id = cmd;
+            obj_desc_cmd->dst_target_id = target_id;
+            obj_desc_cmd->src_target_id = (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+            obj_desc_cmd->num_obj_desc = num_obj_desc;
+            obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+            obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
 
-            if(status == (vx_status)VX_SUCCESS)
+            for(i=0; i<num_obj_desc; i++)
             {
-                if ((vx_status)VX_SUCCESS != (vx_status)context->obj_desc_cmd->cmd_status)
+                obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
+            }
+
+            status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                status = tivxEventWait(cmd_ack_event, timeout);
+
+                if (status == (vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Command ack message returned failure cmd_status: %d\n", context->obj_desc_cmd->cmd_status);
+                    if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Command ack message returned failure cmd_status: %d\n",
+                                 obj_desc_cmd->cmd_status);
+                        status = (vx_status)VX_FAILURE;
+                    }
+
+                    /* Put the object back in the free queue. */
+                    status1 = tivxQueuePut(&context->free_queue,
+                                           obj_id,
+                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Failed to release the object desc id.\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else if (timeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+                {
+                    /* Queue the object into the pend queue for later
+                     * action.
+                     */
+                    status1 = tivxQueuePut(&context->pend_queue,
+                                           obj_id,
+                                           TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                    if (status1 != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Failed to queue the object desc in pend queue.\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+
+                if (status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait() failed.\n");
+                }
+            }
+            else
+            {
+                if ((vx_status)VX_SUCCESS != (vx_status)obj_desc_cmd->cmd_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Failed to send object desc\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,"sending object descriptor failed\n");
         }
 
         ownContextUnlock(context);

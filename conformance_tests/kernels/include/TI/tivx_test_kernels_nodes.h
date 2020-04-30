@@ -150,6 +150,20 @@ VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSourceNode(vx_graph graph,
 VX_API_ENTRY vx_node VX_API_CALL tivxPyramidSinkNode(vx_graph graph,
                                       vx_pyramid           output);
 
+/*! \brief [Graph] Creates a CMD_TIMEOUT_TEST Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration
+ * \param [in] in
+ * \param [out] out
+ * \see <tt>TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME</tt>
+ * \ingroup group_vision_function_cmd_timeout_test
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxCmdTimeoutTestNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_scalar            in,
+                                      vx_scalar            out);
 #ifdef __cplusplus
 }
 #endif

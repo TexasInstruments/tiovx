@@ -130,7 +130,33 @@ extern "C" {
  */
 #define TIVX_KERNEL_PYRAMID_SINK_NAME     "com.ti.test_kernels.pyramid_sink"
 
+/*! \brief cmd_timeout_test kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME     "com.ti.test_kernels.cmd_timeout_test"
+
 /*! End of group_vision_function_test_kernels */
+
+/*!
+ * \brief The configuration data structure used by Cmd Timeout test node.
+ *
+ * \ingroup group_vision_function_cmd_timeout_test
+ */
+typedef struct
+{
+    /** Timeout in milli-sec to be used to simulate delay in the create API. */
+    uint32_t    createCmdTimeout;
+
+    /** Timeout in milli-sec to be used to simulate delay in the control API. */
+    uint32_t    deleteCmdTimeout;
+
+    /** Timeout in milli-sec to be used to simulate delay in the delete API. */
+    uint32_t    controlCmdTimeout;
+
+    /** Timeout in milli-sec to be used to simulate delay in the process API. */
+    uint32_t    processCmdTimeout;
+
+} tivx_cmd_timeout_params_t;
 
 /*!
  * \brief Used for the Application to load the test_kernels kernels into the context.

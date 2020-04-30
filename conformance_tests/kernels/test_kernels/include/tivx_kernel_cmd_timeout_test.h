@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,14 +60,24 @@
  *
  */
 
-#ifndef TIVX_TEST_KERNELS_H_
-#define TIVX_TEST_KERNELS_H_
+#ifndef _TIVX_KERNEL_CMD_TIMEOUT_TEST_
+#define _TIVX_KERNEL_CMD_TIMEOUT_TEST_
 
-#include <TI/tivx.h>
-#include <TI/j7.h>
-#include <TI/tivx_test_kernels_kernels.h>
-#include <TI/tivx_test_kernels_nodes.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif /* TIVX_TEST_KERNELS_H_ */
+#define TIVX_KERNEL_CMD_TIMEOUT_TEST_CONFIGURATION_IDX (0U)
+#define TIVX_KERNEL_CMD_TIMEOUT_TEST_IN_IDX (1U)
+#define TIVX_KERNEL_CMD_TIMEOUT_TEST_OUT_IDX (2U)
+
+#define TIVX_KERNEL_CMD_TIMEOUT_TEST_MAX_PARAMS (3U)
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _TIVX_KERNEL_CMD_TIMEOUT_TEST_ */
 
 

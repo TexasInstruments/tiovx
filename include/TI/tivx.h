@@ -168,8 +168,6 @@ extern "C" {
  */
 #define TIVX_CONFIG_PATH_LENGTH   (512u)
 
-
-
 /*!
  * \brief Flag used with tivxGraphParameterEnqueueReadyRef to
  *        indicate that this enqueue call if for pipeup phase
@@ -288,7 +286,41 @@ typedef enum _tivx_attribute_extensions_e {
     TIVX_REFERENCE_TIMESTAMP = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x2,
 
     /*! \brief Returns a boolean indicating whether or not a reference is invalid */
-    TIVX_REFERENCE_INVALID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x3
+    TIVX_REFERENCE_INVALID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x3,
+
+    /*! \brief Returns the graph stream executions. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
+    TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x4,
+
+    /*! \brief Set/Query the kernel level timeout parameter.
+     * Read-Write. Can be written at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * Refer to \ref TIVX_DEFAULT_KERNAL_TIMEOUT for details on the default
+     * value used for this attribute.
+     */
+    TIVX_KERNEL_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x5,
+
+    /*! \brief Set/Query the node level timeout parameter.
+     * Read-Write. Can be written at initialization as well as at runtime.
+     * This timeout attribute affects the operation of the node CREATE and
+     * DELETE target kernel functions.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * Refer to \ref TIVX_DEFAULT_KERNAL_TIMEOUT for details on the default
+     * value used for this attribute.
+     */
+    TIVX_NODE_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x6,
+
+    /*! \brief Set/Query the graph level timeout parameter.
+     * Read-Write. Can be written at initialization as well as at runtime.
+     * This timeout attribute affects the operation of the following APIs
+     * - vxWaitGraph()
+     * - vxGraphParameterDequeueDoneRef()
+     * - vxStopGraphStreaming()
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * Refer to \ref TIVX_DEFAULT_GRAPH_TIMEOUT for details on the default
+     * value used for this attribute.
+     */
+    TIVX_GRAPH_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x7
+
 } tivx_attribute_extensions_e;
 
 
@@ -314,16 +346,6 @@ typedef enum _tivx_df_image_e {
     TIVX_DF_IMAGE_RGB565 = VX_DF_IMAGE('R','5','6','5'),
 
 } tivx_df_image_e;
-
-/*! \brief Based on the vx_graph_attribute_e definition.
- * \ingroup group_tivx_ext_host
- */
-typedef enum _tivx_graph_attribute_e {
-
-    /*! \brief Returns the graph stream executions. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5,
-
-} tivx_graph_attribute_e;
 
 /*!
  * \brief Function to initialize OpenVX framework
@@ -708,6 +730,46 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
     uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
     vx_reference ref[], uint32_t num_refs);
 
+/*!
+ * \brief Send node specific Control command
+ * \details This API is used to send specific control command to the node.
+ *          Refer to Node documentation for specific control command.
+ *          Note that this API blocks for atmost 'timeout' milli-seconds i.e.
+ *          the API returns either when the command execution finishes or
+ *          if the timeout occurs, whichever occurs first.
+ *          This API is thread safe, ie multi commands can be sent to
+ *          same or different nodes from different threads
+ *
+ * \param [in] node Reference of the node to which this command is to be sent.
+ * \param [in] replicate_nodex_idx: In case of a non-replicated node this
+ *             should be 0, For a replicated node this is the index
+ *             of the replicated node to which the command is targeted.
+ *             To send same command to all replicated nodes use
+ *             TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
+ * \param [in] node_cmd_id Node specific control command id, refer to node
+ *             specific interface file
+ * \param [in,out] ref[] Node parameter,
+ *             This is an array of references, required as parameters for
+ *             this control command.
+ *             They can be any OpenVX object, created using create API.
+ *             It is bidirectional parameters, can be used for INPUT,
+ *             OUTPUT or both.
+ *             These parameters are list of references,
+ *             which are required for the control command on the given node.
+ *             Refer to node documentation to get details about the parameters
+ *             required for given control command.
+ *             Caller of this API should explicitely release these refs after
+ *             their usage is completed.
+ * \param [in] num_refs Number of valid entries/references in ref[] array
+ * \param [in] timeout Timeout in units of msecs, use
+ *             TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_status VX_API_CALL tivxNodeSendCommandTimed(vx_node node,
+    uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
+    vx_reference ref[], uint32_t num_refs, uint32_t timeout);
 
 /*!
  * \brief This API is used to get a reference to a node within a graph at a given index within the graph

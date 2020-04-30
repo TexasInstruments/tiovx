@@ -61,6 +61,8 @@
 */
 
 #include <vx_internal.h>
+#include <errno.h>
+#include <sys/time.h>
 #include <pthread.h>
 
 typedef struct _tivx_event_t {
@@ -82,7 +84,7 @@ vx_status tivxEventCreate(tivx_event *event)
     if(tmp_event==NULL)
     {
         *event = NULL;
-        VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Memory allocation failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "Memory allocation failed\n");
         status = (vx_status)VX_ERROR_NO_MEMORY;
     }
     else
@@ -101,7 +103,7 @@ vx_status tivxEventCreate(tivx_event *event)
             pthread_mutex_destroy(&tmp_event->lock);
             free(tmp_event);
             *event = NULL;
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Mutex initialization failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
@@ -148,7 +150,7 @@ vx_status tivxEventPost(tivx_event event)
         }
         if(status != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost: Mutex post failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex post failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -159,6 +161,8 @@ vx_status tivxEventPost(tivx_event event)
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    int32_t   status1;
+    int32_t   retVal;
 
     if(event)
     {
@@ -179,21 +183,85 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 else
                 if(timeout==TIVX_EVENT_TIMEOUT_NO_WAIT)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
                     status = (vx_status)VX_FAILURE;
                     done = (vx_bool)vx_true_e;
                 }
                 else
+                if(timeout!=TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
                 {
-                    pthread_cond_wait(&event->cond, &event->lock);
+                    /* A valid and finite timeout has been specified. */
+                    struct timespec ts;
+                    struct timeval  tv;
+
+                    retVal = gettimeofday(&tv, NULL);
+
+                    if (retVal == 0)
+                    {
+                        uint32_t        sec;
+                        unsigned long   micro;
+
+                        /* timeout is expected to be in milli-sec. */
+                        micro = tv.tv_usec + (timeout * 1000);
+                        sec   = tv.tv_sec;
+
+                        if (micro >= 1000000LLU)
+                        {
+                            micro %= 1000000LLU;
+                            sec   += micro/1000000LLU;
+                        }
+
+                        ts.tv_nsec = micro * 1000;
+                        ts.tv_sec  = sec;
+
+                        retVal = pthread_cond_timedwait(&event->cond,
+                                                        &event->lock,
+                                                        &ts);
+
+                        if (retVal == ETIMEDOUT)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Event timed-out.\n");
+                            status = (vx_status)VX_FAILURE;
+                            done = (vx_bool)vx_true_e;
+                        }
+                        else if (retVal)
+                        {
+                            /* Error other than ETIMEDOUT. */
+                            VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
+                            status = (vx_status)VX_FAILURE;
+                            done = (vx_bool)vx_true_e;
+                        }
+                    }
+                    else
+                    {
+                        /* gettimeofday() failed. */
+                        VX_PRINT(VX_ZONE_ERROR, "gettimeofday() failed.\n");
+                        status = (vx_status)VX_FAILURE;
+                        done = (vx_bool)vx_true_e;
+                    }
+                }
+                else
+                {
+                    /* timeout == TIVX_EVENT_TIMEOUT_WAIT_FOREVER */
+                    retVal = pthread_cond_wait(&event->cond, &event->lock);
+
+                    if (retVal)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Event wait failed.\n");
+                        status = (vx_status)VX_FAILURE;
+                        done = (vx_bool)vx_true_e;
+                    }
                 }
             }
-            status |= pthread_mutex_unlock(&event->lock);
-        }
-        if(status != 0)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Mutex unlock failed\n");
-            status = (vx_status)VX_FAILURE;
+
+            status1 = pthread_mutex_unlock(&event->lock);
+
+            if(status1 != 0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
+                status = (vx_status)VX_FAILURE;
+            }
         }
     }
 
@@ -214,7 +282,7 @@ vx_status tivxEventClear(tivx_event event)
         }
         if(status != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventClear: Mutex lock failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }

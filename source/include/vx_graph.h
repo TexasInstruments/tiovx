@@ -228,6 +228,9 @@ typedef struct _vx_graph {
     /*! Number of supernodes in the graph */
     uint32_t num_supernodes;
 
+    /*! \brief Control API processing Timeout value in milli-sec. */
+    vx_uint32 timeout_val;
+
 } tivx_graph_t;
 
 
