@@ -230,6 +230,38 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
  */
 tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance target_kernel_instance);
 
+static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
+static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val);
+static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_val);
+
+/*! \brief Macro to check if flag is set, flag MUST be of bit type
+ * \ingroup group_tivx_target_kernel_instance
+ */
+static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val)
+{
+    return (vx_bool)((flag_var & flag_val) == flag_val);
+}
+
+/*! \brief Macro to set flag value, flag MUST be of bit type
+ * \ingroup group_tivx_target_kernel_instance
+ */
+static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val)
+{
+    *flag_var |= flag_val;
+}
+
+/*! \brief Macro to clear flag value, flag MUST be of bit type
+ * \ingroup group_tivx_target_kernel_instance
+ */
+static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_val)
+{
+    uint32_t value = *flag_var;
+
+    value = value & ~flag_val;
+
+    *flag_var = value;
+}
+
 #ifdef __cplusplus
 }
 #endif

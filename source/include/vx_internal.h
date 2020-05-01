@@ -156,39 +156,8 @@ enum tivx_type_e {
  */
 #define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0U))
 
-static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
-static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val);
-static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_val);
 static inline void tivx_uint32_to_uint64(volatile uint64_t *val, uint32_t h, uint32_t l);
 static inline void tivx_uint64_to_uint32(uint64_t val, volatile uint32_t *h, volatile uint32_t *l);
-
-/*! \brief Macro to check if flag is set, flag MUST be of bit type
- * \ingroup group_vx_utils
- */
-static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val)
-{
-    return (vx_bool)((flag_var & flag_val) == flag_val);
-}
-
-/*! \brief Macro to set flag value, flag MUST be of bit type
- * \ingroup group_vx_utils
- */
-static inline void tivxFlagBitSet(volatile uint32_t *flag_var, uint32_t flag_val)
-{
-    *flag_var |= flag_val;
-}
-
-/*! \brief Macro to clear flag value, flag MUST be of bit type
- * \ingroup group_vx_utils
- */
-static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_val)
-{
-    uint32_t value = *flag_var;
-
-    value = value & ~flag_val;
-
-    *flag_var = value;
-}
 
 /*! \brief Macro to convert 2x uint32 to uint64
  * \ingroup group_vx_utils
