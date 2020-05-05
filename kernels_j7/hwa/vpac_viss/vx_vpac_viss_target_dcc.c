@@ -1002,6 +1002,7 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
 
             vissObj->vissCfgRef.glbceCfg = glbceCfg;
 
+
             prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
             prcptCfg->enable = (uint32_t)FALSE;
 
@@ -1009,6 +1010,8 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
             {
                 prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
             }
+            vissObj->vissCfgRef.fwdPrcpCfg = prcptCfg;
+
 
             prcptCfg = &vissObj->vissCfg.revPrcpCfg;
             prcptCfg->enable = (uint32_t)FALSE;
@@ -1017,11 +1020,10 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
             {
                 prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
             }
+            vissObj->vissCfgRef.revPrcpCfg = prcptCfg;
         }
         else
         {
-            vissObj->vissCfgRef.glbceCfg = glbceCfg;
-
             viss_glbce_dcc_cfg_t *dcc_cfg = NULL;
             dcc_cfg = &vissObj->dcc_out_prms.vissGlbceCfg;
 
@@ -1039,13 +1041,17 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
 
             memcpy(glbceCfg->asymLut, dcc_cfg->asym_lut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
 
+            vissObj->vissCfgRef.glbceCfg = glbceCfg;
+
             prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
             prcptCfg->enable = dcc_cfg->fwd_prcpt_en;
             memcpy(prcptCfg->table, dcc_cfg->fwd_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+            vissObj->vissCfgRef.fwdPrcpCfg = prcptCfg;
 
             prcptCfg = &vissObj->vissCfg.revPrcpCfg;
             prcptCfg->enable = (uint32_t) dcc_cfg->rev_prcpt_en;
             memcpy(prcptCfg->table, dcc_cfg->rev_prcpt_lut, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
+            vissObj->vissCfgRef.revPrcpCfg = prcptCfg;
         }
 
         /* Setting config flag to 1,

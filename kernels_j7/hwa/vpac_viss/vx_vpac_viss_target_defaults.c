@@ -677,6 +677,7 @@ static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj)
         {
             prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
         }
+        vissObj->vissCfgRef.fwdPrcpCfg = prcptCfg;
 
         prcptCfg = &vissObj->vissCfg.revPrcpCfg;
         prcptCfg->enable = (uint32_t)FALSE;
@@ -685,6 +686,7 @@ static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj)
         {
             prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
         }
+        vissObj->vissCfgRef.revPrcpCfg = prcptCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */

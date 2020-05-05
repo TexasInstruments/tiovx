@@ -281,18 +281,28 @@ static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms)
 
                 memcpy(glbce_prms->asymLut, glbceCfg->asymLut, GLBCE_ASYMMETRY_LUT_SIZE * sizeof(uint32_t));
 
+                /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
+                glbce_prms->wdr_enable = 0;
+
+                vissCfgRef->glbceCfg = NULL;
+            }
+
+            if(NULL != vissCfgRef->fwdPrcpCfg)
+            {
                 prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
                 glbce_prms->fwd_percept_enable = prcptCfg->enable;
                 memcpy(glbce_prms->fwd_percept_table, prcptCfg->table, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
 
+                vissCfgRef->fwdPrcpCfg = NULL;
+            }
+
+            if(NULL != vissCfgRef->revPrcpCfg)
+            {
                 prcptCfg = &vissObj->vissCfg.revPrcpCfg;
                 glbce_prms->rev_percept_enable = prcptCfg->enable;
                 memcpy(glbce_prms->rev_percept_table, prcptCfg->table, GLBCE_PERCEPT_LUT_SIZE * sizeof(uint32_t));
 
-                glbce_prms->wdr_enable = 0;
-                /* As per Gang's advice, WDR table isn't needed since RAWFE would already take care of it */
-
-                vissCfgRef->glbceCfg = NULL;
+                vissCfgRef->revPrcpCfg = NULL;
             }
         }
         else
