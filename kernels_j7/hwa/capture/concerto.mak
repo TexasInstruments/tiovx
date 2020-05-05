@@ -12,6 +12,7 @@ IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
+IDIRS       += $(TIOVX_PATH)/source/include
 
 DEFS+=SOC_J721E
 

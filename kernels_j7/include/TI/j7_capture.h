@@ -100,6 +100,15 @@ extern "C" {
  */
 #define TIVX_CAPTURE_GET_STATISTICS                      (0x40000001u)
 
+/*! \brief Control Command to create additional frame object descriptors
+ *         from a provided frame reference.  The data buffers for
+ *         each new descriptor will point to the same data buffer as
+ *         the provided frame reference.
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_GENERATE_FRAMES                     (0x40000002u)
+
 /* None */
 
 /*********************************
@@ -153,6 +162,9 @@ typedef struct
     uint32_t numCh; /*!< Number of channels to be processed on current instance of Node */
     uint32_t chVcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
     uint32_t chInstMap[TIVX_CAPTURE_MAX_CH]; /*!< Instance ID for each channel */
+    uint32_t timeout; /*!< Total timeout (in ms) for all cameras.  If this timeout is exceeded, cameras that have not been received are dead */
+    uint32_t timeoutInitial; /*!< Initial failure timeout (in ms) for first time the capture node fails.  Once this
+                                  timeout has been exceeded, the "timeout" parameter will then be used. */
 } tivx_capture_params_t;
 
 /*!
@@ -215,6 +227,10 @@ typedef struct
         Note: This counter will be reset at the time of driver create and
         during driver start. */
     uint32_t strmFIFOOvflCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_STRM];
+    /*! Indicates active channels.  Channel 0 is bit 0; channel N is bit N.
+        If active, the associated bit will be set to 1.  If inactive, the bit
+        is set to 0. */
+    uint8_t activeChannelMask;
 } tivx_capture_statistics_t;
 
 
@@ -273,6 +289,21 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
  */
 void tivx_capture_params_init(tivx_capture_params_t *prms);
 
+/*!
+ * \brief Function to send error frame to capture node
+ *
+ *        Provided ref must be of the same type and have same properties as
+ *        an element of the capture node output object array
+ *
+ *        This API must be called after the vxVerifyGraph call and before the
+ *        processing of the OpenVX graph
+ *
+ * \param node  [in] Capture node reference
+ * \param ref   [in] Error frame to be replicated
+ *
+ * \ingroup group_vision_function_capture
+ */
+vx_status tivxCaptureAllocErrorFrames(vx_node node, vx_reference ref);
 
 #ifdef __cplusplus
 }

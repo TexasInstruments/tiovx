@@ -73,10 +73,17 @@
 #include <TI/tivx_queue.h>
 #include <ti/drv/fvid2/fvid2.h>
 #include <ti/drv/csirx/csirx.h>
+#include <tivx_obj_desc_priv.h>
+#include <vx_reference.h>
 
 #define CAPTURE_FRAME_DROP_LEN                          (4096U*4U)
 
 #define CAPTURE_INST_ID_INVALID                         (0xFFFFU)
+
+#define CAPTURE_TIMEOUT_VALID                           (0U)
+#define CAPTURE_TIMEOUT_EXCEEDED                        (1U)
+
+#define CAPTURE_MS_TO_US                                (1000U)
 
 typedef struct tivxCaptureParams_t tivxCaptureParams;
 
@@ -109,13 +116,13 @@ typedef struct
 struct tivxCaptureParams_t
 {
     tivxCaptureInstParams instParams[TIVX_CAPTURE_MAX_INST];
-    /* Capture Instance parameters */
+    /**< Capture Instance parameters */
     uint32_t numOfInstUsed;
     /**< Number of CSIRX DRV instances used in current TIOVX Node. */
     uint8_t numCh;
     /**< Number of channels processed on given capture node instance. */
     tivx_obj_desc_t *img_obj_desc[TIVX_CAPTURE_MAX_CH];
-    /* Captured Images */
+    /**< Captured Images */
     uint8_t steady_state_started;
     /**< Flag indicating whether or not steady state has begun. */
     tivx_event  frame_available;
@@ -139,6 +146,27 @@ struct tivxCaptureParams_t
     /**< pending frame queue mem */
     uintptr_t pending_frame_timestamp_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< pending frame queue mem */
+    uint32_t timeout;
+    /**< Total timeout to check for dead camera; taken directly from
+     *   tivx_capture_params_t input */
+    uint32_t timeoutInitial;
+    /**< Initial timeout to check for dead camera; taken directly from
+     *   tivx_capture_params_t input */
+    uint32_t timeoutRemaining;
+    /**< Remaining timeout for dead camera */
+    uint8_t activeChannelMask;
+    /**< Mask for active channels; bit 0 maps to channel 0, bit N maps to bit N;
+     *   1 indicates active, 0 indicates inactive */
+    tivx_queue errorFrameQ[TIVX_CAPTURE_MAX_CH];
+    /**< Internal error frame queue; contains descriptor ID's of invalid frames */
+    uintptr_t error_frame_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
+    /**< error frame queue mem */
+    tivx_obj_desc_t *error_obj_desc[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
+    /**< Error Image Object Descriptors; allocated in control callback and points to
+     *   memory from descriptor sent from application */
+    uint8_t enableErrorFrameTimeout;
+    /**< Flag indicating if error frame has been sent and can use error timeout
+     *   Error timeout is only used if this error frame is sent */
 };
 
 static tivx_target_kernel vx_capture_target_kernel1 = NULL;
@@ -172,6 +200,8 @@ static vx_status VX_CALLBACK tivxCaptureControl(
        uint16_t num_params, void *priv_arg);
 static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
     const tivx_obj_desc_user_data_object_t *usr_data_obj);
+static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
+    tivx_obj_desc_t *obj_desc);
 static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
     tivx_capture_statistics_t *capt_status_prms);
 static void tivxCaptureGetChannelIndices(const tivxCaptureParams *prms,
@@ -183,6 +213,17 @@ static uint32_t tivxCaptureGetNodeChannelNum(const tivxCaptureParams *prms,
                                              uint32_t chId);
 static uint32_t tivxCaptureMapInstId(uint32_t instId);
 static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
+static vx_status tivxCaptureStart(tivxCaptureParams *prms);
+static void tivxCaptureSetTimeout(tivxCaptureParams *prms);
+static vx_status tivxCaptureTimeout(tivxCaptureParams *prms);
+static void tivxCaptureGetObjDesc(tivxCaptureParams *prms, 
+        uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
+        tivx_obj_desc_object_array_t *output_desc,
+        uint64_t *timestamp);
+static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms);
+static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms, 
+        uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
+        uint8_t timeoutExceeded);
 
 /**
  *******************************************************************************
@@ -210,6 +251,35 @@ static vx_status captDrvCallback(Fvid2_Handle handle, void *appData, void *reser
     return (vx_status)VX_SUCCESS;
 }
 
+/* Waiting on capture frame available event based on timeout
+ *    Log the wait time and subtract from the remaining time
+ *    Use remaining time as the wait time */
+static vx_status tivxCaptureTimeout(tivxCaptureParams *prms)
+{
+    vx_status status;
+    uint64_t timestamp = 0;
+
+    timestamp = tivxPlatformGetTimeInUsecs();
+
+    status = tivxEventWait(prms->frame_available, prms->timeoutRemaining);
+
+    /* Calculate time that the tivxEventWait waited */
+    timestamp = tivxPlatformGetTimeInUsecs() - timestamp;
+
+    /* Rounding up so that the timeout does not get clipped for each subsequent camera */
+    if ((uint32_t)timestamp > (CAPTURE_MS_TO_US * prms->timeoutRemaining))
+    {
+        prms->timeoutRemaining = 0u;
+    }
+    else
+    {
+        /* Update timeoutRemaining based on amount of time already waited */
+        prms->timeoutRemaining = (((CAPTURE_MS_TO_US * prms->timeoutRemaining + CAPTURE_MS_TO_US) - (uint32_t)timestamp) / CAPTURE_MS_TO_US);
+    }
+
+    return status;
+}
+
 static vx_status tivxCaptureEnqueueFrameToDriver(
        tivx_obj_desc_object_array_t *output_desc,
        tivxCaptureParams *prms)
@@ -223,6 +293,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     Fvid2_Frame *fvid2Frame;
     uint32_t startChIdx, endChIdx, instIdx;
     tivxCaptureInstParams *instParams;
+    uint16_t obj_desc_id;
 
     tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t **)prms->img_obj_desc,
                        prms->numCh);
@@ -232,58 +303,75 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     {
         instParams = &prms->instParams[instIdx];
         tivxCaptureGetChannelIndices(prms, instIdx, &startChIdx, &endChIdx);
-        frmList.numFrames = instParams->numCh;
+        frmList.numFrames = 0;
+
         for (chId = startChIdx ; chId < endChIdx ; chId++)
         {
-            if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+            /* Only enqueue the frame if it is a valid frame */
+            if (tivxFlagIsBitSet(prms->img_obj_desc[chId]->flags, TIVX_REF_FLAG_IS_INVALID) == 0U)
             {
-                tivx_obj_desc_raw_image_t *raw_image;
+                if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[chId]->type)
+                {
+                    tivx_obj_desc_raw_image_t *raw_image;
 
-                raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[chId];
+                    raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[chId];
 
-                /* Question: is the fact that we are just using mem_ptr[0] and not remaining planes correct? */
-                output_image_target_ptr = tivxMemShared2TargetPtr(&raw_image->mem_ptr[0]);
+                    obj_desc_id = prms->img_obj_desc[chId]->obj_desc_id;
 
+                    /* Question: is the fact that we are just using mem_ptr[0] and not remaining planes correct? */
+                    output_image_target_ptr = tivxMemShared2TargetPtr(&raw_image->mem_ptr[0]);
 
-                captured_frame = ((uintptr_t)output_image_target_ptr +
-                    (uint64_t)tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
+                    captured_frame = ((uintptr_t)output_image_target_ptr +
+                        (uint64_t)tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
+                }
+                else
+                {
+                    tivx_obj_desc_image_t *image;
+                    image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
+
+                    obj_desc_id = prms->img_obj_desc[chId]->obj_desc_id;
+
+                    /* Question: is the fact that we are just using mem_ptr[0] and not remaining exposures correct? */
+                    output_image_target_ptr = tivxMemShared2TargetPtr(&image->mem_ptr[0]);
+
+                    captured_frame = ((uintptr_t)output_image_target_ptr +
+                        (uint64_t)tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
+                }
+
+                tivxQueueGet(&prms->freeFvid2FrameQ[chId], (uintptr_t*)&fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                if (NULL != fvid2Frame)
+                {
+                    /* Put into frame list as it is for same driver instance */
+                    frmList.frames[frmList.numFrames]           = fvid2Frame;
+                    frmList.frames[frmList.numFrames]->chNum    = instParams->chVcMap[(chId-startChIdx)];
+                    frmList.frames[frmList.numFrames]->addr[0U] = captured_frame;
+                    frmList.frames[frmList.numFrames]->appData  = (void *)obj_desc_id;
+                    frmList.numFrames++;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, " CAPTURE: Could not retrieve buffer from buffer queue!!!\n");
+                }
             }
             else
             {
-                tivx_obj_desc_image_t *image;
-                image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
-
-                /* Question: is the fact that we are just using mem_ptr[0] and not remaining exposures correct? */
-                output_image_target_ptr = tivxMemShared2TargetPtr(&image->mem_ptr[0]);
-
-                captured_frame = ((uintptr_t)output_image_target_ptr +
-                    (uint64_t)tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
-            }
-
-            tivxQueueGet(&prms->freeFvid2FrameQ[chId], (uintptr_t*)&fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
-
-            if (NULL != fvid2Frame)
-            {
-                /* Put into frame list as it is for same driver instance */
-                frmList.frames[(chId - startChIdx)]           = fvid2Frame;
-                frmList.frames[(chId - startChIdx)]->chNum    = instParams->chVcMap[(chId - startChIdx)];
-                frmList.frames[(chId - startChIdx)]->addr[0U] = captured_frame;
-                frmList.frames[(chId - startChIdx)]->appData  = output_desc;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR, " CAPTURE: Could not retrieve buffer from buffer queue!!!\n");
+                tivxQueuePut(&prms->errorFrameQ[chId], (uintptr_t)output_desc->obj_desc_id[chId], TIVX_EVENT_TIMEOUT_NO_WAIT);
             }
         }
 
-        /* All the frames from frame-list */
-        fvid2_status = Fvid2_queue(instParams->drvHandle, &frmList, 0);
-        if (FVID2_SOK != fvid2_status)
+        /* Only call Fvid2_queue if there are valid frames to enqueue */
+        if (frmList.numFrames > 0U)
         {
-            status = (vx_status)VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Frame could not be queued for frame %d !!!\n", chId);
-            break;
+            fvid2_status = Fvid2_queue(instParams->drvHandle, &frmList, 0);
+            if (FVID2_SOK != fvid2_status)
+            {
+                status = (vx_status)VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Frame could not be queued for frame %d !!!\n", chId);
+                break;
+            }
         }
+
     }
 
     return status;
@@ -421,6 +509,10 @@ static void tivxCaptureSetCreateParams(
         prms->instParams[instId].raw_capture = 0U;
     }
 
+    /* Copying timeout values from user to local structure */
+    prms->timeout        = params->timeout;
+    prms->timeoutInitial = params->timeoutInitial;
+
     /* Do following for each CSIRX DRV instance in the current Node */
     for (instIdx = 0U ; instIdx < params->numInst ; instIdx++)
     {
@@ -486,23 +578,233 @@ static void tivxCaptureSetCreateParams(
        (vx_enum)VX_READ_ONLY);
 }
 
+static vx_status tivxCaptureStart(tivxCaptureParams *prms)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t instIdx;
+    int32_t fvid2_status = FVID2_SOK;
+
+    if (0U == prms->steady_state_started)
+    {
+        /* start all driver instances in the node */
+        for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
+        {
+            fvid2_status = Fvid2_start(prms->instParams[instIdx].drvHandle, NULL);
+            if (FVID2_SOK != fvid2_status)
+            {
+                status = (vx_status)VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Could not start FVID2 !!!\n");
+                break;
+            }
+        }
+    }
+
+    return status;
+}
+
+/* Setting timeout based on capture params and whether user has provided error frame */
+static void tivxCaptureSetTimeout(tivxCaptureParams *prms)
+{
+    /* Only apply timeout if error frame has been sent; otherwise wait forever */
+    if (1U == prms->enableErrorFrameTimeout)
+    {
+        /* Using timeoutInitial if all channels are active, else using timeout */
+        if ( ((1<<(prms->numCh))-1) == prms->activeChannelMask)
+        {
+            prms->timeoutRemaining = prms->timeoutInitial;
+        }
+        else
+        {
+            prms->timeoutRemaining = prms->timeout;
+        }
+    }
+    else
+    {
+        prms->timeoutRemaining = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
+
+        if (0U == prms->steady_state_started)
+        {
+            /* Notifying user with a warning that the error frame was not provided if the timeout is not FOREVER */
+            if ( (TIVX_EVENT_TIMEOUT_WAIT_FOREVER != prms->timeoutInitial) ||
+                 (TIVX_EVENT_TIMEOUT_WAIT_FOREVER != prms->timeout) )
+            {
+                VX_PRINT(VX_ZONE_WARNING, " CAPTURE: WARNING: Error frame not provided using tivxCaptureAllocErrorFrames, defaulting to waiting forever !!!\n");
+            }
+        }
+    }
+}
+
+/* Determines if a frame has been received from each active channel */
+static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms, 
+        uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
+        uint8_t timeoutExceeded)
+{
+    uint32_t is_all_ch_frame_available = 1;
+    vx_uint32 chId = 0U;
+
+    /* Initial loop through channel to check for inactive and active channels */
+    for(chId = 0U ; chId < prms->numCh ; chId++)
+    {
+        tivxQueuePeek(&prms->pendingFrameQ[chId], (uintptr_t*)&recv_obj_desc_id[chId]);
+
+        if (NULL==recv_obj_desc_id[chId])
+        {
+            /* Handle case that capture node timed out; set associated bit in activeChannelMask to 0 */
+            if (CAPTURE_TIMEOUT_EXCEEDED == timeoutExceeded)
+            {
+                prms->activeChannelMask &= ~(1<<chId);
+                VX_PRINT(VX_ZONE_ERROR,
+                    " Channel %d not received!!!\n", chId);
+            }
+        }
+        else
+        {
+            /* Handle the case that a camera came back up and set associated bit in activeChannelMask to 1 */
+            prms->activeChannelMask |= (1<<chId);
+        }
+    }
+
+    /* Loop through channels when capture timeout has not been exceeded to
+     * check if all frames have been received */
+    for(chId = 0U ; chId < prms->numCh ; chId++)
+    {
+        tivxQueuePeek(&prms->pendingFrameQ[chId], (uintptr_t*)&recv_obj_desc_id[chId]);
+
+        /* Handle case that capture node timed out */
+        if (CAPTURE_TIMEOUT_VALID == timeoutExceeded)
+        {
+            /* Marks that a frame is not available only if this is an active channel; i.e., channel has died
+             * or if no channel are active */
+            if( ( (NULL==recv_obj_desc_id[chId]) &&
+                  ((1<<chId) & prms->activeChannelMask) ) ||
+                (0U == prms->activeChannelMask) )
+            {
+                is_all_ch_frame_available = 0;
+            }
+        }
+    }
+
+    return is_all_ch_frame_available;
+}
+
+static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t instIdx, tmp_obj_desc_id = 0U;
+    uint64_t tmp_timestamp = 0U;
+    tivxCaptureInstParams *instParams;
+    Fvid2_Frame *fvid2Frame;
+    vx_uint32 frmIdx = 0U, chId = 0U;
+    int32_t fvid2_status = FVID2_SOK;
+    static Fvid2_FrameList frmList;
+
+    for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
+    {
+        instParams = &prms->instParams[instIdx];
+        fvid2_status = Fvid2_dequeue(instParams->drvHandle,
+                                     &frmList,
+                                     0,
+                                     FVID2_TIMEOUT_NONE);
+
+        if(FVID2_SOK == fvid2_status)
+        {
+            for(frmIdx=0; frmIdx < frmList.numFrames; frmIdx++)
+            {
+                fvid2Frame = frmList.frames[frmIdx];
+                chId = tivxCaptureGetNodeChannelNum(
+                                    prms,
+                                    instIdx,
+                                    fvid2Frame->chNum);
+
+                tmp_obj_desc_id = (uint32_t)fvid2Frame->appData;
+                tmp_timestamp = fvid2Frame->timeStamp64;
+
+                tivxQueuePut(&prms->freeFvid2FrameQ[chId], (uintptr_t)fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
+                tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)tmp_obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+                tivxQueuePut(&prms->pendingFrameTimestampQ[chId], tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            }
+        }
+        else if (fvid2_status == FVID2_ENO_MORE_BUFFERS)
+        {
+            /* continue: move onto next driver instance
+              within node as current driver instance did
+              not generate this CB */
+        }
+        else
+        {
+            /* TIOVX-687: Note: disabling for now until investigated further */
+            if (FVID2_EAGAIN != fvid2_status)
+            {
+                status = (vx_status)VX_FAILURE;
+                VX_PRINT(VX_ZONE_ERROR,
+                    " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n");
+            }
+        }
+    }
+
+    return status;
+}
+
+/* Populating capture output with object descriptors based on if camera is enabled */
+static void tivxCaptureGetObjDesc(tivxCaptureParams *prms, 
+        uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
+        tivx_obj_desc_object_array_t *output_desc,
+        uint64_t *timestamp)
+{
+    uint64_t tmp_timestamp = 0U;
+    vx_uint32 chId = 0U;
+
+    for(chId = 0U ; chId < prms->numCh ; chId++)
+    {
+        tivxQueueGet(&prms->pendingFrameQ[chId], (uintptr_t*)&recv_obj_desc_id[chId], TIVX_EVENT_TIMEOUT_NO_WAIT);
+    }
+
+    for(chId = 0U ; chId < prms->numCh ; chId++)
+    {
+        uint32_t tmp_desc_id_32;
+        uint16_t tmp_obj_desc_16;
+        tivx_obj_desc_t *tmp_obj_desc;
+
+        if (NULL!=recv_obj_desc_id[chId])
+        {
+            tmp_desc_id_32 = (uint32_t)recv_obj_desc_id[chId];
+        }
+        else
+        {
+            tivxQueueGet(&prms->errorFrameQ[chId], (uintptr_t*)&tmp_desc_id_32, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        }
+
+        tmp_obj_desc_16 = (uint16_t)tmp_desc_id_32;
+        tivxGetObjDescList(&tmp_obj_desc_16, &tmp_obj_desc, 1);
+
+        output_desc->obj_desc_id[chId] = (uint16_t)tmp_obj_desc_16;
+
+        if(tmp_obj_desc!=NULL)
+        {
+            tmp_obj_desc->scope_obj_desc_id = output_desc->base.obj_desc_id;
+            tivxQueueGet(&prms->pendingFrameTimestampQ[chId], (uintptr_t*)&tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            tmp_obj_desc->timestamp = tmp_timestamp;
+
+            if (tmp_timestamp > *timestamp)
+            {
+                *timestamp = tmp_timestamp;
+            }
+        }
+    }
+}
+
 static vx_status VX_CALLBACK tivxCaptureProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    int32_t fvid2_status = FVID2_SOK;
     tivxCaptureParams *prms = NULL;
     tivx_obj_desc_object_array_t *output_desc;
-    static Fvid2_FrameList frmList;
-    vx_uint32 size, frmIdx = 0U, chId = 0U;
+    vx_uint32 size, chId = 0U;
     vx_enum state;
-    Fvid2_Frame *fvid2Frame;
-    tivx_obj_desc_object_array_t *desc;
-    uint32_t instIdx;
-    uint64_t timestamp = 0, tmp_timestamp;
-    tivxCaptureInstParams *instParams;
+    uint64_t timestamp = 0U;
+    uint8_t timeoutExceeded = CAPTURE_TIMEOUT_VALID;
 
     if ( (num_params != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX])
@@ -547,112 +849,51 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
             /* Starts FVID2 on initial frame */
             if ((vx_status)VX_SUCCESS == status)
             {
-                if (0U == prms->steady_state_started)
-                {
-                    /* start all driver instances in the node */
-                    for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
-                    {
-                        fvid2_status = Fvid2_start(prms->instParams[instIdx].drvHandle, NULL);
-                        if (FVID2_SOK != fvid2_status)
-                        {
-                            status = (vx_status)VX_FAILURE;
-                            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Could not start FVID2 !!!\n");
-                            break;
-                        }
-                    }
-
-                    if (status == (vx_status)VX_SUCCESS)
-                    {
-                        prms->steady_state_started = 1;
-                    }
-                }
+                status = tivxCaptureStart(prms);
             }
 
             /* Pends until a frame is available then dequeue frames from capture driver */
             if ((vx_status)VX_SUCCESS == status)
             {
-                tivx_obj_desc_t *tmp_desc[TIVX_CAPTURE_MAX_CH] = {NULL};
+                uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH];
 
                 uint32_t is_all_ch_frame_available = 0;
 
-                for(chId = 0U ; chId < prms->numCh ; chId++)
+                for(chId = 0U ; chId < TIVX_CAPTURE_MAX_CH ; chId++)
                 {
-                    tmp_desc[chId] = NULL;
+                    recv_obj_desc_id[chId] = NULL;
                 }
+
+                tivxCaptureSetTimeout(prms);
 
                 while(is_all_ch_frame_available == 0U)
                 {
-                    is_all_ch_frame_available = 1;
-                    for(chId = 0U ; chId < prms->numCh ; chId++)
-                    {
-                        tivxQueuePeek(&prms->pendingFrameQ[chId], (uintptr_t*)&tmp_desc[chId]);
-                        if(NULL==tmp_desc[chId])
-                        {
-                            is_all_ch_frame_available = 0;
-                        }
-                    }
+                    is_all_ch_frame_available = tivxCaptureIsAllChFrameAvailable(prms, recv_obj_desc_id, timeoutExceeded);
 
                     if(is_all_ch_frame_available == 0U)
                     {
-                        tivxEventWait(prms->frame_available, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+                        status |= tivxCaptureTimeout(prms);
 
-                        for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
+                        if (status != VX_SUCCESS)
                         {
-                            instParams = &prms->instParams[instIdx];
-                            fvid2_status = Fvid2_dequeue(instParams->drvHandle,
-                                                         &frmList,
-                                                         0,
-                                                         FVID2_TIMEOUT_NONE);
-
-                            if(FVID2_SOK == fvid2_status)
-                            {
-                                for(frmIdx=0; frmIdx < frmList.numFrames; frmIdx++)
-                                {
-                                    fvid2Frame = frmList.frames[frmIdx];
-                                    chId = tivxCaptureGetNodeChannelNum(
-                                                        prms,
-                                                        instIdx,
-                                                        fvid2Frame->chNum);
-                                    desc = (tivx_obj_desc_object_array_t *)fvid2Frame->appData;
-                                    tmp_timestamp = fvid2Frame->timeStamp64;
-
-                                    tivxQueuePut(&prms->freeFvid2FrameQ[chId], (uintptr_t)fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
-                                    tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)desc, TIVX_EVENT_TIMEOUT_NO_WAIT);
-                                    tivxQueuePut(&prms->pendingFrameTimestampQ[chId], tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
-                                }
-                            }
-                            else if (fvid2_status == FVID2_ENO_MORE_BUFFERS)
-                            {
-                                /* continue: move onto next driver instance
-                                  within node as current driver instance did
-                                  not generate this CB */
-                            }
-                            else
-                            {
-                                /* TIOVX-687: Note: disabling for now until investigated further */
-                                if (FVID2_EAGAIN != fvid2_status)
-                                {
-                                    status = (vx_status)VX_FAILURE;
-                                    VX_PRINT(VX_ZONE_ERROR,
-                                        " CAPTURE: ERROR: FVID2 Dequeue failed !!!\n");
-                                }
-                            }
+                            prms->timeoutRemaining = 0;
+                            timeoutExceeded = CAPTURE_TIMEOUT_EXCEEDED;
+                        }
+                        else
+                        {
+                            status = tivxCaptureDequeueFrameFromDriver(prms);
                         }
                     }
                 }
 
-                for(chId = 0U ; chId < prms->numCh ; chId++)
-                {
-                    tivxQueueGet(&prms->pendingFrameQ[chId], (uintptr_t*)&tmp_desc[chId], TIVX_EVENT_TIMEOUT_NO_WAIT);
-                    tivxQueueGet(&prms->pendingFrameTimestampQ[chId], (uintptr_t*)&tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
-                    if (tmp_timestamp > timestamp)
-                    {
-                        timestamp = tmp_timestamp;
-                    }
-                }
-                /* all values in tmp_desc[] should be same */
-                obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX] = (tivx_obj_desc_t *)tmp_desc[0];
+                tivxCaptureGetObjDesc(prms, recv_obj_desc_id, output_desc, &timestamp);
+
                 obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
+
+                if (0U == prms->steady_state_started)
+                {
+                    prms->steady_state_started = 1;
+                }
             }
         }
         /* Pipe-up state: only receives a buffer; does not return a buffer */
@@ -706,6 +947,10 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
         {
             /* Initialize steady_state_started to 0 */
             prms->steady_state_started = 0;
+
+            /* Black frame has not been sent */
+            prms->enableErrorFrameTimeout = 0U;
+
             /* Initialize raw capture to 0 */
             for (instIdx = 0U ; instIdx < TIVX_CAPTURE_MAX_INST ; instIdx++)
             {
@@ -714,6 +959,8 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
 
             /* Set number of channels to number of items in object array */
             prms->numCh = (uint8_t)output_desc->num_items;
+
+            prms->activeChannelMask = (1<<(prms->numCh))-1;
 
             if (prms->numCh > TIVX_CAPTURE_MAX_CH)
             {
@@ -835,6 +1082,22 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             }
         }
 
+        /* TODO: Should there be a flag to determine whether or not to create this? */
+        /* Creating pending frame Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            for(chId = 0U ; chId < prms->numCh ; chId++)
+            {
+                status = tivxQueueCreate(&prms->errorFrameQ[chId], TIVX_CAPTURE_MAX_NUM_BUFS, prms->error_frame_q_mem[chId], 0);
+
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, ": Capture create failed!!!\r\n");
+                    break;
+                }
+            }
+        }
+
         /* Creating pending timestamp Q */
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -939,7 +1202,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
     int32_t fvid2_status = FVID2_SOK;
     tivxCaptureParams *prms = NULL;
     static Fvid2_FrameList frmList;
-    uint32_t size, chId, instIdx;
+    uint32_t size, chId, bufId, instIdx;
     tivxCaptureInstParams *instParams;
 
     if ( (num_params != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
@@ -1022,11 +1285,6 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 if ( (vx_status)VX_SUCCESS == status)
                 {
                     instParams->drvHandle = NULL;
-
-                    if (sizeof(tivxCaptureParams) == size)
-                    {
-                        tivxMemFree(prms, sizeof(tivxCaptureParams), (vx_status)TIVX_MEM_EXTERNAL);
-                    }
                 }
             }
         }
@@ -1049,6 +1307,36 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
             }
         }
 
+        /* Freeing error object descriptors if they have been allocated */
+        if (((vx_status)VX_SUCCESS == status) &&
+            (1U == prms->enableErrorFrameTimeout))
+        {
+            for (chId = 0U; chId < prms->numCh; chId++)
+            {
+                for (bufId = 0U; bufId < TIVX_CAPTURE_MAX_NUM_BUFS; bufId++)
+                {
+                    if(prms->error_obj_desc[chId][bufId]!=NULL)
+                    {
+                        status = tivxObjDescFree((tivx_obj_desc_t**)&prms->error_obj_desc[chId][bufId]);
+                    }
+
+                    if ((vx_status)VX_SUCCESS != status)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /* Deleting pending frame Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            for(chId= 0U ; chId < prms->numCh ; chId++)
+            {
+                tivxQueueDelete(&prms->errorFrameQ[chId]);
+            }
+        }
+
         /* Deleting pending frame Q */
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -1062,6 +1350,11 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
         if ((vx_status)VX_SUCCESS == status)
         {
             tivxEventDelete(&prms->frame_available);
+        }
+
+        if (sizeof(tivxCaptureParams) == size)
+        {
+            tivxMemFree(prms, sizeof(tivxCaptureParams), (vx_status)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -1098,6 +1391,7 @@ static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
                             instParams->captStatus.strmFIFOOvflCount[strmIdx];
         }
     }
+    capt_status_prms->activeChannelMask  = prms->activeChannelMask;
 }
 
 static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
@@ -1136,6 +1430,140 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
         VX_PRINT(VX_ZONE_ERROR,
             "tivxCaptureGetStatistics: User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return (status);
+}
+
+static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
+    tivx_obj_desc_t *obj_desc)
+{
+    vx_status                             status = (vx_status)VX_SUCCESS;
+    uint16_t obj_desc_id = 0U;
+    vx_reference ref = NULL;
+    uint32_t bufId, chId, planeId;
+
+    ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id);
+    tivxFlagBitSet(&obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
+
+    /* Allocate object descriptors*/
+    for (chId = 0U; chId < prms->numCh; chId++)
+    {
+        for (bufId = 0U; bufId < TIVX_CAPTURE_MAX_NUM_BUFS; bufId++)
+        {
+            prms->error_obj_desc[chId][bufId] = tivxObjDescAlloc((vx_enum)obj_desc->type, ref);
+
+            if (NULL != prms->error_obj_desc[chId][bufId])
+            {
+                tivxFlagBitSet(&prms->error_obj_desc[chId][bufId]->flags, TIVX_REF_FLAG_IS_INVALID);
+
+                if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)obj_desc->type)
+                {
+                    tivx_obj_desc_raw_image_t *tmp_raw_image;
+                    tivx_obj_desc_raw_image_t *ref_raw_image;
+
+                    tmp_raw_image = (tivx_obj_desc_raw_image_t *)prms->error_obj_desc[chId][bufId];
+                    ref_raw_image = (tivx_obj_desc_raw_image_t *)obj_desc;
+
+                    tmp_raw_image->params.num_exposures      = ref_raw_image->params.num_exposures;
+                    tmp_raw_image->params.width              = ref_raw_image->params.width;
+                    tmp_raw_image->params.height             = ref_raw_image->params.height;
+                    tmp_raw_image->params.line_interleaved   = ref_raw_image->params.line_interleaved;
+                    tmp_raw_image->params.meta_height_before = ref_raw_image->params.meta_height_before;
+                    tmp_raw_image->params.meta_height_after  = ref_raw_image->params.meta_height_after;
+
+                    tmp_raw_image->create_type       = ref_raw_image->create_type;
+
+                    for (planeId = 0U; planeId < tmp_raw_image->params.num_exposures; planeId++)
+                    {
+                        tmp_raw_image->mem_ptr[planeId].host_ptr        = ref_raw_image->mem_ptr[planeId].host_ptr;
+                        tmp_raw_image->mem_ptr[planeId].mem_heap_region = ref_raw_image->mem_ptr[planeId].mem_heap_region;
+                        tmp_raw_image->mem_ptr[planeId].shared_ptr      = ref_raw_image->mem_ptr[planeId].shared_ptr;
+                        tmp_raw_image->mem_ptr[planeId].dma_buf_fd      = ref_raw_image->mem_ptr[planeId].dma_buf_fd;
+
+                        tmp_raw_image->img_ptr[planeId].host_ptr        = ref_raw_image->img_ptr[planeId].host_ptr;
+                        tmp_raw_image->img_ptr[planeId].mem_heap_region = ref_raw_image->img_ptr[planeId].mem_heap_region;
+                        tmp_raw_image->img_ptr[planeId].shared_ptr      = ref_raw_image->img_ptr[planeId].shared_ptr;
+                        tmp_raw_image->img_ptr[planeId].dma_buf_fd      = ref_raw_image->img_ptr[planeId].dma_buf_fd;
+
+                        tmp_raw_image->meta_before_ptr[planeId].host_ptr        = ref_raw_image->meta_before_ptr[planeId].host_ptr;
+                        tmp_raw_image->meta_before_ptr[planeId].mem_heap_region = ref_raw_image->meta_before_ptr[planeId].mem_heap_region;
+                        tmp_raw_image->meta_before_ptr[planeId].shared_ptr      = ref_raw_image->meta_before_ptr[planeId].shared_ptr;
+                        tmp_raw_image->meta_before_ptr[planeId].dma_buf_fd      = ref_raw_image->meta_before_ptr[planeId].dma_buf_fd;
+
+                        tmp_raw_image->meta_after_ptr[planeId].host_ptr        = ref_raw_image->meta_after_ptr[planeId].host_ptr;
+                        tmp_raw_image->meta_after_ptr[planeId].mem_heap_region = ref_raw_image->meta_after_ptr[planeId].mem_heap_region;
+                        tmp_raw_image->meta_after_ptr[planeId].shared_ptr      = ref_raw_image->meta_after_ptr[planeId].shared_ptr;
+                        tmp_raw_image->meta_after_ptr[planeId].dma_buf_fd      = ref_raw_image->meta_after_ptr[planeId].dma_buf_fd;
+
+                        tmp_raw_image->params.format[planeId]            = ref_raw_image->params.format[planeId];
+                        tmp_raw_image->mem_size[planeId]                 = ref_raw_image->mem_size[planeId];
+                        tmp_raw_image->imagepatch_addr[planeId].dim_x    = ref_raw_image->imagepatch_addr[planeId].dim_x;
+                        tmp_raw_image->imagepatch_addr[planeId].dim_y    = ref_raw_image->imagepatch_addr[planeId].dim_y;
+                        tmp_raw_image->imagepatch_addr[planeId].stride_x = ref_raw_image->imagepatch_addr[planeId].stride_x;
+                        tmp_raw_image->imagepatch_addr[planeId].stride_y = ref_raw_image->imagepatch_addr[planeId].stride_y;
+                        tmp_raw_image->imagepatch_addr[planeId].scale_x  = ref_raw_image->imagepatch_addr[planeId].scale_x;
+                        tmp_raw_image->imagepatch_addr[planeId].scale_y  = ref_raw_image->imagepatch_addr[planeId].scale_y;
+                        tmp_raw_image->imagepatch_addr[planeId].step_x   = ref_raw_image->imagepatch_addr[planeId].step_x;
+                        tmp_raw_image->imagepatch_addr[planeId].step_y   = ref_raw_image->imagepatch_addr[planeId].step_y;
+                    }
+                }
+                else
+                {
+                    tivx_obj_desc_image_t *tmp_image;
+                    tivx_obj_desc_image_t *ref_image;
+
+                    tmp_image = (tivx_obj_desc_image_t *)prms->error_obj_desc[chId][bufId];
+                    ref_image   = (tivx_obj_desc_image_t *)obj_desc;
+
+                    tmp_image->planes        = ref_image->planes;
+                    tmp_image->uniform_image_pixel_value = ref_image->uniform_image_pixel_value;
+                    tmp_image->width                     = ref_image->width;
+                    tmp_image->height                    = ref_image->height;
+                    tmp_image->format                    = ref_image->format;
+                    tmp_image->color_range               = ref_image->color_range;
+
+                    tmp_image->valid_roi.start_x = ref_image->valid_roi.start_x;
+                    tmp_image->valid_roi.start_y = ref_image->valid_roi.start_x;
+                    tmp_image->valid_roi.end_x   = ref_image->valid_roi.end_x;
+                    tmp_image->valid_roi.end_y   = ref_image->valid_roi.end_y;
+                    tmp_image->color_space       = ref_image->color_space;
+                    tmp_image->create_type       = ref_image->create_type;
+
+                    for (planeId = 0U; planeId < ref_image->planes; planeId++)
+                    {
+                        tmp_image->mem_ptr[planeId].host_ptr        = ref_image->mem_ptr[planeId].host_ptr;
+                        tmp_image->mem_ptr[planeId].mem_heap_region = ref_image->mem_ptr[planeId].mem_heap_region;
+                        tmp_image->mem_ptr[planeId].shared_ptr      = ref_image->mem_ptr[planeId].shared_ptr;
+                        tmp_image->mem_ptr[planeId].dma_buf_fd      = ref_image->mem_ptr[planeId].dma_buf_fd;
+                        tmp_image->mem_size[planeId]                = ref_image->mem_size[planeId];
+
+                        tmp_image->imagepatch_addr[planeId].dim_x    = ref_image->imagepatch_addr[planeId].dim_x;
+                        tmp_image->imagepatch_addr[planeId].dim_y    = ref_image->imagepatch_addr[planeId].dim_y;
+                        tmp_image->imagepatch_addr[planeId].stride_x = ref_image->imagepatch_addr[planeId].stride_x;
+                        tmp_image->imagepatch_addr[planeId].stride_y = ref_image->imagepatch_addr[planeId].stride_y;
+                        tmp_image->imagepatch_addr[planeId].scale_x  = ref_image->imagepatch_addr[planeId].scale_x;
+                        tmp_image->imagepatch_addr[planeId].scale_y  = ref_image->imagepatch_addr[planeId].scale_y;
+                        tmp_image->imagepatch_addr[planeId].step_x   = ref_image->imagepatch_addr[planeId].step_x;
+                        tmp_image->imagepatch_addr[planeId].step_y   = ref_image->imagepatch_addr[planeId].step_y;
+                    }
+                }
+
+                obj_desc_id = prms->error_obj_desc[chId][bufId]->obj_desc_id;
+                tivxQueuePut(&prms->errorFrameQ[chId], (uintptr_t)obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxCaptureControl: Object descriptor allocation failed\n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        prms->enableErrorFrameTimeout = 1U;
     }
 
     return (status);
@@ -1220,6 +1648,29 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                 {
                     VX_PRINT(VX_ZONE_ERROR,
                         "tivxCaptureControl: User data object was NULL\n");
+                    status = (vx_status)VX_FAILURE;
+                }
+                break;
+            }
+            case TIVX_CAPTURE_GENERATE_FRAMES:
+            {
+                if ( NULL != obj_desc[0] )
+                {
+                    if (0U == prms->enableErrorFrameTimeout)
+                    {
+                        status = tivxCaptureAllocErrorDesc(prms, obj_desc[0U]);
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "tivxCaptureControl: Reference frame already provided\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxCaptureControl: Provided reference was NULL\n");
                     status = (vx_status)VX_FAILURE;
                 }
                 break;

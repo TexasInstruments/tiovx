@@ -66,6 +66,9 @@
 #include "tivx_kernel_capture.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_hwa_host_priv.h"
+#include "TI/tivx_event.h"
+#include <TI/tivx_mutex.h>
+#include <include/vx_reference.h>
 
 static vx_kernel vx_capture_kernel = NULL;
 
@@ -300,8 +303,10 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
 
     if (NULL != prms)
     {
-        prms->numInst = 1u;
-        prms->numCh   = 0u;
+        prms->numInst            = 1u;
+        prms->numCh              = 0u;
+        prms->timeout            = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
+        prms->timeoutInitial     = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
 
         for (loopCnt = 0U ; loopCnt < TIVX_CAPTURE_MAX_INST ; loopCnt++)
         {
@@ -319,4 +324,158 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
             prms->chInstMap[cnt] = 0U;
         }
     }
+}
+
+/* Compares provided ref to existing ref to validate that it contains the same properties */
+static vx_status tivxCaptureValidateAllocFrame(vx_node node, vx_reference frame)
+{
+    vx_status status = VX_SUCCESS;
+    vx_reference node_ref;
+    vx_parameter param = NULL;
+
+    param = vxGetParameterByIndex(node, TIVX_KERNEL_CAPTURE_OUTPUT_IDX);
+
+    if (NULL != param)
+    {
+        vxQueryParameter(param, VX_PARAMETER_REF, &node_ref, sizeof(node_ref));
+
+        if (NULL != node_ref)
+        {
+            vx_object_array output = (vx_object_array)node_ref;
+            vx_reference obj_arr_element;
+            vx_enum node_ref_type, recv_ref_type;
+
+            obj_arr_element = vxGetObjectArrayItem(output, 0);
+
+            if (NULL != obj_arr_element)
+            {
+                tivxCheckStatus(&status, vxQueryReference(obj_arr_element, (vx_enum)VX_REFERENCE_TYPE, &node_ref_type, sizeof(node_ref_type)));
+                tivxCheckStatus(&status, vxQueryReference(frame, (vx_enum)VX_REFERENCE_TYPE, &recv_ref_type, sizeof(recv_ref_type)));
+
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    if ( recv_ref_type != node_ref_type )
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "frame reference type is invalid!! \n");
+                    }
+                    else
+                    {
+                        if ((vx_enum)VX_TYPE_IMAGE == node_ref_type)
+                        {
+                            vx_df_image node_img_fmt,    recv_img_fmt;
+                            vx_uint32   node_img_width,  recv_img_width;
+                            vx_uint32   node_img_height, recv_img_height;
+
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, (vx_enum)VX_IMAGE_FORMAT, &node_img_fmt, sizeof(node_img_fmt)));
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, (vx_enum)VX_IMAGE_WIDTH, &node_img_width, sizeof(node_img_width)));
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, (vx_enum)VX_IMAGE_HEIGHT, &node_img_height, sizeof(node_img_height)));
+
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)frame, (vx_enum)VX_IMAGE_FORMAT, &recv_img_fmt, sizeof(recv_img_fmt)));
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)frame, (vx_enum)VX_IMAGE_WIDTH, &recv_img_width, sizeof(recv_img_width)));
+                            tivxCheckStatus(&status, vxQueryImage((vx_image)frame, (vx_enum)VX_IMAGE_HEIGHT, &recv_img_height, sizeof(recv_img_height)));
+
+                            if (node_img_fmt != recv_img_fmt)
+                            {
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                                VX_PRINT(VX_ZONE_ERROR, "frame reference format is invalid \n");
+                            }
+
+                            if (node_img_width != recv_img_width)
+                            {
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                                VX_PRINT(VX_ZONE_ERROR, "frame reference width is invalid \n");
+                            }
+
+                            if (node_img_height != recv_img_height)
+                            {
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                                VX_PRINT(VX_ZONE_ERROR, "frame reference height is invalid \n");
+                            }
+                        }
+                        else if ((vx_enum)TIVX_TYPE_RAW_IMAGE == node_ref_type)
+                        {
+                            vx_uint32   node_img_width,  recv_img_width;
+                            vx_uint32   node_img_height, recv_img_height;
+
+                            tivxCheckStatus(&status, tivxQueryRawImage((tivx_raw_image)obj_arr_element, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &node_img_width, sizeof(node_img_width)));
+                            tivxCheckStatus(&status, tivxQueryRawImage((tivx_raw_image)obj_arr_element, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &node_img_height, sizeof(node_img_height)));
+
+                            tivxCheckStatus(&status, tivxQueryRawImage((tivx_raw_image)frame, (vx_enum)TIVX_RAW_IMAGE_WIDTH, &recv_img_width, sizeof(recv_img_width)));
+                            tivxCheckStatus(&status, tivxQueryRawImage((tivx_raw_image)frame, (vx_enum)TIVX_RAW_IMAGE_HEIGHT, &recv_img_height, sizeof(recv_img_height)));
+
+                            if (node_img_width != recv_img_width)
+                            {
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                                VX_PRINT(VX_ZONE_ERROR, "frame reference width is invalid \n");
+                            }
+
+                            if (node_img_height != recv_img_height)
+                            {
+                                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                                VX_PRINT(VX_ZONE_ERROR, "frame reference height is invalid \n");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query object failed \n");
+                }
+
+                vxReleaseObjectArray(&output);
+                vxReleaseReference(&obj_arr_element);
+            }
+            else
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'output' object array elements are NULL \n");
+            }
+        }
+        else
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "Capture node index %d is NULL!!\n", TIVX_KERNEL_CAPTURE_OUTPUT_IDX);
+        }
+
+        vxReleaseParameter(&param);
+    }
+    else
+    {
+        status = VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "Capture node index %d is NULL!!\n", TIVX_KERNEL_CAPTURE_OUTPUT_IDX);
+    }
+
+    return status;
+}
+
+vx_status tivxCaptureAllocErrorFrames(vx_node node, vx_reference frame)
+{
+    vx_status status;
+    vx_reference ref[1];
+
+    status = tivxCaptureValidateAllocFrame(node, frame);
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        ref[0] = frame;
+
+        status = ownReferenceAllocMem(frame);
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            status = tivxNodeSendCommand(node, 0,
+                TIVX_CAPTURE_GENERATE_FRAMES, ref, 1u);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureAllocErrorFrames: Reference could not be\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxCaptureAllocErrorFrames: Invalid reference\n");
+    }
+
+    return status;
 }

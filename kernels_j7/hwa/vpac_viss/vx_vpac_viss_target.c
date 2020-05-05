@@ -121,6 +121,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
 static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj);
 static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj);
 static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj);
+static void tivxVpacVissSetIsInvalidFlag(tivx_obj_desc_t *obj_desc[]);
 
 int32_t tivxVpacVissFrameComplCb(Fvid2_Handle handle, void *appData);
 
@@ -199,6 +200,58 @@ void tivxRemoveTargetKernelVpacViss(void)
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxRemoveTargetKernelVpacViss: Failed to Remove Viss TargetKernel\n");
+    }
+}
+
+/* Setting the output descriptor flags to invalid if received raw_image is invalid */
+static void tivxVpacVissSetIsInvalidFlag(tivx_obj_desc_t *obj_desc[])
+{
+    uint32_t                   cnt;
+    uint32_t                   out_start;
+
+    if (tivxFlagIsBitSet(obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX]->flags, TIVX_REF_FLAG_IS_INVALID) == 1U)
+    {
+        for (cnt = 0U; cnt < TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT; cnt ++)
+        {
+            out_start = TIVX_KERNEL_VPAC_VISS_OUT0_IDX;
+            if (NULL != obj_desc[out_start])
+            {
+                tivxFlagBitSet(&obj_desc[out_start]->flags, TIVX_REF_FLAG_IS_INVALID);
+            }
+            out_start ++;
+        }
+
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX])
+        {
+            tivxFlagBitSet(&obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+        }
+
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX])
+        {
+            tivxFlagBitSet(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+        }
+    }
+    else
+    {
+        for (cnt = 0U; cnt < TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT; cnt ++)
+        {
+            out_start = TIVX_KERNEL_VPAC_VISS_OUT0_IDX;
+            if (NULL != obj_desc[out_start])
+            {
+                tivxFlagBitClear(&obj_desc[out_start]->flags, TIVX_REF_FLAG_IS_INVALID);
+            }
+            out_start ++;
+        }
+
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX])
+        {
+            tivxFlagBitClear(&obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+        }
+
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX])
+        {
+            tivxFlagBitClear(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+        }
     }
 }
 
@@ -735,6 +788,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[
                 TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
         }
+    }
+
+    if ( (vx_status)VX_SUCCESS == status)
+    {
+        tivxVpacVissSetIsInvalidFlag(obj_desc);
     }
 
     if ((vx_status)VX_SUCCESS == status)

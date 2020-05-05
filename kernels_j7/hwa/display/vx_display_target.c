@@ -739,6 +739,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]))
     {
         status = (vx_status)VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Parameters are NULL!\r\n");
     }
 
     if((vx_status)VX_SUCCESS == status)
@@ -752,6 +753,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
            (sizeof(tivxDisplayParams) != size))
         {
             status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Instance context is NULL!\r\n");
         }
     }
 
