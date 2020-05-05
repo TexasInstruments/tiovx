@@ -107,7 +107,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_capture
  */
-#define TIVX_CAPTURE_GENERATE_FRAMES                     (0x40000002u)
+#define TIVX_CAPTURE_REGISTER_ERROR_FRAME                (0x40000002u)
 
 /* None */
 
@@ -303,7 +303,7 @@ void tivx_capture_params_init(tivx_capture_params_t *prms);
  *
  * \ingroup group_vision_function_capture
  */
-vx_status tivxCaptureAllocErrorFrames(vx_node node, vx_reference ref);
+vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference ref);
 
 #ifdef __cplusplus
 }

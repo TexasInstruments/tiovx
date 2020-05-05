@@ -321,8 +321,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             ASSERT_VX_OBJECT(element1 = (tivx_raw_image) vxGetObjectArrayItem(out_capture_frames, 1), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
-            vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0));
-            vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1));
+            VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0)));
+            VX_CALL(vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1)));
 
             ASSERT(timestamp0!=timestamp1);
 
@@ -337,8 +337,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             ASSERT_VX_OBJECT(element1 = (vx_image) vxGetObjectArrayItem(out_capture_frames, 1), VX_TYPE_IMAGE);
 
-            vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0));
-            vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1));
+            VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0)));
+            VX_CALL(vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1)));
 
             ASSERT(timestamp0!=timestamp1);
 
@@ -346,7 +346,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
             VX_CALL(vxReleaseImage(&element1));
         }
 
-        vxQueryReference((vx_reference)out_capture_frames, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp));
+        VX_CALL(vxQueryReference((vx_reference)out_capture_frames, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
 
         /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
         ASSERT(timestamp > (prev_timestamp+33000));
@@ -611,9 +611,9 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
 
         /* Initialize to black_frame black */
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCaptureAllocErrorFrames(n0, (vx_reference)black_raw_image));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCaptureRegisterErrorFrame(n0, (vx_reference)black_raw_image));
 
-        vxQueryReference((vx_reference)black_raw_image, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+        VX_CALL(vxQueryReference((vx_reference)black_raw_image, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
         ASSERT(is_invalid==vx_true_e);
     }
@@ -691,7 +691,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
             {
                 ASSERT_VX_OBJECT(image_element = (tivx_raw_image) vxGetObjectArrayItem(out_capture_frames, arg_->camera_disable), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
-                vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+                VX_CALL(vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
                 ASSERT(is_invalid==vx_true_e);
 
@@ -721,7 +721,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
             {
                 ASSERT_VX_OBJECT(image_element = (tivx_raw_image) vxGetObjectArrayItem(dequeue_capture_array, arg_->camera_disable), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
-                vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+                VX_CALL(vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
                 ASSERT(is_invalid==vx_true_e);
 
@@ -1014,10 +1014,10 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
         /* Initialize to black_frame black */
 
         /* Note: sending image w/ incorrect params to validate error checking */
-        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCaptureAllocErrorFrames(captureNode, (vx_reference)black_frame_invalid_params));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCaptureAllocErrorFrames(captureNode, (vx_reference)black_frame));
+        ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxCaptureRegisterErrorFrame(captureNode, (vx_reference)black_frame_invalid_params));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxCaptureRegisterErrorFrame(captureNode, (vx_reference)black_frame));
 
-        vxQueryReference((vx_reference)black_frame, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+        VX_CALL(vxQueryReference((vx_reference)black_frame, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
         ASSERT(is_invalid==vx_true_e);
     }
@@ -1064,8 +1064,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
 
             ASSERT_VX_OBJECT(element1 = (vx_image) vxGetObjectArrayItem(out_capture_frames, 1), VX_TYPE_IMAGE);
 
-            vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0));
-            vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1));
+            VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp0, sizeof(timestamp0)));
+            VX_CALL(vxQueryReference((vx_reference)element1, TIVX_REFERENCE_TIMESTAMP, &timestamp1, sizeof(timestamp1)));
 
             ASSERT(timestamp0!=timestamp1);
 
@@ -1139,7 +1139,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                 vx_image image_element;
                 ASSERT_VX_OBJECT(image_element = (vx_image) vxGetObjectArrayItem(out_capture_frames, arg_->camera_disable), VX_TYPE_IMAGE);
 
-                vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+                VX_CALL(vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
                 ASSERT(is_invalid==vx_true_e);
 
@@ -1166,7 +1166,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                 vx_image image_element;
                 ASSERT_VX_OBJECT(image_element = (vx_image) vxGetObjectArrayItem(dequeue_capture_array, arg_->camera_disable), VX_TYPE_IMAGE);
 
-                vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid));
+                VX_CALL(vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
 
                 ASSERT(is_invalid==vx_true_e);
 

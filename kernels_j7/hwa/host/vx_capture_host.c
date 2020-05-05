@@ -449,7 +449,7 @@ static vx_status tivxCaptureValidateAllocFrame(vx_node node, vx_reference frame)
     return status;
 }
 
-vx_status tivxCaptureAllocErrorFrames(vx_node node, vx_reference frame)
+vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
 {
     vx_status status;
     vx_reference ref[1];
@@ -465,16 +465,16 @@ vx_status tivxCaptureAllocErrorFrames(vx_node node, vx_reference frame)
         if ((vx_status)VX_SUCCESS == status)
         {
             status = tivxNodeSendCommand(node, 0,
-                TIVX_CAPTURE_GENERATE_FRAMES, ref, 1u);
+                TIVX_CAPTURE_REGISTER_ERROR_FRAME, ref, 1u);
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureAllocErrorFrames: Reference could not be\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Reference could not be\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxCaptureAllocErrorFrames: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Invalid reference\n");
     }
 
     return status;

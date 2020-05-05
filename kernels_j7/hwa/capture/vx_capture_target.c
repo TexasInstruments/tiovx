@@ -628,7 +628,7 @@ static void tivxCaptureSetTimeout(tivxCaptureParams *prms)
             if ( (TIVX_EVENT_TIMEOUT_WAIT_FOREVER != prms->timeoutInitial) ||
                  (TIVX_EVENT_TIMEOUT_WAIT_FOREVER != prms->timeout) )
             {
-                VX_PRINT(VX_ZONE_WARNING, " CAPTURE: WARNING: Error frame not provided using tivxCaptureAllocErrorFrames, defaulting to waiting forever !!!\n");
+                VX_PRINT(VX_ZONE_WARNING, " CAPTURE: WARNING: Error frame not provided using tivxCaptureRegisterErrorFrame, defaulting to waiting forever !!!\n");
             }
         }
     }
@@ -1652,7 +1652,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                 }
                 break;
             }
-            case TIVX_CAPTURE_GENERATE_FRAMES:
+            case TIVX_CAPTURE_REGISTER_ERROR_FRAME:
             {
                 if ( NULL != obj_desc[0] )
                 {
