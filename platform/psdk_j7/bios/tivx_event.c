@@ -80,9 +80,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         {
             bsp_timeout = SemaphoreP_WAIT_FOREVER;
         }
-        else
+        else if (TIVX_EVENT_TIMEOUT_NO_WAIT == timeout)
         {
             bsp_timeout = SemaphoreP_NO_WAIT;
+        }
+        else
+        {
+            bsp_timeout = timeout;
         }
 
         retVal = SemaphoreP_pend((SemaphoreP_Handle)event, bsp_timeout);

@@ -124,6 +124,14 @@ void tivxPlatformSystemLock(vx_enum lock_id)
              */
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        {
+            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+        }
+        else
+        {
+            /* do nothing */
+        }
     }
 }
 
@@ -135,6 +143,14 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+        }
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
+        {
+            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
+        }
+        else
+        {
+            /* do nothing */
         }
 
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[

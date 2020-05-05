@@ -141,6 +141,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             sem_wait(g_tivx_platform_info.semaphore);
+            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else
         {
@@ -160,6 +161,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
+            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID);
             sem_post(g_tivx_platform_info.semaphore);
         }
         else
