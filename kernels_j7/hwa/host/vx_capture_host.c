@@ -68,7 +68,6 @@
 #include "tivx_hwa_host_priv.h"
 #include "TI/tivx_event.h"
 #include <TI/tivx_mutex.h>
-#include <include/vx_reference.h>
 
 static vx_kernel vx_capture_kernel = NULL;
 
@@ -416,6 +415,11 @@ static vx_status tivxCaptureValidateAllocFrame(vx_node node, vx_reference frame)
                                 VX_PRINT(VX_ZONE_ERROR, "frame reference height is invalid \n");
                             }
                         }
+                        else
+                        {
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                            VX_PRINT(VX_ZONE_ERROR, "invalid reference object type \n");
+                        }
                     }
                 }
                 else
@@ -449,6 +453,76 @@ static vx_status tivxCaptureValidateAllocFrame(vx_node node, vx_reference frame)
     return status;
 }
 
+static vx_status tivxCaptureAllocFrame(vx_reference frame)
+{
+    vx_status status = VX_SUCCESS;
+    vx_enum ref_type;
+
+    tivxCheckStatus(&status, vxQueryReference(frame, (vx_enum)VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if ((vx_enum)VX_TYPE_IMAGE == ref_type)
+        {
+            vx_rectangle_t rect;
+            vx_imagepatch_addressing_t image_addr;
+            vx_map_id map_id;
+            void * data_ptr;
+            vx_uint32  img_width;
+            vx_uint32  img_height;
+
+            vxQueryImage((vx_image)frame, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+            vxQueryImage((vx_image)frame, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = img_width;
+            rect.end_y = img_height;
+
+            status = vxMapImagePatch((vx_image)frame, &rect, 0, &map_id, &image_addr, &data_ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = vxUnmapImagePatch((vx_image)frame, map_id);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxCaptureValidateAllocFrame: Could not allocate capture frame\n");
+            }
+        }
+        else if ((vx_enum)TIVX_TYPE_RAW_IMAGE == ref_type)
+        {
+            vx_map_id map_id;
+            vx_rectangle_t rect;
+            vx_imagepatch_addressing_t image_addr;
+            void * data_ptr;
+            vx_uint32  img_width;
+            vx_uint32  img_height;
+
+            tivxQueryRawImage((tivx_raw_image)frame, TIVX_RAW_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+            tivxQueryRawImage((tivx_raw_image)frame, TIVX_RAW_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = img_width;
+            rect.end_y = img_height;
+
+            status = tivxMapRawImagePatch((tivx_raw_image)frame, &rect, 0, &map_id, &image_addr, &data_ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_ALLOC_BUFFER);
+
+            if ((vx_status)VX_SUCCESS == status)
+            {
+                status = tivxUnmapRawImagePatch((tivx_raw_image)frame, map_id);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxCaptureValidateAllocFrame: Could not allocate capture frame\n");
+            }
+        }
+    }
+
+    return status;
+}
+
 vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
 {
     vx_status status;
@@ -460,7 +534,7 @@ vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
     {
         ref[0] = frame;
 
-        status = ownReferenceAllocMem(frame);
+        status = tivxCaptureAllocFrame(frame);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -469,7 +543,7 @@ vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Reference could not be\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Reference could not be allocated\n");
         }
     }
     else
