@@ -305,11 +305,7 @@ typedef struct
  *      Function Prototypes
  *********************************/
 
-void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj,
-     tivx_ae_awb_params_t *ae_awb_res);
-void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj);
 void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj);
-void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj);
 
 vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
     const tivx_vpac_viss_params_t *vissPrms, tivx_ae_awb_params_t *ae_awb_res);
@@ -334,11 +330,6 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj);
  */
 void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
     const tivx_vpac_viss_params_t *vissPrms);
-
-/*! This is mainly used to set/change H3a LUT.
- *  Can be used to runtime change h3a Lut
- */
-void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj);
 
 /*! This is used to update VISS parameters based on AEWB output.
  *  It uses DCC to get the updated parameter values
