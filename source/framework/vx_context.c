@@ -877,7 +877,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case (vx_enum)VX_CONTEXT_EXTENSIONS:
                 if ( (size <= sizeof(g_context_extensions) ) && ptr)
                 {
-                    strncpy(ptr, g_context_extensions, sizeof(g_context_extensions));
+                    uint32_t str_size = sizeof(g_context_extensions);
+                    strncpy(ptr, g_context_extensions, str_size);
                 }
                 else
                 {
