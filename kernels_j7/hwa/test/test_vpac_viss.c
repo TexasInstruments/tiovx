@@ -76,7 +76,7 @@
 #define ADD_SIZE_64x48(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=64x48", __VA_ARGS__, 64, 48))
 
-static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack);
+static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack, uint16_t downshift_bits);
 static void ct_write_user_data_object(vx_user_data_object user_data_object, const char* fileName);
 static vx_status save_image_from_viss(vx_image y8, char *filename_prefix);
 
@@ -526,7 +526,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
 
         VX_CALL(vxVerifyGraph(graph));
 
-        ct_read_raw_image(raw, "tivx/raw_1280x720.raw", 2);
+        ct_read_raw_image(raw, "tivx/raw_1280x720.raw", 2, 0);
 
         VX_CALL(vxProcessGraph(graph));
         VX_CALL(vxProcessGraph(graph));
@@ -605,22 +605,40 @@ typedef struct {
     int bypass_nsf4;
 } ArgDcc;
 
-static uint32_t viss_checksums_luma_ref[24] = {
+static uint32_t viss_checksums_luma_ref[48] = {
     (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
     (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
     (uint32_t) 0x781f7630, (uint32_t) 0xe7d95550, (uint32_t) 0xeaed49e2, (uint32_t) 0x60b695a7,
     (uint32_t) 0xf4a92a65, (uint32_t) 0x4bed2b15, (uint32_t) 0x202982fd, (uint32_t) 0xdca1c62f,
     (uint32_t) 0xf4a92a65, (uint32_t) 0x4bed2b15, (uint32_t) 0x202982fd, (uint32_t) 0xdca1c62f,
-    (uint32_t) 0x908a52ee, (uint32_t) 0x271d8c34, (uint32_t) 0xa9deaf7a, (uint32_t) 0xcfbdbebe
+    (uint32_t) 0x908a52ee, (uint32_t) 0x271d8c34, (uint32_t) 0xa9deaf7a, (uint32_t) 0xcfbdbebe,
+    (uint32_t) 0x2d81f68f, (uint32_t) 0x51cbd1f6, (uint32_t) 0x6b4b287c, (uint32_t) 0x41bad204,
+    (uint32_t) 0xbe9285d1, (uint32_t) 0xde350c54, (uint32_t) 0x836a5694, (uint32_t) 0x120dacb6,
+    (uint32_t) 0xfefd6eb9, (uint32_t) 0xa0da7954, (uint32_t) 0x17eb771b, (uint32_t) 0xdbe70fff,
+    (uint32_t) 0xe5ca9fb9, (uint32_t) 0x5d90b6fb, (uint32_t) 0xfe5f53fc, (uint32_t) 0x84acc97c,
+    (uint32_t) 0x0924d246, (uint32_t) 0xbe1f4acb, (uint32_t) 0xc6750795, (uint32_t) 0xcd55e141,
+    (uint32_t) 0x8c1cf5bf, (uint32_t) 0x03e50bc8, (uint32_t) 0x122b99ea, (uint32_t) 0x535c63b3
+
 };
-static uint32_t viss_checksums_chroma_ref[24] = {
+static uint32_t viss_checksums_chroma_ref[48] = {
     (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
     (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
     (uint32_t) 0xe6675cfa, (uint32_t) 0x7ad6fa84, (uint32_t) 0x83e22b06, (uint32_t) 0xfef94919,
     (uint32_t) 0x60a42511, (uint32_t) 0x7184a2bb, (uint32_t) 0xb639e94f, (uint32_t) 0xdaa40f92,
     (uint32_t) 0x60a42511, (uint32_t) 0x7184a2bb, (uint32_t) 0xb639e94f, (uint32_t) 0xdaa40f92,
-    (uint32_t) 0xab4f9b81, (uint32_t) 0xd7bec916, (uint32_t) 0xabc8c431, (uint32_t) 0x795a3126
+    (uint32_t) 0xab4f9b81, (uint32_t) 0xd7bec916, (uint32_t) 0xabc8c431, (uint32_t) 0x795a3126,
+    (uint32_t) 0x0fde2e8c, (uint32_t) 0xb50ce008, (uint32_t) 0x2d3215df, (uint32_t) 0x9cc6ef0f,
+    (uint32_t) 0x958b0f6a, (uint32_t) 0x36ae8c52, (uint32_t) 0x9d9802a2, (uint32_t) 0xdc61121b,
+    (uint32_t) 0xfe691dad, (uint32_t) 0xdee54494, (uint32_t) 0x6cdca715, (uint32_t) 0xd94a066e,
+    (uint32_t) 0x227bafb5, (uint32_t) 0xe165e425, (uint32_t) 0x3073d950, (uint32_t) 0xfa2b5cae,
+    (uint32_t) 0xb026e875, (uint32_t) 0xd7075a56, (uint32_t) 0x2f9e5202, (uint32_t) 0xef5d8951,
+    (uint32_t) 0x1ed6ba03, (uint32_t) 0x8eb710fd, (uint32_t) 0x05da456a, (uint32_t) 0x1b0fc632
 };
+
+static uint32_t viss_checksums_h3a_ref[4] = {
+    (uint32_t) 0x00000000, (uint32_t) 0xccff4f2d, (uint32_t) 0x2d7a8f71, (uint32_t) 0x824ffb91
+};
+
 
 static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a, vx_int32 bypass_glbce, vx_int32 bypass_nsf4)
 {
@@ -643,7 +661,12 @@ static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a,
 
 #define ADD_DCC(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/dcc=off", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/dcc=imx390", __VA_ARGS__, 1))
+    CT_EXPAND(nextmacro(testArgName "/dcc=imx390", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/dcc=ar0233", __VA_ARGS__, 2))
+
+#if 0
+    CT_EXPAND(nextmacro(testArgName "/dcc=ar0820", __VA_ARGS__, 3))
+#endif
 
 #define PARAMETERS_DCC \
     CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ARG)
@@ -667,6 +690,11 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     int32_t dcc_status;
     uint32_t checksum_actual = 0, checksum_expected = 0;
     vx_rectangle_t rect;
+    uint32_t sensor_dcc_id;
+    uint32_t sensor_dcc_mode;
+    char *sensor_name = NULL;
+    char *file_name = NULL;
+    uint16_t downshift_bits;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
@@ -676,14 +704,46 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
 
     tivx_raw_image_create_params_t raw_params;
 
-    raw_params.width = 1936;
-    raw_params.height = 1096;
+
+    if(3 == arg_->dcc)
+    {
+        raw_params.width = 3840;
+        raw_params.height = 2160;
+        raw_params.meta_height_after = 0;
+        sensor_dcc_id = 820;
+        sensor_name = SENSOR_ONSEMI_AR0820_UB953_LI;
+        sensor_dcc_mode = 1;
+        file_name = "psdkra/app_single_cam/AR0820_001/AR0820_12bWDR_3840x2160_GRBG.raw";
+        downshift_bits = 0;
+    }
+    else if(2 == arg_->dcc)
+    {
+        raw_params.width = 2048;
+        raw_params.height = 1280;
+        raw_params.meta_height_after = 0;
+        sensor_dcc_id = 233;
+        sensor_name = SENSOR_ONSEMI_AR0233_UB953_MARS;
+        sensor_dcc_mode = 0;
+        file_name = "psdkra/app_single_cam/AR0233_001/input1.raw";
+        downshift_bits = 4;
+    }
+    else
+    {
+        raw_params.width = 1936;
+        raw_params.height = 1096;
+        raw_params.meta_height_after = 4;
+        sensor_dcc_id = 390;
+        sensor_name = SENSOR_SONY_IMX390_UB953_D3;
+        sensor_dcc_mode = 0;
+        file_name = "psdkra/app_single_cam/IMX390_001/input2.raw";
+        downshift_bits = 0;
+    }
+
     raw_params.num_exposures = 1;
     raw_params.line_interleaved = vx_false_e;
     raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
     raw_params.format[0].msb = 11;
     raw_params.meta_height_before = 0;
-    raw_params.meta_height_after = 4;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -703,7 +763,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         /* Create/Configure configuration input structure */
         tivx_vpac_viss_params_init(&params);
 
-        params.sensor_dcc_id = 390;
+        params.sensor_dcc_id = sensor_dcc_id;
         params.ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
         params.mux_output0 = 0;
         params.mux_output1 = 0;
@@ -745,7 +805,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         if(0 != arg_->dcc)
         {
             /* Creating DCC */
-            dcc_buff_size = appIssGetDCCSizeVISS(SENSOR_SONY_IMX390_UB953_D3, 0U);
+            dcc_buff_size = appIssGetDCCSizeVISS(sensor_name, sensor_dcc_mode);
 
             ASSERT_VX_OBJECT(dcc_param_viss = vxCreateUserDataObject( context, (const vx_char*)&dcc_viss_user_data_object_name,
                 dcc_buff_size, NULL),(enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -762,7 +822,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
             ));
             memset(dcc_viss_buf, 0xAB, dcc_buff_size);
 
-            dcc_status = appIssGetDCCBuffVISS(SENSOR_SONY_IMX390_UB953_D3, 0U, dcc_viss_buf, dcc_buff_size);
+            dcc_status = appIssGetDCCBuffVISS(sensor_name, sensor_dcc_mode, dcc_viss_buf, dcc_buff_size);
             ASSERT(dcc_status == 0);
 
             VX_CALL(vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id));
@@ -799,7 +859,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
-        ct_read_raw_image(raw, "psdkra/app_single_cam/IMX390_001/input2.raw", 2);
+        ct_read_raw_image(raw, file_name, 2, downshift_bits);
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -814,26 +874,33 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
 
         rect.start_x = 0;
         rect.start_y = 0;
-        rect.end_x = raw_params.width;
-        rect.end_y = raw_params.height;
+        rect.end_x = width;
+        rect.end_y = height;
 
         checksum_expected = get_checksum(viss_checksums_luma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
         //printf("0x%08x\n", checksum_actual);
         ASSERT(checksum_expected == checksum_actual);
 
-        rect.end_x = raw_params.width/2;
-        rect.end_y = raw_params.height/2;
+        rect.end_x = width/2;
+        rect.end_y = height/2;
         checksum_expected = get_checksum(viss_checksums_chroma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
         checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 1, rect);
         //printf("0x%08x\n", checksum_actual);
         ASSERT(checksum_expected == checksum_actual);
+        //ASSERT(checksum_expected == checksum_expected);
 
         if(0 != arg_->dcc)
         {
-            checksum_actual = tivx_utils_user_data_object_checksum(h3a_aew_af, 0, sizeof(tivx_h3a_data_t));
+            vx_size h3a_valid_size;
+            VX_CALL(vxQueryUserDataObject(h3a_aew_af, TIVX_USER_DATA_OBJECT_VALID_SIZE, &h3a_valid_size, sizeof(vx_size)));
+            ASSERT(h3a_valid_size > 64);
+            ASSERT(h3a_valid_size <= sizeof(tivx_h3a_data_t));
+
+            checksum_actual = tivx_utils_user_data_object_checksum(h3a_aew_af, 0, h3a_valid_size);
             //printf("0x%08x\n", checksum_actual);
-            ASSERT(0xccff4f2d == checksum_actual);
+            //printf("%d\n", h3a_valid_size);
+            ASSERT(viss_checksums_h3a_ref[arg_->dcc] == checksum_actual);
             //ct_write_user_data_object(h3a_aew_af, "output/viss_dcc_h3a_out.bin");
         }
 
@@ -1484,7 +1551,7 @@ static void ct_read_image2(vx_image image, const char* fileName, uint16_t file_b
     fclose(f);
 }
 
-static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack)
+static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack, uint16_t downshift_bits)
 {
     FILE* f = 0;
     size_t sz;
@@ -1556,7 +1623,7 @@ static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16
                 TIVX_RAW_IMAGE_PIXEL_BUFFER
                 );
 
-            if(file_byte_pack == num_bytes)
+            if((file_byte_pack == num_bytes) && (downshift_bits == 0))
             {
                 int i;
                 uint8_t *dst = data_ptr;
@@ -1564,6 +1631,21 @@ static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16
                 for(i = 0; i < height; i++)
                 {
                     memcpy((void*)&dst[image_addr.stride_y*i], (void*)&src[width*num_bytes*i], width*num_bytes);
+                }
+            }
+            else if((file_byte_pack == 2) && (num_bytes == 2))
+            {
+                int i, j;
+                uint16_t *dst = data_ptr;
+                uint16_t *src = (uint16_t*)buf;
+                for(j = 0; j < height; j++)
+                {
+                    for(i = 0; i < width; i++)
+                    {
+                        dst[i] = src[i] >> downshift_bits;
+                    }
+                    dst += image_addr.stride_y/2;
+                    src += width;
                 }
             }
             else if((file_byte_pack == 2) && (num_bytes == 1))
@@ -1969,7 +2051,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         VX_CALL(vxVerifyGraph(graph));
 
-        ct_read_raw_image(raw, "tivx/bayer_1280x720.raw", 2);
+        ct_read_raw_image(raw, "tivx/bayer_1280x720.raw", 2, 0);
 
         VX_CALL(vxProcessGraph(graph));
         //VX_CALL(vxProcessGraph(graph));

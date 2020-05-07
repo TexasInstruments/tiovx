@@ -76,7 +76,7 @@ static void tivxVpacVissParsePwlParams(cfg_pwl_lut *pwl, Rfe_PwlConfig **pwlCfg_
 
 static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseH3aSrcParams(tivxVpacVissParams *prms);
-static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms);
+static vx_status tivxVpacVissParseH3aParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms);
 static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms);
@@ -97,7 +97,7 @@ vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms)
     vx_status status = (vx_status)VX_SUCCESS;
 
     tivxVpacVissParseRfeParams(prms);
-    tivxVpacVissParseH3aParams(prms);
+    status = tivxVpacVissParseH3aParams(prms);
     tivxVpacVissParseNsf4Params(prms);
     tivxVpacVissParseGlbceParams(prms);
     tivxVpacVissParseFlxCfaParams(prms);
@@ -351,8 +351,10 @@ static void tivxVpacVissParseH3aSrcParams(tivxVpacVissParams *prms)
     }
 }
 
-static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms)
+static vx_status tivxVpacVissParseH3aParams(tivxVpacVissParams *prms)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     if (NULL != prms)
     {
         h3a_settings           *h3a_prms = &prms->h3a_params;
@@ -368,30 +370,45 @@ static void tivxVpacVissParseH3aParams(tivxVpacVissParams *prms)
                 ??? = h3aCfg->pos.startY;
             * */
 
-            h3a_prms->pcr_AEW_EN        = (h3aCfg->module == H3A_MODULE_AEWB) ? 1u : 0u;
-            h3a_prms->pcr_AEW_ALAW_EN   = aewbCfg->enableALowComp;
-            h3a_prms->pcr_AEW_MED_EN    = aewbCfg->enableMedFilt;
-            h3a_prms->pcr_AVE2LMT       = aewbCfg->satLimit;
-            h3a_prms->aew_cfg_AEFMT     = aewbCfg->outMode;
-            h3a_prms->aew_cfg_SUMSFT    = aewbCfg->sumShift;
-            h3a_prms->aewinstart_WINSV  = aewbCfg->winCfg.pos.startY;
-            h3a_prms->aewinstart_WINSH  = aewbCfg->winCfg.pos.startX;
-            h3a_prms->aewwin1_WINH      = aewbCfg->winCfg.height;
-            h3a_prms->aewwin1_WINW      = aewbCfg->winCfg.width;
-            h3a_prms->aewwin1_WINVC     = aewbCfg->winCfg.vertCount;
-            h3a_prms->aewwin1_WINHC     = aewbCfg->winCfg.horzCount;
-            h3a_prms->aewsubwin_AEWINCV = aewbCfg->winCfg.vertIncr;
-            h3a_prms->aewsubwin_AEWINCH = aewbCfg->winCfg.horzIncr;
-            h3a_prms->aewinblk_WINH     = aewbCfg->blackLineHeight;
-            h3a_prms->aewinblk_WINSV    = aewbCfg->blackLineVertStart;
+            if(((aewbCfg->winCfg.height % 2u) != 0) ||
+               ((aewbCfg->winCfg.width % 2u) != 0) ||
+               ((aewbCfg->winCfg.vertIncr % 2u) != 0) ||
+               ((aewbCfg->winCfg.horzIncr % 2u) != 0) ||
+               ((aewbCfg->blackLineHeight % 2u) != 0))
+            {
+                VX_PRINT(VX_ZONE_ERROR, "H3A parameter not even\n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+            else
+            {
+                h3a_prms->pcr_AEW_EN        = (h3aCfg->module == H3A_MODULE_AEWB) ? 1u : 0u;
+                h3a_prms->pcr_AEW_ALAW_EN   = aewbCfg->enableALowComp;
+                h3a_prms->pcr_AEW_MED_EN    = aewbCfg->enableMedFilt;
+                h3a_prms->pcr_AVE2LMT       = aewbCfg->satLimit;
+                h3a_prms->aew_cfg_AEFMT     = aewbCfg->outMode;
+                h3a_prms->aew_cfg_SUMSFT    = aewbCfg->sumShift;
+                h3a_prms->aewinstart_WINSV  = aewbCfg->winCfg.pos.startY;
+                h3a_prms->aewinstart_WINSH  = aewbCfg->winCfg.pos.startX;
+                h3a_prms->aewwin1_WINH      = aewbCfg->winCfg.height;
+                h3a_prms->aewwin1_WINW      = aewbCfg->winCfg.width;
+                h3a_prms->aewwin1_WINVC     = aewbCfg->winCfg.vertCount;
+                h3a_prms->aewwin1_WINHC     = aewbCfg->winCfg.horzCount;
+                h3a_prms->aewsubwin_AEWINCV = aewbCfg->winCfg.vertIncr;
+                h3a_prms->aewsubwin_AEWINCH = aewbCfg->winCfg.horzIncr;
+                h3a_prms->aewinblk_WINH     = aewbCfg->blackLineHeight;
+                h3a_prms->aewinblk_WINSV    = aewbCfg->blackLineVertStart;
 
-            vissCfgRef->h3aCfg = NULL;
+                vissCfgRef->h3aCfg = NULL;
+            }
         }
     }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        status = (vx_status)VX_FAILURE;
     }
+
+    return status;
 }
 
 static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)

@@ -919,6 +919,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             vissObj->outFrm[VHWA_M2M_VISS_OUT_H3A_IDX].addr[0u] =
                 (uint64_t)h3a_out->data;
 
+            h3a_out_desc->valid_mem_size = vissObj->h3a_output_size + 64u;
+
             /* Unmap even before processing since the ARM is done, rest of buffer is HW */
             tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, sizeof(tivx_h3a_aew_config)+12U, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY);
