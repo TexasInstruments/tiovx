@@ -154,3 +154,66 @@ uint32_t tivx_utils_user_data_object_checksum(vx_user_data_object user_data_obje
 
     return sum;
 }
+
+uint32_t tivx_utils_tensor_checksum(vx_tensor tensor_object, vx_size number_of_dimensions, vx_size * view_start, vx_size * view_end, vx_size * user_stride)
+{
+    vx_status  status = (vx_status)VX_FAILURE;
+    vx_map_id  map_id;
+    uint32_t   *data_ptr;
+    uint32_t   sum = 0U;
+
+    if((number_of_dimensions != 0) && (NULL != tensor_object))
+    {
+        status = tivxMapTensorPatch(tensor_object,
+                                    number_of_dimensions,
+                                    view_start,
+                                    view_end,
+                                    &map_id,
+                                    user_stride,
+                                    (void**) &data_ptr,
+                                    (vx_enum)VX_READ_ONLY,
+                                    (vx_enum)VX_MEMORY_TYPE_HOST);
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            vx_int32 dim0, dim1, dim2, dim3;
+            vx_uint32 dim0_count = 1;
+            vx_uint32 dim1_count = 1;
+            vx_uint32 dim2_count = 1;
+            vx_uint32 dim3_count = 1;
+            vx_uint32 offset = 0;
+            vx_uint32 num_bytes;
+
+            if (number_of_dimensions >= 1) dim0_count = view_end[0];
+            if (number_of_dimensions >= 2) dim1_count = view_end[1];
+            if (number_of_dimensions >= 3) dim2_count = view_end[2];
+            if (number_of_dimensions >= 4) dim3_count = view_end[3];
+
+            for(dim3 = 0; dim3 < dim3_count; dim3++)
+            {
+                offset += (user_stride[3] * dim3);
+                for(dim2 = 0; dim2 < dim2_count; dim2++)
+                {
+                    offset += (user_stride[2] * dim2);
+                    for(dim1 = 0; dim1 < dim1_count; dim1++)
+                    {
+                        offset += (user_stride[1] * dim1);
+                        num_bytes = dim0_count * user_stride[0];
+                        for (dim0 = 0; dim0 < (num_bytes/4); dim0++)
+                        {
+                            sum += data_ptr[offset + dim0];
+                        }
+                        if (0 != (num_bytes % 4))
+                        {
+                            uint32_t bitshift = (4U - ((uint32_t)num_bytes % 4U)) * 8U;
+                            sum += (data_ptr[offset + dim0] << bitshift) >> bitshift;
+                        }
+                    }
+                }
+            }
+        }
+        tivxUnmapTensorPatch(tensor_object, map_id);
+    }
+
+    return sum;
+}
