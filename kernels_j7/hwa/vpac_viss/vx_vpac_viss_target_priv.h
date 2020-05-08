@@ -185,6 +185,19 @@ typedef struct
     Fcp_HistConfig                     *histCfg;
 } tivxVpacVissConfigRef;
 
+
+/*! Buffers which are set by DCC and the driver doesn't already have space
+ * reserved to put it in the context, can reside here.  This way, if there
+ * are multiple cameras configured with different tables, there is a instance
+ * specific location as part of the instance context where it can reside
+ * independently (this may be a waste of memory in the case of homogenous cameras)*/
+typedef struct
+{
+    uint32_t                           h3aLut[RFE_H3A_COMP_LUT_SIZE];
+    uint32_t                           cfa_lut_16to12[FLXD_LUT_SIZE];
+    uint32_t                           rawfe_pwl_vshort_lut[FLXD_LUT_SIZE];
+} tivxVpacVissDccTables;
+
 typedef struct
 {
     /*! Flag to indicate if this object is free or not */
@@ -229,6 +242,8 @@ typedef struct
     /*! Memory size required for storing DCC output parameters,
      *  which supports multi-photospace */
     uint32_t                            dcc_out_numbytes;
+    /*! Buffers needed for instance specific DCC configured tables*/
+    tivxVpacVissDccTables               dcc_table_ptr;
 
     /*! Number of input buffer pointers */
     uint32_t                            num_in_buf;

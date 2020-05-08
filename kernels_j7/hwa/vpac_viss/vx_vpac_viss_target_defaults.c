@@ -148,8 +148,6 @@ tivxVpacVissSetDefaultParams
  * Once the DCC supports direct write to Driver structures, this should
  * be removed
  */
-static uint32_t gH3aLut[RFE_H3A_COMP_LUT_SIZE] = {0U};
-
 static uint32_t gcfa_lut_16to12[] =
 {
     #include "flexcfa_lut_20to16_0.txt"
@@ -197,7 +195,9 @@ static uint32_t grawfe_pwl_vshort_lut[] =
 
 static uint32_t gGlbceAsymTbl[] =
 {
-    0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
+    0,12173,20997,27687,32934,37159,40634,43543,46014,48138,49984,
+    51603,53035,54310,55453,56483,57416,58265,59041,59753,60409,
+    61015,61577,62099,62585,63039,63464,63863,64237,64590,64923,65237,65535,
 };
 
 static uint32_t gGlbceFwdPrcptTbl[] =
@@ -257,7 +257,6 @@ vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
 
 static void tivxVpacVissDefaultMapH3aLutParams(tivxVpacVissObj *vissObj)
 {
-    uint32_t            cnt;
     Vhwa_LutConfig     *h3aLutCfg = NULL;
 
     if (NULL != vissObj)
@@ -265,15 +264,6 @@ static void tivxVpacVissDefaultMapH3aLutParams(tivxVpacVissObj *vissObj)
         h3aLutCfg = &vissObj->vissCfg.h3aLutCfg;
 
         h3aLutCfg->enable = (uint32_t)FALSE;
-        h3aLutCfg->inputBits = 16U;
-        h3aLutCfg->clip = 0x3FFU;
-
-        h3aLutCfg->tableAddr = &gH3aLut[0U];
-
-        for (cnt = 0U; cnt < RFE_H3A_COMP_LUT_SIZE; cnt ++)
-        {
-            gH3aLut[cnt] = 0u;
-        }
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -648,7 +638,6 @@ static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj)
 
 static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj)
 {
-    uint32_t                 cnt;
     Glbce_Config            *glbceCfg = NULL;
     Glbce_PerceptConfig     *prcptCfg = NULL;
 
@@ -666,26 +655,24 @@ static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj)
         glbceCfg->dither = GLBCE_NO_DITHER;
         glbceCfg->maxSlopeLimit = 72;
         glbceCfg->minSlopeLimit = 62;
+
+        /* Copy default global assym table */
         memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE * 4U);
 
         vissObj->vissCfgRef.glbceCfg = glbceCfg;
 
+        /* Copy default fwd perception table */
         prcptCfg = &vissObj->vissCfg.fwdPrcpCfg;
         prcptCfg->enable = (uint32_t)FALSE;
+        memcpy(prcptCfg->table, gGlbceFwdPrcptTbl, GLBCE_PERCEPT_LUT_SIZE * 4U);
 
-        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
-        {
-            prcptCfg->table[cnt] = gGlbceFwdPrcptTbl[cnt];
-        }
         vissObj->vissCfgRef.fwdPrcpCfg = prcptCfg;
 
+        /* Copy default rev perception table */
         prcptCfg = &vissObj->vissCfg.revPrcpCfg;
         prcptCfg->enable = (uint32_t)FALSE;
+        memcpy(prcptCfg->table, gGlbceRevPrcptTbl, GLBCE_PERCEPT_LUT_SIZE * 4U);
 
-        for (cnt = 0u; cnt < GLBCE_PERCEPT_LUT_SIZE; cnt++)
-        {
-            prcptCfg->table[cnt] = gGlbceRevPrcptTbl[cnt];
-        }
         vissObj->vissCfgRef.revPrcpCfg = prcptCfg;
 
         /* Setting config flag to 1,

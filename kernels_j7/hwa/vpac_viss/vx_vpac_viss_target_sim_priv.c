@@ -841,10 +841,14 @@ static void tivxVpacVissParseRfeLutParams(cfg_lut *lut, Vhwa_LutConfig **lutCfg_
             lut->nbits              = lutCfg->inputBits;
             lut->clip               = lutCfg->clip;
 
-            for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+            if(lut->en != 0)
             {
-                lut->lut[cnt]       = lutCfg->tableAddr[cnt];
+                for (cnt = 0u; cnt < PWL_LUT_SIZE; cnt ++)
+                {
+                    lut->lut[cnt]       = lutCfg->tableAddr[cnt];
+                }
             }
+
             *lutCfg_p = NULL;
         }
     }

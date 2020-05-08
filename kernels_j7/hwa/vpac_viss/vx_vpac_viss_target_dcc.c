@@ -101,23 +101,6 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* Creating LUT array here, so that only one copy is allocated for all handles
- * Once the DCC supports direct write to Driver structures, this should
- * be removed
- */
-uint32_t gH3aLut[RFE_H3A_COMP_LUT_SIZE] = {0U};
-
-uint32_t gcfa_lut_16to12[] =
-{
-    #include "flexcfa_lut_20to16_0.txt"
-};
-
-uint32_t grawfe_pwl_vshort_lut[] =
-{
-    #include "rawfe_pwl_lut_vshort_0.txt"
-};
-
-
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -426,14 +409,14 @@ static void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj)
         h3aLutCfg->enable = (uint32_t)TRUE;
         h3aLutCfg->inputBits = 16U;
         h3aLutCfg->clip = 0x3FFU;
+        h3aLutCfg->tableAddr = vissObj->dcc_table_ptr.h3aLut;
 
         /* TODO: Select the h3a_mux_lut based on frame count. */
+        /* Can't use memcpy since dcc is 16 bits and driver is 32 bits per entry */
         for (cnt = 0U; cnt < RFE_H3A_COMP_LUT_SIZE; cnt ++)
         {
-            gH3aLut[cnt] = dccH3aLutCfg->h3a_mux_lut[0U][cnt];
+            h3aLutCfg->tableAddr[cnt] = dccH3aLutCfg->h3a_mux_lut[0U][cnt];
         }
-
-        h3aLutCfg->tableAddr = &gH3aLut[0U];
     }
     else
     {
@@ -711,9 +694,9 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
             Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
             lut16to12Cfg->enable    = dcc_cfa_cfg->lut_enable;
             lut16to12Cfg->inputBits = dcc_cfa_cfg->bitWidth;
+            lut16to12Cfg->tableAddr = vissObj->dcc_table_ptr.cfa_lut_16to12;
 
-            memcpy(gcfa_lut_16to12, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * (uint32_t)FLXD_LUT_SIZE);
-            lut16to12Cfg->tableAddr = gcfa_lut_16to12;
+            memcpy(lut16to12Cfg->tableAddr, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * (uint32_t)FLXD_LUT_SIZE);
             vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
         }
 
@@ -747,7 +730,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg = &vissObj->vissCfg.pwlCfg3;
             lutCfg = &vissObj->vissCfg.decomp3Cfg;
 
-            lutCfg->tableAddr   = grawfe_pwl_vshort_lut;
+            lutCfg->tableAddr = vissObj->dcc_table_ptr.rawfe_pwl_vshort_lut;
 
             if (1U == vissObj->dcc_out_prms.issRfeDecompand.enable)
             {
@@ -760,7 +743,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
                 lutCfg->clip      = dcc_out_prms->issRfeDecompand.clip;
                 for (i = 0; i < FLXD_LUT_SIZE; i++)
                 {
-                    grawfe_pwl_vshort_lut[i] = dcc_out_prms->issRfeDecompand.lut[i];
+                    lutCfg->tableAddr[i] = dcc_out_prms->issRfeDecompand.lut[i];
                 }
             }
 
