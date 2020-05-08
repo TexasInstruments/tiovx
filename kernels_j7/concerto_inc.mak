@@ -43,9 +43,9 @@ STATIC_LIBS += vx_utils
 
 STATIC_LIBS += vx_tiovx_tidl_tests
 
-STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo
+STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo
 
-STATIC_LIBS += c70-host-emulation
+STATIC_LIBS += C7100-host-emulation
 
 # Uncomment below to link to TIDL/MMALIB in host emulation mode instead of natural C mode on PC
 # STATIC_LIBS += mmalib_x86_64 mmalib_cn_x86_64 common_x86_64
