@@ -74,7 +74,7 @@
 #ifndef x86_64
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
-#define DISABLE_INTERRUPTS_DURING_PROCESS
+/*#define DISABLE_INTERRUPTS_DURING_PROCESS*/
 #endif
 
 /* #define TIVX_TIDL_TARGET_DEBUG */
