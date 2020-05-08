@@ -278,7 +278,6 @@ vx_status ownContextFlushCmdPendQueue(vx_context context)
 {
     vx_status   status = (vx_status)VX_SUCCESS;
     vx_bool     isEmpty;
-    uint32_t    i;
 
     isEmpty = tivxQueueIsEmpty(&context->pend_queue);
 
