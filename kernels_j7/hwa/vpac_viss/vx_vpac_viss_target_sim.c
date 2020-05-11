@@ -805,7 +805,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     pH3a_buf->size = prms->af_buffer_size;
                     memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
                 }
-                h3a_out_desc->valid_mem_size = pH3a_buf->size + 64u;
+                h3a_out_desc->valid_mem_size = pH3a_buf->size + TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN;
             }
 
             prms->viss_frame_count++;

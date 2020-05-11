@@ -116,6 +116,17 @@ extern "C" {
  */
 #define TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES            (24576U)
 
+/*! \brief The H3A output memory address alignment
+ *
+ *   The start address of the tivx_h3a_data_t::data buffer must be aligned
+ *   to this value, so the tivx_h3a_data_t::resv field is used
+ *   along with this value to properly pad the structure to enable this
+ *   alignment.  \see tivx_h3a_data_t::resv
+ *
+ *  \ingroup group_vision_function_vpac_viss
+ */
+#define TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN  (64U)
+
 /*!
  * \defgroup group_vision_function_vpac_viss_mux Enumerations
  * \brief Enumerations for configuration parameters in VPAC VISS structures
@@ -472,7 +483,7 @@ typedef struct {
     /*! Total used size of the data buffer in bytes */
     uint32_t                    size;
     /*! Reserved dummy field to make data to be 64 byte aligned */
-    uint32_t                    resv[(64U-(sizeof(tivx_h3a_aew_config)+12U))/4U ];
+    uint32_t                    resv[(TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN-(sizeof(tivx_h3a_aew_config)+12U))/4U ];
     /*! Payload of the AEW or AF data */
     uint8_t                     data[TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES];
 } tivx_h3a_data_t;

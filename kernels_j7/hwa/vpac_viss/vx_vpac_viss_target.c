@@ -838,7 +838,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     h3a_out = (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
 
                     /* H3A output is special case, only need to map the header since rest is written by HW */
-                    tivxMemBufferMap(vissObj->h3a_out_target_ptr, sizeof(tivx_h3a_aew_config)+12U,
+                    tivxMemBufferMap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv),
                         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
                 }
                 else
@@ -919,10 +919,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             vissObj->outFrm[VHWA_M2M_VISS_OUT_H3A_IDX].addr[0u] =
                 (uint64_t)h3a_out->data;
 
-            h3a_out_desc->valid_mem_size = vissObj->h3a_output_size + 64u;
+            h3a_out_desc->valid_mem_size = vissObj->h3a_output_size + TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN;
 
             /* Unmap even before processing since the ARM is done, rest of buffer is HW */
-            tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, sizeof(tivx_h3a_aew_config)+12U, (vx_enum)VX_MEMORY_TYPE_HOST,
+            tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv), (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY);
             vissObj->h3a_out_target_ptr = NULL;
         }
