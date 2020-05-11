@@ -152,7 +152,7 @@ struct tivxCaptureParams_t
     uint32_t timeoutInitial;
     /**< Initial timeout to check for dead camera; taken directly from
      *   tivx_capture_params_t input */
-    uint32_t timeoutRemaining;
+    uint64_t timeoutRemaining;
     /**< Remaining timeout for dead camera */
     uint8_t activeChannelMask;
     /**< Mask for active channels; bit 0 maps to channel 0, bit N maps to bit N;
@@ -261,20 +261,23 @@ static vx_status tivxCaptureTimeout(tivxCaptureParams *prms)
 
     timestamp = tivxPlatformGetTimeInUsecs();
 
-    status = tivxEventWait(prms->frame_available, prms->timeoutRemaining);
+    status = tivxEventWait(prms->frame_available, (uint32_t)prms->timeoutRemaining);
 
     /* Calculate time that the tivxEventWait waited */
     timestamp = tivxPlatformGetTimeInUsecs() - timestamp;
 
-    /* Rounding up so that the timeout does not get clipped for each subsequent camera */
-    if ((uint32_t)timestamp > (CAPTURE_MS_TO_US * prms->timeoutRemaining))
+    if (1U == prms->enableErrorFrameTimeout)
     {
-        prms->timeoutRemaining = 0u;
-    }
-    else
-    {
-        /* Update timeoutRemaining based on amount of time already waited */
-        prms->timeoutRemaining = (((CAPTURE_MS_TO_US * prms->timeoutRemaining + CAPTURE_MS_TO_US) - (uint32_t)timestamp) / CAPTURE_MS_TO_US);
+        /* Rounding up so that the timeout does not get clipped for each subsequent camera */
+        if (timestamp > (CAPTURE_MS_TO_US * prms->timeoutRemaining))
+        {
+            prms->timeoutRemaining = 0u;
+        }
+        else
+        {
+            /* Update timeoutRemaining based on amount of time already waited */
+            prms->timeoutRemaining = (((CAPTURE_MS_TO_US * prms->timeoutRemaining + CAPTURE_MS_TO_US) - timestamp) / CAPTURE_MS_TO_US);
+        }
     }
 
     return status;
@@ -1446,7 +1449,7 @@ static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
     ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id);
     tivxFlagBitSet(&obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
 
-    /* Allocate object descriptors*/
+    /* Allocate object descriptors */
     for (chId = 0U; chId < prms->numCh; chId++)
     {
         for (bufId = 0U; bufId < TIVX_CAPTURE_MAX_NUM_BUFS; bufId++)
