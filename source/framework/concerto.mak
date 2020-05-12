@@ -42,10 +42,6 @@ CFLAGS += -Wno-format-truncation
 CFLAGS += -Wno-sizeof-pointer-memaccess
 endif
 
-ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
-DEFS += J6_VSDK
-endif
-
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))
 ifeq ($(BUILD_BAM),yes)
 

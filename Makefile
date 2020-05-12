@@ -7,6 +7,7 @@ include build_flags_$(BUILD_SDK).mak
 
 # Project specific build defs (don't change across different combos):
 BUILD_DEFS :=
+BUILD_DEFS += J6_VSDK
 ifeq ($(BUILD_IVISION_KERNELS),yes)
 BUILD_DEFS += BUILD_IVISION_KERNELS
 endif

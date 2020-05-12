@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,14 +60,16 @@
  *
  */
 
-#ifndef TIVX_TEST_KERNELS_H_
-#define TIVX_TEST_KERNELS_H_
+#ifndef TIVX_TEST_PLATFORM_H_
+#define TIVX_TEST_PLATFORM_H_
 
-#include <TI/tivx.h>
-#include <TI/tivx_test_kernels_kernels.h>
-#include <TI/tivx_test_kernels_nodes.h>
-#include <TI/tivx_test_platform.h>
+#if !defined(J6_VSDK)
+#include <TI/j7.h>
+#else /* defined(J6_VSDK) */
+#define TIVX_CPU_ID_A72_0   TIVX_CPU_ID_A15_0
+#define TIVX_TARGET_A72_0   TIVX_TARGET_A15_0
+#endif /* !defined(J6_VSDK) */
 
-#endif /* TIVX_TEST_KERNELS_H_ */
+#endif /* TIVX_TEST_PLATFORM_H_ */
 
 

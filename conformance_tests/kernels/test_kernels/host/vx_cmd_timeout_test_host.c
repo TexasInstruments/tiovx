@@ -247,7 +247,6 @@ vx_status tivxAddKernelCmdTimeoutTest(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
             tivxAddKernelTarget(kernel, TIVX_TARGET_A72_0);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

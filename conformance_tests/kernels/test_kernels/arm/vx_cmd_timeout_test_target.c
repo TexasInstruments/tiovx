@@ -319,12 +319,6 @@ void tivxAddTargetKernelCmdTimeoutTest(void)
         status = (vx_status)VX_SUCCESS;
     }
     else
-    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP_C7_1 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    else
     {
         status = (vx_status)VX_FAILURE;
     }
