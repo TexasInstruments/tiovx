@@ -45,7 +45,7 @@ SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),R5F)
-CSOURCES += tivx_target_config_mcu2_1.c
+CSOURCES += tivx_target_config_mcu2_0.c
 SKIPBUILD=0
 endif
 
