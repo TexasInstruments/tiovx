@@ -20,6 +20,8 @@ void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
 void tivxRegisterTestKernelsTargetC66Kernels(void);
 void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetArmKernels();
+void tivxUnRegisterTestKernelsTargetArmKernels();
 
 static uint8_t g_init_status = 0U;
 
@@ -52,6 +54,7 @@ void tivxInit(void)
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined (C66)
         tivxRegisterCaptureTargetArmKernels();
+        tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
     #if defined (C66)
@@ -86,6 +89,7 @@ void tivxDeInit(void)
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined (C66)
         tivxUnRegisterCaptureTargetArmKernels();
+        tivxUnRegisterTestKernelsTargetArmKernels();
     #endif
 
     #if defined (C66)
