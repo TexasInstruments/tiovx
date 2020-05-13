@@ -29,6 +29,7 @@
 #define TIVX_TEST_ERROR_CFG_OBJ_DELETE_FAILED       (-8)
 #define TIVX_TEST_ERROR_SCALAR_INPUT_DELETE_FAILED  (-9)
 #define TIVX_TEST_ERROR_SCALAR_OUTPUT_DELETE_FAILED (-10)
+#define TIVX_TEST_ERROR_NODE_SET_TARGET_FAILED      (-11)
 
 TESTCASE(tivxCmdTimeout, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -57,7 +58,7 @@ typedef struct
     CT_GENERATE_PARAMETERS("TIVX_TARGET_DSP1", ARG, TIVX_TARGET_DSP1), \
     CT_GENERATE_PARAMETERS("TIVX_TARGET_DSP2", ARG, TIVX_TARGET_DSP2), \
 
-int32_t CreateGraph(TestObjContext *objCntxt)
+int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
     int32_t     status = TIVX_TEST_SUCCESS;
@@ -160,8 +161,22 @@ int32_t CreateGraph(TestObjContext *objCntxt)
         }
         else
         {
-            vxSetReferenceName((vx_reference)objCntxt->vxScalarSrcNode,
-                               "Scalar Source Node");
+            /* Set the node target to TIVX_TARGET_DSP1. */
+            vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
+                                       VX_TARGET_STRING,
+                                       TIVX_TARGET_DSP1);
+
+            if (vxStatus != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "vxSetNodeTarget(%s) failed for ScalarNode.\n", tgt);
+                status = TIVX_TEST_ERROR_NODE_SET_TARGET_FAILED;
+            }
+            else
+            {
+                vxSetReferenceName((vx_reference)objCntxt->vxScalarSrcNode,
+                                   "Scalar Source Node");
+            }
         }
     }
 
@@ -180,8 +195,22 @@ int32_t CreateGraph(TestObjContext *objCntxt)
         }
         else
         {
-            vxSetReferenceName((vx_reference)objCntxt->vxCmdTestNode,
-                               "Command Timeout Test Node");
+            /* Set the node target. */
+            vxStatus = vxSetNodeTarget(objCntxt->vxCmdTestNode,
+                                       VX_TARGET_STRING,
+                                       tgt);
+
+            if (vxStatus != (vx_status)VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "vxSetNodeTarget(%s) failed for CmdTestNode.\n", tgt);
+                status = TIVX_TEST_ERROR_NODE_SET_TARGET_FAILED;
+            }
+            else
+            {
+                vxSetReferenceName((vx_reference)objCntxt->vxCmdTestNode,
+                                   "Command Timeout Test Node");
+            }
         }
     }
 
@@ -315,7 +344,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -356,15 +385,6 @@ TEST_WITH_ARG(tivxCmdTimeout, testDefaultTimeout, TestArg, TEST_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default node time out does not match");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -416,7 +436,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -486,15 +506,6 @@ TEST_WITH_ARG(tivxCmdTimeout, testInvalidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
     /* Verify the graph. */
     vxStatus = vxVerifyGraph(objCntxt.vxGraph);
 
@@ -547,7 +558,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -611,15 +622,6 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
     /* Verify the graph. */
     vxStatus = vxVerifyGraph(objCntxt.vxGraph);
 
@@ -669,7 +671,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -705,15 +707,6 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default node time out does not match");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -769,7 +762,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutDeleteFail, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -805,15 +798,6 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutDeleteFail, TestArg, TEST_PARAMS)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "Expected default node time out does not match");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -866,20 +850,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCtrlCmdFail, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "CreateGraph() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -953,20 +928,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraph, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "CreateGraph() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
@@ -1083,20 +1049,11 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutGraphStream, TestArg, TEST_PARAMS)
     cfgParams->processCmdTimeout = 0;
 
     /* Create objects. */
-    status = CreateGraph(&objCntxt);
+    status = CreateGraph(&objCntxt, arg_->tgt);
 
     if (status != TIVX_TEST_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR, "CreateGraph() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Set the node target to be ARM. */
-    vxStatus = vxSetNodeTarget(objCntxt.vxCmdTestNode, VX_TARGET_STRING, arg_->tgt);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetNodeTarget() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 

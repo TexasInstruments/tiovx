@@ -67,7 +67,7 @@ TESTCASE(tivxTimestamp)
 TESTCASE(tivxTestSinkNode)
 TESTCASE(GraphStreaming)
 TESTCASE(tivxPyramidNode)
-//TESTCASE(tivxCmdTimeout)
+TESTCASE(tivxCmdTimeout)
 #endif
 
 
