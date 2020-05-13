@@ -240,8 +240,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddTargetKernelVpacMscHalfScaleGaussian: Failed to create Semaphore\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to create Semaphore\n");
                 }
                 else
                 {
@@ -263,8 +262,7 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                 status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacMscHalfScaleGaussian: Failed to Add MSC TargetKernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Add MSC TargetKernel\n");
             }
 
             if(status == (vx_status)VX_SUCCESS)
@@ -311,8 +309,7 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxRemoveTargetKernelVpacMscHalfScaleGaussian: Failed to Remove Msc TargetKernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Msc TargetKernel\n");
         }
 
         if (NULL != inst_obj->lock)
@@ -372,8 +369,7 @@ void tivxAddTargetKernelVpacMscScale(void)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddTargetKernelVpacMscScale: Failed to create Semaphore\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to create Semaphore\n");
                 }
                 else
                 {
@@ -395,8 +391,7 @@ void tivxAddTargetKernelVpacMscScale(void)
                 status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacMscScale: Failed to Add MSC TargetKernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Add MSC TargetKernel\n");
             }
 
             if(status == (vx_status)VX_SUCCESS)
@@ -443,8 +438,7 @@ void tivxRemoveTargetKernelVpacMscScale(void)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxRemoveTargetKernelVpacMscScale: Failed to Remove Msc TargetKernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Msc TargetKernel\n");
         }
 
         if (NULL != inst_obj->lock)
@@ -484,8 +478,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         target_kernel = tivxTargetKernelInstanceGetKernel(kernel);
         if (NULL == target_kernel)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleCreate: Failed to get Target Kernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to get Target Kernel\n");
             status = (vx_status)VX_ERROR_INVALID_NODE;
         }
         else
@@ -502,8 +495,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
             if (NULL == inst_obj)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleCreate: Invalid Target Kernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Target Kernel\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
         }
@@ -524,8 +516,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleCreate: Failed to allocate Handle Object, increase VHWA_M2M_MSC_MAX_HANDLES macro in PDK driver\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Handle Object, increase VHWA_M2M_MSC_MAX_HANDLES macro in PDK driver\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
 
@@ -545,8 +536,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
                 if (NULL == msc_obj->handle)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscScaleCreate: Fvid2_create failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Fvid2_create failed\n");
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
                 }
                 else
@@ -557,8 +547,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleCreate: Failed to allocate Event\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
             }
         }
     }
@@ -599,8 +588,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             msc_prms, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleCreate: Fvid2_control Failed: Set Params\n");
+            VX_PRINT(VX_ZONE_ERROR, "Fvid2_control Failed: Set Params\n");
             status = (vx_status)VX_FAILURE;
         }
         else
@@ -681,8 +669,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscScaleDelete: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
     }
 
     return status;
@@ -722,8 +709,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscScaleProcess: NULL Params check failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "NULL Params check failed\n");
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -735,15 +721,13 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Invalid Target Instance Context\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Target Instance Context\n");
         }
         else if ((NULL == msc_obj) ||
             (sizeof(tivxVpacMscHsgObj) != size))
         {
             status = (vx_status)VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Incorrect Object Size\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect Object Size\n");
         }
         else
         {
@@ -796,8 +780,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             coeffCfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Failed to create coefficients\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create coefficients\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -827,8 +810,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             &msc_obj->outFrmList, FVID2_TIMEOUT_FOREVER);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Failed to Submit Request\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Submit Request\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -842,8 +824,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             &msc_obj->inFrmList, &msc_obj->outFrmList, 0);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Failed to Get Processed Request\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Get Processed Request\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -956,8 +937,7 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleSetFmt: Invalid Vx Image Format\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Vx Image Format\n");
                 break;
             }
         }

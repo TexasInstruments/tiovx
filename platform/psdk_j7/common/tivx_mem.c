@@ -384,7 +384,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMemResetScratchHeap: TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
+        VX_PRINT(VX_ZONE_ERROR, "TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
     }
 
     return status;

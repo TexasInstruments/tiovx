@@ -166,7 +166,7 @@ static vx_status VX_CALLBACK tivxAddKernelVideoEncoderValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "Encoder param 'bitstream_format' should be:\n TIVX_BITSTREAM_FORMAT_H264 \n");
         }
     }
-    VX_PRINT(VX_ZONE_INFO, "tivxAddKernelVideoEncoderValidate: Exit\n");
+    VX_PRINT(VX_ZONE_INFO, "Exit\n");
 
     return status;
 }

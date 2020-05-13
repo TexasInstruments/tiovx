@@ -168,8 +168,7 @@ void tivxAddTargetKernelVideoDecoder(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxAddTargetKernelVideoDecoder: Invalid CPU\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -189,8 +188,7 @@ void tivxAddTargetKernelVideoDecoder(void)
             status = tivxMutexCreate(&gTivxVideoDecoderInstObj.lock);
             if ((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVideoDecoder: Failed to create Mutex\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to create Mutex\n");
             }
             else
             {
@@ -200,8 +198,7 @@ void tivxAddTargetKernelVideoDecoder(void)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddTargetKernelVideoDecoder: Failed to Add Video Decoder TargetKernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Add Video Decoder TargetKernel\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -219,8 +216,7 @@ void tivxRemoveTargetKernelVideoDecoder(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxRemoveTargetKernelVideoDecoder: Failed to Remove Video Decoder TargetKernel\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Decoder TargetKernel\n");
     }
     if (0 != gTivxVideoDecoderInstObj.lock)
     {
@@ -253,7 +249,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_DECODER_OUTPUT_IMAGE_IDX])
     )
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderProcess: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -264,11 +260,11 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
 
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderProcess: Null Desc\n");
+            VX_PRINT(VX_ZONE_ERROR, "Null Desc\n");
         }
         else if (sizeof(tivxVideoDecoderObj) != size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderProcess: Incorrect object size\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect object size\n");
             status = (vx_status)VX_FAILURE;
         }
         else
@@ -330,8 +326,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderProcess: MM_DEC Buf Prepare failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC Buf Prepare failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -353,8 +348,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
 
         if ((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderProcess: MM_DEC Process failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC Process failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -458,7 +452,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_DECODER_OUTPUT_IMAGE_IDX])
     )
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderCreate: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -474,8 +468,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: Failed to Alloc Video Decoder Object\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Alloc Video Decoder Object\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -491,7 +484,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         if (NULL == decoder_obj->internal_buff_1)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderCreate: tivxMemAlloc failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -499,7 +492,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         if (NULL == decoder_obj->internal_buff_2)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderCreate: tivxMemAlloc failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
@@ -508,7 +501,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
     {
         if (configuration_desc->mem_size != sizeof(tivx_video_decoder_params_t))
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderCreate: User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
+            VX_PRINT(VX_ZONE_ERROR, "User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -518,8 +511,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
         status = tivxEventCreate(&decoder_obj->waitForProcessCmpl);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: Failed to allocate Event\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
         }
     }
 
@@ -545,8 +537,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: Invalid input format\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid input format\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -556,8 +547,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: Invalid output format\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid output format\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -565,8 +555,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: MM_DEC Create failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC Create failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -577,8 +566,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: M_DEC Register Callback failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "M_DEC Register Callback failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -592,8 +580,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderCreate: MM_DEC Start Streaming failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC Start Streaming failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -623,11 +610,11 @@ static vx_status VX_CALLBACK tivxVideoDecoderDelete(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderDelete: Null Desc\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null Desc\n");
     }
     else if (sizeof(tivxVideoDecoderObj) != size)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoDecoderDelete: Incorrect object size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Incorrect object size\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -644,8 +631,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderDelete(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderDelete: MM_DEC_StopStreaming failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC_StopStreaming failed\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -654,8 +640,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderDelete(
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoDecoderDelete: MM_DEC_Destroy failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_DEC_Destroy failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }

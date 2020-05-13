@@ -826,8 +826,7 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacLdcSetMeshParams: Invalid Argument\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
         }
     }
     else

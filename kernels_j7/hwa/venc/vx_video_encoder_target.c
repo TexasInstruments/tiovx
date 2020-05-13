@@ -161,8 +161,7 @@ void tivxAddTargetKernelVideoEncoder(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxAddTargetKernelVideoEncoder: Invalid CPU\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU\n");
         status = VX_FAILURE;
     }
 
@@ -182,8 +181,7 @@ void tivxAddTargetKernelVideoEncoder(void)
             status = tivxMutexCreate(&gTivxVideoEncoderInstObj.lock);
             if (VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVideoEncoder: Failed to create Mutex\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to create Mutex\n");
             }
             else
             {
@@ -193,8 +191,7 @@ void tivxAddTargetKernelVideoEncoder(void)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddTargetKernelVideoEncoder: Failed to Add Video Encoder TargetKernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Add Video Encoder TargetKernel\n");
             status = VX_FAILURE;
         }
 
@@ -212,8 +209,7 @@ void tivxRemoveTargetKernelVideoEncoder(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxRemoveTargetKernelVideoEncoder: Failed to Remove Video Encoder TargetKernel\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Encoder TargetKernel\n");
     }
     if (0 != gTivxVideoEncoderInstObj.lock)
     {
@@ -247,7 +243,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_ENCODER_OUTPUT_BITSTREAM_IDX])
     )
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderProcess: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
         status = VX_FAILURE;
     }
 
@@ -258,11 +254,11 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         if (VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderProcess: Null Desc\n");
+            VX_PRINT(VX_ZONE_ERROR, "Null Desc\n");
         }
         else if (sizeof(tivxVideoEncoderObj) != size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderProcess: Incorrect object size\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect object size\n");
             status = VX_FAILURE;
         }
     }
@@ -304,8 +300,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         if(MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderProcess: MM_ENC Buf Prepare failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC Buf Prepare failed\n");
             status = VX_FAILURE;
         }
     }
@@ -316,8 +311,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         if (MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderProcess: MM_ENC Process failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC Process failed\n");
             status = VX_FAILURE;
         }
     }
@@ -328,8 +322,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
         if (VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderProcess: tivxEventWait failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait failed\n");
 		}
     }
 
@@ -362,7 +355,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_ENCODER_OUTPUT_BITSTREAM_IDX])
     )
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderCreate: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
         status = VX_FAILURE;
     }
     else
@@ -378,8 +371,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: Failed to Alloc Video Encoder Object\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Alloc Video Encoder Object\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -388,7 +380,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
     {
         if (configuration_desc->mem_size != sizeof(tivx_video_encoder_params_t))
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderCreate: User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
+            VX_PRINT(VX_ZONE_ERROR, "User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
             status = VX_FAILURE;
         }
     }
@@ -398,8 +390,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         status = tivxEventCreate(&encoder_obj->waitForProcessCmpl);
         if (VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: Failed to allocate Event\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
         }
     }
 
@@ -417,8 +408,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: Invalid input format\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid input format\n");
             status = VX_FAILURE;
         }
 
@@ -436,8 +426,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: Invalid output format\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid output format\n");
             status = VX_FAILURE;
         }
 
@@ -445,8 +434,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
 
         if(MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: MM_ENC Create failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC Create failed\n");
             status = VX_FAILURE;
         }
     }
@@ -457,8 +445,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
 
         if(MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: MM_ENC Register Callback failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC Register Callback failed\n");
             status = VX_FAILURE;
         }
     }
@@ -470,8 +457,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
 
         if (MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderCreate: MM_ENC Start Streaming failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC Start Streaming failed\n");
             status = VX_FAILURE;
         }
     }
@@ -500,11 +486,11 @@ static vx_status VX_CALLBACK tivxVideoEncoderDelete(
 
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderDelete: Null Desc\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null Desc\n");
     }
     else if (sizeof(tivxVideoEncoderObj) != size)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVideoEncoderDelete: Incorrect object size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Incorrect object size\n");
         status = VX_FAILURE;
     }
 
@@ -515,8 +501,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderDelete(
 
         if(MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderDelete: MM_ENC_StopStreaming failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC_StopStreaming failed\n");
             status = VX_FAILURE;
         }
 
@@ -524,8 +509,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderDelete(
 
         if(MM_SUCCESS != mm_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVideoEncoderDelete: MM_ENC_Destroy failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "MM_ENC_Destroy failed\n");
             status = VX_FAILURE;
         }
     }
@@ -644,12 +628,10 @@ void tivxVideoEncoderErrorCb(struct mm_buffer *buff, mm_enc_process_cb cb_type)
                 case MM_CB_ENC_STR_END:
                     break;
                 case MM_CB_ENC_ERROR_FATAL:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVideoEncoderErrorCb: MM_CB_ERROR_FATAL\n");
+                    VX_PRINT(VX_ZONE_ERROR, "MM_CB_ERROR_FATAL\n");
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVideoEncoderErrorCb: default\n");
+                    VX_PRINT(VX_ZONE_ERROR, "default\n");
                     break;
                 }
                 if (3 == encoder_obj->processFlag)

@@ -139,8 +139,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL1 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL1 Config !!!\n");
         }
 
         /* Reset Pointer */
@@ -156,8 +155,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL2 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL2 Config !!!\n");
         }
 
         /* Reset Pointer */
@@ -173,8 +171,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL3 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL3 Config !!!\n");
         }
 
         vissCfgRef->vsPwlCfg = NULL;
@@ -189,8 +186,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL1_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL1_LUT Config !!!\n");
         }
 
         vissCfgRef->lLutCfg = NULL;
@@ -205,8 +201,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL2_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL2_LUT Config !!!\n");
         }
 
         vissCfgRef->sLutCfg = NULL;
@@ -221,8 +216,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set PWL3_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PWL3_LUT Config !!!\n");
         }
 
         vissCfgRef->vsLutCfg = NULL;
@@ -237,8 +231,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set WDR_MERGE1 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set WDR_MERGE1 Config !!!\n");
         }
 
         vissCfgRef->wdr1Cfg = NULL;
@@ -252,8 +245,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set WDR_MERGE2 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set WDR_MERGE2 Config !!!\n");
         }
 
         vissCfgRef->wdr2Cfg = NULL;
@@ -268,8 +260,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set COMP_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set COMP_LUT Config !!!\n");
         }
 
         vissCfgRef->comp20To16LutCfg = NULL;
@@ -283,8 +274,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set DPC_OTF Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set DPC_OTF Config !!!\n");
         }
 
         vissCfgRef->dpcOtf = NULL;
@@ -299,8 +289,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
 
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set DPC_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set DPC_LUT Config !!!\n");
         }
 
         vissCfgRef->dpcLut = NULL;
@@ -314,8 +303,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set LSC Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set LSC Config !!!\n");
         }
 
         vissCfgRef->lscCfg = NULL;
@@ -329,8 +317,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set WhiteBalance Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set WhiteBalance Config !!!\n");
         }
 
         vissCfgRef->wbCfg = NULL;
@@ -346,8 +333,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set H3A Input Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set H3A Input Config !!!\n");
         }
 
         vissCfgRef->rfeH3aInCfg = NULL;
@@ -363,8 +349,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)&rfeCtrl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set H3A Input Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set H3A Input Config !!!\n");
         }
 
         vissCfgRef->h3aLutCfg = NULL;
@@ -376,8 +361,7 @@ static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
             (void *)vissCfgRef->h3aCfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetRfeConfig: Failed to set H3A Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set H3A Config !!!\n");
         }
         else
         {
@@ -421,8 +405,7 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
                 (void *)&glbceCtrl, NULL);
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissSetGlbceConfig: Failed to set GLBCE Config !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to set GLBCE Config !!!\n");
             }
 
             vissCfgRef->glbceCfg = NULL;
@@ -436,8 +419,7 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
                 (void *)&glbceCtrl, NULL);
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissSetGlbceConfig: Failed to set GLBCE_FWD_PERCEPT Config !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to set GLBCE_FWD_PERCEPT Config !!!\n");
             }
 
             vissCfgRef->fwdPrcpCfg = NULL;
@@ -451,8 +433,7 @@ static vx_status tivxVpacVissSetGlbceConfig(tivxVpacVissObj *vissObj,
                 (void *)&glbceCtrl, NULL);
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissSetGlbceConfig: Failed to set GLBCE_REV_PERCEPT Config !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to set GLBCE_REV_PERCEPT Config !!!\n");
             }
 
             vissCfgRef->revPrcpCfg = NULL;
@@ -488,8 +469,7 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
             (void *)vissCfgRef->nsf4Cfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetNsf4Config: Failed to set NFS4 Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set NFS4 Config !!!\n");
         }
 
         vissCfgRef->nsf4Cfg = NULL;
@@ -525,8 +505,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set COMP Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set COMP Config !!!\n");
         }
 
         vissCfgRef->cfaLut16to12Cfg = NULL;
@@ -540,8 +519,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set CFA Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set CFA Config !!!\n");
         }
 
         vissCfgRef->cfaCfg = NULL;
@@ -555,8 +533,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set CCM Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set CCM Config !!!\n");
         }
 
         vissCfgRef->ccm = NULL;
@@ -570,8 +547,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set Gamma Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set Gamma Config !!!\n");
         }
 
         vissCfgRef->gamma = NULL;
@@ -585,8 +561,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set RGB2HSV Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set RGB2HSV Config !!!\n");
         }
 
         vissCfgRef->rgb2Hsv = NULL;
@@ -600,8 +575,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set RGB2YUV Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set RGB2YUV Config !!!\n");
         }
 
         vissCfgRef->rgb2yuv = NULL;
@@ -615,8 +589,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set YUV_LUT Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set YUV_LUT Config !!!\n");
         }
 
         vissCfgRef->yuvSatLutCfg = NULL;
@@ -630,8 +603,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set Histogram Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set Histogram Config !!!\n");
         }
 
         vissCfgRef->histCfg = NULL;
@@ -669,8 +641,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetFcpConfig: Failed to set YEE Config !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set YEE Config !!!\n");
         }
 
         vissCfgRef->eeCfg = NULL;

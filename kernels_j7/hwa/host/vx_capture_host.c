@@ -487,7 +487,7 @@ static vx_status tivxCaptureAllocFrame(vx_reference frame)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxCaptureValidateAllocFrame: Could not allocate capture frame\n");
+                VX_PRINT(VX_ZONE_ERROR, "Could not allocate capture frame\n");
             }
         }
         else if ((vx_enum)TIVX_TYPE_RAW_IMAGE == ref_type)
@@ -515,7 +515,7 @@ static vx_status tivxCaptureAllocFrame(vx_reference frame)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxCaptureValidateAllocFrame: Could not allocate capture frame\n");
+                VX_PRINT(VX_ZONE_ERROR, "Could not allocate capture frame\n");
             }
         }
     }
@@ -543,12 +543,12 @@ vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Reference could not be allocated\n");
+            VX_PRINT(VX_ZONE_ERROR, "Reference could not be allocated\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxCaptureRegisterErrorFrame: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
     }
 
     return status;

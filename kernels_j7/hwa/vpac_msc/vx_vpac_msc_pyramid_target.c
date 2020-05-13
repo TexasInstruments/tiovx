@@ -299,8 +299,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddTargetKernelVpacMsc: Failed to create Semaphore\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to create Semaphore\n");
                 }
                 else
                 {
@@ -322,8 +321,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                 status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacMsc: Failed to Add MSC TargetKernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Add MSC TargetKernel\n");
             }
         }
 
@@ -365,8 +363,7 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxRemoveTargetKernelVpacMscGaussianPyramid: Failed to Remove Msc TargetKernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Msc TargetKernel\n");
         }
 
         if (NULL != inst_obj->lock)
@@ -427,8 +424,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddTargetKernelVpacMsc: Failed to create Semaphore\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to create Semaphore\n");
                 }
                 else
                 {
@@ -450,8 +446,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                 status = (vx_status)VX_FAILURE;
 
                 /* TODO: how to handle this condition */
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacMsc: Failed to Add MSC TargetKernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Add MSC TargetKernel\n");
             }
         }
 
@@ -529,8 +524,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         target_kernel = tivxTargetKernelInstanceGetKernel(kernel);
         if (NULL == target_kernel)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdCreate: Failed to get Target Kernel\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to get Target Kernel\n");
             status = (vx_status)VX_ERROR_INVALID_NODE;
         }
         else
@@ -547,8 +541,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             if (NULL == inst_obj)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdCreate: Invalid Target Kernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Target Kernel\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
             }
         }
@@ -578,8 +571,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
             {
                 if (NULL == msc_obj->out_img_desc[cnt])
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCreate: Null Output Descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Null Output Descriptor\n");
                     status = (vx_status)VX_FAILURE;
                     break;
                 }
@@ -594,8 +586,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdCreate: Failed to allocate Handle Object, increase VHWA_M2M_MSC_MAX_HANDLES macro in PDK driver\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Handle Object, increase VHWA_M2M_MSC_MAX_HANDLES macro in PDK driver\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -616,8 +607,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             if (NULL == msc_obj->handle)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdCreate: Fvid2_create failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Fvid2_create failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
             else
@@ -632,8 +622,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         else
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdCreate: Failed to allocate Event\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
         }
     }
 
@@ -669,8 +658,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
             coeffCfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetCoeffsCmd: Failed to create coefficients\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create coefficients\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -686,8 +674,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
                 &msc_obj->msc_prms[cnt], NULL);
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdCreate: Fvid2_control Failed: Set Params\n");
+                VX_PRINT(VX_ZONE_ERROR, "Fvid2_control Failed: Set Params\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }
@@ -777,8 +764,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdDelete(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdDelete: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
     }
 
     return status;
@@ -811,8 +797,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
         ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX])))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdProcess: NULL Params check failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "NULL Params check failed\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -840,8 +825,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
             {
                 if (NULL == msc_obj->out_img_desc[out_cnt])
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                       "tivxVpacMscPmdProcess: Null Descriptor for Output\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Null Descriptor for Output\n");
                     status = (vx_status)VX_FAILURE;
                     break;
                 }
@@ -849,8 +833,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdProcess: Invalid Target Instance Context\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Target Instance Context\n");
             status = (vx_status)VX_ERROR_INVALID_NODE;
         }
     }
@@ -880,8 +863,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     &msc_obj->msc_prms[oct_cnt], NULL);
                 if (FVID2_SOK != fvid2_status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdProcess: Failed to set params\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to set params\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -939,8 +921,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                     outFrmList, FVID2_TIMEOUT_FOREVER);
                 if (FVID2_SOK != fvid2_status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdProcess: Failed to Submit Request\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to Submit Request\n");
                     status = (vx_status)VX_FAILURE;
                 }
 
@@ -953,8 +934,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                         inFrmList, outFrmList, 0);
                     if (FVID2_SOK != fvid2_status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacMscPmdProcess: Failed to Get Processed Request\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Processed Request\n");
                         status = (vx_status)VX_FAILURE;
                     }
                 }
@@ -1001,14 +981,12 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdControl: Failed to Get Target Kernel Instance Context\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Target Kernel Instance Context\n");
     }
     else if ((NULL == msc_obj) ||
         (sizeof(tivxVpacMscPmdObj) != size))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdControl: Invalid Object Size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Size\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -1040,8 +1018,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdControl: Invalid Command Id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Command Id\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }
@@ -1135,8 +1112,7 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdSetFmt: Invalid Vx Image Format\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Vx Image Format\n");
                 break;
             }
         }
@@ -1238,8 +1214,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
                 max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_y))
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdCalcSubSetInfo: Invalid Scaling Factor\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Scaling Factor\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -1284,8 +1259,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
                     if (TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO
                         <= num_subsets)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacMscPmdCalcSubSetInfo: Pyramid Subsets required are more than TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Pyramid Subsets required are more than TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
@@ -1298,8 +1272,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
                 {
                     if (MSC_MAX_OUTPUT < ss_info->num_levels)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacMscPmdCalcSubSetInfo: Max 10 outputs supported in subset\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Max 10 outputs supported in subset\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
@@ -1486,8 +1459,7 @@ static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
                     sc_cfg->hsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_3;
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCopyOutPrmsToScCfg: Incorrect multi-phase horz coeff, defaulting to set 0\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Incorrect multi-phase horz coeff, defaulting to set 0\n");
                     sc_cfg->hsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_0;
                     break;
             }
@@ -1507,8 +1479,7 @@ static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
                     sc_cfg->vsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_3;
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCopyOutPrmsToScCfg: Incorrect multi-phase horz coeff, defaulting to set 0\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Incorrect multi-phase horz coeff, defaulting to set 0\n");
                     sc_cfg->vsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_0;
                     break;
             }
@@ -1560,8 +1531,7 @@ static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetCoeffsCmd: Incorrect Data Object Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect Data Object Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -1570,8 +1540,7 @@ static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdSetCoeffsCmd: Data Object is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Data Object is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -1581,8 +1550,7 @@ static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdObj *msc_obj,
             coeffCfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetCoeffsCmd: Failed to create coefficients\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create coefficients\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -1632,8 +1600,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdSetOutputParamsCmd: Invalid Mem Size for Output Params\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Mem Size for Output Params\n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 
@@ -1642,8 +1609,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetOutputParamsCmd: Null User Data Object\n");
+            VX_PRINT(VX_ZONE_ERROR, "Null User Data Object\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -1660,8 +1626,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
             VHWA_M2M_IOCTL_MSC_SET_PARAMS, &msc_obj->msc_prms, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetOutputParamsCmd: Failed to Set Output Params\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Set Output Params\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -1708,8 +1673,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
                         msc_prms->mscCfg.tapSel = MSC_TAP_SEL_5TAPS;
                         break;
                     default:
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacMscPmdSetInputParamsCmd: Invalid Kernel Size\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Invalid Kernel Size\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         break;
                 }
@@ -1717,8 +1681,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetInputParamsCmd: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -1727,8 +1690,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdSetInputParamsCmd: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -1738,8 +1700,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdObj *msc_obj,
             VHWA_M2M_IOCTL_MSC_SET_PARAMS, &msc_obj->msc_prms, NULL);
         if (FVID2_SOK != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetInputParamsCmd: Failed to Set Input Params\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Set Input Params\n");
             status = (vx_status)VX_FAILURE;
         }
     }

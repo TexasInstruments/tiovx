@@ -206,8 +206,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
         ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxKernelMscScaleCreate: Invalid Parameters\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Parameters\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -221,8 +220,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
         prms = tivxMemAlloc(sizeof(tivxMscScaleParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL == prms)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxKernelMscScaleCreate: Params allocation error\n");
+            VX_PRINT(VX_ZONE_ERROR, "Params allocation error\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
@@ -238,8 +236,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size_in, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
+                VX_PRINT(VX_ZONE_ERROR, "Input Buffer Alloc Error\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
@@ -251,8 +248,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                 prms->src16_cbcr = tivxMemAlloc(prms->buffer_size_in_cbcr, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->src16_cbcr)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Input Buffer Alloc Error\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -285,8 +281,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                         (vx_enum)TIVX_MEM_EXTERNAL);
                     if (NULL == prms->dst16[cnt])
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
+                        VX_PRINT(VX_ZONE_ERROR, "Output%d Buffer Alloc Error\n",
                             cnt);
                         status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
@@ -301,8 +296,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                             (vx_enum)TIVX_MEM_EXTERNAL);
                         if (NULL == prms->dst16_cbcr[cnt])
                         {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
+                            VX_PRINT(VX_ZONE_ERROR, "Output%d Buffer Alloc Error\n",
                                 cnt);
                             status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
@@ -342,8 +336,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
         ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscScaleProcess: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -589,8 +582,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleDelete(
         ((NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX])))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxKernelMscScaleDelete: Invalid Parameters\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Parameters\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -879,8 +871,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
                     prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscScaleSetInputParamsCmd: Invalid Kernel Size\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid Kernel Size\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
             }
@@ -888,8 +879,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleSetInputParamsCmd: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -898,8 +888,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxMscScaleParams *prms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscScaleSetInputParamsCmd: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -1004,8 +993,7 @@ static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleSetCropParamsCmd: Invalid Mem Size for Crop Params\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Mem Size for Crop Params\n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 

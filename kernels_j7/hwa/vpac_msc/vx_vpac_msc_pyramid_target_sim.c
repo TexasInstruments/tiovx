@@ -308,8 +308,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
             prms->src16 = tivxMemAlloc(prms->buffer_size_in, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->src16)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscPmdCreate: Input Buffer Alloc Error\n");
+                VX_PRINT(VX_ZONE_ERROR, "Input Buffer Alloc Error\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
@@ -328,8 +327,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->dst16[cnt])
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCreate: Output%d Buffer Alloc Error\n",
+                    VX_PRINT(VX_ZONE_ERROR, "Output%d Buffer Alloc Error\n",
                         cnt);
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
@@ -758,8 +756,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
                     if (num_subsets >=
                             TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacMscPmdCalcSubSetInfo: Pyramid Subsets required are more than TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Pyramid Subsets required are more than TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         break;
                     }
@@ -771,8 +768,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
 
                 if (ss_info->num_levels > TIVX_VPAC_MSC_MAX_OUTPUT)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdCalcSubSetInfo: Max 10 outputs supported in subset\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Max 10 outputs supported in subset\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
                 }
@@ -881,8 +877,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
                     prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacMscPmdSetInputParamsCmd: Invalid Kernel Size\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid Kernel Size\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
             }
@@ -890,8 +885,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdSetInputParamsCmd: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -900,8 +894,7 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacMscPmdSetInputParamsCmd: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 

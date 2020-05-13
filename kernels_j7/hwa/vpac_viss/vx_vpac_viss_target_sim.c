@@ -142,8 +142,7 @@ void tivxAddTargetKernelVpacViss(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxAddTargetKernelVpacViss: Invalid CPU ID\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -223,8 +222,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissCreate: Alloc Failed for Viss Object\n");
+            VX_PRINT(VX_ZONE_ERROR, "Alloc Failed for Viss Object\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -236,8 +234,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 status = (vx_status)VX_FAILURE;
 
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissCreate: tivx_vpac_viss_params_t, host size (%d) != target size (%d)\n",
+                VX_PRINT(VX_ZONE_ERROR, "tivx_vpac_viss_params_t, host size (%d) != target size (%d)\n",
                     config_desc->mem_size, sizeof(tivx_vpac_viss_params_t));
             }
         }
@@ -247,8 +244,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 status = (vx_status)VX_FAILURE;
 
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissCreate: tivx_ae_awb_params_t, host size (%d) != target size (%d)\n",
+                VX_PRINT(VX_ZONE_ERROR, "tivx_ae_awb_params_t, host size (%d) != target size (%d)\n",
                     aewb_res_desc->mem_size, sizeof(tivx_ae_awb_params_t));
             }
         }
@@ -258,8 +254,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 status = (vx_status)VX_FAILURE;
 
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
+                VX_PRINT(VX_ZONE_ERROR, "tivx_h3a_data_t, host size (%d) != target size (%d)\n",
                     h3a_out_desc->mem_size, sizeof(tivx_h3a_data_t));
             }
             if (NULL != dcc_buf_desc)
@@ -337,14 +332,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         vissObj, dcc_buf_desc, h3a_out_desc, ae_awb_result);
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Failed to Parse and Set DCC Params\n");
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to Parse and Set DCC Params\n");
                 }
             }
         }
@@ -672,8 +665,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             status = tivxVpacVissApplyAEWBParams(vissObj, ae_awb_result);
             if ((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissProcess: Failed to apply AEWB Result\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to apply AEWB Result\n");
             }
         }
 
@@ -683,8 +675,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             if ((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissProcess: Failed to Set Config in Simulator\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Set Config in Simulator\n");
             }
         }
 

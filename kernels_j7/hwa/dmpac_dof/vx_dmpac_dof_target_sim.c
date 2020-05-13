@@ -803,8 +803,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                        "tivxDmpacDofControl: Invalid Input\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Input\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }
@@ -872,8 +871,7 @@ static vx_status tivxDmpacDofGetErrStatusCmd(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDmpacDofGetErrStatus: Null argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null argument\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -891,8 +889,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
 
     if(NULL == usr_data_obj)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDmpacDofSetCsPrms: Invalid Input\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Input\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -992,8 +989,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacDofSetCsPrms: Invalid Argument\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
@@ -1001,8 +997,7 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDmpacDofSetCsPrms: Null Argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null Argument\n");
     }
 
     return (status);

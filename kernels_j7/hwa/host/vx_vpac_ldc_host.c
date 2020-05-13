@@ -303,48 +303,42 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
              ((vx_df_image)VX_DF_IMAGE_UYVY != in_img_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'out0_img' is YUV422I but 'in_img' is not YUV422I \n");
+            VX_PRINT(VX_ZONE_ERROR, "'out0_img' is YUV422I but 'in_img' is not YUV422I \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_U8) &&
              !((out0_img_fmt == (vx_df_image)VX_DF_IMAGE_U8) || (out0_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_U8 but 'out0_img' is not VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_U8 but 'out0_img' is not VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_U16) &&
              (out0_img_fmt != (vx_df_image)VX_DF_IMAGE_U16))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_U16 but 'out0_img' is not VX_DF_IMAGE_U16 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_U16 but 'out0_img' is not VX_DF_IMAGE_U16 \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12) &&
              !((out0_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12) || (out0_img_fmt == (vx_df_image)VX_DF_IMAGE_U8)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is TIVX_DF_IMAGE_P12 but 'out0_img' is not TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is TIVX_DF_IMAGE_P12 but 'out0_img' is not TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) &&
              !((out0_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) || (out0_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_NV12 but 'out0_img' is not VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_NV12 but 'out0_img' is not VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) &&
              !((out0_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) || (out0_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12)))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is TIVX_DF_IMAGE_NV12_P12 but 'out0_img' is not TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is TIVX_DF_IMAGE_NV12_P12 but 'out0_img' is not TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 \n");
         }
 
         if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_UYVY) &&
@@ -352,8 +346,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                (out0_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) || (out0_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) ))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_UYVY but 'out0_img' is not VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12\n");
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_UYVY but 'out0_img' is not VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12\n");
         }
 
         if (NULL != out1_img)
@@ -372,8 +365,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 ((vx_df_image)VX_DF_IMAGE_UYVY != in_img_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Output1 is YUV422I Input is not YUV422I \n");
+                VX_PRINT(VX_ZONE_ERROR, "Output1 is YUV422I Input is not YUV422I \n");
             }
 
             if ((((vx_df_image)VX_DF_IMAGE_NV12 == out0_img_fmt) ||
@@ -383,8 +375,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 ((vx_df_image)VX_DF_IMAGE_U8 != out1_img_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Output1 cannot be single plane if output0 is multi-plane \n");
+                VX_PRINT(VX_ZONE_ERROR, "Output1 cannot be single plane if output0 is multi-plane \n");
             }
 
             if ((((vx_df_image)VX_DF_IMAGE_U8 == out0_img_fmt) ||
@@ -393,48 +384,42 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                  ((vx_df_image)VX_DF_IMAGE_NV12 == out1_img_fmt))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Output1 cannot be multi-plane if output0 is single-plane \n");
+                VX_PRINT(VX_ZONE_ERROR, "Output1 cannot be multi-plane if output0 is single-plane \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_U8) &&
                  !((out1_img_fmt == (vx_df_image)VX_DF_IMAGE_U8) || (out1_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_U8 but 'out1_img' is not VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_U8 but 'out1_img' is not VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_U16) &&
                  !((out1_img_fmt == (vx_df_image)VX_DF_IMAGE_U16) || (out1_img_fmt == (vx_df_image)VX_DF_IMAGE_U8)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_U16 but 'out1_img' is not VX_DF_IMAGE_U16 or VX_DF_IMAGE_U8 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_U16 but 'out1_img' is not VX_DF_IMAGE_U16 or VX_DF_IMAGE_U8 \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12) &&
                  !((out1_img_fmt == (vx_df_image)TIVX_DF_IMAGE_P12) || (out1_img_fmt == (vx_df_image)VX_DF_IMAGE_U8)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is TIVX_DF_IMAGE_P12 but 'out1_img' is not TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is TIVX_DF_IMAGE_P12 but 'out1_img' is not TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) &&
                  !((out1_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) || (out1_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_NV12 but 'out1_img' is not VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_NV12 but 'out1_img' is not VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) &&
                  !((out1_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) || (out1_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12)))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is TIVX_DF_IMAGE_NV12_P12 but 'out1_img' is not TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is TIVX_DF_IMAGE_NV12_P12 but 'out1_img' is not TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 \n");
             }
 
             if ( (in_img_fmt == (vx_df_image)VX_DF_IMAGE_UYVY) &&
@@ -442,8 +427,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                    (out1_img_fmt == (vx_df_image)VX_DF_IMAGE_NV12) || (out1_img_fmt == (vx_df_image)TIVX_DF_IMAGE_NV12_P12) ))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: 'in_img' is VX_DF_IMAGE_UYVY but 'out1_img' is not VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12\n");
+                VX_PRINT(VX_ZONE_ERROR, "'in_img' is VX_DF_IMAGE_UYVY but 'out1_img' is not VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12\n");
             }
         }
     }

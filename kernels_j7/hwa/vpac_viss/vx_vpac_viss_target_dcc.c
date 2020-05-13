@@ -126,8 +126,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 
     if (NULL == vissObj->dcc_out_buf)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacVissInitDcc: failed to allocate %d bytes !!!\n", vissObj->dcc_out_numbytes);
+        VX_PRINT(VX_ZONE_ERROR, "failed to allocate %d bytes !!!\n", vissObj->dcc_out_numbytes);
         status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
@@ -174,15 +173,13 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
 
                 if (0 != dcc_status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacVissSetParamsFromDcc: dcc_update Failed !!!\n");
+                    VX_PRINT(VX_ZONE_ERROR, "dcc_update Failed !!!\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacVissSetParamsFromDcc: Dcc_Create Failed !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, "Dcc_Create Failed !!!\n");
                 status = (vx_status)VX_FAILURE;
             }
 
@@ -191,8 +188,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissSetParamsFromDcc: Incorrect DCC Input Buf memory !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect DCC Input Buf memory !!!\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -294,8 +290,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
 
         if (0 != dcc_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissApplyAEWBParams: DCC Update Failed !!!\n");
+            VX_PRINT(VX_ZONE_ERROR, "DCC Update Failed !!!\n");
             status = (vx_status)VX_FAILURE;
         }
         else

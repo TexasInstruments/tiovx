@@ -1047,8 +1047,7 @@ static vx_status tivxCsitxGetStatistics(tivxCsitxParams *prms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxCsitxGetStatistics: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -1057,8 +1056,7 @@ static vx_status tivxCsitxGetStatistics(tivxCsitxParams *prms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCsitxGetStatistics: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -1080,14 +1078,12 @@ static vx_status VX_CALLBACK tivxCsitxControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCsitxControl: Failed to Get Target Kernel Instance Context\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Target Kernel Instance Context\n");
     }
     else if ((NULL == prms) ||
         (sizeof(tivxCsitxParams) != size))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCsitxControl: Invalid Object Size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Size\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -1121,8 +1117,7 @@ static vx_status VX_CALLBACK tivxCsitxControl(
                                                 NULL);
                         if (FVID2_SOK != fvid2_status)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                "tivxCsitxControl: Get status returned failure\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Get status returned failure\n");
                             status = (vx_status)VX_FAILURE;
                             break;
                         }
@@ -1133,8 +1128,7 @@ static vx_status VX_CALLBACK tivxCsitxControl(
                             (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                         if ((vx_status)VX_SUCCESS != status)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                "tivxCsitxControl: Get status failed\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Get status failed\n");
                             status = (vx_status)VX_FAILURE;
                         }
 
@@ -1142,16 +1136,14 @@ static vx_status VX_CALLBACK tivxCsitxControl(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxCsitxControl: User data object was NULL\n");
+                    VX_PRINT(VX_ZONE_ERROR, "User data object was NULL\n");
                     status = (vx_status)VX_FAILURE;
                 }
                 break;
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxCsitxControl: Invalid Command Id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Command Id\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }

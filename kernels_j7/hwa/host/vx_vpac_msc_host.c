@@ -548,8 +548,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
             ((vx_df_image)TIVX_DF_IMAGE_P12 != in_img_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacMscScaleValidate: Incorrect in_img fmt \n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect in_img fmt \n");
         }
     }
 
@@ -724,8 +723,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             ((vx_df_image)TIVX_DF_IMAGE_P12 != fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacMscPyramidValidate: Incorrect Input Image Format \n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect Input Image Format \n");
         }
     }
 
@@ -750,16 +748,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             ((vx_df_image)TIVX_DF_IMAGE_P12 != p_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacMscPyramidValidate: Incorrect Pyramid Format\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect Pyramid Format\n");
         }
 
         if (((vx_df_image)VX_DF_IMAGE_NV12 == p_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_NV12 != fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxAddKernelVpacMscPyramidValidate: Pyramid Format MisMatch\n");
+            VX_PRINT(VX_ZONE_ERROR, "Pyramid Format MisMatch\n");
         }
     }
 
@@ -778,8 +774,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
                 (border.mode != (vx_enum)VX_BORDER_UNDEFINED))
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacMscPyramidValidate: Only replicate/Undefined border mode is supported \n");
+                VX_PRINT(VX_ZONE_ERROR, "Only replicate/Undefined border mode is supported \n");
             }
         }
     }

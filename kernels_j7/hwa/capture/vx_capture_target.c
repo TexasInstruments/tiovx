@@ -1420,8 +1420,7 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxCaptureGetStatistics: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -1430,8 +1429,7 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCaptureGetStatistics: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -1557,8 +1555,7 @@ static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxCaptureControl: Object descriptor allocation failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Object descriptor allocation failed\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
@@ -1587,14 +1584,12 @@ static vx_status VX_CALLBACK tivxCaptureControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCaptureControl: Failed to Get Target Kernel Instance Context\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Target Kernel Instance Context\n");
     }
     else if ((NULL == prms) ||
         (sizeof(tivxCaptureParams) != size))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxCaptureControl: Invalid Object Size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Size\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -1628,8 +1623,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                                                 NULL);
                         if (FVID2_SOK != fvid2_status)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                "tivxCaptureControl: Get status returned failure\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Get status returned failure\n");
                             status = (vx_status)VX_FAILURE;
                             break;
                         }
@@ -1640,8 +1634,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                             (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                         if ((vx_status)VX_SUCCESS != status)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                "tivxCaptureControl: Get status failed\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Get status failed\n");
                             status = (vx_status)VX_FAILURE;
                         }
 
@@ -1649,8 +1642,7 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxCaptureControl: User data object was NULL\n");
+                    VX_PRINT(VX_ZONE_ERROR, "User data object was NULL\n");
                     status = (vx_status)VX_FAILURE;
                 }
                 break;
@@ -1665,23 +1657,20 @@ static vx_status VX_CALLBACK tivxCaptureControl(
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxCaptureControl: Reference frame already provided\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Reference frame already provided\n");
                         status = (vx_status)VX_FAILURE;
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxCaptureControl: Provided reference was NULL\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Provided reference was NULL\n");
                     status = (vx_status)VX_FAILURE;
                 }
                 break;
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxCaptureControl: Invalid Command Id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Command Id\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }

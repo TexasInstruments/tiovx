@@ -173,8 +173,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxDisplaySwitchChannel: Invalid Size \n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -183,8 +182,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDisplaySwitchChannel: User Data Object is NULL \n");
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -682,14 +680,12 @@ static vx_status VX_CALLBACK tivxDisplayControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDisplayControl: Failed to Get Target Kernel Instance Context\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Target Kernel Instance Context\n");
     }
     else if ((NULL == dispPrms) ||
         (sizeof(tivxDisplayParams) != size))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDisplayControl: Invalid Object Size\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Size\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -709,8 +705,7 @@ static vx_status VX_CALLBACK tivxDisplayControl(
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxDisplayControl: Invalid Command Id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Command Id\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }

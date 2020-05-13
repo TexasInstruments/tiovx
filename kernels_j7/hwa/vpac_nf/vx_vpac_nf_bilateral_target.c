@@ -233,8 +233,7 @@ void tivxRemoveTargetKernelVpacNfBilateral(void)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxRemoveTargetKernelVpacNfBilateral: Failed to Remove Nf TargetKernel\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Nf TargetKernel\n");
     }
     if (NULL != gTivxVpacNfBilateralInstObj.lock)
     {
@@ -266,7 +265,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -276,11 +275,11 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Null Desc\n");
+            VX_PRINT(VX_ZONE_ERROR, "Null Desc\n");
         }
         else if (sizeof(tivxVpacNfBilateralObj) != size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Incorrect object size\n");
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect object size\n");
             status = (vx_status)VX_FAILURE;
         }
         else
@@ -320,8 +319,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             outFrmList, FVID2_TIMEOUT_FOREVER);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralProcess: Failed to Submit Request\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Submit Request\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -335,8 +333,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             inFrmList, outFrmList, 0);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralProcess: Failed to Get Processed Request\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Get Processed Request\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -377,8 +374,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralCreate: Required input parameter set to NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Required input parameter set to NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -398,8 +394,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Failed to Alloc Nf Bilateral Object\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Alloc Nf Bilateral Object\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -420,15 +415,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
 
             if (NULL == nf_bilateral_obj->handle)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Failed to Alloc Nf Bilateral Object\n");
+                VX_PRINT(VX_ZONE_ERROR, "Failed to Alloc Nf Bilateral Object\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Failed to allocate Event\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
         }
     }
 
@@ -443,8 +436,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             IOCTL_VHWA_M2M_NF_REGISTER_ERR_CB, &nf_bilateral_obj->errEvtPrms, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Failed to Register Error Callback\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Register Error Callback\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -495,8 +487,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             IOCTL_VHWA_M2M_NF_SET_PARAMS, &nf_bilateral_obj->nf_cfg, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Set parameters request failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Set parameters request failed\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -505,8 +496,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             &nf_bilateral_obj->wgtTbl, NULL);
         if (FVID2_SOK != fvid2_status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralCreate: Set coeffs request failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Set coeffs request failed\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -579,14 +569,12 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
         else
         {
             status = (vx_status)VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralDelete: Invalid Target Instance Context\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Target Instance Context\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralDelete: Invalid Descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Descriptor\n");
     }
 
     return status;
@@ -606,14 +594,12 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
 
     if ((vx_status)VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralControl: Failed to get Target Kernel Instance Context\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to get Target Kernel Instance Context\n");
     }
     else if ((NULL == nf_bilateral_obj) ||
         (sizeof(tivxVpacNfBilateralObj) != size))
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralControl: Wrong Size for Nf Bilateral Obj\n");
+        VX_PRINT(VX_ZONE_ERROR, "Wrong Size for Nf Bilateral Obj\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -645,8 +631,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacNfBilateralControl: Invalid Node Command Id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Node Command Id\n");
                 status = (vx_status)VX_FAILURE;
                 break;
             }
@@ -740,8 +725,7 @@ static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
             }
             default:
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacNfSetFmt: Invalid Vx Image Format\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Vx Image Format\n");
                 break;
             }
         }
@@ -1003,8 +987,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
 
     if(NULL == usr_data_obj)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralSetHtsLimitCmd: Invalid Argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -1028,8 +1011,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
                 IOCTL_VHWA_M2M_NF_SET_HTS_LIMIT, &hts_limit, NULL);
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacNfBilateralSetHtsLimitCmd: Set HTS limit request failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Set HTS limit request failed\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
@@ -1039,8 +1021,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralSetHtsLimitCmd: Invalid Argument\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
@@ -1048,8 +1029,7 @@ static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralSetHtsLimitCmd: Null Argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null Argument\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -1080,15 +1060,13 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
 
             if (FVID2_SOK != fvid2_status)
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacNfBilateralSetCoeff: Set coeff request failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Set coeff request failed\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacNfBilateralSetCoeff: Invalid Argument\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
             status = (vx_status)VX_FAILURE;
         }
         tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
@@ -1096,8 +1074,7 @@ static vx_status tivxVpacNfBilateralSetCoeff(tivxVpacNfBilateralObj *nf_bilatera
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralSetCoeff: Null Argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null Argument\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -1115,8 +1092,7 @@ static vx_status tivxVpacNfBilateralGetErrStatusCmd(const tivxVpacNfBilateralObj
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxVpacNfBilateralGetErrStatusCmd: Null argument\n");
+        VX_PRINT(VX_ZONE_ERROR, "Null argument\n");
         status = (vx_status)VX_FAILURE;
     }
 
