@@ -68,7 +68,7 @@ typedef struct _vx_graph {
     uint32_t num_head_nodes;
 
     /*! \brief Leaf Nodes in a graph */
-    vx_node leaf_nodes[TIVX_GRAPH_MAX_HEAD_NODES];
+    vx_node leaf_nodes[TIVX_GRAPH_MAX_LEAF_NODES];
 
     /* \brief Number of leaf nodes in a graph */
     uint32_t num_leaf_nodes;
