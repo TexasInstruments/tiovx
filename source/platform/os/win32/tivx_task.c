@@ -113,7 +113,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 
         if (NULL == tskHndl)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTaskCreate: Task handle is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Task handle is NULL\n");
             status = (vx_status)VX_FAILURE;
         }
         else
@@ -123,7 +123,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTaskCreate: Task or params are NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Task or params are NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 

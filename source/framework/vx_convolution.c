@@ -108,7 +108,7 @@ vx_status VX_API_CALL vxQueryConvolution(
 
     if (obj_desc == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: Invalid Object Descriptor! \n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Descriptor! \n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -118,8 +118,7 @@ vx_status VX_API_CALL vxQueryConvolution(
 
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-                "vxQueryConvolution: Could not allocate memory! \n");
+            VX_PRINT(VX_ZONE_ERROR, "Could not allocate memory! \n");
         }
     }
 
@@ -134,7 +133,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: scale query failed \n");
+                    VX_PRINT(VX_ZONE_ERROR, "scale query failed \n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -145,7 +144,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: columns query failed \n");
+                    VX_PRINT(VX_ZONE_ERROR, "columns query failed \n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -156,7 +155,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: rows query failed \n");
+                    VX_PRINT(VX_ZONE_ERROR, "rows query failed \n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -168,12 +167,12 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: size query failed \n");
+                    VX_PRINT(VX_ZONE_ERROR, "size query failed \n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: invalid attribute \n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute \n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -195,7 +194,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
 
     if (obj_desc == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetConvolutionAttribute: Invalid Object Descriptor! \n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Descriptor! \n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -218,18 +217,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "vxSetConvolutionAttribute: scale value is not a power of two \n");
+                        VX_PRINT(VX_ZONE_ERROR, "scale value is not a power of two \n");
                         status = (vx_status)VX_ERROR_INVALID_VALUE;
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetConvolutionAttribute: set convolution scale failed \n");
+                    VX_PRINT(VX_ZONE_ERROR, "set convolution scale failed \n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxSetConvolutionAttribute: invalid attribute \n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute \n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 break;
         }
@@ -251,14 +250,14 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 
     if (obj_desc == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: Invalid Object Descriptor! \n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Object Descriptor! \n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: user_mem_type is not VX_MEMORY_TYPE_HOST\n");
+            VX_PRINT(VX_ZONE_ERROR, "user_mem_type is not VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -266,13 +265,13 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
         if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: Memory still not allocated\n");
+            VX_PRINT(VX_ZONE_ERROR, "Memory still not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == user_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: user pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "user pointer is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -308,7 +307,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCopyConvolutionCoefficients: Convolution allocation failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Convolution allocation failed\n");
             }
         }
     }
@@ -339,7 +338,7 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
                 {
                     /* could not allocate memory */
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    VX_PRINT(VX_ZONE_ERROR, "ownAllocConvolutionBuffer: could not allocate memory\n");
+                    VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
                 }
                 else
                 {
@@ -352,13 +351,13 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownAllocConvolutionBuffer: convolution object descriptor is null\n");
+            VX_PRINT(VX_ZONE_ERROR, "convolution object descriptor is null\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownAllocConvolutionBuffer: reference type is not a convolution\n");
+        VX_PRINT(VX_ZONE_ERROR, "reference type is not a convolution\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

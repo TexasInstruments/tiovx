@@ -44,11 +44,11 @@ vx_status tivxMemBufferAlloc(
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = (vx_status)VX_FAILURE;
     }
@@ -69,7 +69,7 @@ vx_status tivxMemBufferAlloc(
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }
@@ -87,7 +87,7 @@ vx_status tivxMemBufferAlloc(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Shared mem ptr allocation failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Shared mem ptr allocation failed\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
@@ -153,7 +153,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
         heap_id = UTILS_HEAPID_L2_LOCAL;
         break;
     default:
-        VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
         status = (vx_status)VX_FAILURE;
         break;
     }
@@ -204,7 +204,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
             heap_id = UTILS_HEAPID_L2_LOCAL;
             break;
         default:
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = (vx_status)VX_FAILURE;
             break;
         }
@@ -228,11 +228,11 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = (vx_status)VX_FAILURE;
     }
@@ -252,7 +252,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }
@@ -269,7 +269,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Shared ptr mem free failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Shared ptr mem free failed\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
@@ -308,7 +308,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemStats: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }
@@ -405,7 +405,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMemResetScratchHeap: TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
+        VX_PRINT(VX_ZONE_ERROR, "TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
     }
 
     return status;

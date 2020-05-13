@@ -56,7 +56,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
 
     if ((vx_status)VX_SUCCESS != ownReferenceLock(&scalar->base))
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: could not lock reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "could not lock reference\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
@@ -84,13 +84,13 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
             case (vx_enum)VX_TYPE_BOOL:     *(vx_bool*)user_ptr = obj_desc->data.boolean; break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: data type is not supported\n");
+                VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
         if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownScalarToHostMem: reference could not be unlocked\n");
+            VX_PRINT(VX_ZONE_ERROR, "reference could not be unlocked\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -105,7 +105,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 
     if ((vx_status)VX_SUCCESS != ownReferenceLock(&scalar->base))
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: could not lock reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "could not lock reference\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
@@ -133,13 +133,13 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
             case (vx_enum)VX_TYPE_BOOL:     obj_desc->data.boolean = *(const vx_bool*)user_ptr; break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: data type is not supported\n");
+                VX_PRINT(VX_ZONE_ERROR, "data type is not supported\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
         if ((vx_status)VX_SUCCESS != ownReferenceUnlock(&scalar->base))
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownHostMemToScalar: reference could not be unlocked\n");
+            VX_PRINT(VX_ZONE_ERROR, "reference could not be unlocked\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -266,7 +266,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
 
     if (ownIsValidSpecificReference(&pscalar->base,(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -281,13 +281,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: query scalar type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "query scalar type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryScalar: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -302,7 +302,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
 
     if ((vx_bool)vx_false_e == ownIsValidSpecificReference(&scalar->base, (vx_enum)VX_TYPE_SCALAR))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -313,12 +313,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             if (NULL == user_ptr)
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user ptr is NULL\n");
+                VX_PRINT(VX_ZONE_ERROR, "user ptr is NULL\n");
             }
 
             if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
+                VX_PRINT(VX_ZONE_ERROR, "user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             }
         }
         else
@@ -333,7 +333,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
                     break;
                 default:
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: usage value is invalid\n");
+                    VX_PRINT(VX_ZONE_ERROR, "usage value is invalid\n");
                     break;
             }
         }

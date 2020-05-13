@@ -80,7 +80,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
     if(hMutex==NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex creation failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "Mutex creation failed\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
 
@@ -115,7 +115,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
         if(dwWaitResult != WAIT_OBJECT_0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Wait for single object failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Wait for single object failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -136,13 +136,13 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
     {
         if( !ReleaseMutex(hMutex) )
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex release failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex release failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex handle is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Mutex handle is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 

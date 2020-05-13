@@ -82,7 +82,7 @@ vx_status tivxEventCreate(tivx_event *event)
     if(tmp_event==NULL)
     {
         *event = NULL;
-        VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Memory allocation failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "Memory allocation failed\n");
         status = (vx_status)VX_ERROR_NO_MEMORY;
     }
     else
@@ -99,7 +99,7 @@ vx_status tivxEventCreate(tivx_event *event)
         {
             free(tmp_event);
             *event = NULL;
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Mutex initialization failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
@@ -146,7 +146,7 @@ vx_status tivxEventPost(tivx_event event)
         }
         if(status != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventPost: Mutex post failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex post failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -177,7 +177,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                 else
                 if(timeout==TIVX_EVENT_TIMEOUT_NO_WAIT)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Timeout set to TIVX_EVENT_TIMEOUT_NO_WAIT\n");
                     status = (vx_status)VX_FAILURE;
                     done = (vx_bool)vx_true_e;
                 }
@@ -190,7 +190,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
         }
         if(status != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Mutex unlock failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex unlock failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -212,7 +212,7 @@ vx_status tivxEventClear(tivx_event event)
         }
         if(status != 0)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventClear: Mutex lock failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mutex lock failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }

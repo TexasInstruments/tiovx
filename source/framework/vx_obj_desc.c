@@ -190,7 +190,7 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjDescFree: object descriptor ID is greater than number of object descriptor table entries\n");
+            VX_PRINT(VX_ZONE_ERROR, "object descriptor ID is greater than number of object descriptor table entries\n");
         }
     }
 

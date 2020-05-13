@@ -40,7 +40,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxReleaseKernel: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -221,7 +221,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
             )
         {
             /* kernel removal is locked, return error */
-            VX_PRINT(VX_ZONE_ERROR, "vxRemoveKernel: Kernel is locked\n");
+            VX_PRINT(VX_ZONE_ERROR, "Kernel is locked\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -234,7 +234,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxRemoveKernel: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -262,19 +262,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 if (ownIsValidType(data_type) == (vx_bool)vx_false_e)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid data type\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid data type\n");
                 }
                 if (ownIsValidDirection(dir) == (vx_bool)vx_false_e)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid direction\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid direction\n");
                 }
                 if (ownIsValidState(state) == (vx_bool)vx_false_e)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid state\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid state\n");
                 }
                 if ((data_type == (vx_enum)VX_TYPE_DELAY) && (dir != (vx_enum)VX_INPUT))
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Delay type is not input\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Delay type is not input\n");
                 }
             }
             else
@@ -288,14 +288,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Index value is greater than the number of parameters\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: May need to increase the value of TIVX_KERNEL_MAX_PARAMS in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "Index value is greater than the number of parameters\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_KERNEL_MAX_PARAMS in tiovx/include/tivx_config.h\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -391,19 +391,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
             {
                 if (kernel->signature.directions[p] < (vx_enum)VX_INPUT)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Kernel signature directions less than VX_INPUT\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions less than VX_INPUT\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if (kernel->signature.directions[p] > (vx_enum)VX_BIDIRECTIONAL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Kernel signature directions greater than VX_BIDIRECTIONAL\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Kernel signature directions greater than VX_BIDIRECTIONAL\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
 
                 if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Invalid kernel signature type\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid kernel signature type\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 if(status!=(vx_status)VX_SUCCESS)
@@ -418,13 +418,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Number of parameters greater than maximum allowable\n");
+            VX_PRINT(VX_ZONE_ERROR, "Number of parameters greater than maximum allowable\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxFinalizeKernel: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -448,13 +448,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
         else
         {
             status = (vx_status)VX_ERROR_NO_RESOURCES;
-            VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Number of targets greater than maximum allowable\n");
-            VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: May need to increase the value of TIVX_MAX_TARGETS_PER_KERNEL in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "Number of targets greater than maximum allowable\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_MAX_TARGETS_PER_KERNEL in tiovx/include/tivx_config.h\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -471,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxSetKernelSinkDepth: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;

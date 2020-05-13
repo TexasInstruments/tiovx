@@ -433,7 +433,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     else
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: trigger node is not set with pipelining\n");
+                        VX_PRINT(VX_ZONE_ERROR, "trigger node is not set with pipelining\n");
                     }
 
                     if ((vx_status)VX_SUCCESS == status)
@@ -443,7 +443,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     else
                     {
                         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be registered\n");
+                        VX_PRINT(VX_ZONE_ERROR, "event could not be registered\n");
                     }
                 }
                 else
@@ -465,29 +465,29 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
                             if ((vx_status)VX_SUCCESS != status)
                             {
-                                VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: streaming task could not be created\n");
+                                VX_PRINT(VX_ZONE_ERROR, "streaming task could not be created\n");
                             }
                         }
                         else
                         {
-                            VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be created\n");
+                            VX_PRINT(VX_ZONE_ERROR, "event could not be created\n");
                         }
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be created\n");
+                        VX_PRINT(VX_ZONE_ERROR, "event could not be created\n");
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: graph event queue could not be registered\n");
+                    VX_PRINT(VX_ZONE_ERROR, "graph event queue could not be registered\n");
                 }
             }
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -505,13 +505,13 @@ vx_status ownGraphVerifyStreamingMode(vx_graph graph)
              ((graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO) ||
              (graph->schedule_mode==(vx_enum)VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)) )
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownGraphVerifyStreamingMode: streaming is not supported with manual or auto pipelining\n");
+            VX_PRINT(VX_ZONE_ERROR, "streaming is not supported with manual or auto pipelining\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownGraphVerifyStreamingMode: invalid graph reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

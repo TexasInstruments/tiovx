@@ -98,14 +98,14 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 
     kernel = tivxTargetKernelGet(kernel_id, kernel_name, target_id);
 
-    VX_PRINT(VX_ZONE_INFO, "tivxTargetKernelInstanceAlloc: attempting to call kernel %s on this CPU\n", kernel_name);
+    VX_PRINT(VX_ZONE_INFO, "attempting to call kernel %s on this CPU\n", kernel_name);
 
     if(kernel==NULL)
     {
         /* there is no kernel registered with this kernel ID on this CPU, hence return
         NULL */
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceAlloc: kernel %s has not been registered on this CPU\n", kernel_name);
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceAlloc: Please register this kernel on the appropriate target core\n");
+        VX_PRINT(VX_ZONE_ERROR, "kernel %s has not been registered on this CPU\n", kernel_name);
+        VX_PRINT(VX_ZONE_ERROR, "Please register this kernel on the appropriate target core\n");
     }
     else
     {
@@ -143,7 +143,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 
             if(tmp_kernel_instance->kernel_id == (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID)
             {
-                VX_PRINT(VX_ZONE_WARNING, "tivxTargetKernelInstanceAlloc: May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
             tivxMutexUnlock(g_target_kernel_instance_lock);
@@ -167,7 +167,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceFree: target kernel instance is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
     }
 
     return status;
@@ -231,7 +231,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxSetTargetKernelInstanceContext: target kernel instance is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
     }
     return status;
 }
@@ -250,7 +250,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceContext: target kernel instance is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
     }
     return status;
 }
@@ -271,7 +271,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceContext: target kernel instance is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
     }
     return status;
 }

@@ -353,7 +353,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseCreateInBamGraph: prms mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "prms mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -371,7 +371,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
         }
     }
     else {
-        VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseCreateInBamGraph: obj_descs cannot be NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "obj_descs cannot be NULL\n");
     }
 
     return status;
@@ -405,7 +405,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_PHASE_I16S_I16S_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

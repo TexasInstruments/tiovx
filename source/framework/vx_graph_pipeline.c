@@ -152,7 +152,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Not supported on verified graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "Not supported on verified graph\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -179,7 +179,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                         (graph_parameters_queue_params_list[i].refs_list_size >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
                         )
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxSetGraphScheduleConfig: Invalid parameters\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                     else
@@ -533,7 +533,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
     }
     if(graph->pipeline_depth >= TIVX_GRAPH_MAX_PIPELINE_DEPTH)
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownGraphAllocAndEnqueueObjDescForPipeline: Invalid graph pipeline depth\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid graph pipeline depth\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -543,7 +543,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
             graph->obj_desc[i] = (tivx_obj_desc_graph_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
             if(graph->obj_desc[i]==NULL)
             {
-                VX_PRINT(VX_ZONE_ERROR,"ownGraphAllocAndEnqueueObjDescForPipeline: Unable to alloc obj desc\n");
+                VX_PRINT(VX_ZONE_ERROR, "Unable to alloc obj desc\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
                 break;
             }
@@ -849,7 +849,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxSetGraphPipelineDepth: Not supported on verified graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "Not supported on verified graph\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -861,15 +861,15 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: pipeline depth greater than max allowed pipeline depth\n");
-                VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "pipeline depth greater than max allowed pipeline depth\n");
+                VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;

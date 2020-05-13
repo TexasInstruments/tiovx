@@ -120,7 +120,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
     if (ownIsValidSpecificReference(&meta->base, (vx_enum)VX_TYPE_META_FORMAT) ==
             (vx_bool)vx_false_e)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid meta format reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid meta format reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -128,14 +128,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
     {
         if (VX_TYPE(attribute) != (vx_uint32)meta->type)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid meta format type\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid meta format type\n");
             status = (vx_status)VX_ERROR_INVALID_TYPE;
         }
     }
 
     if( NULL == ptr)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: ptr is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "ptr is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -154,13 +154,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Valid rectangle callback not called\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Valid rectangle callback not called\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid type for valid rectangle callback\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid type for valid rectangle callback\n");
                     status = (vx_status)VX_ERROR_INVALID_TYPE;
                 }
                 break;
@@ -171,7 +171,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Image format error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Image format error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -183,7 +183,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Image height error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Image height error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -195,7 +195,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Image width error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Image width error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -207,7 +207,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Array capacity error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Array capacity error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -219,7 +219,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Array item type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Array item type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -231,7 +231,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Pyramid format error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid format error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -243,7 +243,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Pyramid height error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid height error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -255,7 +255,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Pyramid width error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid width error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -267,7 +267,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Pyramid levels error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid levels error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -279,7 +279,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Pyramid scale error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid scale error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -291,7 +291,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Scalar type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Scalar type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -303,7 +303,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Matrix type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -315,7 +315,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Matrix rows error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix rows error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -327,7 +327,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Matrix columns error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix columns error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -339,7 +339,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Distribution bins error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution bins error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -351,7 +351,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Distribution offset error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution offset error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -363,7 +363,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Distribution range error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution range error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -375,7 +375,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Remap source width error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Remap source width error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -387,7 +387,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Remap source height error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Remap source height error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -399,7 +399,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Remap destination width error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Remap destination width error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -411,7 +411,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Remap source height error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Remap source height error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -423,7 +423,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: LUT type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "LUT type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -435,7 +435,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: LUT count error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "LUT count error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -447,7 +447,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Threshold type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Threshold type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -459,7 +459,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Object array item type error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Object array item type error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -471,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Object array numitems error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Object array numitems error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -483,7 +483,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_NUMBER_OF_DIMS error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_NUMBER_OF_DIMS error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -507,7 +507,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_DIMS error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_DIMS error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -519,7 +519,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_DATA_TYPE error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_DATA_TYPE error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -531,7 +531,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_FIXED_POINT_POSITION error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_TENSOR_FIXED_POINT_POSITION error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -543,7 +543,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: VX_USER_DATA_OBJECT_NAME error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_USER_DATA_OBJECT_NAME error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -555,7 +555,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_USER_DATA_OBJECT_SIZE error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "VX_USER_DATA_OBJECT_SIZE error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -567,7 +567,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_WIDTH error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_WIDTH error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -579,7 +579,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_HEIGHT error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_HEIGHT error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -591,7 +591,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_NUM_EXPOSURES error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_NUM_EXPOSURES error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -603,7 +603,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_LINE_INTERLEAVED error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_LINE_INTERLEAVED error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -617,7 +617,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_FORMAT error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_FORMAT error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -629,7 +629,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT_BEFORE error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_META_HEIGHT_BEFORE error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -641,13 +641,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT_AFTER error\n");
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_RAW_IMAGE_META_HEIGHT_AFTER error\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -665,11 +665,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
         status = (vx_status)VX_FAILURE;
         if (NULL == meta)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: meta value is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "meta value is NULL\n");
         }
         if (NULL == exemplar)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: exemplar value is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "exemplar value is NULL\n");
         }
     }
     else
@@ -680,14 +680,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                 status = ownInitMetaFormatWithImage(meta, (vx_image)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Image init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Image init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_ARRAY:
                 status = ownInitMetaFormatWithArray(meta, (vx_array)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Array init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Array init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_SCALAR:
@@ -695,7 +695,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_scalar)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Scalar init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Scalar init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_PYRAMID:
@@ -703,7 +703,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_pyramid)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Pyramid init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Pyramid init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_MATRIX:
@@ -711,7 +711,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_matrix)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Matrix init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Matrix init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_DISTRIBUTION:
@@ -719,7 +719,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_distribution)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Distribution init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Distribution init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_THRESHOLD:
@@ -727,7 +727,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_threshold)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Threshold init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Threshold init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_REMAP:
@@ -735,7 +735,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_remap)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Remap init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Remap init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_LUT:
@@ -743,7 +743,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_lut)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: LUT init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "LUT init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_OBJECT_ARRAY:
@@ -751,21 +751,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     meta, (vx_object_array)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Object array init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Object array init meta format failure\n");
                 }
                 break;
             case (vx_enum)VX_TYPE_TENSOR:
                 status = ownInitMetaFormatWithTensor(meta, (vx_tensor)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Tensor init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Tensor init meta format failure\n");
                 }
                 break;
             case VX_TYPE_USER_DATA_OBJECT:
                 status = ownInitMetaFormatWithUserDataObject(meta, (vx_user_data_object)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: User Data Object init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "User Data Object init meta format failure\n");
                 }
                 break;
 
@@ -773,12 +773,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                 status = ownInitMetaFormatWithRawImage(meta, (tivx_raw_image)exemplar);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Raw image init meta format failure\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Raw image init meta format failure\n");
                 }
                 break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -998,7 +998,7 @@ static vx_bool ownIsMetaFormatImageEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatImageEqual: Image object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Image object meta data are not equivalent!\n");
         }
     }
 
@@ -1020,7 +1020,7 @@ static vx_bool ownIsMetaFormatArrayEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatArrayEqual: Array object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Array object meta data are not equivalent!\n");
         }
     }
 
@@ -1041,7 +1041,7 @@ static vx_bool ownIsMetaFormatScalarEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatScalarEqual: Scalar object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Scalar object meta data are not equivalent!\n");
         }
     }
 
@@ -1066,7 +1066,7 @@ static vx_bool ownIsMetaFormatPyramidEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatPyramidEqual: Pyramid object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Pyramid object meta data are not equivalent!\n");
         }
     }
 
@@ -1089,7 +1089,7 @@ static vx_bool ownIsMetaFormatMatrixEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatMatrixEqual: Matrix object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Matrix object meta data are not equivalent!\n");
         }
     }
 
@@ -1112,7 +1112,7 @@ static vx_bool ownIsMetaFormatDistributionEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatDistributionEqual: Distribution object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Distribution object meta data are not equivalent!\n");
         }
     }
 
@@ -1136,7 +1136,7 @@ static vx_bool ownIsMetaFormatRemapEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatRemapEqual: Remap object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Remap object meta data are not equivalent!\n");
         }
     }
 
@@ -1157,7 +1157,7 @@ static vx_bool ownIsMetaFormatThresholdEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatThresholdEqual: Threshold object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Threshold object meta data are not equivalent!\n");
         }
     }
 
@@ -1179,7 +1179,7 @@ static vx_bool ownIsMetaFormatObjectArrayEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatObjectArrayEqual: Object Array object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Object Array object meta data are not equivalent!\n");
         }
     }
 
@@ -1201,7 +1201,7 @@ static vx_bool ownIsMetaFormatLutEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatLutEqual: LUT object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "LUT object meta data are not equivalent!\n");
         }
     }
 
@@ -1235,7 +1235,7 @@ static vx_bool ownIsMetaFormatTensorEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatTensorEqual: Tensor object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Tensor object meta data are not equivalent!\n");
         }
     }
 
@@ -1257,7 +1257,7 @@ static vx_bool ownIsMetaFormatUserDataObjectEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatUserDataObjectEqual: User data object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "User data object meta data are not equivalent!\n");
         }
     }
 
@@ -1295,7 +1295,7 @@ static vx_bool ownIsMetaFormatRawImageEqual(
         }
         else
         {
-            VX_PRINT(VX_ZONE_INFO, "ownIsMetaFormatRawImageEqual: Raw Image object meta data are not equivalent!\n");
+            VX_PRINT(VX_ZONE_INFO, "Raw Image object meta data are not equivalent!\n");
         }
     }
 
@@ -1352,13 +1352,13 @@ vx_bool ownIsMetaFormatEqual(
                 is_equal = ownIsMetaFormatRawImageEqual(meta1, meta2);
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "ownIsMetaFormatEqual: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownIsMetaFormatEqual: Meta format is invalid!\n");
+        VX_PRINT(VX_ZONE_ERROR, "Meta format is invalid!\n");
     }
 
     return is_equal;

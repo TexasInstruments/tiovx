@@ -85,7 +85,7 @@ vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
     }
     if(status!=(vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxEventQueueCreate: Unable to create queues\n");
+        VX_PRINT(VX_ZONE_ERROR, "Unable to create queues\n");
     }
     if(status==(vx_status)VX_SUCCESS)
     {
@@ -150,7 +150,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
         }
         if(status != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEventQueueAddEvent: Unable to add event, dropping it\n");
+            VX_PRINT(VX_ZONE_ERROR, "Unable to add event, dropping it\n");
         }
     }
     return status;
@@ -342,7 +342,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
             else
             {
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "vxRegisterEvent: Invalid queue type given\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid queue type given\n");
             }
 
             if ((vx_status)VX_SUCCESS == status)

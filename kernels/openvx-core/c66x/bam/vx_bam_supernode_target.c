@@ -1183,7 +1183,7 @@ static inline vx_bool tivxEdgeSortStackPush(tivx_edge_sort_context *context, tiv
     else
     {
         /* for this to happen, edge_list size should have already passed TIVX_BAM_MAX_EDGES*/
-        VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStakPush: Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
+        VX_PRINT(VX_ZONE_ERROR, "Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
     }
     return status;
 }
@@ -1201,11 +1201,11 @@ static inline vx_bool tivxEdgeSortStackPop(tivx_edge_sort_context *context, tivx
     else
     {
         if (context->stack_top <= 0) {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStackPop: Trying to pop while empty from Supernode's Edge Sort Stack\n");
+            VX_PRINT(VX_ZONE_ERROR, "Trying to pop while empty from Supernode's Edge Sort Stack\n");
         }
         else if (context->stack_top >= (int32_t)TIVX_BAM_MAX_EDGES)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxEdgeSortStackPop: Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
+            VX_PRINT(VX_ZONE_ERROR, "Stack Overflow at Supernode's Edge Sort Stack, increase TIVX_BAM_MAX_EDGES\n");
         }
         else
         {

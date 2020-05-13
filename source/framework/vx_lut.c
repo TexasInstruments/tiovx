@@ -130,7 +130,7 @@ vx_status VX_API_CALL vxQueryLUT(
         (lut->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Invalid LUT reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -145,7 +145,7 @@ vx_status VX_API_CALL vxQueryLUT(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query LUT type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -156,7 +156,7 @@ vx_status VX_API_CALL vxQueryLUT(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT count failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query LUT count failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -167,7 +167,7 @@ vx_status VX_API_CALL vxQueryLUT(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query LUT size failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -193,18 +193,18 @@ vx_status VX_API_CALL vxQueryLUT(
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT offset failed. LUT has invalid type\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Query LUT offset failed. LUT has invalid type\n");
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT offset failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query LUT offset failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Invalid query attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid query attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -225,7 +225,7 @@ vx_status VX_API_CALL vxCopyLUT(
         (lut->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: Invalid LUT reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -233,7 +233,7 @@ vx_status VX_API_CALL vxCopyLUT(
         obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
+            VX_PRINT(VX_ZONE_ERROR, "User mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -241,13 +241,13 @@ vx_status VX_API_CALL vxCopyLUT(
         if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: Memory is not allocated\n");
+            VX_PRINT(VX_ZONE_ERROR, "Memory is not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == user_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: User pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "User pointer is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -299,7 +299,7 @@ vx_status VX_API_CALL vxMapLUT(
         (lut->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxMapLUT: Invalid LUT reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -329,7 +329,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
         (lut->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxUnmapLUT: Invalid LUT reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -363,7 +363,7 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "ownAllocLutBuffer: could not allocate memory\n");
+                    VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY ;
                 }
                 else
@@ -377,13 +377,13 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownAllocLutBuffer: object descriptor is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownAllocLutBuffer: Invalid LUT reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid LUT reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

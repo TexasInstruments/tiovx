@@ -153,133 +153,133 @@ vx_status tivxObjectDeInit(void)
             TIVX_META_FORMAT_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is meta format use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is meta format use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isContextUse,
             TIVX_CONTEXT_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is context use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is context use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isGraphUse,
             TIVX_GRAPH_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is graph use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is graph use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isNodeUse,
             TIVX_NODE_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is node use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is node use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isKernelUse,
             TIVX_KERNEL_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is kernel use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is kernel use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isArrayUse,
             TIVX_ARRAY_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is array use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is array use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isUserDataObjectUse,
             TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is user data object use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is user data object use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isRawImageUse,
             TIVX_RAW_IMAGE_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is raw image use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is raw image use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isSuperNodeUse,
             TIVX_SUPER_NODE_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is super node use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is super node use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is convolution use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is convolution use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isDelayUse,
             TIVX_DELAY_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is delay use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is delay use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isDistributionUse,
             TIVX_DISTRIBUTION_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is distribution use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is distribution use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isImageUse,
             TIVX_IMAGE_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is image use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is image use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isTensorUse,
             TIVX_TENSOR_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is tensor use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is tensor use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isLutUse,
             TIVX_LUT_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is LUT use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is LUT use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isMatrixUse,
             TIVX_MATRIX_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is matrix use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is matrix use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isPyramidUse,
             TIVX_PYRAMID_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is pyramid use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is pyramid use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isRemapUse,
             TIVX_REMAP_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is remap use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is remap use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isScalarUse,
             TIVX_SCALAR_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is scalar use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is scalar use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is threshold use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is threshold use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isErrorUse,
             TIVX_ERROR_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is error use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is error use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isDataRefQUse,
             TIVX_DATA_REF_Q_MAX_OBJECTS);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is data ref q use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is data ref q use failed\n");
         }
     }
 
@@ -477,7 +477,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_PARAMETER_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free parameter object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free parameter object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_OBJECT_ARRAY:
@@ -489,7 +489,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_OBJ_ARRAY_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free object array object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free object array object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_ERROR:
@@ -501,7 +501,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_ERROR_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free error object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free error object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_META_FORMAT:
@@ -513,7 +513,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_META_FORMAT_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free meta format object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free meta format object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_CONTEXT:
@@ -524,7 +524,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_CONTEXT_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free context object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free context object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_GRAPH:
@@ -534,7 +534,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_GRAPH_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free graph object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free graph object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_NODE:
@@ -544,7 +544,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_NODE_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free node object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free node object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_KERNEL:
@@ -555,7 +555,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_KERNEL_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free kernel object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free kernel object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_ARRAY:
@@ -565,7 +565,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_ARRAY_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free array object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free array object failed\n");
                     }
                     break;
                 case VX_TYPE_USER_DATA_OBJECT:
@@ -575,7 +575,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_USER_DATA_OBJECT_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free user data object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free user data object failed\n");
                     }
                     break;
                 case TIVX_TYPE_RAW_IMAGE:
@@ -585,7 +585,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_RAW_IMAGE_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free raw image failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free raw image failed\n");
                     }
                     break;
                 case TIVX_TYPE_SUPER_NODE:
@@ -595,7 +595,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_SUPER_NODE_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free super node failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free super node failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_CONVOLUTION:
@@ -607,7 +607,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_CONVOLUTION_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free convolution object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free convolution object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_DELAY:
@@ -617,7 +617,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_DELAY_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free delay object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free delay object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_DISTRIBUTION:
@@ -629,7 +629,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_DISTRIBUTION_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free distribution object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free distribution object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_IMAGE:
@@ -639,7 +639,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_IMAGE_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free image object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free image object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_TENSOR:
@@ -649,7 +649,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_TENSOR_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free tensor object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free tensor object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_LUT:
@@ -659,7 +659,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_LUT_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free LUT object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free LUT object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_MATRIX:
@@ -670,7 +670,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_MATRIX_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free matrix object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free matrix object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_PYRAMID:
@@ -681,7 +681,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_PYRAMID_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free pyramid object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free pyramid object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_REMAP:
@@ -691,7 +691,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_REMAP_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free remap object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free remap object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_SCALAR:
@@ -702,7 +702,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_SCALAR_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free scalar object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free scalar object failed\n");
                     }
                     break;
                 case (vx_enum)VX_TYPE_THRESHOLD:
@@ -713,7 +713,7 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_THRESHOLD_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free threshold object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free threshold object failed\n");
                     }
                     break;
                 case (vx_enum)TIVX_TYPE_DATA_REF_Q:
@@ -723,11 +723,11 @@ vx_status tivxObjectFree(vx_reference ref)
                         "TIVX_DATA_REF_Q_MAX_OBJECTS");
                     if ((vx_status)VX_SUCCESS != status)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free data ref queue object failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Free data ref queue object failed\n");
                     }
                     break;
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Invalid reference type\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid reference type\n");
                     status = (vx_status)VX_ERROR_INVALID_REFERENCE;
                     break;
             }
@@ -760,7 +760,7 @@ static uint8_t *ownAllocObject(
 
     if (obj_ptr == NULL)
     {
-        VX_PRINT(VX_ZONE_WARNING, "ownAllocObject: May need to increase the value of %s in tiovx/include/TI/tivx_config.h\n", resource_name);
+        VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of %s in tiovx/include/TI/tivx_config.h\n", resource_name);
     }
 
     return (obj_ptr);

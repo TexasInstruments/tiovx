@@ -102,7 +102,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "vxCreateObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -124,7 +124,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
-                        VX_PRINT(VX_ZONE_ERROR,"vxCreateObjectArray: Could not allocate objarr object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
@@ -171,7 +171,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -219,7 +219,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxGetObjectArrayItem: Object array item is invalid\n");
+            VX_PRINT(VX_ZONE_ERROR, "Object array item is invalid\n");
         }
     }
 
@@ -236,7 +236,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
         (objarr->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Invalid object array reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid object array reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -253,7 +253,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Query object array item type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query object array item type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -267,12 +267,12 @@ vx_status VX_API_CALL vxQueryObjectArray(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Query object array num items failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query object array num items failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"vxQueryObjectArray: Invalid query attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid query attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -344,7 +344,7 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
     else
     {
         status = (vx_status)VX_FAILURE;
-        VX_PRINT(VX_ZONE_ERROR,"ownAddRefToObjArray: Could not allocate image object descriptor\n");
+        VX_PRINT(VX_ZONE_ERROR, "Could not allocate image object descriptor\n");
         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
            "Could not allocate image object descriptor\n");
    }
@@ -420,20 +420,20 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Object array reference is NULL for %d num_item\n", i);
+                    VX_PRINT(VX_ZONE_ERROR, "Object array reference is NULL for %d num_item\n", i);
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Object array object descriptor is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Object array object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownAllocObjectArrayBuffer: Data type is not Object Array\n");
+        VX_PRINT(VX_ZONE_ERROR, "Data type is not Object Array\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

@@ -211,8 +211,8 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                 else
                                 {
                                     status = (vx_status)VX_ERROR_NO_RESOURCES;
-                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
-                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                    VX_PRINT(VX_ZONE_ERROR, "number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                    VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                     break;
                                 }
                             }
@@ -338,8 +338,8 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                     else
                                                     {
                                                         status = (vx_status)VX_ERROR_NO_RESOURCES;
-                                                        VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
-                                                        VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                                        VX_PRINT(VX_ZONE_ERROR, "number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                                         break;
                                                     }
                                                 }
@@ -373,8 +373,8 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                     else
                                     {
                                         status = (vx_status)VX_ERROR_NO_RESOURCES;
-                                        VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
-                                        VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                        VX_PRINT(VX_ZONE_ERROR, "number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
                                         break;
                                     }
                                 }

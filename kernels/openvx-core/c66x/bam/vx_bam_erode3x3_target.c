@@ -392,7 +392,7 @@ static vx_status VX_CALLBACK tivxKernelErodeGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_ERODE_3X3_I8U_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelErodeGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

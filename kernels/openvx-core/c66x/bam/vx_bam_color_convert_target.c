@@ -1054,7 +1054,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_NVXXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1080,7 +1080,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_NVXXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1104,7 +1104,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoYUV4_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_NVXXtoYUV4_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1128,7 +1128,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_NVXXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1161,7 +1161,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_YUVXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1194,7 +1194,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_YUVXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1225,7 +1225,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoNV12_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_YUVXtoNV12_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1256,7 +1256,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_YUVXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1280,7 +1280,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_IYUVtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_IYUVtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1304,7 +1304,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_IYUVtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "colorConvert_IYUVtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -1336,7 +1336,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: prms mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "prms mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -1387,7 +1387,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
                         *bam_port = 2;
                         break;
                     default:
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        VX_PRINT(VX_ZONE_ERROR, "non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                 }
@@ -1405,13 +1405,13 @@ static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
                         *bam_port = 2;
                         break;
                     default:
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        VX_PRINT(VX_ZONE_ERROR, "non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

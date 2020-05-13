@@ -535,7 +535,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_ERODE_MXN_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelNonLinearFilterGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

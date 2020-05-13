@@ -132,14 +132,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
         }
         if(idx>=dimof(g_module_table))
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Module table is full\n");
-            VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: May need to increase the value of TIVX_MODULE_MAX in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "Module table is full\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_MODULE_MAX in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Publish and/or unpublish are NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Publish and/or unpublish are NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -171,7 +171,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
 
     if(status != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxUnRegisterModule: Unable to unregister module [%s]\n", name);
+        VX_PRINT(VX_ZONE_ERROR, "Unable to unregister module [%s]\n", name);
     }
 
     return status;

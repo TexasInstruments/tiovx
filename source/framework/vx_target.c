@@ -119,8 +119,8 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetAllocHandle: Exceeded max targets in CPU. Modify TIVX_TARGET_MAX_TARGETS_IN_CPU value in tiovx/include/TI/tivx_config.h\n");
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetAllocHandle: May need to increase the value of TIVX_TARGET_MAX_TARGETS_IN_CPU in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max targets in CPU. Modify TIVX_TARGET_MAX_TARGETS_IN_CPU value in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_TARGET_MAX_TARGETS_IN_CPU in tiovx/include/TI/tivx_config.h\n");
     }
 
     return target;
@@ -758,7 +758,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
 
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeCreate: target_kernel_instance is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
         else
@@ -895,7 +895,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
 
         if(target_kernel_instance == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeDelete: target_kernel_instance is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -942,8 +942,7 @@ static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_de
 
     if(target_kernel_instance == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxTargetNodeSendCommand: target_kernel_instance is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target_kernel_instance is NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
@@ -982,8 +981,7 @@ static vx_status tivxTargetNodeDescNodeControl(
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                    "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
                     break;
                 }
             }
@@ -998,14 +996,12 @@ static vx_status tivxTargetNodeDescNodeControl(
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                    "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
                 }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxTargetNodeDescNodeControl: Incorrect node id\n");
+                VX_PRINT(VX_ZONE_ERROR, "Incorrect node id\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
@@ -1016,8 +1012,7 @@ static vx_status tivxTargetNodeDescNodeControl(
         status = tivxTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR,
-            "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
         }
     }
 
@@ -1139,7 +1134,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxTargetCmdDescHandler: object descriptor type is invalid\n");
+                    VX_PRINT(VX_ZONE_ERROR, "object descriptor type is invalid\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 tivxTargetCmdDescSendAck(cmd_obj_desc, status);
@@ -1261,7 +1256,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
 
     if(target == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetCreate: target is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target is NULL\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else
@@ -1368,7 +1363,7 @@ vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTargetQueueObjDesc: target is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "target is NULL\n");
     }
 
     return status;

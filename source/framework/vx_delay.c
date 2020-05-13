@@ -99,7 +99,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
 
     if (prm == NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayPrm: May need to increase the value of TIVX_DELAY_MAX_PRM_OBJECT in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_DELAY_MAX_PRM_OBJECT in tiovx/include/TI/tivx_config.h\n");
     }
 
     return prm;
@@ -312,14 +312,14 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: delay reference %d is null\n", i);
+                VX_PRINT(VX_ZONE_ERROR, "delay reference %d is null\n", i);
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: reference type is not delay\n");
+        VX_PRINT(VX_ZONE_ERROR, "reference type is not delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -422,7 +422,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
                                             if( (NULL == ref) || (status!=(vx_status)VX_SUCCESS))
                                             {
-                                                VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
+                                                VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
                                                 break;
                                             }
                                         }
@@ -455,7 +455,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                         status = ownAddRefToDelay(context, pyrdelay, ref, i);
                                         if(status!=(vx_status)VX_SUCCESS)
                                         {
-                                            VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
+                                            VX_PRINT(VX_ZONE_ERROR, "reference was not added to delay\n");
                                             break;
                                         }
                                     }
@@ -469,7 +469,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         ownReleaseRefFromDelay(delay, i);
                         vxReleaseDelay(&delay);
 
-                        VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not allocate delay object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate delay object descriptor\n");
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate delay object descriptor\n");
                         delay = (vx_delay)ownGetErrorObject(
@@ -478,20 +478,20 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not create delay reference\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Could not create delay reference\n");
                     delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference or reference type\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid reference or reference type\n");
                 delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_REFERENCE);
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: count > TIVX_DELAY_MAX_OBJECT\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: May need to increase the value of TIVX_DELAY_MAX_OBJECT in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "count > TIVX_DELAY_MAX_OBJECT\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_DELAY_MAX_OBJECT in tiovx/include/TI/tivx_config.h\n");
             delay = (vx_delay)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
     }
@@ -535,7 +535,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay type query failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "delay type query failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -546,19 +546,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay slots query failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "delay slots query failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -623,7 +623,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;

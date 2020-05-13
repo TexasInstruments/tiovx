@@ -340,7 +340,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter direction failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query parameter direction failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -351,7 +351,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter index failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query parameter index failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -362,7 +362,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query parameter type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -373,7 +373,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter state failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query parameter state failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -397,25 +397,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter reference failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Query parameter reference failed\n");
                         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     }
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Query parameter reference failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query parameter reference failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxQueryParameter: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;

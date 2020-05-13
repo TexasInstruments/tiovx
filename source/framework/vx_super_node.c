@@ -74,8 +74,8 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
     if (TIVX_SUPER_NODE_MAX_NODES < num_nodes)
     {
         is_valid = (vx_bool)vx_false_e;
-        VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: num_nodes is higher than TIVX_SUPER_NODE_MAX_NODES\n");
-        VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: May need to increase the value of TIVX_SUPER_NODE_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "num_nodes is higher than TIVX_SUPER_NODE_MAX_NODES\n");
+        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_SUPER_NODE_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
     }
 
     if( (vx_bool)vx_true_e == is_valid )
@@ -87,17 +87,17 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
             if ((ownIsValidSpecificReference(&nodes[i]->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e))
             {
                 is_valid = (vx_bool)vx_false_e;
-                VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not a valid node\n", i);
+                VX_PRINT(VX_ZONE_ERROR, "node[%d] is not a valid node\n", i);
             }
             else if (nodes[i]->graph != graph)
             {
                 is_valid = (vx_bool)vx_false_e;
-                VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is not in graph\n", i);
+                VX_PRINT(VX_ZONE_ERROR, "node[%d] is not in graph\n", i);
             }
             else if (nodes[i]->super_node != NULL)
             {
                 is_valid = (vx_bool)vx_false_e;
-                VX_PRINT(VX_ZONE_ERROR, "ownIsValidCreateParams: node[%d] is already in a super node\n", i);
+                VX_PRINT(VX_ZONE_ERROR, "node[%d] is already in a super node\n", i);
             }
             else
             {
@@ -226,7 +226,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                         else
                         {
                             vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
-                            VX_PRINT(VX_ZONE_ERROR,"tivxCreateSuperNode: Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
+                            VX_PRINT(VX_ZONE_ERROR, "Failed to create node with kernel enum TIVX_KERNEL_SUPERNODE\n");
                         }
                     }
                     else
@@ -246,7 +246,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
     else
     {
         vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
-        VX_PRINT(VX_ZONE_ERROR, "tivxCreateSuperNode: graph is invalid\n");
+        VX_PRINT(VX_ZONE_ERROR, "graph is invalid\n");
     }
 
     return super_node;
@@ -276,7 +276,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node target failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query super node target failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -288,7 +288,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node performance failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query super node performance failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -304,7 +304,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node status failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query super node status failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -316,20 +316,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxQuerySuperNode: Query super node num nodes failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query super node num nodes failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxQuerySuperNode: invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxQuerySuperNode: invalid super node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid super node reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -383,7 +383,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node supe
          */
         if (super_node->node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxSetSuperNodeTileSize: Graph has been verified\n");
+            VX_PRINT(VX_ZONE_ERROR, "Graph has been verified\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else

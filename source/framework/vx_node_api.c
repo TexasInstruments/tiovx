@@ -82,7 +82,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
         else
         {
             vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum %d\n", kernelenum);
-            VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: Failed to create node with kernel enum %d\n", kernelenum);
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create node with kernel enum %d\n", kernelenum);
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         if (release_kernel != 0U)
@@ -93,7 +93,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
     else
     {
         vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_PARAMETERS, "failed to retrieve kernel enum %d\n", kernelenum);
-        VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: failed to retrieve kernel enum %d\n", kernelenum);
+        VX_PRINT(VX_ZONE_ERROR, "failed to retrieve kernel enum %d\n", kernelenum);
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
     return node;
@@ -133,7 +133,7 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxCreateNodeByKernelName: Call to vxGetKernelByName failed; kernel may not be registered\n");
+        VX_PRINT(VX_ZONE_ERROR, "Call to vxGetKernelByName failed; kernel may not be registered\n");
     }
     return node;
 }

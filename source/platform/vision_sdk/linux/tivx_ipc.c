@@ -79,13 +79,13 @@ vx_status tivxIpcSendMsg(
 
         if( status != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: Send notification failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Send notification failed\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: Invalid CPU ID\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 

@@ -477,7 +477,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_CONVOLVE_I8U_C16S_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelConvolveGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

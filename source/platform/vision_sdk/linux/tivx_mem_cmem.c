@@ -28,11 +28,11 @@ vx_status tivxMemBufferAlloc(
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = (vx_status)VX_FAILURE;
     }
@@ -46,7 +46,7 @@ vx_status tivxMemBufferAlloc(
                 block_id = 0;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: invalid mem type\n");
+                VX_PRINT(VX_ZONE_ERROR, "invalid mem type\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }
@@ -69,7 +69,7 @@ vx_status tivxMemBufferAlloc(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: host pointer could not be allocated\n");
+                VX_PRINT(VX_ZONE_ERROR, "host pointer could not be allocated\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
@@ -116,11 +116,11 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = (vx_status)VX_FAILURE;
     }
@@ -139,7 +139,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Host pointer mem free failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Host pointer mem free failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }

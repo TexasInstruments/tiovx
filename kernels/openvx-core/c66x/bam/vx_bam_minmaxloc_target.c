@@ -506,7 +506,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
     /* Check number of buffers and NULL pointers */
     if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: Obj_desc param count doesn't match TIVX_KERNEL_MML_MAX_PARAMS\n");
+        VX_PRINT(VX_ZONE_ERROR, "Obj_desc param count doesn't match TIVX_KERNEL_MML_MAX_PARAMS\n");
         status = (vx_status)VX_FAILURE;
     }
     else
@@ -515,7 +515,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
             (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: one or more Obj_desc params are NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "one or more Obj_desc params are NULL\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
     }
@@ -537,7 +537,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
         if ((NULL == kernel_params) || (NULL == prms) ||
             ((int32_t)sizeof(BAM_VXLIB_minMaxLoc_i8u_params) != *size))
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: minMaxLoc_i8u, kernel_params is null or the size is not as expected or prms are NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "minMaxLoc_i8u, kernel_params is null or the size is not as expected or prms are NULL\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -619,7 +619,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_MINMAXLOC_I8U_INPUT_IMAGE_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

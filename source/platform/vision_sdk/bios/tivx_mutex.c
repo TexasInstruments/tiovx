@@ -65,13 +65,13 @@ vx_status tivxMutexLock(tivx_mutex mutex)
 
         if (FALSE == retVal)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Semaphore wait failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore wait failed\n");
             status = (vx_status)VX_FAILURE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Mutex is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Mutex is NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 

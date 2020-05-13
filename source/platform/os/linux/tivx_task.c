@@ -122,7 +122,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         context = malloc(sizeof(tivx_task_context_t));
         if(context == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTaskCreate: Context memory allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Context memory allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
@@ -185,7 +185,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxTaskCreate: Task or params arguments are NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Task or params arguments are NULL\n");
         status = (vx_status)VX_FAILURE;
     }
 

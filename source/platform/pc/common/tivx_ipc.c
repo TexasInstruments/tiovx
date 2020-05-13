@@ -87,7 +87,7 @@ vx_status tivxIpcSendMsg(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxIpcSendMsg: IPC send msg failed\n");
+        VX_PRINT(VX_ZONE_ERROR, "IPC send msg failed\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 

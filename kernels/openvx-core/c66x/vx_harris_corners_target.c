@@ -362,7 +362,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             prms->sobel_x = tivxMemAlloc(prms->sobel_size, (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
             if (NULL == prms->sobel_x)
             {
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_x mem allocation failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "sobel_x mem allocation failed\n");
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
@@ -372,7 +372,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->sobel_y)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_y mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "sobel_y mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -392,7 +392,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcs_score)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_score mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "hcs_score mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -406,7 +406,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcs_scratch)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_scratch mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "hcs_scratch mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -420,7 +420,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_sprs)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_sprs mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "hcd_sprs mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -434,7 +434,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_corners)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_corners mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "hcd_corners mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -448,7 +448,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->hcd_strength)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_strength mem allocation failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "hcd_strength mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
@@ -471,7 +471,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                     if (NULL == prms->nms_scratch)
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_scratch mem allocation failed\n");
+                        VX_PRINT(VX_ZONE_ERROR, "nms_scratch mem allocation failed\n");
                         status = (vx_status)VX_ERROR_NO_MEMORY;
                     }
 
@@ -484,7 +484,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                             (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                         if (NULL == prms->nms_corners)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_corners mem allocation failed\n");
+                            VX_PRINT(VX_ZONE_ERROR, "nms_corners mem allocation failed\n");
                             status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
@@ -498,7 +498,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                             (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
                         if (NULL == prms->nms_strength)
                         {
-                            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
+                            VX_PRINT(VX_ZONE_ERROR, "nms_strength mem allocation failed\n");
                             status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
                     }
@@ -515,7 +515,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "nms_strength mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 

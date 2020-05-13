@@ -320,7 +320,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
             ownIncrementReference(ref, reftype);
             if (ownAddReferenceToContext(context, ref) == (vx_bool)vx_false_e)
             {
-                VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Add reference to context failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Add reference to context failed\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }
@@ -329,14 +329,14 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
         {
             tivxObjectFree(ref);
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
-            VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Failed to add to resources table\n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
         }
     }
     else
     {
         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to allocate reference object\n");
-        VX_PRINT(VX_ZONE_ERROR,"ownCreateReference: Failed to allocate reference object\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to allocate reference object\n");
         ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
     }
     return ref;
@@ -463,7 +463,7 @@ vx_status ownReferenceAllocMem(vx_reference ref)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownReferenceAllocMem: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -514,7 +514,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
         (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e))
     {
 
-        VX_PRINT(VX_ZONE_ERROR,"tivxSetReferenceAttribute: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -528,12 +528,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "tivxSetReferenceAttribute: error setting reference timestamp\n");
+                    VX_PRINT(VX_ZONE_ERROR, "error setting reference timestamp\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxSetReferenceAttribute: Invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -549,7 +549,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
     /* if it is not a reference and not a context */
     if ((ownIsValidReference(ref) == (vx_bool)vx_false_e) &&
         (ownIsValidContext((vx_context)ref) == (vx_bool)vx_false_e)) {
-        VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -563,7 +563,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference count failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference count failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -574,7 +574,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -585,7 +585,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference name failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference name failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -596,7 +596,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference timestamp failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference timestamp failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -617,12 +617,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Query reference invalid flag failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query reference invalid flag failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"vxQueryReference: Invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -640,7 +640,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxSetReferenceName: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
     }
     return status;
 }
@@ -680,7 +680,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxRetainReference: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -694,7 +694,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
     if (ref == NULL)
     {
         /*! \internal probably ran out of handles or memory */
-        VX_PRINT(VX_ZONE_ERROR,"vxGetStatus: Reference is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Reference is NULL\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
     else if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
@@ -728,12 +728,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
     /* reference param should be a valid OpenVX reference*/
     if ((ownIsValidContext((vx_context)reference) == (vx_bool)vx_false_e) && (ownIsValidReference(reference) == (vx_bool)vx_false_e))
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxHint: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxHint: Hint not supported\n");
+        VX_PRINT(VX_ZONE_ERROR, "Hint not supported\n");
         status = (vx_status)VX_ERROR_NOT_SUPPORTED;
     }
 

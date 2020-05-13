@@ -126,40 +126,40 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     /* Check for errors */
     if(ownIsValidContext(context) != (vx_bool)vx_true_e)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: invalid context\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid context\n");
         status = (vx_status)VX_FAILURE;
     }
 
     if (rows == 0U)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: rows value is equal to zero\n");
+        VX_PRINT(VX_ZONE_ERROR, "rows value is equal to zero\n");
         status = (vx_status)VX_FAILURE;
     }
 
     if (columns == 0U)
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: columns value is equal to zero\n");
+        VX_PRINT(VX_ZONE_ERROR, "columns value is equal to zero\n");
         status = (vx_status)VX_FAILURE;
     }
 
     if (((vx_enum)VX_PATTERN_BOX != pattern) && ((vx_enum)VX_PATTERN_CROSS != pattern) &&
              ((vx_enum)VX_PATTERN_OTHER != pattern) && ((vx_enum)VX_PATTERN_DISK != pattern))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: invalid pattern value\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid pattern value\n");
         status = (vx_status)VX_FAILURE;
     }
 
     /* For Cross pattern, rows and columns must be odd */
     if (((vx_enum)VX_PATTERN_CROSS == pattern) && (((rows%2U) == 0U) || ((columns%2U) == 0U)))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: cross pattern rows and columns are not odd\n");
+        VX_PRINT(VX_ZONE_ERROR, "cross pattern rows and columns are not odd\n");
         status = (vx_status)VX_FAILURE;
     }
 
     /* For Disk pattern, rows and columns must be equal */
     if (((vx_enum)VX_PATTERN_DISK == pattern) && ( rows != columns ))
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: disk pattern rows and columns are not equal\n");
+        VX_PRINT(VX_ZONE_ERROR, "disk pattern rows and columns are not equal\n");
         status = (vx_status)VX_FAILURE;
     }
 
@@ -189,7 +189,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                     "Could not allocate matrix object descriptor\n");
                 matrix = (vx_matrix)ownGetErrorObject(
                     context, (vx_status)VX_ERROR_NO_RESOURCES);
-                VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: Could not allocate matrix object descriptor\n");
+                VX_PRINT(VX_ZONE_ERROR, "Could not allocate matrix object descriptor\n");
                 status = (vx_status)VX_FAILURE;
             }
             else
@@ -224,7 +224,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                         "Could not allocate matrix object descriptor\n");
                     matrix = (vx_matrix)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
-                    VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: Could not allocate matrix object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate matrix object descriptor\n");
                 }
                 else
                 {
@@ -237,7 +237,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrixFromPattern: Invalid matrix reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid matrix reference\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -334,7 +334,7 @@ vx_status VX_API_CALL vxQueryMatrix(
         (matrix->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Invalid matrix reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid matrix reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -349,7 +349,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix type failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix type failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -360,7 +360,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix columns failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix columns failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -371,7 +371,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix rows failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix rows failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -383,7 +383,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix size failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix size failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -397,7 +397,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix origin failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix origin failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -408,12 +408,12 @@ vx_status VX_API_CALL vxQueryMatrix(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Query matrix pattern failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query matrix pattern failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "vxQueryMatrix: Invalid matrix query attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid matrix query attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -440,7 +440,7 @@ vx_status VX_API_CALL vxCopyMatrix(
         (matrix->base.obj_desc == NULL)
         )
     {
-        VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: Invalid matrix reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid matrix reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -448,7 +448,7 @@ vx_status VX_API_CALL vxCopyMatrix(
         obj_desc = (tivx_obj_desc_matrix_t *)matrix->base.obj_desc;
         if ((vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
+            VX_PRINT(VX_ZONE_ERROR, "user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -456,13 +456,13 @@ vx_status VX_API_CALL vxCopyMatrix(
         if (((vx_enum)VX_READ_ONLY == usage) &&
             ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: Memory is not allocated\n");
+            VX_PRINT(VX_ZONE_ERROR, "Memory is not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == user_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: User pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "User pointer is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -523,20 +523,20 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
                     (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
                 {
                     /* could not allocate memory */
-                    VX_PRINT(VX_ZONE_ERROR, "ownAllocMatrixBuffer: Memory could not be allocated\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Memory could not be allocated\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "ownAllocMatrixBuffer: Object descriptor is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownAllocMatrixBuffer: Invalid matrix reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid matrix reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

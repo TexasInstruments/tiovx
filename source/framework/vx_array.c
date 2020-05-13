@@ -614,8 +614,8 @@ vx_status VX_API_CALL vxMapArrayRange(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxMapArrayRange: No available array maps\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxMapArrayRange: May need to increase the value of TIVX_ARRAY_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "No available array maps\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_ARRAY_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }

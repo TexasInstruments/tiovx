@@ -108,7 +108,7 @@ vx_status tivxMemBufferAlloc(
 
     if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Memory was not allocated\n");
+        VX_PRINT(VX_ZONE_ERROR, "Memory was not allocated\n");
         status = (vx_status)VX_ERROR_NO_MEMORY;
     }
 
@@ -244,7 +244,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxMemResetScratchHeap: TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
+        VX_PRINT(VX_ZONE_ERROR, "TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
     }
 
     return status;

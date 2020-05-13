@@ -170,7 +170,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     {
         /* invalid target or no target, associated with kernel,
          */
-        VX_PRINT(VX_ZONE_ERROR, "ownInitNodeObjDesc: invalid target or no target, associated with kernel\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid target or no target, associated with kernel\n");
         status = (vx_status)VX_ERROR_INVALID_VALUE;
     }
 
@@ -243,7 +243,7 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "ownNodeKernelValidate: Node and/or kernel are NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Node and/or kernel are NULL\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -699,19 +699,19 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,"ownNodeUserKernelExecute: kernel function is NULL and/or not target kernel\n");
+                VX_PRINT(VX_ZONE_ERROR, "kernel function is NULL and/or not target kernel\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownNodeUserKernelExecute: invalid kernel reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "invalid kernel reference\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownNodeUserKernelExecute: invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -736,7 +736,7 @@ vx_status ownResetNodePerf(vx_node node)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownResetNodePerf: invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -776,7 +776,7 @@ vx_status ownUpdateNodePerf(vx_node node, uint32_t pipeline_id)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownUpdateNodePerf: invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -798,7 +798,7 @@ vx_status ownSetNodeImmTarget(vx_node node)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownSetNodeImmTarget: invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -815,7 +815,7 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownSetNodeAttributeValidRectReset: invalid node reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "invalid node reference\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -870,8 +870,8 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownNodeAddOutNode: number of out nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_OUT_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "number of out nodes greater than maximum allowed\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_OUT_NODES in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -951,8 +951,8 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownNodeAddInNode: number of in nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "number of in nodes greater than maximum allowed\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
@@ -1655,7 +1655,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecom
     {
         if ((callback) && (node->user_callback))
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxAssignNodeCallback: callback and user callback failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "callback and user callback failed\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -1702,7 +1702,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_true_e)
     {
         vxAddLogEntry((vx_reference)graph, (vx_status)VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
-        VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Graph %p is invalid!\n", graph);
+        VX_PRINT(VX_ZONE_ERROR, "Graph %p is invalid!\n", graph);
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1711,7 +1711,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
         if (ownIsValidSpecificReference(&first_node->base, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_true_e)
         {
             vxAddLogEntry((vx_reference)first_node, (vx_status)VX_ERROR_INVALID_REFERENCE, "Node %p is invalid!\n", first_node);
-            VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Node %p is invalid!\n", first_node);
+            VX_PRINT(VX_ZONE_ERROR, "Node %p is invalid!\n", first_node);
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
     }
@@ -1720,7 +1720,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         if (first_node->graph != graph)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: first node graph does node match given graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "first node graph does node match given graph\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -1729,7 +1729,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         if (replicate == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: replicate is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "replicate is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -1742,7 +1742,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
         {
             if (numParams != number_of_parameters)
             {
-                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: numParams does not equal number_of_parameters\n");
+                VX_PRINT(VX_ZONE_ERROR, "numParams does not equal number_of_parameters\n");
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
         }
@@ -1777,7 +1777,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                 {
                     if ((replicate[p] == (vx_bool)vx_false_e) && ((dir == (vx_enum)VX_OUTPUT) || (dir == (vx_enum)VX_BIDIRECTIONAL)))
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Parameter %d direction is incorrect\n", p);
+                        VX_PRINT(VX_ZONE_ERROR, "Parameter %d direction is incorrect\n", p);
                         status = (vx_status)VX_FAILURE;
                     }
 
@@ -1800,7 +1800,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                                 }
                                 else
                                 {
-                                    VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Invalid reference type\n");
+                                    VX_PRINT(VX_ZONE_ERROR, "Invalid reference type\n");
                                     status = (vx_status)VX_FAILURE;
                                 }
                                 if(status == (vx_status)VX_SUCCESS)
@@ -1812,13 +1812,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
 
                                     if ((num_of_replicas != 0U) && (items != num_of_replicas))
                                     {
-                                        VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is not equal to zero and not equal to items\n");
+                                        VX_PRINT(VX_ZONE_ERROR, "Number of replicas is not equal to zero and not equal to items\n");
                                         status = (vx_status)VX_FAILURE;
                                     }
                                     if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                                     {
-                                        VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is greater than maximum allowed\n");
-                                        VX_PRINT(VX_ZONE_ERROR, "vxReplicateNode: May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
+                                        VX_PRINT(VX_ZONE_ERROR, "Number of replicas is greater than maximum allowed\n");
+                                        VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
                                         status = (vx_status)VX_FAILURE;
                                     }
                                     else
@@ -1829,7 +1829,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                             }
                             else
                             {
-                                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Invalid reference type\n");
+                                VX_PRINT(VX_ZONE_ERROR, "Invalid reference type\n");
                                 status = (vx_status)VX_FAILURE;
                             }
                         }
@@ -1838,7 +1838,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Parameter %d is NULL!\n", p);
+                VX_PRINT(VX_ZONE_ERROR, "Parameter %d is NULL!\n", p);
                 status = (vx_status)VX_FAILURE;
             }
             if(status == (vx_status)VX_SUCCESS)
@@ -1886,7 +1886,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 b
          */
         if (node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxSetNodeTileSize: Graph has been verified\n");
+            VX_PRINT(VX_ZONE_ERROR, "Graph has been verified\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -1917,7 +1917,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
          */
         if (node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxSetNodeTarget: Graph has been verified\n");
+            VX_PRINT(VX_ZONE_ERROR, "Graph has been verified\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -1950,7 +1950,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
                             if(target_id == (vx_enum)TIVX_TARGET_ID_INVALID)
                             {
                                 /* use default and return error */
-                                VX_PRINT(VX_ZONE_ERROR,"vxSetNodeTarget: Target ID is invalid\n");
+                                VX_PRINT(VX_ZONE_ERROR, "Target ID is invalid\n");
                                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                             }
                             else
@@ -1963,7 +1963,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
                     break;
 
                 default:
-                    VX_PRINT(VX_ZONE_ERROR,"vxSetNodeTarget: Invalid target enum\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid target enum\n");
                     status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                     break;
             }
@@ -2048,7 +2048,7 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
     {
         if (node->graph->verified == (vx_bool)vx_true_e)
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Cannot register event on verified graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "Cannot register event on verified graph\n");
             status = (vx_status)VX_ERROR_NOT_SUPPORTED;
         }
         else
@@ -2080,7 +2080,7 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_v
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Invalid node\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid node\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -2100,12 +2100,12 @@ vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownCheckNodeCompleted: Invalid node obj desc\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid node obj desc\n");
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownCheckNodeCompleted: Invalid node or pipeline_id\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid node or pipeline_id\n");
     }
     return is_completed;
 }

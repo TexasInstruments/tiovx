@@ -130,7 +130,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                     if(kernel_name!=NULL)
                     {
                         strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME);
-                        VX_PRINT(VX_ZONE_INFO, "tivxAddTargetKernelInternal: registered kernel %s on target %s\n", kernel_name, target_name);
+                        VX_PRINT(VX_ZONE_INFO, "registered kernel %s on target %s\n", kernel_name, target_name);
                     }
                     g_target_kernel_table[i].target_id =
                         tivxPlatformGetTargetId(target_name);
@@ -152,7 +152,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
 
             if ((vx_bool)vx_false_e == resource_added)
             {
-                VX_PRINT(VX_ZONE_WARNING, "tivxAddTargetKernelInternal: May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/TI/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
             tivxMutexUnlock(g_target_kernel_lock);
@@ -160,7 +160,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxAddTargetKernelInternal: Invalid parameters given to function\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters given to function\n");
     }
 
     return (knl);
@@ -309,7 +309,7 @@ vx_status tivxTargetKernelCreate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelCreate: Kernel create function is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Kernel create function is NULL\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -337,7 +337,7 @@ vx_status tivxTargetKernelDelete(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelDelete: Kernel delete function is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Kernel delete function is NULL\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -367,12 +367,12 @@ vx_status tivxTargetKernelExecute(
 
             if((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
+                VX_PRINT(VX_ZONE_ERROR, "Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Kernel process function is NULL\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -400,7 +400,7 @@ vx_status tivxTargetKernelControl(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelControl: Kernel control function is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Kernel control function is NULL\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -451,7 +451,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
     else
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, "tivxEnableKernelForSuperNode: Invalid parameters given to function\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters given to function\n");
     }
 
     return status;

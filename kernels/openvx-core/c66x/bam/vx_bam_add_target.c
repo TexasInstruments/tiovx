@@ -484,7 +484,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelAddCreateInBamGraph: add_i8u_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "add_i8u_i8u_o8u, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -522,7 +522,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelAddCreateInBamGraph: add_i16s_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "add_i16s_i16s_o16s, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -554,7 +554,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelAddCreateInBamGraph: add_i8u_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    VX_PRINT(VX_ZONE_ERROR, "add_i8u_i16s_o16s, kernel_params is null or the size is not as expected\n");
                     status = (vx_status)VX_FAILURE;
                 }
             }
@@ -562,7 +562,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelAddCreateInBamGraph: prms mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "prms mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -619,7 +619,7 @@ static vx_status VX_CALLBACK tivxKernelAddGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_ADD_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelAddGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

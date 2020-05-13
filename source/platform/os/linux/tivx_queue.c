@@ -104,7 +104,7 @@ vx_status tivxQueueCreate(
 
         if(queue->context==NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxQueueCreate: queue memory allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "queue memory allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
         else
@@ -179,7 +179,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     {
         context = queue->context;
 
-        VX_PRINT(VX_ZONE_INFO, "tivxQueueDelete: if this hangs, please ensure all application threads have been destroyed\n");
+        VX_PRINT(VX_ZONE_INFO, "if this hangs, please ensure all application threads have been destroyed\n");
         if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET))
         {
             pthread_cond_destroy(&(context)->condGet);
@@ -244,7 +244,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     /* que is full */
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: queue is full\n");
+                        VX_PRINT(VX_ZONE_ERROR, "queue is full\n");
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
                     }
@@ -260,7 +260,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         /* blocking on que put disabled */
 
                         /* exit with error */
-                        VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: blocking on queue is disabled\n");
+                        VX_PRINT(VX_ZONE_ERROR, "blocking on queue is disabled\n");
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e;
                     }
@@ -341,7 +341,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                         /* blocking on que get disabled */
 
                         /* exit with error */
-                        VX_PRINT(VX_ZONE_ERROR, "tivxQueueGet: blocking on que get disabled\n");
+                        VX_PRINT(VX_ZONE_ERROR, "blocking on que get disabled\n");
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e;
                     }

@@ -76,36 +76,36 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
     {
         if (width == 0U)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Width is equal to 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "Width is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
         if (height == 0U)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Height is equal to 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "Height is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
         if (levels == 0U)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels is equal to 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "Levels is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
         if ((scale != VX_SCALE_PYRAMID_HALF) &&
             (scale != VX_SCALE_PYRAMID_ORB))
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Invalid scale value\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid scale value\n");
             status = (vx_status)VX_FAILURE;
         }
         if (levels > TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels greater than max allowable\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "Levels greater than max allowable\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_FAILURE;
         }
         if ((scale == VX_SCALE_PYRAMID_ORB) &&
             (levels > TIVX_PYRAMID_MAX_LEVELS_ORB))
         {
-            VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Orb levels are greater than max allowable\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB in tiovx/include/TI/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "Orb levels are greater than max allowable\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB in tiovx/include/TI/tivx_config.h\n");
             status = (vx_status)VX_FAILURE;
         }
 
@@ -272,7 +272,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     }
     else
     {
-        VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualPyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB or TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB or TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
     }
 
     return (prmd);
@@ -314,7 +314,7 @@ vx_status VX_API_CALL vxQueryPyramid(
     if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
             || (prmd->base.obj_desc == NULL))
     {
-        VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -329,7 +329,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid levels failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query pyramid levels failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -340,7 +340,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid scale failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query pyramid scale failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -351,7 +351,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid width failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query pyramid width failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -362,7 +362,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid height failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query pyramid height failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -374,11 +374,11 @@ vx_status VX_API_CALL vxQueryPyramid(
                 else
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Query pyramid format failed\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Query pyramid format failed\n");
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"vxQueryPyramid: Invalid attribute\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -415,20 +415,20 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Image level %d is NULL\n", i);
+                    VX_PRINT(VX_ZONE_ERROR, "Image level %d is NULL\n", i);
                     status = (vx_status)VX_ERROR_INVALID_VALUE;
                 }
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Pyramid base object descriptor is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Pyramid base object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR,"ownAllocPyramidBuffer: Reference type is not pyramid\n");
+        VX_PRINT(VX_ZONE_ERROR, "Reference type is not pyramid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 

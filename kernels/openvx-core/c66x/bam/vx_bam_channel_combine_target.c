@@ -769,7 +769,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: channelCombine_yuyv_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                        VX_PRINT(VX_ZONE_ERROR, "channelCombine_yuyv_i8u_o8u, kernel_params is null or the size is not as expected\n");
                         status = (vx_status)VX_FAILURE;
                     }
 
@@ -880,13 +880,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreateInBamGraph(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: unsupported output format found\n");
+                VX_PRINT(VX_ZONE_ERROR, "unsupported output format found\n");
                 status = (vx_status)VX_FAILURE;
             }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineCreateInBamGraph: prms mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "prms mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -1078,13 +1078,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineGetNodePort(
                         }
                         break;
                     default:
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        VX_PRINT(VX_ZONE_ERROR, "non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                 }
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelCombineGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }

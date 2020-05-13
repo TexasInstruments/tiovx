@@ -1182,7 +1182,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractCreateInBamGraph(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractCreateInBamGraph: prms mem allocation failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "prms mem allocation failed\n");
             status = (vx_status)VX_ERROR_NO_MEMORY;
         }
 
@@ -1232,7 +1232,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
                         *bam_port = (prms->plane_idx == 2U) ? 2U : (uint8_t)TIVX_IMAGE_NULL_PLANE;
                         break;
                     default:
-                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        VX_PRINT(VX_ZONE_ERROR, "non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                         status = (vx_status)VX_FAILURE;
                         break;
                 }
@@ -1242,7 +1242,7 @@ static vx_status VX_CALLBACK tivxKernelChannelExtractGetNodePort(
                 *bam_port = (uint8_t)BAM_VXLIB_CHANNELEXTRACT_1OF3_I8U_IO8U_OUTPUT_PORT;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR,"tivxKernelChannelExtractGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                VX_PRINT(VX_ZONE_ERROR, "non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = (vx_status)VX_FAILURE;
                 break;
         }
