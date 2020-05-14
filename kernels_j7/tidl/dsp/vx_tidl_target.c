@@ -538,38 +538,46 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
                 tidlObj->createParams.flowCtrl  = 1;
 #endif
 
-                VX_PRINT(VX_ZONE_INFO, "Network version - 0x%08X, Expected version - 0x%08X\n",
-                    tidlObj->createParams.net->netVersion,
-                    TIDL_NET_VERSION
+                if(TIDL_NET_VERSION != tidlObj->createParams.net->netVersion)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Network version - 0x%08X, Expected version - 0x%08X\n",
+                        tidlObj->createParams.net->netVersion,
+                        TIDL_NET_VERSION
                     );
 
-                tidlObj->algHandle = tivxAlgiVisionCreate
-                                  (
-                                    &TIDL_VISION_FXNS,
-                                    (IALG_Params *)(&tidlObj->createParams)
-                                  );
-
-                if (NULL == tidlObj->algHandle)
-                {
-                    status = (vx_status)VX_FAILURE;
+                    status = VX_FAILURE;
                 }
 
-                tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
-                tidlObj->outBufs.size    = sizeof(tidlObj->outBufs);
-
-                tidlObj->inBufs.bufDesc  = tidlObj->inBufDescList;
-                tidlObj->outBufs.bufDesc = tidlObj->outBufDescList;
-
-                tidlObj->inBufs.numBufs  = tidl_AllocNetInputMem(tidlObj->inBufDesc, &tidlObj->tidlParams.ioBufDesc);
-                tidlObj->outBufs.numBufs = tidl_AllocNetOutputMem(tidlObj->outBufDesc, &tidlObj->tidlParams.ioBufDesc);
-
-                for(i = 0; i < tidlObj->inBufs.numBufs; i++)
+                if ((vx_status)VX_SUCCESS == status)
                 {
-                  tidlObj->inBufDescList[i]     = &tidlObj->inBufDesc[i];
-                }
-                for(i = 0; i < tidlObj->outBufs.numBufs; i++)
-                {
-                  tidlObj->outBufDescList[i]     = &tidlObj->outBufDesc[i];
+                    tidlObj->algHandle = tivxAlgiVisionCreate
+                                        (
+                                            &TIDL_VISION_FXNS,
+                                            (IALG_Params *)(&tidlObj->createParams)
+                                        );
+
+                    if (NULL == tidlObj->algHandle)
+                    {
+                        status = (vx_status)VX_FAILURE;
+                    }
+
+                    tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
+                    tidlObj->outBufs.size    = sizeof(tidlObj->outBufs);
+
+                    tidlObj->inBufs.bufDesc  = tidlObj->inBufDescList;
+                    tidlObj->outBufs.bufDesc = tidlObj->outBufDescList;
+
+                    tidlObj->inBufs.numBufs  = tidl_AllocNetInputMem(tidlObj->inBufDesc, &tidlObj->tidlParams.ioBufDesc);
+                    tidlObj->outBufs.numBufs = tidl_AllocNetOutputMem(tidlObj->outBufDesc, &tidlObj->tidlParams.ioBufDesc);
+
+                    for(i = 0; i < tidlObj->inBufs.numBufs; i++)
+                    {
+                        tidlObj->inBufDescList[i]     = &tidlObj->inBufDesc[i];
+                    }
+                    for(i = 0; i < tidlObj->outBufs.numBufs; i++)
+                    {
+                        tidlObj->outBufDescList[i]     = &tidlObj->outBufDesc[i];
+                    }
                 }
             }
         }
