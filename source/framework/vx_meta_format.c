@@ -782,6 +782,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
         }
+
+        /* Copy the type information. */
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            meta->type = ((vx_reference)exemplar)->type;
+        }
     }
 
     return (status);
@@ -1363,3 +1369,4 @@ vx_bool ownIsMetaFormatEqual(
 
     return is_equal;
 }
+

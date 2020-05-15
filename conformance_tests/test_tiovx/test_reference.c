@@ -71,8 +71,66 @@ TEST(tivxReference, testQueryInvalidFlag)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxReference, testIsReferenceMetaFormatEqualPass)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image1;
+    vx_image image2;
+    vx_bool is_equal;
+
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)image1, (vx_reference)image2);
+
+    ASSERT(is_equal==vx_true_e);
+
+    VX_CALL(vxReleaseImage(&image1));
+    VX_CALL(vxReleaseImage(&image2));
+}
+
+TEST(tivxReference, testIsReferenceMetaFormatEqualFail1)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image1;
+    vx_image image2;
+    vx_bool is_equal;
+
+    ASSERT_VX_OBJECT(image1 = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, 128, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)image1, (vx_reference)image2);
+
+    ASSERT(is_equal==vx_false_e);
+
+    VX_CALL(vxReleaseImage(&image1));
+    VX_CALL(vxReleaseImage(&image2));
+}
+
+TEST(tivxReference, testIsReferenceMetaFormatEqualFail2)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_user_data_object user_data_object = 0;
+    vx_bool is_equal;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, NULL, 100, NULL),
+                     (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    is_equal = tivxIsReferenceMetaFormatEqual((vx_reference)image, (vx_reference)user_data_object);
+
+    ASSERT(is_equal==vx_false_e);
+
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseUserDataObject(&user_data_object));
+}
+
 TESTCASE_TESTS(tivxReference,
         testQueryTimestamp,
         testSetTimestamp,
-        testQueryInvalidFlag
+        testQueryInvalidFlag,
+        testIsReferenceMetaFormatEqualPass,
+        testIsReferenceMetaFormatEqualFail1,
+        testIsReferenceMetaFormatEqualFail2
 )

@@ -3,7 +3,6 @@
 
 #include <tivx_utils_file_rd_wr.h>
 #include <test_utils_file_bmp_rd_wr.h>
-#include <vx_internal.h>
 
 #define TIVX_TEST_FAIL_CLEANUP(x) {(x) = 1; goto cleanup;}
 #define TIVX_TEST_UPDATE_STATUS(x) {if ((x)) CT_RecordFailure();}
@@ -52,107 +51,6 @@ typedef struct
     CT_GENERATE_PARAMETERS("bmptest_output_image_1280x720_gray", ARG, 1, 1), \
     CT_GENERATE_PARAMETERS("bmptest_output_colors_col",          ARG, 2, 0), \
     CT_GENERATE_PARAMETERS("bmptest_output_colors_gray",         ARG, 2, 1), \
-
-static vx_bool tivxIsMetaFormatEqual(vx_context context, vx_reference ref1, vx_reference ref2)
-{
-    vx_meta_format  mf1;
-    vx_meta_format  mf2;
-    vx_status       status;
-    vx_bool         boolStatus;
-
-    mf1        = NULL;
-    mf2        = NULL;
-    status     = (vx_status)VX_SUCCESS;
-    boolStatus = (vx_bool)vx_false_e;
-
-    if (context == NULL)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Context is NULL.\n");
-        status = (vx_status)VX_FAILURE;
-    }
-    else if (ref1 == NULL)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Reference1 is NULL.\n");
-        status = (vx_status)VX_FAILURE;
-    }
-    else if (ref2 == NULL)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Reference2 is NULL.\n");
-        status = (vx_status)VX_FAILURE;
-    }
-    else if (ref1->type != ref2->type)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "The type of the references do not match.\n");
-        status = (vx_status)VX_FAILURE;
-    }
-
-    /* Create a meta format object. */
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        mf1 = vxCreateMetaFormat(context);
-
-        if (mf1 == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-
-    /* Create a meta format object. */
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        mf2 = vxCreateMetaFormat(context);
-
-        if (mf2 == NULL)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-
-    /* Set the ref1 in mf1. */
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        status = vxSetMetaFormatFromReference(mf1, ref1);
-
-        if (status != (vx_status)VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference(ref1) failed.\n");
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-
-    /* Set the ref2 in mf2. */
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        status = vxSetMetaFormatFromReference(mf2, ref2);
-
-        if (status != (vx_status)VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference(ref2) failed.\n");
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        //boolStatus = ownIsMetaFormatEqual(mf1, mf2, mf1->type);
-        boolStatus = ownIsMetaFormatEqual(mf1, mf2, VX_TYPE_IMAGE);
-    }
-
-    /* Release the meta objects. */
-    if (mf1 != NULL)
-    {
-        vxReleaseMetaFormat(&mf1);
-    }
-
-    if (mf2 != NULL)
-    {
-        vxReleaseMetaFormat(&mf2);
-    }
-
-    return boolStatus;
-}
 
 static int32_t ReadInputImages(TestObjContext  *objCntxt,
                                const char      *inFileName)
@@ -369,8 +267,8 @@ static int32_t CompareImages(TestObjContext *objCntxt)
     status   = TIVX_TEST_SUCCESS;
     vxStatus = (vx_status)VX_SUCCESS;
 
-    boolStatus = tivxIsMetaFormatEqual(objCntxt->vxContext,
-                                       (vx_reference)objCntxt->tuImg,
+    boolStatus =
+        tivxIsReferenceMetaFormatEqual((vx_reference)objCntxt->tuImg,
                                        (vx_reference)objCntxt->ctImg);
 
     if (boolStatus == (vx_bool)vx_false_e)

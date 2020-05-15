@@ -758,6 +758,105 @@ VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
     return context;
 }
 
+VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref1, vx_reference ref2)
+{
+    vx_meta_format  mf1;
+    vx_meta_format  mf2;
+    vx_status       status;
+    vx_bool         boolStatus;
+
+    mf1        = NULL;
+    mf2        = NULL;
+    status     = (vx_status)VX_SUCCESS;
+    boolStatus = (vx_bool)vx_false_e;
+
+    if ((ref1 == NULL) ||
+        (ownIsValidReference(ref1) == (vx_bool)vx_false_e))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference1 is Invalid.\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else if ((ref2 == NULL) ||
+             (ownIsValidReference(ref2) == (vx_bool)vx_false_e))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference2 is Invalid.\n");
+        status = (vx_status)VX_FAILURE;
+    }
+    else if (ref1->type != ref2->type)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The type of the references do not match.\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    /* Create a meta format object. */
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        mf1 = vxCreateMetaFormat(ref1->context);
+
+        if (mf1 == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    /* Create a meta format object. */
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        mf2 = vxCreateMetaFormat(ref2->context);
+
+        if (mf2 == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create meta format object.\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    /* Set the ref1 in mf1. */
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        status = vxSetMetaFormatFromReference(mf1, ref1);
+
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                     "vxSetMetaFormatFromReference(ref1) failed.\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    /* Set the ref2 in mf2. */
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        status = vxSetMetaFormatFromReference(mf2, ref2);
+
+        if (status != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                     "vxSetMetaFormatFromReference(ref2) failed.\n");
+            status = (vx_status)VX_FAILURE;
+        }
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        boolStatus = ownIsMetaFormatEqual(mf1, mf2, mf1->type);
+    }
+
+    /* Release the meta objects. */
+    if (mf1 != NULL)
+    {
+        vxReleaseMetaFormat(&mf1);
+    }
+
+    if (mf2 != NULL)
+    {
+        vxReleaseMetaFormat(&mf2);
+    }
+
+    return boolStatus;
+}
+
 vx_bool tivxIsReferenceVirtual(vx_reference ref)
 {
     vx_bool ret = (vx_bool)vx_false_e;

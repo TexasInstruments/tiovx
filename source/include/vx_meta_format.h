@@ -225,10 +225,7 @@ vx_meta_format vxCreateMetaFormat(vx_context context);
  *
  * \ingroup group_int_meta_format
  */
-vx_bool VX_API_CALL ownIsMetaFormatEqual(
-    vx_meta_format meta1, vx_meta_format meta2, vx_enum type);
-
-
+vx_bool ownIsMetaFormatEqual(vx_meta_format meta1, vx_meta_format meta2, vx_enum type);
 
 #ifdef __cplusplus
 }

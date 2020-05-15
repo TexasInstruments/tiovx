@@ -834,7 +834,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(vx_user_data_o
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 block_width, vx_uint32 block_height);
 
-
 /*! \brief Sets reference attributes for the below enums:
  *         TIVX_REFERENCE_TIMESTAMP
  * \param [in] ref       The reference object.
@@ -846,6 +845,19 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetNodeTileSize(vx_node node, vx_uint32 b
  * \retval VX_SUCCESS if the attribute was set correctly.
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, vx_enum attribute, const void *ptr, vx_size size);
+
+/*! \brief Check for equivalence between the meta formats of two reference objects
+ * \details This API is used to check for equivalence between the meta formats
+ *          of two reference objects. The function returns true if they are
+ *          equal and false if not.
+ *
+ * \param [in] ref1 First reference object to be compared.
+ * \param [in] ref2 Second reference object to be compared.
+ * \ingroup group_tivx_ext_host
+ * \return A <tt>\ref _vx_bool_e</tt> enumeration.
+ * \return vx_true_e in case of equal meta formats, vx_false else
+ */
+VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref1, vx_reference ref2);
 
 #ifdef __cplusplus
 }
