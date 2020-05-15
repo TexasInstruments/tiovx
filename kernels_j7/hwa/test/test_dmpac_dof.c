@@ -65,7 +65,7 @@
 #include <TI/j7.h>
 #include <string.h>
 #include "test_engine/test.h"
-#include "test_tiovx/test_utils_file_bmp_rd_wr.h"
+#include "test_tiovx/utils/test_utils_file_bmp_rd_wr.h"
 #include "tivx_utils_checksum.h"
 #include "test_hwa_common.h"
 
