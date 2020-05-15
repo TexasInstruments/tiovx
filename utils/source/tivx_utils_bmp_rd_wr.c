@@ -70,7 +70,7 @@ vx_status tivx_utils_bmp_file_read(
             vx_bool convert_to_gray_scale,
             tivx_utils_bmp_image_params_t  *imgParams)
 {
-    int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
+    int32_t dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
     int32_t     status;
     vx_status vxStatus;
 
@@ -94,7 +94,7 @@ vx_status tivx_utils_bmp_file_read_from_memory(
             vx_bool convert_to_gray_scale,
             tivx_utils_bmp_image_params_t *imgParams)
 {
-    int32_t dcn = (convert_to_gray_scale != (vx_bool)(vx_bool)vx_false_e) ? 1 : -1;
+    int32_t dcn = (convert_to_gray_scale != (vx_bool)vx_false_e) ? 1 : -1;
     int32_t     status;
     vx_status vxStatus;
 
@@ -508,7 +508,7 @@ vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, v
                 (vx_enum)VX_NOGAP_X
                 );
 
-            if((enable_rgb2gray == (vx_bool)(vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)(vx_bool)vx_false_e))
+            if((enable_rgb2gray == (vx_bool)vx_false_e) && (enable_gray2rgb == (vx_bool)vx_false_e))
             {
                 uint32_t y;
 

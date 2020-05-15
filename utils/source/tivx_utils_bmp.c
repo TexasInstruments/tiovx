@@ -77,14 +77,14 @@
 
 typedef struct
 {
-    /** Red. */
-    uint8_t     r;
+    /** Blue. */
+    uint8_t     b;
 
     /** Green. */
     uint8_t     g;
 
-    /** Blue. */
-    uint8_t     b;
+    /** Red. */
+    uint8_t     r;
 
     /** Reserved. */
     uint8_t     a;
@@ -639,7 +639,7 @@ tivx_utils_bmp_read_data(tivx_utils_bmp_rd_context_t   *cntxt,
             stride_y = -stride_y;
         }
 
-        if (color && (bpp <= 8))
+        if ((color == 0) && (bpp <= 8))
         {
             cvtRGBToGray(grayPalette, &palette[0].b, (1 << bpp), 4, 0);
         }
