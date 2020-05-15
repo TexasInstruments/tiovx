@@ -383,6 +383,11 @@ typedef struct {
      *  in VISS.
      */
     uint32_t                    enable_ctx;
+    /*! Identifier for camera channel ID. 
+     *  Currently used only for identifying AEWB results send by AEWB node
+     *  when ae_awb_result from the graph is NULL.
+     */
+    uint32_t                    channel_id;
 } tivx_vpac_viss_params_t;
 
 /*!

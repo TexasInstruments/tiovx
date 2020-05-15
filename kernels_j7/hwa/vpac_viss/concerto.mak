@@ -12,6 +12,7 @@ ifeq ($(TARGET_CPU),R5F)
     IDIRS       += $(J7_C_MODELS_PATH)/include
   else
     CSOURCES    += vx_vpac_viss_target.c vx_vpac_viss_target_drv.c
+    CSOURCES    += viss_srvr_remote.c
   endif
 else
   CSOURCES    += vx_vpac_viss_target_sim.c vx_vpac_viss_target_sim_priv.c
@@ -30,6 +31,9 @@ IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include
 IDIRS       += $(IMAGING_PATH)/algos/awb/include
+
+IDIRS       += $(VISION_APPS_PATH)/utils/remote_service/include
+IDIRS       += $(VISION_APPS_PATH)/utils/ipc/include
 
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA

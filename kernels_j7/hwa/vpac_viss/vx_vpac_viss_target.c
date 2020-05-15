@@ -132,6 +132,8 @@ int32_t tivxVpacVissFrameComplCb(Fvid2_Handle handle, void *appData);
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
 tivxVpacVissInstObj gTivxVpacVissInstObj;
 
+extern tivx_mutex             viss_aewb_lock[VHWA_M2M_VISS_MAX_HANDLES];
+extern tivx_ae_awb_params_t   viss_aewb_results[VHWA_M2M_VISS_MAX_HANDLES];
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -720,6 +722,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
     tivx_obj_desc_user_data_object_t *h3a_out_desc = NULL;
     uint64_t cur_time;
+    tivx_ae_awb_params_t   aewb_params;
 
     /* Check for mandatory descriptor */
     status = tivxVpacVissCheckInputDesc(num_params, obj_desc);
@@ -785,18 +788,34 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
 
         /* AEWB Result is optional parameter */
-        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        if((vx_status)VX_SUCCESS == status)
         {
-            status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
-                aewb_res_desc, sizeof(tivx_ae_awb_params_t));
-            if ((vx_status)VX_SUCCESS == status)
+            if(NULL != aewb_res_desc)
             {
-                ae_awb_result =
-                    (tivx_ae_awb_params_t *)vissObj->aewb_res_target_ptr;
+                status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
+                    aewb_res_desc, sizeof(tivx_ae_awb_params_t));
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    ae_awb_result = (tivx_ae_awb_params_t *)vissObj->aewb_res_target_ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to Map AEWB Result Descriptor\n");
+                }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to Map AEWB Result Descriptor\n");
+                /* AEWB Result sent by the graph is NULL */
+                /* VISS needs to use the results sent by AEWB node through VISS_CMD_SET_2A_PARAMS command */
+                /* RemoteService command is supported only on target*/
+                uint32_t chId = vissPrms->channel_id;
+                status = tivxMutexLock(viss_aewb_lock[chId]);
+                if((vx_status)VX_SUCCESS == status)
+                {
+                    ae_awb_result = &aewb_params;
+                    memcpy(ae_awb_result, &viss_aewb_results[chId], sizeof(tivx_ae_awb_params_t));
+                    status = tivxMutexUnlock(viss_aewb_lock[chId]);
+                }
             }
         }
 
