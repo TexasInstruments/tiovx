@@ -664,7 +664,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                         status = (vx_status)VX_FAILURE;
                     }
                 }
-                else if (timeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
                 {
                     /* Queue the object into the pend queue for later
                      * action.
@@ -785,7 +785,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                         status = (vx_status)VX_FAILURE;
                     }
                 }
-                else if (timeout != TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+                else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
                 {
                     /* Queue the object into the pend queue for later
                      * action.
@@ -798,7 +798,6 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Failed to queue the object desc in pend queue.\n");
-                        status = (vx_status)VX_FAILURE;
                     }
                 }
 

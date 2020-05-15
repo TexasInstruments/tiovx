@@ -222,7 +222,7 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
                         if (retVal == ETIMEDOUT)
                         {
                             VX_PRINT(VX_ZONE_ERROR, "Event timed-out.\n");
-                            status = (vx_status)VX_FAILURE;
+                            status = (vx_status)TIVX_ERROR_EVENT_TIMEOUT;
                             done = (vx_bool)vx_true_e;
                         }
                         else if (retVal)

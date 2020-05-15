@@ -347,6 +347,23 @@ typedef enum _tivx_df_image_e {
 
 } tivx_df_image_e;
 
+/*! \brief The enumeration of all TIVX operational error codes.
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_status_e {
+    /*!< \brief Indicates the base for the TIVX error codes.
+     * Used for bounds checks only.
+     */
+    TIVX_STATUS_BASE         = -(vx_int32)100,
+
+    /* add new codes here */
+    /*!< \brief Indicates that the wait operation on an event
+     * timed-out
+     */
+    TIVX_ERROR_EVENT_TIMEOUT = (vx_int32)(TIVX_STATUS_BASE + 1),
+
+} tivx_status_e;
+
 /*!
  * \brief Function to initialize OpenVX framework
  *
