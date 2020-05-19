@@ -27,14 +27,37 @@
 
 TESTCASE(tivxHwaVpacMscScale, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaVpacMscScale, testNodeCreation1)
+typedef struct {
+    const char* testName;
+    int msc;
+    int dummy;
+} ArgCreate;
+
+#define ADD_MSC_INSTANCE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/MSC_2", __VA_ARGS__, 2))
+
+#define ADD_DUMMY(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "", __VA_ARGS__, 0))
+
+#define PARAMETERS_CREATE \
+    CT_GENERATE_PARAMETERS("instance", ADD_MSC_INSTANCE, ADD_DUMMY, ARG)
+
+
+TEST_WITH_ARG(tivxHwaVpacMscScale, testNodeCreation, ArgCreate, PARAMETERS_CREATE)
 {
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
     vx_graph graph = 0;
     vx_node node = 0;
+    char *target_name = TIVX_TARGET_VPAC_MSC1;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if(2 == arg_->msc)
+    {
+        target_name = TIVX_TARGET_VPAC_MSC2;
+    }
+
+    if (vx_true_e == tivxIsTargetEnabled(target_name))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -45,7 +68,7 @@ TEST(tivxHwaVpacMscScale, testNodeCreation1)
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = vxScaleImageNode(graph, src_image, dst_image, VX_INTERPOLATION_NEAREST_NEIGHBOR), VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, target_name));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -60,41 +83,6 @@ TEST(tivxHwaVpacMscScale, testNodeCreation1)
         tivxHwaUnLoadKernels(context);
     }
 }
-
-TEST(tivxHwaVpacMscScale, testNodeCreation2)
-{
-    vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
-    vx_graph graph = 0;
-    vx_node node = 0;
-
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
-    {
-        tivxHwaLoadKernels(context);
-        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
-
-        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        ASSERT_VX_OBJECT(node = vxScaleImageNode(graph, src_image, dst_image, VX_INTERPOLATION_NEAREST_NEIGHBOR), VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
-
-        VX_CALL(vxReleaseNode(&node));
-        VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
-
-        ASSERT(node == 0);
-        ASSERT(graph == 0);
-        ASSERT(dst_image == 0);
-        ASSERT(src_image == 0);
-
-        tivxHwaUnLoadKernels(context);
-    }
-}
-
 
 static CT_Image scale_generate_random(const char* fileName, int width, int height)
 {
@@ -687,4 +675,4 @@ TEST_WITH_ARG(tivxHwaVpacMscScale, testImmediateProcessing, Arg,
     ASSERT(src_image == 0);
 }
 
-TESTCASE_TESTS(tivxHwaVpacMscScale, testNodeCreation1, testNodeCreation2, testGraphProcessing, testImmediateProcessing)
+TESTCASE_TESTS(tivxHwaVpacMscScale, testNodeCreation, testGraphProcessing, testImmediateProcessing)
