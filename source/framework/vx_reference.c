@@ -887,3 +887,490 @@ vx_reference tivxGetReferenceParent(vx_reference child_ref)
     return ref;
 }
 
+vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32_t num_entries)
+{
+    tivx_shared_mem_ptr_t  *mem_ptr;
+    volatile uint32_t      *mem_size;
+    uint64_t                shared_ptr[16] = {0};
+    uint32_t                numMemElem;
+    uint32_t                i;
+    vx_status               vxStatus;
+
+    vxStatus = (vx_status)VX_SUCCESS;
+
+    /* Validate the arguments. */
+    if ((ref == NULL) || (ownIsValidReference(ref) == (vx_bool)vx_false_e))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference is Invalid.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (num_entries == 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+                 "The parameter 'num_entries' must be non-zero.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (addr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else
+    {
+        for (i = 0; i < num_entries; i++)
+        {
+            if (addr[i] != NULL)
+            {
+                /* Check if the memory has been allocated using ION API. */
+                shared_ptr[i] =
+                    tivxMemHost2SharedPtr((uint64_t)(uintptr_t)addr[i],
+                                          (vx_enum)TIVX_MEM_EXTERNAL);
+
+                if (shared_ptr[i] == 0)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "addr[%d] is INVALID.\n", i);
+                    vxStatus = (vx_status)VX_FAILURE;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        numMemElem = 1;
+        mem_ptr    = NULL;
+        mem_size   = NULL;
+
+        if (ref->type == (vx_enum)VX_TYPE_IMAGE)
+        {
+            tivx_obj_desc_image_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                numMemElem = obj_desc->planes;
+                mem_ptr    = obj_desc->mem_ptr;
+                mem_size   = obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_TENSOR)
+        {
+            tivx_obj_desc_tensor_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_USER_DATA_OBJECT)
+        {
+            tivx_obj_desc_user_data_object_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_ARRAY)
+        {
+            tivx_obj_desc_array_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_CONVOLUTION)
+        {
+            tivx_obj_desc_convolution_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_MATRIX)
+        {
+            tivx_obj_desc_matrix_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
+        {
+            tivx_obj_desc_distribution_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+
+        if ((vxStatus == (vx_status)VX_SUCCESS) &&
+            (numMemElem > num_entries))
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                     "num_entries [%d] less than num handles expected [%d].\n",
+                     num_entries, numMemElem);
+
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+
+        if (vxStatus == (vx_status)VX_SUCCESS)
+        {
+            /* Issue a warning if the number of handles passed is more than
+             * what is needed.
+             */
+            if (numMemElem < num_entries)
+            {
+                VX_PRINT(VX_ZONE_WARNING,
+                         "The value 'num_entries' exceeds the number of "
+                         "handles needed.\n");
+            }
+
+            /* Update the object. */
+            for (i = 0; i < numMemElem; i++)
+            {
+                mem_ptr[i].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+
+                if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
+                {
+                    VX_PRINT(VX_ZONE_WARNING,
+                             "Non-NULL handle detected. Overwriting.\n");
+                }
+
+                mem_ptr[i].host_ptr = (uint64_t)(uintptr_t)addr[i];
+                mem_ptr[i].shared_ptr = shared_ptr[i];
+
+                if (mem_ptr[i].host_ptr)
+                {
+                    /* Perform a cache write back. */
+                    tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
+                                       mem_size[i],
+                                       (vx_enum)TIVX_MEM_EXTERNAL,
+                                       (vx_enum)VX_WRITE_ONLY);
+                }
+            }
+        }
+    }
+
+    return vxStatus;
+}
+
+vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t max_entries, uint32_t *num_entries)
+{
+    tivx_shared_mem_ptr_t  *mem_ptr;
+    volatile uint32_t      *mem_size;
+    uint32_t                numMemElem;
+    uint32_t                i;
+    vx_status               vxStatus;
+
+    vxStatus = (vx_status)VX_SUCCESS;
+
+    /* Validate the arguments. */
+    if ((ref == NULL) || (ownIsValidReference(ref) == (vx_bool)vx_false_e))
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference is Invalid.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (addr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (max_entries == 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'max_entries' is 0.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (num_entries == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'num_entries' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        numMemElem = 1;
+        mem_ptr    = NULL;
+
+        if (ref->type == (vx_enum)VX_TYPE_IMAGE)
+        {
+            tivx_obj_desc_image_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else if (obj_desc->planes > max_entries)
+            {
+                /* Having more handles than needed is OK but not the
+                 * other way.
+                 */
+                VX_PRINT(VX_ZONE_ERROR,
+                         "max_entries [%d] less than num planes [%d].\n",
+                         max_entries, obj_desc->planes);
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                numMemElem = obj_desc->planes;
+                mem_ptr    = obj_desc->mem_ptr;
+                mem_size   = obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_TENSOR)
+        {
+            tivx_obj_desc_tensor_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_USER_DATA_OBJECT)
+        {
+            tivx_obj_desc_user_data_object_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_ARRAY)
+        {
+            tivx_obj_desc_array_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_CONVOLUTION)
+        {
+            tivx_obj_desc_convolution_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_MATRIX)
+        {
+            tivx_obj_desc_matrix_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else if (ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
+        {
+            tivx_obj_desc_distribution_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                mem_ptr  = &obj_desc->mem_ptr;
+                mem_size = &obj_desc->mem_size;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+
+        if (vxStatus == (vx_status)VX_SUCCESS)
+        {
+            tivx_shared_mem_ptr_t   lMemPtr[16] = {0};
+            uint32_t                numAlloc = 0;
+
+            /* Update the object. */
+            for (i = 0; i < numMemElem; i++)
+            {
+                /* Allocate memory, if needed. Since we should not change the
+                 * state of the object for failure cases and since memory
+                 * allocation can fail in case of multiple element allocation,
+                 * use a local array for tracking allocations. The object will
+                 * be updated only when all requested memory blocks have been
+                 * allocated successfully.
+                 */
+                if (mem_ptr[i].host_ptr == (uint64_t)(uintptr_t)NULL)
+                {
+                    tivxMemBufferAlloc(&lMemPtr[i],
+                                       mem_size[i],
+                                       (vx_enum)TIVX_MEM_EXTERNAL);
+
+                    if (lMemPtr[i].host_ptr == (uint64_t)(uintptr_t)NULL)
+                    {
+                        /* Could not allocate memory */
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "Could not allocate user data object memory\n");
+                        vxStatus = (vx_status)VX_ERROR_NO_MEMORY;
+                        break;
+                    }
+                    else
+                    {
+                        /* Update the allocation counter. */
+                        numAlloc++;
+
+                        /* Since the host_ptr has been allocated here, there is
+                         * no need to validate the translation to shared_ptr.
+                         */
+                        lMemPtr[i].shared_ptr =
+                            tivxMemHost2SharedPtr(lMemPtr[i].host_ptr,
+                                                  (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
+                }
+
+            } /* for (i = 0; i < numMemElem; i++) */
+
+            if (vxStatus == (vx_status)VX_SUCCESS)
+            {
+                for (i = 0; i < numMemElem; i++)
+                {
+                    /* Update the pointers only if allocation has been done
+                     * above. 'numAlloc' will be zero if allocations have not
+                     * been done in this function.
+                     */
+                    if (numAlloc)
+                    {
+                        mem_ptr[i] = lMemPtr[i];
+                    }
+
+                    addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
+                }
+
+                /* Update the entry count. */
+                *num_entries = numMemElem;
+            }
+            else
+            {
+                /* Could not allocate memory for all the elements. Release any
+                 * partially allocated memory.
+                 */
+                for (i = 0; i < numAlloc; i++)
+                {
+                    tivxMemBufferFree(&lMemPtr[i], mem_size[i]);
+                }
+            }
+
+        } /* if (vxStatus == (vx_status)VX_SUCCESS) */
+
+    } /* if (vxStatus == (vx_status)VX_SUCCESS) */
+
+    return vxStatus;
+}
+

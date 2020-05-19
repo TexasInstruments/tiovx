@@ -859,8 +859,80 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
  */
 VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref1, vx_reference ref2);
 
+/*! \brief Updates a reference object with the supplied handles (pointers to memory).
+ *
+ * Any existing handles in the reference object will be over-written with the new handles provided. No
+ * error will be reported. If the caller chooses to preserve the existing handles then the caller should use
+ * <tt>\ref tivxReferenceExportHandle</tt> for retrieving the current handles before invoking this function.
+ *
+ * The following conditions regarding 'addr' must be TRUE:
+ * - allocated using appMemAlloc() on ARM
+ * - memory block is contiguous
+ *
+ * Only the following reference object types are supported:
+ * - VX_TYPE_IMAGE
+ * - VX_TYPE_TENSOR
+ * - VX_TYPE_USER_DATA_OBJECT
+ * - VX_TYPE_ARRAY
+ * - VX_TYPE_DISTRIBUTION
+ * - VX_TYPE_MATRIX
+ * - VX_TYPE_CONVOLUTION
+ *
+ * \param [in,out] ref The reference object to be updated.
+ * \param [in] addr An array of pointers for holding the handles. The entries can be NULL.
+ * \param [in] num_entries Number of valid entries in addr[]. This should match the
+ *                         number of handles expected to be maintained internally by 'ref'
+ *                         (ex:- for an image object with multiple planes, num_extries > 1).
+ * \ingroup group_image
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS, if the import operation is successful. The 'ref' object will have the
+ * internal handles updated.
+ * VX_FAILURE, if the operation is unsuccessful. The state of the reference object is not changed.
+ * A failure can occur for the following reasons:
+ * - Unsupported reference object type
+ * - The argument check fails
+ * - The handle check fails i.e. the handles have not been allocated using appMemAlloc()
+ * - The number of handles specified is less than the number expected by the reference object.
+ */
+vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32_t num_entries);
+
+/*! \brief Exports the handles from a reference object.
+ *
+ * It is the responsibility of the caller to make sure that the addr array is dimensioned to
+ * hold all the handles expected from the reference object.
+ *
+ * Only the following reference object types are supported:
+ * - VX_TYPE_IMAGE
+ * - VX_TYPE_TENSOR
+ * - VX_TYPE_USER_DATA_OBJECT
+ * - VX_TYPE_ARRAY
+ * - VX_TYPE_DISTRIBUTION
+ * - VX_TYPE_MATRIX
+ * - VX_TYPE_CONVOLUTION
+ *
+ * \param [in]  ref The reference object to export the handles from.
+ * \param [out] addr An array of pointers for holding the handles.
+ * \param [in]  max_entries Maximum number of entries to export.
+ * \param [out] num_entries Number of valid entries in addr[]. This should match the
+ *                         number of handles expected to be maintained internally by 'ref'
+ *                         (ex:- for an image object with multiple planes, num_extries > 1).
+ * \ingroup group_image
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS, if the export operation is successful. The 'addr' object will be populated
+ * with 'num_entries' handles.
+ * VX_FAILURE, if the operation is unsuccessful. The state of the reference object is not changed.
+ * A failure can occur for the following reasons:
+ * - Unsupported reference object type
+ * - The argument check fails
+ * - Internal memory allocation fails
+ * - The max number of handles specified is less than the number expected to be exported by the
+ *   reference object.
+ */
+vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t max_entries, uint32_t *num_entries);
+
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+

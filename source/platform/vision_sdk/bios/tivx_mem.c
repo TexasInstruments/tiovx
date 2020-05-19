@@ -411,3 +411,53 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
     return status;
 }
 
+int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr)
+{
+    vx_status   vxStatus = (vx_status)VX_SUCCESS;
+
+    if (fd == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'fd' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (phyAddr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'phyAddr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        *fd      = (uint64_t *)virtAddr;
+        *phyAddr = (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
+                                                           TIVX_MEM_EXTERNAL);
+    }
+
+    return vxStatus;
+}
+
+int32_t tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
+{
+    vx_status   vxStatus = (vx_status)VX_SUCCESS;
+
+    if (virtAddr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'virtAddr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (phyAddr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'phyAddr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        *virtAddr = (void*)(uintptr_t)dmaBufFd;
+        *phyAddr = (void*)(uintptr_t)tivxMemHost2SharedPtr(dmaBufFd,
+                                                           TIVX_MEM_EXTERNAL);
+    }
+
+    return vxStatus;
+}
+
