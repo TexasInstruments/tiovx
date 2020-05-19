@@ -43,50 +43,36 @@ static vx_status save_image_from_msc(vx_image y8, char *filename_prefix)
     return status;
 }
 
-TEST(tivxHwaVpacMscScaleMultiOutput, testNodeCreation1)
+typedef struct {
+    const char* testName;
+    int msc_instance;
+    int dummy;
+} ArgFixed;
+
+#define ADD_INSTANCE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/msc=1", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/msc=2", __VA_ARGS__, 1))
+
+#define ADD_DUMMY(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "", __VA_ARGS__, 0))
+
+#define PARAMETERS_FIX \
+    CT_GENERATE_PARAMETERS("instance", ADD_INSTANCE, ADD_DUMMY, ARG)
+
+TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testNodeCreation, ArgFixed, PARAMETERS_FIX)
 {
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
     vx_graph graph = 0;
     vx_node node = 0;
+    char *target_name = TIVX_TARGET_VPAC_MSC1;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if(1 == arg_->msc_instance)
     {
-        tivxHwaLoadKernels(context);
-        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
-
-        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
-            dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-
-        VX_CALL(vxReleaseNode(&node));
-        VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
-
-        ASSERT(node == 0);
-        ASSERT(graph == 0);
-        ASSERT(dst_image == 0);
-        ASSERT(src_image == 0);
-
-        tivxHwaUnLoadKernels(context);
+        target_name = TIVX_TARGET_VPAC_MSC2;
     }
-}
 
-
-TEST(tivxHwaVpacMscScaleMultiOutput, testNodeCreation2)
-{
-    vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
-    vx_graph graph = 0;
-    vx_node node = 0;
-
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    if (vx_true_e == tivxIsTargetEnabled(target_name))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -98,7 +84,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testNodeCreation2)
 
         ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
             dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, target_name));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -730,8 +716,8 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
 #define ADD_CROP_1(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/crop=1", __VA_ARGS__, 1))
 
-TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern1
-)
+
+TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern, ArgFixed, PARAMETERS_FIX)
 {
     vx_context context = context_->vx_context_;
     int w = 16, h = 16, i, j, crop_mode = 0;
@@ -746,204 +732,14 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern1
     vx_rectangle_t rect;
     uint32_t checksum_actual;
     vx_enum interpolation = VX_INTERPOLATION_BILINEAR;
+    char *target_name = TIVX_TARGET_VPAC_MSC1;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
+    if(1 == arg_->msc_instance)
     {
-        tivxHwaLoadKernels(context);
-        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
-
-        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, w, h, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-/* Note: for debug--load in a file by putting a breakpoint at unmap */
-#if 1
-        vx_imagepatch_addressing_t image_addr;
-        vx_map_id map_id;
-        vx_df_image df;
-        void *data_ptr, *data_ptr2;
-        uint8_t *data_ptr_u8;
-
-        rect.start_x = 0;
-        rect.start_y = 0;
-        rect.end_x = w;
-        rect.end_y = h;
-
-        vxMapImagePatch(src_image,
-            &rect,
-            0,
-            &map_id,
-            &image_addr,
-            &data_ptr,
-            VX_WRITE_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
-            );
-
-        data_ptr_u8 = data_ptr;
-
-        for(j=0; j < h; j++)
-        {
-            for(i=0; i<w; i++)
-            {
-                data_ptr_u8[j*image_addr.stride_y+i] = j*16;
-                printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
-            }
-            printf("\n");
-        }
-
-        vxUnmapImagePatch(src_image, map_id);
-#endif
-        dst_width = w-4;
-        dst_height = h-4;
-
-        if(crop_mode == 1)
-        {
-            dst_width /= 2;
-            dst_height /= 2;
-        }
-
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
-            dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
-
-        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-
-        scale_set_coeff(&coeffs, interpolation);
-
-        VX_CALL(vxVerifyGraph(graph));
-
-        /* Set Coefficients */
-        ASSERT_VX_OBJECT(coeff_obj = vxCreateUserDataObject(context,
-            "tivx_vpac_msc_coefficients_t",
-            sizeof(tivx_vpac_msc_coefficients_t), NULL),
-            (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        VX_CALL(vxCopyUserDataObject(coeff_obj, 0,
-            sizeof(tivx_vpac_msc_coefficients_t), &coeffs, VX_WRITE_ONLY,
-            VX_MEMORY_TYPE_HOST));
-
-        refs[0] = (vx_reference)coeff_obj;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
-            refs, 1u));
-
-        VX_CALL(vxReleaseUserDataObject(&coeff_obj));
-
-        if(crop_mode == 1)
-        {
-            /* Set Input Crop */
-            ASSERT_VX_OBJECT(crop_obj = vxCreateUserDataObject(context,
-                "tivx_vpac_msc_crop_params_t",
-                sizeof(tivx_vpac_msc_crop_params_t), NULL),
-                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-            /* Center crop of input */
-            crop.crop_start_x = w / 4;
-            crop.crop_start_y =h / 4;
-            crop.crop_width   = w / 2;
-            crop.crop_height  = h / 2;
-
-            VX_CALL(vxCopyUserDataObject(crop_obj, 0,
-                sizeof(tivx_vpac_msc_crop_params_t), &crop, VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST));
-
-            refs[0] = (vx_reference)crop_obj;
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-                tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_CROP_PARAMS,
-                refs, 5u));
-
-            VX_CALL(vxReleaseUserDataObject(&crop_obj));
-        }
-
-        VX_CALL(vxProcessGraph(graph));
-
-        //ASSERT_NO_FAILURE(src = ct_image_from_vx_image(src_image));
-        //ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
-
-#if 1
-        rect.start_x = 0;
-        rect.start_y = 0;
-        rect.end_x = dst_width;
-        rect.end_y = dst_height;
-
-        vxMapImagePatch(dst_image,
-            &rect,
-            0,
-            &map_id,
-            &image_addr,
-            &data_ptr2,
-            VX_READ_ONLY,
-            VX_MEMORY_TYPE_HOST,
-            VX_NOGAP_X
-            );
-
-        data_ptr_u8 = data_ptr2;
-
-        for(j=0; j < dst_height; j++)
-        {
-            for(i=0; i<dst_width; i++)
-            {
-                printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
-            }
-            printf("\n");
-        }
-
-        vxUnmapImagePatch(dst_image, map_id);
-#endif
-
-        //ASSERT_NO_FAILURE(scale_check(src, dst, arg_->interpolation, arg_->border, arg_->exact_result));
-
-        rect.start_x = 0;
-        rect.start_y = 0;
-        rect.end_x = dst_width;
-        rect.end_y = dst_height;
-
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-        printf("0x%08x\n", checksum_actual);
-        //printf("end_x = %d\n", dst_width);
-        //printf("end_y = %d\n", dst_height);
-
-        //ASSERT(arg_->checksum == checksum_actual);
-
-        //save_image_from_msc(dst_image, "output/lena_msc");
-
-        VX_CALL(vxReleaseNode(&node));
-        VX_CALL(vxReleaseGraph(&graph));
-
-        ASSERT(node == 0);
-        ASSERT(graph == 0);
-
-        VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
-
-        tivxHwaUnLoadKernels(context);
+        target_name = TIVX_TARGET_VPAC_MSC2;
     }
 
-    ASSERT(dst_image == 0);
-    ASSERT(src_image == 0);
-}
-
-
-TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern2
-)
-{
-    vx_context context = context_->vx_context_;
-    int w = 16, h = 16, i, j, crop_mode = 0;
-    int dst_width = 0, dst_height = 0;
-    vx_image src_image = 0, dst_image = 0;
-    vx_graph graph = 0;
-    vx_node node = 0;
-    vx_user_data_object coeff_obj, crop_obj;
-    tivx_vpac_msc_coefficients_t coeffs;
-    tivx_vpac_msc_crop_params_t crop;
-    vx_reference refs[5] = {0};
-    vx_rectangle_t rect;
-    uint32_t checksum_actual;
-    vx_enum interpolation = VX_INTERPOLATION_BILINEAR;
-
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    if (vx_true_e == tivxIsTargetEnabled(target_name))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -981,9 +777,10 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern2
             for(i=0; i<w; i++)
             {
                 data_ptr_u8[j*image_addr.stride_y+i] = j*16;
-                printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
+                //printf("%03d,", data_ptr_u8[j*image_addr.stride_y+i]);
             }
-            printf("\n");
+            //printf("\n");
+            //printf("\n");
         }
 
         vxUnmapImagePatch(src_image, map_id);
@@ -1004,7 +801,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern2
         ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
             dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
 
-        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
+        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, target_name));
 
         scale_set_coeff(&coeffs, interpolation);
 
@@ -1058,7 +855,7 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern2
         //ASSERT_NO_FAILURE(src = ct_image_from_vx_image(src_image));
         //ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 
-#if 1
+#if 0
         rect.start_x = 0;
         rect.start_y = 0;
         rect.end_x = dst_width;
@@ -1097,11 +894,11 @@ TEST(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern2
         rect.end_y = dst_height;
 
         checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-        printf("0x%08x\n", checksum_actual);
+        //printf("0x%08x\n", checksum_actual);
         //printf("end_x = %d\n", dst_width);
         //printf("end_y = %d\n", dst_height);
 
-        //ASSERT(arg_->checksum == checksum_actual);
+        ASSERT((uint32_t)0xdbdbdbcb == checksum_actual);
 
         //save_image_from_msc(dst_image, "output/lena_msc");
 
@@ -1858,10 +1655,8 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FiveOutput, Ar
 }
 
 TESTCASE_TESTS(tivxHwaVpacMscScaleMultiOutput,
-    testNodeCreation1,
-    testNodeCreation2,
-    testGraphProcessing_FixedPattern1,
-    testGraphProcessing_FixedPattern2,
+    testNodeCreation,
+    testGraphProcessing_FixedPattern,
     testGraphProcessing_OneOutput,
     testGraphProcessing_TwoOutput,
     testGraphProcessing_ThreeOutput,
