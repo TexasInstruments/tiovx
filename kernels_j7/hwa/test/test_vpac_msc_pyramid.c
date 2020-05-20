@@ -626,8 +626,8 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
 
-        width = (vx_uint32)((vx_float32)input->width * arg_->scale);
-        height = (vx_uint32)((vx_float32)input->height * arg_->scale);
+        width = (vx_uint32)((vx_float32)ceil(input->width * arg_->scale));
+        height = (vx_uint32)((vx_float32)ceil(input->height * arg_->scale));
         levels = gaussian_pyramid_calc_max_levels_count(width, height, arg_->scale);
 
         ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
@@ -690,11 +690,23 @@ static uint32_t expected_cksm[] = {
     0x6d1f12be,
     0xca0d7926,
     0x681a4134,
-    0xb94a2c2d
+    0xb94a2c2d,
+
+    0x8bc87ce5,
+    0x49753f33,
+    0x5c72dc43,
+    0xcb18dc3f,
+    0xc4be797e,
+    0xe966bc8d,
+    0xef067bcf
 };
 
+#define ADD_VX_SCALE_CKSUM(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
+
 #define PARAMETERS_CKSUM \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE_CKSUM, ARG, gaussian_pyramid_read_image, "lena.bmp")
 
 TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
     PARAMETERS_CKSUM
@@ -709,6 +721,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
     vx_node node = 0;
     vx_uint32 width, height, level;
     vx_reference refs[1];
+    vx_uint32 cksm_offset = 0;
 
     CT_Image input = NULL;
 
@@ -725,8 +738,8 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
         ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
 
-        width = (vx_uint32)((vx_float32)input->width * arg_->scale);
-        height = (vx_uint32)((vx_float32)input->height * arg_->scale);
+        width = (vx_uint32)((vx_float32)ceil(input->width * arg_->scale));
+        height = (vx_uint32)((vx_float32)ceil(input->height * arg_->scale));
         levels = gaussian_pyramid_calc_max_levels_count(width, height, arg_->scale);
 
         ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
@@ -754,7 +767,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
         VX_CALL(vxProcessGraph(graph));
 
         #ifdef CHECK_OUTPUT
-        CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
+        //CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
         #endif
 
         for(level = 0; level < levels; level++)
@@ -778,7 +791,12 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
             //sprintf(temp, "output/lena_msc_%d", level);
             //save_image_from_msc(dst_image, temp);
 
-            ASSERT(expected_cksm[level] == checksum_actual);
+            if (arg_->scale == VX_SCALE_PYRAMID_ORB)
+            {
+                cksm_offset = 5;
+            }
+
+            ASSERT(expected_cksm[level+cksm_offset] == checksum_actual);
             vxReleaseImage(&dst_image);
         }
         VX_CALL(vxReleaseNode(&node));
