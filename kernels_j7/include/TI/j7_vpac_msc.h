@@ -149,7 +149,10 @@ extern "C" {
  *         scaling operation, the coefficients and other scaler parameters.
  *
  *         This command takes an array of user objects containing
- *         tivx_vpac_msc_crop_params_t parameters..
+ *         tivx_vpac_msc_crop_params_t parameters.
+ *
+ *         Node: Applies only to \ref tivxVpacMscScaleNode
+ *
  *
  *  \ingroup group_vision_function_vpac_msc
  */
@@ -417,6 +420,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscScaleNode(vx_graph graph,
 
 /*! \brief Creates a VPAC_MSC Node with multi-scale pyramid output.
  *
+ *         By default, a separable 5-tap gaussian filter is used with following
+ *         coefficients : [ 16, 64, 96, 64, 16 ].
+ *         This can be changed by using \ref TIVX_VPAC_MSC_CMD_SET_COEFF command.
+ *
  * \param [in] graph The reference to the graph.
  * \param [in] in_img The input image in
  *             <tt>\ref VX_DF_IMAGE_NV12</tt>,
@@ -449,6 +456,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscPyramidNode(vx_graph graph,
 /*!
  * \brief Function to initialize MSC Coefficients Parameters
  *        This initializes Coefficients to default values.
+ *        This is used for control command: \ref TIVX_VPAC_MSC_CMD_SET_COEFF
  *
  * \param coeff          [IN] Pointer to MSC coefficient structure
  * \param interpolation  [IN] Indicates interpolation method to initialize coefficients to
@@ -460,6 +468,7 @@ void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *coeff,
 
 /*!
  * \brief Function to initialize MSC input Parameters
+ *        This is used for control command: \ref TIVX_VPAC_MSC_CMD_SET_INPUT_PARAMS
  *
  * \param prms  [IN] Pointer to MSC input parameters
  *
@@ -469,6 +478,7 @@ void tivx_vpac_msc_input_params_init(tivx_vpac_msc_input_params_t *prms);
 
 /*!
  * \brief Function to initialize MSC output Parameters
+ *        This is used for control command: \ref TIVX_VPAC_MSC_CMD_SET_OUTPUT_PARAMS
  *
  * \param prms  [IN] Pointer to MSC output parameters
  *
