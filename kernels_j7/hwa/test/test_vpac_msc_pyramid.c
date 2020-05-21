@@ -702,8 +702,9 @@ static uint32_t expected_cksm[] = {
 };
 
 #define ADD_VX_SCALE_CKSUM(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF))
+
+//  ,CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
 
 #define PARAMETERS_CKSUM \
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE_CKSUM, ARG, gaussian_pyramid_read_image, "lena.bmp")
