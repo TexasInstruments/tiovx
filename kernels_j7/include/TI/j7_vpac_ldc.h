@@ -116,10 +116,12 @@ extern "C" {
 #define TIVX_VPAC_LDC_CMD_GET_ERR_STATUS                    (0x10000002u)
 
 /*! \brief Control Command to set the LDC Parameters
- *         Returns the error status of the last processed frame.
- *         Reference to vx_scalar is passed as argument with
- *         this control command.
- *         Node returns bit-mask of error status in u32 variable of vx_scalar.
+ *
+ *         This command takes an array of vx_references as an argument,
+ *         where each index contains a reference to a parameter to update.
+ *
+ *         The following are the supported paramters:
+ *         index 0 : vx_matrix reference for updating warp matrix.
  *
  *
  *  \ingroup group_vision_function_vpac_ldc
