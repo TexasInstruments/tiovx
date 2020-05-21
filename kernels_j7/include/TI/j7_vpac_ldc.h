@@ -132,6 +132,29 @@ extern "C" {
  *      VPAC_LDC Defines
  *********************************/
 
+/*!
+ * \defgroup group_vision_function_vpac_ldc_enums Enumerations
+ * \brief Enumerations for configuration parameters in VPAC LDC structures
+ * \ingroup group_vision_function_vpac_ldc
+ * @{*/
+
+/*! \see tivx_vpac_ldc_params_t::input_align_12bit */
+#define TIVX_VPAC_LDC_ALIGN_LSB        (0U)
+/*! \see tivx_vpac_ldc_params_t::input_align_12bit */
+#define TIVX_VPAC_LDC_ALIGN_MSB        (1U)
+
+/*! \see tivx_vpac_ldc_params_t::luma_interpolation_type */
+#define TIVX_VPAC_LDC_INTERPOLATION_BICUBIC        (0U)
+/*! \see tivx_vpac_ldc_params_t::input_aluma_interpolation_typelign_12bit */
+#define TIVX_VPAC_LDC_INTERPOLATION_BILINEAR       (1U)
+
+/*! \see tivx_vpac_ldc_params_t::yc_mode */
+#define TIVX_VPAC_LDC_MODE_LUMA_ONLY        (0U)
+/*! \see tivx_vpac_ldc_params_t::yc_mode */
+#define TIVX_VPAC_LDC_MODE_CHROMA_ONLY      (1U)
+
+/*@}*/
+
 /*! \brief Macro to calculate mesh line offset for the given width and
  *         down scaling factor.
  *

@@ -922,7 +922,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
         tivx_vpac_ldc_params_init(&params);
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
                                                             sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        params.luma_interpolation_type = 1;
+        params.luma_interpolation_type = TIVX_VPAC_LDC_INTERPOLATION_BILINEAR;
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 

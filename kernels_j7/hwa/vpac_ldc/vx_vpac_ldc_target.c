@@ -509,7 +509,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     if ((vx_status)VX_SUCCESS == status)
     {
         if (((vx_df_image)VX_DF_IMAGE_U16 == in_img_desc->format) &&
-            (1u == ldc_prms->input_align_12bit))
+            (TIVX_VPAC_LDC_ALIGN_MSB == ldc_prms->input_align_12bit))
         {
             ldc_cfg->inFmt.ccsFormat = FVID2_CCSF_BITS12_UNPACKED16_MSB_ALIGNED;
         }
@@ -540,7 +540,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_cfg->enableBackMapping = (uint32_t)FALSE;
 
         /* Set Luma interpolation type */
-        if (0U == ldc_prms->luma_interpolation_type)
+        if (TIVX_VPAC_LDC_INTERPOLATION_BICUBIC == ldc_prms->luma_interpolation_type)
         {
             ldc_cfg->lumaIntrType = VHWA_LDC_LUMA_INTRP_BICUBIC;
         }
@@ -885,7 +885,7 @@ static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
             }
             case (vx_df_image)VX_DF_IMAGE_U8:
             {
-                if (0u == ldc_prms->yc_mode)
+                if (TIVX_VPAC_LDC_MODE_LUMA_ONLY == ldc_prms->yc_mode)
                 {
                     fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 }
@@ -898,7 +898,7 @@ static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
             }
             case (vx_df_image)VX_DF_IMAGE_U16:
             {
-                if (0u == ldc_prms->yc_mode)
+                if (TIVX_VPAC_LDC_MODE_LUMA_ONLY == ldc_prms->yc_mode)
                 {
                     fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 }
@@ -911,7 +911,7 @@ static vx_status tivxVpacLdcSetFmt(const tivx_vpac_ldc_params_t *ldc_prms,
             }
             case (vx_df_image)TIVX_DF_IMAGE_P12:
             {
-                if (0u == ldc_prms->yc_mode)
+                if (TIVX_VPAC_LDC_MODE_LUMA_ONLY == ldc_prms->yc_mode)
                 {
                     fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 }

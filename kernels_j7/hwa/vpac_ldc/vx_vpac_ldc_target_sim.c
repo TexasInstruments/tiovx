@@ -537,7 +537,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 }
                 else
                 {
-                    if (0U == params->yc_mode)
+                    if (TIVX_VPAC_LDC_MODE_LUMA_ONLY == params->yc_mode)
                     {
                         data_mode = DATA_MODE_Y;
                     }

@@ -799,11 +799,11 @@ void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_ldc_params_t));
         /* By Default LSB Aligned pixels */
-        prms->input_align_12bit = 0u;
+        prms->input_align_12bit = TIVX_VPAC_LDC_ALIGN_LSB;
         /* By Default Bilinear Interpolation */
-        prms->luma_interpolation_type = 1U;
+        prms->luma_interpolation_type = TIVX_VPAC_LDC_INTERPOLATION_BILINEAR;
         prms->init_x = 0u;
         prms->init_y = 0u;
-        prms->yc_mode = 0U;
+        prms->yc_mode = TIVX_VPAC_LDC_MODE_LUMA_ONLY;
     }
 }
