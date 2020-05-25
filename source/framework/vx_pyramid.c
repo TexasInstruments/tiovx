@@ -89,8 +89,8 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
             VX_PRINT(VX_ZONE_ERROR, "Levels is equal to 0\n");
             status = (vx_status)VX_FAILURE;
         }
-        if ((scale != VX_SCALE_PYRAMID_HALF) &&
-            (scale != VX_SCALE_PYRAMID_ORB))
+        if ((scale >= 1.0f) ||
+            (scale < 0.25f))
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid scale value\n");
             status = (vx_status)VX_FAILURE;
