@@ -125,9 +125,24 @@ vx_enum tivxGetSelfCpuId(void)
     return (cpu_id);
 }
 
-uint32_t tivxIpcGetSelfPortId(void)
+uint16_t tivxIpcGetHostPortId(uint16_t cpu_id)
 {
-    return appIpcGetSelfPortId();
+    /* convert OpenVX CPU ID to VSDK CPU ID */
+    uint32_t vsdk_cpu_id;
+    uint32_t host_port_id = 0;
+
+    if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
+    {
+        vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
+
+        if(vsdk_cpu_id != APP_IPC_CPU_INVALID )
+        {
+            host_port_id = appIpcGetHostPortId(vsdk_cpu_id);
+        }
+    }
+
+    /* host port ID is 16b max to this type conversion is ok */
+    return (uint16_t)host_port_id;
 }
 
 void tivxIpcInit(void)
