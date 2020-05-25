@@ -81,7 +81,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (600U)
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (640U)
 
 /*!
  * \brief Max possible planes of data in an image
@@ -151,6 +151,13 @@ extern "C" {
  * \ingroup group_tivx_obj_desc
  */
 #define TIVX_NODE_OBJ_DESC_STATE_BLOCKED                  (0x1u)
+
+
+/*! \brief Max size of the array host_port_id, in tivx_obj_desc_t
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU                (16u)
 
 /*!
  * \brief Enum that list all possible object descriptor type's
@@ -308,14 +315,23 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief holds the index ID in the case that this is an element within a pyramid or object array */
     volatile uint32_t element_idx;
 
-    /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor */
-    volatile uint32_t host_port_id;
+    /*! \brief reference timestamp */
+    volatile uint64_t timestamp;
 
     /*! \brief holds the CPU ID of the OpenVX host for this object descriptor */
     volatile uint32_t host_cpu_id;
 
-    /*! \brief reference timestamp */
-    volatile uint64_t timestamp;
+    /*! \brief reserved to make 64b aligned */
+    volatile uint32_t rsv0;
+
+    /*! \brief holds the index of the IPC port on OpenVX host for this object descriptor for each remote CPU
+     *
+     *         A connection to each remote CPU could be on a different host_port_id, hence this needs
+     *         to hold host_port_id for each remote CPU, this array is indexed by TIOVX CPU ID.
+     *         TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU MUST be <= TIVX_CPU_ID_MAX
+     * */
+    volatile uint16_t host_port_id[TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU];
+
 
 } tivx_obj_desc_t;
 

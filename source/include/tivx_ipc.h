@@ -108,7 +108,7 @@ void tivxIpcInit(void);
  *
  * \ingroup group_tivx_ipc
  */
-uint32_t tivxIpcGetSelfPortId(void);
+uint16_t tivxIpcGetHostPortId(uint16_t cpu_id);
 
 /*!
  * \brief DeInit IPC module

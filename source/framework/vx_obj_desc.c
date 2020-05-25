@@ -131,7 +131,7 @@ void tivxObjDescInit(void)
 tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 {
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
-    uint32_t i, idx;
+    uint32_t i, idx, cpu_id;
 
     tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
@@ -152,7 +152,10 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->element_idx = 0;
             tmp_obj_desc->type = (uint16_t)type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
-            tmp_obj_desc->host_port_id = tivxIpcGetSelfPortId();
+            for(cpu_id = 0; cpu_id<TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU; cpu_id++)
+            {
+                tmp_obj_desc->host_port_id[cpu_id] = tivxIpcGetHostPortId(cpu_id);
+            }
             tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
             tmp_obj_desc->timestamp = 0;
 
@@ -227,14 +230,16 @@ vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_ty
 
 vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 {
-    vx_enum cpu_id;
+    vx_enum cpu_id, self_cpu_id;
     uint32_t ipc_payload;
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *obj_desc;
 
     cpu_id = tivxTargetGetCpuId((int32_t)dst_target_id);
 
-    if(cpu_id == tivxGetSelfCpuId())
+    self_cpu_id = tivxGetSelfCpuId();
+
+    if(cpu_id == self_cpu_id)
     {
         /* target is on same CPU queue obj_desc using target APIs */
         status = tivxTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
@@ -252,8 +257,15 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
         if (NULL != obj_desc)
         {
-            /* target is on remote CPU, send using IPC */
-            status = tivxIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id);
+            if(self_cpu_id < TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU)
+            {
+                /* target is on remote CPU, send using IPC */
+                status = tivxIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
 
             if(status != (vx_status)VX_SUCCESS)
             {

@@ -90,7 +90,7 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
-uint32_t tivxIpcGetSelfPortId(void)
+uint16_t tivxIpcGetHostPortId(uint16_t cpu_id)
 {
     /* NOT used */
     return 0;

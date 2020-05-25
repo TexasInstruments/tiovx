@@ -99,7 +99,7 @@ void tivxSetSelfCpuId(vx_enum cpu_id)
     g_cpu_id = cpu_id;
 }
 
-uint32_t tivxIpcGetSelfPortId(void)
+uint16_t tivxIpcGetHostPortId(uint16_t cpu_id)
 {
     /* NOT used */
     return 0;
