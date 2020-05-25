@@ -692,19 +692,36 @@ static uint32_t expected_cksm[] = {
     0x681a4134,
     0xb94a2c2d,
 
-    0x8bc87ce5,
-    0x49753f33,
-    0x5c72dc43,
-    0xcb18dc3f,
-    0xc4be797e,
-    0xe966bc8d,
-    0xef067bcf
+    0xf8e73683,
+    0x1e268f84,
+    0x4150d9ca,
+    0xee8ecad3,
+    0x187ff593,
+    0xd79fb95b,
+    0xdec5ad28,
+
+    0x13e62a48,
+    0x62fadeaf,
+    0xb3e971ed,
+    0xde351d05,
+    0x4758959f,
+    0x82161790,
+    0xe4a4743e,
+
+    0x932c9093,
+    0x50b2d5d3,
+    0xafe5e83c,
+    0x2383b5a7,
+    0x8cd8f999,
+    0x7506616f,
+    0xaa9656a9
 };
 
 #define ADD_VX_SCALE_CKSUM(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF))
-
-//  ,CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB)), \
+    CT_EXPAND(nextmacro(testArgName "/THREE_FORTHS_SCALE", __VA_ARGS__, 0.75f)), \
+    CT_EXPAND(nextmacro(testArgName "/TWO_THIRDS_SCALE", __VA_ARGS__, 0.66f)) \
 
 #define PARAMETERS_CKSUM \
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE_CKSUM, ARG, gaussian_pyramid_read_image, "lena.bmp")
@@ -765,6 +782,33 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
 
         VX_CALL(vxVerifyGraph(graph));
 
+        /* Test half of the tests using control command for updating coefficients, other half using default */
+        if(arg_->msc == 1)
+        {
+            // Set custom filter coefficients
+            vx_user_data_object coeff_obj;
+            tivx_vpac_msc_coefficients_t coeffs;
+            vx_reference refs[1];
+
+            tivx_vpac_msc_coefficients_params_init(&coeffs, TIVX_VPAC_MSC_INTERPOLATION_GAUSSIAN_32_PHASE);
+
+            /* Set Coefficients */
+            ASSERT_VX_OBJECT(coeff_obj = vxCreateUserDataObject(context,
+                "tivx_vpac_msc_coefficients_t",
+                sizeof(tivx_vpac_msc_coefficients_t), NULL),
+                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            VX_CALL(vxCopyUserDataObject(coeff_obj, 0,
+                sizeof(tivx_vpac_msc_coefficients_t), &coeffs, VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST));
+
+            refs[0] = (vx_reference)coeff_obj;
+            VX_CALL(tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
+                refs, 1u));
+
+            VX_CALL(vxReleaseUserDataObject(&coeff_obj));
+        }
+
         VX_CALL(vxProcessGraph(graph));
 
         #ifdef CHECK_OUTPUT
@@ -788,13 +832,19 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
             rect.end_y = h;
 
             checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-            //printf("0x%08x\n", checksum_actual);
+            //printf("0x%08x\t%d\n", checksum_actual, cksm_offset);
             //sprintf(temp, "output/lena_msc_%d", level);
             //save_image_from_msc(dst_image, temp);
 
             if (arg_->scale == VX_SCALE_PYRAMID_ORB)
             {
                 cksm_offset = 5;
+            } else if (arg_->scale == 0.75f)
+            {
+                cksm_offset = 12;
+            } else if (arg_->scale == 0.66f)
+            {
+                cksm_offset = 19;
             }
 
             ASSERT(expected_cksm[level+cksm_offset] == checksum_actual);

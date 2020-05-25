@@ -121,6 +121,8 @@ typedef struct
     uint32_t                    buffer_size_out[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 
     Scaler_params               unitParams[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
+
+    uint32_t                    integer_scale;
 } tivxVpacMscPmdParams;
 
 /* ========================================================================== */
@@ -165,6 +167,11 @@ static void tivxVpacMscPmdMaskLSBs(uint16_t *ptr16, uint32_t w, uint32_t h);
 
 static tivx_target_kernel vx_vpac_msc_pyramid_target_kernel = NULL;
 static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
+
+static uint32_t gmsc_32_phase_gaussian_filter[] =
+{
+    #include "../host/msc_32_phase_gaussian_filter.txt"
+};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -264,6 +271,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         prms = tivxMemAlloc(sizeof(tivxVpacMscPmdParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
+            vx_float32 scale;
             memset (prms, 0x0, sizeof(tivxVpacMscPmdParams));
 
             in_img_desc = (tivx_obj_desc_image_t *)
@@ -273,6 +281,13 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             prms->in_img_desc = in_img_desc;
             prms->num_pmd_levels = out_pmd_desc->num_levels;
+
+            scale = out_pmd_desc->scale;
+
+            if ((scale == 0.5f) || (scale == 0.25f))
+            {
+                prms->integer_scale = 1u;
+            }
 
             /* Get the Image Descriptors from the Pyramid Object */
             tivxGetObjDescList(out_pmd_desc->obj_desc_id,
@@ -712,6 +727,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
                 max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_y))
         {
+            VX_PRINT(VX_ZONE_ERROR, "Scale should not be less than 1/%d\n", max_ds_factor);
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -768,7 +784,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
 
                 if (ss_info->num_levels > TIVX_VPAC_MSC_MAX_OUTPUT)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Max 10 outputs supported in subset\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Max %d outputs supported in subset\n", TIVX_VPAC_MSC_MAX_OUTPUT);
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     break;
                 }
@@ -972,8 +988,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
 
 static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings)
 {
-    uint32_t i;
-    uint32_t weight;
+    uint32_t i,j,k;
 
     /* coefficients 1x output */
     settings->coef_sp[0u][0u] = 0;
@@ -989,46 +1004,16 @@ static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings)
     settings->coef_sp[1u][3u] = 64;
     settings->coef_sp[1u][4u] = 16;
 
-    /* The precision (64 phases) of the bilinear interpolation on the random
-     * conformance tests for ORB, 3_1, and DOWN_NEAR is not enough
-     * to pass these conformance tests.  It is expected that real images
-     * would have better results */
-
-    /* Coefficients for Bilinear Interpolation */
-    for(i=0; i<TIVX_VPAC_MSC_32_PHASE_COEFF; i++)
+    /* Coefficients for Gaussian filter */
+    for(k = 0; k < 4; k++)
     {
-        weight = i<<2;
-        settings->coef_mp[0].matrix[i][0] = 0;
-        settings->coef_mp[0].matrix[i][1] = 0;
-        settings->coef_mp[0].matrix[i][2] = 256-weight;
-        settings->coef_mp[0].matrix[i][3] = weight;
-        settings->coef_mp[0].matrix[i][4] = 0;
-    }
-    for(i=0; i<TIVX_VPAC_MSC_32_PHASE_COEFF; i++)
-    {
-        weight = (i+32)<<2;
-        settings->coef_mp[1].matrix[i][0] = 0;
-        settings->coef_mp[1].matrix[i][1] = 0;
-        settings->coef_mp[1].matrix[i][2] = 256-weight;
-        settings->coef_mp[1].matrix[i][3] = weight;
-        settings->coef_mp[1].matrix[i][4] = 0;
-    }
-    /* Coefficients for Nearest Neighbor */
-    for(i=0; i<TIVX_VPAC_MSC_32_PHASE_COEFF; i++)
-    {
-        settings->coef_mp[2].matrix[i][0] = 0;
-        settings->coef_mp[2].matrix[i][1] = 0;
-        settings->coef_mp[2].matrix[i][2] = 256;
-        settings->coef_mp[2].matrix[i][3] = 0;
-        settings->coef_mp[2].matrix[i][4] = 0;
-    }
-    for(i=0; i<TIVX_VPAC_MSC_32_PHASE_COEFF; i++)
-    {
-        settings->coef_mp[3].matrix[i][0] = 0;
-        settings->coef_mp[3].matrix[i][1] = 0;
-        settings->coef_mp[3].matrix[i][2] = 0;
-        settings->coef_mp[3].matrix[i][3] = 256;
-        settings->coef_mp[3].matrix[i][4] = 0;
+        for(i=0; i<TIVX_VPAC_MSC_32_PHASE_COEFF; i++)
+        {
+            for(j=0; j<5; j++)
+            {
+                settings->coef_mp[k].matrix[i][j] = gmsc_32_phase_gaussian_filter[(i*5)+j];
+            }
+        }
     }
 }
 
@@ -1084,20 +1069,30 @@ static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_tar
 
         prms->unitParams[i].sp_hs_coef_sel = 1;
         prms->unitParams[i].sp_vs_coef_sel = 1;
-    }
 
-    /* For vxGaussianPyramid, level 0 of the output pyramid is the same
-     * size as this input (always).  Therefore, set the coefficients for
-     * level 0 to be set to unity.
-     *
-     * TODO: for tivxVpacMscPyramid, normal use case is to downsample,
-     * but it could be option in future to have as same size as input.
-     * In this case, a DMA would be more optimal
-     */
-    if (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel))
-    {
-        prms->unitParams[0].sp_hs_coef_sel = 0;
-        prms->unitParams[0].sp_vs_coef_sel = 0;
+        /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
+        /* For vxGaussianPyramid, level 0 of the output pyramid is the same
+         * size as this input (always).  Therefore, set the coefficients for
+         * level 0 to be set to unity.
+         *
+         * TODO: for tivxVpacMscPyramid, normal use case is to downsample,
+         * but it could be option in future to have as same size as input.
+         * In this case, a DMA would be more optimal
+         */
+        if ( (0U == i) &&
+             (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel)) )
+        {
+            prms->unitParams[0].sp_hs_coef_sel = 0;
+            prms->unitParams[0].sp_vs_coef_sel = 0;
+        }
+        else
+        {
+            if(prms->integer_scale == 0)
+            {
+                prms->unitParams[i].filter_mode = 1;
+                prms->unitParams[i].phase_mode = 1;
+            }
+        }
     }
 }
 

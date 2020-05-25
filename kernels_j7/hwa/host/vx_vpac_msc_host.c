@@ -101,6 +101,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidInitialize(vx_node node,
 static vx_kernel vx_vpac_msc_scale_kernel = NULL;
 static vx_kernel vx_vpac_msc_pyramid_kernel = NULL;
 
+static uint32_t gmsc_32_phase_gaussian_filter[] =
+{
+    #include "msc_32_phase_gaussian_filter.txt"
+};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -384,7 +388,7 @@ void tivx_vpac_msc_coefficients_params_init(
             coeff->multi_phase[3][idx++] = 0;
         }
     }
-    else /* VX_INTERPOLATION_NEAREST_NEIGHBOR */
+    else if((vx_enum)VX_INTERPOLATION_NEAREST_NEIGHBOR == interpolation)
     {
         idx = 0;
         for(i = 0; i < 32u; i++)
@@ -422,6 +426,29 @@ void tivx_vpac_msc_coefficients_params_init(
             coeff->multi_phase[3][idx++] = 256;
             coeff->multi_phase[3][idx++] = 0;
         }
+    }
+    else if((vx_enum)TIVX_VPAC_MSC_INTERPOLATION_GAUSSIAN_32_PHASE == interpolation)
+    {
+        for(i = 0; i < 2u; i++)
+        {
+            idx = 0;
+            coeff->single_phase[i][idx++] = 16;
+            coeff->single_phase[i][idx++] = 64;
+            coeff->single_phase[i][idx++] = 96;
+            coeff->single_phase[i][idx++] = 64;
+            coeff->single_phase[i][idx++] = 16;
+        }
+        for(i = 0; i < (32u*5u); i++)
+        {
+            coeff->multi_phase[0][i] = gmsc_32_phase_gaussian_filter[i];
+            coeff->multi_phase[1][i] = gmsc_32_phase_gaussian_filter[i];
+            coeff->multi_phase[2][i] = gmsc_32_phase_gaussian_filter[i];
+            coeff->multi_phase[3][i] = gmsc_32_phase_gaussian_filter[i];
+        }
+    }
+    else
+    {
+        /* Do nothing */
     }
 }
 
@@ -739,6 +766,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
             ((h / TIVX_VPAC_MSC_MAX_DS_FACTOR) > p_h))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Scale out of range [1.0 downto 0.25]\n");
         }
 
         /* Check for validity of data format */

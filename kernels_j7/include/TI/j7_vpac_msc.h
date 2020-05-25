@@ -181,6 +181,9 @@ extern "C" {
 /*! Autocompute: Allow the node to autocompute instead of specifying */
 #define TIVX_VPAC_MSC_AUTOCOMPUTE                     (0xFFFFFFFFU)
 
+/*! Specify the 32 phase gaussian interpolation filter coeficients */
+#define TIVX_VPAC_MSC_INTERPOLATION_GAUSSIAN_32_PHASE (0)
+
 /*********************************
  *      VPAC_MSC STRUCTURES
  *********************************/
@@ -421,8 +424,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscScaleNode(vx_graph graph,
 /*! \brief Creates a VPAC_MSC Node with multi-scale pyramid output.
  *
  *         By default, a separable 5-tap gaussian filter is used with following
- *         coefficients : [ 16, 64, 96, 64, 16 ].
- *         This can be changed by using \ref TIVX_VPAC_MSC_CMD_SET_COEFF command.
+ *         coefficients for half scale pyramid : [ 16, 64, 96, 64, 16 ], and a 32 phase
+ *         5-tap gaussian filter is used for non-half scale pyramids.
+ *         These can be customized using \ref TIVX_VPAC_MSC_CMD_SET_COEFF command.
  *
  * \param [in] graph The reference to the graph.
  * \param [in] in_img The input image in
@@ -460,7 +464,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscPyramidNode(vx_graph graph,
  *
  * \param coeff          [IN] Pointer to MSC coefficient structure
  * \param interpolation  [IN] Indicates interpolation method to initialize coefficients to
- *                            ( \ref VX_INTERPOLATION_BILINEAR or \ref VX_INTERPOLATION_NEAREST_NEIGHBOR)
+ *                            ( \ref VX_INTERPOLATION_BILINEAR or
+ *                              \ref VX_INTERPOLATION_NEAREST_NEIGHBOR or
+ *                              \ref TIVX_VPAC_MSC_INTERPOLATION_GAUSSIAN_32_PHASE)
  *
  * \ingroup group_vision_function_vpac_msc
  */

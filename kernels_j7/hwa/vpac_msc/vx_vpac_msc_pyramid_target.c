@@ -245,6 +245,11 @@ int32_t tivxVpacMscPmdFrameComplCb(Fvid2_Handle handle, void *appData);
 
 tivxVpacMscPmdInstObj gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_NUM_INST];
 
+static int32_t gmsc_32_phase_gaussian_filter[] =
+{
+    #include "../host/msc_32_phase_gaussian_filter.txt"
+};
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -652,6 +657,12 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         for (cnt = 0u; cnt < MSC_MAX_SP_COEFF_SET; cnt ++)
         {
             coeffCfg->spCoeffSet[cnt] = &single_phase[cnt][0u];
+        }
+
+        /* Coefficients for Gaussian filter */
+        for (cnt = 0u; cnt < MSC_MAX_MP_COEFF_SET; cnt ++)
+        {
+            coeffCfg->mpCoeffSet[cnt] = &gmsc_32_phase_gaussian_filter[0];
         }
 
         fvid2_status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_COEFF,
@@ -1140,19 +1151,6 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->enable = TRUE;
         sc_cfg->filtMode = MSC_FILTER_MODE_SINGLE_PHASE;
 
-        /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
-        if ( (0U == level) &&
-               ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
-                (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1U].target_kernel == target_kernel)) )
-        {
-            sc_cfg->hsSpCoeffSel = 0;
-            sc_cfg->vsSpCoeffSel = 0;
-        }
-        else
-        {
-            sc_cfg->hsSpCoeffSel = 1;
-            sc_cfg->vsSpCoeffSel = 1;
-        }
         sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
@@ -1163,6 +1161,37 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->horzAccInit = (uint32_t)temp;
         temp = (((((vx_float32)sc_cfg->inRoi.cropHeight/(vx_float32)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
         sc_cfg->vertAccInit = (uint32_t)temp;
+        sc_cfg->hsSpCoeffSel = 1;
+        sc_cfg->vsSpCoeffSel = 1;
+
+        /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
+        if ( (0U == level) &&
+               ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
+                (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1U].target_kernel == target_kernel)) )
+        {
+            sc_cfg->hsSpCoeffSel = 0;
+            sc_cfg->vsSpCoeffSel = 0;
+        }
+        else
+        {
+            if(!((sc_cfg->outWidth == sc_cfg->inRoi.cropWidth) ||
+                ((sc_cfg->outWidth*2u) == sc_cfg->inRoi.cropWidth) ||
+                ((sc_cfg->outWidth*4u) == sc_cfg->inRoi.cropWidth)) )
+            {
+                sc_cfg->filtMode = MSC_FILTER_MODE_MULTI_PHASE;
+                sc_cfg->phaseMode = MSC_PHASE_MODE_32PHASE;
+                sc_cfg->hsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_0;
+            }
+
+            if(!((sc_cfg->outHeight == sc_cfg->inRoi.cropHeight) ||
+                ((sc_cfg->outHeight*2u) == sc_cfg->inRoi.cropHeight) ||
+                ((sc_cfg->outHeight*4u) == sc_cfg->inRoi.cropHeight)) )
+            {
+                sc_cfg->filtMode = MSC_FILTER_MODE_MULTI_PHASE;
+                sc_cfg->phaseMode = MSC_PHASE_MODE_32PHASE;
+                sc_cfg->vsMpCoeffSel = MSC_MULTI_32PHASE_COEFF_SET_0;
+            }
+        }
     }
 }
 
