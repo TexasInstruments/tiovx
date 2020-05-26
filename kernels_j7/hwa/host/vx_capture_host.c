@@ -316,6 +316,7 @@ void tivx_capture_params_init(tivx_capture_params_t *prms)
             prms->instCfg[loopCnt].dataLanesMap[1u]     = 2u;
             prms->instCfg[loopCnt].dataLanesMap[2u]     = 3u;
             prms->instCfg[loopCnt].dataLanesMap[3u]     = 4u;
+            prms->instCfg[loopCnt].laneBandSpeed        = TIVX_CAPTURE_LANE_BAND_SPEED_1350_TO_1500_MBPS;
         }
         for (cnt = 0u; cnt < TIVX_CAPTURE_MAX_CH; cnt ++)
         {

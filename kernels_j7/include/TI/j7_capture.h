@@ -133,6 +133,121 @@ extern "C" {
  */
 #define TIVX_CAPTURE_MAX_STRM                               (4U)
 
+/*! \brief Lane Band Speed:  80 Mbps to 100 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_80_TO_100_MBPS              ((uint32_t) 0x00U)
+/*! \brief Lane Band Speed:  100 Mbps to 120 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_100_TO_120_MBPS             ((uint32_t) 0x01U)
+/*! \brief Lane Band Speed:  120 Mbps to 160 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_120_TO_160_MBPS             ((uint32_t) 0x02U)
+/*! \brief Lane Band Speed:  160 Mbps to 200 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_160_TO_200_MBPS             ((uint32_t) 0x03U)
+/*! \brief Lane Band Speed:  200 Mbps to 240 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_200_TO_240_MBPS             ((uint32_t) 0x04U)
+/*! \brief Lane Band Speed:  240 Mbps to 280 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_240_TO_280_MBPS             ((uint32_t) 0x05U)
+/*! \brief Lane Band Speed:  280 Mbps to 320 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_280_TO_320_MBPS             ((uint32_t) 0x06U)
+/*! \brief Lane Band Speed:  320 Mbps to 360 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_320_TO_360_MBPS             ((uint32_t) 0x07U)
+/*! \brief Lane Band Speed:  360 Mbps to 400 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_360_TO_400_MBPS             ((uint32_t) 0x08U)
+/*! \brief Lane Band Speed:  400 Mbps to 480 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_400_TO_480_MBPS             ((uint32_t) 0x09U)
+/*! \brief Lane Band Speed:  480 Mbps to 560 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_480_TO_560_MBPS             ((uint32_t) 0x0AU)
+/*! \brief Lane Band Speed:  560 Mbps to 640 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_560_TO_640_MBPS             ((uint32_t) 0x0BU)
+/*! \brief Lane Band Speed:  640 Mbps to 720 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_640_TO_720_MBPS             ((uint32_t) 0x0CU)
+/*! \brief Lane Band Speed:  720 Mbps to 800 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS             ((uint32_t) 0x0DU)
+/*! \brief Lane Band Speed:  800 Mbps to 880 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_800_TO_880_MBPS             ((uint32_t) 0x0EU)
+/*! \brief Lane Band Speed:  880 Mbps to 1040 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_880_TO_1040_MBPS            ((uint32_t) 0x0FU)
+/*! \brief Lane Band Speed:  1040 Mbps to 1200 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_1040_TO_1200_MBPS           ((uint32_t) 0x10U)
+/*! \brief Lane Band Speed:  1200 Mbps to 1350 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_1200_TO_1350_MBPS           ((uint32_t) 0x11U)
+/*! \brief Lane Band Speed:  1350 Mbps to 1500 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_1350_TO_1500_MBPS           ((uint32_t) 0x12U)
+/*! \brief Lane Band Speed:  1500 Mbps to 1750 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_1500_TO_1750_MBPS           ((uint32_t) 0x13U)
+/*! \brief Lane Band Speed:  1750 Mbps to 2000 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_1750_TO_2000_MBPS           ((uint32_t) 0x14U)
+/*! \brief Lane Band Speed:  2000 Mbps to 2250 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_2000_TO_2250_MBPS           ((uint32_t) 0x15U)
+/*! \brief Lane Band Speed:  2250 Mbps to 2500 Mbps
+ *
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_CAPTURE_LANE_BAND_SPEED_2250_TO_2500_MBPS           ((uint32_t) 0x16U)
 
 /*********************************
  *      Capture STRUCTURES
@@ -147,6 +262,7 @@ typedef struct
     uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
     uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
     uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+    uint32_t laneBandSpeed;         /*!<  Data rates for lane band control. */
 } tivx_capture_inst_params_t;
 
 /*!

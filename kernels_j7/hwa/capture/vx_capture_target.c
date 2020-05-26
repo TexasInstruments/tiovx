@@ -216,12 +216,12 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
 static vx_status tivxCaptureStart(tivxCaptureParams *prms);
 static void tivxCaptureSetTimeout(tivxCaptureParams *prms);
 static vx_status tivxCaptureTimeout(tivxCaptureParams *prms);
-static void tivxCaptureGetObjDesc(tivxCaptureParams *prms, 
+static void tivxCaptureGetObjDesc(tivxCaptureParams *prms,
         uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
         tivx_obj_desc_object_array_t *output_desc,
         uint64_t *timestamp);
 static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms);
-static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms, 
+static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms,
         uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
         uint8_t timeoutExceeded);
 
@@ -523,6 +523,11 @@ static void tivxCaptureSetCreateParams(
         /* set instance configuration parameters */
         createParams = &prms->instParams[instIdx].createPrms;
         Csirx_createParamsInit(createParams);
+        /* Set CSIRX D-PHY configuration parameters */
+        Csirx_initDPhyCfg(&prms->instParams[instIdx].dphyCfg);
+        prms->instParams[instIdx].dphyCfg.inst               = params->instId[instIdx];
+        prms->instParams[instIdx].dphyCfg.rightLaneBandSpeed = params->instCfg[instIdx].laneBandSpeed;
+        prms->instParams[instIdx].dphyCfg.leftLaneBandSpeed  = params->instCfg[instIdx].laneBandSpeed;
 
         /* set module configuration parameters */
         createParams->instCfg.enableCsiv2p0Support = params->instCfg[instIdx].enableCsiv2p0Support;
@@ -638,7 +643,7 @@ static void tivxCaptureSetTimeout(tivxCaptureParams *prms)
 }
 
 /* Determines if a frame has been received from each active channel */
-static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms, 
+static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms,
         uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
         uint8_t timeoutExceeded)
 {
@@ -749,7 +754,7 @@ static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
 }
 
 /* Populating capture output with object descriptors based on if camera is enabled */
-static void tivxCaptureGetObjDesc(tivxCaptureParams *prms, 
+static void tivxCaptureGetObjDesc(tivxCaptureParams *prms,
         uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH],
         tivx_obj_desc_object_array_t *output_desc,
         uint64_t *timestamp)
@@ -1017,9 +1022,6 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                 }
                 else
                 {
-                    /* Set CSIRX D-PHY configuration parameters */
-                    Csirx_initDPhyCfg(&instParams->dphyCfg);
-                    instParams->dphyCfg.inst = instParams->instId;
                     fvid2_status = Fvid2_control(
                         instParams->drvHandle, IOCTL_CSIRX_SET_DPHY_CONFIG,
                         &instParams->dphyCfg, NULL);
