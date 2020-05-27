@@ -88,6 +88,20 @@
 
 #define CHANNEL_SWITCH_FRAME_COUNT          (150u)
 
+#define STREAMING_START_OFF  0
+#define STREAMING_START_ON   1
+
+#define ERROR_GENERATION_OFF  0
+#define ERROR_GENERATION_ON   1
+
+#define DISABLE_CH_0     0
+#define DISABLE_CH_1     1
+#define DISABLE_CH_2     2
+#define DISABLE_CH_3     3
+#define DISABLE_CH_2_3   4
+#define DISABLE_ALL_CH   5
+#define ENABLE_ALL_CH    6
+
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
 
 /*
@@ -460,11 +474,11 @@ typedef struct {
 } Arg_CaptureTimeout;
 
 #define CAPTURE_TIMEOUT_PARAMETERS \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 0, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 1, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 2, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 3, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 0, 0, 0)
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON, ERROR_GENERATION_ON,  DISABLE_CH_0, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON, ERROR_GENERATION_ON,  DISABLE_CH_1, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON, ERROR_GENERATION_ON,  DISABLE_CH_2, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON, ERROR_GENERATION_ON,  DISABLE_CH_3, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON, ERROR_GENERATION_OFF, 0, 0)
 
 TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CAPTURE_TIMEOUT_PARAMETERS)
 {
@@ -651,22 +665,22 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
     vxWaitGraph(graph);
 
     /* In the event of error generation, disable sensor as indicated by test case arguments */
-    if (1 == arg_->generate_error)
+    if (ERROR_GENERATION_ON == arg_->generate_error)
     {
         VX_CALL(appStopImageSensor(sensor_name, (1<<(num_capture_channels))-1)); /*Disabling camera 4 */
-        if (0 == arg_->camera_disable)
+        if (DISABLE_CH_0 == arg_->camera_disable)
         {
             VX_CALL(appStartImageSensor(sensor_name, 0xE)); // re-enabling all but 0th camera
         }
-        else if (1 == arg_->camera_disable)
+        else if (DISABLE_CH_1 == arg_->camera_disable)
         {
             VX_CALL(appStartImageSensor(sensor_name, 0xD)); // re-enabling all but 1st camera
         }
-        else if (2 == arg_->camera_disable)
+        else if (DISABLE_CH_2 == arg_->camera_disable)
         {
             VX_CALL(appStartImageSensor(sensor_name, 0xB)); // re-enabling all but 2nd camera
         }
-        else if (3 == arg_->camera_disable)
+        else if (DISABLE_CH_3 == arg_->camera_disable)
         {
             VX_CALL(appStartImageSensor(sensor_name, (1<<(3))-1)); // re-enabling all but 3rd camera
         }
@@ -717,7 +731,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
 
             VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&dequeue_capture_array, 1, &out_num_refs));
 
-            if (1 == arg_->generate_error)
+            if (ERROR_GENERATION_ON == arg_->generate_error)
             {
                 ASSERT_VX_OBJECT(image_element = (tivx_raw_image) vxGetObjectArrayItem(dequeue_capture_array, arg_->camera_disable), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
@@ -780,7 +794,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
                   capture_stats_struct->dequeueCount[0U][chIdx],
                   capture_stats_struct->dropCount[0U][chIdx]);
         }
-        if (1 == arg_->generate_error)
+        if (ERROR_GENERATION_ON == arg_->generate_error)
         {
             for(chIdx = 0U ; chIdx < num_capture_channels ; chIdx ++)
             {
@@ -818,15 +832,24 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/* Test case 1: Start with all cameras streaming then turn off camera 0
+ * Test case 2: Start with all cameras streaming then turn off camera 1
+ * Test case 3: Start with all cameras streaming then turn off camera 2
+ * Test case 4: Start with all cameras streaming then turn off camera 3
+ * Test case 5: Start with all cameras streaming then turn off cameras 2 and 3
+ * Test case 6: Start with all cameras streaming then turn off all cameras
+ * Test case 7: Start with all cameras not streaming then turn on all cameras
+ * Test case 8: Start with all cameras on and don't generate any errors
+ */
 #define CAPTURE_DISPLAY_PARAMETERS \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 0, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 1, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 2, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 3, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 4, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 1, 1, 5, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 0, 1, 6, 0), \
-    CT_GENERATE_PARAMETERS("capture", ARG, 100, 0, 0, 0, 0)
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_0,   0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_1,   0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_2,   0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_3,   0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_2_3, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_ALL_CH, 0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_OFF, ERROR_GENERATION_ON,  ENABLE_ALL_CH,  0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_OFF, 0, 0)
 
 TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CAPTURE_DISPLAY_PARAMETERS)
 {
@@ -1023,7 +1046,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
     }
 
     /* initializing sensor */
-    if (1 == arg_->start_sensors)
+    if (STREAMING_START_ON == arg_->start_sensors)
     {
         VX_CALL(appStartImageSensor(sensor_name, (1<<(num_capture_channels))-1));/*Mask for 4 cameras*/
     }
@@ -1056,7 +1079,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                 TIVX_DISPLAY_SELECT_CHANNEL, refs, 1u));
         }
 
-        if (1 == arg_->start_sensors)
+        if (STREAMING_START_ON == arg_->start_sensors)
         {
             vx_image element0, element1;
 
@@ -1080,28 +1103,28 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
     vxWaitGraph(graph);
 
     /* In the event of error generation, disable sensor as indicated by test case arguments */
-    if (1 == arg_->generate_error)
+    if (ERROR_GENERATION_ON == arg_->generate_error)
     {
-        if (1 == arg_->start_sensors)
+        if (STREAMING_START_ON == arg_->start_sensors)
         {
             VX_CALL(appStopImageSensor(sensor_name, (1<<(num_capture_channels))-1)); /*Disabling camera 4 */
-            if (0 == arg_->camera_disable)
+            if (DISABLE_CH_0 == arg_->camera_disable)
             {
                 VX_CALL(appStartImageSensor(sensor_name, 0xE)); // re-enabling all but 0th camera
             }
-            else if (1 == arg_->camera_disable)
+            else if (DISABLE_CH_1 == arg_->camera_disable)
             {
                 VX_CALL(appStartImageSensor(sensor_name, 0xD)); // re-enabling all but 1st camera
             }
-            else if (2 == arg_->camera_disable)
+            else if (DISABLE_CH_2 == arg_->camera_disable)
             {
                 VX_CALL(appStartImageSensor(sensor_name, 0xB)); // re-enabling all but 2nd camera
             }
-            else if (3 == arg_->camera_disable)
+            else if (DISABLE_CH_3 == arg_->camera_disable)
             {
                 VX_CALL(appStartImageSensor(sensor_name, (1<<(3))-1)); // re-enabling all but 3rd camera
             }
-            else if (4 == arg_->camera_disable)
+            else if (DISABLE_CH_2_3 == arg_->camera_disable)
             {
                 VX_CALL(appStartImageSensor(sensor_name, 0xC)); // re-enabling all 0th and 1st camera
             }
@@ -1133,7 +1156,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
             }
 
             if ( (loop_id > num_buf) &&
-                 (1 == arg_->generate_error) &&
+                 (ERROR_GENERATION_ON == arg_->generate_error) &&
                  (arg_->camera_disable < 4) )
             {
                 vx_image image_element;
@@ -1160,7 +1183,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
         {
             VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&dequeue_capture_array, 1, &out_num_refs));
 
-            if ( (1 == arg_->generate_error) &&
+            if ( (ERROR_GENERATION_ON == arg_->generate_error) &&
                  (arg_->camera_disable < 4) )
             {
                 vx_image image_element;
@@ -1225,7 +1248,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                   capture_stats_struct->dequeueCount[0U][chIdx],
                   capture_stats_struct->dropCount[0U][chIdx]);
         }
-        if (1 == arg_->generate_error)
+        if (ERROR_GENERATION_ON == arg_->generate_error)
         {
             for(chIdx = 0U ; chIdx < num_capture_channels ; chIdx ++)
             {
@@ -1234,12 +1257,12 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                 {
                     ASSERT((capture_stats_struct->activeChannelMask & bitmask)==0U);
                 }
-                else if ((4 == arg_->camera_disable) &&
+                else if ((DISABLE_CH_2_3 == arg_->camera_disable) &&
                          ((chIdx == 0) || (chIdx == 1)))
                 {
                     ASSERT((capture_stats_struct->activeChannelMask & bitmask)==0U);
                 }
-                else if (5 == arg_->camera_disable)
+                else if (DISABLE_ALL_CH == arg_->camera_disable)
                 {
                     ASSERT((capture_stats_struct->activeChannelMask & bitmask)==0U);
                 }
