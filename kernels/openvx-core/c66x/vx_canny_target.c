@@ -90,6 +90,11 @@ typedef struct
     uint32_t nms_edge_size;
     VXLIB_bufParams2D_t vxlib_edge;
 
+    /* Parameters for threshold */
+    uint8_t *nms_edge2;
+    uint32_t nms_edge_size2;
+    VXLIB_bufParams2D_t vxlib_edge2;
+
     uint32_t *edge_list;
     uint32_t edge_list_size;
     uint32_t gs;
@@ -177,6 +182,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
+        rect = dst->valid_roi;
+
         dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
@@ -186,13 +193,13 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
+        border_addr_tl = (uint8_t *)((uintptr_t)prms->nms_edge +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
-        border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
+        border_addr_tr = (uint8_t *)((uintptr_t)prms->nms_edge +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2U),
             &dst->imagepatch_addr[0U]));
-        border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
+        border_addr_bl = (uint8_t *)((uintptr_t)prms->nms_edge +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2U), rect.start_y + (prms->gs / 2U) + 1U + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
@@ -233,8 +240,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         }
         if ((vx_status)VXLIB_SUCCESS == status)
         {
-            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(prms->nms_edge,
-                &prms->vxlib_edge, dst_addr, &prms->vxlib_dst, 128, 255, 0);
+            status = (vx_status)VXLIB_thresholdBinary_i8u_o8u(prms->nms_edge2,
+                &prms->vxlib_edge2, dst_addr, &prms->vxlib_dst, 128, 255, 0);
         }
 
         if (status != (vx_status)VXLIB_SUCCESS)
@@ -341,6 +348,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             if ((vx_status)VX_SUCCESS == status)
             {
+                vx_rectangle_t rect;
+
                 prms->vxlib_edge.dim_x = prms->vxlib_src.dim_x;
                 prms->vxlib_edge.dim_y = prms->vxlib_src.dim_y -
                     ((uint32_t)sc_gs->data.s32 - 1U) - 2U;
@@ -357,6 +366,17 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     VX_PRINT(VX_ZONE_ERROR, "nms_edge mem allocation failed\n");
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
+
+                prms->vxlib_edge2.dim_x = prms->vxlib_dst.dim_x;
+                prms->vxlib_edge2.dim_y = prms->vxlib_dst.dim_y;
+                prms->vxlib_edge2.stride_y = prms->vxlib_edge.stride_y;
+                prms->vxlib_edge2.data_type = (uint32_t)VXLIB_UINT8;
+
+                rect = dst->valid_roi;
+
+                prms->nms_edge2 = (uint8_t *)((uintptr_t)prms->nms_edge +
+                    tivxComputePatchOffset(rect.start_x, rect.start_y,
+                    &src->imagepatch_addr[0U]));
             }
 
             if ((vx_status)VX_SUCCESS == status)
