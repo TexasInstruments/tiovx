@@ -505,79 +505,62 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             tivxMemStats(&l2_stats, (vx_enum)TIVX_MEM_INTERNAL_L2);
             tivxMemStats(&l3_stats, (vx_enum)TIVX_MEM_INTERNAL_L3);
 
-            tidlObj->createParams.l1MemSize = tidlObj->tidlParams.ioBufDesc.l1MemSize;
-            tidlObj->createParams.l2MemSize = tidlObj->tidlParams.ioBufDesc.l2MemSize;
-            tidlObj->createParams.l3MemSize = tidlObj->tidlParams.ioBufDesc.l3MemSize;
+            VX_PRINT(VX_ZONE_INFO, "L1 = %d KB, L2 = %d KB, L3 = %d KB\n",
+                l1_stats.free_size/1024,
+                l2_stats.free_size/1024,
+                l3_stats.free_size/1024
+                );
 
-            if((tidlObj->createParams.l1MemSize > l1_stats.free_size) ||
-               (tidlObj->createParams.l2MemSize > l2_stats.free_size) ||
-               (tidlObj->createParams.l3MemSize > l3_stats.free_size))
+            tidlObj->createParams.udmaDrvObj = tivxPlatformGetDmaObj();
+
+            tidlObj->createParams.net = (sTIDL_Network_t *)tidlObj->tidlNet;
+
+            tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
+            tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
+
+#ifdef x86_64
+            tidlObj->createParams.flowCtrl  = 1;
+#endif
+
+            if(TIDL_NET_VERSION != tidlObj->createParams.net->netVersion)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Requested L1 size %d bytes, available size %d bytes\n", tidlObj->createParams.l1MemSize, l1_stats.free_size);
-                VX_PRINT(VX_ZONE_ERROR, "Requested L2 size %d bytes, available size %d bytes\n", tidlObj->createParams.l2MemSize, l2_stats.free_size);
-                VX_PRINT(VX_ZONE_ERROR, "Requested L3 size %d bytes, available size %d bytes\n", tidlObj->createParams.l3MemSize, l3_stats.free_size);
+                VX_PRINT(VX_ZONE_ERROR, "Network version - 0x%08X, Expected version - 0x%08X\n",
+                    tidlObj->createParams.net->netVersion,
+                    TIDL_NET_VERSION
+                );
+
                 status = VX_FAILURE;
             }
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                VX_PRINT(VX_ZONE_INFO, "L1 = %d KB, L2 = %d KB, L3 = %d KB\n",
-                    tidlObj->createParams.l1MemSize/1024,
-                    tidlObj->createParams.l2MemSize/1024,
-                    tidlObj->createParams.l3MemSize/1024
-                    );
+                tidlObj->algHandle = tivxAlgiVisionCreate
+                                    (
+                                        &TIDL_VISION_FXNS,
+                                        (IALG_Params *)(&tidlObj->createParams)
+                                    );
 
-                tidlObj->createParams.udmaDrvObj = tivxPlatformGetDmaObj();
-
-                tidlObj->createParams.net = (sTIDL_Network_t *)tidlObj->tidlNet;
-
-                tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
-                tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
-
-#ifdef x86_64
-                tidlObj->createParams.flowCtrl  = 1;
-#endif
-
-                if(TIDL_NET_VERSION != tidlObj->createParams.net->netVersion)
+                if (NULL == tidlObj->algHandle)
                 {
-                    VX_PRINT(VX_ZONE_ERROR, "Network version - 0x%08X, Expected version - 0x%08X\n",
-                        tidlObj->createParams.net->netVersion,
-                        TIDL_NET_VERSION
-                    );
-
-                    status = VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
 
-                if ((vx_status)VX_SUCCESS == status)
+                tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
+                tidlObj->outBufs.size    = sizeof(tidlObj->outBufs);
+
+                tidlObj->inBufs.bufDesc  = tidlObj->inBufDescList;
+                tidlObj->outBufs.bufDesc = tidlObj->outBufDescList;
+
+                tidlObj->inBufs.numBufs  = tidl_AllocNetInputMem(tidlObj->inBufDesc, &tidlObj->tidlParams.ioBufDesc);
+                tidlObj->outBufs.numBufs = tidl_AllocNetOutputMem(tidlObj->outBufDesc, &tidlObj->tidlParams.ioBufDesc);
+
+                for(i = 0; i < tidlObj->inBufs.numBufs; i++)
                 {
-                    tidlObj->algHandle = tivxAlgiVisionCreate
-                                        (
-                                            &TIDL_VISION_FXNS,
-                                            (IALG_Params *)(&tidlObj->createParams)
-                                        );
-
-                    if (NULL == tidlObj->algHandle)
-                    {
-                        status = (vx_status)VX_FAILURE;
-                    }
-
-                    tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
-                    tidlObj->outBufs.size    = sizeof(tidlObj->outBufs);
-
-                    tidlObj->inBufs.bufDesc  = tidlObj->inBufDescList;
-                    tidlObj->outBufs.bufDesc = tidlObj->outBufDescList;
-
-                    tidlObj->inBufs.numBufs  = tidl_AllocNetInputMem(tidlObj->inBufDesc, &tidlObj->tidlParams.ioBufDesc);
-                    tidlObj->outBufs.numBufs = tidl_AllocNetOutputMem(tidlObj->outBufDesc, &tidlObj->tidlParams.ioBufDesc);
-
-                    for(i = 0; i < tidlObj->inBufs.numBufs; i++)
-                    {
-                        tidlObj->inBufDescList[i]     = &tidlObj->inBufDesc[i];
-                    }
-                    for(i = 0; i < tidlObj->outBufs.numBufs; i++)
-                    {
-                        tidlObj->outBufDescList[i]     = &tidlObj->outBufDesc[i];
-                    }
+                    tidlObj->inBufDescList[i]     = &tidlObj->inBufDesc[i];
+                }
+                for(i = 0; i < tidlObj->outBufs.numBufs; i++)
+                {
+                    tidlObj->outBufDescList[i]     = &tidlObj->outBufDesc[i];
                 }
             }
         }
