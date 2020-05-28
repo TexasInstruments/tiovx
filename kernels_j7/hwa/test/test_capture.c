@@ -94,13 +94,14 @@
 #define ERROR_GENERATION_OFF  0
 #define ERROR_GENERATION_ON   1
 
-#define DISABLE_CH_0     0
-#define DISABLE_CH_1     1
-#define DISABLE_CH_2     2
-#define DISABLE_CH_3     3
-#define DISABLE_CH_2_3   4
-#define DISABLE_ALL_CH   5
-#define ENABLE_ALL_CH    6
+#define DISABLE_CH_0              0
+#define DISABLE_CH_1              1
+#define DISABLE_CH_2              2
+#define DISABLE_CH_3              3
+#define DISABLE_CH_2_3            4
+#define DISABLE_ALL_CH            5
+#define ENABLE_ALL_CH             6
+#define DISABLE_REENABLE_ALL_CH   7
 
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
 
@@ -839,7 +840,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
  * Test case 5: Start with all cameras streaming then turn off cameras 2 and 3
  * Test case 6: Start with all cameras streaming then turn off all cameras
  * Test case 7: Start with all cameras not streaming then turn on all cameras
- * Test case 8: Start with all cameras on and don't generate any errors
+ * Test case 8: Start with all cameras streaming then turn off all cameras then turn back on all cameras
+ * Test case 9: Start with all cameras on and don't generate any errors
  */
 #define CAPTURE_DISPLAY_PARAMETERS \
     CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_0,   0), \
@@ -849,6 +851,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureTimeout, Arg_CaptureTimeout, CA
     CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_CH_2_3, 0), \
     CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_ALL_CH, 0), \
     CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_OFF, ERROR_GENERATION_ON,  ENABLE_ALL_CH,  0), \
+    CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_ON,  DISABLE_REENABLE_ALL_CH, 0), \
     CT_GENERATE_PARAMETERS("capture", ARG, 100, STREAMING_START_ON,  ERROR_GENERATION_OFF, 0, 0)
 
 TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CAPTURE_DISPLAY_PARAMETERS)
@@ -1170,6 +1173,50 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
             }
 
             vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+        }
+
+        if (DISABLE_REENABLE_ALL_CH == arg_->camera_disable)
+        {
+            /* ensure all graph processing is complete */
+            vxWaitGraph(graph);
+
+            VX_CALL(appStartImageSensor(sensor_name, (1<<(num_capture_channels))-1));/*Mask for 4 cameras*/
+
+            /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+            for(loop_id=0; loop_id<loop_cnt; loop_id++)
+            {
+                uint32_t num_refs;
+                vx_object_array out_capture_frames;
+
+                /* Get output reference, waits until a reference is available */
+                vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_capture_frames, 1, &num_refs);
+
+                if (0 == (loop_id % CHANNEL_SWITCH_FRAME_COUNT))
+                {
+                    channel_prms.active_channel_id =
+                        (channel_prms.active_channel_id + 1) % num_capture_channels;
+                    VX_CALL(vxCopyUserDataObject(switch_ch_obj, 0,
+                        sizeof(tivx_display_select_channel_params_t),
+                        &channel_prms, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                    VX_CALL(tivxNodeSendCommand(displayNode, 0,
+                        TIVX_DISPLAY_SELECT_CHANNEL, refs, 1u));
+                }
+
+                /* Ensuring that the capture frame is valid after reenabling sensor */
+                if (loop_id > num_buf)
+                {
+                    vx_image image_element;
+                    ASSERT_VX_OBJECT(image_element = (vx_image) vxGetObjectArrayItem(out_capture_frames, 0), VX_TYPE_IMAGE);
+
+                    VX_CALL(vxQueryReference((vx_reference)image_element, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
+
+                    ASSERT(is_invalid==vx_false_e);
+
+                    VX_CALL(vxReleaseImage(&image_element));
+                }
+
+                vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+            }
         }
     }
 
