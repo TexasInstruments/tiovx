@@ -121,8 +121,6 @@ typedef struct
     uint32_t                    buffer_size_out[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 
     Scaler_params               unitParams[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
-
-    uint32_t                    integer_scale;
 } tivxVpacMscPmdParams;
 
 /* ========================================================================== */
@@ -160,6 +158,7 @@ static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
 static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdMaskLSBs(uint16_t *ptr16, uint32_t w, uint32_t h);
+static void tivxVpacMscPmdSetLevelPhase(tivxVpacMscPmdParams *prms, tivx_obj_desc_image_t *in_img_desc, uint32_t level);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -271,7 +270,6 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         prms = tivxMemAlloc(sizeof(tivxVpacMscPmdParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
-            vx_float32 scale;
             memset (prms, 0x0, sizeof(tivxVpacMscPmdParams));
 
             in_img_desc = (tivx_obj_desc_image_t *)
@@ -281,13 +279,6 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             prms->in_img_desc = in_img_desc;
             prms->num_pmd_levels = out_pmd_desc->num_levels;
-
-            scale = out_pmd_desc->scale;
-
-            if ((scale == 0.5f) || (scale == 0.25f))
-            {
-                prms->integer_scale = 1u;
-            }
 
             /* Get the Image Descriptors from the Pyramid Object */
             tivxGetObjDescList(out_pmd_desc->obj_desc_id,
@@ -743,6 +734,8 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
             {
                 out_img_desc = prms->out_img_desc[cnt];
 
+                tivxVpacMscPmdSetLevelPhase(prms, in_img_desc, cnt);
+
                 /* Need to change pyramid subset,
                  * if input to output ratio is more than max_ds_factor
                  */
@@ -795,6 +788,32 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
     }
 
     return (status);
+}
+
+static void tivxVpacMscPmdSetLevelPhase(tivxVpacMscPmdParams *prms, tivx_obj_desc_image_t *in_img_desc, uint32_t level)
+{
+    uint32_t iw, ih, ow, oh;
+
+    iw = in_img_desc->imagepatch_addr[0].dim_x;
+    ih = in_img_desc->imagepatch_addr[0].dim_y;
+    ow = prms->out_img_desc[level]->imagepatch_addr[0].dim_x;
+    oh = prms->out_img_desc[level]->imagepatch_addr[0].dim_y;
+
+    if(!((ow == iw) ||
+        ((ow*2u) == iw) ||
+        ((ow*4u) == iw)) ||
+       !((oh == ih) ||
+        ((oh*2u) == ih) ||
+        ((oh*4u) == ih)) )
+    {
+        prms->unitParams[level].filter_mode = 1;
+        prms->unitParams[level].phase_mode = 1;
+    }
+    else
+    {
+        prms->unitParams[level].filter_mode = 0;
+        prms->unitParams[level].phase_mode = 0;
+    }
 }
 
 /* ========================================================================== */
@@ -1058,9 +1077,6 @@ static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_tar
         prms->unitParams[i].threadMap = 0;
         prms->unitParams[i].coefShift = 8;
 
-        prms->unitParams[i].filter_mode = 0;
-
-        prms->unitParams[i].phase_mode = 0;
         prms->unitParams[i].hs_coef_sel = 0;
         prms->unitParams[i].vs_coef_sel = 0;
 
@@ -1084,14 +1100,6 @@ static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_tar
         {
             prms->unitParams[0].sp_hs_coef_sel = 0;
             prms->unitParams[0].sp_vs_coef_sel = 0;
-        }
-        else
-        {
-            if(prms->integer_scale == 0)
-            {
-                prms->unitParams[i].filter_mode = 1;
-                prms->unitParams[i].phase_mode = 1;
-            }
         }
     }
 }
