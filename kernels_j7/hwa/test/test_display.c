@@ -92,18 +92,31 @@ typedef struct {
 
 #define ADD_PIPE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/pipeId=2", __VA_ARGS__, 2))
-#define ADD_DATA_FORMAT(testArgName, nextmacro, ...) \
+
+#define ADD_DATA_FORMAT_RGB(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_RGBX", __VA_ARGS__, VX_DF_IMAGE_RGBX))
+#define ADD_DATA_FORMAT_UYVY(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_UYVY", __VA_ARGS__, VX_DF_IMAGE_UYVY))
+#define ADD_DATA_FORMAT_YUYV(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_YUYV", __VA_ARGS__, VX_DF_IMAGE_YUYV))
+
 #define ADD_IN_WIDTH(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/inWidth=480", __VA_ARGS__, 480))
 #define ADD_IN_HEIGHT(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/inHeight=360", __VA_ARGS__, 360))
+
 #define ADD_BPP_4(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/bpp=4", __VA_ARGS__, 4))
+#define ADD_BPP_2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/bpp=2", __VA_ARGS__, 2))
+
 #define ADD_PITCH_Y(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/pitchY=1920", __VA_ARGS__, 1920))
 #define ADD_PITCH_UV(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/pitchUV=0", __VA_ARGS__, 0))
+#define ADD_PITCH_YUV(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/pitchY=3840", __VA_ARGS__, 3840))
+
 #define ADD_OUT_WIDTH(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/outWidth=480", __VA_ARGS__, 480))
 #define ADD_OUT_HEIGHT(testArgName, nextmacro, ...) \
@@ -114,9 +127,13 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/posY=440", __VA_ARGS__, 440))
 #define ADD_LOOP_100(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loopCount=100", __VA_ARGS__, 100))
+#define ADD_LOOP_1000(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_100, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node RGBX", ADD_PIPE, ADD_DATA_FORMAT_RGB, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_100, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node UYVY", ADD_PIPE, ADD_DATA_FORMAT_UYVY, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node YUYV", ADD_PIPE, ADD_DATA_FORMAT_YUYV, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG)
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -153,7 +170,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
-        ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, arg_->inWidth, arg_->inHeight, arg_->dataFormat), VX_TYPE_IMAGE);
 
         image_addr.dim_x = arg_->inWidth;
         image_addr.dim_y = arg_->inHeight;
@@ -256,8 +273,8 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
-        ASSERT_VX_OBJECT(disp_image[0] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(disp_image[1] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(disp_image[0] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, arg_->dataFormat), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(disp_image[1] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, arg_->dataFormat), VX_TYPE_IMAGE);
 
         image_addr.dim_x = arg_->inWidth;
         image_addr.dim_y = arg_->inHeight;
