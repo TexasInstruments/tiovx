@@ -259,6 +259,12 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             prms->oldPoints[list_indx] = _ftof2((VXLIB_F32)oldPts_addr[list_indx].y, (VXLIB_F32)oldPts_addr[list_indx].x);
             prms->newPoints[list_indx] = _ftof2((VXLIB_F32)estPts_addr[list_indx].y, (VXLIB_F32)estPts_addr[list_indx].x);
             prms->tracking[list_indx] = (uint8_t)estPts_addr[list_indx].tracking_status;
+
+            /* As per spec, these are passthrough */
+            newPts_addr[list_indx].strength    = oldPts_addr[list_indx].strength;
+            newPts_addr[list_indx].scale       = oldPts_addr[list_indx].scale;
+            newPts_addr[list_indx].orientation = oldPts_addr[list_indx].orientation;
+            newPts_addr[list_indx].error       = oldPts_addr[list_indx].error;
         }
 
         /* We are done with external prevpts and estimatedpts buffers since we have copied what we need internally s*/
@@ -371,6 +377,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         tivxMemBufferUnmap(nextpts_target_ptr,
            nextpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_WRITE_ONLY);
+    }
+
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Process Callback Failed\n");
     }
 
     return status;

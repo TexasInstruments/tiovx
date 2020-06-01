@@ -148,37 +148,20 @@ static void own_keypoints_check(vx_size num_points,
         vx_keypoint_t* old_points, vx_keypoint_t* new_points_ref, vx_keypoint_t* new_points)
 {
     vx_size i;
-    int num_valid_points = 0;
-    int num_lost = 0;
-    int num_errors = 0;
-    int num_tracked_points = 0;
 
     for (i = 0; i < num_points; i++)
     {
-        vx_int32 dx, dy;
-        if (new_points_ref[i].tracking_status == 0)
-            continue;
-        num_valid_points++;
-        if (new_points[i].tracking_status == 0)
-        {
-            num_lost++;
-            continue;
-        }
-        num_tracked_points++;
-        dx = new_points_ref[i].x - new_points[i].x;
-        dy = new_points_ref[i].y - new_points[i].y;
-        if ((dx * dx + dy * dy) > 2 * 2)
-        {
-            num_errors++;
-        }
-    }
+        ASSERT(new_points_ref[i].tracking_status == new_points[i].tracking_status);
+        ASSERT(new_points_ref[i].tracking_status < 2);
 
-    if (num_lost > (int)(num_valid_points * 0.05f))
-        CT_ADD_FAILURE("Too many lost points: %d (threshold %d)\n",
-                num_lost, (int)(num_valid_points * 0.05f));
-    if (num_errors > (int)(num_tracked_points * 0.10f))
-        CT_ADD_FAILURE("Too many bad points: %d (threshold %d, both tracked points %d)\n",
-                num_errors, (int)(num_tracked_points * 0.10f), num_tracked_points);
+        ASSERT(new_points_ref[i].x == new_points[i].x);
+        ASSERT(new_points_ref[i].y == new_points[i].y);
+
+        ASSERT(new_points_ref[i].strength == new_points[i].strength);
+        ASSERT(new_points_ref[i].scale == new_points[i].scale);
+        ASSERT(new_points_ref[i].orientation == new_points[i].orientation);
+        ASSERT(new_points_ref[i].error == new_points[i].error);
+    }
 }
 
 static const int circle[][2] =
@@ -389,6 +372,11 @@ TEST_WITH_ARG(tivxFastCorners, testVirtualImages, format_arg,
     if (NULL != src_ct_image)
     {
         ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
+    }
+
+    if (NULL != src0)
+    {
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src0, pyr, levels, VX_SCALE_PYRAMID_HALF, border));
     }
 
     ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
