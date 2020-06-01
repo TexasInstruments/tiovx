@@ -521,8 +521,6 @@ vx_status VX_API_CALL vxCopyArrayRange(
             tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
                 (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
         }
-
-        obj_desc->num_items += (uint32_t)inst;
     }
 
     return (status);
