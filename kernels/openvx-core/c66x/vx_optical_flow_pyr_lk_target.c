@@ -103,6 +103,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 
+static void tivxOpticalFlowPyrLKFreeMem(tivxOpticalFlowPyrLkParams *prms);
+
 static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -409,6 +411,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
         }
     }
 
+    if (VX_SUCCESS == status)
+    {
+        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+    }
+
     if ((vx_status)VX_SUCCESS == status)
     {
         prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
@@ -438,7 +445,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
             prms->scratch_buff_size = window_dimension_value*window_dimension_value*8U*sizeof(uint8_t);
 
             prms->scratch = tivxMemAlloc(prms->scratch_buff_size,
-                (vx_enum)TIVX_MEM_EXTERNAL);
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
             if (NULL == prms->scratch)
             {
@@ -450,13 +457,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 prms->tracking_buff_size = list_length*sizeof(uint8_t);
 
                 prms->tracking = tivxMemAlloc(prms->tracking_buff_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
                 if (NULL == prms->tracking)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
@@ -465,32 +470,22 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 prms->points_size = list_length*sizeof(__float2_t);
 
                 prms->oldPoints = tivxMemAlloc(prms->points_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
                 if (NULL == prms->oldPoints)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->tracking, prms->tracking_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
             if ((vx_status)VX_SUCCESS == status)
             {
                 prms->newPoints = tivxMemAlloc(prms->points_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
                 if (NULL == prms->newPoints)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->tracking, prms->tracking_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->oldPoints, prms->points_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
@@ -499,40 +494,22 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
                 prms->sch_size = width*height*sizeof(int16_t);
 
                 prms->pSchX = tivxMemAlloc(prms->sch_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
                 if (NULL == prms->pSchX)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->tracking, prms->tracking_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->oldPoints, prms->points_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->newPoints, prms->points_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
             if ((vx_status)VX_SUCCESS == status)
             {
                 prms->pSchY = tivxMemAlloc(prms->sch_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
+                    (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
 
                 if (NULL == prms->pSchY)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->tracking, prms->tracking_buff_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->oldPoints, prms->points_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->newPoints, prms->points_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(prms->pSchX, prms->sch_size,
-                        (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
@@ -540,6 +517,10 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
             {
                 tivxSetTargetKernelInstanceContext(kernel, prms,
                     sizeof(tivxOpticalFlowPyrLkParams));
+            }
+            else
+            {
+                tivxOpticalFlowPyrLKFreeMem(prms);
             }
         }
         else
@@ -585,41 +566,48 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
         if (((vx_status)VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxOpticalFlowPyrLkParams) == size))
         {
-
-            if (NULL != prms->scratch)
-            {
-                tivxMemFree(prms->scratch, prms->scratch_buff_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            if (NULL != prms->tracking)
-            {
-                tivxMemFree(prms->tracking, prms->tracking_buff_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            if (NULL != prms->oldPoints)
-            {
-                tivxMemFree(prms->oldPoints, prms->points_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            if (NULL != prms->newPoints)
-            {
-                tivxMemFree(prms->newPoints, prms->points_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            if (NULL != prms->pSchX)
-            {
-                tivxMemFree(prms->pSchX, prms->sch_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            if (NULL != prms->pSchY)
-            {
-                tivxMemFree(prms->pSchY, prms->sch_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-
-            tivxMemFree(prms, size, (vx_enum)TIVX_MEM_EXTERNAL);
+            tivxOpticalFlowPyrLKFreeMem(prms);
         }
     }
 
     return (status);
+}
+
+static void tivxOpticalFlowPyrLKFreeMem(tivxOpticalFlowPyrLkParams *prms)
+{
+    if (NULL != prms)
+    {
+        if (NULL != prms->scratch)
+        {
+            tivxMemFree(prms->scratch, prms->scratch_buff_size,
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+        if (NULL != prms->tracking)
+        {
+            tivxMemFree(prms->tracking, prms->tracking_buff_size,
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+        if (NULL != prms->oldPoints)
+        {
+            tivxMemFree(prms->oldPoints, prms->points_size,
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+        if (NULL != prms->newPoints)
+        {
+            tivxMemFree(prms->newPoints, prms->points_size,
+                (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+        if (NULL != prms->pSchX)
+        {
+            tivxMemFree(prms->pSchX, prms->sch_size, (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+        if (NULL != prms->pSchY)
+        {
+            tivxMemFree(prms->pSchY, prms->sch_size, (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
+        }
+
+        tivxMemFree(prms, sizeof(tivxOpticalFlowPyrLkParams), (vx_enum)TIVX_MEM_EXTERNAL);
+    }
 }
 
 void tivxAddTargetKernelOpticalFlowPyrLk(void)
