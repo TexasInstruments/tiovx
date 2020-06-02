@@ -3941,7 +3941,8 @@ TEST_WITH_ARG(tivxMaxNodes, testMaxNodes, Arg,
     ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr1, (void**)&new_points1, 0, &new_points_size1, 0));
     ASSERT(new_points_size1 == corners_data_size);
 
-    ASSERT_NO_FAILURE(own_keypoints_check(new_points_size0, NULL, new_points0, new_points1));
+    /* This is invalid check since one set of outputs comes from harris, the other from fast.  Disabling this check */
+    //ASSERT_NO_FAILURE(own_keypoints_check(new_points_size0, NULL, new_points0, new_points1));
 
     ct_free_mem(corners_data);
     ct_free_mem(new_points1);
@@ -4091,7 +4092,7 @@ TEST_WITH_ARG(tivxMaxNodes, testMaxNodes, Arg,
 
         VX_CALL(vxQueryDistribution(dist, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
         /*The attribute is specified as valid only when the range is a multiple of nbins,
-	 * in other cases, its value shouldn't be checked */
+         * in other cases, its value shouldn't be checked */
         if (((hist_range % nbins) == 0) && (attr_window != reference_window(hist_range, nbins)))
             CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
 
