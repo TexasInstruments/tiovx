@@ -134,6 +134,8 @@ tivxVpacVissInstObj gTivxVpacVissInstObj;
 
 extern tivx_mutex             viss_aewb_lock[VHWA_M2M_VISS_MAX_HANDLES];
 extern tivx_ae_awb_params_t   viss_aewb_results[VHWA_M2M_VISS_MAX_HANDLES];
+extern uint32_t               viss_aewb_channel[VHWA_M2M_VISS_MAX_HANDLES];
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -385,18 +387,58 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
         /* Extract AEWB Result parameters, it might be needed in
          * setting some of the VISS configuration */
-        if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        if ((vx_status)VX_SUCCESS == status)
         {
-            status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
-                aewb_res_desc, sizeof(tivx_ae_awb_params_t));
-            if ((vx_status)VX_SUCCESS == status)
+            if(NULL != aewb_res_desc)
             {
-                ae_awb_result = (tivx_ae_awb_params_t *)
-                    vissObj->aewb_res_target_ptr;
+                status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
+                    aewb_res_desc, sizeof(tivx_ae_awb_params_t));
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    ae_awb_result = (tivx_ae_awb_params_t *)
+                        vissObj->aewb_res_target_ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to Map AEWB Result Descriptor\n");
+                }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "Failed to Map AEWB Result Descriptor\n");
+                uint32_t i, loop_break = 0;
+
+                /* AEWB Result sent by the graph is NULL */
+                /* VISS needs to use the results sent by AEWB node through VISS_CMD_SET_2A_PARAMS command */
+                /* RemoteService command is supported only on target*/
+                for(i=0;i<VHWA_M2M_VISS_MAX_HANDLES;i++)
+                {
+                    status = tivxMutexLock(viss_aewb_lock[i]);
+                    if((vx_status)VX_SUCCESS == status)
+                    {
+                        if(0 == viss_aewb_channel[i])
+                        {
+                            viss_aewb_channel[i] = 1u;
+                            vissObj->channel_id = i;
+                            loop_break = 1;
+                        }
+                        status = tivxMutexUnlock(viss_aewb_lock[i]);
+                    }
+
+                    if(((vx_status)VX_SUCCESS != status) || (loop_break == 1))
+                    {
+                        if((vx_status)VX_SUCCESS != status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "viss_aewb_lock[%d] failed\n", i);
+                        }
+                        break;
+                    }
+                }
+
+                if(((vx_status)VX_SUCCESS == status) && (loop_break == 0))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Number of instances has exceeded VHWA_M2M_VISS_MAX_HANDLES\n");
+                    status = (vx_status)VX_ERROR_NO_RESOURCES;
+                }
             }
         }
     }
@@ -677,6 +719,29 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
         }
         else
         {
+            tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
+
+            aewb_res_desc = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+
+            if(NULL == aewb_res_desc)
+            {
+                status = tivxMutexLock(viss_aewb_lock[vissObj->channel_id]);
+                if((vx_status)VX_SUCCESS == status)
+                {
+                    if(0 != viss_aewb_channel[vissObj->channel_id])
+                    {
+                        viss_aewb_channel[vissObj->channel_id] = 0u;
+                    }
+                    status = tivxMutexUnlock(viss_aewb_lock[vissObj->channel_id]);
+                }
+
+                if((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "viss_aewb_lock[%d] failed\n", vissObj->channel_id);
+                }
+            }
+
             tivxVpacVissDeInitDcc(vissObj);
 
             Fvid2_delete(vissObj->handle, NULL);
@@ -808,7 +873,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 /* AEWB Result sent by the graph is NULL */
                 /* VISS needs to use the results sent by AEWB node through VISS_CMD_SET_2A_PARAMS command */
                 /* RemoteService command is supported only on target*/
-                uint32_t chId = vissPrms->channel_id;
+                uint32_t chId = vissObj->channel_id;
                 status = tivxMutexLock(viss_aewb_lock[chId]);
                 if((vx_status)VX_SUCCESS == status)
                 {
@@ -897,6 +962,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             h3a_out->aew_af_mode = vissPrms->h3a_aewb_af_mode;
             h3a_out->h3a_source_data = vissPrms->h3a_in;
+            h3a_out->channel_id = vissObj->channel_id;
             h3a_out->size = vissObj->h3a_output_size;
 
             if(0U == vissPrms->h3a_aewb_af_mode)

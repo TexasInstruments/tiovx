@@ -66,6 +66,7 @@
 
 tivx_mutex             viss_aewb_lock[VHWA_M2M_VISS_MAX_HANDLES];
 tivx_ae_awb_params_t   viss_aewb_results[VHWA_M2M_VISS_MAX_HANDLES];
+uint32_t               viss_aewb_channel[VHWA_M2M_VISS_MAX_HANDLES];
 
 int32_t VissServer_RemoteServiceHandler(char *service_name, uint32_t cmd,
     void *prm, uint32_t prm_size, uint32_t flags)
@@ -118,6 +119,8 @@ int32_t VissRemoteServer_Init()
         for(i=0;i<VHWA_M2M_VISS_MAX_HANDLES;i++)
         {
             memset(&viss_aewb_results[i], 0x0, sizeof(tivx_ae_awb_params_t));
+            memset(&viss_aewb_channel[i], 0x0, sizeof(uint32_t));
+
             status = tivxMutexCreate(&(viss_aewb_lock[i]));
             if(status!=0)
             {

@@ -383,9 +383,8 @@ typedef struct {
      *  in VISS.
      */
     uint32_t                    enable_ctx;
-    /*! Identifier for camera channel ID. 
-     *  Currently used only for identifying AEWB results send by AEWB node
-     *  when ae_awb_result from the graph is NULL.
+    /*! Identifier for camera channel ID.
+     *  Currently not being used, potentially for future need.
      */
     uint32_t                    channel_id;
 } tivx_vpac_viss_params_t;
@@ -485,10 +484,14 @@ typedef struct {
     uint32_t                    h3a_source_data;
     /*! If aew_af_mode == TIVX_VPAC_VISS_H3A_MODE_AEWB, this is the aew HW configuration used */
     tivx_h3a_aew_config         aew_config;
+    /*! Identifier for camera channel ID.
+     *  Currently used only for notifying AEWB node which channel to update based on these results
+     *  when ae_awb_result from the graph is NULL. */
+    uint32_t                    channel_id;
     /*! Total used size of the data buffer in bytes */
     uint32_t                    size;
     /*! Reserved dummy field to make data to be 64 byte aligned */
-    uint32_t                    resv[(TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN-(sizeof(tivx_h3a_aew_config)+12U))/4U ];
+    uint32_t                    resv[(TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN-(sizeof(tivx_h3a_aew_config)+16U))/4U ];
     /*! Payload of the AEW or AF data */
     uint8_t                     data[TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES];
 } tivx_h3a_data_t;
