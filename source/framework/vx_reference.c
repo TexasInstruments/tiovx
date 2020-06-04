@@ -30,8 +30,8 @@
 
 #include <vx_internal.h>
 
-/* COnstant internal to this file. */
-#define TIOVX_REF_MAX_NUM_MEM_ELEM  (8U)
+/* Constant internal to this file. */
+#define TIOVX_REF_MAX_NUM_MEM_ELEM  (TIVX_CONTEXT_MAX_TENSOR_DIMS)
 
 typedef struct _vx_enum_type_size {
     vx_enum item_type;
@@ -890,7 +890,7 @@ vx_reference tivxGetReferenceParent(vx_reference child_ref)
     return ref;
 }
 
-vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32_t num_entries)
+vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const uint32_t size[], uint32_t num_entries)
 {
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size;
@@ -918,25 +918,10 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
     }
-    else
+    else if (size == NULL)
     {
-        for (i = 0; i < num_entries; i++)
-        {
-            if (addr[i] != NULL)
-            {
-                /* Check if the memory has been allocated using ION API. */
-                shared_ptr[i] =
-                    tivxMemHost2SharedPtr((uint64_t)(uintptr_t)addr[i],
-                                          (vx_enum)TIVX_MEM_EXTERNAL);
-
-                if (shared_ptr[i] == 0)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "addr[%d] is INVALID.\n", i);
-                    vxStatus = (vx_status)VX_FAILURE;
-                    break;
-                }
-            }
-        }
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
     }
 
     if (vxStatus == (vx_status)VX_SUCCESS)
@@ -1081,6 +1066,60 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
             vxStatus = (vx_status)VX_FAILURE;
         }
 
+        /* Validate the sizes of the handles. */
+        if (vxStatus == (vx_status)VX_SUCCESS)
+        {
+            for (i = 0; i < numMemElem; i++)
+            {
+                if (mem_size[i] != size[i])
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "[Entry %d] Memory size mis-match: Expecting [%d] "
+                             "but given [%d]\n",
+                             i, mem_size[i], size[i]);
+
+                    vxStatus = (vx_status)VX_FAILURE;
+                }
+            }
+        }
+
+        /* Validate the addr entries. */
+        if (vxStatus == (vx_status)VX_SUCCESS)
+        {
+            uint32_t    numNulls = 0;
+
+            for (i = 0; i < numMemElem; i++)
+            {
+                if (addr[i] != NULL)
+                {
+                    /* Check if the memory allocated can be translated. */
+                    shared_ptr[i] =
+                        tivxMemHost2SharedPtr((uint64_t)(uintptr_t)addr[i],
+                                              (vx_enum)TIVX_MEM_EXTERNAL);
+
+                    if (shared_ptr[i] == 0)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "addr[%d] is INVALID.\n", i);
+                        vxStatus = (vx_status)VX_FAILURE;
+                        break;
+                    }
+                }
+                else
+                {
+                    numNulls++;
+                }
+            }
+
+            if ((vxStatus == (vx_status)VX_SUCCESS) &&
+                (numNulls != 0) &&
+                (numNulls != numMemElem))
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                         "addr[] has a mix of NULL and non-NULL entries.\n");
+                vxStatus = (vx_status)VX_FAILURE;
+            }
+        }
+
         if (vxStatus == (vx_status)VX_SUCCESS)
         {
             /* Issue a warning if the number of handles passed is more than
@@ -1107,7 +1146,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
                 mem_ptr[i].host_ptr = (uint64_t)(uintptr_t)addr[i];
                 mem_ptr[i].shared_ptr = shared_ptr[i];
 
-                if (mem_ptr[i].host_ptr)
+                if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                 {
                     /* Perform a cache write back. */
                     tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
@@ -1122,7 +1161,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
     return vxStatus;
 }
 
-vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t max_entries, uint32_t *num_entries)
+vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries)
 {
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size;
@@ -1141,6 +1180,11 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
     else if (addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
+        vxStatus = (vx_status)VX_FAILURE;
+    }
+    else if (size == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
         vxStatus = (vx_status)VX_FAILURE;
     }
     else if (max_entries == 0)
@@ -1348,12 +1392,13 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                      * above. 'numAlloc' will be zero if allocations have not
                      * been done in this function.
                      */
-                    if (numAlloc)
+                    if (numAlloc != 0)
                     {
                         mem_ptr[i] = lMemPtr[i];
                     }
 
                     addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
+                    size[i] = mem_size[i];
                 }
 
                 /* Update the entry count. */

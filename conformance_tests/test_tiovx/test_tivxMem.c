@@ -62,12 +62,11 @@ typedef struct
 
 TESTCASE(tivxMem, CT_VXContext, ct_setup_vx_context, 0)
 
-static int32_t checkTranslation(const void *ptr, int32_t expectedStatus)
+static int32_t checkTranslation(const void *ptr, uint32_t size, int32_t expectedStatus)
 {
     void       *phyAddr;
     void       *virtAddr;
     uint64_t    dmaBufFd;
-    uint32_t    size;
     uint32_t    testFail = 0;
     vx_enum     region;
     vx_status   vxStatus;
@@ -93,7 +92,7 @@ static int32_t checkTranslation(const void *ptr, int32_t expectedStatus)
         /* From the 'dmaBufFd', query the 'virtAddr' and check it against the
          * original 'ptr' we have allocated.
          */
-        vxStatus = tivxMemTranslateFd(dmaBufFd, 0, &virtAddr, &phyAddr);
+        vxStatus = tivxMemTranslateFd(dmaBufFd, size, &virtAddr, &phyAddr);
 
         if (vxStatus != expectedStatus)
         {
@@ -311,7 +310,7 @@ TEST(tivxMem, testTranslateAddrMemAlloc)
     }
 
     /* Check address translation. */
-    status = checkTranslation(ptr, VX_SUCCESS);
+    status = checkTranslation(ptr, size, VX_SUCCESS);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -360,7 +359,7 @@ TEST(tivxMem, testTranslateAddrMalloc)
     /* Check address translation. The translation should fail since the memory
      * has not been allocated using ether tivxMemAlloc() or ion_alloc().
      */
-    status = checkTranslation(ptr, expectedStatus);
+    status = checkTranslation(ptr, size, expectedStatus);
 
     if (status != TIVX_TEST_SUCCESS)
     {
@@ -382,6 +381,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     vx_context      context = context_->vx_context_;
     void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
     vx_reference    ref[2] = {NULL};
     uint32_t        testFail = 0;
     vx_enum         type = (vx_enum)arg_->type;
@@ -411,6 +411,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
     vxStatus = tivxReferenceExportHandle(ref[0],
                                          virtAddr1,
+                                         size,
                                          maxNumAddr,
                                          &numEntries1);
 
@@ -423,6 +424,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     /* Import the handles into obj[1]. */
     vxStatus = tivxReferenceImportHandle(ref[1],
                                          (const void **)virtAddr1,
+                                         (const uint32_t *)size,
                                          numEntries1);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -436,7 +438,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     {
         int32_t     status;
 
-        status = checkTranslation(virtAddr1[i], VX_SUCCESS);
+        status = checkTranslation(virtAddr1[i], size[i], VX_SUCCESS);
 
         if (status != TIVX_TEST_SUCCESS)
         {
@@ -450,6 +452,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
     vxStatus = tivxReferenceExportHandle(ref[1],
                                          virtAddr2,
+                                         size,
                                          maxNumAddr,
                                          &numEntries2);
 
@@ -489,6 +492,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     /* Import NULL handles into obj[0]. */
     vxStatus = tivxReferenceImportHandle(ref[0],
                                          (const void **)virtAddr1,
+                                         (const uint32_t *)size,
                                          numEntries1);
 
     if (vxStatus != (vx_status)VX_SUCCESS)
@@ -518,6 +522,8 @@ TEST(tivxMem, testReferenceImportNeg)
 {
     vx_context      context = context_->vx_context_;
     void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    void           *p;
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
     vx_reference    ref = NULL;
     uint32_t        testFail = 0;
     vx_enum         type = VX_TYPE_IMAGE;
@@ -534,6 +540,7 @@ TEST(tivxMem, testReferenceImportNeg)
      */
     vxStatus = tivxReferenceImportHandle(ref,
                                          (const void **)virtAddr,
+                                         (const uint32_t *)size,
                                          numEntries);
 
     if (vxStatus != (vx_status)VX_FAILURE)
@@ -556,13 +563,58 @@ TEST(tivxMem, testReferenceImportNeg)
     /* Import the handles into obj. Since 'virtAddr' is NULL, the call should
      * fail.
      */
-    vxStatus = tivxReferenceImportHandle(ref, NULL, numEntries);
+    vxStatus = tivxReferenceImportHandle(ref, NULL, size, numEntries);
 
     if (vxStatus != (vx_status)VX_FAILURE)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
+
+    /* Import the handles into obj. Since 'size' is NULL, the call should
+     * fail.
+     */
+    vxStatus = tivxReferenceImportHandle(ref,
+                                         (const void **)virtAddr,
+                                         NULL,
+                                         numEntries);
+
+    if (vxStatus != (vx_status)VX_FAILURE)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export handles to get valid size information. */
+    vxStatus = tivxReferenceExportHandle(ref,
+                                         virtAddr,
+                                         size,
+                                         TIVX_TEST_MAX_NUM_ADDR,
+                                         &numEntries);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Nullify one of the addr[] entries. Import should fail. */
+    p = virtAddr[1];
+    virtAddr[1] = NULL;
+
+    vxStatus = tivxReferenceImportHandle(ref,
+                                         (const void **)virtAddr,
+                                         (const uint32_t *)size,
+                                         numEntries);
+
+    if (vxStatus != (vx_status)VX_FAILURE)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Restore the Nullified entry. */
+    virtAddr[1] = p;
 
     /* Run the loop with [0..(numEntries+1)] values. */
     for (i = 0; i < numEntries+2; i++)
@@ -580,7 +632,10 @@ TEST(tivxMem, testReferenceImportNeg)
         }
 
         /* Import the handles into obj. */
-        vxStatus = tivxReferenceImportHandle(ref, (const void **)virtAddr, i);
+        vxStatus = tivxReferenceImportHandle(ref,
+                                             (const void **)virtAddr,
+                                             (const uint32_t *)size,
+                                             i);
 
         if (vxStatus != (vx_status)expected)
         {
@@ -607,6 +662,7 @@ TEST(tivxMem, testReferenceExportNeg)
 {
     vx_context      context = context_->vx_context_;
     void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
     vx_reference    ref = NULL;
     uint32_t        testFail = 0;
     vx_enum         type = VX_TYPE_IMAGE;
@@ -624,6 +680,7 @@ TEST(tivxMem, testReferenceExportNeg)
      */
     vxStatus = tivxReferenceExportHandle(ref,
                                          virtAddr,
+                                         size,
                                          maxNumAddr,
                                          &numEntries);
 
@@ -647,7 +704,26 @@ TEST(tivxMem, testReferenceExportNeg)
     /* Import the handles into obj. Since 'virtAddr' is NULL, the call should
      * fail.
      */
-    vxStatus = tivxReferenceExportHandle(ref, NULL, maxNumAddr, &numEntries);
+    vxStatus = tivxReferenceExportHandle(ref,
+                                         NULL,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries);
+
+    if (vxStatus != (vx_status)VX_FAILURE)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Import the handles into obj. Since 'size' is NULL, the call should
+     * fail.
+     */
+    vxStatus = tivxReferenceExportHandle(ref,
+                                         virtAddr,
+                                         NULL,
+                                         maxNumAddr,
+                                         &numEntries);
 
     if (vxStatus != (vx_status)VX_FAILURE)
     {
@@ -671,7 +747,11 @@ TEST(tivxMem, testReferenceExportNeg)
         }
 
         /* Import the handles into obj. */
-        vxStatus = tivxReferenceExportHandle(ref, virtAddr, i, &numEntries);
+        vxStatus = tivxReferenceExportHandle(ref,
+                                             virtAddr,
+                                             size,
+                                             i,
+                                             &numEntries);
 
         if (vxStatus != (vx_status)expected)
         {
