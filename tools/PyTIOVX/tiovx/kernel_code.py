@@ -451,12 +451,12 @@ class KernelExportCode :
             self.host_c_code.write_open_brace()
             self.host_c_code.write_line("status = vxAddParameterToKernel(kernel,")
             self.host_c_code.write_line("            index,")
-            self.host_c_code.write_line("            %s," % (Direction.get_vx_enum_name(prm.direction)) )
+            self.host_c_code.write_line("            (vx_enum)%s," % (Direction.get_vx_enum_name(prm.direction)) )
             if Type.is_scalar_type(prm.type) :
-                self.host_c_code.write_line("            VX_TYPE_SCALAR,")
+                self.host_c_code.write_line("            (vx_enum)VX_TYPE_SCALAR,")
             else :
-                self.host_c_code.write_line("            %s," % (Type.get_vx_enum_name(prm.type)) )
-            self.host_c_code.write_line("            %s" % (ParamState.get_vx_enum_name(prm.state)) )
+                self.host_c_code.write_line("            (vx_enum)%s," % (Type.get_vx_enum_name(prm.type)) )
+            self.host_c_code.write_line("            (vx_enum)%s" % (ParamState.get_vx_enum_name(prm.state)) )
             self.host_c_code.write_line(");")
             self.host_c_code.write_line("index++;")
             self.host_c_code.write_close_brace()
@@ -616,16 +616,16 @@ class KernelExportCode :
 
             attr = Attribute.from_type(prm.type)
             if Type.is_scalar_type(prm.type) :
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, (vx_enum)VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             else :
                 for name, member in attr.__members__.items() :
                     if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member, name) :
                         if prm.type == Type.RAW_IMAGE :
-                            self.host_c_code.write_line("tivxCheckStatus(&status, tivxQuery%s(%s, TIVX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                            self.host_c_code.write_line("tivxCheckStatus(&status, tivxQuery%s(%s, (vx_enum)TIVX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
                         elif prm.type == Type.LUT:
-                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, (vx_enum)VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
                         else :
-                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, (vx_enum)VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
 
             if prm.state is ParamState.OPTIONAL :
                 self.host_c_code.write_close_brace()
@@ -652,24 +652,24 @@ class KernelExportCode :
                     self.print_data_type = prm.data_types
                 if Type.IMAGE == prm.type :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if( ((vx_df_image)%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != %s_fmt) &&" % (dt, prm.name_lower))
-                        self.host_c_code.write_line("    (%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
+                            self.host_c_code.write_line("    ((vx_df_image)%s != %s_fmt) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    ((vx_df_image)%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if ((vx_df_image)%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
                 elif Type.PYRAMID == prm.type :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if( ((vx_df_image)%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != %s_fmt) &&" % (dt, prm.name_lower))
-                        self.host_c_code.write_line("    (%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
+                            self.host_c_code.write_line("    ((vx_df_image)%s != %s_fmt) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    ((vx_df_image)%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if ((vx_df_image)%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
                 elif Type.ARRAY == prm.type :
                     if len(prm.data_types) > 1 :
                         if self.check_array_type(self.print_data_type[0]) :
-                            self.host_c_code.write_line("if( (%s_item_type != %s) &&" % (prm.name_lower, self.print_data_type[0]))
+                            self.host_c_code.write_line("if( ((vx_enum)%s != %s_item_type) &&" % (self.print_data_type[0], prm.name_lower))
                         else :
                             self.host_c_code.write_line("if( (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, self.print_data_type[0]))
                         for dt in self.print_data_type[1:-1] :
@@ -683,25 +683,25 @@ class KernelExportCode :
                             self.host_c_code.write_line("    (%s_item_size != sizeof(%s)))" % (prm.name_lower, self.print_data_type[-1]))
                     else :
                         if self.check_array_type(self.print_data_type[0]) :
-                            self.host_c_code.write_line("if ( %s_item_type != %s)" % (prm.name_lower, self.print_data_type[0]))
+                            self.host_c_code.write_line("if (%s != %s_item_type )" % (self.print_data_type[0]), prm.name_lower)
                         else :
                             self.host_c_code.write_line("if ( %s_item_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]))
                 elif Type.MATRIX == prm.type or Type.LUT == prm.type:
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != %s_type) &&" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if( ((vx_enum)%s != %s_type) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != %s_type) &&" % (dt, prm.name_lower))
-                        self.host_c_code.write_line("    (%s != %s_type))" % (self.print_data_type[-1], prm.name_lower))
+                            self.host_c_code.write_line("    ((vx_enum)%s != %s_type) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    ((vx_enum)%s != %s_type))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != %s_type)" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if ((vx_enum)%s != %s_type)" % (self.print_data_type[0], prm.name_lower))
                 elif Type.is_scalar_type(prm.type) :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != %s_scalar_type) &&" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if( ((vx_enum)%s != %s_scalar_type) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != %s_scalar_type) &&" % (dt, prm.name_lower))
-                        self.host_c_code.write_line("    (%s != %s_scalar_type))" % (self.print_data_type[-1], prm.name_lower))
+                            self.host_c_code.write_line("    ((vx_enum)%s != %s_scalar_type) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    ((vx_enum)%s != %s_scalar_type))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != %s_scalar_type)" % (self.print_data_type[0], prm.name_lower))
+                        self.host_c_code.write_line("if ((vx_enum)%s != %s_scalar_type)" % (self.print_data_type[0], prm.name_lower))
                 elif Type.USER_DATA_OBJECT == prm.type :
                     if len(prm.data_types) > 1 :
                         self.host_c_code.write_line("if( ((%s_size != sizeof(%s)) ||" % (prm.name_lower, self.print_data_type[0]))
