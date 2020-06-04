@@ -866,7 +866,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * <tt>\ref tivxReferenceExportHandle</tt> for retrieving the current handles before invoking this function.
  *
  * The following conditions regarding 'addr' must be TRUE:
- * - allocated using appMemAlloc() on ARM
+ * - allocated using appMemAlloc()/tivxMemAlloc() on ARM
  * - memory block is contiguous
  *
  * Only the following reference object types are supported:
@@ -883,7 +883,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * \param [in] num_entries Number of valid entries in addr[]. This should match the
  *                         number of handles expected to be maintained internally by 'ref'
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
- * \ingroup group_image
+ * \ingroup group_tivx_ext_host
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS, if the import operation is successful. The 'ref' object will have the
  * internal handles updated.
@@ -891,10 +891,10 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * A failure can occur for the following reasons:
  * - Unsupported reference object type
  * - The argument check fails
- * - The handle check fails i.e. the handles have not been allocated using appMemAlloc()
+ * - The handle check fails i.e. the handles have not been allocated using appMemAlloc()/tivxMemAlloc()
  * - The number of handles specified is less than the number expected by the reference object.
  */
-vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32_t num_entries);
+VX_API_ENTRY vx_bool VX_API_CALL tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32_t num_entries);
 
 /*! \brief Exports the handles from a reference object.
  *
@@ -916,7 +916,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
  * \param [out] num_entries Number of valid entries in addr[]. This should match the
  *                         number of handles expected to be maintained internally by 'ref'
  *                         (ex:- for an image object with multiple planes, num_extries > 1).
- * \ingroup group_image
+ * \ingroup group_tivx_ext_host
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS, if the export operation is successful. The 'addr' object will be populated
  * with 'num_entries' handles.
@@ -928,7 +928,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
  * - The max number of handles specified is less than the number expected to be exported by the
  *   reference object.
  */
-vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t max_entries, uint32_t *num_entries);
+VX_API_ENTRY vx_bool VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t max_entries, uint32_t *num_entries);
 
 #ifdef __cplusplus
 }

@@ -411,7 +411,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
     return status;
 }
 
-int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr)
+vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
 
@@ -436,7 +436,7 @@ int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyA
     return vxStatus;
 }
 
-int32_t tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
+vx_status tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
 

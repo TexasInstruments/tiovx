@@ -30,6 +30,9 @@
 
 #include <vx_internal.h>
 
+/* COnstant internal to this file. */
+#define TIOVX_REF_MAX_NUM_MEM_ELEM  (8U)
+
 typedef struct _vx_enum_type_size {
     vx_enum item_type;
     vx_size item_size;
@@ -891,7 +894,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], uint32
 {
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size;
-    uint64_t                shared_ptr[16] = {0};
+    uint64_t                shared_ptr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
     uint32_t                numMemElem;
     uint32_t                i;
     vx_status               vxStatus;
@@ -1294,7 +1297,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
         if (vxStatus == (vx_status)VX_SUCCESS)
         {
-            tivx_shared_mem_ptr_t   lMemPtr[16] = {0};
+            tivx_shared_mem_ptr_t   lMemPtr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
             uint32_t                numAlloc = 0;
 
             /* Update the object. */

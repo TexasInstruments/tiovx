@@ -188,7 +188,7 @@ void tivxMemDeInit(void)
 {
 }
 
-int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr)
+vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
 
@@ -205,6 +205,7 @@ int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyA
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
+        /* TODO: Review this assumption. */
         *fd      = (uint64_t *)virtAddr;
         *phyAddr = (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
                                                            TIVX_MEM_EXTERNAL);
@@ -213,7 +214,7 @@ int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyA
     return vxStatus;
 }
 
-int32_t tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
+vx_status tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
 
@@ -230,6 +231,7 @@ int32_t tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
+        /* TODO: Review this assumption. */
         *virtAddr = (void*)(uintptr_t)dmaBufFd;
         *phyAddr = (void*)(uintptr_t)tivxMemHost2SharedPtr(dmaBufFd,
                                                            TIVX_MEM_EXTERNAL);

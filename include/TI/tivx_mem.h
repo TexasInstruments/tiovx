@@ -352,7 +352,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
  * \brief Translates a given virtual address to a file descriptor and a
  *        physical address.
  *        The following conditions regarding 'virt_addr' must be TRUE:
- *        - allocated using appMemAlloc() on ARM
+ *        - allocated using appMemAlloc()/tivxMemAlloc() on ARM
  *        - memory block is contiguous
  *
  * \param virt_addr [in] Virtual address to translate.
@@ -361,34 +361,34 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
  *
  * \param phys_addr [out] Physical address corresponding to 'virt_addr'.
  *
- * \return  - 0 and the content of 'fd' and 'phys_addr' will be valid
- *          - < 0 and the content of 'fd' and 'phys_addr' will be undefined
+ * \return  - VX_SUCCESS, and the content of 'fd' and 'phys_addr' will be valid
+ *          - VX_FAILURE, and the content of 'fd' and 'phys_addr' will be undefined
  *
  * \ingroup group_tivx_mem
  */
-int32_t tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr);
+vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr);
 
 /**
  * \brief Translates a given file descriptor to a virtual and physical addresss.
  *        The following conditions regarding 'fd' must be TRUE:
- *        - allocated using appMemAlloc()
+ *        - allocated using appMemAlloc()/tivxMemAlloc()
  *        - memory block is contiguous
  *
  * \param dmaBufFd [in] File descriptor to translate.
  *
- * \param size [in] Size of the memory block corresponding to 'dmaBufFd'
+ * \param size [in] Size of the memory block corresponding to 'dmaBufFd' in bytes.
  *
  * \param virt_addr [out] File descriptor corresponding to 'dmaBufFd'.
  *
  * \param phys_addr [out] Physical address corresponding to 'dmaBufFd'.
  *
- * \return  - 0 and the content of 'virt_addr' and 'phys_addr' will be valid
- *          - < 0 and the content of 'virt_addr' and 'phys_addr' will be
+ * \return  - VX_SUCCESS and the content of 'virt_addr' and 'phys_addr' will be valid
+ *          - VX_FAILURE, and the content of 'virt_addr' and 'phys_addr' will be
  *                undefined
  *
  * \ingroup group_tivx_mem
  */
-int32_t tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, void **phyAddr);
+vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, void **phyAddr);
 
 #ifdef __cplusplus
 }
