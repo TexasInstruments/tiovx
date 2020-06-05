@@ -21,8 +21,8 @@ TESTCASE(tivxBmpRdWr, CT_VXContext, ct_setup_vx_context, 0)
 
 const char *inFiles[TIOVX_UTILS_MAXPATHLENGTH/4] =
 {
-    "${VX_TEST_DATA_PATH}/bmptest_input_image_1248x376.bmp",
-    "${VX_TEST_DATA_PATH}/bmptest_input_image_1280x720.bmp",
+    "${VX_TEST_DATA_PATH}/baboon.bmp",
+    "${VX_TEST_DATA_PATH}/blurred_lena_gray.bmp",
     "${VX_TEST_DATA_PATH}/colors.bmp",
 };
 
@@ -45,12 +45,11 @@ typedef struct
 } TestArg;
 
 #define TEST_PARAMS \
-    CT_GENERATE_PARAMETERS("bmptest_output_image_1248x376_col",  ARG, 0, 0), \
-    CT_GENERATE_PARAMETERS("bmptest_output_image_1248x376_gray", ARG, 0, 1), \
-    CT_GENERATE_PARAMETERS("bmptest_output_image_1280x720_col",  ARG, 1, 0), \
-    CT_GENERATE_PARAMETERS("bmptest_output_image_1280x720_gray", ARG, 1, 1), \
-    CT_GENERATE_PARAMETERS("bmptest_output_colors_col",          ARG, 2, 0), \
-    CT_GENERATE_PARAMETERS("bmptest_output_colors_gray",         ARG, 2, 1), \
+    CT_GENERATE_PARAMETERS("bmptest_output_baboon_col",        ARG, 0, 0), \
+    CT_GENERATE_PARAMETERS("bmptest_output_baboon_gray",       ARG, 0, 1), \
+    CT_GENERATE_PARAMETERS("bmptest_output_blurred_lena_gray", ARG, 1, 1), \
+    CT_GENERATE_PARAMETERS("bmptest_output_colors_col",        ARG, 2, 0), \
+    CT_GENERATE_PARAMETERS("bmptest_output_colors_gray",       ARG, 2, 1), \
 
 static int32_t ReadInputImages(TestObjContext  *objCntxt,
                                const char      *inFileName)
@@ -71,14 +70,14 @@ static int32_t ReadInputImages(TestObjContext  *objCntxt,
         status = TIVX_TEST_ERROR_EXPAND_FILE_PATH_FAILED;
     }
 
-    if (vxStatus == (vx_status)VX_SUCCESS)
+    if (status == TIVX_TEST_SUCCESS)
     {
         objCntxt->tuImg =
             tivx_utils_create_vximage_from_bmpfile(objCntxt->vxContext,
                                                    objCntxt->inFileName,
                                                    objCntxt->convToGrayScale);
 
-        if (vxStatus != (vx_status)VX_SUCCESS)
+        if (objCntxt->tuImg == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "tivx_utils_create_vximage_from_bmpfile() failed.\n");
@@ -92,14 +91,14 @@ static int32_t ReadInputImages(TestObjContext  *objCntxt,
     }
 
     /* Read the same input image using CT API. */
-    if (vxStatus == (vx_status)VX_SUCCESS)
+    if (status == TIVX_TEST_SUCCESS)
     {
         objCntxt->ctImg =
             test_utils_create_vximage_from_bmpfile(objCntxt->vxContext,
                                                    objCntxt->inFileName,
                                                    objCntxt->convToGrayScale);
 
-        if (vxStatus != (vx_status)VX_SUCCESS)
+        if (objCntxt->ctImg == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "test_utils_create_vximage_from_bmpfile() failed.\n");
@@ -396,7 +395,7 @@ TEST_WITH_ARG(tivxBmpRdWr, testBmpRd, TestArg, TEST_PARAMS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    /* Expand the file path. */
+    /* Read the images. */
     status = ReadInputImages(&objCntxt, inFileName);
 
     if (status != TIVX_TEST_SUCCESS)

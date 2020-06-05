@@ -87,21 +87,37 @@ vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
 {
     char       *start;
     char       *end;
+    int32_t     len;
     vx_status  status;
 
     status = (vx_status)VX_SUCCESS;
     start  = strstr(inFilePath, "${");
     end    = strstr(inFilePath, "}");
 
+    /* Zero out the buffer. */
+    memset(outFilePath, 0, TIOVX_UTILS_MAXPATHLENGTH);
+
     if ((start == NULL) || (end == NULL))
     {
-        /* The path does not contain a reference to an environment variable. */
-        strncpy(outFilePath, inFilePath, TIOVX_UTILS_MAXPATHLENGTH);
+        len = strlen(inFilePath);
+
+        if (len > (TIOVX_UTILS_MAXPATHLENGTH-1))
+        {
+            status = (vx_status)VX_FAILURE;
+        }
+        else
+        {
+            /* The path does not contain a reference to an
+             * environment variable.
+             */
+            strcpy(outFilePath, inFilePath);
+        }
     }
     else
     {
-        int32_t len = (int32_t)(end - start)-2;
         char   *b = NULL;
+
+        len = (int32_t)(end - start)-2;
 
         if (len >= (TIOVX_UTILS_MAXPATHLENGTH/2))
         {
@@ -110,7 +126,6 @@ vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
 
         if (status == (vx_status)VX_SUCCESS)
         {
-            memset(outFilePath, 0, TIOVX_UTILS_MAXPATHLENGTH);
             strncpy(outFilePath, &start[2], len);
 
 #if defined(SYSBIOS)
