@@ -890,7 +890,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         ASSERT(checksum_expected == checksum_actual);
         //ASSERT(checksum_expected == checksum_expected);
 
-        if(0 != arg_->dcc)
+        if( (0 != arg_->dcc) && (NULL != h3a_aew_af))
         {
             vx_size h3a_valid_size;
             VX_CALL(vxQueryUserDataObject(h3a_aew_af, TIVX_USER_DATA_OBJECT_VALID_SIZE, &h3a_valid_size, sizeof(vx_size)));
@@ -1779,6 +1779,7 @@ static void ct_write_user_data_object(vx_user_data_object user_data_object, cons
     char* buf = 0;
     char file[MAXPATHLENGTH];
     vx_size size;
+    vx_status status;
 
     if (!fileName)
     {
@@ -1796,13 +1797,27 @@ static void ct_write_user_data_object(vx_user_data_object user_data_object, cons
         return;
     }
 
-    VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size)));
+    status = vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
+    if (VX_SUCCESS != status)
+    {
+        fclose(f);
+        return;
+    }
 
     if( size > 0 )
     {
         buf = (char*)ct_alloc_mem(size);
-        VX_CALL(vxCopyUserDataObject(user_data_object, 0, size, buf, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-        fwrite(buf, 1, size, f);
+        if (NULL != buf)
+        {
+            status = vxCopyUserDataObject(user_data_object, 0, size, buf, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+            if (VX_SUCCESS != status)
+            {
+                ct_free_mem(buf);
+                fclose(f);
+                return;
+            }
+            fwrite(buf, 1, size, f);
+        }
     }
 
     ct_free_mem(buf);

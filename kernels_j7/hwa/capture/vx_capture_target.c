@@ -925,7 +925,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
     tivx_obj_desc_object_array_t *output_desc;
     tivxCaptureParams *prms = NULL;
     uint32_t chId, bufId, instIdx;
-    tivxCaptureInstParams *instParams;
+    tivxCaptureInstParams *instParams = NULL;
 
     if ( (num_params != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX])
