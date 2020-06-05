@@ -294,9 +294,11 @@ void tivxMemBufferMap(
     {
         if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
+            #ifndef A72
             appMemCacheInv(
                 host_ptr,
                 size);
+            #endif
         }
     }
     else
@@ -313,9 +315,11 @@ void tivxMemBufferUnmap(
         if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
             (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
+            #ifndef A72
             appMemCacheWb(
                 host_ptr,
                 size);
+            #endif
         }
     }
     else
