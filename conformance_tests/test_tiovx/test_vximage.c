@@ -58,6 +58,8 @@ TEST(tivxMapImage, testMapImage)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                 VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
 
+    memset(pdata, 0xFF, addr.stride_y*h);
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
