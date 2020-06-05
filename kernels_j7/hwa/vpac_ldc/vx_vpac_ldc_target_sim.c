@@ -127,7 +127,8 @@ static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
 void tivxVpacLdcSetWarpParams(ldc_settings *settings,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
-    tivx_obj_desc_lut_t *luma_lut_desc,tivx_obj_desc_lut_t *chroma_lut_desc);
+    tivx_obj_desc_user_data_object_t *luma_user_desc,
+    tivx_obj_desc_user_data_object_t *chroma_user_desc);
 static void xyMeshSwapCpy(uint32_t *output, uint32_t *input, uint32_t num_points);
 
 #ifdef ENABLE_DEBUG_PRINT
@@ -688,10 +689,10 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
 
     switch (node_cmd_id)
     {
-        case TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS:
+        case TIVX_VPAC_LDC_CMD_SET_BIT_DEPTH_CONV_LUT_PARAMS:
             status = tivxVpacLdcSetLutParamsCmd(&prms->config.settings,
-                (tivx_obj_desc_lut_t *)obj_desc[0U],
-                (tivx_obj_desc_lut_t *)obj_desc[1U]);
+                (tivx_obj_desc_user_data_object_t *)obj_desc[0U],
+                (tivx_obj_desc_user_data_object_t *)obj_desc[1U]);
             break;
         case TIVX_VPAC_LDC_CMD_SET_LDC_PARAMS:
         {
@@ -1008,48 +1009,51 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
 }
 
 static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
-    tivx_obj_desc_lut_t *luma_lut_desc,tivx_obj_desc_lut_t *chroma_lut_desc)
+    tivx_obj_desc_user_data_object_t *luma_user_desc,
+    tivx_obj_desc_user_data_object_t *chroma_user_desc)
 {
     uint32_t i;
-    uint16_t *lut_addr;
     void *target_ptr;
+    tivx_vpac_ldc_bit_depth_conv_lut_params_t *lut_prms;
 
-    if(NULL != luma_lut_desc)
+    if(NULL != luma_user_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(&luma_lut_desc->mem_ptr);
+        target_ptr = tivxMemShared2TargetPtr(&luma_user_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, luma_lut_desc->mem_size,
+        tivxMemBufferMap(target_ptr, luma_user_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        lut_addr = target_ptr;
+        lut_prms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
 
         settings->ylut_en = 1;
-        settings->yin_bits = 12u;
-        settings->yout_bits = 8u;
+        settings->yin_bits = lut_prms->input_bits;
+        settings->yout_bits = lut_prms->output_bits;
 
         for(i = 0; i < 513; i++) {
-            settings->ylut[i]  = lut_addr[i];           // subframe enable
+            settings->ylut[i]  = lut_prms->lut[i];  // subframe enable
         }
-        tivxMemBufferUnmap(target_ptr, luma_lut_desc->mem_size,
+        tivxMemBufferUnmap(target_ptr, luma_user_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
-    if(NULL != chroma_lut_desc)
+    if(NULL != chroma_user_desc)
     {
-        target_ptr = tivxMemShared2TargetPtr(&chroma_lut_desc->mem_ptr);
+        target_ptr = tivxMemShared2TargetPtr(&chroma_user_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, chroma_lut_desc->mem_size,
+        tivxMemBufferMap(target_ptr, chroma_user_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-        lut_addr = target_ptr;
+        lut_prms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
 
         settings->clut_en = 1;
-        settings->cin_bits = 12;            // LUT used for 12 to 8 bit conversion
-        settings->cout_bits = 8;
+        settings->cin_bits = lut_prms->input_bits;
+        settings->cout_bits = lut_prms->output_bits;
 
         for(i = 0; i < 513; i++) {
-            settings->clut[i]  = lut_addr[i];           // subframe enable
+            settings->clut[i]  = lut_prms->lut[i];  // subframe enable
         }
+        tivxMemBufferUnmap(target_ptr, chroma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
     }
 
     return ((vx_status)VX_SUCCESS);

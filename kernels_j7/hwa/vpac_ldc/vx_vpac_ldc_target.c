@@ -80,6 +80,8 @@
 
 #include "idcc.h"
 
+#define LDC_REMAP_LUT_DRV_EN (0)
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -99,7 +101,9 @@ typedef struct
     tivx_event                          waitForProcessCmpl;
     Ldc_ErrEventParams                  errEvtPrms;
     Ldc_RdBwLimitConfig                 rdBwLimitCfg;
-
+#if LDC_REMAP_LUT_DRV_EN
+    Ldc_RemapLutCfg                     lut_cfg;
+#endif
     uint32_t                            num_output;
 
     Fvid2_FrameList                     inFrmList;
@@ -152,7 +156,8 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     const tivx_obj_desc_user_data_object_t *mesh_prms_desc,
     const tivx_obj_desc_image_t *mesh_img_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(tivxVpacLdcObj *ldc_obj,
-    tivx_obj_desc_lut_t *luma_lut_desc, tivx_obj_desc_lut_t *chroma_lut_desc);
+    tivx_obj_desc_user_data_object_t *luma_user_desc,
+    tivx_obj_desc_user_data_object_t *chroma_lut_desc);
 static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,
     tivx_obj_desc_scalar_t *scalar_obj_desc);
 static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
@@ -776,11 +781,11 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS:
+            case TIVX_VPAC_LDC_CMD_SET_BIT_DEPTH_CONV_LUT_PARAMS:
             {
                 status = tivxVpacLdcSetLutParamsCmd(ldc_obj,
-                    (tivx_obj_desc_lut_t *)obj_desc[0U],
-                    (tivx_obj_desc_lut_t *)obj_desc[1U]);
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U],
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[1U]);
                 break;
             }
             case TIVX_VPAC_LDC_CMD_GET_ERR_STATUS:
@@ -1239,10 +1244,81 @@ static vx_status tivxVpacLdcSetRdBwLimitCmd(tivxVpacLdcObj *ldc_obj,
 }
 
 static vx_status tivxVpacLdcSetLutParamsCmd(tivxVpacLdcObj *ldc_obj,
-    tivx_obj_desc_lut_t *luma_lut_desc, tivx_obj_desc_lut_t *chroma_lut_desc)
+    tivx_obj_desc_user_data_object_t *luma_user_desc,
+    tivx_obj_desc_user_data_object_t *chroma_user_desc)
 {
-    /* TODO */
-    return ((vx_status)VX_SUCCESS);
+    vx_status                         status = (vx_status)VX_SUCCESS;
+
+#if LDC_REMAP_LUT_DRV_EN
+    uint32_t                          fvid2_status;
+    tivx_vpac_ldc_bit_depth_conv_lut_params_t *lutPrms = NULL;
+    void                             *target_ptr;
+
+    if (NULL != luma_user_desc)
+    {
+        target_ptr = tivxMemShared2TargetPtr(&luma_user_desc->mem_ptr);
+
+        tivxMemBufferMap(target_ptr, luma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
+        if (sizeof(tivx_vpac_ldc_bit_depth_conv_lut_params_t) ==
+                luma_user_desc->mem_size)
+        {
+            lutPrms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
+
+            ldc_obj->lut_cfg.enable = 1;
+            ldc_obj->lut_cfg.inputBits = lutPrms->input_bits;
+            ldc_obj->lut_cfg.outputBits = lutPrms->output_bits;
+            ldc_obj->lut_cfg.tableAddr = lutPrms->lut;
+
+            fvid2_status = Fvid2_control(ldc_obj->handle,
+                IOCTL_LDC_SET_LUMA_TONEMAP_LUT_CFG, &ldc_obj->lut_cfg, NULL);
+            if (FVID2_SOK != fvid2_status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to set Luma Lut\n");
+                status = VX_FAILURE;
+            }
+        }
+
+        tivxMemBufferUnmap(target_ptr, luma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    }
+
+    if ((NULL != chroma_user_desc) && (VX_SUCCESS == status))
+    {
+        target_ptr = tivxMemShared2TargetPtr(&chroma_user_desc->mem_ptr);
+
+        tivxMemBufferMap(target_ptr, chroma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
+        if (sizeof(tivx_vpac_ldc_bit_depth_conv_lut_params_t) ==
+                chroma_user_desc->mem_size)
+        {
+            lutPrms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
+
+            ldc_obj->lut_cfg.enable = 1;
+            ldc_obj->lut_cfg.inputBits = lutPrms->input_bits;
+            ldc_obj->lut_cfg.outputBits = lutPrms->output_bits;
+            ldc_obj->lut_cfg.tableAddr = lutPrms->lut;
+
+            fvid2_status = Fvid2_control(ldc_obj->handle,
+                IOCTL_LDC_SET_CHROMA_TONEMAP_LUT_CFG, &ldc_obj->lut_cfg, NULL);
+            if (FVID2_SOK != fvid2_status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Failed to set Chroma Lut\n");
+                status = VX_FAILURE;
+            }
+        }
+
+        tivxMemBufferUnmap(target_ptr, chroma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    }
+
+#else
+    VX_PRINT(VX_ZONE_WARNING, "Driver for this feature not yet supported\n");
+#endif
+
+    return (status);
 }
 
 static vx_status tivxVpacLdcGetErrStatusCmd(const tivxVpacLdcObj *ldc_obj,

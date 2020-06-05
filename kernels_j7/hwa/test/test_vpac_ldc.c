@@ -478,21 +478,35 @@ static vx_image mesh_create(vx_context context, int width, int height, int m)
     return mesh;
 }
 
-static vx_lut lut_create(vx_context context, void* data, vx_size count)
+static vx_user_data_object lut_create(
+    vx_context context, void* data, vx_size count)
 {
+    tivx_vpac_ldc_bit_depth_conv_lut_params_t remap_lut;
+    vx_user_data_object lut_obj;
     vx_size size = sizeof(vx_uint16);
-
-    vx_lut lut = vxCreateLUT(context, VX_TYPE_UINT16, count);
     void* ptr = NULL;
 
-    ASSERT_VX_OBJECT_(return 0, lut, VX_TYPE_LUT);
+    lut_obj = vxCreateUserDataObject(context,
+        "tivx_vpac_ldc_bit_depth_conv_lut_params_t",
+        sizeof(tivx_vpac_ldc_bit_depth_conv_lut_params_t), NULL);
 
-    vx_map_id map_id;
-    VX_CALL_(return 0, vxMapLUT(lut, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-    ASSERT_(return 0, ptr);
-    memcpy(ptr, data, size);
-    VX_CALL_(return 0, vxUnmapLUT(lut, map_id));
-    return lut;
+    ASSERT_VX_OBJECT_(return 0, lut_obj,
+        (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    remap_lut.input_bits = 12;
+    remap_lut.output_bits = 8;
+
+    memcpy(remap_lut.lut, data, size *
+        TIVX_VPAC_LDC_BIT_DEPTH_CONV_LUT_SIZE);
+
+    if (VX_SUCCESS != vxCopyUserDataObject(lut_obj, 0,
+            sizeof(tivx_vpac_ldc_bit_depth_conv_lut_params_t), &remap_lut,
+            VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST))
+    {
+        VX_CALL_(return 0, vxReleaseUserDataObject(&lut_obj));
+    }
+
+    return lut_obj;
 }
 
 static void lut_data_fill_identity(void* data, vx_size count)
@@ -699,7 +713,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     vx_image input_image = 0, output_image = 0;
     vx_image dual_out_image = 0;
     vx_image mesh_image = 0;
-    vx_lut luma_lut = 0, chroma_lut = 0;
+    vx_user_data_object luma_lut = NULL, chroma_lut = NULL;
     vx_matrix matrix = 0;
     vx_reference ref[2];
     vx_float32 m[6];
@@ -738,11 +752,11 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         {
             ASSERT_NO_FAILURE(dual_out = ct_allocate_image(arg_->out_width, arg_->out_height, VX_DF_IMAGE_U8));
             ASSERT_VX_OBJECT(dual_out_image = ct_image_to_vx_image(dual_out, context), VX_TYPE_IMAGE);
-            ASSERT_VX_OBJECT(luma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
+            ASSERT_VX_OBJECT(luma_lut = lut_create(context, lut_data, 513), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
             if (arg_->input_mode == 1)
             {
-                ASSERT_VX_OBJECT(chroma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
+                ASSERT_VX_OBJECT(chroma_lut = lut_create(context, lut_data, 513), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
             }
         }
 
@@ -800,7 +814,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         {
             ref[0] = (vx_reference) luma_lut;
             ref[1] = (vx_reference) chroma_lut;
-            VX_CALL(tivxNodeSendCommand(node, 0, TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS, ref, 2));
+            VX_CALL(tivxNodeSendCommand(node, 0,
+                TIVX_VPAC_LDC_CMD_SET_BIT_DEPTH_CONV_LUT_PARAMS, ref, 2));
         }
 
         VX_CALL(vxProcessGraph(graph));
@@ -829,11 +844,11 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         if(arg_->output_mode == 1)
         {
             VX_CALL(vxReleaseImage(&dual_out_image));
-            VX_CALL(vxReleaseLUT(&luma_lut));
+            VX_CALL(vxReleaseUserDataObject(&luma_lut));
 
             if(arg_->input_mode == 1)
             {
-                VX_CALL(vxReleaseLUT(&chroma_lut));
+                VX_CALL(vxReleaseUserDataObject(&chroma_lut));
             }
         }
 
@@ -889,7 +904,6 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
     vx_image input_image = 0, output_image = 0;
     vx_image dual_out_image = 0;
     vx_image mesh_image = 0;
-    vx_lut luma_lut = 0, chroma_lut = 0;
     vx_matrix matrix = 0, matrix2 = 0;
     vx_reference ref[1];
     vx_float32 m[6], m2[6];
@@ -995,8 +1009,6 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
         ASSERT(region_obj == 0);
         ASSERT(mesh_params_obj == 0);
         ASSERT(dual_out_image == 0);
-        ASSERT(luma_lut == 0);
-        ASSERT(chroma_lut == 0);
         ASSERT(mesh_image == 0);
 
         tivxHwaUnLoadKernels(context);

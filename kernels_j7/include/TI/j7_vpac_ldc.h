@@ -94,15 +94,16 @@ extern "C" {
 #define TIVX_VPAC_LDC_CMD_SET_READ_BW_LIMIT_PARAMS         (0x10000000u)
 
 /*! \brief Control Command to set LDC Lut parameters
- *         This LUT is used in 12bit to 8bit conversion.
- *         An array of vx_lut is used an an argument to this command.
- *         Lut at index-0 is used for setting luma lut and
- *         lut at index-1 is used for setting chroma lut.
+ *         This LUT is used in bit depth conversion for output 2 & 3.
+ *         An array of tivx_vpac_ldc_bit_depth_conv_lut_params_t is
+ *         used an an argument to this command.
+ *         Params at index-0 is used for setting Luma output (output2) and
+ *         Params at index-1 is used for setting Chroma output (output3).
  *         Both entries are optional and can be null if no change is required.
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS                    (0x10000001u)
+#define TIVX_VPAC_LDC_CMD_SET_BIT_DEPTH_CONV_LUT_PARAMS     (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -163,6 +164,8 @@ extern "C" {
 #define TIVX_VPAC_LDC_CALC_MESH_LINE_OFFSET(width, subsample_factor)      \
     ((((((width)/(subsample_factor))+1) + 15U) & ~15U) * (4U))
 
+/*! Size of the Remap LUT, used for 12bit to 8bit conversion */
+#define TIVX_VPAC_LDC_BIT_DEPTH_CONV_LUT_SIZE           (513u)
 
 /*! Error status for pixel co-ordinate goes out of the
  *  pre-computed input pixel bounding box */
@@ -318,6 +321,28 @@ typedef struct {
     uint32_t                                max_burst_length;
 } tivx_vpac_ldc_bandwidth_params_t;
 
+/*!
+ * \brief The remap params structure used by the
+ *        TIVX_KERNEL_VPAC_LDC kernel.
+ *        Passed as argument to TIVX_VPAC_LDC_CMD_SET_BIT_DEPTH_CONV_LUT_PARAMS
+ *        command.
+ *        Used to set Remap/Tone Map Lut in LDC
+ *
+ * \ingroup group_vision_function_vpac_ldc
+ */
+typedef struct {
+    /*! Number of input bits to remap/tone map module.
+     *  [Range (8 - 12)]
+     */
+    uint32_t                                input_bits;
+    /*! Number of output bits from remap/tone map module.
+     *  [Range (8 - 12)]
+     */
+    uint32_t                                output_bits;
+    /*! 513 entry tone mapping curve
+     */
+    uint16_t                                lut[TIVX_VPAC_LDC_BIT_DEPTH_CONV_LUT_SIZE];
+} tivx_vpac_ldc_bit_depth_conv_lut_params_t;
 
 /*********************************
  *      Function Prototypes
