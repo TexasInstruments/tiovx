@@ -85,5 +85,6 @@ TESTCASE(tivxPackedDataFormat)
 TESTCASE(tivxRawImage)
 TESTCASE(tivxReference)
 TESTCASE(tivxMem)
+TESTCASE(tivxMapImage)
 #endif
 
