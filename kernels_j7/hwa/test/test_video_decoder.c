@@ -128,7 +128,6 @@ TEST(tivxHwaVideoDecoder, testNodeCreation)
     }
 }
 
-
 TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
 {
     vx_context context = context_->vx_context_;
@@ -174,7 +173,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     vx_imagepatch_addressing_t image_addr_uv;
     uint8_t                  *data_ptr_y;
     uint8_t                  *data_ptr_uv;
-
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
     const uint32_t checksum_expected[NUM_ITERATIONS] =
     {
         (uint32_t) 0x00000000, (uint32_t) 0x2bfbdee0, (uint32_t) 0xe3196ed0, (uint32_t) 0x9379a0c7, (uint32_t) 0xe333648e,
@@ -199,7 +198,8 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
         (uint32_t) 0xcb2b4286, (uint32_t) 0xc43a743f, (uint32_t) 0x46afcd48, (uint32_t) 0x6444183a, (uint32_t) 0x4b3f8aff
     };
     uint32_t checksum_actual;
-    uint32_t i;
+#endif
+    uint32_t i, j;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1))
     {
@@ -312,19 +312,28 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
                                     VX_NOGAP_X
                                     ));
 
-            out_fp = fopen(output_file, "ab");
-            if (NULL != out_fp)
+            if (i < 5)
             {
-                num_read = fwrite(data_ptr_y, sizeof(uint8_t), (width * height), out_fp);
-                num_read += fwrite(data_ptr_uv, sizeof(uint8_t), (width * height) / 2, out_fp);
+                out_fp = fopen(output_file, "ab");
+                if (NULL != out_fp)
+                {
+                    for(j = 0; j < (height ); j++)
+                    {
+                        num_read = fwrite(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), width, out_fp);
+                    }
+                    for(j = 0; j < (height / 2); j++)
+                    {
+                        num_read += fwrite(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), width, out_fp);
+                    }
 
-                fclose(out_fp);
-                out_fp = NULL;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file);
-                ASSERT(NULL != out_fp);
+                    fclose(out_fp);
+                    out_fp = NULL;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file);
+                    ASSERT(NULL != out_fp);
+                }
             }
 
             VX_CALL(vxUnmapImagePatch(output_image, map_id_image_y));
@@ -381,6 +390,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     };
     vx_size bitstream_sizes_l[NUM_ITERATIONS] =
     {
+
         82437, 74618, 81778, 71937, 68102, 68683, 68911, 65367, 66464, 65291,
         67193, 68828, 68452, 66693, 61739, 70680, 67804, 63271, 62826, 60666,
         58988, 56842, 54840, 58680, 53905, 59807, 55503, 58511, 57463, 58687,
@@ -409,6 +419,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     FILE* out_fp_l = NULL;
     size_t num_read;
     int seek_status;
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
     const uint32_t checksum_expected_s[NUM_ITERATIONS] =
     {
         (uint32_t) 0x00000000, (uint32_t) 0x2bfbdee0, (uint32_t) 0xe3196ed0, (uint32_t) 0x9379a0c7, (uint32_t) 0xe333648e,
@@ -457,7 +468,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     };
     uint32_t checksum_actual_s;
     uint32_t checksum_actual_l;
-
+#endif
     vx_rectangle_t             rect_y_s;
     vx_rectangle_t             rect_uv_s;
     vx_map_id                  map_id_image_y_s;
@@ -475,7 +486,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     uint8_t                  *data_ptr_y_l;
     uint8_t                  *data_ptr_uv_l;
 
-    uint32_t i;
+    uint32_t i, j;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1))
     {
@@ -652,19 +663,28 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
                                     VX_NOGAP_X
                                     ));
 
-            out_fp_s = fopen(output_file_s, "ab");
-            if (NULL != out_fp_s)
+            if (i < 5)
             {
-                num_read = fwrite(data_ptr_y_s, sizeof(uint8_t), (width_s * height_s), out_fp_s);
-                num_read += fwrite(data_ptr_uv_s, sizeof(uint8_t), (width_s * height_s) / 2, out_fp_s);
+                out_fp_s = fopen(output_file_s, "ab");
+                if (NULL != out_fp_s)
+                {
+                    for(j = 0; j < (height_s ); j++)
+                    {
+                        num_read = fwrite(data_ptr_y_s + (j * image_addr_y_s.stride_y), sizeof(uint8_t), width_s, out_fp_s);
+                    }
+                    for(j = 0; j < (height_s / 2); j++)
+                    {
+                        num_read += fwrite(data_ptr_uv_s + (j * image_addr_uv_s.stride_y), sizeof(uint8_t), width_s, out_fp_s);
+                    }
 
-                fclose(out_fp_s);
-                out_fp_s = NULL;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_s);
-                ASSERT(NULL != out_fp_s);
+                    fclose(out_fp_s);
+                    out_fp_s = NULL;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_s);
+                    ASSERT(NULL != out_fp_s);
+                }
             }
 
             VX_CALL(vxUnmapImagePatch(output_image_s, map_id_image_y_s));
@@ -692,19 +712,28 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
                                     VX_NOGAP_X
                                     ));
 
-            out_fp_l = fopen(output_file_l, "ab");
-            if (NULL != out_fp_l)
+            if (i < 5)
             {
-                num_read = fwrite(data_ptr_y_l, sizeof(uint8_t), (width_l * height_l), out_fp_l);
-                num_read += fwrite(data_ptr_uv_l, sizeof(uint8_t), (width_l * height_l) / 2, out_fp_l);
+                out_fp_l = fopen(output_file_l, "ab");
+                if (NULL != out_fp_l)
+                {
+                    for(j = 0; j < (height_l ); j++)
+                    {
+                        num_read = fwrite(data_ptr_y_l + (j * image_addr_y_l.stride_y), sizeof(uint8_t), width_l, out_fp_l);
+                    }
+                    for(j = 0; j < (height_l / 2); j++)
+                    {
+                        num_read += fwrite(data_ptr_uv_l + (j * image_addr_uv_l.stride_y), sizeof(uint8_t), width_l, out_fp_l);
+                    }
 
-                fclose(out_fp_l);
-                out_fp_l = NULL;
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_l);
-                ASSERT(NULL != out_fp_l);
+                    fclose(out_fp_l);
+                    out_fp_l = NULL;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_l);
+                    ASSERT(NULL != out_fp_l);
+                }
             }
 
             VX_CALL(vxUnmapImagePatch(output_image_l, map_id_image_y_l));
