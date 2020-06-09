@@ -62,7 +62,7 @@
 
 #include "vx_tutorial_graph_user_kernel_pytiovx_uc.h"
 
-vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_create(vx_tutorial_graph_user_kernel_pytiovx_uc usecase)
+vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_create(vx_tutorial_graph_user_kernel_pytiovx_uc usecase, vx_bool add_as_target_kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     
@@ -82,7 +82,7 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_create(vx_tutorial_graph_user
     }
     if (status == (vx_status)VX_SUCCESS)
     {
-        status = vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(usecase);
+        status = vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(usecase, add_as_target_kernel);
     }
     
     return status;
@@ -278,7 +278,7 @@ static vx_node usecase_node_create_node_3 (
     return node;
 }
 
-vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_graph_user_kernel_pytiovx_uc usecase)
+vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_graph_user_kernel_pytiovx_uc usecase, vx_bool add_as_target_kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     
@@ -323,7 +323,14 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_create(vx_tutorial_gr
             usecase->phase_rgb 
           );
         vxSetReferenceName( (vx_reference)usecase->node_3, "node_3");
-        vxSetNodeTarget(usecase->node_3, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        if(add_as_target_kernel==(vx_bool)vx_true_e)
+        {
+            vxSetNodeTarget(usecase->node_3, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        }
+        else
+        {
+            vxSetNodeTarget(usecase->node_3, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_HOST);
+        }
     }
     
     usecase->graph_0 = graph;

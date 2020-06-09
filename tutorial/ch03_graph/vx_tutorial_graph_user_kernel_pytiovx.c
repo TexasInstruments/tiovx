@@ -217,7 +217,7 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
          *       should be done next, before calling graph verify
          * \code
          */
-        vx_tutorial_graph_user_kernel_pytiovx_uc_create(&uc);
+        vx_tutorial_graph_user_kernel_pytiovx_uc_create(&uc, add_as_target_kernel);
         /** \endcode */
 
         /**
