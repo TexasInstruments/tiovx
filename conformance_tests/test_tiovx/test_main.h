@@ -84,7 +84,9 @@ TESTCASE(tivxGraphPipeline)
 TESTCASE(tivxPackedDataFormat)
 TESTCASE(tivxRawImage)
 TESTCASE(tivxReference)
+#ifndef QNX
 TESTCASE(tivxMem)
+#endif
 TESTCASE(tivxMapImage)
 #endif
 
