@@ -72,7 +72,7 @@
 TESTCASE(tivxHwaVideoEncoder, CT_VXContext, ct_setup_vx_context, 0)
 
 #define MAX_ABS_FILENAME   (1024u)
-#define NUM_ITERATIONS     (100u)
+#define MAX_ITERATIONS     (100u)
 
 #define NUM_FRAMES_IN_IPFILE (5u)
 
@@ -152,6 +152,237 @@ TEST(tivxHwaVideoEncoder, testNodeCreation)
     }
 }
 
+typedef struct stream_info {
+    uint32_t width;
+    uint32_t height;
+    uint32_t num_iterations;
+    uint32_t num_frames_in_ipfile;
+    char input_file[MAX_ABS_FILENAME - 32];
+    char output_file[MAX_ABS_FILENAME - 16];
+} stream_info;
+
+static char *read_config_file(char *cfg_file)
+{
+    FILE *fd;
+    char *fcontent = NULL;
+    int filesize = 0, ret = 0;
+
+    fd = fopen(cfg_file, "r");
+    if (NULL == fd)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "%s: file not found!!!\n", cfg_file);
+        return NULL;
+    }
+
+    ret = fseek(fd, 0, SEEK_END);
+    if (0 != ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "fseek failed to find EOF\n");
+        goto error;
+    }
+
+    filesize = ftell(fd);
+    if (0 > filesize)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ftell failed to get file size\n");
+        goto error;
+    }
+
+    ret = fseek(fd, 0, SEEK_SET);
+    if (0 != ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "fseek failed to find start of file\n");
+        goto error;
+    }
+
+    fcontent = (char*)ct_alloc_mem(filesize + 1);
+    if (NULL == fcontent)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ct_alloc_mem failed to allocate buffer\n");
+        goto error;
+    }
+
+    ret = fread(fcontent, sizeof(uint8_t), filesize, fd);
+
+    if (filesize != ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "fread failed to read config file. read=%d != %d",
+                ret, filesize);
+        ct_free_mem(fcontent);
+        goto error;
+    }
+
+    fclose(fd);
+    fd = NULL;
+
+    fcontent[filesize] = '\0';
+
+    return fcontent;
+error:
+    fclose(fd);
+    return NULL;
+}
+
+static uint8_t parse_config_file(char *fcontent, struct stream_info *info, const char *suffix)
+{
+    char substr[MAX_ABS_FILENAME];
+    char *string = NULL, *str = NULL, *tok = NULL;
+    int i, filesize = 0, ret = 0;
+
+    snprintf(substr, sizeof(substr), "width%s=", suffix);
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        info->width = strtol(str + strlen(substr), NULL, 10);
+        if (0 == info->width)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+            return 1;
+        }
+    } else {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+        return 1;
+    }
+
+    snprintf(substr, sizeof(substr), "height%s=", suffix);
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        info->height = strtol(str + strlen(substr), NULL, 10);
+        if (0 == info->height)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+            return 1;
+        }
+    } else {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+        return 1;
+    }
+
+    snprintf(substr, sizeof(substr), "input_file%s=", suffix);
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        ret = sscanf(str + strlen(substr), "%s", info->input_file);
+        if (0 == ret || EOF == ret)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+            return 1;
+        }
+    } else {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+        return 1;
+    }
+
+    snprintf(substr, sizeof(substr), "output_file%s=", suffix);
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        ret = sscanf(str + strlen(substr), "%s", info->output_file);
+        if (0 == ret || EOF == ret)
+        {
+            VX_PRINT(VX_ZONE_INFO, "Failed to find %s, using default.\n", substr);
+            info->output_file[0] = '\0';
+        }
+    } else {
+        VX_PRINT(VX_ZONE_INFO, "Failed to find %s, using default.\n", substr);
+        info->output_file[0] = '\0';
+    }
+
+    snprintf(substr, sizeof(substr), "num_iterations=");
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        info->num_iterations = strtol(str + strlen(substr), NULL, 10);
+        if (0 == info->num_iterations)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+            return 1;
+        }
+        if (info->num_iterations > MAX_ITERATIONS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "num_iterations > MAX_ITERATIONS. Please increase MAX_ITERATIONS and rebuild.\n");
+            return 1;
+        }
+    } else {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+        return 1;
+    }
+
+    snprintf(substr, sizeof(substr), "num_frames_in_ipfile=");
+    str = strstr(fcontent, substr);
+    if (str)
+    {
+        info->num_frames_in_ipfile = strtol(str + strlen(substr), NULL, 10);
+        if (0 == info->num_frames_in_ipfile)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+            return 1;
+        }
+    } else {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to find %s\n", substr);
+        return 1;
+    }
+
+    return 0;
+}
+
+static uint8_t parse_singlechannel_config_file(char *cfg_file, struct stream_info *info)
+{
+    char *fcontent = NULL;
+    int ret = 0;
+
+    fcontent = read_config_file(cfg_file);
+    if (NULL == fcontent)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to read config file\n");
+        return 1;
+    }
+
+    ret = parse_config_file(fcontent, info, "");
+    if (ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to parse config file\n");
+        ct_free_mem(fcontent);
+        return 1;
+    }
+
+    ct_free_mem(fcontent);
+    return 0;
+}
+
+static uint8_t parse_multichannel_config_file(char *cfg_file, struct stream_info *info_0, struct stream_info *info_1)
+{
+    char *fcontent = NULL;
+    int ret = 0;
+
+    fcontent = read_config_file(cfg_file);
+    if (NULL == fcontent)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to read config file\n");
+        return 1;
+    }
+
+    ret = parse_config_file(fcontent, info_0, "_0");
+    if (ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to parse config file for stream_0\n");
+        ct_free_mem(fcontent);
+        return 1;
+    }
+
+    ret = parse_config_file(fcontent, info_1, "_1");
+    if (ret)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to parse config file for stream_1\n");
+        ct_free_mem(fcontent);
+        return 1;
+    }
+
+    ct_free_mem(fcontent);
+    return 0;
+}
+
 TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 {
     vx_context context = context_->vx_context_;
@@ -161,11 +392,11 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
     uint8_t *bitstream;
     vx_map_id map_id;
     vx_user_data_object bitstream_obj;
-    uint32_t width = 1280;
-    uint32_t height = 720;
     vx_graph graph = 0;
     vx_node node_encode = 0;
     vx_status status = VX_SUCCESS;
+    struct stream_info info;
+    char cfg_file[MAX_ABS_FILENAME];
     char input_file[MAX_ABS_FILENAME];
     char output_file[MAX_ABS_FILENAME];
     FILE* out_fp = NULL;
@@ -185,31 +416,44 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
     uint8_t                  *data_ptr_uv;
     FILE* in_fp = NULL;
     uint32_t max_bitstream_size;
-    vx_size seek[NUM_ITERATIONS];
+    vx_size seek[MAX_ITERATIONS];
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VENC1))
     {
+        snprintf(cfg_file, MAX_ABS_FILENAME, "%s/tivx/video_encoder/enc_single_channel.cfg", ct_get_test_file_path());
+
+        if (parse_singlechannel_config_file(cfg_file, &info))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "%s: Failed to parse config file\n", cfg_file);
+            ASSERT(0);
+        }
+
+        snprintf(input_file, MAX_ABS_FILENAME, "%s/tivx/video_encoder/%s", ct_get_test_file_path(), info.input_file);
+
+        if (0 != strlen(info.output_file))
+            snprintf(output_file, MAX_ABS_FILENAME, "%s/output/%s", ct_get_test_file_path(), info.output_file);
+        else
+            snprintf(output_file, MAX_ABS_FILENAME, "%s/output/encoder_output.h264", ct_get_test_file_path());
+
+        remove(output_file);
+
         rect_y.start_x = 0;
         rect_y.start_y = 0;
-        rect_y.end_x = width;
-        rect_y.end_y = height;
+        rect_y.end_x = info.width;
+        rect_y.end_y = info.height;
 
         rect_uv.start_x = 0;
         rect_uv.start_y = 0;
-        rect_uv.end_x = width;
-        rect_uv.end_y = (height * 1)/2;
+        rect_uv.end_x = info.width;
+        rect_uv.end_y = (info.height * 1)/2;
 
         tivxHwaLoadKernels(context);
 
         seek[0] = 0;
-        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
+        for(i = 1; i < info.num_frames_in_ipfile; i++)
         {
-            seek[i] = seek[i - 1] + ((width * height * 3) / 2 );
+            seek[i] = seek[i - 1] + ((info.width * info.height * 3) / 2 );
         }
-
-        snprintf(output_file, MAX_ABS_FILENAME, "%s/output/encode_output.h264", ct_get_test_file_path());
-
-        remove(output_file);
 
         tivx_video_encoder_params_init(&params);
         ASSERT_VX_OBJECT(configuration_obj = vxCreateUserDataObject(context, "tivx_video_encoder_params_t", sizeof(tivx_video_encoder_params_t), NULL),
@@ -219,11 +463,11 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 
         VX_CALL(vxCopyUserDataObject(configuration_obj, 0, sizeof(tivx_video_encoder_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-        ASSERT_VX_OBJECT(input_image = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image = vxCreateImage(context, info.width, info.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
-        max_bitstream_size = ((uint32_t)(width / 16)
-                            * (uint32_t)(height / 16) * WORST_QP_SIZE)
-                            + ((height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+        max_bitstream_size = ((uint32_t)(info.width / 16)
+                            * (uint32_t)(info.height / 16) * WORST_QP_SIZE)
+                            + ((info.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
 
         ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "tivx_video_bitstream_t", sizeof(uint8_t) * max_bitstream_size, NULL),
@@ -237,10 +481,8 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         VX_CALL(vxSetNodeTarget(node_encode, VX_TARGET_STRING, TIVX_TARGET_VENC1));
         VX_CALL(vxVerifyGraph(graph));
 
-        for (i = 0; i < NUM_ITERATIONS; i++)
+        for (i = 0; i < info.num_iterations; i++)
         {
-            snprintf(input_file, MAX_ABS_FILENAME, "%s/tivx/video_encoder/720p_nv12_images_5num.yuv", ct_get_test_file_path());
-
             VX_CALL(vxMapImagePatch(input_image,
                                     &rect_y,
                                     0,
@@ -267,24 +509,24 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
             num_read = 0;
             if (NULL != in_fp)
             {
-                seek_status = fseek(in_fp, seek[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+                seek_status = fseek(in_fp, seek[i % info.num_frames_in_ipfile], SEEK_SET);
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < (height ); j++)
+                    for(j = 0; j < (info.height ); j++)
                     {
-                        num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), width, in_fp);
+                        num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
 
-                    for(j = 0; j < (height / 2); j++)
+                    for(j = 0; j < (info.height / 2); j++)
                     {
-                        num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), width, in_fp);
+                        num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
 
                 }
                 fclose(in_fp);
                 in_fp = NULL;
-                if (((width * height * 3) / 2)!= num_read)
+                if (((info.width * info.height * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file);
                 }
@@ -353,14 +595,14 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
     vx_map_id map_id_l;
     vx_user_data_object bitstream_obj_s;
     vx_user_data_object bitstream_obj_l;
-    uint32_t width_s = 1280;
-    uint32_t width_l = 1920;
-    uint32_t height_s = 720;
-    uint32_t height_l = 1080;
     vx_graph graph = 0;
     vx_node node_encode_s = 0;
     vx_node node_encode_l = 0;
     vx_status status = VX_SUCCESS;
+    struct stream_info info_s;
+    struct stream_info info_l;
+    char cfg_file[MAX_ABS_FILENAME];
+    uint32_t iterations;
     char input_file_s[MAX_ABS_FILENAME];
     char input_file_l[MAX_ABS_FILENAME];
     char output_file_s[MAX_ABS_FILENAME];
@@ -401,51 +643,72 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
     size_t num_read;
     uint32_t max_bitstream_size_s;
     uint32_t max_bitstream_size_l;
-    vx_size seek_s[NUM_ITERATIONS];
-    vx_size seek_l[NUM_ITERATIONS];
+    vx_size seek_s[MAX_ITERATIONS];
+    vx_size seek_l[MAX_ITERATIONS];
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VENC1))
     {
+        snprintf(cfg_file, MAX_ABS_FILENAME, "%s/tivx/video_encoder/enc_multi_channel.cfg", ct_get_test_file_path());
+
+        if (parse_multichannel_config_file(cfg_file, &info_s, &info_l))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "%s: Failed to parse config file\n", cfg_file);
+            ASSERT(0);
+        }
+
+        snprintf(input_file_s, MAX_ABS_FILENAME, "%s/tivx/video_encoder/%s", ct_get_test_file_path(), info_s.input_file);
+        snprintf(input_file_l, MAX_ABS_FILENAME, "%s/tivx/video_encoder/%s", ct_get_test_file_path(), info_l.input_file);
+
+        if (0 != strlen(info_s.output_file))
+            snprintf(output_file_s, MAX_ABS_FILENAME, "%s/output/%s", ct_get_test_file_path(), info_s.output_file);
+        else
+            snprintf(output_file_s, MAX_ABS_FILENAME, "%s/output/encoder_output_s.h264", ct_get_test_file_path());
+
+        if (0 != strlen(info_l.output_file))
+            snprintf(output_file_l, MAX_ABS_FILENAME, "%s/output/%s", ct_get_test_file_path(), info_l.output_file);
+        else
+            snprintf(output_file_l, MAX_ABS_FILENAME, "%s/output/encoder_output_l.h264", ct_get_test_file_path());
+
+        remove(output_file_s);
+        remove(output_file_l);
+
+
+        iterations = info_s.num_iterations < info_l.num_iterations ? info_s.num_iterations : info_l.num_iterations;
+
         rect_s_y.start_x = 0;
         rect_s_y.start_y = 0;
-        rect_s_y.end_x = width_s;
-        rect_s_y.end_y = height_s;
+        rect_s_y.end_x = info_s.width;
+        rect_s_y.end_y = info_s.height;
 
         rect_s_uv.start_x = 0;
         rect_s_uv.start_y = 0;
-        rect_s_uv.end_x = width_s;
-        rect_s_uv.end_y = height_s/2;
+        rect_s_uv.end_x = info_s.width;
+        rect_s_uv.end_y = info_s.height/2;
 
         rect_l_y.start_x = 0;
         rect_l_y.start_y = 0;
-        rect_l_y.end_x = width_l;
-        rect_l_y.end_y = height_l;
+        rect_l_y.end_x = info_l.width;
+        rect_l_y.end_y = info_l.height;
 
         rect_l_uv.start_x = 0;
         rect_l_uv.start_y = 0;
-        rect_l_uv.end_x = width_l;
-        rect_l_uv.end_y = height_l/2;
+        rect_l_uv.end_x = info_l.width;
+        rect_l_uv.end_y = info_l.height/2;
 
         tivxHwaLoadKernels(context);
 
 
         seek_s[0] = 0;
-        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
+        for(i = 1; i < info_s.num_frames_in_ipfile; i++)
         {
-            seek_s[i] = seek_s[i - 1] + ((width_s * height_s * 3) / 2 );
+            seek_s[i] = seek_s[i - 1] + ((info_s.width * info_s.height * 3) / 2 );
         }
 
         seek_l[0] = 0;
-        for(i = 1; i < NUM_FRAMES_IN_IPFILE; i++)
+        for(i = 1; i < info_l.num_frames_in_ipfile; i++)
         {
-            seek_l[i] = seek_l[i - 1] + ((width_l * height_l * 3) / 2 );
+            seek_l[i] = seek_l[i - 1] + ((info_l.width * info_l.height * 3) / 2 );
         }
-
-        snprintf(output_file_s, MAX_ABS_FILENAME, "%s/output/encode_output_s.h264", ct_get_test_file_path());
-        snprintf(output_file_l, MAX_ABS_FILENAME, "%s/output/encode_output_l.h264", ct_get_test_file_path());
-
-        remove(output_file_s);
-        remove(output_file_l);
 
         tivx_video_encoder_params_init(&params_s);
         tivx_video_encoder_params_init(&params_l);
@@ -460,18 +723,18 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         VX_CALL(vxCopyUserDataObject(configuration_obj_s, 0, sizeof(tivx_video_encoder_params_t), &params_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(configuration_obj_l, 0, sizeof(tivx_video_encoder_params_t), &params_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-        ASSERT_VX_OBJECT(input_image_s = vxCreateImage(context, width_s, height_s, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(input_image_l = vxCreateImage(context, width_l, height_l, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(file_io_image_s = vxCreateImage(context, width_s, height_s, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(file_io_image_l = vxCreateImage(context, width_l, height_l, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(file_io_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(file_io_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
 
-        max_bitstream_size_s = ((uint32_t)(width_s / 16)
-                                    * (uint32_t)(height_s / 16) * WORST_QP_SIZE)
-                                    + ((height_s >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+        max_bitstream_size_s = ((uint32_t)(info_s.width / 16)
+                                    * (uint32_t)(info_s.height / 16) * WORST_QP_SIZE)
+                                    + ((info_s.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
-        max_bitstream_size_l = ((uint32_t)(width_l / 16)
-                                    * (uint32_t)(height_l / 16) * WORST_QP_SIZE)
-                                    + ((height_l >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+        max_bitstream_size_l = ((uint32_t)(info_l.width / 16)
+                                    * (uint32_t)(info_l.height / 16) * WORST_QP_SIZE)
+                                    + ((info_l.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
         ASSERT_VX_OBJECT(bitstream_obj_s = vxCreateUserDataObject(context, "tivx_video_bitstream_t", sizeof(uint8_t) * max_bitstream_size_s, NULL),
                                                                     (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -491,11 +754,8 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         VX_CALL(vxSetNodeTarget(node_encode_l, VX_TARGET_STRING, TIVX_TARGET_VENC1));
         VX_CALL(vxVerifyGraph(graph));
 
-        for (i = 0; i < NUM_ITERATIONS; i++)
+        for (i = 0; i < iterations; i++)
         {
-            snprintf(input_file_s, MAX_ABS_FILENAME, "%s/tivx/video_encoder/720p_nv12_images_5num.yuv", ct_get_test_file_path());
-            snprintf(input_file_l, MAX_ABS_FILENAME, "%s/tivx/video_encoder/1080p_nv12_images_5num.yuv", ct_get_test_file_path());
-
             VX_CALL(vxMapImagePatch(input_image_s,
                                     &rect_s_y,
                                     0,
@@ -544,23 +804,23 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
             num_read = 0;
             if (NULL != in_fp_s)
             {
-                seek_status = fseek(in_fp_s, seek_s[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+                seek_status = fseek(in_fp_s, seek_s[i % info_s.num_frames_in_ipfile], SEEK_SET);
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < height_s; j++)
+                    for(j = 0; j < info_s.height; j++)
                     {
-                        num_read  += fread(data_ptr_s_y + (j * image_addr_s_y.stride_y), sizeof(uint8_t), width_s, in_fp_s);
+                        num_read  += fread(data_ptr_s_y + (j * image_addr_s_y.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
-                    for(j = 0; j < height_s / 2; j++)
+                    for(j = 0; j < info_s.height / 2; j++)
                     {
-                    num_read  += fread(data_ptr_s_uv + (j * image_addr_s_uv.stride_y), sizeof(uint8_t), width_s, in_fp_s);
+                    num_read  += fread(data_ptr_s_uv + (j * image_addr_s_uv.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
                 }
 
                 fclose(in_fp_s);
                 in_fp_s = NULL;
-                if (((width_s * height_s * 3) / 2)!= num_read)
+                if (((info_s.width * info_s.height * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
                 }
@@ -570,24 +830,24 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
             num_read = 0;
             if (NULL != in_fp_l)
             {
-                seek_status = fseek(in_fp_l, seek_l[i % NUM_FRAMES_IN_IPFILE], SEEK_SET);
+                seek_status = fseek(in_fp_l, seek_l[i % info_l.num_frames_in_ipfile], SEEK_SET);
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < height_l; j++)
+                    for(j = 0; j < info_l.height; j++)
                     {
-                        num_read  += fread(data_ptr_l_y + (j * image_addr_l_y.stride_y), sizeof(uint8_t), width_l, in_fp_l);
+                        num_read  += fread(data_ptr_l_y + (j * image_addr_l_y.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
 
-                    for(j = 0; j < (height_l / 2); j++)
+                    for(j = 0; j < (info_l.height / 2); j++)
                     {
-                        num_read  += fread(data_ptr_l_uv + (j * image_addr_l_uv.stride_y), sizeof(uint8_t), width_l, in_fp_l);
+                        num_read  += fread(data_ptr_l_uv + (j * image_addr_l_uv.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
                 }
 
                 fclose(in_fp_l);
                 in_fp_l = NULL;
-                if (((width_l * height_l * 3) / 2)!= num_read)
+                if (((info_l.width * info_l.height * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
                 }
