@@ -835,18 +835,28 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
         inst_obj = msc_obj->inst_obj;
 
+        if ((vx_df_image)VX_DF_IMAGE_NV12 == in_img_desc->format)
+        {
+            size = in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y + \
+                   in_img_desc->imagepatch_addr[1].dim_x*in_img_desc->imagepatch_addr[1].dim_y;
+        }
+        else
+        {
+            size = in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y;
+        }
+
         if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
                 (uint32_t)cur_time,
-                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                size /* pixels processed */
                 );
         }
         else
         {
             appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
                 (uint32_t)cur_time,
-                in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y /* pixels processed */
+                size /* pixels processed */
                 );
         }
     }
