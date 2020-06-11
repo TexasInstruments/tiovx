@@ -5,7 +5,7 @@
 
 from tiovx import *
 
-code = KernelExportCode(Module.TEST_KERNELS, Core.ARM, "CUSTOM_KERNEL_PATH")
+code = KernelExportCode("test", Core.ARM, "CUSTOM_APPLICATION_PATH")
 
 kernel = Kernel("pyramid_intermediate")
 
