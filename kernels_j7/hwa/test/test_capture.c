@@ -341,6 +341,13 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             ASSERT(timestamp0!=timestamp1);
 
+            VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
+
+            /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
+            ASSERT(timestamp > (prev_timestamp+33000));
+
+            prev_timestamp = timestamp;
+
             VX_CALL(tivxReleaseRawImage(&element0));
             VX_CALL(tivxReleaseRawImage(&element1));
         }
@@ -357,16 +364,17 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             ASSERT(timestamp0!=timestamp1);
 
+            VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
+
+            /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
+            /* TIOVX-995: Currently is around 32.5ms in broadcast mode */
+            ASSERT(timestamp > (prev_timestamp+33000));
+
+            prev_timestamp = timestamp;
+
             VX_CALL(vxReleaseImage(&element0));
             VX_CALL(vxReleaseImage(&element1));
         }
-
-        VX_CALL(vxQueryReference((vx_reference)out_capture_frames, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
-
-        /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
-        ASSERT(timestamp > (prev_timestamp+33000));
-
-        prev_timestamp = timestamp;
 
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
     }
