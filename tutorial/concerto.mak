@@ -24,7 +24,6 @@ CH02_SOURCES := \
 CH03_SOURCES := \
 	ch03_graph/vx_tutorial_graph.c \
 	ch03_graph/vx_tutorial_graph_image_gradients.c \
-	ch03_graph/vx_tutorial_graph_image_gradients_pytiovx.c \
 	ch03_graph/vx_tutorial_graph_image_gradients_pytiovx_uc.c \
 	ch03_graph/vx_tutorial_graph_user_kernel.c \
 	ch03_graph/phase_rgb_user_kernel.c \

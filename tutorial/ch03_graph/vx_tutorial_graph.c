@@ -70,11 +70,10 @@ static char menu[] = {
     "\n ================"
     "\n"
     "\n 1: Graph with multiple targets"
-    "\n 2: Graph generated with PyTIOVX tool"
-    "\n 3: Graph with user kernels"
-    "\n 4: Graph with user kernels and generated with PyTIOVX tool"
-    "\n 5: Graph with target kernels"
-    "\n 6: Graph with target kernels and generated with PyTIOVX tool"
+    "\n 2: Graph with user kernels"
+    "\n 3: Graph with user kernels and generated with PyTIOVX tool"
+    "\n 4: Graph with target kernels"
+    "\n 5: Graph with target kernels and generated with PyTIOVX tool"
     "\n"
     "\n a: Run All"
     "\n"
@@ -86,7 +85,6 @@ static char menu[] = {
 void vx_tutorial_graph_run_all()
 {
     vx_tutorial_graph_image_gradients();
-    vx_tutorial_graph_image_gradients_pytiovx();
     vx_tutorial_graph_user_kernel((vx_bool)vx_false_e);
     vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_false_e);
     vx_tutorial_graph_user_kernel((vx_bool)vx_true_e);
@@ -110,18 +108,15 @@ void vx_tutorial_graph_run_interactive()
                 vx_tutorial_graph_image_gradients();
                 break;
             case '2':
-                vx_tutorial_graph_image_gradients_pytiovx();
-                break;
-            case '3':
                 vx_tutorial_graph_user_kernel((vx_bool)vx_false_e);
                 break;
-            case '4':
+            case '3':
                 vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_false_e);
                 break;
-            case '5':
+            case '4':
                 vx_tutorial_graph_user_kernel((vx_bool)vx_true_e);
                 break;
-            case '6':
+            case '5':
                 vx_tutorial_graph_user_kernel_pytiovx((vx_bool)vx_true_e);
                 break;
             case 'a':
