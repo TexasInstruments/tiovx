@@ -1030,6 +1030,21 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                         status = (vx_status)VX_FAILURE;
                         VX_PRINT(VX_ZONE_ERROR, ": Failed to set PHY Parameters!!!\r\n");
                     }
+                    else
+                    {
+                        /* Register Error Events */
+                        Csirx_EventPrms eventPrms;
+                        Csirx_eventPrmsInit(&eventPrms);
+                        fvid2_status = Fvid2_control(instParams->drvHandle,
+                                               IOCTL_CSIRX_REGISTER_EVENT,
+                                               &eventPrms,
+                                               NULL);
+                        if (FVID2_SOK != fvid2_status)
+                        {
+                            status = (vx_status)VX_FAILURE;
+                            VX_PRINT(VX_ZONE_ERROR, ": Failed to set Event Parameters!!!\r\n");
+                        }
+                    }
                 }
             }
         }
@@ -1129,6 +1144,16 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                 instParams = &prms->instParams[instIdx];
                 if (NULL != instParams->drvHandle)
                 {
+                    /* Disable Error Events */
+                    fvid2_status = Fvid2_control(instParams->drvHandle,
+                                           IOCTL_CSIRX_UNREGISTER_EVENT,
+                                           CSIRX_EVENT_GROUP_ERROR,
+                                           NULL);
+                    if(FVID2_SOK != fvid2_status)
+                    {
+                        status = (vx_status)VX_FAILURE;
+                        VX_PRINT(VX_ZONE_ERROR, ": Capture Event Unregister failed!!!\r\n");
+                    }
                     Fvid2_delete(instParams->drvHandle, NULL);
                     instParams->drvHandle = NULL;
                 }
@@ -1274,6 +1299,16 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                     tivxCapturePrintStatus(instParams);
                 }
 
+                /* Disable Error Events */
+                fvid2_status = Fvid2_control(instParams->drvHandle,
+                                       IOCTL_CSIRX_UNREGISTER_EVENT,
+                                       CSIRX_EVENT_GROUP_ERROR,
+                                       NULL);
+                if(FVID2_SOK != fvid2_status)
+                {
+                    status = (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, ": Capture Event Unregister failed!!!\r\n");
+                }
                 /* Deleting FVID2 handle */
                 if ((vx_status)VX_SUCCESS == status)
                 {
