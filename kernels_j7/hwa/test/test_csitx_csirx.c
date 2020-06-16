@@ -155,6 +155,7 @@ static void VX_CALLBACK tivxTask_capture(void *app_var)
     {
         local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
+    local_capture_config.instCfg[0U].laneBandSpeed = TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS;
     for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
     {
         local_capture_config.chVcNum[loopCnt]   = loopCnt;
