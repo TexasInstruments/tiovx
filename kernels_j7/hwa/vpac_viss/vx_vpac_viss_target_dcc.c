@@ -14,7 +14,7 @@
  * The patent license shall not apply to any combinations which include this software,
  * other than combinations with devices manufactured by or for TI ("TI Devices").
  * No hardware patent is licensed hereunder.
- *
+*
  * Redistributions must preserve existing copyright notices and reproduce this license
  * (including the above copyright notice and the disclaimer and (if applicable) source
  * code license limitations below) in the documentation and/or other materials provided
@@ -111,10 +111,7 @@ vx_status tivxVpacVissInitDcc(tivxVpacVissObj *vissObj,
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    vissObj->dcc_in_prms.analog_gain = 1024;
-    vissObj->dcc_in_prms.cameraId = vissPrms->sensor_dcc_id;
-    vissObj->dcc_in_prms.color_temparature = 5000;
-    vissObj->dcc_in_prms.exposure_time = 33333;
+    vissObj->sensor_dcc_id = vissPrms->sensor_dcc_id;
 
     /* Calculate the number of bytes required for
      * storing DCC output */
@@ -147,14 +144,19 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     const tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res)
 {
-    vx_status                   status = (vx_status)VX_SUCCESS;
-    int32_t                         dcc_status;
+    vx_status                  status = (vx_status)VX_SUCCESS;
+    int32_t                    dcc_status;
+    dcc_parser_input_params_t  dcc_in;
     dcc_parser_input_params_t  *dcc_in_prms;
     dcc_parser_output_params_t *dcc_out_prms;
 
     if (NULL != dcc_buf_desc)
     {
-        dcc_in_prms = &vissObj->dcc_in_prms;
+        dcc_in_prms = &dcc_in;
+    	dcc_in_prms->dcc_buf = NULL;
+    	dcc_in_prms->dcc_buf_size = 0;
+    	dcc_in_prms->cameraId = vissObj->sensor_dcc_id;
+
         dcc_out_prms = &vissObj->dcc_out_prms;
 
         dcc_in_prms->dcc_buf_size = dcc_buf_desc->mem_size;
@@ -243,15 +245,13 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result)
 {
     vx_status                        status = (vx_status)VX_SUCCESS;
-    int32_t                          dcc_status = 0;
     tivxVpacVissConfig              *vsCfg;
     Rfe_GainOfstConfig              *wbCfg;
+    dcc_parser_input_params_t       dcc_in;
     dcc_parser_input_params_t       *dcc_in_prms;
-    dcc_parser_output_params_t      *dcc_out_prms;
 
     vsCfg = &vissObj->vissCfg;
-    dcc_in_prms = &vissObj->dcc_in_prms;
-    dcc_out_prms = &vissObj->dcc_out_prms;
+    dcc_in_prms = &dcc_in;
 
     wbCfg = &vsCfg->wbCfg;
 
@@ -286,33 +286,23 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
             dcc_in_prms->exposure_time = aewb_result->exposure_time;
         }
 
-        dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
+        /* Apply DCC Output to VISS Driver config */
 
-        if (0 != dcc_status)
+        /* Apply DCC Output and update CCM */
+        tivxVpacVissDccMapCCMParams(vissObj, aewb_result);
+
+        /* Update WB Gains in NSF4 if it is enabled */
+        if (0u == vissObj->bypass_nsf4)
         {
-            VX_PRINT(VX_ZONE_ERROR, "DCC Update Failed !!!\n");
-            status = (vx_status)VX_FAILURE;
+            tivxVpacVissDccMapNsf4Params(vissObj, aewb_result);
         }
-        else
-        {
-            /* Apply DCC Output to VISS Driver config */
 
-            /* Apply DCC Output and update CCM */
-            tivxVpacVissDccMapCCMParams(vissObj, aewb_result);
+        /* Update BLC Offset */
+        tivxVpacVissDccMapBlc(vissObj, aewb_result);
 
-            /* Update WB Gains in NSF4 if it is enabled */
-            if (0u == vissObj->bypass_nsf4)
-            {
-                tivxVpacVissDccMapNsf4Params(vissObj, aewb_result);
-            }
-
-            /* Update BLC Offset */
-            tivxVpacVissDccMapBlc(vissObj, aewb_result);
-
-            /*
-             * TODO: H3A LUT Update.
-             */
-        }
+        /*
+         * TODO: H3A LUT Update.
+         */
     }
     else
     {
@@ -513,34 +503,44 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     Fcp_CcmConfig      *ccmCfg = NULL;
     ccmCfg = &vissObj->vissCfg.ccmCfg;
 
-    if ((vissObj->dcc_out_prms.useCcmCfg != 0) && (NULL != ae_awb_res))
+    if (vissObj->dcc_out_prms.useCcmCfg != 0)
     {
-        int color_temp = ae_awb_res->color_temperature;
-        int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
-        iss_ipipe_rgb2rgb ccm_int;
-        iss_ipipe_rgb2rgb *rgb2rgb = &ccm_int;
-
-        dcc_interp_CCM(
-            vissObj->dcc_out_prms.phPrmsRgb2Rgb1,
-            n_regions,
-            color_temp,
-            vissObj->dcc_out_prms.ipipeRgb2Rgb1Cfg,
-            rgb2rgb);
-
-        for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
+    	if(NULL != ae_awb_res)
         {
-            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
+            int color_temp = ae_awb_res->color_temperature;
+            int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
+            iss_ipipe_rgb2rgb ccm_int;
+            iss_ipipe_rgb2rgb *rgb2rgb = &ccm_int;
+
+            dcc_interp_CCM(
+                vissObj->dcc_out_prms.phPrmsRgb2Rgb1,
+                n_regions,
+                color_temp,
+                vissObj->dcc_out_prms.ipipeRgb2Rgb1Cfg,
+                rgb2rgb);
+
+            for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
             {
-                ccmCfg->weights[cnt1][cnt2] = rgb2rgb->matrix[cnt1][cnt2];
+                for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
+                {
+                    ccmCfg->weights[cnt1][cnt2] = rgb2rgb->matrix[cnt1][cnt2];
+                }
+                ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
             }
-            ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
+
+            vissObj->vissCfgRef.ccm = ccmCfg;
+
+            /* Setting config flag to 1,
+             * assumes caller protects this flag */
+            vissObj->isConfigUpdated = 1U;
         }
-
-        vissObj->vissCfgRef.ccm = ccmCfg;
-
-        /* Setting config flag to 1,
-         * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;
+    	else
+        {
+            /*
+            	Nothing to do. dcc_out_prms has been updated and will take effect 
+            	when tivxVpacVissApplyAEWBParams is called next time 
+            */
+         }
     }
     else
     {

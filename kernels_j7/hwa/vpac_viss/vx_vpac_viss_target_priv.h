@@ -230,8 +230,8 @@ typedef struct
     /* DCC Parameters */
     /*! Flag to indicate if DCC is used or not */
     uint32_t                            use_dcc;
-    /*! Input parameters require for DCC parsing */
-    dcc_parser_input_params_t           dcc_in_prms;
+    /*! Sensor DCC ID required for DCC parsing */
+	uint32_t                            sensor_dcc_id;
     /*! DCC Parsed output
      *  TODO: This instance can be very big, allocate it.
      */
