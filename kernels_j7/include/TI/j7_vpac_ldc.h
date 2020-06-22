@@ -129,6 +129,23 @@ extern "C" {
  */
 #define TIVX_VPAC_LDC_CMD_SET_LDC_PARAMS                    (0x10000003u)
 
+/*! \brief Control Command to set the DCC (Dynamic Camera Configuration)
+ *         information to the given LDC Node.
+ *
+ *         Ldc node gets the pointer to DCC buffer containing
+ *         LDC configuration. It uses DCC parser to parse and
+ *         map DCC parameters into LDC configuration and sets it
+ *         in the driver.
+ *
+ *         User data object containing DCC buffer is passed
+ *         as argument with this control command.
+ *
+ *         The ID of this command must be the same as TIVX_VPAC_VISS_CMD_SET_DCC_PARAMS
+ *
+ *  \ingroup group_vision_function_vpac_ldc
+ */
+#define TIVX_VPAC_LDC_CMD_SET_LDC_DCC_PARAMS                  (0x30000000u)
+
 /*********************************
  *      VPAC_LDC Defines
  *********************************/
