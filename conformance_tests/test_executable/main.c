@@ -24,17 +24,19 @@ void TestModuleUnRegister();
 
 static void intSigHandler(int sig)
 {
-    exit(0);
+    exit(1);
 }
 
 int main(int argc, char* argv[])
 {
+    int status = 0;
     /* Register the signal handler. */
     signal(SIGINT, intSigHandler);
 
     tivxInit();
     TestModuleRegister();
-    vx_conformance_test_main(argc, argv);
+    status = vx_conformance_test_main(argc, argv);
     TestModuleUnRegister();
     tivxDeInit();
+    return status;
 }
