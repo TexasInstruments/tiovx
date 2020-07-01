@@ -70,7 +70,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
     {
         if (status == (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Invalid status code!\n");
+            VX_PRINT(VX_ZONE_WARNING, "Invalid status code; VX_SUCCESS status is not logged!\n");
             ret = (vx_status)VX_ERROR_INVALID_VALUE;
         }
     }
