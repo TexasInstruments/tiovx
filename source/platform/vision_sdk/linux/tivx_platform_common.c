@@ -76,6 +76,7 @@ vx_status tivxPlatformInit(void)
 
     tivxMemInit();
     tivxIpcInit();
+    tivxLogRtInit();
 
     return (status);
 }
@@ -274,4 +275,16 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
 void *tivxPlatformGetDmaObj()
 {
   return NULL;
+}
+
+void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
+{
+    if(shm_base)
+    {
+        *shm_base = NULL;
+    }
+    if(shm_size)
+    {
+        *shm_size = 0;
+    }
 }

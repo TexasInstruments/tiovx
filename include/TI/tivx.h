@@ -70,6 +70,7 @@
 #include <VX/vx_khr_pipelining.h>
 #include <VX/vx_khr_user_data_object.h>
 #include <TI/tivx_debug.h>
+#include <TI/tivx_log_rt.h>
 #include <TI/tivx_kernels.h>
 #include <TI/tivx_nodes.h>
 #include <TI/tivx_mem.h>

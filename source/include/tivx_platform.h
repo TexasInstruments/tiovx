@@ -93,6 +93,12 @@ typedef enum {
     /*! \brief Lock the data reference queue during enqueue and dequeue */
     TIVX_PLATFORM_LOCK_DATA_REF_QUEUE,
 
+    /*! \brief Lock the index information of run-time logger */
+    TIVX_PLATFORM_LOCK_LOG_RT_INDEX,
+
+    /*! \brief Lock the run-time logger */
+    TIVX_PLATFORM_LOCK_LOG_RT,
+
     /*! \brief Max number of locks */
     TIVX_PLATFORM_LOCK_MAX
 
@@ -141,6 +147,16 @@ vx_bool tivxPlatformTargetMatch(const char *kernel_target_name, const char *targ
  * \ingroup group_tivx_platform
  */
 void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info);
+
+/*!
+ * \brief Return shared memory info which holds the run-time logger buffer
+ *
+ *        This is platform APIs since method of specifying shared memory,
+ *        is platform dependant
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size);
 
 /*!
  * \brief Take a system level lock
