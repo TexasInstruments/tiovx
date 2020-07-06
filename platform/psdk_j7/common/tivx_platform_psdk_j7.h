@@ -40,6 +40,12 @@ extern "C" {
  */
 #define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
 
+/*! \brief HW spinlock ID to use for locking run-time event logger
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID    (253u)
+
+
 /*! \brief HW spinlock ID to use for locking object descriptor table
  * \ingroup group_tivx_platform
  */

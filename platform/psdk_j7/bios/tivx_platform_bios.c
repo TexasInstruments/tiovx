@@ -88,6 +88,7 @@ vx_status tivxPlatformInit(void)
             }
         }
         tivxIpcInit();
+        tivxLogRtInit();
     }
 
     return (status);
@@ -124,6 +125,10 @@ void tivxPlatformSystemLock(vx_enum lock_id)
              */
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
+        {
+            appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
+        }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
@@ -143,6 +148,10 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+        }
+        else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
+        {
+            appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
@@ -266,5 +275,23 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
                 break;
             }
         }
+    }
+}
+
+void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
+{
+    if(shm_base)
+    {
+        *shm_base = NULL;
+    }
+    if(shm_size)
+    {
+        *shm_size = 0;
+    }
+    if(shm_base && shm_size)
+    {
+        appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
+        /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
+        tivxLogRtResetShm(*shm_base, *shm_size);
     }
 }
