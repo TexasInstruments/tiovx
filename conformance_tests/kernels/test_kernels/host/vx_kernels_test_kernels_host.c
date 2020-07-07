@@ -162,3 +162,10 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     }
 }
 
+void tivxTestKernelsUnSetLoadKernelsFlag(void)
+{
+    if (1u == gIsTestKernelsKernelsLoad)
+    {
+        gIsTestKernelsKernelsLoad = 0U;
+    }
+}

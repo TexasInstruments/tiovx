@@ -1009,6 +1009,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                     ownReleaseReferenceInt(&ref, ref->type, (vx_enum)VX_INTERNAL, NULL);
                 }
 
+                if((NULL != ref) && (ref->type == (vx_enum)VX_TYPE_KERNEL) ) {
+                    VX_PRINT(VX_ZONE_WARNING,"A kernel with name %s has not been removed, possibly due to a kernel module not being unloaded.\n", ref->name);
+                    VX_PRINT(VX_ZONE_WARNING,"Removing as a part of garbage collection\n");
+                    status = vxRemoveKernel((vx_kernel)ref);
+                }
+
                 /* Warning above so user can fix release external objects, but close here anyway */
                 while ((NULL != ref)&& (ref->external_count > 1U) ) {
                     ownDecrementReference(ref, (vx_enum)VX_EXTERNAL);

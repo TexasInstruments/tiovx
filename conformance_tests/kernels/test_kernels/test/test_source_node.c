@@ -1906,6 +1906,17 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/*
+ * Test for TIOVX-1002
+ * Calling load kernels and having the garbage collection perform the remove kernels
+ */
+TEST(tivxSourceNode, testContextRelease)
+{
+    vx_context context = context_->vx_context_;
+    tivxTestKernelsLoadKernels(context);
+
+    tivxTestKernelsUnSetLoadKernelsFlag();
+}
 
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
@@ -1925,5 +1936,6 @@ TESTCASE_TESTS(tivxSourceNode,
                testMultiGraphPipelined3,
                testPipeliningStreaming1,
                testPipeliningStreaming2,
-               testPipeliningStreaming3)
+               testPipeliningStreaming3,
+               testContextRelease)
 

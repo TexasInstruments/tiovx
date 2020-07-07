@@ -176,6 +176,12 @@ void tivxTestKernelsUnLoadKernels(vx_context context);
  */
 void tivxTestKernelsPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
 
+/*!
+ * \brief Used for the Application to unset the load kernels flag.
+ * \ingroup group_kernel
+ */
+void tivxTestKernelsUnSetLoadKernelsFlag(void);
+
 #ifdef __cplusplus
 }
 #endif
