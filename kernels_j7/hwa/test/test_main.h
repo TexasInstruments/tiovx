@@ -62,9 +62,6 @@
 
 #if defined(J7) || defined(PC)
 #if defined(BUILD_CT_TIOVX_HWA)
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-#endif
 TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaVpacLdc)
