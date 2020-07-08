@@ -93,19 +93,27 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 {
     uint16_t i;
     tivx_target_kernel_instance kernel_instance = NULL, tmp_kernel_instance = NULL;
-    tivx_target_kernel kernel;
+    tivx_target_kernel kernel = NULL;
     vx_status status;
+    volatile char kernel_name_print[VX_MAX_KERNEL_NAME];
 
     kernel = tivxTargetKernelGet(kernel_id, kernel_name, target_id);
 
-    VX_PRINT(VX_ZONE_INFO, "attempting to call kernel %s on this CPU\n", kernel_name);
+    if( kernel_name != NULL )
+    {
+        tivx_obj_desc_memcpy(kernel_name_print, kernel_name, VX_MAX_KERNEL_NAME);
+        VX_PRINT(VX_ZONE_INFO, "attempting to call kernel %s on this CPU\n", kernel_name_print);
+    }
 
     if(kernel==NULL)
     {
         /* there is no kernel registered with this kernel ID on this CPU, hence return
         NULL */
-        VX_PRINT(VX_ZONE_ERROR, "kernel %s has not been registered on this CPU\n", kernel_name);
-        VX_PRINT(VX_ZONE_ERROR, "Please register this kernel on the appropriate target core\n");
+        if( kernel_name != NULL )
+        {
+            VX_PRINT(VX_ZONE_ERROR, "kernel %s has not been registered on this CPU\n", kernel_name_print);
+            VX_PRINT(VX_ZONE_ERROR, "Please register this kernel on the appropriate target core\n");
+        }
     }
     else
     {
@@ -149,6 +157,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
             tivxMutexUnlock(g_target_kernel_instance_lock);
         }
     }
+
     return kernel_instance;
 }
 
