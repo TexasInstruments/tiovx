@@ -316,64 +316,73 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
 
     if(ownIsValidContext(context)==(vx_bool)vx_true_e)
     {
-        is_found = (vx_bool)vx_false_e;
-
-        ownIsKernelInContext(context, enumeration, name, &is_found);
-
-        if((numParams <= TIVX_KERNEL_MAX_PARAMS)
-            && (
-            (is_found == (vx_bool)vx_false_e) /* not a duplicate kernel */
-            ||
-            (strncmp(name, "com.ti.tidl", VX_MAX_KERNEL_NAME)==0)
-            ))
+        if (NULL != name)
         {
-            kernel = (vx_kernel)ownCreateReference(context, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, &context->base);
-            if ((vxGetStatus((vx_reference)kernel) == (vx_status)VX_SUCCESS) && (kernel->base.type == (vx_enum)VX_TYPE_KERNEL))
+            is_found = (vx_bool)vx_false_e;
+
+            ownIsKernelInContext(context, enumeration, name, &is_found);
+            if((numParams <= TIVX_KERNEL_MAX_PARAMS)
+                && (
+                (is_found == (vx_bool)vx_false_e) /* not a duplicate kernel */
+                ||
+                (strncmp(name, "com.ti.tidl", VX_MAX_KERNEL_NAME)==0)
+                ))
             {
-                strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
-                kernel->name[VX_MAX_KERNEL_NAME-1]=(char)0;
-                kernel->enumeration = enumeration;
-                kernel->function = func_ptr;
-                kernel->validate = validate;
-                kernel->initialize = initialize;
-                kernel->deinitialize = deinitialize;
-                kernel->num_targets = 0;
-                kernel->num_pipeup_bufs = 1;
-                kernel->pipeup_buf_idx  = 0;
-                kernel->num_sink_bufs = 1;
-                kernel->connected_sink_bufs = 1;
-                kernel->state = (vx_enum)VX_NODE_STATE_STEADY;
-                kernel->signature.num_parameters = numParams;
-                kernel->local_data_size = 0;
-                kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
-                kernel->timeout_val = TIVX_DEFAULT_KERNAL_TIMEOUT;
-                if(kernel->function != NULL)
+                kernel = (vx_kernel)ownCreateReference(context, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, &context->base);
+                if ((vxGetStatus((vx_reference)kernel) == (vx_status)VX_SUCCESS) && (kernel->base.type == (vx_enum)VX_TYPE_KERNEL))
                 {
-                    kernel->is_target_kernel = (vx_bool)vx_false_e;
+                    strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
+                    kernel->name[VX_MAX_KERNEL_NAME-1]=(char)0;
+                    vxSetReferenceName((vx_reference)kernel, kernel->name);
+                    kernel->enumeration = enumeration;
+                    kernel->function = func_ptr;
+                    kernel->validate = validate;
+                    kernel->initialize = initialize;
+                    kernel->deinitialize = deinitialize;
+                    kernel->num_targets = 0;
+                    kernel->num_pipeup_bufs = 1;
+                    kernel->pipeup_buf_idx  = 0;
+                    kernel->num_sink_bufs = 1;
+                    kernel->connected_sink_bufs = 1;
+                    kernel->state = (vx_enum)VX_NODE_STATE_STEADY;
+                    kernel->signature.num_parameters = numParams;
+                    kernel->local_data_size = 0;
+                    kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
+                    kernel->timeout_val = TIVX_DEFAULT_KERNAL_TIMEOUT;
+                    if(kernel->function != NULL)
+                    {
+                        kernel->is_target_kernel = (vx_bool)vx_false_e;
+                    }
+                    else
+                    {
+                        kernel->is_target_kernel = (vx_bool)vx_true_e;
+                    }
+                    for(idx=0; idx<TIVX_KERNEL_MAX_PARAMS; idx++)
+                    {
+                        kernel->signature.directions[idx] = (vx_enum)VX_TYPE_INVALID;
+                        kernel->signature.types[idx] = (vx_enum)VX_TYPE_INVALID;
+                        kernel->signature.states[idx] = (vx_enum)VX_TYPE_INVALID;
+                    }
+                    kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
+                    if(kernel->is_target_kernel == (vx_bool)(vx_bool)vx_false_e)
+                    {
+                        /* for user kernel, add to HOST target by default */
+                        tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
+                    }
                 }
-                else
-                {
-                    kernel->is_target_kernel = (vx_bool)vx_true_e;
-                }
-                for(idx=0; idx<TIVX_KERNEL_MAX_PARAMS; idx++)
-                {
-                    kernel->signature.directions[idx] = (vx_enum)VX_TYPE_INVALID;
-                    kernel->signature.types[idx] = (vx_enum)VX_TYPE_INVALID;
-                    kernel->signature.states[idx] = (vx_enum)VX_TYPE_INVALID;
-                }
-                kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
-                if(kernel->is_target_kernel == (vx_bool)(vx_bool)vx_false_e)
-                {
-                    /* for user kernel, add to HOST target by default */
-                    tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
-                }
+            }
+            else
+            {
+                kernel = (vx_kernel)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
             }
         }
         else
         {
             kernel = (vx_kernel)ownGetErrorObject(context, (vx_status)VX_ERROR_INVALID_PARAMETERS);
+            VX_PRINT(VX_ZONE_ERROR,"provided kernel name was NULL, please provide non-NULL kernel name\n");
         }
     }
+
     return kernel;
 }
 
@@ -427,6 +436,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
         VX_PRINT(VX_ZONE_ERROR, "Invalid kernel reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+
     return status;
 }
 

@@ -556,6 +556,11 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         VX_PRINT(VX_ZONE_ERROR,"invalid context\n");
         status = (vx_status)VX_FAILURE;
     }
+    else if (NULL == string)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"provided kernel name was NULL, please provide non-NULL kernel name\n");
+        status = (vx_status)VX_FAILURE;
+    }
     else
     {
         ownContextLock(context);
@@ -579,6 +584,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
                 *is_found = (vx_bool)vx_true_e;
                 break;
             }
+
         }
 
         ownContextUnlock(context);
