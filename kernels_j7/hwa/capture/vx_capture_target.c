@@ -172,6 +172,12 @@ struct tivxCaptureParams_t
 
 static tivx_target_kernel vx_capture_target_kernel1 = NULL;
 static tivx_target_kernel vx_capture_target_kernel2 = NULL;
+static tivx_target_kernel vx_capture_target_kernel3 = NULL;
+static tivx_target_kernel vx_capture_target_kernel4 = NULL;
+static tivx_target_kernel vx_capture_target_kernel5 = NULL;
+static tivx_target_kernel vx_capture_target_kernel6 = NULL;
+static tivx_target_kernel vx_capture_target_kernel7 = NULL;
+static tivx_target_kernel vx_capture_target_kernel8 = NULL;
 
 static vx_status captDrvCallback(Fvid2_Handle handle, void *appData, void *reserved);
 static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format);
@@ -1716,7 +1722,6 @@ void tivxAddTargetKernelCapture(void)
     if((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_CAPTURE1, TIVX_TARGET_MAX_NAME);
-
         vx_capture_target_kernel1 = tivxAddTargetKernelByName(
                             TIVX_KERNEL_CAPTURE_NAME,
                             target_name,
@@ -1727,8 +1732,67 @@ void tivxAddTargetKernelCapture(void)
                             NULL);
 
         strncpy(target_name, TIVX_TARGET_CAPTURE2, TIVX_TARGET_MAX_NAME);
-
         vx_capture_target_kernel2 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE3, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel3 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE4, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel4 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE5, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel5 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE6, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel6 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE7, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel7 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_CAPTURE_NAME,
+                            target_name,
+                            tivxCaptureProcess,
+                            tivxCaptureCreate,
+                            tivxCaptureDelete,
+                            tivxCaptureControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_CAPTURE8, TIVX_TARGET_MAX_NAME);
+        vx_capture_target_kernel8 = tivxAddTargetKernelByName(
                             TIVX_KERNEL_CAPTURE_NAME,
                             target_name,
                             tivxCaptureProcess,
@@ -1752,6 +1816,41 @@ void tivxRemoveTargetKernelCapture(void)
     if(status == (vx_status)VX_SUCCESS)
     {
         vx_capture_target_kernel2 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel3);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel3 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel4);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel4 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel5);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel5 = NULL;
+    }
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel6);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel6 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel7);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel7 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_capture_target_kernel8);
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        vx_capture_target_kernel8 = NULL;
     }
 }
 

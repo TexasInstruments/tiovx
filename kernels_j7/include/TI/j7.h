@@ -148,6 +148,30 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_CAPTURE2     "CAPTURE2"
+/*! \brief Target name for Capture Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE3     "CAPTURE3"
+/*! \brief Target name for Capture Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE4     "CAPTURE4"
+/*! \brief Target name for Capture Node Instance 5
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE5     "CAPTURE5"
+/*! \brief Target name for Capture Node Instance 6
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE6     "CAPTURE6"
+/*! \brief Target name for Capture Node Instance 7
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE7     "CAPTURE7"
+/*! \brief Target name for Capture Node Instance 8
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE8     "CAPTURE8"
 /*! \brief Target name for Display
  * \ingroup group_tivx_ext_targets
  */

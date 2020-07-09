@@ -265,6 +265,12 @@ vx_status tivxAddKernelCapture(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE3);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE4);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE5);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE6);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE7);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE8);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

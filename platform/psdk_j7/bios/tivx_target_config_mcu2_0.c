@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_j7.h>
 
 
-#define TIVX_TARGET_MCU2_0_MAX          (17)
+#define TIVX_TARGET_MCU2_0_MAX          (23)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
@@ -79,6 +79,12 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VENC1, 14, "TIVX_VENC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VENC2, 15, "TIVX_VENC2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CSITX, 16, "TIVX_CSITX", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3, 17, "TIVX_CAPT3", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4, 18, "TIVX_CAPT4", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE5, 19, "TIVX_CAPT5", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6, 20, "TIVX_CAPT6", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7, 21, "TIVX_CAPT7", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8, 22, "TIVX_CAPT8", 15u);
 }
 
 void tivxPlatformDeleteTargets(void)
@@ -93,6 +99,12 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE5);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VDEC1);
