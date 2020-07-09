@@ -153,6 +153,10 @@ vx_status tivxObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id)
 
             status = (vx_status)VX_SUCCESS;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_WARNING, "Enqueue count greater than TIVX_OBJ_DESC_QUEUE_MAX_DEPTH\n");
+        }
     }
     else
     {
