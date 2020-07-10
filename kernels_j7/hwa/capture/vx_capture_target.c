@@ -186,7 +186,7 @@ static uint32_t tivxCaptureExtractDataFormat(uint32_t format);
 static vx_status tivxCaptureEnqueueFrameToDriver(
        tivx_obj_desc_object_array_t *output_desc,
        tivxCaptureParams *prms);
-static void tivxCaptureSetCreateParams(
+static vx_status tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
        const tivx_obj_desc_user_data_object_t *obj_desc);
 static vx_status VX_CALLBACK tivxCaptureProcess(
@@ -218,6 +218,8 @@ static void tivxCaptureGetChannelIndices(const tivxCaptureParams *prms,
 static uint32_t tivxCaptureGetNodeChannelNum(const tivxCaptureParams *prms,
                                              uint32_t instId,
                                              uint32_t chId);
+static uint32_t tivxCaptureGetDrvInstIndex(const tivxCaptureParams *prms,
+                                           uint32_t instId);
 static uint32_t tivxCaptureMapInstId(uint32_t instId);
 static void tivxCapturePrintStatus(tivxCaptureInstParams *prms);
 static vx_status tivxCaptureStart(tivxCaptureParams *prms);
@@ -465,10 +467,11 @@ static uint32_t tivxCaptureExtractDataFormat(uint32_t format)
     return dataFormat;
 }
 
-static void tivxCaptureSetCreateParams(
+static vx_status tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
        const tivx_obj_desc_user_data_object_t *obj_desc)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
     uint32_t loopCnt = 0U, i, format, width, height, planes, stride[TIVX_IMAGE_MAX_PLANES];
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
@@ -482,115 +485,133 @@ static void tivxCaptureSetCreateParams(
 
     params = (tivx_capture_params_t *)capture_config_target_ptr;
 
-    /* Scan through all the channels provided in the Node instance and prepare CSIRX DRV instance data/cfg */
-    for (chIdx = 0U ; chIdx < params->numCh ; chIdx++)
-    {
-        instId = params->chInstMap[chIdx];
-        prms->instParams[instId].chVcMap[prms->instParams[instId].numCh] = params->chVcNum[chIdx];
-        prms->instParams[instId].numCh++;
-    }
-
-    if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
-    {
-        tivx_obj_desc_raw_image_t *raw_image;
-        raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
-        format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
-        width = raw_image->params.width;
-        height = raw_image->params.height + (raw_image->params.meta_height_before + raw_image->params.meta_height_after);
-        planes = raw_image->params.num_exposures;
-        for (i = 0; i < planes; i++)
-        {
-            stride[i] = (uint32_t)raw_image->imagepatch_addr[i].stride_y;
-        }
-        prms->instParams[instId].raw_capture = 1U;
-    }
-    else
-    {
-        tivx_obj_desc_image_t *image;
-        image = (tivx_obj_desc_image_t *)prms->img_obj_desc[0];
-        format = image->format;
-        width = image->imagepatch_addr[0].dim_x;
-        height = image->imagepatch_addr[0].dim_y;
-        planes = image->planes;
-        for (i = 0; i < planes; i++)
-        {
-            stride[i] = (uint32_t)image->imagepatch_addr[i].stride_y;
-        }
-        prms->instParams[instId].raw_capture = 0U;
-    }
-
-    /* Copying timeout values from user to local structure */
-    prms->timeout        = params->timeout;
-    prms->timeoutInitial = params->timeoutInitial;
-
-    /* Do following for each CSIRX DRV instance in the current Node */
+    /* Scan through all the instances provided in the Node instance and prepare CSIRX DRV instance data/cfg */
     for (instIdx = 0U ; instIdx < params->numInst ; instIdx++)
     {
-        prms->instParams[instIdx].captParams = prms;
-        /* set instance configuration parameters */
-        createParams = &prms->instParams[instIdx].createPrms;
-        Csirx_createParamsInit(createParams);
-        /* Set CSIRX D-PHY configuration parameters */
-        Csirx_initDPhyCfg(&prms->instParams[instIdx].dphyCfg);
-        prms->instParams[instIdx].dphyCfg.inst               = params->instId[instIdx];
-        prms->instParams[instIdx].dphyCfg.rightLaneBandSpeed = params->instCfg[instIdx].laneBandSpeed;
-        prms->instParams[instIdx].dphyCfg.leftLaneBandSpeed  = params->instCfg[instIdx].laneBandSpeed;
-
-        /* set module configuration parameters */
-        createParams->instCfg.enableCsiv2p0Support = params->instCfg[instIdx].enableCsiv2p0Support;
-        createParams->instCfg.enableErrbypass = (uint32_t)FALSE;
-        createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
-        for (loopCnt = 0U ;
-             loopCnt < createParams->instCfg.numDataLanes ;
-             loopCnt++)
-        {
-            createParams->instCfg.dataLanesMap[loopCnt] = params->instCfg[instIdx].dataLanesMap[loopCnt];
-        }
-
-        createParams->numCh = prms->instParams[instIdx].numCh;
-        for (loopCnt = 0U ; loopCnt < createParams->numCh ; loopCnt++)
-        {
-            createParams->chCfg[loopCnt].chId = loopCnt;
-            createParams->chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
-            createParams->chCfg[loopCnt].vcNum = prms->instParams[instIdx].chVcMap[loopCnt];
-
-            if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
-            {
-                createParams->chCfg[loopCnt].inCsiDataType =
-                    FVID2_CSI2_DF_RAW12;
-            }
-            else
-            {
-                createParams->chCfg[loopCnt].inCsiDataType =
-                    tivxCaptureExtractInCsiDataType(format);
-            }
-            createParams->chCfg[loopCnt].outFmt.width =
-                width;
-            createParams->chCfg[loopCnt].outFmt.height =
-                height;
-            for (i = 0; i < planes; i ++)
-            {
-                createParams->chCfg[loopCnt].outFmt.pitch[i] =
-                    stride[i];
-            }
-
-            createParams->chCfg[loopCnt].outFmt.dataFormat =
-                tivxCaptureExtractDataFormat(format);
-            createParams->chCfg[loopCnt].outFmt.ccsFormat =
-                tivxCaptureExtractCcsFormat(format);
-        }
-        /* set frame drop buffer parameters */
-        createParams->frameDropBufLen = CAPTURE_FRAME_DROP_LEN;
-        createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, (int32_t)TIVX_MEM_EXTERNAL);
-
         /* set instance to be used for capture */
         prms->instParams[instIdx].instId = tivxCaptureMapInstId(params->instId[instIdx]);
         prms->numOfInstUsed++;
+    }
+    /* Scan through all the channels provided in the Node instance and prepare CSIRX DRV instance data/cfg */
+    for (chIdx = 0U ; chIdx < params->numCh ; chIdx++)
+    {
+        instId = tivxCaptureGetDrvInstIndex(prms, params->chInstMap[chIdx]);
+        if (instId >= prms->numOfInstUsed)
+        {
+            status = (vx_status)VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: Wrong Instance ID provided: %d !!!\n", params->chInstMap[chIdx]);
+            break;
+        }
+        else
+        {
+            prms->instParams[instId].chVcMap[prms->instParams[instId].numCh] =
+                                                        params->chVcNum[chIdx];
+            prms->instParams[instId].numCh++;
+        }
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
+        {
+            tivx_obj_desc_raw_image_t *raw_image;
+            raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
+            format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
+            width = raw_image->params.width;
+            height = raw_image->params.height + (raw_image->params.meta_height_before + raw_image->params.meta_height_after);
+            planes = raw_image->params.num_exposures;
+            for (i = 0; i < planes; i++)
+            {
+                stride[i] = (uint32_t)raw_image->imagepatch_addr[i].stride_y;
+            }
+            prms->instParams[instId].raw_capture = 1U;
+        }
+        else
+        {
+            tivx_obj_desc_image_t *image;
+            image = (tivx_obj_desc_image_t *)prms->img_obj_desc[0];
+            format = image->format;
+            width = image->imagepatch_addr[0].dim_x;
+            height = image->imagepatch_addr[0].dim_y;
+            planes = image->planes;
+            for (i = 0; i < planes; i++)
+            {
+                stride[i] = (uint32_t)image->imagepatch_addr[i].stride_y;
+            }
+            prms->instParams[instId].raw_capture = 0U;
+        }
+
+        /* Copying timeout values from user to local structure */
+        prms->timeout        = params->timeout;
+        prms->timeoutInitial = params->timeoutInitial;
+
+        /* Do following for each CSIRX DRV instance in the current Node */
+        for (instIdx = 0U ; instIdx < params->numInst ; instIdx++)
+        {
+            prms->instParams[instIdx].captParams = prms;
+            /* set instance configuration parameters */
+            createParams = &prms->instParams[instIdx].createPrms;
+            Csirx_createParamsInit(createParams);
+            /* Set CSIRX D-PHY configuration parameters */
+            Csirx_initDPhyCfg(&prms->instParams[instIdx].dphyCfg);
+            prms->instParams[instIdx].dphyCfg.inst               = params->instId[instIdx];
+            prms->instParams[instIdx].dphyCfg.rightLaneBandSpeed = params->instCfg[instIdx].laneBandSpeed;
+            prms->instParams[instIdx].dphyCfg.leftLaneBandSpeed  = params->instCfg[instIdx].laneBandSpeed;
+
+            /* set module configuration parameters */
+            createParams->instCfg.enableCsiv2p0Support = params->instCfg[instIdx].enableCsiv2p0Support;
+            createParams->instCfg.enableErrbypass = (uint32_t)FALSE;
+            createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
+            for (loopCnt = 0U ;
+                 loopCnt < createParams->instCfg.numDataLanes ;
+                 loopCnt++)
+            {
+                createParams->instCfg.dataLanesMap[loopCnt] = params->instCfg[instIdx].dataLanesMap[loopCnt];
+            }
+
+            createParams->numCh = prms->instParams[instIdx].numCh;
+            for (loopCnt = 0U ; loopCnt < createParams->numCh ; loopCnt++)
+            {
+                createParams->chCfg[loopCnt].chId = loopCnt;
+                createParams->chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
+                createParams->chCfg[loopCnt].vcNum = prms->instParams[instIdx].chVcMap[loopCnt];
+
+                if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+                {
+                    createParams->chCfg[loopCnt].inCsiDataType =
+                        FVID2_CSI2_DF_RAW12;
+                }
+                else
+                {
+                    createParams->chCfg[loopCnt].inCsiDataType =
+                        tivxCaptureExtractInCsiDataType(format);
+                }
+                createParams->chCfg[loopCnt].outFmt.width =
+                    width;
+                createParams->chCfg[loopCnt].outFmt.height =
+                    height;
+                for (i = 0; i < planes; i ++)
+                {
+                    createParams->chCfg[loopCnt].outFmt.pitch[i] =
+                        stride[i];
+                }
+
+                createParams->chCfg[loopCnt].outFmt.dataFormat =
+                    tivxCaptureExtractDataFormat(format);
+                createParams->chCfg[loopCnt].outFmt.ccsFormat =
+                    tivxCaptureExtractCcsFormat(format);
+            }
+            /* set frame drop buffer parameters */
+            createParams->frameDropBufLen = CAPTURE_FRAME_DROP_LEN;
+            createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, (int32_t)TIVX_MEM_EXTERNAL);
+        }
     }
 
     tivxMemBufferUnmap(capture_config_target_ptr,
        obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
        (vx_enum)VX_READ_ONLY);
+
+    return status;
 }
 
 static vx_status tivxCaptureStart(tivxCaptureParams *prms)
@@ -990,7 +1011,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t **)prms->img_obj_desc,
                            prms->numCh);
 
-            tivxCaptureSetCreateParams(prms, input_obj_desc);
+            status = tivxCaptureSetCreateParams(prms, input_obj_desc);
         }
 
         /* Creating frame available event */
@@ -1903,4 +1924,22 @@ static uint32_t tivxCaptureGetNodeChannelNum(const tivxCaptureParams *prms,
     chIdx += chId;
 
     return (chIdx);
+}
+
+static uint32_t tivxCaptureGetDrvInstIndex(const tivxCaptureParams *prms,
+                                           uint32_t instId)
+{
+    uint32_t instIdx, instVal;
+
+    instVal = tivxCaptureMapInstId(instId);
+    for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
+    {
+        if (prms->instParams[instIdx].instId == instVal)
+        {
+            /* Found out the index for required instance */
+            break;
+        }
+    }
+
+    return instIdx;
 }
