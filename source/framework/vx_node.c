@@ -524,6 +524,8 @@ vx_status ownNodeKernelInit(vx_node node)
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Please be sure the target callbacks have been registered for this core\n");
+                    VX_PRINT(VX_ZONE_ERROR,"If the target callbacks have been registered, please ensure no errors are occurring within the create callback of this kernel\n");
                 }
 
                 /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
