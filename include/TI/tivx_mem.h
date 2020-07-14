@@ -248,7 +248,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size);
  *
  * \ingroup group_tivx_mem
  */
-void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
+vx_status tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
 
 /*!
  * \brief UnMap a buffer address
@@ -266,7 +266,7 @@ void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum m
  *
  * \ingroup group_tivx_mem
  */
-void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
+vx_status tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
 
 /*!
  * \brief Convert Host pointer to shared pointer

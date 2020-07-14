@@ -147,9 +147,11 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     return (status);
 }
 
-void tivxMemBufferMap(
+vx_status tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     /* Note: Technically, we might be able to avoid a cache invalidate
      * if the maptype == VX_WRITE_ONLY, however if the mapping boundary splits
      * a cache line, then stale data outside the mapping, but on a cache
@@ -171,8 +173,11 @@ void tivxMemBufferMap(
     }
     else
     {
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferMap failed (either pointer is NULL or size is 0)\n");
     }
+
+    return status;
 }
 
 void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
@@ -191,9 +196,11 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
     }
 }
 
-void tivxMemBufferUnmap(
+vx_status tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
+    vx_status status = (vx_status)VX_SUCCESS;
+
     if ((NULL != host_ptr) && (0U != size))
     {
         if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
@@ -211,8 +218,11 @@ void tivxMemBufferUnmap(
     }
     else
     {
+        status = (vx_status)VX_FAILURE;
         VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap failed (either pointer is NULL or size is 0)\n");
     }
+
+    return status;
 }
 
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
