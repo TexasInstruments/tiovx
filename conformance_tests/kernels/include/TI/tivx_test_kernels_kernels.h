@@ -135,6 +135,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_CMD_TIMEOUT_TEST_NAME     "com.ti.test_kernels.cmd_timeout_test"
 
+/*! \brief scalar_intermediate_2 kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_SCALAR_INTERMEDIATE_2_NAME     "com.ti.test_kernels.scalar_intermediate_2"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!

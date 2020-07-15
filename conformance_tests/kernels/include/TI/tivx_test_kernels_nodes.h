@@ -164,6 +164,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCmdTimeoutTestNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_scalar            in,
                                       vx_scalar            out);
+/*! \brief [Graph] Creates a SCALAR_INTERMEDIATE_2 Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in
+ * \param [out] out
+ * \see <tt>TIVX_KERNEL_SCALAR_INTERMEDIATE_2_NAME</tt>
+ * \ingroup group_vision_function_scalar_intermediate_2
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediate2Node(vx_graph graph,
+                                      vx_scalar            in,
+                                      vx_scalar            out);
+
 #ifdef __cplusplus
 }
 #endif

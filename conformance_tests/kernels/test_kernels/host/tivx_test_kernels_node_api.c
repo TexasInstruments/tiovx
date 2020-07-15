@@ -242,3 +242,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCmdTimeoutTestNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediate2Node(vx_graph graph,
+                                      vx_scalar            in,
+                                      vx_scalar            out)
+{
+    vx_reference prms[] = {
+            (vx_reference)in,
+            (vx_reference)out
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_SCALAR_INTERMEDIATE_2_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,56 +60,24 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_capture_kernels.h"
-#include "tivx_kernels_target_utils.h"
+#ifndef _TIVX_KERNEL_SCALAR_INTERMEDIATE_2_
+#define _TIVX_KERNEL_SCALAR_INTERMEDIATE_2_
 
-void tivxAddTargetKernelScalarSink(void);
-void tivxAddTargetKernelScalarSource(void);
-void tivxAddTargetKernelScalarSink2(void);
-void tivxAddTargetKernelScalarSource2(void);
-void tivxAddTargetKernelScalarIntermediate(void);
-void tivxAddTargetKernelScalarIntermediate2(void);
-void tivxAddTargetKernelScalarSourceError(void);
-void tivxAddTargetKernelScalarSourceObjArray(void);
-void tivxAddTargetKernelScalarSinkObjArray(void);
-void tivxAddTargetKernelPyramidIntermediate(void);
-void tivxAddTargetKernelPyramidSource(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void tivxRemoveTargetKernelScalarSink(void);
-void tivxRemoveTargetKernelScalarSource(void);
-void tivxRemoveTargetKernelScalarSink2(void);
-void tivxRemoveTargetKernelScalarSource2(void);
-void tivxRemoveTargetKernelScalarIntermediate(void);
-void tivxRemoveTargetKernelScalarIntermediate2(void);
-void tivxRemoveTargetKernelScalarSourceError(void);
-void tivxRemoveTargetKernelScalarSourceObjArray(void);
-void tivxRemoveTargetKernelScalarSinkObjArray(void);
-void tivxRemoveTargetKernelPyramidIntermediate(void);
-void tivxRemoveTargetKernelPyramidSource(void);
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelScalarSink, &tivxRemoveTargetKernelScalarSink},
-    {&tivxAddTargetKernelScalarSource, &tivxRemoveTargetKernelScalarSource},
-    {&tivxAddTargetKernelScalarSink2, &tivxRemoveTargetKernelScalarSink2},
-    {&tivxAddTargetKernelScalarSource2, &tivxRemoveTargetKernelScalarSource2},
-    {&tivxAddTargetKernelScalarIntermediate, &tivxRemoveTargetKernelScalarIntermediate},
-    {&tivxAddTargetKernelScalarIntermediate2, &tivxRemoveTargetKernelScalarIntermediate2},
-    {&tivxAddTargetKernelScalarSourceError, &tivxRemoveTargetKernelScalarSourceError},
-    {&tivxAddTargetKernelScalarSourceObjArray, &tivxRemoveTargetKernelScalarSourceObjArray},
-    {&tivxAddTargetKernelScalarSinkObjArray, &tivxRemoveTargetKernelScalarSinkObjArray},
-    {&tivxAddTargetKernelPyramidIntermediate, &tivxRemoveTargetKernelPyramidIntermediate},
-    {&tivxAddTargetKernelPyramidSource, &tivxRemoveTargetKernelPyramidSource},
-};
+#define TIVX_KERNEL_SCALAR_INTERMEDIATE_2_IN_IDX (0U)
+#define TIVX_KERNEL_SCALAR_INTERMEDIATE_2_OUT_IDX (1U)
 
-void tivxRegisterCaptureTargetArmKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+#define TIVX_KERNEL_SCALAR_INTERMEDIATE_2_MAX_PARAMS (2U)
+
+#ifdef __cplusplus
 }
+#endif
 
-void tivxUnRegisterCaptureTargetArmKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
+
+#endif /* _TIVX_KERNEL_SCALAR_INTERMEDIATE_2_ */
+
 
