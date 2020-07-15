@@ -372,7 +372,15 @@ static void tivxTargetNodeDescReleaseParameter(
         {
             obj_desc->in_node_done_cnt++;
 
-            if(obj_desc->in_node_done_cnt==data_ref_q_obj_desc->num_in_nodes)
+            /* In order to fix TIOVX-956, this if statement was modified to become the below check
+             * The bug found that when a replicated node output was consumed by both another replicated
+             * node as well as a node consuming the full object array, the reference was never released.
+             * This was because the do_release_ref_to_queue was not set to true because the two consumed
+             * descriptors were different, i.e., the replicated node input was an element of an obj array
+             * and the full obj array was the obj array itself.  Therefore, instead of checking the
+             * in_node_done_cnt of the obj_desc, we check the in_done_node_cnt of the data_ref_q_obj_desc
+             * which is the same for both objects */
+            if (do_release_ref == (vx_bool)vx_true_e)
             {
                 do_release_ref_to_queue = (vx_bool)vx_true_e;
                 /* Note: This is needed because the delay obj_desc does not get re-acquired for each slot.
