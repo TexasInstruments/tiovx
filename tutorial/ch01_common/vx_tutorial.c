@@ -83,6 +83,11 @@ static char menu[] = {
     "\n Enter Choice: "
 };
 
+char vx_tutorial_get_char()
+{
+    return getchar();
+}
+
 void vx_tutorial_run_all()
 {
     vx_tutorial_image_run_all();
@@ -133,4 +138,3 @@ void vx_tutorial_run_interactive()
         }
     }
 }
-

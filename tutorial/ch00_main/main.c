@@ -119,8 +119,3 @@ int main(int argc, char* argv[])
     }
     tivxDeInit();
 }
-
-char vx_tutorial_get_char()
-{
-    return getchar();
-}
