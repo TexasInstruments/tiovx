@@ -81,6 +81,8 @@
 
 #define CAPTURE_INST_ID_INVALID                         (0xFFFFU)
 
+#define CAPTURE_IN_CSI_DT_INVALID                       (0xFFFFFFFFU)
+
 #define CAPTURE_TIMEOUT_VALID                           (0U)
 #define CAPTURE_TIMEOUT_EXCEEDED                        (1U)
 
@@ -410,11 +412,68 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
             inCsiDataType = FVID2_CSI2_DF_YUV422_8B;
             break;
         default:
-            inCsiDataType = 0xFFFFFFFFu;
+            inCsiDataType = CAPTURE_IN_CSI_DT_INVALID;
             break;
     }
 
     return inCsiDataType;
+}
+
+static uint32_t tivxCaptureExtractInCsiDataTypeFromRawImg(tivx_obj_desc_raw_image_t *raw_img)
+{
+    uint32_t inCsiDataType = CAPTURE_IN_CSI_DT_INVALID;
+    tivx_raw_image_create_params_t *params = &raw_img->params;
+
+    if (TIVX_RAW_IMAGE_16_BIT == params->format[0].pixel_container)
+    {
+        switch (params->format[0].msb)
+        {
+            case 10u:
+                inCsiDataType = FVID2_CSI2_DF_RAW10;
+            break;
+            case 12u:
+                inCsiDataType = FVID2_CSI2_DF_RAW12;
+            break;
+            case 14u:
+                inCsiDataType = FVID2_CSI2_DF_RAW14;
+            break;
+            case 16u:
+                inCsiDataType = FVID2_CSI2_DF_RAW16;
+            break;
+            default:
+                break;
+        }
+    }
+    else if (TIVX_RAW_IMAGE_8_BIT == params->format[0].pixel_container)
+    {
+        switch (params->format[0].msb)
+        {
+            case 6u:
+                inCsiDataType = FVID2_CSI2_DF_RAW6;
+            break;
+            case 7u:
+                inCsiDataType = FVID2_CSI2_DF_RAW7;
+            break;
+            case 8u:
+                inCsiDataType = FVID2_CSI2_DF_RAW8;
+            break;
+            default:
+                break;
+        }
+    }
+    else if (TIVX_RAW_IMAGE_P12_BIT == params->format[0].pixel_container)
+    {
+        if (12u == params->format[0].msb)
+        {
+            inCsiDataType = FVID2_CSI2_DF_RAW12;
+        }
+    }
+    else
+    {
+        /* Don Nothing */
+    }
+
+    return (inCsiDataType);
 }
 
 static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
@@ -490,6 +549,7 @@ static vx_status tivxCaptureSetCreateParams(
     tivx_capture_params_t *params;
     uint32_t chIdx, instId = 0U, instIdx;
     Csirx_CreateParams *createParams;
+    tivx_obj_desc_raw_image_t *raw_image;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
@@ -527,7 +587,6 @@ static vx_status tivxCaptureSetCreateParams(
     {
         if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
         {
-            tivx_obj_desc_raw_image_t *raw_image;
             raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
             format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
             width = raw_image->params.width;
@@ -592,13 +651,22 @@ static vx_status tivxCaptureSetCreateParams(
                 if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
                 {
                     createParams->chCfg[loopCnt].inCsiDataType =
-                        FVID2_CSI2_DF_RAW12;
+                        tivxCaptureExtractInCsiDataTypeFromRawImg(raw_image);
                 }
                 else
                 {
                     createParams->chCfg[loopCnt].inCsiDataType =
                         tivxCaptureExtractInCsiDataType(format);
                 }
+                if (CAPTURE_IN_CSI_DT_INVALID ==
+                                    createParams->chCfg[loopCnt].inCsiDataType)
+                {
+                    status = (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,
+                        " CAPTURE: ERROR: Un-supported Capture Data-type!!!\n");
+                    break;
+                }
+
                 createParams->chCfg[loopCnt].outFmt.width =
                     width;
                 createParams->chCfg[loopCnt].outFmt.height =
