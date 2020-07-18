@@ -109,7 +109,7 @@ extern "C" {
  *         (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (8u)
+#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (16u)
 
 /*! \brief Max number of replicated nodes
  * \ingroup group_tivx_obj_desc_cfg
