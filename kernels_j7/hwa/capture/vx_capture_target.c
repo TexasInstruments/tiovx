@@ -60,6 +60,7 @@
  *
  */
 
+#include <stdio.h>
 #include "TI/tivx.h"
 #include "TI/j7.h"
 #include "VX/vx.h"
@@ -661,7 +662,7 @@ static uint32_t tivxCaptureIsAllChFrameAvailable(tivxCaptureParams *prms,
             if (CAPTURE_TIMEOUT_EXCEEDED == timeoutExceeded)
             {
                 prms->activeChannelMask &= ~(1<<chId);
-                VX_PRINT(VX_ZONE_ERROR,
+                VX_PRINT(VX_ZONE_INFO,
                     " Channel %d not received!!!\n", chId);
             }
         }
@@ -1186,29 +1187,18 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms)
                                 IOCTL_CSIRX_GET_INST_STATUS,
                                 &prms->captStatus,
                                 NULL);
-        tivx_set_debug_zone((vx_enum)VX_ZONE_INFO);
         if (FVID2_SOK == fvid2_status)
         {
-            VX_PRINT(VX_ZONE_INFO,
-                "\n\r==========================================================\r\n");
-            VX_PRINT(VX_ZONE_INFO,
-                      ": Capture Status: Instance|%d\r\n", prms->instId);
-            VX_PRINT(VX_ZONE_INFO,
-                      "==========================================================\r\n");
-            VX_PRINT(VX_ZONE_INFO,
-                      ": FIFO Overflow Count: %d\r\n",
-                      prms->captStatus.overflowCount);
-            VX_PRINT(VX_ZONE_INFO,
-                      ": Spurious UDMA interrupt count: %d\r\n",
-                      prms->captStatus.spuriousUdmaIntrCount);
-
-            VX_PRINT(VX_ZONE_INFO,
-                "  [Channel No] | Frame Queue Count |"
-                " Frame De-queue Count | Frame Drop Count |\n");
+            printf(   "==========================================================\r\n");
+            printf(   " Capture Status: Instance|%d\r\n", prms->instId);
+            printf(   "==========================================================\r\n");
+            printf(   " FIFO Overflow Count: %d\r\n", prms->captStatus.overflowCount);
+            printf(   " Spurious UDMA interrupt count: %d\r\n", prms->captStatus.spuriousUdmaIntrCount);
+            printf(   " Channel Num | Frame Queue Count | Frame De-queue Count | Frame Drop Count |\r\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
-                VX_PRINT(VX_ZONE_INFO,
-                      "\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
+                printf(
+                      " %11d | %17d | %20d | %16d |\r\n",
                       cnt,
                       prms->captStatus.queueCount[cnt],
                       prms->captStatus.dequeueCount[cnt],
@@ -1219,7 +1209,6 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms)
         {
             VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Control failed !!!\n");
         }
-        tivx_clr_debug_zone((vx_enum)VX_ZONE_INFO);
     }
 }
 

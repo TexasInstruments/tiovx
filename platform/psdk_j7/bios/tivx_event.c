@@ -93,7 +93,8 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
         if (SemaphoreP_OK != retVal)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Semaphore wait returned an error\n");
+            /* making info since on a valid timeout, it will continously print errors instead */
+            VX_PRINT(VX_ZONE_INFO, "Semaphore wait returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
     }

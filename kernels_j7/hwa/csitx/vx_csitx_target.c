@@ -59,7 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#include <stdio.h>
 #include "TI/tivx.h"
 #include "TI/j7.h"
 #include "TI/tivx_event.h"
@@ -841,24 +841,22 @@ static void tivxCsitxPrintStatus(tivxCsitxInstParams *prms)
                                 IOCTL_CSITX_GET_INST_STATUS,
                                 &prms->csitxStatus,
                                 NULL);
-        tivx_set_debug_zone((vx_enum)VX_ZONE_INFO);
         if (FVID2_SOK == fvid2_status)
         {
-            VX_PRINT(VX_ZONE_INFO,
-                "\n\r==========================================================\r\n");
-            VX_PRINT(VX_ZONE_INFO,
-                      ": Csitx Status: Instance|%d\r\n", prms->instId);
-            VX_PRINT(VX_ZONE_INFO,
+            printf(   "==========================================================\r\n");
+            printf(
+                      " Csitx Status: Instance|%d\r\n", prms->instId);
+            printf(
                       "==========================================================\r\n");
-            VX_PRINT(VX_ZONE_INFO,
-                      ": FIFO Overflow Count: %d\r\n",
+            printf(
+                      " FIFO Overflow Count: %d\r\n",
                       prms->csitxStatus.overflowCount);
-            VX_PRINT(VX_ZONE_INFO,
-                "  [Channel No] | Frame Queue Count |"
+            printf(
+                "  Channel Num | Frame Queue Count |"
                 " Frame De-queue Count | Frame Repeat Count |\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
-                VX_PRINT(VX_ZONE_INFO,
+                printf(
                       "\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
                       cnt,
                       prms->csitxStatus.queueCount[cnt],
@@ -870,7 +868,6 @@ static void tivxCsitxPrintStatus(tivxCsitxInstParams *prms)
         {
             VX_PRINT(VX_ZONE_ERROR, " CSITX: ERROR: FVID2 Control failed !!!\n");
         }
-        tivx_clr_debug_zone((vx_enum)VX_ZONE_INFO);
     }
 }
 
