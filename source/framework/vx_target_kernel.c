@@ -367,7 +367,8 @@ vx_status tivxTargetKernelExecute(
 
             if((vx_status)VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
+                /* making info since on a valid kernel process error, it will continously print errors  */
+                VX_PRINT(VX_ZONE_INFO, "Kernel process function for [%s] returned error code: %d\n", knl->kernel_name, status);
             }
         }
         else
