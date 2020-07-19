@@ -323,7 +323,7 @@ static void create_output(tivx_log_rt_obj_t *obj)
         
     const char div_tags[] = 
         "  <div id=\"%s\"></div>\n"
-        "  <p> <b>Global statistics : </b> min = %d, max = %d, avg = %d, std dev = %d, #frame = %d </p> \n"
+        "  <p> <b>Global statistics : </b> min = %d us, max = %d us, avg = %d us, (max - min) = %d us, Nunber of frames = %d </p> \n"
         "  <hr> \n"
         ;
         
@@ -344,6 +344,7 @@ static void create_output(tivx_log_rt_obj_t *obj)
         "               showRangeSelector: true,\n"
         "               xlabel: 'Global time (usecs)',\n"
         "               ylabel: 'Frame time (usecs)',\n"
+        "               axisLabelWidth: 100,\n"
         "           }\n"
         "         );\n"
         "\n"
@@ -372,7 +373,7 @@ static void create_output(tivx_log_rt_obj_t *obj)
                     obj->global_stats[event_index].min,
                     obj->global_stats[event_index].max,
                     obj->global_stats[event_index].avg,
-                    obj->global_stats[event_index].std_dev,
+                    obj->global_stats[event_index].max - obj->global_stats[event_index].min,
                     obj->num_events[event_index]
                     );
         }
