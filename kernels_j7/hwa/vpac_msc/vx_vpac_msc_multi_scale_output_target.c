@@ -727,8 +727,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
         if ((vx_df_image)VX_DF_IMAGE_NV12 == in_img_desc->format)
         {
+            
+            
             size = in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y + \
-                   in_img_desc->imagepatch_addr[1].dim_x*in_img_desc->imagepatch_addr[1].dim_y;
+                   in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y/2;
+            
         }
         else
         {
