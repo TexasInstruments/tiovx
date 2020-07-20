@@ -110,7 +110,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_csitx
  */
-#define TIVX_CSITX_MAX_CH                                 (1U)
+#define TIVX_CSITX_MAX_CH                                 (4U)
 
 /*! \brief Maximum number of instances supported in the csitx node.
  *

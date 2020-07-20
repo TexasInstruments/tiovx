@@ -77,6 +77,8 @@
 
 #define CSITX_INST_ID_INVALID                         (0xFFFFU)
 
+#define CAPTURE_OUT_CSI_DT_INVALID                    (0xFFFFFFFFU)
+
 typedef struct tivxCsitxParams_t tivxCsitxParams;
 
 typedef struct
@@ -304,11 +306,68 @@ static uint32_t tivxCsitxExtractOutCsiDataType(uint32_t format)
             outCsiDataType = FVID2_CSI2_DF_YUV422_8B;
             break;
         default:
-            outCsiDataType = 0xFFFFFFFFu;
+            outCsiDataType = CAPTURE_OUT_CSI_DT_INVALID;
             break;
     }
 
     return outCsiDataType;
+}
+
+static uint32_t tivxCsitxExtractOutCsiDataTypeFromRawImg(tivx_obj_desc_raw_image_t *raw_img)
+{
+    uint32_t inCsiDataType = CAPTURE_OUT_CSI_DT_INVALID;
+    tivx_raw_image_create_params_t *params = &raw_img->params;
+
+    if (TIVX_RAW_IMAGE_16_BIT == params->format[0].pixel_container)
+    {
+        switch (params->format[0].msb)
+        {
+            case 10u:
+                inCsiDataType = FVID2_CSI2_DF_RAW10;
+            break;
+            case 12u:
+                inCsiDataType = FVID2_CSI2_DF_RAW12;
+            break;
+            case 14u:
+                inCsiDataType = FVID2_CSI2_DF_RAW14;
+            break;
+            case 16u:
+                inCsiDataType = FVID2_CSI2_DF_RAW16;
+            break;
+            default:
+                break;
+        }
+    }
+    else if (TIVX_RAW_IMAGE_8_BIT == params->format[0].pixel_container)
+    {
+        switch (params->format[0].msb)
+        {
+            case 6u:
+                inCsiDataType = FVID2_CSI2_DF_RAW6;
+            break;
+            case 7u:
+                inCsiDataType = FVID2_CSI2_DF_RAW7;
+            break;
+            case 8u:
+                inCsiDataType = FVID2_CSI2_DF_RAW8;
+            break;
+            default:
+                break;
+        }
+    }
+    else if (TIVX_RAW_IMAGE_P12_BIT == params->format[0].pixel_container)
+    {
+        if (12u == params->format[0].msb)
+        {
+            inCsiDataType = FVID2_CSI2_DF_RAW12;
+        }
+    }
+    else
+    {
+        /* Don Nothing */
+    }
+
+    return (inCsiDataType);
 }
 
 static uint32_t tivxCsitxExtractCcsFormat(uint32_t format)
@@ -360,10 +419,10 @@ static uint32_t tivxCsitxExtractDataFormat(uint32_t format)
             dataFormat = FVID2_DF_BGRX32_8888;
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
-            dataFormat = FVID2_DF_YUV422I_UYVY;
+            dataFormat = FVID2_DF_YUV422I_YVYU;
             break;
         case (vx_df_image)VX_DF_IMAGE_YUYV:
-            dataFormat = FVID2_DF_YUV422I_YUYV;
+            dataFormat = FVID2_DF_YUV422I_VYUY;
             break;
         default:
             /* do nothing */
@@ -382,6 +441,7 @@ static void tivxCsitxSetCreateParams(
     tivx_csitx_params_t *params;
     uint32_t chIdx, instId = 0U, instIdx;
     Csitx_CreateParams *createParams;
+    tivx_obj_desc_raw_image_t *raw_image;
 
     csitx_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
@@ -400,7 +460,6 @@ static void tivxCsitxSetCreateParams(
 
     if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
     {
-        tivx_obj_desc_raw_image_t *raw_image;
         raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
         format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
         width = raw_image->params.width;
@@ -457,7 +516,7 @@ static void tivxCsitxSetCreateParams(
             if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
             {
                 createParams->chCfg[loopCnt].outCsiDataType =
-                    FVID2_CSI2_DF_RAW12;
+                    tivxCsitxExtractOutCsiDataTypeFromRawImg(raw_image);
             }
             else
             {
