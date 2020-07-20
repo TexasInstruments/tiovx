@@ -173,9 +173,9 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
     tivxVpacMscScaleObj *msc_obj);
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
     const tivx_obj_desc_image_t *in_img_desc,
-    const tivx_obj_desc_image_t *out_img_desc);
+    const tivx_obj_desc_image_t *out_img_desc, uint32_t do_line_skip);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    const tivx_obj_desc_image_t *img_desc);
+    const tivx_obj_desc_image_t *img_desc, uint32_t do_line_skip);
 static void tivxVpacMscScaleCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     const tivx_vpac_msc_output_params_t *out_prms);
 static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj,
@@ -314,6 +314,34 @@ void tivxRemoveTargetKernelVpacMscMultiScale(void)
     }
 }
 
+
+static uint32_t tivxVpacMscScaleDoLinkSkip(tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc[], uint32_t num_outputs)
+{
+    uint32_t in_h, cnt;
+    uint32_t out_max_h = 0;
+    uint32_t do_line_skip = 0;
+
+    in_h = in_img_desc->imagepatch_addr[0].dim_y;
+
+    for (cnt = 0u; cnt < num_outputs; cnt ++)
+    {
+        if (NULL != out_img_desc[cnt])
+        {
+            if(out_img_desc[cnt]->imagepatch_addr[0].dim_y > out_max_h)
+            {
+                out_max_h = out_img_desc[cnt]->imagepatch_addr[0].dim_y;
+            }
+        }
+    }
+
+    /* if downscale ratio is more than 2.5x then skip alternate lines */
+    if( (out_max_h*5)/2 < in_h )
+    {
+        do_line_skip = 1;
+    }
+    return do_line_skip;
+}
+
 /* ========================================================================== */
 /*                              OPENVX Callbacks                              */
 /* ========================================================================== */
@@ -432,11 +460,15 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        uint32_t do_line_skip = 0;
+
+        do_line_skip = tivxVpacMscScaleDoLinkSkip(in_img_desc, out_img_desc, TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT);
+
         msc_prms = &msc_obj->msc_prms;
 
         Vhwa_m2mMscParamsInit(msc_prms);
 
-        tivxVpacMscScaleSetFmt(&msc_prms->inFmt, in_img_desc);
+        tivxVpacMscScaleSetFmt(&msc_prms->inFmt, in_img_desc, do_line_skip);
 
         if ((vx_df_image)VX_DF_IMAGE_NV12 != out_img_desc[0u]->format)
         {
@@ -467,8 +499,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                 /* Overwrite to multi */
                 sc_cfg->filtMode = MSC_FILTER_MODE_MULTI_PHASE; //MSC_FILTER_MODE_SINGLE_PHASE;
 
-                tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
-                tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
+                tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt], do_line_skip);
+                tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt], 0);
 
                 msc_obj->user_init_phase_x[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
                 msc_obj->user_init_phase_y[cnt] = TIVX_VPAC_MSC_AUTOCOMPUTE;
@@ -727,11 +759,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
         if ((vx_df_image)VX_DF_IMAGE_NV12 == in_img_desc->format)
         {
-            
-            
+
+
             size = in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y + \
                    in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y/2;
-            
+
         }
         else
         {
@@ -875,7 +907,7 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
 }
 
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
-    const tivx_obj_desc_image_t *img_desc)
+    const tivx_obj_desc_image_t *img_desc, uint32_t do_line_skip)
 {
     if (NULL != img_desc)
     {
@@ -912,16 +944,26 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
             }
         }
 
+
         fmt->width      = img_desc->imagepatch_addr[0].dim_x;
-        fmt->height     = img_desc->imagepatch_addr[0].dim_y;
-        fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
-        fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
+        if(do_line_skip)
+        {
+            fmt->height     = img_desc->imagepatch_addr[0].dim_y/2;
+            fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y*2;
+            fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y*2;
+        }
+        else
+        {
+            fmt->height     = img_desc->imagepatch_addr[0].dim_y;
+            fmt->pitch[0]   = (uint32_t)img_desc->imagepatch_addr[0].stride_y;
+            fmt->pitch[1]   = (uint32_t)img_desc->imagepatch_addr[1].stride_y;
+        }
     }
 }
 
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
     const tivx_obj_desc_image_t *in_img_desc,
-    const tivx_obj_desc_image_t *out_img_desc)
+    const tivx_obj_desc_image_t *out_img_desc, uint32_t do_line_skip)
 {
     if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
@@ -931,7 +973,14 @@ static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropStartY = 0u;
         sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
+        if(do_line_skip)
+        {
+            sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y/2;
+        }
+        else
+        {
+            sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
+        }
     }
 }
 
