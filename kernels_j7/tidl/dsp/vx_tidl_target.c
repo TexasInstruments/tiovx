@@ -220,21 +220,24 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        tivx_obj_desc_user_data_object_t *network;
-        void *network_target_ptr = NULL;
-
-        /* IMPORTANT! Network data is assumed to be available at index 1 */
-        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
-
-        network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
-        tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
         if(tidlObj->tidlParams.compute_network_checksum == 1)
         {
+            tivx_obj_desc_user_data_object_t *network;
+            void *network_target_ptr = NULL;
+
+            /* IMPORTANT! Network data is assumed to be available at index 1 */
+            network   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
+
+            network_target_ptr = tivxMemShared2TargetPtr(&network->mem_ptr);
+            tivxMemBufferMap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+
             sTIDL_Network_t *pNet = (sTIDL_Network_t *)network_target_ptr;
             uint8_t *pPerfInfo = (uint8_t *)network_target_ptr + pNet->dataFlowInfo;
 
             status = testChecksum(pPerfInfo, &tidlObj->tidlParams.network_checksum[0], tidlObj->netSize - pNet->dataFlowInfo, 1);
+
+            tivxMemBufferUnmap(network_target_ptr, network->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
         }
     }
 
