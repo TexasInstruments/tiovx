@@ -474,6 +474,11 @@ typedef struct _tivx_obj_desc_node
      */
     volatile uint32_t num_pipeup_bufs;
 
+    /*! \brief Pipe buf idx used for when to begin graph
+     *         processing on source node
+     */
+    volatile uint32_t pipeup_buf_idx;
+
     /*! \brief variable to store the tile width for the given node
      */
     volatile uint32_t block_width;

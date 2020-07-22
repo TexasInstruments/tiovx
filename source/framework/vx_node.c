@@ -160,6 +160,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     }
 
     obj_desc->num_pipeup_bufs = kernel->num_pipeup_bufs;
+    obj_desc->pipeup_buf_idx  = kernel->pipeup_buf_idx;
     obj_desc->source_state    = (uint32_t)kernel->state;
 
     obj_desc->block_width = TIVX_DEFAULT_TILE_WIDTH;
