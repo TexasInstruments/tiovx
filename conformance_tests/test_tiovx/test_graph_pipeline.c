@@ -1554,6 +1554,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 
 /* Note: Modifying the data ref queue value depending on node relationship */
 /* Filed TIOVX-676 task to fix this */
+/* Note: this test case has been disabled as per bug TIOVX-1023 */
 #if (TIVX_GRAPH_MAX_NODES - 2) > TIVX_GRAPH_MAX_DATA_REF_QUEUE
 #define PIPELINE_TEST_MAX_DATA_REF_QUEUE TIVX_GRAPH_MAX_DATA_REF_QUEUE
 #else
@@ -5557,8 +5558,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testInputMultipleEnqueue,
     testTwoNodes,
     testFourNodes,
-    testMaxDataRef,
-    /*negativeTestGraphMaxDataRef,*/
+    /*testMaxDataRef,
+    negativeTestGraphMaxDataRef,*/
     negativeTestMaxDataRefQ,
     testUniformImage,
     testScalarOutput,
