@@ -763,13 +763,11 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         }
         else
         {
-            /* Set the target kernel instance number of pipeup bufs */
-            target_kernel_instance->kernel->num_pipeup_bufs = 1;
-
-            if(kernel_name_obj_desc!=NULL)
-            {
-                target_kernel_instance->kernel->num_pipeup_bufs = kernel_name_obj_desc->num_pipeup_bufs;
-            }
+            /* This target_kernel_instance is newly allocated in this create function.  The "kernel"
+             * in this case is a target_kernel which has not had num_pipeup_bufs set either
+             * and thus needs to be set from the node_obj_desc which received this value from
+             * the host side vx_kernel. */
+            target_kernel_instance->kernel->num_pipeup_bufs = node_obj_desc->num_pipeup_bufs;
 
             if (target_kernel_instance->kernel->num_pipeup_bufs > 1U)
             {

@@ -343,12 +343,8 @@ vx_status ownNodeKernelInitKernelName(vx_node node)
         /* set kernel name */
         tivx_obj_desc_strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
 
-        /* set the number of pipeup buffers */
-        kernel_name_obj_desc->num_pipeup_bufs = node->kernel->num_pipeup_bufs;  // TODO: WHY WAS THIS NEEDED?
-
         /* associated kernel name object descriptor with node object */
         node->obj_desc[0]->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
-
     }
     else
     {
