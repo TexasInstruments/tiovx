@@ -315,7 +315,7 @@ void tivxRemoveTargetKernelVpacMscMultiScale(void)
 }
 
 
-static uint32_t tivxVpacMscScaleDoLinkSkip(tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc[], uint32_t num_outputs)
+uint32_t tivxVpacMscScaleDoLinkSkip(tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc[], uint32_t num_outputs)
 {
     uint32_t in_h, cnt;
     uint32_t out_max_h = 0;
@@ -462,7 +462,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
     {
         uint32_t do_line_skip = 0;
 
-        do_line_skip = tivxVpacMscScaleDoLinkSkip(in_img_desc, out_img_desc, TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT);
+        /* not enabling this as of now, this skips lines in input to improve the performance but this
+         * affects output quality */
+        /* do_line_skip = tivxVpacMscScaleDoLinkSkip(in_img_desc, out_img_desc, TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT); */
 
         msc_prms = &msc_obj->msc_prms;
 
