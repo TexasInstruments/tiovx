@@ -1015,7 +1015,8 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                                                      &instParams->createStatus,
                                                      &instParams->drvCbPrms);
 
-                if ((NULL == instParams->drvHandle) ||
+                if ((NULL == instParams) ||
+                    (NULL == instParams->drvHandle) ||
                     (instParams->createStatus.retVal != FVID2_SOK))
                 {
                     VX_PRINT(VX_ZONE_ERROR, ": Capture Create Failed!!!\r\n");

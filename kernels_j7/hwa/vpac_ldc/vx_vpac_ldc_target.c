@@ -670,13 +670,13 @@ static vx_status tivxVpacLdcSetParamsFromDcc(
     const tivxVpacLdcObj                   *ldc_obj,
     const tivx_obj_desc_user_data_object_t *dcc_buf_desc)
 {
-    uint32_t ldc_dcc_num_bytes = dcc_buf_desc->mem_size;
     Ldc_Config *ldc_cfg = (Ldc_Config *)&ldc_obj->ldc_cfg;
     vx_status status = (vx_status)VX_SUCCESS;
     int32_t  fvid2_status = FVID2_SOK;
 
     if (NULL != dcc_buf_desc)
     {
+        uint32_t ldc_dcc_num_bytes = dcc_buf_desc->mem_size;
         dcc_parser_output_params_t *pout = tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL == pout)
         {
