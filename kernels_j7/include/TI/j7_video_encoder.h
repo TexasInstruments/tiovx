@@ -101,6 +101,17 @@ extern "C" {
  *    VIDEO_ENCODER STRUCTURES
  *********************************/
 
+typedef enum {
+	TIVX_ENC_FEATURE_CABAC = 0x01,
+	TIVX_ENC_FEATURES_8x8 = 0x02
+} tivx_enc_features;
+
+typedef enum {
+	TIVX_ENC_VBR,
+	TIVX_ENC_SVBR
+} tivx_enc_rcmode;
+
+
 /*!
  * \brief The configuration data structure used by the VIDEO_ENCODER kernel.
  *
@@ -110,6 +121,33 @@ extern "C" {
  */
 typedef struct {
     uint32_t bitstream_format;
+    /** Bit flags for encoding features */
+    uint32_t features;
+    /** RC Mode */
+    tivx_enc_rcmode rcmode;
+    /** IDR-period */
+    uint32_t idr_period;
+    /** I-period */
+    uint32_t i_period;
+    /** Bitrate */
+    uint32_t bitrate;
+    /** Framerate */
+    uint8_t framerate;
+    /** Crop settings */
+    uint32_t crop_left;
+    uint32_t crop_right;
+    uint32_t crop_top;
+    uint32_t crop_bottom;
+    /** # Slices */
+    uint8_t nslices;
+    /** base pipe */
+    uint8_t base_pipe;
+    /** Qp Settings */
+    uint32_t initial_qp_i;
+    uint32_t initial_qp_p;
+    uint32_t initial_qp_b;
+    uint32_t min_qp;
+    uint32_t max_qp;
 } tivx_video_encoder_params_t;
 
 /*********************************

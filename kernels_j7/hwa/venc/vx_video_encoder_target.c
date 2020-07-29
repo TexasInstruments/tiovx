@@ -343,6 +343,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
     int32_t                           mm_status = MM_SUCCESS;
     vx_df_image                       input_image_fmt;
     mm_vid_create_params             venc_params;
+    mm_enc_ctrl_params               venc_ctrl = {0};
     tivxVideoEncoderObj              *encoder_obj = NULL;
     tivx_video_encoder_params_t      *encoder_params;
     tivx_obj_desc_user_data_object_t *configuration_desc;
@@ -430,7 +431,41 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
             status = VX_FAILURE;
         }
 
-        mm_status = MM_ENC_Create(&venc_params, &encoder_obj->channel_id);
+        if (encoder_params->features | TIVX_ENC_FEATURE_CABAC)
+            venc_ctrl.features |= MM_ENC_FEATURE_CABAC;
+        if (encoder_params->features | TIVX_ENC_FEATURES_8x8)
+            venc_ctrl.features |= MM_ENC_FEATURES_8x8;
+
+        switch (encoder_params->rcmode)
+        {
+            case TIVX_ENC_VBR:
+                venc_ctrl.rcmode = MM_ENC_VBR;
+                break;
+            case TIVX_ENC_SVBR:
+                venc_ctrl.rcmode = MM_ENC_SVBR;
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid rcmode\n");
+                status = VX_FAILURE;
+        }
+
+        venc_ctrl.idr_period = encoder_params->idr_period;
+        venc_ctrl.i_period = encoder_params->i_period;
+        venc_ctrl.bitrate = encoder_params->bitrate;
+        venc_ctrl.framerate = encoder_params->framerate;
+        venc_ctrl.crop_left = encoder_params->crop_left;
+        venc_ctrl.crop_right = encoder_params->crop_right;
+        venc_ctrl.crop_top = encoder_params->crop_top;
+        venc_ctrl.crop_bottom = encoder_params->crop_bottom;
+        venc_ctrl.nslices = encoder_params->nslices;
+        venc_ctrl.base_pipe = encoder_params->base_pipe;
+        venc_ctrl.initial_qp_i = encoder_params->initial_qp_i;
+        venc_ctrl.initial_qp_p = encoder_params->initial_qp_p;
+        venc_ctrl.initial_qp_b = encoder_params->initial_qp_b;
+        venc_ctrl.min_qp = encoder_params->min_qp;
+        venc_ctrl.max_qp = encoder_params->max_qp;
+
+        mm_status = MM_ENC_Create(&venc_params, &venc_ctrl, &encoder_obj->channel_id);
 
         if(MM_SUCCESS != mm_status)
         {

@@ -449,26 +449,42 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 
         tivxHwaLoadKernels(context);
 
-        seek[0] = 0;
-        for(i = 1; i < info.num_frames_in_ipfile; i++)
-        {
-            seek[i] = seek[i - 1] + ((info.width * info.height * 3) / 2 );
-        }
-
         tivx_video_encoder_params_init(&params);
         ASSERT_VX_OBJECT(configuration_obj = vxCreateUserDataObject(context, "tivx_video_encoder_params_t", sizeof(tivx_video_encoder_params_t), NULL),
                                                                     (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
+        params.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params.rcmode = TIVX_ENC_SVBR;
+        params.idr_period = 30;
+        params.i_period = 30;
+        params.bitrate = 10000000;
+        params.framerate = 30;
+        params.crop_left = 0;
+        params.crop_right = 0;
+        params.crop_top = 0;
+        params.crop_bottom = 0;
+        params.nslices = 1;
+        params.base_pipe = 0;
+        params.initial_qp_i = 0;
+        params.initial_qp_p = 0;
+        params.initial_qp_b = 0;
+        params.min_qp = 0;
+        params.max_qp = 0;
 
         VX_CALL(vxCopyUserDataObject(configuration_obj, 0, sizeof(tivx_video_encoder_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        seek[0] = 0;
+        for(i = 1; i < info.num_frames_in_ipfile; i++)
+        {
+            seek[i] = seek[i - 1] + ((info.width * (info.height - params.crop_top - params.crop_bottom) * 3) / 2 );
+        }
 
         ASSERT_VX_OBJECT(input_image = vxCreateImage(context, info.width, info.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
         max_bitstream_size = ((uint32_t)(info.width / 16)
                             * (uint32_t)(info.height / 16) * WORST_QP_SIZE)
                             + ((info.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
-
 
         ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "tivx_video_bitstream_t", sizeof(uint8_t) * max_bitstream_size, NULL),
                                                                 (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -513,12 +529,12 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < (info.height ); j++)
+                    for(j = 0; j < (info.height - params.crop_top - params.crop_bottom); j++)
                     {
                         num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
 
-                    for(j = 0; j < (info.height / 2); j++)
+                    for(j = 0; j < ((info.height - params.crop_top - params.crop_bottom) / 2); j++)
                     {
                         num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
@@ -526,7 +542,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                 }
                 fclose(in_fp);
                 in_fp = NULL;
-                if (((info.width * info.height * 3) / 2)!= num_read)
+                if (((info.width * (info.height - params.crop_top - params.crop_bottom) * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file);
                 }
@@ -697,19 +713,6 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
         tivxHwaLoadKernels(context);
 
-
-        seek_s[0] = 0;
-        for(i = 1; i < info_s.num_frames_in_ipfile; i++)
-        {
-            seek_s[i] = seek_s[i - 1] + ((info_s.width * info_s.height * 3) / 2 );
-        }
-
-        seek_l[0] = 0;
-        for(i = 1; i < info_l.num_frames_in_ipfile; i++)
-        {
-            seek_l[i] = seek_l[i - 1] + ((info_l.width * info_l.height * 3) / 2 );
-        }
-
         tivx_video_encoder_params_init(&params_s);
         tivx_video_encoder_params_init(&params_l);
         ASSERT_VX_OBJECT(configuration_obj_s = vxCreateUserDataObject(context, "tivx_video_encoder_params_t", sizeof(tivx_video_encoder_params_t), NULL),
@@ -718,10 +721,58 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                                                                         (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params_s.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
+        params_s.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params_s.rcmode = TIVX_ENC_SVBR;
+        params_s.idr_period = 30;
+        params_s.i_period = 30;
+        params_s.bitrate = 5000000;
+        params_s.framerate = 30;
+        params_s.crop_left = 0;
+        params_s.crop_right = 0;
+        params_s.crop_top = 0;
+        params_s.crop_bottom = 0;
+        params_s.nslices = 1;
+        params_s.base_pipe = 0;
+        params_s.initial_qp_i = 0;
+        params_s.initial_qp_p = 0;
+        params_s.initial_qp_b = 0;
+        params_s.min_qp = 0;
+        params_s.max_qp = 0;
+
+
         params_l.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
+        params_l.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params_l.rcmode = TIVX_ENC_SVBR;
+        params_l.idr_period = 30;
+        params_l.i_period = 30;
+        params_l.bitrate = 10000000;
+        params_l.framerate = 30;
+        params_l.crop_left = 0;
+        params_l.crop_right = 0;
+        params_l.crop_top = 0;
+        params_l.crop_bottom = 8;
+        params_l.nslices = 1;
+        params_l.base_pipe = 1;
+        params_l.initial_qp_i = 0;
+        params_l.initial_qp_p = 0;
+        params_l.initial_qp_b = 0;
+        params_l.min_qp = 0;
+        params_l.max_qp = 0;
 
         VX_CALL(vxCopyUserDataObject(configuration_obj_s, 0, sizeof(tivx_video_encoder_params_t), &params_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(configuration_obj_l, 0, sizeof(tivx_video_encoder_params_t), &params_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        seek_s[0] = 0;
+        for(i = 1; i < info_s.num_frames_in_ipfile; i++)
+        {
+            seek_s[i] = seek_s[i - 1] + ((info_s.width * (info_s.height - params_s.crop_top - params_s.crop_bottom) * 3) / 2 );
+        }
+
+        seek_l[0] = 0;
+        for(i = 1; i < info_l.num_frames_in_ipfile; i++)
+        {
+            seek_l[i] = seek_l[i - 1] + ((info_l.width * (info_l.height - params_l.crop_top - params_l.crop_bottom) * 3) / 2 );
+        }
 
         ASSERT_VX_OBJECT(input_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(input_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
@@ -808,11 +859,11 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < info_s.height; j++)
+                    for(j = 0; j < (info_s.height - params_s.crop_top - params_s.crop_bottom); j++)
                     {
                         num_read  += fread(data_ptr_s_y + (j * image_addr_s_y.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
-                    for(j = 0; j < info_s.height / 2; j++)
+                    for(j = 0; j < (info_s.height - params_s.crop_top - params_s.crop_bottom) / 2; j++)
                     {
                     num_read  += fread(data_ptr_s_uv + (j * image_addr_s_uv.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
@@ -820,7 +871,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 fclose(in_fp_s);
                 in_fp_s = NULL;
-                if (((info_s.width * info_s.height * 3) / 2)!= num_read)
+                if (((info_s.width * (info_s.height - params_s.crop_top - params_s.crop_bottom) * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
                 }
@@ -834,12 +885,12 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < info_l.height; j++)
+                    for(j = 0; j < (info_l.height - params_l.crop_top - params_l.crop_bottom); j++)
                     {
                         num_read  += fread(data_ptr_l_y + (j * image_addr_l_y.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
 
-                    for(j = 0; j < (info_l.height / 2); j++)
+                    for(j = 0; j < (info_l.height - params_l.crop_top - params_l.crop_bottom) / 2; j++)
                     {
                         num_read  += fread(data_ptr_l_uv + (j * image_addr_l_uv.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
@@ -847,7 +898,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 fclose(in_fp_l);
                 in_fp_l = NULL;
-                if (((info_l.width * info_l.height * 3) / 2)!= num_read)
+                if (((info_l.width * (info_l.height - params_l.crop_top - params_l.crop_bottom) * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
                 }

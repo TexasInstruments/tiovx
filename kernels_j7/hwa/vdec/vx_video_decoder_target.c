@@ -440,6 +440,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
     uint32_t                          temp_mm_status;
     vx_df_image                       output_image_fmt;
     mm_vid_create_params             vdec_params;
+    mm_dec_ctrl_params               vdec_ctrl = {0};
     tivxVideoDecoderObj              *decoder_obj = NULL;
     tivx_video_decoder_params_t      *decoder_params;
     tivx_obj_desc_user_data_object_t *configuration_desc;
@@ -551,7 +552,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderCreate(
             status = (vx_status)VX_FAILURE;
         }
 
-        mm_status = MM_DEC_Create(&vdec_params, &decoder_obj->channel_id);
+        mm_status = MM_DEC_Create(&vdec_params, &vdec_ctrl, &decoder_obj->channel_id);
 
         if((int32_t)MM_DEC_SUCCESS != mm_status)
         {
