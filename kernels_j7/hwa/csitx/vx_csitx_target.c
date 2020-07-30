@@ -259,7 +259,7 @@ static vx_status tivxCsitxEnqueueFrameToDriver(
             {
                 /* Put into frame list as it is for same driver instance */
                 frmList.frames[(chId - startChIdx)]           = fvid2Frame;
-                frmList.frames[(chId - startChIdx)]->chNum    = instParams->chVcMap[(chId - startChIdx)];
+                frmList.frames[(chId - startChIdx)]->chNum    = (chId - startChIdx);
                 frmList.frames[(chId - startChIdx)]->addr[0U] = transmit_frame;
                 frmList.frames[(chId - startChIdx)]->appData  = input_desc;
             }

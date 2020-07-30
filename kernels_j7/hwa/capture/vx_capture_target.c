@@ -356,7 +356,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
                 {
                     /* Put into frame list as it is for same driver instance */
                     frmList.frames[frmList.numFrames]           = fvid2Frame;
-                    frmList.frames[frmList.numFrames]->chNum    = instParams->chVcMap[(chId-startChIdx)];
+                    frmList.frames[frmList.numFrames]->chNum    = (chId - startChIdx);
                     frmList.frames[frmList.numFrames]->addr[0U] = captured_frame;
                     frmList.frames[frmList.numFrames]->appData  = (void *)obj_desc_id;
                     frmList.numFrames++;
