@@ -161,8 +161,8 @@ void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
 /*! \brief [Graph] Creates a DMPAC_SDE Node.
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
- * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_NV12</tt> (Y plane only), <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_NV12</tt> (Y plane only), <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]. <br> 
  *                     The 3 bit 'Confidence' value is the result of passing the 7-bit confidence score through the user configured
  *                     \ref tivx_dmpac_sde_params_t::confidence_score_map range table to produce a 3-bit mapping.

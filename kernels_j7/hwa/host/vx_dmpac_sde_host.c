@@ -171,19 +171,21 @@ static vx_status VX_CALLBACK tivxKernelDmpacSdeValidate(vx_node node,
         }
 
         if( ((vx_df_image)VX_DF_IMAGE_U8 != left_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != left_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_U16 != left_fmt) &&
             ((vx_df_image)TIVX_DF_IMAGE_P12 != left_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'left' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'left' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
         if( ((vx_df_image)VX_DF_IMAGE_U8 != right_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_NV12 != right_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_U16 != right_fmt) &&
             ((vx_df_image)TIVX_DF_IMAGE_P12 != right_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'right' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+            VX_PRINT(VX_ZONE_ERROR, "'right' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
 
         if ((vx_df_image)VX_DF_IMAGE_S16 != output_fmt)
