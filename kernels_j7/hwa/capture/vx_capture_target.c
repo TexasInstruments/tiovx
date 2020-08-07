@@ -428,16 +428,16 @@ static uint32_t tivxCaptureExtractInCsiDataTypeFromRawImg(tivx_obj_desc_raw_imag
     {
         switch (params->format[0].msb)
         {
-            case 10u:
+            case 9u:
                 inCsiDataType = FVID2_CSI2_DF_RAW10;
             break;
-            case 12u:
+            case 11u:
                 inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
-            case 14u:
+            case 13u:
                 inCsiDataType = FVID2_CSI2_DF_RAW14;
             break;
-            case 16u:
+            case 15u:
                 inCsiDataType = FVID2_CSI2_DF_RAW16;
             break;
             default:
@@ -448,13 +448,13 @@ static uint32_t tivxCaptureExtractInCsiDataTypeFromRawImg(tivx_obj_desc_raw_imag
     {
         switch (params->format[0].msb)
         {
-            case 6u:
+            case 5u:
                 inCsiDataType = FVID2_CSI2_DF_RAW6;
             break;
-            case 7u:
+            case 6u:
                 inCsiDataType = FVID2_CSI2_DF_RAW7;
             break;
-            case 8u:
+            case 7u:
                 inCsiDataType = FVID2_CSI2_DF_RAW8;
             break;
             default:
@@ -526,10 +526,10 @@ static uint32_t tivxCaptureExtractDataFormat(uint32_t format)
     switch (format)
     {
         case (vx_df_image)VX_DF_IMAGE_UYVY:
-            dataFormat = FVID2_DF_YUV422I_YVYU;
+            dataFormat = FVID2_DF_YUV422I_UYVY;
         break;
         case (vx_df_image)VX_DF_IMAGE_YUYV:
-            dataFormat = FVID2_DF_YUV422I_VYUY;
+            dataFormat = FVID2_DF_YUV422I_YUYV;
         break;
         default:
             dataFormat = FVID2_DF_BGRX32_8888;
