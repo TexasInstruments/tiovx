@@ -76,6 +76,7 @@
 #include "mm_enc.h"
 #include <utils/mem/include/app_mem.h>
 #include "utils/udma/include/app_udma.h"
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -234,8 +235,9 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
     tivx_obj_desc_image_t            *input_image_desc;
     tivx_obj_desc_user_data_object_t *output_bitstream_desc;
     void                             *input_image_target_ptr_y;
-    void 			     *input_image_target_ptr_uv;
+    void                             *input_image_target_ptr_uv;
     void                             *output_bitstream_target_ptr;
+    uint64_t                         cur_time;
 
     if ( (num_params != TIVX_KERNEL_VIDEO_ENCODER_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_ENCODER_CONFIGURATION_IDX])
@@ -307,12 +309,18 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
     if (VX_SUCCESS == status)
     {
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         mm_status = MM_ENC_Process(&encoder_obj->in_buff, &encoder_obj->out_buff, encoder_obj->channel_id);
 
         if (MM_SUCCESS != mm_status)
         {
             VX_PRINT(VX_ZONE_ERROR, "MM_ENC Process failed\n");
             status = VX_FAILURE;
+        }
+        else
+        {
+            cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
         }
     }
 
@@ -324,10 +332,32 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait failed\n");
 		}
+        else
+        {
+            cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+        }
     }
 
     if(VX_SUCCESS == status)
     {
+        uint32_t buffer_size;
+
+        if ((vx_df_image)VX_DF_IMAGE_NV12 == input_image_desc->format)
+        {
+            buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y + \
+                   input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y/2;
+
+        }
+        else
+        {
+            buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y;
+        }
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VENC,
+            (uint32_t)cur_time,
+            buffer_size /* pixels processed */
+            );
+
         output_bitstream_desc->valid_mem_size = encoder_obj->out_buff.size[0];
     }
 

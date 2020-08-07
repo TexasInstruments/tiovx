@@ -77,6 +77,7 @@
 #include "mm_dec.h"
 #include <utils/mem/include/app_mem.h>
 #include "utils/udma/include/app_udma.h"
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -242,6 +243,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     void                             *input_bitstream_target_ptr;
     void                             *output_image_target_ptr_y;
     void                             *output_image_target_ptr_uv;
+    uint64_t                         cur_time;
 
     if ( (num_params != TIVX_KERNEL_VIDEO_DECODER_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VIDEO_DECODER_CONFIGURATION_IDX])
@@ -337,6 +339,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
         decoder_obj->in_buff.size[0] = input_bitstream_desc->valid_mem_size;
         decoder_obj->in_buff_2.size[0] = input_bitstream_desc->valid_mem_size;
 
+        cur_time = tivxPlatformGetTimeInUsecs();
+
         if (1U == decoder_obj->which_buff)
         {
             mm_status = MM_DEC_Process(&decoder_obj->in_buff, &decoder_obj->out_buff, decoder_obj->channel_id);
@@ -363,6 +367,8 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
                                 * ALIGN_SIZE(output_image_desc->imagepatch_addr[0].dim_y, (uint32_t)HW_ALIGN) * 1U )/ 2U;
 
         tivxEventWait(decoder_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         if (0U != decoder_obj->first_process)
         {
@@ -422,6 +428,24 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        uint32_t buffer_size = 0;
+
+        if ((vx_df_image)VX_DF_IMAGE_NV12 == output_image_desc->format)
+        {
+            buffer_size = output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y + \
+                   output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y/2;
+
+        }
+        else
+        {
+            buffer_size = output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y;
+        }
+
+        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VDEC,
+            (uint32_t)cur_time,
+            buffer_size /* pixels processed */
+            );
+
         tivxMemBufferUnmap(input_bitstream_target_ptr, input_bitstream_desc->mem_size,
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
     }
