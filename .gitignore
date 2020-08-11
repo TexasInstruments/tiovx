@@ -11,6 +11,7 @@ docs/user_guide
 *.dll
 out/
 lib/TDAX
+lib/PC
 libvx_*.a
 vx_*_exe*
 *.pp
