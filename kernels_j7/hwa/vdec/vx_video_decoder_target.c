@@ -430,16 +430,7 @@ static vx_status VX_CALLBACK tivxVideoDecoderProcess(
     {
         uint32_t buffer_size = 0;
 
-        if ((vx_df_image)VX_DF_IMAGE_NV12 == output_image_desc->format)
-        {
-            buffer_size = output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y + \
-                   output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y/2;
-
-        }
-        else
-        {
-            buffer_size = output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y;
-        }
+        buffer_size = output_image_desc->imagepatch_addr[0].dim_x*output_image_desc->imagepatch_addr[0].dim_y;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VDEC,
             (uint32_t)cur_time,

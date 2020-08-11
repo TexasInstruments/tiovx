@@ -340,18 +340,9 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
     if(VX_SUCCESS == status)
     {
-        uint32_t buffer_size;
+        uint32_t buffer_size = 0;
 
-        if ((vx_df_image)VX_DF_IMAGE_NV12 == input_image_desc->format)
-        {
-            buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y + \
-                   input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y/2;
-
-        }
-        else
-        {
-            buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y;
-        }
+        buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y;
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VENC,
             (uint32_t)cur_time,
