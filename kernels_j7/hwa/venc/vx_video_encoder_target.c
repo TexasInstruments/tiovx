@@ -139,7 +139,8 @@ void tivxVideoEncoderErrorCb();
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-static tivx_target_kernel vx_video_encoder_target_kernel = NULL;
+static tivx_target_kernel vx_video_encoder_target_kernel_0 = NULL;
+static tivx_target_kernel vx_video_encoder_target_kernel_1 = NULL;
 
 static tivxVideoEncoderInstObj gTivxVideoEncoderInstObj;
 
@@ -150,14 +151,15 @@ static tivxVideoEncoderInstObj gTivxVideoEncoderInstObj;
 void tivxAddTargetKernelVideoEncoder(void)
 {
     vx_status status = VX_FAILURE;
-    char target_name[TIVX_TARGET_MAX_NAME];
+    char target_name[2][TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
-        strncpy(target_name, TIVX_TARGET_VENC1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name[0], TIVX_TARGET_VENC1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name[1], TIVX_TARGET_VENC2, TIVX_TARGET_MAX_NAME);
         status = VX_SUCCESS;
     }
     else
@@ -168,15 +170,24 @@ void tivxAddTargetKernelVideoEncoder(void)
 
     if (status == VX_SUCCESS)
     {
-        vx_video_encoder_target_kernel = tivxAddTargetKernelByName(
+        vx_video_encoder_target_kernel_0 = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VIDEO_ENCODER_NAME,
-                            target_name,
+                            target_name[0],
                             tivxVideoEncoderProcess,
                             tivxVideoEncoderCreate,
                             tivxVideoEncoderDelete,
                             tivxVideoEncoderControl,
                             NULL);
-        if (NULL != vx_video_encoder_target_kernel)
+        vx_video_encoder_target_kernel_1 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VIDEO_ENCODER_NAME,
+                            target_name[1],
+                            tivxVideoEncoderProcess,
+                            tivxVideoEncoderCreate,
+                            tivxVideoEncoderDelete,
+                            tivxVideoEncoderControl,
+                            NULL);
+
+        if (NULL != vx_video_encoder_target_kernel_0 || NULL != vx_video_encoder_target_kernel_1)
         {
             /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVideoEncoderInstObj.lock);
@@ -203,10 +214,19 @@ void tivxRemoveTargetKernelVideoEncoder(void)
 {
     vx_status status = VX_SUCCESS;
 
-    status = tivxRemoveTargetKernel(vx_video_encoder_target_kernel);
+    status = tivxRemoveTargetKernel(vx_video_encoder_target_kernel_0);
     if (status == VX_SUCCESS)
     {
-        vx_video_encoder_target_kernel = NULL;
+        vx_video_encoder_target_kernel_0 = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Encoder TargetKernel\n");
+    }
+    status = tivxRemoveTargetKernel(vx_video_encoder_target_kernel_1);
+    if (status == VX_SUCCESS)
+    {
+        vx_video_encoder_target_kernel_1 = NULL;
     }
     else
     {

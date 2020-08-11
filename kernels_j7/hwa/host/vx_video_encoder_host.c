@@ -311,5 +311,22 @@ void tivx_video_encoder_params_init(tivx_video_encoder_params_t *prms)
         memset(prms, 0x0, sizeof(tivx_video_encoder_params_t));
 
         prms->bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
+        prms->features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        prms->rcmode = TIVX_ENC_SVBR;
+        prms->idr_period = 1; /* for I-only encode, set to 1 */
+        prms->i_period = 1; /* for I-only encode, set to 1 */
+        prms->bitrate = 10*1000000;
+        prms->framerate = 30;
+        prms->crop_left = 0;
+        prms->crop_right = 0;
+        prms->crop_top = 0;
+        prms->crop_bottom = 0;
+        prms->nslices = 1;
+        prms->base_pipe = 0;
+        prms->initial_qp_i = 0;
+        prms->initial_qp_p = 0;
+        prms->initial_qp_b = 0;
+        prms->min_qp = 0;
+        prms->max_qp = 0;
     }
 }
