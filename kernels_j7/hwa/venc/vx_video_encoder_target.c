@@ -100,6 +100,8 @@ typedef struct
     uint8_t                             processFlag;
     tivx_event                          waitForProcessCmpl;
     uint8_t                             which_buff;
+    uint32_t                            inst_id;
+    
 } tivxVideoEncoderObj;
 
 typedef struct
@@ -327,20 +329,16 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
         }
     }
 
+    cur_time = tivxPlatformGetTimeInUsecs();
+
     if (VX_SUCCESS == status)
     {
-        cur_time = tivxPlatformGetTimeInUsecs();
-
         mm_status = MM_ENC_Process(&encoder_obj->in_buff, &encoder_obj->out_buff, encoder_obj->channel_id);
 
         if (MM_SUCCESS != mm_status)
         {
             VX_PRINT(VX_ZONE_ERROR, "MM_ENC Process failed\n");
             status = VX_FAILURE;
-        }
-        else
-        {
-            cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
         }
     }
 
@@ -352,19 +350,26 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxEventWait failed\n");
 		}
-        else
-        {
-            cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
-        }
     }
+    
+    cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
     if(VX_SUCCESS == status)
     {
         uint32_t buffer_size = 0;
+        app_perf_hwa_id_t hwa_id;
 
         buffer_size = input_image_desc->imagepatch_addr[0].dim_x*input_image_desc->imagepatch_addr[0].dim_y;
 
-        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VENC,
+        if(encoder_obj->inst_id == 1)
+        {
+            hwa_id = APP_PERF_HWA_VENC1;
+        }
+        else
+        {
+            hwa_id = APP_PERF_HWA_VENC0;
+        }
+        appPerfStatsHwaUpdateLoad(hwa_id,
             (uint32_t)cur_time,
             buffer_size /* pixels processed */
             );
@@ -476,6 +481,8 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
             venc_ctrl.features |= MM_ENC_FEATURE_CABAC;
         if (encoder_params->features | TIVX_ENC_FEATURES_8x8)
             venc_ctrl.features |= MM_ENC_FEATURES_8x8;
+            
+        encoder_obj->inst_id = encoder_params->base_pipe;
 
         switch (encoder_params->rcmode)
         {
