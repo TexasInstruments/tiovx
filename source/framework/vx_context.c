@@ -412,6 +412,12 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
             }
         }
 
+        if ((vx_bool)vx_false_e == is_success)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Max context references exceeded\n");
+            VX_PRINT(VX_ZONE_ERROR, "May need to increase the value of TIVX_CONTEXT_MAX_REFERENCES in tiovx/include/TI/tivx_config.h\n");
+        }
+
         ownContextUnlock(context);
     }
     return is_success;
