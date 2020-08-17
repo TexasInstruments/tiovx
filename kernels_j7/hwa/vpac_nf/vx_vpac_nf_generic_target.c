@@ -337,8 +337,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         nf_generic_obj->nf_cfg.nfCfg.centralPixelWeight = temp_lut[12];
         nf_generic_obj->wgtTbl.filterMode      = NF_FILTER_MODE_GENERIC_2D_FILTER;
 
-        cur_time = tivxPlatformGetTimeInUsecs();
-
         /* Update NF params */
         fvid2_status = Fvid2_control(nf_generic_obj->handle,
             IOCTL_VHWA_M2M_NF_SET_PARAMS, &nf_generic_obj->nf_cfg, NULL);
@@ -382,6 +380,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         nf_generic_obj->outFrm.addr[0U] = tivxMemShared2PhysPtr(
             dst->mem_ptr[0].shared_ptr,
             (int32_t)dst->mem_ptr[0].mem_heap_region);
+            
+        cur_time = tivxPlatformGetTimeInUsecs();    
 
         /* Submit NF Request*/
         fvid2_status = Fvid2_processRequest(nf_generic_obj->handle, inFrmList,

@@ -339,6 +339,8 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             VX_PRINT(VX_ZONE_ERROR, "Failed to Get Processed Request\n");
             status = (vx_status)VX_FAILURE;
         }
+        
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -363,7 +365,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
         sdePrms = &sde_obj->sdePrms;
 
-        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+        
 
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_SDE,
             (uint32_t)cur_time,

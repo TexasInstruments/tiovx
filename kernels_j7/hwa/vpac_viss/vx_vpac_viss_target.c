@@ -70,6 +70,12 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+/* #undef below to see performance without VISS context save/restore */
+#define VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
+
+/* #undef below to see performance using CPU for VISS context save/restore */
+#define VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
+
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -987,7 +993,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         vhwaVissRestoreCtx(vissObj);
-
+        
         cur_time = tivxPlatformGetTimeInUsecs();
 
         /* Submit the request to the driver */
@@ -1011,14 +1017,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 status = (vx_status)VX_FAILURE;
             }
         }
+        
+        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         vhwaVissSaveCtx(vissObj);
     }
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
-
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
             (uint32_t)cur_time,
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
@@ -1617,7 +1623,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             else
             {
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
-                    vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_INTERNAL_L3);
                 if (NULL == (int32_t)vissObj->ctx_mem_ptr.host_ptr)
                 {
                     vissObj->ctx_mem_phys_ptr = 0u;
@@ -1629,6 +1635,8 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
                     vissObj->ctx_mem_phys_ptr = tivxMemShared2PhysPtr(
                         vissObj->ctx_mem_ptr.shared_ptr,
                         (int32_t)vissObj->ctx_mem_ptr.mem_heap_region);
+                        
+                    VX_PRINT(VX_ZONE_INFO, "TIOVX: VISS: GLBCE ctx mem @ 0x%08x or size %d B\n", (uint32_t)vissObj->ctx_mem_phys_ptr, vissObj->glbceStatInfo.size);
                 }
             }
         }
@@ -1660,7 +1668,10 @@ static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj)
 
 static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
 {
+    #ifdef VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
+    #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
     int32_t status;
+    #endif
     app_udma_copy_1d_prms_t prms;
 
     if ((NULL != vissObj) && (0u != vissObj->ctx_mem_phys_ptr))
@@ -1668,18 +1679,26 @@ static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
         prms.src_addr = vissObj->ctx_mem_phys_ptr;
         prms.dest_addr = vissObj->glbceStatInfo.addr;
         prms.length = vissObj->glbceStatInfo.size;
+        #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
         status = appUdmaCopy1D(NULL, &prms);
 
         if (0 != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to restore Context !!!\n");
         }
+        #else
+        memcpy((void*)(uint32_t)prms.dest_addr, (void*)(uint32_t)prms.src_addr, prms.length);
+        #endif
     }
+    #endif
 }
 
 static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj)
 {
+    #ifdef VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
+    #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
     int32_t status;
+    #endif
     app_udma_copy_1d_prms_t prms;
 
     if ((NULL != vissObj) && (0u != vissObj->ctx_mem_phys_ptr))
@@ -1687,13 +1706,18 @@ static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj)
         prms.src_addr = vissObj->glbceStatInfo.addr;
         prms.dest_addr = vissObj->ctx_mem_phys_ptr;
         prms.length = vissObj->glbceStatInfo.size;
+        #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
         status = appUdmaCopy1D(NULL, &prms);
 
         if (0 != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to restore Context !!!\n");
         }
+        #else
+        memcpy((void*)(uint32_t)prms.dest_addr, (void*)(uint32_t)prms.src_addr, prms.length);
+        #endif
     }
+    #endif
 }
 
 /* ========================================================================== */
