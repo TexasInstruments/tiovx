@@ -22,6 +22,9 @@
 typedef struct {
     char in_file_name[256];
     char out_file_name[256];
+    uint32_t start_offset;
+    uint32_t duration;
+    
 } tivx_log_rt_args;
 
 const char *argp_program_version = "v1.0.0 " __DATE__ " " __TIME__;
@@ -33,6 +36,8 @@ static char args_doc[] = "";
 static struct argp_option options[] = { 
     { "input", 'i', "file", 0, "Input file generated via tivxLogRtTraceExportToFile()."},
     { "output_vcd", 'o', "file", 0, "VCD (Value Change Dump) Output file. Use 'gtkwave' to visualize the output."},
+    { "start", 's', "time in msecs", 0, "Start offset for clip in units of ms"},
+    { "duration", 'd', "time in msecs", 0, "Duration for clip in units of ms"},
     { 0 } 
 };
 
@@ -43,6 +48,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     {
         case 'i': strcpy(arguments->in_file_name, arg); break;
         case 'o': strcpy(arguments->out_file_name, arg); break;
+        case 's': 
+            arguments->start_offset = atoi(arg);
+            break;
+        case 'd': 
+            arguments->duration = atoi(arg);
+            break;
         case ARGP_KEY_ARG: return 0;
         default: return ARGP_ERR_UNKNOWN;
     }   
@@ -64,15 +75,17 @@ static void set_default(tivx_log_rt_args *arguments)
 {
     strcpy(arguments->in_file_name, "in.bin");
     strcpy(arguments->out_file_name, "out.vcd");
+    arguments->start_offset = 0;
+    arguments->duration = 0xFFFFFFFF;
 }
 
 int main(int argc, char *argv[])
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     size_t bytes_read;
-    int32_t i;
+    uint32_t i, event_cnt;
     tivx_log_rt_entry_t event;
-    uint64_t start_time;
+    uint64_t start_time, global_start_time;
     
     set_default(&obj->arguments);
     argp_parse(&argp, argc, argv, 0, 0, &obj->arguments);
@@ -131,6 +144,7 @@ int main(int argc, char *argv[])
     fprintf(out_fp, "$enddefinitions $end\n");
     
     i = 0;
+    event_cnt = 0;
     /* read events */
     do {
         bytes_read = read(in_fd, &event, sizeof(tivx_log_rt_entry_t));
@@ -140,65 +154,76 @@ int main(int argc, char *argv[])
             /* done, exit */
             break;
         }
-        
+
         if(i==0)
         {
-            start_time = event.timestamp;
+            global_start_time = event.timestamp;
         }
         i++;
-
-        switch(event.event_class)
+        
+        if(event.timestamp >= (global_start_time + (uint64_t)obj->arguments.start_offset*1000)
+            && event.timestamp <= (global_start_time + (uint64_t)(obj->arguments.start_offset + obj->arguments.duration)*1000)
+            )
         {
-            case TIVX_LOG_RT_EVENT_CLASS_NODE:
-            
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
-                        event.timestamp - start_time,
-                        BYTE_TO_BINARY(event.event_value),
-                        (uintptr_t)event.event_id);
-                }
-                else
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
-                        event.timestamp - start_time,
-                        (uintptr_t)event.event_id);
-                }
-                break;
-            #if 0 /* not supported as of now */
-            case TIVX_LOG_RT_EVENT_CLASS_GRAPH:
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" g_%" PRIuPTR "\n",
-                        event.timestamp  - start_time,
-                        BYTE_TO_BINARY(event.event_value),
-                        (uintptr_t)event.event_id);
-                }
-                else
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "bZ g_%" PRIuPTR "\n",
-                        event.timestamp  - start_time,
-                        (uintptr_t)event.event_id);
-                }
-                break;
-            #endif
-            case TIVX_LOG_RT_EVENT_CLASS_TARGET:
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "b1 t_%" PRIuPTR "\n",
-                        event.timestamp  - start_time,
-                        (uintptr_t)event.event_id);
-                }
-                else
-                if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
-                {
-                    fprintf(out_fp, "#%" PRIu64 "\n" "b0 t_%" PRIuPTR "\n",
-                        event.timestamp  - start_time,
-                        (uintptr_t)event.event_id);
-                }
-                break;
+            if(event_cnt  == 0)
+            {
+                start_time = event.timestamp;
+            }
+            event_cnt++;
+    
+            switch(event.event_class)
+            {
+                case TIVX_LOG_RT_EVENT_CLASS_NODE:
+                
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
+                            event.timestamp - start_time,
+                            BYTE_TO_BINARY(event.event_value),
+                            (uintptr_t)event.event_id);
+                    }
+                    else
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
+                            event.timestamp - start_time,
+                            (uintptr_t)event.event_id);
+                    }
+                    break;
+                #if 0 /* not supported as of now */
+                case TIVX_LOG_RT_EVENT_CLASS_GRAPH:
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" g_%" PRIuPTR "\n",
+                            event.timestamp  - start_time,
+                            BYTE_TO_BINARY(event.event_value),
+                            (uintptr_t)event.event_id);
+                    }
+                    else
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "bZ g_%" PRIuPTR "\n",
+                            event.timestamp  - start_time,
+                            (uintptr_t)event.event_id);
+                    }
+                    break;
+                #endif
+                case TIVX_LOG_RT_EVENT_CLASS_TARGET:
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_START)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "b1 t_%" PRIuPTR "\n",
+                            event.timestamp  - start_time,
+                            (uintptr_t)event.event_id);
+                    }
+                    else
+                    if(event.event_type==TIVX_LOG_RT_EVENT_TYPE_END)
+                    {
+                        fprintf(out_fp, "#%" PRIu64 "\n" "b0 t_%" PRIuPTR "\n",
+                            event.timestamp  - start_time,
+                            (uintptr_t)event.event_id);
+                    }
+                    break;
+            }
         }
         
     } while(1);

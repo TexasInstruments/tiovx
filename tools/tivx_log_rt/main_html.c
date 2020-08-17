@@ -16,6 +16,10 @@
 typedef struct {
     char in_file_name[256];
     char out_file_name[256];
+    uint32_t start_offset;
+    uint32_t duration;
+    uint32_t threshold;
+    
 } tivx_log_rt_args;
 
 typedef struct {
@@ -24,6 +28,7 @@ typedef struct {
     uint32_t max;
     uint32_t avg;
     uint32_t std_dev;
+    uint32_t threshold_cnt;
     
 } tivx_log_rt_global_stats_t;
 
@@ -63,6 +68,9 @@ static char args_doc[] = "";
 static struct argp_option options[] = { 
     { "input", 'i', "file", 0, "Input file generated via tivxLogRtTraceExportToFile()."},
     { "output_html", 'o', "file", 0, "HTML file. Open in web browser to view"},
+    { "start", 's', "time in msecs", 0, "Start offset for clip in units of ms"},
+    { "duration", 'd', "time in msecs", 0, "Duration for clip in units of ms"},
+    { "threshold", 't', "time in usecs", 0, "Threshold to use for threshold counter"},
     { 0 } 
 };
 
@@ -70,6 +78,9 @@ static void set_default(tivx_log_rt_args *arguments)
 {
     strcpy(arguments->in_file_name, "in.bin");
     strcpy(arguments->out_file_name, "out.html");
+    arguments->start_offset = 0;
+    arguments->duration = 0xFFFFFFFF;
+    arguments->threshold = 33333;
 }
 
 static error_t parse_opt(int key, char *arg, struct argp_state *state) {
@@ -82,6 +93,15 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
             break;
         case 'o': 
             strcpy(arguments->out_file_name, arg); 
+            break;
+        case 's': 
+            arguments->start_offset = atoi(arg);
+            break;
+        case 'd': 
+            arguments->duration = atoi(arg);
+            break;
+        case 't': 
+            arguments->threshold = atoi(arg);
             break;
         case ARGP_KEY_ARG: 
             return 0;
@@ -131,6 +151,7 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
         num_events = 0;
         start = obj->start_time;
         end = obj->end_time;
+        start = (uint64_t)(-1);
         for(k=0; k<obj->total_events; k++)
         {
             tivx_log_rt_entry_t *event = &obj->events[k];
@@ -143,13 +164,12 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
                     start = event->timestamp - obj->start_time; 
                 }
                 else
-                if(event->event_type==TIVX_LOG_RT_EVENT_TYPE_END)
+                if(event->event_type==TIVX_LOG_RT_EVENT_TYPE_END && start != (uint64_t)(-1))
                 {
                     end = event->timestamp - obj->start_time; 
                     
                     if(num_events < obj->num_events[i])
                     {
-                        
                         frame_period[num_events].start_time = start;
                         frame_period[num_events].frame_period = (uint32_t)(end - start);
                         
@@ -167,10 +187,12 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
     {
         uint32_t min, max;
         uint64_t sum;
+        uint32_t threshold_cnt;
         
         min = (uint32_t)-1;
         max = 0;
         sum = 0;
+        threshold_cnt = 0;
         frame_period = obj->frame_period[i];
         for(k=0; k<obj->num_events[i]; k++)
         {
@@ -178,11 +200,14 @@ static void create_time_series(tivx_log_rt_obj_t *obj)
                 min = frame_period[k].frame_period;
             if(frame_period[k].frame_period >= max)
                 max = frame_period[k].frame_period;
+            if(frame_period[k].frame_period > obj->arguments.threshold)
+                threshold_cnt++;
             sum += frame_period[k].frame_period;    
         }
         obj->global_stats[i].min = min;
         obj->global_stats[i].max = max;
         obj->global_stats[i].avg = sum/obj->num_events[i];
+        obj->global_stats[i].threshold_cnt = threshold_cnt;
         obj->global_stats[i].std_dev = 0;
         for(k=0; k<obj->num_events[i]; k++)
         {
@@ -201,7 +226,7 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
     int in_fd  = open(obj->arguments.in_file_name, O_RDONLY);
     struct stat st;
     size_t in_bytes_read, read_bytes, in_file_size;
-    uint32_t cur_index, i;
+    uint32_t cur_index, i, event_cnt;
     tivx_log_rt_index_t index[TIVX_LOG_RT_INDEX_MAX];
     
     if(in_fd < 0)
@@ -275,6 +300,8 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
         obj->num_events[i] = 0;
     }
     
+    event_cnt = 0;
+    obj->start_time = obj->events[0].timestamp;
     /* map event ID to event name via event_2_index_table */
     for(i=0; i<obj->total_events; i++)
     {
@@ -282,24 +309,26 @@ static void read_in_file(tivx_log_rt_obj_t *obj)
         uint32_t index;
         
         event = &obj->events[i];
+
+        if(event->timestamp >= (obj->start_time  + (uint64_t)obj->arguments.start_offset*1000)
+            && event->timestamp <= (obj->start_time  + (uint64_t)(obj->arguments.start_offset+obj->arguments.duration)*1000)
+          )
+        {
+            index = find_event_index(event->event_id, obj);
+            obj->event_2_index_table[event_cnt] = index;
         
-        if(i==0)
-        {
-            obj->start_time = event->timestamp;
-        }
-        else
-        if(i==(obj->total_events-1))
-        {
-            obj->end_time = event->timestamp;
-        }
-        index = find_event_index(event->event_id, obj);
-        obj->event_2_index_table[i] = index;
-        
-        if(event->event_type == TIVX_LOG_RT_EVENT_TYPE_START && index < obj->num_index)  
-        {
-            obj->num_events[index]++;
+            if(event->event_type == TIVX_LOG_RT_EVENT_TYPE_START && index < obj->num_index)  
+            {
+                obj->num_events[index]++;
+            }
+            obj->events[event_cnt] = *event;
+            event_cnt++;
         }
     }
+    obj->total_events = event_cnt;
+    obj->start_time = obj->events[0].timestamp;
+    obj->end_time = obj->events[event_cnt-1].timestamp;
+    
     printf(" Input file, total duration = %ld usecs, %d events, %d event ID's\n",
         obj->end_time - obj->start_time, obj->total_events, obj->num_index
         );
@@ -323,7 +352,7 @@ static void create_output(tivx_log_rt_obj_t *obj)
         
     const char div_tags[] = 
         "  <div id=\"%s\"></div>\n"
-        "  <p> <b>Global statistics : </b> min = %d us, max = %d us, avg = %d us, (max - min) = %d us, Nunber of frames = %d </p> \n"
+        "  <p> <b>Global statistics : </b> min = %d us, max = %d us, avg = %d us, (max - min) = %d us, Nunber of frames = %d, Number of frame exceeded threshold (%d us) = %d </p> \n"
         "  <hr> \n"
         ;
         
@@ -374,7 +403,9 @@ static void create_output(tivx_log_rt_obj_t *obj)
                     obj->global_stats[event_index].max,
                     obj->global_stats[event_index].avg,
                     obj->global_stats[event_index].max - obj->global_stats[event_index].min,
-                    obj->num_events[event_index]
+                    obj->num_events[event_index],
+                    obj->arguments.threshold,
+                    obj->global_stats[event_index].threshold_cnt
                     );
         }
     }
