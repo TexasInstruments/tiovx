@@ -19,9 +19,11 @@
   (((byte & 0x02U) != 0U) ? '1' : '0'), \
   (((byte & 0x01U) != 0U) ? '1' : '0')
 
+#define FILENAME_MAX_LENGTH   (256u)
+
 typedef struct {
-    char in_file_name[256];
-    char out_file_name[256];
+    char in_file_name[FILENAME_MAX_LENGTH];
+    char out_file_name[FILENAME_MAX_LENGTH];
     uint32_t start_offset;
     uint32_t duration;
     
@@ -46,8 +48,8 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     
     switch (key) 
     {
-        case 'i': strcpy(arguments->in_file_name, arg); break;
-        case 'o': strcpy(arguments->out_file_name, arg); break;
+        case 'i': strncpy(arguments->in_file_name, arg, FILENAME_MAX_LENGTH); break;
+        case 'o': strncpy(arguments->out_file_name, arg, FILENAME_MAX_LENGTH); break;
         case 's': 
             arguments->start_offset = atoi(arg);
             break;
@@ -73,8 +75,8 @@ tivx_log_rt_obj_t g_tivx_log_rt_obj;
 
 static void set_default(tivx_log_rt_args *arguments)
 {
-    strcpy(arguments->in_file_name, "in.bin");
-    strcpy(arguments->out_file_name, "out.vcd");
+    strncpy(arguments->in_file_name, "in.bin", FILENAME_MAX_LENGTH);
+    strncpy(arguments->out_file_name, "out.vcd", FILENAME_MAX_LENGTH);
     arguments->start_offset = 0;
     arguments->duration = 0xFFFFFFFF;
 }

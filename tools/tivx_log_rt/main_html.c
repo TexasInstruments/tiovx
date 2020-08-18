@@ -13,9 +13,11 @@
 
 #include <tivx_log_rt_if.h>
 
+#define FILENAME_MAX_LENGTH   (256u)
+
 typedef struct {
-    char in_file_name[256];
-    char out_file_name[256];
+    char in_file_name[FILENAME_MAX_LENGTH];
+    char out_file_name[FILENAME_MAX_LENGTH];
     uint32_t start_offset;
     uint32_t duration;
     uint32_t threshold;
@@ -76,8 +78,8 @@ static struct argp_option options[] = {
 
 static void set_default(tivx_log_rt_args *arguments)
 {
-    strcpy(arguments->in_file_name, "in.bin");
-    strcpy(arguments->out_file_name, "out.html");
+    strncpy(arguments->in_file_name, "in.bin", FILENAME_MAX_LENGTH);
+    strncpy(arguments->out_file_name, "out.html", FILENAME_MAX_LENGTH);
     arguments->start_offset = 0;
     arguments->duration = 0xFFFFFFFF;
     arguments->threshold = 33333;
@@ -89,10 +91,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state) {
     switch (key) 
     {
         case 'i': 
-            strcpy(arguments->in_file_name, arg); 
+            strncpy(arguments->in_file_name, arg, FILENAME_MAX_LENGTH); 
             break;
         case 'o': 
-            strcpy(arguments->out_file_name, arg); 
+            strncpy(arguments->out_file_name, arg, FILENAME_MAX_LENGTH); 
             break;
         case 's': 
             arguments->start_offset = atoi(arg);
