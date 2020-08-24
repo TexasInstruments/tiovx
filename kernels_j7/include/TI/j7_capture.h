@@ -305,6 +305,10 @@ typedef struct
     /*! Counter to keep track of the occurrence of overflow error.
         Note: This counter will be reset at the time of driver create and
         during driver start. */
+     uint32_t errorFrameCount[TIVX_CAPTURE_MAX_INST][TIVX_CAPTURE_MAX_CH];
+    /**< Counter to keep track number of error or incomplete frames 
+     *   from the driver.
+     *   Note: This counter will be reset at the time of driver init. */
     uint32_t overflowCount[TIVX_CAPTURE_MAX_INST];
     /*! Counter to keep track of the occurrences of spurious UDMA interrupts.
         Note: This counter will be reset at the time of driver create and

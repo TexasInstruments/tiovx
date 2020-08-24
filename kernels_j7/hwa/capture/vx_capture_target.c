@@ -835,7 +835,7 @@ static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
 
                 tmp_obj_desc_id = (uint32_t)fvid2Frame->appData;
                 tmp_timestamp = fvid2Frame->timeStamp64;
-
+                
                 tivxQueuePut(&prms->freeFvid2FrameQ[chId], (uintptr_t)fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)tmp_obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 tivxQueuePut(&prms->pendingFrameTimestampQ[chId], tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
@@ -1303,15 +1303,16 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms)
             printf(   "==========================================================\r\n");
             printf(   " FIFO Overflow Count: %d\r\n", prms->captStatus.overflowCount);
             printf(   " Spurious UDMA interrupt count: %d\r\n", prms->captStatus.spuriousUdmaIntrCount);
-            printf(   " Channel Num | Frame Queue Count | Frame De-queue Count | Frame Drop Count |\r\n");
+            printf(   " Channel Num | Frame Queue Count | Frame De-queue Count | Frame Drop Count | Error Frame Count |\r\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
                 printf(
-                      " %11d | %17d | %20d | %16d |\r\n",
+                      " %11d | %17d | %20d | %16d | %17d |\r\n",
                       cnt,
                       prms->captStatus.queueCount[cnt],
                       prms->captStatus.dequeueCount[cnt],
-                      prms->captStatus.dropCount[cnt]);
+                      prms->captStatus.dropCount[cnt],
+                      prms->captStatus.errorFrameCount[cnt]);
             }
         }
         else
@@ -1510,9 +1511,10 @@ static void tivxCaptureCopyStatistics(tivxCaptureParams *prms,
         instParams = &prms->instParams[instIdx];
         for (i = 0U ; i < instParams->numCh ; i++)
         {
-            capt_status_prms->queueCount[instIdx][i]     = instParams->captStatus.queueCount[i];
-            capt_status_prms->dequeueCount[instIdx][i]   = instParams->captStatus.dequeueCount[i];
-            capt_status_prms->dropCount[instIdx][i]      = instParams->captStatus.dropCount[i];
+            capt_status_prms->queueCount[instIdx][i]      = instParams->captStatus.queueCount[i];
+            capt_status_prms->dequeueCount[instIdx][i]    = instParams->captStatus.dequeueCount[i];
+            capt_status_prms->dropCount[instIdx][i]       = instParams->captStatus.dropCount[i];
+            capt_status_prms->errorFrameCount[instIdx][i] = instParams->captStatus.errorFrameCount[i];
         }
         capt_status_prms->overflowCount[instIdx]         = instParams->captStatus.overflowCount;
         capt_status_prms->spuriousUdmaIntrCount[instIdx] = instParams->captStatus.spuriousUdmaIntrCount;
