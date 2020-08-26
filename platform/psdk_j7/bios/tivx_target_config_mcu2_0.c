@@ -69,7 +69,7 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2, 4, "TIVX_MSC2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_SDE, 5, "TIVX_SDE", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_DOF, 6, "TIVX_DOF", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 7, "TIVX_VISS1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 7, "TIVX_VISS1", 13u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1, 8, "TIVX_CAPT1", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2, 9, "TIVX_CAPT2", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY1, 10, "TIVX_DISP1", 14u);
