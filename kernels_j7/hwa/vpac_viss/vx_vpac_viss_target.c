@@ -1280,11 +1280,27 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
 
     switch (raw_img_desc->params.format[0U].pixel_container)
     {
+        vx_uint32 msb;
         case (vx_enum)TIVX_RAW_IMAGE_8_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
             break;
         case (vx_enum)TIVX_RAW_IMAGE_16_BIT:
-            fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+            msb = raw_img_desc->params.format[0U].msb;
+            if(msb < 7U)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Invalid Format \n");
+                /* do nothing */
+            }else if (msb == 15U)
+            {
+                fmt->ccsFormat = FVID2_CCSF_BITS16_PACKED;
+            }
+            else
+            {
+                /*MSB = 7 translates to FVID2_CCSF_BITS8_UNPACKED16*/
+                /*MSB = 11 translates to FVID2_CCSF_BITS12_UNPACKED16*/
+                /*MSB = 14 translates to FVID2_CCSF_BITS15_UNPACKED16*/
+                fmt->ccsFormat = FVID2_CCSF_BITS8_UNPACKED16 + msb - 7U;
+            }
             break;
         case (vx_enum)TIVX_RAW_IMAGE_P12_BIT:
             fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
