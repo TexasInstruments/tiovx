@@ -29,7 +29,7 @@ static uint32_t g_ipc_cpu_id_map[APP_IPC_CPU_MAX] = {
     APP_IPC_CPU_INVALID,
     APP_IPC_CPU_INVALID,
     APP_IPC_CPU_MCU2_0, /* in j721e, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
-    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_MCU2_1, /* in j721e, TIOVX CPU IPU1-1 is mapped to vision_apps/pdk CPU mcu2-1 */
     APP_IPC_CPU_INVALID,
     APP_IPC_CPU_MPU1_0,
     APP_IPC_CPU_INVALID,

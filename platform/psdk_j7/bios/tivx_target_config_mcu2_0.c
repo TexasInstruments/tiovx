@@ -32,20 +32,27 @@ static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
-
-    tivxTargetSetDefaultCreateParams(&target_create_prms);
-
-    target_create_prms.task_stack_ptr = gTarget_tskStack[i];
-    target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
-    target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
-    target_create_prms.task_priority = task_pri;
-    strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
-    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
-
-    status = tivxTargetCreate(target_id, &target_create_prms);
-    if ((vx_status)VX_SUCCESS != status)
+    
+    if(tivxTargetGetCpuId(target_id) == tivxGetSelfCpuId() )
     {
-        VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
+        char target_name[TIVX_TARGET_MAX_NAME];
+        
+        tivxTargetSetDefaultCreateParams(&target_create_prms);
+    
+        target_create_prms.task_stack_ptr = gTarget_tskStack[i];
+        target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
+        target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
+        target_create_prms.task_priority = task_pri;
+        strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
+        target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
+    
+        status = tivxTargetCreate(target_id, &target_create_prms);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
+        }
+        tivxPlatformGetTargetName(target_id, target_name);
+        VX_PRINT(VX_ZONE_INIT, "Added target %s \n", target_name);
     }
 }
 
