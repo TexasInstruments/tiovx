@@ -196,6 +196,7 @@ typedef struct
     uint32_t                           h3aLut[RFE_H3A_COMP_LUT_SIZE];
     uint32_t                           cfa_lut_16to12[FLXD_LUT_SIZE];
     uint32_t                           rawfe_pwl_vshort_lut[FLXD_LUT_SIZE];
+    uint32_t                           lsc_lut[RFE_LSC_TBL_SIZE];
 } tivxVpacVissDccTables;
 
 typedef struct

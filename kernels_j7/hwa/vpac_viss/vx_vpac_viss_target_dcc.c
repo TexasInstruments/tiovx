@@ -752,11 +752,41 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
     }
 }
 
+static void tivxVpacVissDccMapLscParams(tivxVpacVissObj *vissObj)
+{
+    if (NULL != vissObj)
+    {
+        Rfe_LscConfig *lscCfg = &vissObj->vissCfg.lscCfg;
+        lscCfg->tableAddr = vissObj->dcc_table_ptr.lsc_lut;
+        lscCfg->enable = 0;
+        if (1U == vissObj->dcc_out_prms.vissLscCfg.lsc_params.enable)
+        {
+            viss_lsc_dcc_cfg_t * dcc_cfg = &vissObj->dcc_out_prms.vissLscCfg;
+            int32_t len = dcc_cfg->lsc_params.lut_size_in_bytes;
+
+            lscCfg->numTblEntry  = len / 4;
+            lscCfg->enable       = dcc_cfg->lsc_params.enable;
+            lscCfg->gainFmt      = dcc_cfg->lsc_params.gain_mode_format;
+            lscCfg->horzDsFactor = dcc_cfg->lsc_params.gain_mode_m;
+            lscCfg->vertDsFactor = dcc_cfg->lsc_params.gain_mode_n;
+
+            memcpy(lscCfg->tableAddr, dcc_cfg->lsc_table, len);
+        }
+
+        vissObj->vissCfgRef.lscCfg = lscCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
 void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
     {
         /* Parse Long exposure PWL Parameters */
         tivxVpacVissDccMapPwlParams(vissObj, 2u);
+        tivxVpacVissDccMapLscParams(vissObj);
     }
 }
