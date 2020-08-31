@@ -238,8 +238,11 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
                 meta[i]->type = node->kernel->signature.types[i];
             }
 
+            VX_PRINT(VX_ZONE_INFO, "Validating kernel %s\n", node->kernel->name);
+
             status = node->kernel->validate(node, node->parameters,
                 num_params, meta);
+
         }
     }
     else

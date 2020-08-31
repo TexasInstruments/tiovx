@@ -528,7 +528,7 @@ static vx_status ownGraphNodeKernelValidate(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"node kernel validate failed at index %d\n", i);
+            VX_PRINT(VX_ZONE_ERROR,"node kernel validate failed for kernel %s at index %d\n", node->kernel->name, i);
         }
 
         if(status != (vx_status)VX_SUCCESS)
