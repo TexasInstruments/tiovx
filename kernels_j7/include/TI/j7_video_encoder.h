@@ -101,11 +101,21 @@ extern "C" {
  *    VIDEO_ENCODER STRUCTURES
  *********************************/
 
+/**
+ * \verbatim
+ *  MM Encoder supported features
+ *  Application shall use this type to configure encoder features \endverbatim
+ */
 typedef enum {
 	TIVX_ENC_FEATURE_CABAC = 0x01,
-	TIVX_ENC_FEATURES_8x8 = 0x02
+	TIVX_ENC_FEATURE_8x8 = 0x02
 } tivx_enc_features_e;
 
+/**
+ * \verbatim
+ *  MM Encoder supported RC Modes
+ *  Application shall use this type to configure encoder RC mode \endverbatim
+ */
 typedef enum {
 	TIVX_ENC_VBR,
 	TIVX_ENC_SVBR

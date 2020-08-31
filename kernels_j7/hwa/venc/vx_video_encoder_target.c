@@ -479,8 +479,8 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
 
         if (encoder_params->features | TIVX_ENC_FEATURE_CABAC)
             venc_ctrl.features |= MM_ENC_FEATURE_CABAC;
-        if (encoder_params->features | TIVX_ENC_FEATURES_8x8)
-            venc_ctrl.features |= MM_ENC_FEATURES_8x8;
+        if (encoder_params->features | TIVX_ENC_FEATURE_8x8)
+            venc_ctrl.features |= MM_ENC_FEATURE_8x8;
             
         encoder_obj->inst_id = encoder_params->base_pipe;
 

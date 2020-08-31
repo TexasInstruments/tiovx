@@ -454,7 +454,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                                                                     (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
-        params.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURE_8x8;
         params.rcmode = TIVX_ENC_SVBR;
         params.idr_period = 30;
         params.i_period = 30;
@@ -721,7 +721,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                                                                         (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params_s.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
-        params_s.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params_s.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURE_8x8;
         params_s.rcmode = TIVX_ENC_SVBR;
         params_s.idr_period = 30;
         params_s.i_period = 30;
@@ -741,7 +741,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
 
         params_l.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
-        params_l.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURES_8x8;
+        params_l.features = TIVX_ENC_FEATURE_CABAC | TIVX_ENC_FEATURE_8x8;
         params_l.rcmode = TIVX_ENC_SVBR;
         params_l.idr_period = 30;
         params_l.i_period = 30;
