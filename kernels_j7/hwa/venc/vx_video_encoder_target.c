@@ -333,7 +333,7 @@ static vx_status VX_CALLBACK tivxVideoEncoderProcess(
 
     if (VX_SUCCESS == status)
     {
-        mm_status = MM_ENC_Process(&encoder_obj->in_buff, &encoder_obj->out_buff, encoder_obj->channel_id);
+        mm_status = MM_ENC_Process(&encoder_obj->in_buff, &encoder_obj->out_buff, NULL, encoder_obj->channel_id);
 
         if (MM_SUCCESS != mm_status)
         {
