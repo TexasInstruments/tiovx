@@ -79,7 +79,7 @@
 
 /* #define TIVX_TIDL_TARGET_DEBUG */
 
-#define TIDL_COPY_NETWORK_BUF
+/* #define TIDL_COPY_NETWORK_BUF */
 
 typedef struct
 {
