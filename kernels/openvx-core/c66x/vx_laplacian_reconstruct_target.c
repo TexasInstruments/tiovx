@@ -169,10 +169,10 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         low_img_target_ptr = tivxMemShared2TargetPtr(&low_img->mem_ptr[0]);
         out_img_target_ptr = tivxMemShared2TargetPtr(&out_img->mem_ptr[0]);
 
-        tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(out_img_target_ptr, out_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(out_img_target_ptr, out_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         /* Input is 8-bit image ... need to convert to 16 */
         tivxInitBufParams(low_img, &prms->vxlib_scratch);
@@ -199,9 +199,9 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             pyd_level = prms->img_obj_desc[level];
 
             pyd_level_target_ptr = tivxMemShared2TargetPtr(&pyd_level->mem_ptr[0]);
-            tivxMemBufferMap(pyd_level_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(pyd_level_target_ptr,
                 pyd_level->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
             tivxSetPointerLocation(pyd_level, &pyd_level_target_ptr, (uint8_t**)&laplac_addr);
 
@@ -267,9 +267,9 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 }
             }
 
-            tivxMemBufferUnmap(pyd_level_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(pyd_level_target_ptr,
                 pyd_level->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
             if (status != (vx_status)VXLIB_SUCCESS)
             {
@@ -278,10 +278,10 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             }
         }
 
-        tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(out_img_target_ptr, out_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(out_img_target_ptr, out_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

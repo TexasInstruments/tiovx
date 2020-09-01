@@ -186,8 +186,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
 
         mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
-        tivxMemBufferMap(mask_target_ptr, mask->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(mask_target_ptr, mask->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
@@ -396,8 +396,8 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
 
         mask_target_ptr = tivxMemShared2TargetPtr(&mask->mem_ptr);
 
-        tivxMemBufferMap(mask_target_ptr, mask->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(mask_target_ptr, mask->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), (vx_enum)TIVX_MEM_EXTERNAL);
 

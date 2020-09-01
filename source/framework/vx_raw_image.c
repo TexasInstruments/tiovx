@@ -870,7 +870,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
 
         if(status == (vx_status)VX_SUCCESS)
         {
-            tivxMemBufferMap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage);
+            tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage));
 
             if (buffer_select == (vx_enum)TIVX_RAW_IMAGE_PIXEL_BUFFER)
             {
@@ -1035,7 +1035,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(
                 }
             }
 
-            tivxMemBufferUnmap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage));
         }
     }
 
@@ -1161,7 +1161,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 uintptr_t temp_map_size0 = ((uintptr_t)end_addr - (uintptr_t)host_addr);
                 map_size = (vx_uint32)temp_map_size0;
-                tivxMemBufferMap(map_addr, map_size, mem_type, usage);
+                tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, mem_type, usage));
 
                 tivxLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
             }
@@ -1234,10 +1234,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapRawImagePatch(tivx_raw_image raw_ima
             uintptr_t temp_map_size1 = ((uintptr_t)end_addr - (uintptr_t)map_addr);
             map_size = (vx_uint32)temp_map_size1;
 
-            tivxMemBufferUnmap(
+            tivxCheckStatus(&status, tivxMemBufferUnmap(
                 map_addr, map_size,
                 raw_image->maps[map_id].mem_type,
-                raw_image->maps[map_id].usage);
+                raw_image->maps[map_id].usage));
 
             raw_image->maps[map_id].map_addr = NULL;
         }

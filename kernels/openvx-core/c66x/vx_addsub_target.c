@@ -164,12 +164,12 @@ static vx_status tivxKernelAddSub(
                 );
         #endif
 
-        tivxMemBufferMap(src0_target_ptr, src0_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(src1_target_ptr, src1_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_target_ptr, dst_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src0_target_ptr, src0_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(src1_target_ptr, src1_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         tivxSetTwoPointerLocation(src0_desc, src1_desc, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
         tivxSetPointerLocation(dst_desc, &dst_target_ptr, &dst_addr);
@@ -280,15 +280,15 @@ static vx_status tivxKernelAddSub(
             status = (vx_status)VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src0_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src0_target_ptr,
             src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(src1_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src1_target_ptr,
             src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

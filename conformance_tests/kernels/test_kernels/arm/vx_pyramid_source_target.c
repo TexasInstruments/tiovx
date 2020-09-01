@@ -129,9 +129,9 @@ static vx_status VX_CALLBACK tivxPyramidSourceProcess(
         for(i=0; i<output_desc->num_levels; i++)
         {
             output_target_ptr[i] = tivxMemShared2TargetPtr(&img_output_desc[i]->mem_ptr[0]);
-            tivxMemBufferMap(output_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr[i],
                img_output_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-               VX_WRITE_ONLY);
+               VX_WRITE_ONLY));
         }
 
 
@@ -170,9 +170,9 @@ static vx_status VX_CALLBACK tivxPyramidSourceProcess(
 
         for(i=0; i<output_desc->num_levels; i++)
         {
-            tivxMemBufferUnmap(output_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr[i],
                img_output_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                VX_WRITE_ONLY));
         }
 
 

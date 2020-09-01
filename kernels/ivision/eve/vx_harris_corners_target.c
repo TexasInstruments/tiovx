@@ -160,10 +160,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         src_desc_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         arr_desc_target_ptr = tivxMemShared2TargetPtr(&arr->mem_ptr);
 
-        tivxMemBufferMap(src_desc_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(arr_desc_target_ptr, arr->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(arr_desc_target_ptr, arr->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
@@ -226,10 +226,10 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
             }
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(arr_desc_target_ptr, arr->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(arr_desc_target_ptr, arr->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

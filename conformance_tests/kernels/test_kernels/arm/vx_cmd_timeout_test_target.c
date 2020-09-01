@@ -124,10 +124,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestProcess(
 
         cfgTgtPtr = tivxMemShared2TargetPtr(&cfgDesc->mem_ptr);
 
-        tivxMemBufferMap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferMap(cfgTgtPtr,
                          cfgDesc->mem_size,
                          (vx_enum)VX_MEMORY_TYPE_HOST,
-                         (vx_enum)VX_READ_ONLY);
+                         (vx_enum)VX_READ_ONLY));
 
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
@@ -140,10 +140,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestProcess(
             tivxTaskWaitMsecs(cfgParams->processCmdTimeout);
         }
 
-        tivxMemBufferUnmap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(cfgTgtPtr,
                            cfgDesc->mem_size,
                            (vx_enum)VX_MEMORY_TYPE_HOST,
-                           (vx_enum)VX_READ_ONLY);
+                           (vx_enum)VX_READ_ONLY));
     }
 
     return status;
@@ -176,10 +176,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestCreate(
 
         cfgTgtPtr = tivxMemShared2TargetPtr(&cfgDesc->mem_ptr);
 
-        tivxMemBufferMap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferMap(cfgTgtPtr,
                          cfgDesc->mem_size,
                          (vx_enum)VX_MEMORY_TYPE_HOST,
-                         (vx_enum)VX_READ_ONLY);
+                         (vx_enum)VX_READ_ONLY));
 
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
@@ -189,10 +189,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestCreate(
             tivxTaskWaitMsecs(cfgParams->createCmdTimeout);
         }
 
-        tivxMemBufferUnmap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(cfgTgtPtr,
                            cfgDesc->mem_size,
                            (vx_enum)VX_MEMORY_TYPE_HOST,
-                           (vx_enum)VX_READ_ONLY);
+                           (vx_enum)VX_READ_ONLY));
     }
 
     return status;
@@ -225,10 +225,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestDelete(
 
         cfgTgtPtr = tivxMemShared2TargetPtr(&cfgDesc->mem_ptr);
 
-        tivxMemBufferMap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferMap(cfgTgtPtr,
                          cfgDesc->mem_size,
                          (vx_enum)VX_MEMORY_TYPE_HOST,
-                         (vx_enum)VX_READ_ONLY);
+                         (vx_enum)VX_READ_ONLY));
 
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
@@ -238,10 +238,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestDelete(
             tivxTaskWaitMsecs(cfgParams->deleteCmdTimeout);
         }
 
-        tivxMemBufferUnmap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(cfgTgtPtr,
                            cfgDesc->mem_size,
                            (vx_enum)VX_MEMORY_TYPE_HOST,
-                           (vx_enum)VX_READ_ONLY);
+                           (vx_enum)VX_READ_ONLY));
     }
 
     return status;
@@ -271,10 +271,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestControl(
 
         cfgTgtPtr = tivxMemShared2TargetPtr(&cfgDesc->mem_ptr);
 
-        tivxMemBufferMap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferMap(cfgTgtPtr,
                          cfgDesc->mem_size,
                          (vx_enum)VX_MEMORY_TYPE_HOST,
-                         (vx_enum)VX_READ_ONLY);
+                         (vx_enum)VX_READ_ONLY));
 
         cfgParams = (tivx_cmd_timeout_params_t *)cfgTgtPtr;
 
@@ -284,10 +284,10 @@ static vx_status VX_CALLBACK tivxCmdTimeoutTestControl(
             tivxTaskWaitMsecs(cfgParams->controlCmdTimeout);
         }
 
-        tivxMemBufferUnmap(cfgTgtPtr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(cfgTgtPtr,
                            cfgDesc->mem_size,
                            (vx_enum)VX_MEMORY_TYPE_HOST,
-                           (vx_enum)VX_READ_ONLY);
+                           (vx_enum)VX_READ_ONLY));
     }
 
     return status;

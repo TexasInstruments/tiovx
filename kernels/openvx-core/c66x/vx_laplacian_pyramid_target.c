@@ -165,16 +165,16 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         void *dst_target_ptr;
 
         low_img_target_ptr = tivxMemShared2TargetPtr(&low_img->mem_ptr[0]);
-        tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
-        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
@@ -195,8 +195,8 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
-            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             tivxSetPointerLocation(dst, &dst_target_ptr, (uint8_t**)&dst_addr);
 
@@ -266,8 +266,8 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 }
             }
 
-            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             if (status != (vx_status)VXLIB_SUCCESS)
             {
@@ -276,11 +276,11 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             }
         }
 
-        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-        tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

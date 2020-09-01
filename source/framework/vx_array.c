@@ -348,9 +348,9 @@ vx_status VX_API_CALL vxAddArrayItems(
         offset = (vx_size)obj_desc->num_items * (vx_size)obj_desc->item_size;
         temp_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
 
-        tivxMemBufferMap(
+        tivxCheckStatus(&status, tivxMemBufferMap(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         for (i = 0; i < count; i ++)
         {
@@ -360,9 +360,9 @@ vx_status VX_API_CALL vxAddArrayItems(
             user_ptr += stride;
         }
 
-        tivxMemBufferUnmap(
+        tivxCheckStatus(&status, tivxMemBufferUnmap(
             (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         obj_desc->num_items += (uint32_t)count;
     }
@@ -489,8 +489,8 @@ vx_status VX_API_CALL vxCopyArrayRange(
         /* Copy from arr object to user memory */
         if ((vx_enum)(vx_enum)VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
@@ -501,13 +501,13 @@ vx_status VX_API_CALL vxCopyArrayRange(
                 user_ptr += stride;
             }
 
-            tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         }
         else /* Copy from user memory to arr object */
         {
-            tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(start_offset, (uint32_t)inst*obj_desc->item_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
@@ -518,8 +518,8 @@ vx_status VX_API_CALL vxCopyArrayRange(
                 user_ptr += stride;
             }
 
-            tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(start_offset, (uint32_t)inst*obj_desc->item_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -599,8 +599,8 @@ vx_status VX_API_CALL vxMapArrayRange(
                 arr->maps[i].mem_type = mem_type;
                 arr->maps[i].usage = usage;
 
-                tivxMemBufferMap(start_offset, (uint32_t)arr->maps[i].map_size,
-                    mem_type, usage);
+                tivxCheckStatus(&status, tivxMemBufferMap(start_offset, (uint32_t)arr->maps[i].map_size,
+                    mem_type, usage));
 
                 *ptr = (vx_uint8 *)start_offset;
                 *stride = obj_desc->item_size;
@@ -658,9 +658,9 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 
     if ((vx_status)(vx_status)VX_SUCCESS == status)
     {
-        tivxMemBufferUnmap(arr->maps[map_id].map_addr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(arr->maps[map_id].map_addr,
             (uint32_t)arr->maps[map_id].map_size, arr->maps[map_id].mem_type,
-            arr->maps[map_id].usage);
+            arr->maps[map_id].usage));
 
         arr->maps[map_id].map_addr = NULL;
         arr->maps[map_id].map_size = 0;

@@ -221,15 +221,15 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         estimatedpts_target_ptr = tivxMemShared2TargetPtr(&estimatedpts_desc->mem_ptr);
         nextpts_target_ptr = tivxMemShared2TargetPtr(&nextpts_desc->mem_ptr);
 
-        tivxMemBufferMap(prevpts_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(prevpts_target_ptr,
            prevpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(estimatedpts_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(estimatedpts_target_ptr,
            estimatedpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(nextpts_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(nextpts_target_ptr,
            nextpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         termination_value = termination_desc->data.u08;
         epsilon_value = epsilon_desc->data.f32;
@@ -268,12 +268,12 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         }
 
         /* We are done with external prevpts and estimatedpts buffers since we have copied what we need internally s*/
-        tivxMemBufferUnmap(prevpts_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(prevpts_target_ptr,
            prevpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(estimatedpts_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(estimatedpts_target_ptr,
            estimatedpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
         /* Set the scale for the lowest resolution level for first iteration */
         scale = (vx_float32)pow((vx_float64)pyramid_scale, (vx_float64)((vx_float64)num_levels-(vx_float64)1.0f));
@@ -293,18 +293,18 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
 
             /* Map Old image */
             old_image_target_ptr = tivxMemShared2TargetPtr(&old_image->mem_ptr[0]);
-            tivxMemBufferMap(old_image_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(old_image_target_ptr,
                 old_image->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
             old_image_addr = (uint8_t *)((uintptr_t)old_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &old_image->imagepatch_addr[0U]));
 
             /* Map New image */
             new_image_target_ptr = tivxMemShared2TargetPtr(&new_image->mem_ptr[0]);
-            tivxMemBufferMap(new_image_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(new_image_target_ptr,
                 new_image->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY); /* Not sure if this is READ_ONLY */
+                (vx_enum)VX_READ_ONLY)); /* Not sure if this is READ_ONLY */
 
             new_image_addr = (uint8_t *)((uintptr_t)new_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &new_image->imagepatch_addr[0U]));
@@ -354,12 +354,12 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                                                  termination_value, prms->scratch, prms->scratch_buff_size);
             status = (vx_status)temp_status;
 
-            tivxMemBufferUnmap(old_image_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(old_image_target_ptr,
                old_image->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-               (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(new_image_target_ptr,
+               (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(new_image_target_ptr,
                new_image->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-               (vx_enum)VX_READ_ONLY);
+               (vx_enum)VX_READ_ONLY));
 
         }
 
@@ -374,9 +374,9 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         }
 
         /* kernel processing function complete */
-        tivxMemBufferUnmap(nextpts_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(nextpts_target_ptr,
            nextpts_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
     }
 
     if(status != VX_SUCCESS)

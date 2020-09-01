@@ -136,29 +136,29 @@ static vx_status VX_CALLBACK tivxChannelCombine(
             dst_desc_target_ptr[plane_idx] = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[plane_idx]);
         }
 
-        tivxMemBufferMap(src0_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(src0_desc_target_ptr,
            src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(src1_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(src1_desc_target_ptr,
            src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
         if( src2_desc != NULL)
         {
-            tivxMemBufferMap(src2_desc_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(src2_desc_target_ptr,
                src2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         if( src3_desc != NULL)
         {
-            tivxMemBufferMap(src3_desc_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(src3_desc_target_ptr,
                src3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
         {
-            tivxMemBufferMap(dst_desc_target_ptr[plane_idx],
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr[plane_idx],
                dst_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
 
@@ -349,29 +349,29 @@ static vx_status VX_CALLBACK tivxChannelCombine(
 
         /* kernel processing function complete */
 
-        tivxMemBufferUnmap(src0_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src0_desc_target_ptr,
            src0_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(src1_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src1_desc_target_ptr,
            src1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
         if( src2_desc != NULL)
         {
-            tivxMemBufferUnmap(src2_desc_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(src2_desc_target_ptr,
                src2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         if( src3_desc != NULL)
         {
-            tivxMemBufferUnmap(src3_desc_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(src3_desc_target_ptr,
                src3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
         {
-            tivxMemBufferUnmap(dst_desc_target_ptr[plane_idx],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr[plane_idx],
                dst_desc->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
 

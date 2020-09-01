@@ -125,18 +125,18 @@ static vx_status VX_CALLBACK tivxPyramidIntermediateProcess(
         for(i=0; i<input_desc->num_levels; i++)
         {
             input_target_ptr[i] = tivxMemShared2TargetPtr(&img_input_desc[i]->mem_ptr[0]);
-            tivxMemBufferMap(input_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr[i],
                img_input_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-               VX_READ_ONLY);
+               VX_READ_ONLY));
         }
 
         tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t**)img_output_desc, output_desc->num_levels);
         for(i=0; i<output_desc->num_levels; i++)
         {
             output_target_ptr[i] = tivxMemShared2TargetPtr(&img_output_desc[i]->mem_ptr[0]);
-            tivxMemBufferMap(output_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr[i],
                img_output_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-               VX_WRITE_ONLY);
+               VX_WRITE_ONLY));
         }
 
 
@@ -150,16 +150,16 @@ static vx_status VX_CALLBACK tivxPyramidIntermediateProcess(
         }
         for(i=0; i<input_desc->num_levels; i++)
         {
-            tivxMemBufferUnmap(input_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr[i],
                img_input_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+                VX_READ_ONLY));
         }
 
         for(i=0; i<output_desc->num_levels; i++)
         {
-            tivxMemBufferUnmap(output_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr[i],
                img_output_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_WRITE_ONLY);
+                VX_WRITE_ONLY));
         }
 
 

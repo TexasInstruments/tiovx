@@ -149,8 +149,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
-        tivxMemBufferMap(dst_target_ptr, dst->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
@@ -163,8 +163,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
-        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);
@@ -448,8 +448,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramPreprocessInBamGraph(
 
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
-        tivxMemBufferMap(dst_target_ptr, dst->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         status = tivxBamControlNode(*g_handle, prms->bam_node_num,
                            VXLIB_HISTOGRAM_I8U_O32U_CMD_SET_DIST_PTR,
@@ -479,8 +479,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramPostprocessInBamGraph(
 
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr);
 
-        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
 
     return status;

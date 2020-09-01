@@ -124,15 +124,15 @@ static vx_status VX_CALLBACK tivxNonLinearFilter(
         mask_desc_target_ptr = tivxMemShared2TargetPtr(&mask_desc->mem_ptr);
         dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
-        tivxMemBufferMap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr,
            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(mask_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(mask_desc_target_ptr,
            mask_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr,
            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         mask_addr = (uint8_t *)((uintptr_t)mask_desc_target_ptr);
 
@@ -183,15 +183,15 @@ static vx_status VX_CALLBACK tivxNonLinearFilter(
             }
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr,
            src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(mask_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(mask_desc_target_ptr,
            mask_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr,
            dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
 
     }

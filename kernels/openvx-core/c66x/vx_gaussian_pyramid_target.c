@@ -181,10 +181,10 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
 
-            tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             /* Valid rectangle is ignore here */
             src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
@@ -263,10 +263,10 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                 }
             }
 
-            tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             if (status != (vx_status)VXLIB_SUCCESS)
             {

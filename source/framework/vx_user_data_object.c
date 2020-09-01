@@ -241,13 +241,13 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                                 obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
                                 start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
 
-                                tivxMemBufferMap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                                tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
+                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
                                 memset(start_ptr, 0, size);
 
-                                tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                                tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
+                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                             }
                         }
                     }
@@ -429,23 +429,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
         /* Copy from internal object to user memory */
         if ((vx_enum)VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(start_ptr, (uint32_t)size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             memcpy(user_ptr, start_ptr, size);
 
-            tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         }
         else /* Copy from user memory to internal object */
         {
-            tivxMemBufferMap(start_ptr, (uint32_t)size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             memcpy(start_ptr, user_ptr, size);
 
-            tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -527,8 +527,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
             user_data_object->maps[i].mem_type = mem_type;
             user_data_object->maps[i].usage = usage;
 
-            tivxMemBufferMap(map_addr, map_size,
-                mem_type, usage);
+            tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size,
+                mem_type, usage));
 
             *ptr = (vx_uint8 *)map_addr;
 
@@ -587,10 +587,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
             uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
             map_size = (uint32_t)temp_map_size;
 
-            tivxMemBufferUnmap(
+            tivxCheckStatus(&status, tivxMemBufferUnmap(
                 map_addr, map_size,
                 user_data_object->maps[map_id].mem_type,
-                user_data_object->maps[map_id].usage);
+                user_data_object->maps[map_id].usage));
 
             user_data_object->maps[map_id].map_addr = NULL;
         }

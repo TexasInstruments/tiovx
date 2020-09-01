@@ -122,8 +122,8 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
 
-        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
@@ -136,8 +136,8 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         {
             dst0_target_ptr = tivxMemShared2TargetPtr(&dst0->mem_ptr[0]);
 
-            tivxMemBufferMap(dst0_target_ptr, dst0->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dst0_target_ptr, dst0->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             tivxSetPointerLocation(dst0, &dst0_target_ptr, (uint8_t **)&dst_addr);
 
@@ -151,16 +151,16 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 status = (vx_status)VX_FAILURE;
             }
 
-            tivxMemBufferUnmap(dst0_target_ptr, dst0->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst0_target_ptr, dst0->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
 
         if (((vx_status)VX_SUCCESS == status) && (NULL != dst1))
         {
             dst1_target_ptr = tivxMemShared2TargetPtr(&dst1->mem_ptr[0]);
 
-            tivxMemBufferMap(dst1_target_ptr, dst1->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dst1_target_ptr, dst1->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             tivxSetPointerLocation(dst1, &dst1_target_ptr, (uint8_t **)&dst_addr);
 
@@ -174,12 +174,12 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 status = (vx_status)VX_FAILURE;
             }
 
-            tivxMemBufferUnmap(dst1_target_ptr, dst1->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst1_target_ptr, dst1->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
 
-        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
 
     return (status);

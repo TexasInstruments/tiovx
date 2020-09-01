@@ -128,16 +128,16 @@ static vx_status tivxKernelColorConvert(
         for (i = 0; i < src_desc->planes; i++)
         {
             src_desc_target_ptr[i] = tivxMemShared2TargetPtr(&src_desc->mem_ptr[i]);
-            tivxMemBufferMap(src_desc_target_ptr[i], src_desc->mem_size[i],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr[i], src_desc->mem_size[i],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         }
         tivxSetPointerLocation(src_desc, src_desc_target_ptr, (uint8_t**)&src_addr);
 
         for (i = 0; i < dst_desc->planes; i++)
         {
             dst_desc_target_ptr[i] = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[i]);
-            tivxMemBufferMap(dst_desc_target_ptr[i], dst_desc->mem_size[i],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr[i], dst_desc->mem_size[i],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
         tivxSetPointerLocation(dst_desc, dst_desc_target_ptr, (uint8_t**)&dst_addr);
 
@@ -333,16 +333,16 @@ static vx_status tivxKernelColorConvert(
 
         for (i = 0; i < src_desc->planes; i++)
         {
-            tivxMemBufferUnmap(src_desc_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr[i],
                 src_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
 
         for (i = 0; i < dst_desc->planes; i++)
         {
-            tivxMemBufferUnmap(dst_desc_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr[i],
                 dst_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
     }
 

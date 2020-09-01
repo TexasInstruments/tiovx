@@ -163,12 +163,12 @@ static vx_status VX_CALLBACK tivxProcessErode3X3(
     if ((vx_status)VX_SUCCESS == status)
     {
         /* Map all buffers, which invalidates the cache */
-        tivxMemBufferMap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr,
             src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
@@ -190,12 +190,12 @@ static vx_status VX_CALLBACK tivxProcessErode3X3(
             status = (vx_status)VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr,
             src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

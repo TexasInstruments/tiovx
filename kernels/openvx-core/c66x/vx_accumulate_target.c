@@ -128,10 +128,10 @@ static vx_status tivxKernelAccumulate(
 
         dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0U]);
 
-        tivxMemBufferMap(src_desc_target_ptr, src_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc_target_ptr, dst_desc->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr, src_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr, dst_desc->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
         tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
@@ -147,12 +147,12 @@ static vx_status tivxKernelAccumulate(
             status = (vx_status)VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr,
             src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
     }
 
     return (status);

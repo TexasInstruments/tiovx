@@ -790,9 +790,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                         /* ptrs[plane_idx] can be NULL */
                         mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
 
-                        tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
+                        tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
                             obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL,
-                            (vx_enum)VX_WRITE_ONLY);
+                            (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }
@@ -1735,7 +1735,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
         if(status == (vx_status)VX_SUCCESS)
         {
-            tivxMemBufferMap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage);
+            tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage));
 
             /* copy the patch from the image */
             if (user_addr->stride_x == image_addr->stride_x)
@@ -1886,7 +1886,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                 }
             }
 
-            tivxMemBufferUnmap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(map_addr, map_size, (vx_enum)VX_MEMORY_TYPE_HOST, usage));
         }
     }
 
@@ -1974,9 +1974,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 uintptr_t temp_map_size = (uintptr_t)end_addr - (uintptr_t)host_addr;
                 map_size = (vx_uint32)temp_map_size;
-                tivxMemBufferMap(map_addr, map_size, mem_type, usage);
+                tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, mem_type, usage));
 
-            tivxLogSetResourceUsedValue("TIVX_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
+                tivxLogSetResourceUsedValue("TIVX_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
             }
             else
             {
@@ -2047,10 +2047,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             uintptr_t temp_size = (uintptr_t)end_addr - (uintptr_t)map_addr;
             map_size = (uint32_t)temp_size;
 
-            tivxMemBufferUnmap(
+            tivxCheckStatus(&status, tivxMemBufferUnmap(
                 map_addr, map_size,
                 image->maps[map_id].mem_type,
-                image->maps[map_id].usage);
+                image->maps[map_id].usage));
 
             image->maps[map_id].map_addr = NULL;
         }
@@ -2129,8 +2129,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
                     if (NULL != prev_ptrs[p])
                     {
-                        tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
-                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }
@@ -2195,8 +2195,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
                     if (NULL != new_ptrs[p])
                     {
-                        tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
-                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
+                            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                     }
                 }
             }

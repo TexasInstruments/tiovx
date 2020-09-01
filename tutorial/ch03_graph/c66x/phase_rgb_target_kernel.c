@@ -91,6 +91,7 @@
 #include <VX/vx.h>
 #include <TI/tivx_target_kernel.h>
 #include <vx_tutorial_kernels.h>
+#include <tivx_kernels_common_utils.h>
 
 /** \brief Index of input image in parameter list */
 #define PHASE_RGB_IN0_IMG_IDX   (0u)
@@ -143,12 +144,12 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
         dst_desc_target_ptr = tivxMemShared2TargetPtr(&dst_desc->mem_ptr[0]);
 
         /* Map all buffers, which invalidates the cache */
-        tivxMemBufferMap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(src_desc_target_ptr,
             src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_desc_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         /* Run function for complete image, ROI is ignored in this example */
         {
@@ -203,12 +204,12 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
             }
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr,
             src_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_desc_target_ptr,
             dst_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
     }
 

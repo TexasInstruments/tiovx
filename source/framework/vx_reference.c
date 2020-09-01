@@ -1149,10 +1149,10 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                 {
                     /* Perform a cache write back. */
-                    tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
+                    tivxCheckStatus(&vxStatus, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
                                        mem_size[i],
                                        (vx_enum)TIVX_MEM_EXTERNAL,
-                                       (vx_enum)VX_WRITE_ONLY);
+                                       (vx_enum)VX_WRITE_ONLY));
                 }
             }
         }

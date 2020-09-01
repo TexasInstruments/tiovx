@@ -184,8 +184,8 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
         lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
-        tivxMemBufferMap(lut_target_ptr, lut->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(lut_target_ptr, lut->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         prms = tivxMemAlloc(sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
 
@@ -362,8 +362,8 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
 
         lut_target_ptr = tivxMemShared2TargetPtr(&lut->mem_ptr);
 
-        tivxMemBufferMap(lut_target_ptr, lut->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(lut_target_ptr, lut->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         prms = tivxMemAlloc(sizeof(tivxLutParams), (vx_enum)TIVX_MEM_EXTERNAL);
 

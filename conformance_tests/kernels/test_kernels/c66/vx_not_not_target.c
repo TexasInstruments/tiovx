@@ -115,14 +115,14 @@ static vx_status VX_CALLBACK tivxNotNotProcess(
         void *output_target_ptr;
 
         input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
-        tivxMemBufferMap(input_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr,
            input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-           VX_READ_ONLY);
+           VX_READ_ONLY));
 
         output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
-        tivxMemBufferMap(output_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr,
            output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-           VX_WRITE_ONLY);
+           VX_WRITE_ONLY));
 
 
 
@@ -142,13 +142,13 @@ static vx_status VX_CALLBACK tivxNotNotProcess(
             status = VXLIB_not_i8u_o8u(output_target_ptr, &vxlib_output, output_target_ptr, &vxlib_output);
 
         }
-        tivxMemBufferUnmap(input_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr,
            input_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+            VX_READ_ONLY));
 
-        tivxMemBufferUnmap(output_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr,
            output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_WRITE_ONLY);
+            VX_WRITE_ONLY));
 
 
 
