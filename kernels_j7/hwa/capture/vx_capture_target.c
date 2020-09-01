@@ -553,8 +553,8 @@ static vx_status tivxCaptureSetCreateParams(
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
-    tivxMemBufferMap(capture_config_target_ptr, obj_desc->mem_size,
-        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    tivxCheckStatus(&status, tivxMemBufferMap(capture_config_target_ptr, obj_desc->mem_size,
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
     params = (tivx_capture_params_t *)capture_config_target_ptr;
 
@@ -688,9 +688,9 @@ static vx_status tivxCaptureSetCreateParams(
         }
     }
 
-    tivxMemBufferUnmap(capture_config_target_ptr,
+    tivxCheckStatus(&status, tivxMemBufferUnmap(capture_config_target_ptr,
        obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-       (vx_enum)VX_READ_ONLY);
+       (vx_enum)VX_READ_ONLY));
 
     return status;
 }
@@ -1545,8 +1545,8 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         if (sizeof(tivx_capture_statistics_t) ==
                 usr_data_obj->mem_size)
@@ -1561,8 +1561,8 @@ static vx_status tivxCaptureGetStatistics(tivxCaptureParams *prms,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
     else
     {

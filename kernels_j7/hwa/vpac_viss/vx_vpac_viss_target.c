@@ -120,7 +120,7 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     tivx_obj_desc_t *obj_desc[]);
 static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     const tivx_obj_desc_user_data_object_t *desc, uint32_t size);
-static void tivxVpacVissUnmapUserDesc(void **target_ptr,
+static vx_status tivxVpacVissUnmapUserDesc(void **target_ptr,
     const tivx_obj_desc_user_data_object_t *desc);
 static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
     const tivx_vpac_viss_params_t *vissPrms);
@@ -627,7 +627,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
          * unmap must be called */
         if ((NULL != aewb_res_desc) && (NULL != vissObj->aewb_res_target_ptr))
         {
-            tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr,
+            status = tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr,
                 aewb_res_desc);
         }
 
@@ -636,7 +636,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
          * unmap must be called */
         if (NULL != vissObj->viss_prms_target_ptr)
         {
-            tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr,
+            status = tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr,
                 config_desc);
         }
     }
@@ -901,8 +901,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     h3a_out = (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
 
                     /* H3A output is special case, only need to map the header since rest is written by HW */
-                    tivxMemBufferMap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv),
-                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                    tivxCheckStatus(&status, tivxMemBufferMap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv),
+                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
                 }
                 else
                 {
@@ -984,8 +984,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_out_desc->valid_mem_size = vissObj->h3a_output_size + TIVX_VPAC_VISS_H3A_OUT_BUFF_ALIGN;
 
             /* Unmap even before processing since the ARM is done, rest of buffer is HW */
-            tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv), (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(vissObj->h3a_out_target_ptr, offsetof(tivx_h3a_data_t, resv), (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
             vissObj->h3a_out_target_ptr = NULL;
         }
     }
@@ -1036,7 +1036,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
      * unmap must be called */
     if (((vx_status)VX_SUCCESS == status) && (NULL != aewb_res_desc))
     {
-        tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr, aewb_res_desc);
+        status = tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr, aewb_res_desc);
     }
 
     /* If the target pointer is non null, descriptor is also non null
@@ -1044,7 +1044,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
      * unmap must be called */
     if (((vx_status)VX_SUCCESS == status) && (NULL != config_desc))
     {
-        tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr, config_desc);
+        status = tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr, config_desc);
     }
 
     return (status);
@@ -1546,8 +1546,8 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     {
         *target_ptr = tivxMemShared2TargetPtr(&desc->mem_ptr);
 
-        tivxMemBufferMap(*target_ptr, desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(*target_ptr, desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
     else
     {
@@ -1558,12 +1558,17 @@ static vx_status tivxVpacVissMapUserDesc(void **target_ptr,
     return (status);
 }
 
-static void tivxVpacVissUnmapUserDesc(void **target_ptr,
+static vx_status tivxVpacVissUnmapUserDesc(void **target_ptr,
     const tivx_obj_desc_user_data_object_t *desc)
 {
-    tivxMemBufferUnmap(*target_ptr, desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-        (vx_enum)VX_READ_ONLY);
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    tivxCheckStatus(&status, tivxMemBufferUnmap(*target_ptr, desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+        (vx_enum)VX_READ_ONLY));
+
     *target_ptr = NULL;
+
+    return status;
 }
 
 static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,

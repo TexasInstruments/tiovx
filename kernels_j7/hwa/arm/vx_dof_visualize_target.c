@@ -145,21 +145,21 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         }
         confidence_image_target_ptr = tivxMemShared2TargetPtr(&confidence_image_desc->mem_ptr[0]);
 
-        tivxMemBufferMap(flow_vector_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(flow_vector_target_ptr,
            flow_vector_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferMap(flow_vector_image1_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferMap(flow_vector_image1_target_ptr,
            flow_vector_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
         if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
-            tivxMemBufferMap(flow_vector_image2_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(flow_vector_image2_target_ptr,
                flow_vector_image_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
-        tivxMemBufferMap(confidence_image_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(confidence_image_target_ptr,
            confidence_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         /* if not specified by user or value out of valid range use default value */
         if(confidence_threshold_desc != NULL)
@@ -195,23 +195,23 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
 
         /* kernel processing function complete */
 
-        tivxMemBufferUnmap(flow_vector_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(flow_vector_target_ptr,
            flow_vector_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
-        tivxMemBufferUnmap(flow_vector_image1_target_ptr,
+            (vx_enum)VX_READ_ONLY));
+        tivxCheckStatus(&status, tivxMemBufferUnmap(flow_vector_image1_target_ptr,
            flow_vector_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
         if(flow_vector_image_desc->format == (vx_df_image)VX_DF_IMAGE_NV12)
         {
-            tivxMemBufferUnmap(flow_vector_image2_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(flow_vector_image2_target_ptr,
                flow_vector_image_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
-        tivxMemBufferUnmap(confidence_image_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(confidence_image_target_ptr,
            confidence_image_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
 
     }
 

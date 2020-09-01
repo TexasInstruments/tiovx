@@ -184,18 +184,18 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
             sigmas_target_ptr = tivxMemShared2TargetPtr(&sigmas_desc->mem_ptr);
             output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
 
-            tivxMemBufferMap(configuration_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr,
                configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(input_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr,
                input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(sigmas_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(sigmas_target_ptr,
                sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(output_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr,
                output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
@@ -220,18 +220,18 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 
             lse_reformat_out(input_desc, output_desc, output_target_ptr, prms->dst16, 12, 0);
 
-            tivxMemBufferUnmap(configuration_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr,
                configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(input_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr,
                input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(sigmas_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(sigmas_target_ptr,
                sigmas_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(output_target_ptr,
+                (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr,
                output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -296,10 +296,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
                 sigmas_array_target_ptr = tivxMemShared2TargetPtr(&sigmas_array->mem_ptr);
 
-                tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-                tivxMemBufferMap(sigmas_array_target_ptr, sigmas_array->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+                tivxCheckStatus(&status, tivxMemBufferMap(sigmas_array_target_ptr, sigmas_array->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 params = (tivx_vpac_nf_bilateral_params_t *)params_array_target_ptr;
                 sigmas = (tivx_vpac_nf_bilateral_sigmas_t *)sigmas_array_target_ptr;
@@ -332,8 +332,8 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 generate_LUT(prms->mmr.subRangeBits, sigmas->sigma_space, sigmas->sigma_range,
                              (uint16_t*)&prms->lut, &prms->mmr.centerPixelWeight);
 
-                tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
         }
         else

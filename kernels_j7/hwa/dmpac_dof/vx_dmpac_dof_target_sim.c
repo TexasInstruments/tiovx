@@ -367,22 +367,22 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         /* map buffers */
 
-        tivxMemBufferMap(configuration_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr,
            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
         if(flow_vector_in_desc != NULL)
         {
-            tivxMemBufferMap(flow_vector_in_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(flow_vector_in_target_ptr,
                 flow_vector_in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         if( sparse_of_config_desc != NULL)
         {
             tivx_dmpac_dof_sof_params_t *sof_params;
 
-            tivxMemBufferMap(sparse_of_config_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(sparse_of_config_target_ptr,
                sparse_of_config_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
             sof_params = (tivx_dmpac_dof_sof_params_t*)sparse_of_config_target_ptr;
             prms->sof_max_pix_in_row = sof_params->sof_max_pix_in_row;
@@ -390,40 +390,40 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
         if( sparse_of_map_desc != NULL)
         {
-            tivxMemBufferMap(sparse_of_map_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(sparse_of_map_target_ptr,
                sparse_of_map_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
-        tivxMemBufferMap(flow_vector_out_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(flow_vector_out_target_ptr,
            flow_vector_out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
         if( confidence_histogram_desc != NULL)
         {
-            tivxMemBufferMap(confidence_histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(confidence_histogram_target_ptr,
                confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if(NULL != input_current_base_desc)
         {
-            tivxMemBufferMap(img_curr_base_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(img_curr_base_target_ptr,
                input_current_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
-            tivxMemBufferMap(img_ref_base_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(img_ref_base_target_ptr,
                input_reference_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
 
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
-            tivxMemBufferMap(img_current_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferMap(img_current_target_ptr[i],
                img_current_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
-            tivxMemBufferMap(img_reference_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferMap(img_reference_target_ptr[i],
                img_reference_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
 
         /* copy input */
@@ -569,49 +569,49 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         /* unmap buffers */
 
-        tivxMemBufferUnmap(configuration_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr,
            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
         if(flow_vector_in_desc != NULL)
         {
-            tivxMemBufferUnmap(flow_vector_in_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(flow_vector_in_target_ptr,
                flow_vector_in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         if( sparse_of_map_desc != NULL)
         {
-            tivxMemBufferUnmap(sparse_of_map_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(sparse_of_map_target_ptr,
                sparse_of_map_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
-        tivxMemBufferUnmap(flow_vector_out_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(flow_vector_out_target_ptr,
            flow_vector_out_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY);
+            (vx_enum)VX_WRITE_ONLY));
         if( confidence_histogram_desc != NULL)
         {
-            tivxMemBufferUnmap(confidence_histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(confidence_histogram_target_ptr,
                confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
-            tivxMemBufferUnmap(img_current_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(img_current_target_ptr[i],
                img_current_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
-            tivxMemBufferUnmap(img_reference_target_ptr[i],
+            tivxCheckStatus(&status, tivxMemBufferUnmap(img_reference_target_ptr[i],
                img_reference_desc[i]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
         if(NULL != input_current_base_desc)
         {
-            tivxMemBufferUnmap(img_curr_base_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(img_curr_base_target_ptr,
                input_current_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
-            tivxMemBufferUnmap(img_ref_base_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(img_ref_base_target_ptr,
                input_reference_base_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
         }
     }
 
@@ -688,8 +688,8 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 
             params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
-            tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             params = (tivx_dmpac_dof_params_t *)params_array_target_ptr;
 
@@ -714,8 +714,8 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             /* For first frame, turn off temporal predictor */
             prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 0;
 
-            tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             status = tivxDmpacDofAllocMem(prms);
         }
@@ -897,8 +897,8 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_dmpac_dof_cs_tree_params_t) ==
                 usr_data_obj->mem_size)
@@ -992,8 +992,8 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
             VX_PRINT(VX_ZONE_ERROR, "Invalid Argument\n");
             status = (vx_status)VX_FAILURE;
         }
-        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
     else
     {

@@ -476,16 +476,16 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
                 prms->config.settings.G_inHeight[0] = ih;
 
                 target_ptr = tivxMemShared2TargetPtr(&in_img_desc->mem_ptr[0]);
-                tivxMemBufferMap(target_ptr, in_img_desc->mem_size[0],
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, in_img_desc->mem_size[0],
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 /* C-model supports only 12-bit in uint16_t container
                  * So we may need to translate.  In HW, VPAC_LSE does this
                  */
                 lse_reformat_in(in_img_desc, target_ptr, prms->src16, 0, 0);
 
-                tivxMemBufferUnmap(target_ptr, in_img_desc->mem_size[0],
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, in_img_desc->mem_size[0],
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 src_ptr = prms->src16;
             }
@@ -593,14 +593,14 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
 
                     /* Reformat output */
                     target_ptr = tivxMemShared2TargetPtr(&out_img_desc->mem_ptr[0]);
-                    tivxMemBufferMap(target_ptr, out_img_desc->mem_size[0],
-                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                    tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, out_img_desc->mem_size[0],
+                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
                     lse_reformat_out(&stub, out_img_desc, target_ptr,
                         dst_ptr[out_cnt], 12, 0);
 
-                    tivxMemBufferUnmap(target_ptr, out_img_desc->mem_size[0],
-                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+                    tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, out_img_desc->mem_size[0],
+                        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
                     out_img_idx ++;
                 }
@@ -832,8 +832,8 @@ static vx_status tivxVpacMscPmdSetCoeffsCmd(tivxVpacMscPmdParams *prms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_vpac_msc_coefficients_t) ==
                 usr_data_obj->mem_size)
@@ -886,8 +886,8 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_vpac_msc_input_params_t) ==
                 usr_data_obj->mem_size)
@@ -924,8 +924,8 @@ static vx_status tivxVpacMscPmdSetInputParamsCmd(tivxVpacMscPmdParams *prms,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
     else
     {
@@ -950,8 +950,8 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
         {
             target_ptr = tivxMemShared2TargetPtr(&usr_data_obj[cnt]->mem_ptr);
 
-            tivxMemBufferMap(target_ptr, usr_data_obj[cnt]->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj[cnt]->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             if (sizeof(tivx_vpac_msc_output_params_t) ==
                     usr_data_obj[cnt]->mem_size)
@@ -980,8 +980,8 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             }
 
-            tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         }
         else
         {

@@ -288,9 +288,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         if( confidence_histogram_desc != NULL)
         {
             confidence_histogram_target_ptr = tivxMemShared2TargetPtr(&confidence_histogram_desc->mem_ptr);
-            tivxMemBufferMap(confidence_histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(confidence_histogram_target_ptr,
                 confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         /* Initialize SDE Input Frame List */
@@ -377,9 +377,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     {
         if( confidence_histogram_desc != NULL)
         {
-            tivxMemBufferUnmap(confidence_histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(confidence_histogram_target_ptr,
                 confidence_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -487,8 +487,8 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
         params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
-        tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         params = (tivx_dmpac_sde_params_t *)params_array_target_ptr;
 
@@ -577,8 +577,8 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             }
         }
 
-        tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
     }
 

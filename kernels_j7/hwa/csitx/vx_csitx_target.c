@@ -145,7 +145,7 @@ static vx_status tivxCsitxEnqueueFrameToDriver(
        tivx_obj_desc_object_array_t *input_desc,
        tivxCsitxParams *prms);
 
-static void tivxCsitxSetCreateParams(
+static vx_status tivxCsitxSetCreateParams(
        tivxCsitxParams *prms,
        tivx_obj_desc_user_data_object_t *obj_desc);
 
@@ -432,7 +432,7 @@ static uint32_t tivxCsitxExtractDataFormat(uint32_t format)
     return dataFormat;
 }
 
-static void tivxCsitxSetCreateParams(
+static vx_status tivxCsitxSetCreateParams(
        tivxCsitxParams *prms,
        tivx_obj_desc_user_data_object_t *obj_desc)
 {
@@ -442,11 +442,12 @@ static void tivxCsitxSetCreateParams(
     uint32_t chIdx, instId = 0U, instIdx;
     Csitx_CreateParams *createParams;
     tivx_obj_desc_raw_image_t *raw_image;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     csitx_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
-    tivxMemBufferMap(csitx_config_target_ptr, obj_desc->mem_size,
-        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+    tivxCheckStatus(&status, tivxMemBufferMap(csitx_config_target_ptr, obj_desc->mem_size,
+        (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
     params = (tivx_csitx_params_t *)csitx_config_target_ptr;
 
@@ -549,9 +550,11 @@ static void tivxCsitxSetCreateParams(
         prms->numOfInstUsed++;
     }
 
-    tivxMemBufferUnmap(csitx_config_target_ptr,
+    tivxCheckStatus(&status, tivxMemBufferUnmap(csitx_config_target_ptr,
        obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-       (vx_enum)VX_READ_ONLY);
+       (vx_enum)VX_READ_ONLY));
+
+    return status;
 }
 
 
@@ -1091,8 +1094,8 @@ static vx_status tivxCsitxGetStatistics(tivxCsitxParams *prms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         if (sizeof(tivx_csitx_statistics_t) ==
                 usr_data_obj->mem_size)
@@ -1107,8 +1110,8 @@ static vx_status tivxCsitxGetStatistics(tivxCsitxParams *prms,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
     else
     {

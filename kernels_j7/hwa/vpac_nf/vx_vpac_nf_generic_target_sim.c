@@ -160,12 +160,12 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
             conv_target_ptr = tivxMemShared2TargetPtr(&conv->mem_ptr);
 
-            tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(conv_target_ptr, conv->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(conv_target_ptr, conv->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
@@ -229,12 +229,12 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 
             lse_reformat_out(src, dst, dst_target_ptr, prms->dst16, 12, 0);
 
-            tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -292,8 +292,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
 
                 params_array_target_ptr = tivxMemShared2TargetPtr(&params_array->mem_ptr);
 
-                tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 params = (tivx_vpac_nf_common_params_t *)params_array_target_ptr;
 
@@ -321,8 +321,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 prms->debug.replicateH_off = 0;
                 prms->debug.replicateV_off = 0;
 
-                tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
         }
         else

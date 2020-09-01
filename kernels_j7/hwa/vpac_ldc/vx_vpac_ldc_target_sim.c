@@ -223,9 +223,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             if ((vx_df_image)VX_DF_IMAGE_UYVY == in_img->format)
             {
                 target_ptr = tivxMemShared2TargetPtr(&in_img->mem_ptr[0]);
-                tivxMemBufferMap(target_ptr,
+                tivxCheckStatus(&status, tivxMemBufferMap(target_ptr,
                     in_img->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_READ_ONLY);
+                    (vx_enum)VX_READ_ONLY));
 
                 lse_deinterleave_422(in_img, target_ptr, prms->inY_16, prms->inC_16, 8);
             }
@@ -234,9 +234,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 for (i = 0; i < num_planes; i ++)
                 {
                     target_ptr = tivxMemShared2TargetPtr(&in_img->mem_ptr[i]);
-                    tivxMemBufferMap(target_ptr,
+                    tivxCheckStatus(&status, tivxMemBufferMap(target_ptr,
                         in_img->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                        (vx_enum)VX_READ_ONLY);
+                        (vx_enum)VX_READ_ONLY));
 
                     if (i == 0)
                     {
@@ -247,9 +247,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         lse_reformat_in(in_img, target_ptr, prms->inC_16, 1, 1);
                     }
 
-                    tivxMemBufferUnmap(target_ptr,
+                    tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr,
                         in_img->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                        (vx_enum)VX_READ_ONLY);
+                        (vx_enum)VX_READ_ONLY));
                 }
             }
 
@@ -314,9 +314,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         ((vx_df_image)VX_DF_IMAGE_YUYV == out_img[j]->format))
                     {
                         target_ptr = tivxMemShared2TargetPtr(&out_img[j]->mem_ptr[0]);
-                        tivxMemBufferMap(target_ptr,
+                        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr,
                             out_img[j]->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                            (vx_enum)VX_WRITE_ONLY);
+                            (vx_enum)VX_WRITE_ONLY));
 
                         lse_interleave_422(in_img, out_img[j], target_ptr, prms->outY_16[j], prms->outC_16[j], 8);
                     }
@@ -325,9 +325,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                         for (i = 0; i < num_planes; i ++)
                         {
                             target_ptr = tivxMemShared2TargetPtr(&out_img[j]->mem_ptr[i]);
-                            tivxMemBufferMap(target_ptr,
+                            tivxCheckStatus(&status, tivxMemBufferMap(target_ptr,
                                 out_img[j]->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                                (vx_enum)VX_WRITE_ONLY);
+                                (vx_enum)VX_WRITE_ONLY));
 
                             if (i == 0)
                             {
@@ -338,9 +338,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                                 lse_reformat_out(in_img, out_img[j], target_ptr, prms->outC_16[j], output_bits, 1);
                             }
 
-                            tivxMemBufferUnmap(target_ptr,
+                            tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr,
                                 out_img[j]->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                                (vx_enum)VX_WRITE_ONLY);
+                                (vx_enum)VX_WRITE_ONLY));
                         }
                     }
                 }
@@ -494,8 +494,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                 configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
 
-                tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 params = (tivx_vpac_ldc_params_t *)configuration_target_ptr;
 
@@ -585,8 +585,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     }
                 }
 
-                tivxMemBufferUnmap(configuration_target_ptr, configuration_desc->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr, configuration_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
 
             /* Configure mesh table */
@@ -791,13 +791,14 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
 {
     tivx_vpac_ldc_mesh_params_t *mesh_prms = NULL;
     void                        *target_ptr;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != mesh_prms_desc) && (NULL != mesh_img_desc))
     {
         target_ptr = tivxMemShared2TargetPtr(&mesh_prms_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, mesh_prms_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, mesh_prms_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_vpac_ldc_mesh_params_t) == mesh_prms_desc->mem_size)
         {
@@ -811,8 +812,8 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
 
             mesh_table_target_ptr = tivxMemShared2TargetPtr(&mesh_img_desc->mem_ptr[0]);
 
-            tivxMemBufferMap(mesh_table_target_ptr, mesh_img_desc->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(mesh_table_target_ptr, mesh_img_desc->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             meshPtr = mesh_table_target_ptr;
 
@@ -827,9 +828,9 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
             settings->table_width = mesh_img_desc->imagepatch_addr[0].dim_x;  // must fill in correctly before running LDC
             settings->table_height = mesh_img_desc->imagepatch_addr[0].dim_y; // must fill in correctly before running LDC
 
-            tivxMemBufferUnmap(mesh_table_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(mesh_table_target_ptr,
                 mesh_img_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY);
+                (vx_enum)VX_READ_ONLY));
 
             settings->table_m      = mesh_prms->subsample_factor;
             settings->mesh_frame_w = mesh_prms->mesh_frame_width;
@@ -864,13 +865,14 @@ static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
     tivx_obj_desc_user_data_object_t *region_params_desc)
 {
     void                        *target_ptr;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (NULL != region_params_desc)
     {
         target_ptr = tivxMemShared2TargetPtr(&region_params_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, region_params_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, region_params_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_vpac_ldc_region_params_t) == region_params_desc->mem_size)
         {
@@ -920,13 +922,14 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
     tivx_obj_desc_matrix_t *warp_matrix_desc)
 {
     void *warp_matrix_target_ptr;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if (NULL != warp_matrix_desc)
     {
         warp_matrix_target_ptr = tivxMemShared2TargetPtr(&warp_matrix_desc->mem_ptr);
 
-        tivxMemBufferMap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if ((vx_enum)VX_TYPE_INT16 == warp_matrix_desc->data_type) /* Direct pass to HW registers */
         {
@@ -991,8 +994,8 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
             }
         }
 
-        tivxMemBufferUnmap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(warp_matrix_target_ptr, warp_matrix_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
     else
     {
@@ -1015,13 +1018,14 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
     uint32_t i;
     void *target_ptr;
     tivx_vpac_ldc_bit_depth_conv_lut_params_t *lut_prms;
+    vx_status status = (vx_status)VX_SUCCESS;
 
     if(NULL != luma_user_desc)
     {
         target_ptr = tivxMemShared2TargetPtr(&luma_user_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, luma_user_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, luma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         lut_prms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
 
@@ -1032,16 +1036,16 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
         for(i = 0; i < 513; i++) {
             settings->ylut[i]  = lut_prms->lut[i];  // subframe enable
         }
-        tivxMemBufferUnmap(target_ptr, luma_user_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, luma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
 
     if(NULL != chroma_user_desc)
     {
         target_ptr = tivxMemShared2TargetPtr(&chroma_user_desc->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, chroma_user_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, chroma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         lut_prms = (tivx_vpac_ldc_bit_depth_conv_lut_params_t *)target_ptr;
 
@@ -1052,9 +1056,9 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
         for(i = 0; i < 513; i++) {
             settings->clut[i]  = lut_prms->lut[i];  // subframe enable
         }
-        tivxMemBufferUnmap(target_ptr, chroma_user_desc->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, chroma_user_desc->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
 
-    return ((vx_status)VX_SUCCESS);
+    return (status);
 }

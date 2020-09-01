@@ -164,8 +164,8 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
 
         if(NULL != dcc_in_prms->dcc_buf)
         {
-            tivxMemBufferMap(dcc_in_prms->dcc_buf,
-                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dcc_in_prms->dcc_buf,
+                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
             dcc_status = Dcc_Create(dcc_out_prms, vissObj->dcc_out_buf);
 
@@ -185,8 +185,8 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
                 status = (vx_status)VX_FAILURE;
             }
 
-            tivxMemBufferUnmap(dcc_in_prms->dcc_buf,
-                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dcc_in_prms->dcc_buf,
+                dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         }
         else
         {

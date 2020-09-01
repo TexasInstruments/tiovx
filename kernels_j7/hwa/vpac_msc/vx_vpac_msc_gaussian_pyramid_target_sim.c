@@ -149,16 +149,16 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         void *src_target_ptr;
 
         src_target_ptr = tivxMemShared2TargetPtr(&src->mem_ptr[0]);
-        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
          */
         lse_reformat_in(src, src_target_ptr, prms->src16, 0, 0);
 
-        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -272,23 +272,23 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         /* Reformat levels 0 and 1 */
         dst = prms->img_obj_desc[0];
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
-        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[0], 12, 0);
 
-        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         dst = prms->img_obj_desc[1];
         dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
-        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[1], 12, 0);
 
-        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
         imgOutput[0] = NULL;
 
@@ -322,13 +322,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
 #endif
             dst_target_ptr = tivxMemShared2TargetPtr(&dst->mem_ptr[0]);
-            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[bufCnt^1], 12, 0);
 
-            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
-                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
 
             bufCnt ^= 1;
         }

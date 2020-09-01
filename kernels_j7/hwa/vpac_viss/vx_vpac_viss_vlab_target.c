@@ -186,14 +186,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         raw_mem_target_ptr[2] = NULL;
 
         configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
-        tivxMemBufferMap(configuration_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr,
            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
         ae_awb_result_target_ptr = tivxMemShared2TargetPtr(&ae_awb_result_desc->mem_ptr);
-        tivxMemBufferMap(ae_awb_result_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferMap(ae_awb_result_target_ptr,
            ae_awb_result_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
         /* Get image pointer(s) */
         for(i=0; i < num_exposures; i++)
@@ -203,91 +203,91 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         /* Map buffer(s) */
         raw_mem_target_ptr[0] = tivxMemShared2TargetPtr(&raw_desc->mem_ptr[0]);
-        tivxMemBufferMap(raw_mem_target_ptr[0],
+        tivxCheckStatus(&status, tivxMemBufferMap(raw_mem_target_ptr[0],
             raw_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
         if (!raw_desc->params.line_interleaved)
         {
             for(i=1; i < num_exposures; i++)
             {
                 raw_mem_target_ptr[i] = tivxMemShared2TargetPtr(&raw_desc->mem_ptr[i]);
-                tivxMemBufferMap(raw_mem_target_ptr[i],
+                tivxCheckStatus(&status, tivxMemBufferMap(raw_mem_target_ptr[i],
                     raw_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_READ_ONLY);
+                    (vx_enum)VX_READ_ONLY));
             }
         }
 
         if( y12_desc != NULL)
         {
             y12_target_ptr = tivxMemShared2TargetPtr(&y12_desc->mem_ptr[0]);
-            tivxMemBufferMap(y12_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(y12_target_ptr,
                y12_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
                 uv12_c1_target_ptr = tivxMemShared2TargetPtr(&y12_desc->mem_ptr[1]);
-                tivxMemBufferMap(uv12_c1_target_ptr,
+                tivxCheckStatus(&status, tivxMemBufferMap(uv12_c1_target_ptr,
                   y12_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                   (vx_enum)VX_WRITE_ONLY);
+                   (vx_enum)VX_WRITE_ONLY));
             }
         }
 
         if( uv12_c1_desc != NULL)
         {
             uv12_c1_target_ptr = tivxMemShared2TargetPtr(&uv12_c1_desc->mem_ptr[0]);
-            tivxMemBufferMap(uv12_c1_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(uv12_c1_target_ptr,
                uv12_c1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( y8_r8_c2_desc != NULL)
         {
             y8_r8_c2_target_ptr = tivxMemShared2TargetPtr(&y8_r8_c2_desc->mem_ptr[0]);
-            tivxMemBufferMap(y8_r8_c2_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(y8_r8_c2_target_ptr,
                y8_r8_c2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             if ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
             {
                 uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(&y8_r8_c2_desc->mem_ptr[1]);
-                tivxMemBufferMap(uv8_g8_c3_target_ptr,
+                tivxCheckStatus(&status, tivxMemBufferMap(uv8_g8_c3_target_ptr,
                   y8_r8_c2_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                   (vx_enum)VX_WRITE_ONLY);
+                   (vx_enum)VX_WRITE_ONLY));
             }
         }
 
         if( uv8_g8_c3_desc != NULL)
         {
             uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(&uv8_g8_c3_desc->mem_ptr[0]);
-            tivxMemBufferMap(uv8_g8_c3_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(uv8_g8_c3_target_ptr,
                uv8_g8_c3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( s8_b8_c4_desc != NULL)
         {
             s8_b8_c4_target_ptr = tivxMemShared2TargetPtr(&s8_b8_c4_desc->mem_ptr[0]);
-            tivxMemBufferMap(s8_b8_c4_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(s8_b8_c4_target_ptr,
                s8_b8_c4_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( histogram_desc != NULL)
         {
             histogram_target_ptr = tivxMemShared2TargetPtr(&histogram_desc->mem_ptr);
-            tivxMemBufferMap(histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(histogram_target_ptr,
                histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( h3a_aew_af_desc != NULL)
         {
             h3a_aew_af_target_ptr = tivxMemShared2TargetPtr(&h3a_aew_af_desc->mem_ptr);
-            tivxMemBufferMap(h3a_aew_af_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(h3a_aew_af_target_ptr,
                h3a_aew_af_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
@@ -503,89 +503,89 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         /* kernel processing function complete */
 
-        tivxMemBufferUnmap(configuration_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr,
            configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
-        tivxMemBufferUnmap(ae_awb_result_target_ptr,
+        tivxCheckStatus(&status, tivxMemBufferUnmap(ae_awb_result_target_ptr,
            ae_awb_result_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
-        tivxMemBufferUnmap(raw_mem_target_ptr[0],
+        tivxCheckStatus(&status, tivxMemBufferUnmap(raw_mem_target_ptr[0],
             raw_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY);
+            (vx_enum)VX_READ_ONLY));
 
         if (!raw_desc->params.line_interleaved)
         {
             for(i=1; i < num_exposures; i++)
             {
-                tivxMemBufferUnmap(raw_mem_target_ptr[i],
+                tivxCheckStatus(&status, tivxMemBufferUnmap(raw_mem_target_ptr[i],
                     raw_desc->mem_size[i], (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_READ_ONLY);
+                    (vx_enum)VX_READ_ONLY));
             }
         }
 
         if( y12_desc != NULL)
         {
-            tivxMemBufferUnmap(y12_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(y12_target_ptr,
                y12_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
             {
-                tivxMemBufferUnmap(uv12_c1_target_ptr,
+                tivxCheckStatus(&status, tivxMemBufferUnmap(uv12_c1_target_ptr,
                    y12_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
+                    (vx_enum)VX_WRITE_ONLY));
             }
         }
 
         if( uv12_c1_desc != NULL)
         {
-            tivxMemBufferUnmap(uv12_c1_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(uv12_c1_target_ptr,
                uv12_c1_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( y8_r8_c2_desc != NULL)
         {
-            tivxMemBufferUnmap(y8_r8_c2_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(y8_r8_c2_target_ptr,
                y8_r8_c2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             if ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
             {
-                tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
+                tivxCheckStatus(&status, tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
                    y8_r8_c2_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
+                    (vx_enum)VX_WRITE_ONLY));
             }
         }
 
         if( uv8_g8_c3_desc != NULL)
         {
-            tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
                uv8_g8_c3_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( s8_b8_c4_desc != NULL)
         {
-            tivxMemBufferUnmap(s8_b8_c4_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(s8_b8_c4_target_ptr,
                s8_b8_c4_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( histogram_desc != NULL)
         {
-            tivxMemBufferUnmap(histogram_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(histogram_target_ptr,
                histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
 
         if( h3a_aew_af_desc != NULL)
         {
-            tivxMemBufferUnmap(h3a_aew_af_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(h3a_aew_af_target_ptr,
                h3a_aew_af_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
         }
     }
 
@@ -727,10 +727,10 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
                 ae_awb_result_target_ptr = tivxMemShared2TargetPtr(&ae_awb_result_desc->mem_ptr);
 
-                tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
-                tivxMemBufferMap(ae_awb_result_target_ptr, ae_awb_result_desc->mem_size,
-                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+                tivxCheckStatus(&status, tivxMemBufferMap(ae_awb_result_target_ptr, ae_awb_result_desc->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
                 params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
             }
@@ -749,9 +749,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     prms->dcc_input_params->dcc_buf = tivxMemShared2TargetPtr(&dcc_desc->mem_ptr);
                     if(NULL != prms->dcc_input_params->dcc_buf)
                     {
-                        tivxMemBufferMap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferMap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
 
-                        prms->dcc_out_numbytes = calc_dcc_outbuf_size();
+                        prms->dcc_out_numbytes = calc_dcc_outbuf_size());
                         prms->dcc_out_buf = (uint8_t *)tivxMemAlloc(prms->dcc_out_numbytes, (vx_enum)TIVX_MEM_EXTERNAL);
                         if(NULL != prms->dcc_out_buf)
                         {
@@ -763,11 +763,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             status = (vx_status)VX_ERROR_NO_MEMORY;
                         }
 
-                        tivxMemBufferUnmap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+                        tivxCheckStatus(&status, tivxMemBufferUnmap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
                     }
                     else
                     {
-                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS);
                     }
                 }
                 else

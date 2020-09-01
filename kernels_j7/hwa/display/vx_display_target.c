@@ -162,8 +162,8 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     {
         target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
 
-        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
         if (sizeof(tivx_display_select_channel_params_t) ==
                 usr_data_obj->mem_size)
@@ -177,8 +177,8 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
-        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
-            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY);
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
     }
     else
     {
@@ -270,8 +270,8 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
 
             chroma_target_ptr = tivxMemShared2TargetPtr(&dispPrms->chroma_mem_ptr);
 
-            tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
-                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
+            tivxCheckStatus(&status, tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
+                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
 
             if ((vx_df_image)VX_DF_IMAGE_U16 == obj_desc_img->format)
             {
@@ -296,8 +296,8 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                 /* do nothing */
             }
 
-            tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
-                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE);
+            tivxCheckStatus(&status, tivxMemBufferUnmap(chroma_target_ptr, dispPrms->chromaBufSize,
+                             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
         }
     }
     else
@@ -410,10 +410,10 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         {
             display_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc_configuration->mem_ptr);
 
-            tivxMemBufferMap(display_config_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferMap(display_config_target_ptr,
                              obj_desc_configuration->mem_size,
                              (vx_enum)VX_MEMORY_TYPE_HOST,
-                             (vx_enum)VX_READ_ONLY);
+                             (vx_enum)VX_READ_ONLY));
 
             params = (tivx_display_params_t *)display_config_target_ptr;
 
@@ -533,10 +533,10 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
 
         if((vx_status)VX_SUCCESS == status)
         {
-            tivxMemBufferUnmap(display_config_target_ptr,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(display_config_target_ptr,
                                obj_desc_configuration->mem_size,
                                (vx_enum)VX_MEMORY_TYPE_HOST,
-                               (vx_enum)VX_READ_ONLY);
+                               (vx_enum)VX_READ_ONLY));
             tivxSetTargetKernelInstanceContext(kernel,
                                                displayParams,
                                                sizeof(tivxDisplayParams));
@@ -855,60 +855,60 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
         }
         else if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
         {
-            tivxMemBufferMap(
+            tivxCheckStatus(&status, tivxMemBufferMap(
                 displayParams->copyImagePtr[displayParams->currIdx][0],
                 displayParams->copyImageSize[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
-            tivxMemBufferMap(
+                (vx_enum)VX_WRITE_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferMap(
                 image_target_ptr1,
                 displayParams->copyImageSize[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             /* Copy  and assign buffers */
             memcpy(displayParams->copyImagePtr[displayParams->currIdx][0], image_target_ptr1, displayParams->copyImageSize[0]);
 
-            tivxMemBufferUnmap(
+            tivxCheckStatus(&status, tivxMemBufferUnmap(
                 displayParams->copyImagePtr[displayParams->currIdx][0],
                 displayParams->copyImageSize[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
-            tivxMemBufferUnmap(
+                (vx_enum)VX_WRITE_ONLY));
+            tivxCheckStatus(&status, tivxMemBufferUnmap(
                 image_target_ptr1,
                 displayParams->copyImageSize[0],
                 (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY);
+                (vx_enum)VX_WRITE_ONLY));
 
             displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][0];
             if((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format)
             {
-                tivxMemBufferMap(
+                tivxCheckStatus(&status, tivxMemBufferMap(
                     displayParams->copyImagePtr[displayParams->currIdx][1],
                     displayParams->copyImageSize[1],
                     (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
-                tivxMemBufferMap(
+                    (vx_enum)VX_WRITE_ONLY));
+                tivxCheckStatus(&status, tivxMemBufferMap(
                     image_target_ptr2,
                     displayParams->copyImageSize[1],
                     (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
+                    (vx_enum)VX_WRITE_ONLY));
 
                 if (NULL != image_target_ptr2)
                 {
                     memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
                 }
 
-                tivxMemBufferUnmap(
+                tivxCheckStatus(&status, tivxMemBufferUnmap(
                     displayParams->copyImagePtr[displayParams->currIdx][1],
                     displayParams->copyImageSize[1],
                     (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
-                tivxMemBufferUnmap(
+                    (vx_enum)VX_WRITE_ONLY));
+                tivxCheckStatus(&status, tivxMemBufferUnmap(
                     image_target_ptr2,
                     displayParams->copyImageSize[1],
                     (vx_enum)VX_MEMORY_TYPE_HOST,
-                    (vx_enum)VX_WRITE_ONLY);
+                    (vx_enum)VX_WRITE_ONLY));
 
                 displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][1];
             }
