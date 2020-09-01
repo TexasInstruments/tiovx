@@ -897,34 +897,34 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     uint64_t                shared_ptr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
     uint32_t                numMemElem;
     uint32_t                i;
-    vx_status               vxStatus;
+    vx_status               status;
 
-    vxStatus = (vx_status)VX_SUCCESS;
+    status = (vx_status)VX_SUCCESS;
 
     /* Validate the arguments. */
     if ((ref == NULL) || (ownIsValidReference(ref) == (vx_bool)vx_false_e))
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference is Invalid.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (num_entries == 0)
     {
         VX_PRINT(VX_ZONE_ERROR,
                  "The parameter 'num_entries' must be non-zero.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (size == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (vxStatus == (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         numMemElem = 1;
         mem_ptr    = NULL;
@@ -939,7 +939,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -957,7 +957,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -974,7 +974,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -991,7 +991,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1008,7 +1008,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1025,7 +1025,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1042,7 +1042,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1053,21 +1053,21 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
-            vxStatus = (vx_status)VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if ((vxStatus == (vx_status)VX_SUCCESS) &&
+        if ((status == (vx_status)VX_SUCCESS) &&
             (numMemElem > num_entries))
         {
             VX_PRINT(VX_ZONE_ERROR,
                      "num_entries [%d] less than num handles expected [%d].\n",
                      num_entries, numMemElem);
 
-            vxStatus = (vx_status)VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
         /* Validate the sizes of the handles. */
-        if (vxStatus == (vx_status)VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             for (i = 0; i < numMemElem; i++)
             {
@@ -1078,13 +1078,13 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                              "but given [%d]\n",
                              i, mem_size[i], size[i]);
 
-                    vxStatus = (vx_status)VX_FAILURE;
+                    status = (vx_status)VX_FAILURE;
                 }
             }
         }
 
         /* Validate the addr entries. */
-        if (vxStatus == (vx_status)VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             uint32_t    numNulls = 0;
 
@@ -1100,7 +1100,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     if (shared_ptr[i] == 0)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "addr[%d] is INVALID.\n", i);
-                        vxStatus = (vx_status)VX_FAILURE;
+                        status = (vx_status)VX_FAILURE;
                         break;
                     }
                 }
@@ -1110,17 +1110,17 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 }
             }
 
-            if ((vxStatus == (vx_status)VX_SUCCESS) &&
+            if ((status == (vx_status)VX_SUCCESS) &&
                 (numNulls != 0) &&
                 (numNulls != numMemElem))
             {
                 VX_PRINT(VX_ZONE_ERROR,
                          "addr[] has a mix of NULL and non-NULL entries.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
         }
 
-        if (vxStatus == (vx_status)VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             /* Issue a warning if the number of handles passed is more than
              * what is needed.
@@ -1149,7 +1149,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                 {
                     /* Perform a cache write back. */
-                    tivxCheckStatus(&vxStatus, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
+                    tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
                                        mem_size[i],
                                        (vx_enum)TIVX_MEM_EXTERNAL,
                                        (vx_enum)VX_WRITE_ONLY));
@@ -1158,7 +1158,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         }
     }
 
-    return vxStatus;
+    return status;
 }
 
 vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries)
@@ -1167,38 +1167,38 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
     volatile uint32_t      *mem_size;
     uint32_t                numMemElem;
     uint32_t                i;
-    vx_status               vxStatus;
+    vx_status               status;
 
-    vxStatus = (vx_status)VX_SUCCESS;
+    status = (vx_status)VX_SUCCESS;
 
     /* Validate the arguments. */
     if ((ref == NULL) || (ownIsValidReference(ref) == (vx_bool)vx_false_e))
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference is Invalid.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (addr == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'addr' is NULL.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (size == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'size' is NULL.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (max_entries == 0)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'max_entries' is 0.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
     else if (num_entries == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "The parameter 'num_entries' is NULL.\n");
-        vxStatus = (vx_status)VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (vxStatus == (vx_status)VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         numMemElem = 1;
         mem_ptr    = NULL;
@@ -1212,7 +1212,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else if (obj_desc->planes > max_entries)
             {
@@ -1222,7 +1222,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 VX_PRINT(VX_ZONE_ERROR,
                          "max_entries [%d] less than num planes [%d].\n",
                          max_entries, obj_desc->planes);
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1240,7 +1240,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1257,7 +1257,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1274,7 +1274,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1291,7 +1291,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1308,7 +1308,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1325,7 +1325,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             if (obj_desc == NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
-                vxStatus = (vx_status)VX_FAILURE;
+                status = (vx_status)VX_FAILURE;
             }
             else
             {
@@ -1336,10 +1336,10 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
-            vxStatus = (vx_status)VX_FAILURE;
+            status = (vx_status)VX_FAILURE;
         }
 
-        if (vxStatus == (vx_status)VX_SUCCESS)
+        if (status == (vx_status)VX_SUCCESS)
         {
             tivx_shared_mem_ptr_t   lMemPtr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
             uint32_t                numAlloc = 0;
@@ -1365,7 +1365,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                         /* Could not allocate memory */
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Could not allocate user data object memory\n");
-                        vxStatus = (vx_status)VX_ERROR_NO_MEMORY;
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
                         break;
                     }
                     else
@@ -1384,7 +1384,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
             } /* for (i = 0; i < numMemElem; i++) */
 
-            if (vxStatus == (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS)
             {
                 for (i = 0; i < numMemElem; i++)
                 {
@@ -1415,10 +1415,10 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 }
             }
 
-        } /* if (vxStatus == (vx_status)VX_SUCCESS) */
+        } /* if (status == (vx_status)VX_SUCCESS) */
 
-    } /* if (vxStatus == (vx_status)VX_SUCCESS) */
+    } /* if (status == (vx_status)VX_SUCCESS) */
 
-    return vxStatus;
+    return status;
 }
 
