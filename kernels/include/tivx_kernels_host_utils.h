@@ -65,6 +65,7 @@
 #define TIVX_KERNELS_HOST_UTILS_
 
 #include <TI/tivx_debug.h>
+#include <tivx_kernels_common_utils.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -166,17 +167,6 @@ static inline void tivxKernelValidRectParams_init(
     tivxKernelValidRectParams *prms);
 
 /*!
- * \brief Function to set the status variable equal to status_temp
- *        if the status_temp variable is not VX_SUCCESS.
- *
- * \param status [in,out] status variable
- * \param status_temp [in] temporary status variable
- *
- * \ingroup group_tivx_ext_host_kernel
- */
-static inline void tivxCheckStatus(vx_status *status, vx_status status_temp);
-
-/*!
  * \brief Function to calculate and configure valid region
  *        This API loops over all the input and output image's valid
  *        rectangles and figures out overlapping rectangle and sets it
@@ -208,13 +198,6 @@ static inline void tivxKernelValidRectParams_init(
     {
         memset(prms, 0, sizeof(tivxKernelValidRectParams));
         prms->border_mode = (vx_enum)VX_BORDER_UNDEFINED;
-    }
-}
-
-static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
-{
-    if((vx_status)VX_SUCCESS != status_temp) {
-        *status = status_temp;
     }
 }
 

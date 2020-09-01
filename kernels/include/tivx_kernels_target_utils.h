@@ -64,6 +64,7 @@
 #define TIVX_KERNELS_TARGET_UTILS_
 
 #include <ti/vxlib/src/common/VXLIB_bufParams.h>
+#include <tivx_kernels_common_utils.h>
 
 #ifdef __cplusplus
 extern "C" {
