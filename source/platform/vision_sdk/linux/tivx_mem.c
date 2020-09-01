@@ -214,7 +214,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
     return vxStatus;
 }
 
-vx_status tivxMemTranslateFd(uint64_t dmaBufFd, void **virtAddr, void **phyAddr)
+vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, void **phyAddr)
 {
     vx_status   vxStatus = (vx_status)VX_SUCCESS;
 

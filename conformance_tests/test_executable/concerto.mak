@@ -67,6 +67,8 @@ ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU)
 endif
 
+STATIC_LIBS += vx_utils
+
 include $(FINALE)
 
 endif
