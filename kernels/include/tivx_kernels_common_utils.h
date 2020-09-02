@@ -77,7 +77,7 @@ extern "C" {
  * \param status [in,out] status variable
  * \param status_temp [in] temporary status variable
  *
- * \ingroup group_tivx_ext_host_kernel
+ * \ingroup group_tivx_ext_common_kernel
  */
 static inline void tivxCheckStatus(vx_status *status, vx_status status_temp);
 
