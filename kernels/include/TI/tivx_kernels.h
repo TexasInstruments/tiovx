@@ -72,12 +72,12 @@ extern "C" {
 #endif
 
 /*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_MODULE_NAME_OPENVX_CORE    "openvx-core"
 
 /*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_MODULE_NAME_IVISION    "ivision"
 
@@ -98,7 +98,7 @@ enum tivx_library_e {
 /*!
  * \brief The list of kernels supported in ivision.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 enum tivx_kernel_ivision_e {
     /*! \brief The Harris Corners Kernel.

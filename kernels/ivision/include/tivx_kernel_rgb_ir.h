@@ -80,21 +80,21 @@ extern "C" {
 /*!
  * \brief Index of the input RGB-IR image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_IN_IMG_IDX                  (0U)
 
 /*!
  * \brief Index of the sensor phase
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_SENSOR_PHASE_IDX            (1U)
 
 /*!
  * \brief Index of the decision threshold between horizontal and vertical gradient.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_THR_IDX              (2U)
 
@@ -102,7 +102,7 @@ extern "C" {
  * \brief Index of the Mixing coefficient applied to the IR component to obtain the final
  *        R= R - alphaR*IR . Q15 format.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_ALPHA_R_IDX              (3U)
 
@@ -110,7 +110,7 @@ extern "C" {
  * \brief Mixing coefficient applied to the IR component to obtain the final
  *        G=G - alphaG*IR. Q15 format.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_ALPHA_G_IDX              (4U)
 
@@ -118,7 +118,7 @@ extern "C" {
  * \brief Mixing coefficient applied to the IR component to obtain the final
  *        B=B - alphaB*IR. Q15 format.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_ALPHA_B_IDX              (5U)
 
@@ -127,28 +127,28 @@ extern "C" {
  *        Method of intializing the border within the output frame.
  *        Use enum RGB_IR_TI_BorderMode as initializer.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_BORDER_MODE_IDX          (6U)
 
 /*!
  * \brief Index of the output bayer frame
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX            (7U)
 
 /*!
  * \brief Index of the output IR frame
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_OUT_IR_IDX               (8U)
 
 /*!
  * \brief Max Params supported by fast corners kernel
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_KERNEL_RGB_IR_MAX_PARAMS                  (9U)
 
