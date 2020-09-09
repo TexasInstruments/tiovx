@@ -385,7 +385,7 @@ extern "C" {
 /*! \brief Max possible leaf nodes in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_LEAF_NODES          (8u)
+#define TIVX_GRAPH_MAX_LEAF_NODES          (16u)
 
 /*! \brief Max possible parameters in graph
  * \ingroup group_vx_graph_cfg
