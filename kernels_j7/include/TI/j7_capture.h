@@ -377,6 +377,18 @@ void tivxUnRegisterHwaTargetCaptureKernels(void);
             either \ref vx_image or \ref tivx_raw_image data types.  \ref vx_image is used if the sensor outputs processed
             image formats, while \ref tivx_raw_image is used for raw sensor outputs.
 
+            If using \ref tivx_raw_image as the output, the raw image type MUST be one of the following formats:
+            - Raw8  (\ref tivx_raw_image_create_params_t parameters msb = 7 and pixel_container = \ref TIVX_RAW_IMAGE_8_BIT)
+            - Raw10 (\ref tivx_raw_image_create_params_t parameters msb = 9 and pixel_container = \ref TIVX_RAW_IMAGE_16_BIT)
+            - Raw12 with either:
+                - \ref tivx_raw_image_create_params_t parameters msb = 11 and pixel_container = \ref TIVX_RAW_IMAGE_16_BIT
+                - \ref tivx_raw_image_create_params_t parameters msb = 11 and pixel_container = \ref TIVX_RAW_IMAGE_P12_BIT
+            - Raw14 (\ref tivx_raw_image_create_params_t parameters msb = 13 and pixel_container = \ref TIVX_RAW_IMAGE_16_BIT)
+
+            If using \ref vx_image, the image type MUST be one of the following formats:
+            - \ref VX_DF_IMAGE_UYVY
+            - \ref VX_DF_IMAGE_YUYV
+
             The number of items in the output object array corresponds to the number of syncronized, homogeneous
             camera sensors assigned to the capture node.  Each item in an object array must have the same
             dimensions and formats.  If multiple sensors are needed tot be configured at different rates, formats, or
@@ -385,11 +397,9 @@ void tivxUnRegisterHwaTargetCaptureKernels(void);
             \note The capture node does not program or control the sensors, but relies on the application (or custom nodes)
             to call into the sensor drivers.
  * \param [in] graph The reference to the graph.
- * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.
+ * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.<br>
  * \param [out] output Object array output which has been created from an exemplar of either \ref vx_image or \ref tivx_raw_image.
- *              If using \ref vx_image, the image type MUST be one of the following formats:
-                <tt>\ref VX_DF_IMAGE_RGBX</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
-                <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_YUYV</tt>.
+ *
  * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
  * \ingroup group_vision_function_capture
  * \return <tt>\ref vx_node</tt>.
