@@ -1004,7 +1004,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                 }
 
                 tivxCaptureGetObjDesc(prms, recv_obj_desc_id, output_desc, &timestamp);
-
+            
                 obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
 
                 if (0U == prms->steady_state_started)
@@ -1301,8 +1301,20 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms)
             printf(   "==========================================================\r\n");
             printf(   " Capture Status: Instance|%d\r\n", prms->instId);
             printf(   "==========================================================\r\n");
-            printf(   " FIFO Overflow Count: %d\r\n", prms->captStatus.overflowCount);
-            printf(   " Spurious UDMA interrupt count: %d\r\n", prms->captStatus.spuriousUdmaIntrCount);
+            printf(   " overflowCount: %d\r\n", prms->captStatus.overflowCount);
+            printf(   " spuriousUdmaIntrCount: %d\r\n", prms->captStatus.spuriousUdmaIntrCount);
+            printf(   " frontFIFOOvflCount: %d\r\n", prms->captStatus.frontFIFOOvflCount);
+            printf(   " crcCount: %d\r\n", prms->captStatus.crcCount);
+            printf(   " eccCount: %d\r\n", prms->captStatus.eccCount);
+            printf(   " correctedEccCount: %d\r\n", prms->captStatus.correctedEccCount);
+            printf(   " dataIdErrorCount: %d\r\n", prms->captStatus.dataIdErrorCount);
+            printf(   " invalidAccessCount: %d\r\n", prms->captStatus.invalidAccessCount);
+            printf(   " invalidSpCount: %d\r\n", prms->captStatus.invalidSpCount);
+            printf(   " strmFIFOOvflCount[0]: %d\r\n", prms->captStatus.strmFIFOOvflCount[0]);
+            printf(   " strmFIFOOvflCount[1]: %d\r\n", prms->captStatus.strmFIFOOvflCount[1]);
+            printf(   " strmFIFOOvflCount[2]: %d\r\n", prms->captStatus.strmFIFOOvflCount[2]);
+            printf(   " strmFIFOOvflCount[3]: %d\r\n", prms->captStatus.strmFIFOOvflCount[3]);
+
             printf(   " Channel Num | Frame Queue Count | Frame De-queue Count | Frame Drop Count | Error Frame Count |\r\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
