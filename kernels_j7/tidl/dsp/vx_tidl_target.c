@@ -377,7 +377,40 @@ int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t siz
 
     return 0;
 }
+#ifdef x86_64
+/* Udma_init for target flow is done part of App Common Init 
+   Udma is not used in in Host emulation mode of other module, but TIDL
+   Has flows which uses UDMA. So intilizing here Specific to TIDL Init.
+   This flow is controlled via flowCtrl in create Params
+*/
+#include <ti/drv/udma/udma.h>
+static struct Udma_DrvObj  x86udmaDrvObj;
 
+uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr,
+                                      uint32_t chNum,
+                                      void *appData)
+{
+	return (uint64_t)virtAddr;
+}
+static void tidlX86Printf(const char *str)
+{
+}
+void * tidlX86UdmaInit( void)
+{
+    static firstCall = 1;
+    if(firstCall)
+    {
+        Udma_InitPrms initPrms;
+        UdmaInitPrms_init(UDMA_INST_ID_MAIN_0, &initPrms);
+        initPrms.printFxn = &tidlX86Printf;
+        initPrms.skipGlobalEventReg = 1;
+        initPrms.virtToPhyFxn = tidlVirtToPhyAddrConversion;
+        Udma_init(&x86udmaDrvObj, &initPrms);
+        firstCall = 0;
+    }
+    return &x86udmaDrvObj;
+}
+#endif
 
 static vx_status VX_CALLBACK tivxKernelTIDLCreate
 (
@@ -514,17 +547,17 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
                 l2_stats.free_size/1024,
                 l3_stats.free_size/1024
                 );
-
+#ifdef x86_64
+            tidlObj->createParams.udmaDrvObj = tidlX86UdmaInit();
+#else
             tidlObj->createParams.udmaDrvObj = tivxPlatformGetDmaObj();
+#endif
 
             tidlObj->createParams.net = (sTIDL_Network_t *)tidlObj->tidlNet;
 
             tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
-            tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
 
-#ifdef x86_64
-            tidlObj->createParams.flowCtrl  = 1;
-#endif
+            tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
 
             if(TIDL_NET_VERSION != tidlObj->createParams.net->netVersion)
             {
