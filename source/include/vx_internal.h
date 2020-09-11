@@ -108,6 +108,11 @@ extern "C" {
 #define TIVX_FLOOR(value, align)      (((value)/(align))*(align))
 
 /*! \brief Macro to specify default alignment to use for stride in Y-direction
+ *
+ *         Video codecs require 64 byte alignment
+ *
+ *         Remaining HWA nodes require 16 byte alignment
+ *
  * \ingroup group_vx_utils
  */
 #define TIVX_DEFAULT_STRIDE_Y_ALIGN   (64U)
