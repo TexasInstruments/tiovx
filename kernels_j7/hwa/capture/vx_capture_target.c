@@ -463,7 +463,7 @@ static uint32_t tivxCaptureExtractInCsiDataTypeFromRawImg(tivx_obj_desc_raw_imag
     }
     else if (TIVX_RAW_IMAGE_P12_BIT == params->format[0].pixel_container)
     {
-        if (12u == params->format[0].msb)
+        if (11u == params->format[0].msb)
         {
             inCsiDataType = FVID2_CSI2_DF_RAW12;
         }
