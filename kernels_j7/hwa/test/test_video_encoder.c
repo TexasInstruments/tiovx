@@ -76,6 +76,8 @@ TESTCASE(tivxHwaVideoEncoder, CT_VXContext, ct_setup_vx_context, 0)
 
 #define NUM_FRAMES_IN_IPFILE (5u)
 
+#define MB_ALIGN (16u)
+
 /*
 * Utility API used to add a graph parameter from a node, node parameter index
 */
@@ -440,12 +442,12 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         rect_y.start_x = 0;
         rect_y.start_y = 0;
         rect_y.end_x = info.width;
-        rect_y.end_y = info.height;
+        rect_y.end_y = ((info.height + MB_ALIGN - 1) / MB_ALIGN) * MB_ALIGN;
 
         rect_uv.start_x = 0;
         rect_uv.start_y = 0;
         rect_uv.end_x = info.width;
-        rect_uv.end_y = (info.height * 1)/2;
+        rect_uv.end_y = rect_y.end_y / 2;
 
         tivxHwaLoadKernels(context);
 
@@ -463,7 +465,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         params.crop_left = 0;
         params.crop_right = 0;
         params.crop_top = 0;
-        params.crop_bottom = 0;
+        params.crop_bottom = rect_y.end_y - info.height;
         params.nslices = 1;
         params.base_pipe = 0;
         params.initial_qp_i = 0;
@@ -477,14 +479,14 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         seek[0] = 0;
         for(i = 1; i < info.num_frames_in_ipfile; i++)
         {
-            seek[i] = seek[i - 1] + ((info.width * (info.height - params.crop_top - params.crop_bottom) * 3) / 2 );
+            seek[i] = seek[i - 1] + ((info.width * info.height * 3) / 2 );
         }
 
-        ASSERT_VX_OBJECT(input_image = vxCreateImage(context, info.width, info.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image = vxCreateImage(context, info.width, rect_y.end_y, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
         max_bitstream_size = ((uint32_t)(info.width / 16)
-                            * (uint32_t)(info.height / 16) * WORST_QP_SIZE)
-                            + ((info.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+                            * (uint32_t)(rect_y.end_y / 16) * WORST_QP_SIZE)
+                            + ((rect_y.end_y >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
         ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "tivx_video_bitstream_t", sizeof(uint8_t) * max_bitstream_size, NULL),
                                                                 (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -529,12 +531,12 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < (info.height - params.crop_top - params.crop_bottom); j++)
+                    for(j = 0; j < (info.height); j++)
                     {
                         num_read  += fread(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
 
-                    for(j = 0; j < ((info.height - params.crop_top - params.crop_bottom) / 2); j++)
+                    for(j = 0; j < ((info.height) / 2); j++)
                     {
                         num_read  += fread(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, in_fp);
                     }
@@ -542,7 +544,7 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
                 }
                 fclose(in_fp);
                 in_fp = NULL;
-                if (((info.width * (info.height - params.crop_top - params.crop_bottom) * 3) / 2)!= num_read)
+                if (((info.width * (info.height) * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file);
                 }
@@ -603,8 +605,6 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
     vx_user_data_object configuration_obj_l;
     vx_image input_image_s = NULL;
     vx_image input_image_l = NULL;
-    vx_image file_io_image_s = NULL;
-    vx_image file_io_image_l = NULL;
     uint8_t *bitstream_s;
     uint8_t *bitstream_l;
     vx_map_id map_id_s;
@@ -694,22 +694,22 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         rect_s_y.start_x = 0;
         rect_s_y.start_y = 0;
         rect_s_y.end_x = info_s.width;
-        rect_s_y.end_y = info_s.height;
+        rect_s_y.end_y = ((info_s.height + MB_ALIGN - 1) / MB_ALIGN) * MB_ALIGN;;
 
         rect_s_uv.start_x = 0;
         rect_s_uv.start_y = 0;
         rect_s_uv.end_x = info_s.width;
-        rect_s_uv.end_y = info_s.height/2;
+        rect_s_uv.end_y = rect_s_y.end_y / 2;
 
         rect_l_y.start_x = 0;
         rect_l_y.start_y = 0;
         rect_l_y.end_x = info_l.width;
-        rect_l_y.end_y = info_l.height;
+        rect_l_y.end_y = ((info_l.height + MB_ALIGN - 1) / MB_ALIGN) * MB_ALIGN;;
 
         rect_l_uv.start_x = 0;
         rect_l_uv.start_y = 0;
         rect_l_uv.end_x = info_l.width;
-        rect_l_uv.end_y = info_l.height/2;
+        rect_l_uv.end_y = rect_l_y.end_y / 2;
 
         tivxHwaLoadKernels(context);
 
@@ -730,7 +730,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         params_s.crop_left = 0;
         params_s.crop_right = 0;
         params_s.crop_top = 0;
-        params_s.crop_bottom = 0;
+        params_s.crop_bottom = rect_s_y.end_y - info_s.height;
         params_s.nslices = 1;
         params_s.base_pipe = 0;
         params_s.initial_qp_i = 0;
@@ -750,7 +750,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         params_l.crop_left = 0;
         params_l.crop_right = 0;
         params_l.crop_top = 0;
-        params_l.crop_bottom = 8;
+        params_l.crop_bottom = rect_l_y.end_y - info_l.height;
         params_l.nslices = 1;
         params_l.base_pipe = 1;
         params_l.initial_qp_i = 0;
@@ -765,27 +765,25 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         seek_s[0] = 0;
         for(i = 1; i < info_s.num_frames_in_ipfile; i++)
         {
-            seek_s[i] = seek_s[i - 1] + ((info_s.width * (info_s.height - params_s.crop_top - params_s.crop_bottom) * 3) / 2 );
+            seek_s[i] = seek_s[i - 1] + ((info_s.width * info_s.height * 3) / 2 );
         }
 
         seek_l[0] = 0;
         for(i = 1; i < info_l.num_frames_in_ipfile; i++)
         {
-            seek_l[i] = seek_l[i - 1] + ((info_l.width * (info_l.height - params_l.crop_top - params_l.crop_bottom) * 3) / 2 );
+            seek_l[i] = seek_l[i - 1] + ((info_l.width * info_l.height * 3) / 2 );
         }
 
-        ASSERT_VX_OBJECT(input_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(input_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(file_io_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(file_io_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image_s = vxCreateImage(context, info_s.width, rect_s_y.end_y, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input_image_l = vxCreateImage(context, info_l.width, rect_l_y.end_y, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
         max_bitstream_size_s = ((uint32_t)(info_s.width / 16)
-                                    * (uint32_t)(info_s.height / 16) * WORST_QP_SIZE)
-                                    + ((info_s.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+                                    * (uint32_t)(rect_s_y.end_y / 16) * WORST_QP_SIZE)
+                                    + ((rect_s_y.end_y >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
         max_bitstream_size_l = ((uint32_t)(info_l.width / 16)
-                                    * (uint32_t)(info_l.height / 16) * WORST_QP_SIZE)
-                                    + ((info_l.height >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
+                                    * (uint32_t)(rect_l_y.end_y / 16) * WORST_QP_SIZE)
+                                    + ((rect_l_y.end_y >> 4) * CODED_BUFFER_INFO_SECTION_SIZE);
 
         ASSERT_VX_OBJECT(bitstream_obj_s = vxCreateUserDataObject(context, "tivx_video_bitstream_t", sizeof(uint8_t) * max_bitstream_size_s, NULL),
                                                                     (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -797,7 +795,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
                                                                 configuration_obj_s,
                                                                 input_image_s,
                                                                 bitstream_obj_s), VX_TYPE_NODE);
-                                                                ASSERT_VX_OBJECT(node_encode_l = tivxVideoEncoderNode(graph,
+        ASSERT_VX_OBJECT(node_encode_l = tivxVideoEncoderNode(graph,
                                                                 configuration_obj_l,
                                                                 input_image_l,
                                                                 bitstream_obj_l), VX_TYPE_NODE);
@@ -859,11 +857,11 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < (info_s.height - params_s.crop_top - params_s.crop_bottom); j++)
+                    for(j = 0; j < info_s.height; j++)
                     {
                         num_read  += fread(data_ptr_s_y + (j * image_addr_s_y.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
-                    for(j = 0; j < (info_s.height - params_s.crop_top - params_s.crop_bottom) / 2; j++)
+                    for(j = 0; j < info_s.height / 2; j++)
                     {
                     num_read  += fread(data_ptr_s_uv + (j * image_addr_s_uv.stride_y), sizeof(uint8_t), info_s.width, in_fp_s);
                     }
@@ -871,7 +869,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 fclose(in_fp_s);
                 in_fp_s = NULL;
-                if (((info_s.width * (info_s.height - params_s.crop_top - params_s.crop_bottom) * 3) / 2)!= num_read)
+                if (((info_s.width * info_s.height * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_s);
                 }
@@ -885,12 +883,12 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 if (0 == seek_status)
                 {
-                    for(j = 0; j < (info_l.height - params_l.crop_top - params_l.crop_bottom); j++)
+                    for(j = 0; j < info_l.height; j++)
                     {
                         num_read  += fread(data_ptr_l_y + (j * image_addr_l_y.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
 
-                    for(j = 0; j < (info_l.height - params_l.crop_top - params_l.crop_bottom) / 2; j++)
+                    for(j = 0; j < info_l.height / 2; j++)
                     {
                         num_read  += fread(data_ptr_l_uv + (j * image_addr_l_uv.stride_y), sizeof(uint8_t), info_l.width, in_fp_l);
                     }
@@ -898,7 +896,7 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
 
                 fclose(in_fp_l);
                 in_fp_l = NULL;
-                if (((info_l.width * (info_l.height - params_l.crop_top - params_l.crop_bottom) * 3) / 2)!= num_read)
+                if (((info_l.width * info_l.height * 3) / 2)!= num_read)
                 {
                     VX_PRINT(VX_ZONE_INFO, "%s: Read less than expected!!!\n", input_file_l);
                 }
@@ -962,8 +960,6 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseUserDataObject(&bitstream_obj_l));
         VX_CALL(vxReleaseUserDataObject(&bitstream_obj_s));
-        VX_CALL(vxReleaseImage(&file_io_image_l));
-        VX_CALL(vxReleaseImage(&file_io_image_s));
         VX_CALL(vxReleaseImage(&input_image_l));
         VX_CALL(vxReleaseImage(&input_image_s));
         VX_CALL(vxReleaseUserDataObject(&configuration_obj_l));
@@ -974,8 +970,6 @@ TEST(tivxHwaVideoEncoder, testMultiStreamProcessing)
         ASSERT(graph == 0);
         ASSERT(bitstream_obj_l == 0);
         ASSERT(bitstream_obj_s == 0);
-        ASSERT(file_io_image_l == 0);
-        ASSERT(file_io_image_s == 0);
         ASSERT(input_image_l == 0);
         ASSERT(input_image_s == 0);
         ASSERT(configuration_obj_l == 0);
