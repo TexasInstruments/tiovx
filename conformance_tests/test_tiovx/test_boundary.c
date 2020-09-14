@@ -1811,8 +1811,8 @@ TEST(tivxBoundary, testMapArray)
 TEST(tivxBoundary, testHeadLeafNodes)
 {
     int i;
-    vx_image src_image[TIVX_GRAPH_MAX_HEAD_NODES], dst_image[TIVX_GRAPH_MAX_LEAF_NODES];
-    vx_node node[TIVX_GRAPH_MAX_HEAD_NODES];
+    vx_image src_image[TIVX_GRAPH_MAX_HEAD_NODES], int_image[TIVX_GRAPH_MAX_HEAD_NODES], dst_image1[TIVX_GRAPH_MAX_HEAD_NODES], dst_image2[TIVX_GRAPH_MAX_HEAD_NODES];
+    vx_node node_input[TIVX_GRAPH_MAX_HEAD_NODES], node_output1[TIVX_GRAPH_MAX_HEAD_NODES], node_output2[TIVX_GRAPH_MAX_HEAD_NODES];
     vx_context context = context_->vx_context_;
     vx_graph graph;
 
@@ -1820,9 +1820,13 @@ TEST(tivxBoundary, testHeadLeafNodes)
 
     for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES; i++)
     {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(node[i]      = vxNotNode(graph, src_image[i], dst_image[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(src_image[i]         = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(int_image[i]         = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image1[i]        = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image2[i]        = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node_input[i]        = vxNotNode(graph, src_image[i], int_image[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node_output1[i]      = vxNotNode(graph, int_image[i], dst_image1[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node_output2[i]      = vxNotNode(graph, int_image[i], dst_image2[i]), VX_TYPE_NODE);
     }
 
     VX_CALL(vxVerifyGraph(graph));
@@ -1830,8 +1834,12 @@ TEST(tivxBoundary, testHeadLeafNodes)
     for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES; i++)
     {
         VX_CALL(vxReleaseImage(&src_image[i]));
-        VX_CALL(vxReleaseImage(&dst_image[i]));
-        VX_CALL(vxReleaseNode(&node[i]));
+        VX_CALL(vxReleaseImage(&int_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image1[i]));
+        VX_CALL(vxReleaseImage(&dst_image2[i]));
+        VX_CALL(vxReleaseNode(&node_input[i]));
+        VX_CALL(vxReleaseNode(&node_output1[i]));
+        VX_CALL(vxReleaseNode(&node_output2[i]));
     }
 
     VX_CALL(vxReleaseGraph(&graph));
@@ -1840,7 +1848,6 @@ TEST(tivxBoundary, testHeadLeafNodes)
     ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_HEAD_NODES);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_LEAF_NODES", &stats));
     ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_LEAF_NODES);
-
 }
 
 /* TIVX_CONTEXT_MAX_CONVOLUTION_DIM */
@@ -3013,9 +3020,11 @@ TEST(tivxNegativeBoundary, negativeTestHeadNodes)
 TEST(tivxNegativeBoundary, negativeTestLeafNodes)
 {
     int i;
-    vx_image src_image[TIVX_GRAPH_MAX_LEAF_NODES], dst_image[TIVX_GRAPH_MAX_LEAF_NODES+2], sobel_x, sobel_y;
+    vx_image sobel_x, sobel_y;
+    vx_image src_image[TIVX_GRAPH_MAX_HEAD_NODES], int_image[TIVX_GRAPH_MAX_HEAD_NODES], dst_image1[TIVX_GRAPH_MAX_HEAD_NODES+2], dst_image2[TIVX_GRAPH_MAX_HEAD_NODES];
+    vx_node node_input[TIVX_GRAPH_MAX_HEAD_NODES], node_output1[TIVX_GRAPH_MAX_HEAD_NODES], node_output2[TIVX_GRAPH_MAX_HEAD_NODES];
     vx_scalar scalar_shift;
-    vx_node node[TIVX_GRAPH_MAX_LEAF_NODES+2];
+    vx_node sobel_node, convert_depth_node[3];
     vx_int32 tmp = 0;
     vx_context context = context_->vx_context_;
     vx_graph graph;
@@ -3024,40 +3033,52 @@ TEST(tivxNegativeBoundary, negativeTestLeafNodes)
 
     ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
 
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < (TIVX_GRAPH_MAX_HEAD_NODES-1); i++)
     {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(node[i]      = vxNotNode(graph, src_image[i], dst_image[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(src_image[i]         = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(int_image[i]         = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image1[i]        = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image2[i]        = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node_input[i]        = vxNotNode(graph, src_image[i], int_image[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node_output1[i]      = vxNotNode(graph, int_image[i], dst_image1[i]), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node_output2[i]      = vxNotNode(graph, int_image[i], dst_image2[i]), VX_TYPE_NODE);
     }
-    ASSERT_VX_OBJECT(src_image[TIVX_GRAPH_MAX_LEAF_NODES-1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src_image[TIVX_GRAPH_MAX_HEAD_NODES-1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(sobel_x      = vxCreateImage(context, 16, 16, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(sobel_y      = vxCreateImage(context, 16, 16, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(dst_image[TIVX_GRAPH_MAX_LEAF_NODES-1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(dst_image[TIVX_GRAPH_MAX_LEAF_NODES] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image1[TIVX_GRAPH_MAX_HEAD_NODES-1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image1[TIVX_GRAPH_MAX_HEAD_NODES] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image1[TIVX_GRAPH_MAX_HEAD_NODES+1] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
 
-    ASSERT_VX_OBJECT(node[TIVX_GRAPH_MAX_LEAF_NODES-1] = vxSobel3x3Node(graph, src_image[TIVX_GRAPH_MAX_LEAF_NODES-1], sobel_x, sobel_y), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(sobel_node = vxSobel3x3Node(graph, src_image[TIVX_GRAPH_MAX_HEAD_NODES-1], sobel_x, sobel_y), VX_TYPE_NODE);
 
-    ASSERT_VX_OBJECT(node[TIVX_GRAPH_MAX_LEAF_NODES] = vxConvertDepthNode(graph, sobel_x, dst_image[TIVX_GRAPH_MAX_LEAF_NODES-1], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
-    ASSERT_VX_OBJECT(node[TIVX_GRAPH_MAX_LEAF_NODES+1] = vxConvertDepthNode(graph, sobel_y, dst_image[TIVX_GRAPH_MAX_LEAF_NODES], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(convert_depth_node[0] = vxConvertDepthNode(graph, sobel_x, dst_image1[TIVX_GRAPH_MAX_HEAD_NODES-1], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(convert_depth_node[1] = vxConvertDepthNode(graph, sobel_y, dst_image1[TIVX_GRAPH_MAX_HEAD_NODES], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(convert_depth_node[2] = vxConvertDepthNode(graph, sobel_y, dst_image1[TIVX_GRAPH_MAX_HEAD_NODES+1], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     VX_CALL(vxReleaseScalar(&scalar_shift));
-    for (i = 0; i < TIVX_GRAPH_MAX_LEAF_NODES-1; i++)
+    for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES-1; i++)
     {
         VX_CALL(vxReleaseImage(&src_image[i]));
-        VX_CALL(vxReleaseImage(&dst_image[i]));
-        VX_CALL(vxReleaseNode(&node[i]));
+        VX_CALL(vxReleaseImage(&int_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image1[i]));
+        VX_CALL(vxReleaseImage(&dst_image2[i]));
+        VX_CALL(vxReleaseNode(&node_input[i]));
+        VX_CALL(vxReleaseNode(&node_output1[i]));
+        VX_CALL(vxReleaseNode(&node_output2[i]));
     }
-    VX_CALL(vxReleaseImage(&src_image[TIVX_GRAPH_MAX_LEAF_NODES-1]));
+    VX_CALL(vxReleaseImage(&src_image[TIVX_GRAPH_MAX_HEAD_NODES-1]));
     VX_CALL(vxReleaseImage(&sobel_x));
     VX_CALL(vxReleaseImage(&sobel_y));
-    VX_CALL(vxReleaseImage(&dst_image[TIVX_GRAPH_MAX_LEAF_NODES-1]));
-    VX_CALL(vxReleaseImage(&dst_image[TIVX_GRAPH_MAX_LEAF_NODES]));
-    VX_CALL(vxReleaseNode(&node[TIVX_GRAPH_MAX_LEAF_NODES-1]));
-    VX_CALL(vxReleaseNode(&node[TIVX_GRAPH_MAX_LEAF_NODES]));
-    VX_CALL(vxReleaseNode(&node[TIVX_GRAPH_MAX_LEAF_NODES+1]));
+    VX_CALL(vxReleaseImage(&dst_image1[TIVX_GRAPH_MAX_HEAD_NODES-1]));
+    VX_CALL(vxReleaseImage(&dst_image1[TIVX_GRAPH_MAX_HEAD_NODES]));
+    VX_CALL(vxReleaseImage(&dst_image1[TIVX_GRAPH_MAX_HEAD_NODES+1]));
+    VX_CALL(vxReleaseNode(&sobel_node));
+    VX_CALL(vxReleaseNode(&convert_depth_node[0]));
+    VX_CALL(vxReleaseNode(&convert_depth_node[1]));
+    VX_CALL(vxReleaseNode(&convert_depth_node[2]));
 
     VX_CALL(vxReleaseGraph(&graph));
 }
