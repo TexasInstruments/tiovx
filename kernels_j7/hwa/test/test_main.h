@@ -89,7 +89,7 @@ TESTCASE(tivxHwaCaptureDisplay)
 TESTCASE(tivxHwaCaptureVissDisplay)
 TESTCASE(tivxHwaCaptureVpacDisplay)
 #endif
-TESTCASE(tivxHwaVideoDecoder)
+//TESTCASE(tivxHwaVideoDecoder)
 TESTCASE(tivxHwaVideoEncoder)
 #endif
 
