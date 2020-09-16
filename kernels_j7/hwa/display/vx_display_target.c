@@ -492,12 +492,32 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                     if(displayParams->copyImageSize[0] != 0U)
                     {
                         displayParams->copyImagePtr[0][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                        if(displayParams->copyImagePtr[0][0] == NULL)
+                        {
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Couldn't allocate memory for copy buffer!\r\n");
+                        }
                         displayParams->copyImagePtr[1][0] = tivxMemAlloc(displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                        if(displayParams->copyImagePtr[1][0] == NULL)
+                        {
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Couldn't allocate memory for copy buffer!\r\n");
+                        }
                     }
                     if((displayParams->copyImageSize[1] != 0U) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                     {
                         displayParams->copyImagePtr[0][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                        if(displayParams->copyImagePtr[0][1] == NULL)
+                        {
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Couldn't allocate memory for copy buffer!\r\n");
+                        }
                         displayParams->copyImagePtr[1][1] = tivxMemAlloc(displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                        if(displayParams->copyImagePtr[1][1] == NULL)
+                        {
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Couldn't allocate memory for copy buffer!\r\n");
+                        }
                     }
                 }
                 displayParams->currIdx = 0;
@@ -646,13 +666,25 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
             {
                 if(displayParams->copyImageSize[0] != 0U)
                 {
-                    tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                    if(displayParams->copyImagePtr[0][0])
+                    {
+                        tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
+                    if(displayParams->copyImagePtr[0][1])
+                    {
+                        tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
                 }
                 if((displayParams->copyImageSize[1] != 0U) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                 {
-                    tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
-                    tivxMemFree(displayParams->copyImagePtr[1][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                    if(displayParams->copyImagePtr[1][0])
+                    {
+                        tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
+                    if(displayParams->copyImagePtr[1][1])
+                    {
+                        tivxMemFree(displayParams->copyImagePtr[1][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
+                    }
                 }
             }
 
