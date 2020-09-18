@@ -397,7 +397,7 @@ static void tidlX86Printf(const char *str)
 }
 void * tidlX86UdmaInit( void)
 {
-    static firstCall = 1;
+    static uint8_t firstCall = 1;
     if(firstCall)
     {
         Udma_InitPrms initPrms;
