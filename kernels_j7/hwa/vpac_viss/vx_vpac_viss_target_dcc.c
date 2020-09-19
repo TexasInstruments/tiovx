@@ -153,9 +153,9 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     if (NULL != dcc_buf_desc)
     {
         dcc_in_prms = &dcc_in;
-    	dcc_in_prms->dcc_buf = NULL;
-    	dcc_in_prms->dcc_buf_size = 0;
-    	dcc_in_prms->cameraId = vissObj->sensor_dcc_id;
+        dcc_in_prms->dcc_buf = NULL;
+        dcc_in_prms->dcc_buf_size = 0;
+        dcc_in_prms->cameraId = vissObj->sensor_dcc_id;
 
         dcc_out_prms = &vissObj->dcc_out_prms;
 
@@ -505,7 +505,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
 
     if (vissObj->dcc_out_prms.useCcmCfg != 0)
     {
-    	if(NULL != ae_awb_res)
+        if(NULL != ae_awb_res)
         {
             int color_temp = ae_awb_res->color_temperature;
             int n_regions = vissObj->dcc_out_prms.ipipeNumRgb2Rgb1Inst;
@@ -534,11 +534,11 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
              * assumes caller protects this flag */
             vissObj->isConfigUpdated = 1U;
         }
-    	else
+        else
         {
             /*
-            	Nothing to do. dcc_out_prms has been updated and will take effect 
-            	when tivxVpacVissApplyAEWBParams is called next time 
+                Nothing to do. dcc_out_prms has been updated and will take effect
+                when tivxVpacVissApplyAEWBParams is called next time
             */
          }
     }
@@ -552,7 +552,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
             }
             ccmCfg->offsets[cnt1] = 0;
         }
-        // Note: hardcoding
+        /* Note: hardcoding */
         ccmCfg->weights[0][0] = 256;
         ccmCfg->weights[1][1] = 256;
         ccmCfg->weights[2][2] = 256;
@@ -769,6 +769,11 @@ static void tivxVpacVissDccMapLscParams(tivxVpacVissObj *vissObj)
             lscCfg->gainFmt      = dcc_cfg->lsc_params.gain_mode_format;
             lscCfg->horzDsFactor = dcc_cfg->lsc_params.gain_mode_m;
             lscCfg->vertDsFactor = dcc_cfg->lsc_params.gain_mode_n;
+
+            if(lscCfg->numTblEntry > RFE_LSC_TBL_SIZE)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "LSC table length is %d entries, which is greater than RFE_LSC_TBL_SIZE (%d entries)!!!\n", lscCfg->numTblEntry, RFE_LSC_TBL_SIZE);
+            }
 
             memcpy(lscCfg->tableAddr, dcc_cfg->lsc_table, len);
         }

@@ -605,7 +605,7 @@ typedef struct {
     int bypass_nsf4;
 } ArgDcc;
 
-static uint32_t viss_checksums_luma_ref[48] = {
+static uint32_t viss_checksums_luma_ref[60] = {
     (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
     (uint32_t) 0xf47beefd, (uint32_t) 0x03b9eda6, (uint32_t) 0x98c0c9df, (uint32_t) 0xade9ca14,
     (uint32_t) 0x781f7630, (uint32_t) 0xe7d95550, (uint32_t) 0xeaed49e2, (uint32_t) 0x60b695a7,
@@ -615,12 +615,15 @@ static uint32_t viss_checksums_luma_ref[48] = {
     (uint32_t) 0x2d81f68f, (uint32_t) 0x51cbd1f6, (uint32_t) 0x6b4b287c, (uint32_t) 0x41bad204,
     (uint32_t) 0xbe9285d1, (uint32_t) 0xde350c54, (uint32_t) 0x836a5694, (uint32_t) 0x120dacb6,
     (uint32_t) 0xfefd6eb9, (uint32_t) 0xa0da7954, (uint32_t) 0x17eb771b, (uint32_t) 0xdbe70fff,
+    (uint32_t) 0xa822fcba, (uint32_t) 0xdcb0c966, (uint32_t) 0x3af111cf, (uint32_t) 0xb720e2e6,
+    (uint32_t) 0xa822fcba, (uint32_t) 0xdcb0c966, (uint32_t) 0x3af111cf, (uint32_t) 0xb720e2e6,
+    (uint32_t) 0xe2263148, (uint32_t) 0x0d47a692, (uint32_t) 0x61c52600, (uint32_t) 0x9f39b173,
     (uint32_t) 0xe5ca9fb9, (uint32_t) 0x5d90b6fb, (uint32_t) 0xfe5f53fc, (uint32_t) 0x84acc97c,
     (uint32_t) 0x0924d246, (uint32_t) 0xbe1f4acb, (uint32_t) 0xc6750795, (uint32_t) 0xcd55e141,
     (uint32_t) 0x8c1cf5bf, (uint32_t) 0x03e50bc8, (uint32_t) 0x122b99ea, (uint32_t) 0x535c63b3
 
 };
-static uint32_t viss_checksums_chroma_ref[48] = {
+static uint32_t viss_checksums_chroma_ref[60] = {
     (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
     (uint32_t) 0x0f262775, (uint32_t) 0x8113e190, (uint32_t) 0x81ca6e9d, (uint32_t) 0x8f36aeb2,
     (uint32_t) 0xe6675cfa, (uint32_t) 0x7ad6fa84, (uint32_t) 0x83e22b06, (uint32_t) 0xfef94919,
@@ -630,13 +633,16 @@ static uint32_t viss_checksums_chroma_ref[48] = {
     (uint32_t) 0x0fde2e8c, (uint32_t) 0xb50ce008, (uint32_t) 0x2d3215df, (uint32_t) 0x9cc6ef0f,
     (uint32_t) 0x958b0f6a, (uint32_t) 0x36ae8c52, (uint32_t) 0x9d9802a2, (uint32_t) 0xdc61121b,
     (uint32_t) 0xfe691dad, (uint32_t) 0xdee54494, (uint32_t) 0x6cdca715, (uint32_t) 0xd94a066e,
+    (uint32_t) 0x987a6c65, (uint32_t) 0x7bbf7d1d, (uint32_t) 0x99a80276, (uint32_t) 0x8f833a56,
+    (uint32_t) 0x987a6c65, (uint32_t) 0x7bbf7d1d, (uint32_t) 0x99a80276, (uint32_t) 0x8f833a56,
+    (uint32_t) 0x5dc5ce7a, (uint32_t) 0x3f14c7b0, (uint32_t) 0x0ff5279e, (uint32_t) 0x35356d95,
     (uint32_t) 0x227bafb5, (uint32_t) 0xe165e425, (uint32_t) 0x3073d950, (uint32_t) 0xfa2b5cae,
     (uint32_t) 0xb026e875, (uint32_t) 0xd7075a56, (uint32_t) 0x2f9e5202, (uint32_t) 0xef5d8951,
     (uint32_t) 0x1ed6ba03, (uint32_t) 0x8eb710fd, (uint32_t) 0x05da456a, (uint32_t) 0x1b0fc632
 };
 
-static uint32_t viss_checksums_h3a_ref[4] = {
-    (uint32_t) 0x00000000, (uint32_t) 0xccff4f2d, (uint32_t) 0x2d7a8f71, (uint32_t) 0x824ffb91
+static uint32_t viss_checksums_h3a_ref[5] = {
+    (uint32_t) 0x00000000, (uint32_t) 0xccff4f2d, (uint32_t) 0x2d7a8f71, (uint32_t) 0x7b0ba698, (uint32_t) 0x824ffb91
 };
 
 
@@ -665,7 +671,8 @@ static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a,
     CT_EXPAND(nextmacro(testArgName "/dcc=ar0233", __VA_ARGS__, 2))
 
 #if 0
-    CT_EXPAND(nextmacro(testArgName "/dcc=ar0820", __VA_ARGS__, 3))
+    CT_EXPAND(nextmacro(testArgName "/dcc=ub9xx", __VA_ARGS__, 3))
+    CT_EXPAND(nextmacro(testArgName "/dcc=ar0820", __VA_ARGS__, 4))
 #endif
 
 #define PARAMETERS_DCC \
@@ -705,7 +712,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     tivx_raw_image_create_params_t raw_params;
 
 
-    if(3 == arg_->dcc)
+    if(4 == arg_->dcc)
     {
         raw_params.width = 3840;
         raw_params.height = 2160;
@@ -714,6 +721,17 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         sensor_name = SENSOR_ONSEMI_AR0820_UB953_LI;
         sensor_dcc_mode = 1;
         file_name = "psdkra/app_single_cam/AR0820_001/AR0820_12bWDR_3840x2160_GRBG.raw";
+        downshift_bits = 0;
+    }
+    else if(3 == arg_->dcc)
+    {
+        raw_params.width = 3840;
+        raw_params.height = 2160;
+        raw_params.meta_height_after = 0;
+        sensor_dcc_id = 9702;
+        sensor_name = UB9XX_RAW_TESTPAT;
+        sensor_dcc_mode = 0;
+        file_name = "psdkra/app_single_cam/UB960/ub960_test_pattern_3840x2160.raw";
         downshift_bits = 0;
     }
     else if(2 == arg_->dcc)

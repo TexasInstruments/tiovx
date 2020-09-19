@@ -914,11 +914,29 @@ static void tivxVpacVissParseLscParams(cfg_lsc *lsc, Rfe_LscConfig **lscCfg_p)
             lsc->gain_mode_m            = lscCfg->horzDsFactor;
             lsc->gain_mode_n            = lscCfg->vertDsFactor;
             lsc->gain_format            = lscCfg->gainFmt;
-            lsc->gain_table_len         = lscCfg->numTblEntry;
+            lsc->gain_table_len         = lscCfg->numTblEntry*4;
 
-            for (cnt = 0u; cnt < lsc->gain_table_len; cnt ++)
+            if (lsc->gain_table_len > 0)
             {
-                lsc->gain_table[cnt] = lscCfg->tableAddr[cnt];
+                if(NULL != lsc->gain_table)
+                {
+                    free(lsc->gain_table);
+                }
+
+                lsc->gain_table = malloc(lsc->gain_table_len*sizeof(int));
+
+                if (NULL == lsc->gain_table)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Can't alloc LSC gain table of size = %d bytes\n", lsc->gain_table_len*sizeof(int));
+                }
+                else
+                {
+                    uint8_t *tblPtr = (uint8_t*)lscCfg->tableAddr;
+                    for (cnt = 0u; cnt < lsc->gain_table_len; cnt ++)
+                    {
+                        lsc->gain_table[cnt] = (int)tblPtr[cnt];
+                    }
+                }
             }
 
             *lscCfg_p = NULL;

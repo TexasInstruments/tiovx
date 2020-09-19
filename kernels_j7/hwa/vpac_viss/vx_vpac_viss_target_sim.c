@@ -1232,6 +1232,11 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
             }
         }
 
+        if(NULL != prms->rawfe_params.lsc.gain_table)
+        {
+            free(prms->rawfe_params.lsc.gain_table);
+        }
+
         tivxMemFree(prms, sizeof(tivxVpacVissParams), (vx_enum)TIVX_MEM_EXTERNAL);
     }
 }
