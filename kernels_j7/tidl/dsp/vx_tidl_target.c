@@ -80,7 +80,7 @@
 
 /* #define TIVX_TIDL_TARGET_DEBUG */
 
-/* #define TIDL_COPY_NETWORK_BUF */
+#define TIDL_COPY_NETWORK_BUF
 
 typedef struct
 {
@@ -492,8 +492,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             sTIDL_Network_t *pNet = (sTIDL_Network_t *)network_target_ptr;
             uint8_t *pPerfInfo = (uint8_t *)network_target_ptr + pNet->dataFlowInfo;
             
-            VX_PRINT(VX_ZONE_ERROR, "tidlObj->netSize = %d\n", tidlObj->netSize);
-            VX_PRINT(VX_ZONE_ERROR, "pNet->dataFlowInfo = %d \n", pNet->dataFlowInfo);
+            VX_PRINT(VX_ZONE_INFO, "tidlObj->netSize = %d\n", tidlObj->netSize);
+            VX_PRINT(VX_ZONE_INFO, "pNet->dataFlowInfo = %d \n", pNet->dataFlowInfo);
 
             status = testChecksum(pPerfInfo, &tidlObj->tidlParams.network_checksum[0], tidlObj->netSize - pNet->dataFlowInfo, 0);
           }
