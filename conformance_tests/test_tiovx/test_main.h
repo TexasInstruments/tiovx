@@ -85,9 +85,7 @@ TESTCASE(tivxPackedDataFormat)
 TESTCASE(tivxRawImage)
 TESTCASE(tivxReference)
 TESTCASE(tivxBmpRdWr)
-#ifndef QNX
 TESTCASE(tivxMem)
-#endif
 TESTCASE(tivxMapImage)
 #endif
 
