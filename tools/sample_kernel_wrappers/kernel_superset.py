@@ -34,6 +34,7 @@ kernel.setParameter(Type.SIZE,          Direction.INPUT, ParamState.REQUIRED, "I
 kernel.setParameter(Type.DF_IMAGE,      Direction.INPUT, ParamState.REQUIRED, "IN_DF_IMAGE",      ['VX_TYPE_DF_IMAGE'])
 kernel.setParameter(Type.BOOL,          Direction.INPUT, ParamState.REQUIRED, "IN_BOOL",          ['VX_TYPE_BOOL'])
 kernel.setParameter(Type.ARRAY,         Direction.INPUT, ParamState.REQUIRED, "IN_ARRAY",         ['tivx_array_params_t'])
+kernel.setParameter(Type.ARRAY,         Direction.INPUT, ParamState.REQUIRED, "IN_ARRAY_2",       ['VX_TYPE_KEYPOINT'])
 kernel.setParameter(Type.PYRAMID,       Direction.INPUT, ParamState.REQUIRED, "IN_PYRAMID",       ['VX_DF_IMAGE_U8'])
 kernel.setParameter(Type.MATRIX,        Direction.INPUT, ParamState.REQUIRED, "IN_MATRIX",        ['VX_DF_IMAGE_S16'])
 kernel.setParameter(Type.CONVOLUTION,   Direction.INPUT, ParamState.REQUIRED, "IN_CONVOLUTION",   ['VX_DF_IMAGE_U8'])

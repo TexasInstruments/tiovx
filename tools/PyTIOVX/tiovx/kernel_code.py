@@ -683,7 +683,7 @@ class KernelExportCode :
                             self.host_c_code.write_line("    (%s_item_size != sizeof(%s)))" % (prm.name_lower, self.print_data_type[-1]))
                     else :
                         if self.check_array_type(self.print_data_type[0]) :
-                            self.host_c_code.write_line("if (%s != %s_item_type )" % (self.print_data_type[0]), prm.name_lower)
+                            self.host_c_code.write_line("if (%s != %s_item_type )" % (self.print_data_type[0], prm.name_lower))
                         else :
                             self.host_c_code.write_line("if ( %s_item_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]))
                 elif Type.MATRIX == prm.type or Type.LUT == prm.type:
