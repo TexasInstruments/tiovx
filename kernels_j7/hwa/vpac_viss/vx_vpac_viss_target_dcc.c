@@ -145,7 +145,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res)
 {
     vx_status                  status = (vx_status)VX_SUCCESS;
-    int32_t                    dcc_status;
+    int32_t                    dcc_status = 0;
     dcc_parser_input_params_t  dcc_in;
     dcc_parser_input_params_t  *dcc_in_prms;
     dcc_parser_output_params_t *dcc_out_prms;
@@ -167,21 +167,11 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             tivxCheckStatus(&status, tivxMemBufferMap(dcc_in_prms->dcc_buf,
                 dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
 
-            dcc_status = Dcc_Create(dcc_out_prms, vissObj->dcc_out_buf);
+            dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
 
-            if (0 == dcc_status)
+            if (0 != dcc_status)
             {
-                dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
-
-                if (0 != dcc_status)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "dcc_update Failed !!!\n");
-                    status = (vx_status)VX_FAILURE;
-                }
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Dcc_Create Failed !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, "dcc_update Failed !!!\n");
                 status = (vx_status)VX_FAILURE;
             }
 
