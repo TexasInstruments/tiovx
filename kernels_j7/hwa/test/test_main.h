@@ -79,6 +79,7 @@ TESTCASE(tivxHwaDisplay)
 #endif
 #if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
 TESTCASE(tivxHwaCapture)
+TESTCASE(tivxHwaCaptureSplitMode)
 #endif
 #if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
 TESTCASE(tivxHwaCsitxCsirx)
