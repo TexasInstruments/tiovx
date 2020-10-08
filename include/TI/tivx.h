@@ -897,7 +897,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * - The handle check fails i.e. the handles have not been allocated using appMemAlloc()/tivxMemAlloc()
  * - The number of handles specified is less than the number expected by the reference object.
  */
-VX_API_ENTRY vx_bool VX_API_CALL tivxReferenceImportHandle(vx_reference ref, const void *addr[], const uint32_t size[], uint32_t num_entries);
+VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, const void *addr[], const uint32_t size[], uint32_t num_entries);
 
 /*! \brief Exports the handles from a reference object.
  *
@@ -932,7 +932,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxReferenceImportHandle(vx_reference ref, con
  * - The max number of handles specified is less than the number expected to be exported by the
  *   reference object.
  */
-VX_API_ENTRY vx_bool VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries);
+VX_API_ENTRY vx_status VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries);
 
 #ifdef __cplusplus
 }
