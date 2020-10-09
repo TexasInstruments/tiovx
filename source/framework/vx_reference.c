@@ -1139,7 +1139,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                 if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                 {
-                    VX_PRINT(VX_ZONE_WARNING,
+                    VX_PRINT(VX_ZONE_INFO,
                              "Non-NULL handle detected. Overwriting.\n");
                 }
 
