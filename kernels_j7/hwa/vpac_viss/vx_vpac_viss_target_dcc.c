@@ -411,18 +411,36 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     uint32_t            cnt1, cnt2;
     Nsf4v_Config       *nsf4Cfg = NULL;
     Nsf4_LsccConfig    *lsccCfg = NULL;
-    viss_nsf4          *dccNsf4Cfg = NULL;
+    viss_nsf4          phNsf4Cfg;
+    viss_nsf4          *dccNsf4Cfg = &phNsf4Cfg;
+    uint32_t n_regions = 0;
+    int32_t dcc_status = -1;
+
+    n_regions = vissObj->dcc_out_prms.vissNumNSF4Inst;
+
+    if(ae_awb_res->ae_valid)
+    {
+        dcc_status = dcc_search_NSF4(
+            vissObj->dcc_out_prms.phPrmsNSF4,
+            n_regions,
+            ae_awb_res->analog_gain,
+            vissObj->dcc_out_prms.vissNSF4Cfg,
+            dccNsf4Cfg);
+
+		if(dcc_status < 0)
+		{
+            VX_PRINT(VX_ZONE_ERROR, "dcc_search_NSF4 failed for analog_gain = 0x%x !!!\n", ae_awb_res->analog_gain);
+		}
+    }
 
     nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
     lsccCfg = &nsf4Cfg->lsccCfg;
-
-    dccNsf4Cfg = &(vissObj->dcc_out_prms.vissNSF4Cfg);
 
     /* Map DCC Output Config to FVID2 Driver Config */
 
     /* TODO: Does shading gain map to lscc enable? */
 
-    if ((NULL != vissObj) && (0 != vissObj->dcc_out_prms.useNsf4Cfg))
+    if ((NULL != vissObj) && (0 != vissObj->dcc_out_prms.useNsf4Cfg) && (0==dcc_status))
     {
         nsf4Cfg->mode = (uint32_t)dccNsf4Cfg->mode;
         nsf4Cfg->tKnee = (uint32_t)dccNsf4Cfg->u1_knee;
