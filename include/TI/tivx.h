@@ -88,11 +88,17 @@ extern "C" {
  */
 
 /*! \brief Name for DSP target class, instance 1
+ *
+ *   Assigned to C66_0 core
+ *
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DSP1        "DSP-1"
 
 /*! \brief Name for DSP target class, instance 2
+ *
+ *   Assigned to C66_1 core
+ *
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DSP2        "DSP-2"
@@ -123,11 +129,25 @@ extern "C" {
 #define TIVX_TARGET_A15_0       "A15-0"
 
 /*! \brief Name for IPU1 target class, core 0
+ *
+ *   \if DOCS_J7
+ *   Assigned to MCU2_0 core
+ *   \else
+ *   Assigned to M4_0 core
+ *   \endif
+ *
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_0      "IPU1-0"
 
 /*! \brief Name for IPU1 target class, core 1
+ *
+ *   \if DOCS_J7
+ *   Assigned to MCU2_1 core
+ *   \else
+ *   Assigned to M4_1 core
+ *   \endif
+ *
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_1      "IPU1-1"
