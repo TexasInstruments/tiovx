@@ -1008,12 +1008,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 
                 /* Warnings should only come when users have not released all external references */
                 if ((NULL != ref) && (ref->external_count > 0U) ) {
-                    VX_PRINT(VX_ZONE_WARNING,"Stale reference "VX_FMT_REF" of type %08x at external count %u, internal count %u\n",
+                    VX_PRINT(VX_ZONE_WARNING,"Found a reference "VX_FMT_REF" of type %08x at external count %u, internal count %u, releasing it\n",
                              ref, ref->type, ref->external_count, ref->internal_count);
                     if (NULL != ref->name)
                     {
                         VX_PRINT(VX_ZONE_WARNING,"Unreleased reference name = %s\n", ref->name);
                     }
+                    VX_PRINT(VX_ZONE_WARNING,"Releasing reference now as a part of garbage collection\n");
                 }
 
                 /* These were internally opened during creation, so should internally close ERRORs */
