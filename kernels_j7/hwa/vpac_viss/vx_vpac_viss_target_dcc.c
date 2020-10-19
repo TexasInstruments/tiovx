@@ -492,13 +492,6 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
                 }
             }
         }
-        else
-        {
-            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
-            {
-                nsf4Cfg->gains[cnt1] = (uint32_t)dccNsf4Cfg->wb_gains[cnt1];
-            }
-        }
 
         vissObj->vissCfgRef.nsf4Cfg = nsf4Cfg;
 
