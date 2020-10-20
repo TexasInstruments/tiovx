@@ -74,6 +74,8 @@
 
 #include "utils/perf_stats/include/app_perf_stats.h"
 
+#define TIVX_DMPAC_DOF_FLOW_VEC_QSIZE   (TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY+1)
+
 typedef struct
 {
     uint32_t                            isAlloc;
@@ -101,6 +103,38 @@ typedef struct
     Fvid2_Frame                         inFrm[VHWA_M2M_DOF_MAX_IN_BUFFER];
     Fvid2_Frame                         outFrm;
     Fvid2_CbParams                      cbPrms;
+
+    /* Number of internal delay slots to use for applying previous flow vector
+     * output to temporal predictor. After the create phase, this field will
+     * either be 0 or a known validated non-zero value and will be used in
+     * conjunction with 'flow_vector_in_desc' parameter, to determine whether
+     * to use internal history buffer 'outFlowVecHistory' or not.
+     *
+     * A history buffer is considered for use if
+     *  |outFlowVecWrIdx - outFlowVecRdIdx] >= flowVecIntDelay
+     *
+     * In practice |outFlowVecWrIdx - outFlowVecRdIdx] == flowVecIntDelay is
+     * maintained under steady state conditions.
+     */
+    uint32_t                            flowVecIntDelay;
+
+    /* Next write location in the history buffer. This is initialized to 0 and
+     * should never take over 'outFlowVecRdIdx'. The check for takeover is
+     * not checked explicitly.
+     */
+    int32_t                             outFlowVecWrIdx;
+
+    /* Next read location in the history buffer. This is initialized to 0 and
+     * should never takeover 'outFlowVecWrIdx'. The check for takeover is
+     * not checked explicitly.
+     */
+    int32_t                             outFlowVecRdIdx;
+
+    /* Space to hold the past flow vector information. This buffer is used only
+     * if 'flowVecIntDelay' is non-zero and temporal prediction is enabled.
+     */
+    uintptr_t                           outFlowVecHistory[TIVX_DMPAC_DOF_FLOW_VEC_QSIZE];
+
 } tivxDmpacDofObj;
 
 
@@ -437,6 +471,27 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                             flow_vector_in_desc->mem_ptr[0].shared_ptr,
                             (int32_t)flow_vector_in_desc->mem_ptr[0].mem_heap_region);
                 }
+                else if (dofObj->flowVecIntDelay != 0)
+                {
+                    int32_t diff;
+
+                    /* Check if we have enough history to use a past buffer. */
+                    diff = dofObj->outFlowVecWrIdx - dofObj->outFlowVecRdIdx;
+
+                    if (diff < 0)
+                    {
+                        diff += TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+                    }
+
+                    if (diff >= dofObj->flowVecIntDelay)
+                    {
+                        dofObj->inFrm[DOF_INPUT_TEMPORAL_PRED].addr[0] =
+                            dofObj->outFlowVecHistory[dofObj->outFlowVecRdIdx++];
+
+                        dofObj->outFlowVecRdIdx %= TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+                    }
+                }
+
                 if(NULL != sparse_of_map_desc)
                 {
                     dofObj->inFrm[DOF_INPUT_SOF].addr[0] =
@@ -516,6 +571,20 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         if ((vx_status)VX_SUCCESS == status)
         {
+            /* Save the out flow vector. */
+            if (dofObj->flowVecIntDelay != 0)
+            {
+                uintptr_t   ptr;
+
+                ptr = tivxMemShared2PhysPtr(
+                        flow_vector_out_desc->mem_ptr[0].shared_ptr,
+                        (int32_t)flow_vector_out_desc->mem_ptr[0].mem_heap_region);
+
+                dofObj->outFlowVecHistory[dofObj->outFlowVecWrIdx++] = ptr;
+
+                dofObj->outFlowVecWrIdx %= TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+            }
+
             /* Get Histogram */
             if(NULL != confidence_histogram_desc)
             {
@@ -707,6 +776,21 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         }
 
         tivxDmpacDofSetCfgPrms(dofPrms, dofAppPrms, sofAppPrms, obj_desc);
+
+        if((DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1) ||
+           (DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2))
+        {
+            /* Store the flow vector delay parameter. */
+            dofObj->flowVecIntDelay = dofAppPrms->flow_vector_internal_delay_num;
+        }
+        else
+        {
+            /* We should ignore the flow_vector_internal_delay_num' if temporal
+             * predictor is OFF. Set it to 0 for ease of use in the process
+             * function.
+             */
+            dofObj->flowVecIntDelay = 0;
+        }
 
         if(NULL != sof_config_desc)
         {
@@ -1195,6 +1279,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
             dofPrms->bPredictor1 = DOF_PREDICTOR_NONE;
         }
     }
+
 
     return;
 }

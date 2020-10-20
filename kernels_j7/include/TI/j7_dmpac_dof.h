@@ -132,6 +132,8 @@ extern "C" {
            layers */
 #define TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED         (4U)
 
+/** \brief Maximum value for the flow vector delay. */
+#define TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY           (4U)
 
 /*********************************
  *      DMPAC_DOF Defines
@@ -185,6 +187,28 @@ typedef struct {
     uint16_t  inter_predictor[2];
     /*! IIR filter alpha value recommended = 0x66 */
     uint16_t  iir_filter_alpha;
+    /*! Number of internal delay slots to use for applying previous flow vector
+     *  output to temporal predictor. The use of this field and the valid values
+     *  it can take is as explained below:
+     *  - Range [0 TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY]
+     *  - This field is validated and used only if temporal predictor is ON. This
+     *    is a pre-condition for all the cases below.
+     *  1) When pipelining is OFF, then this field must be set to 0. The understanding
+     *     is that with this configuration, external delay object shall be used for
+     *     providing the input flow vector.
+     *  2) When pipelining is ON and if an external delay object is used, then this
+     *     field must be set to 0.
+     *  3) When pipelining is ON and if no external delay object is used, then this
+     *     field must be set to a valid non-zero value.
+     *
+     *  In case (3) above, the node stores pointers to the previous output flow vectors
+     *  to be used as potential inputs later so it is important that under this configuration
+     *  the hight level Application does not alter the output buffer data in any way. Also, the
+     *  node parameter must be configured with the buffer depth appropriately such that all the
+     *  configured buffers are used and recycled during the pipelining operation.
+     */
+    uint16_t  flow_vector_internal_delay_num;
+
 } tivx_dmpac_dof_params_t;
 
 /*!

@@ -268,6 +268,49 @@ static vx_status copy_flow_image(vx_image in_image, uint32_t width, uint32_t hei
     return status;
 }
 
+static vx_status addParamByNodeIndex(vx_graph  graph,
+                                     vx_node   node,
+                                     vx_uint32 nodeParamIndex)
+{
+    vx_parameter    param;
+    vx_status       vxStatus;
+
+    vxStatus = VX_SUCCESS;
+    param = vxGetParameterByIndex(node, nodeParamIndex);
+
+    if (param == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "[%s:%d] vxGetParameterByIndex() failed\n",
+                    __FUNCTION__, __LINE__);
+
+        vxStatus = VX_FAILURE;
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        vxStatus = vxAddParameterToGraph(graph, param);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "[%s:%d] vxAddParameterToGraph() failed\n",
+                        __FUNCTION__, __LINE__);
+        }
+    }
+
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        vxStatus = vxReleaseParameter(&param);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "[%s:%d] vxReleaseParameter() failed\n",
+                        __FUNCTION__, __LINE__);
+        }
+    }
+
+    return vxStatus;
+}
+
 typedef struct {
     const char* testName;
     int median_filter;
@@ -1316,6 +1359,204 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
     }
 }
 
+typedef struct {
+    const char* testName;
+    int base_predictor1;
+    int base_predictor2;
+    int flow_vec_delay;
+    int enable_pipeline;
+    int vec_in_present;
+} ArgConfig;
 
-TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testPredictors, testNegativeGraph)
+#define ADD_CONFIG_VEC_IN_ABSENT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/vec_in_present=0", __VA_ARGS__, 0))
+
+#define ADD_CONFIG_VEC_IN_PRESENT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/vec_in_present=1", __VA_ARGS__, 1))
+
+#define ADD_CONFIG_PIPELINE_OFF(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/enable_pipeline=0", __VA_ARGS__, 0))
+
+#define ADD_CONFIG_PIPELINE_ON(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/enable_pipeline=1", __VA_ARGS__, 1))
+
+#define ADD_CONFIG_BASE_PRED1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/base_pred1=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+
+#define ADD_CONFIG_BASE_PRED2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/base_pred2=TEMPORAL", __VA_ARGS__, TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
+
+#define ADD_CONFIG_VEC_DELAY_0(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/flow_vec_delay=0", __VA_ARGS__, 0))
+
+#define ADD_CONFIG_VEC_DELAY_1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/flow_vec_delay=0", __VA_ARGS__, 1))
+
+#define ADD_CONFIG_VEC_DELAY_EXCEED_MAX(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/flow_vec_delay=exceed_max_value", __VA_ARGS__, (TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY+1)))
+
+/* The following negative tests are defined below, all with temporal predictors ON.
+ * 1) Flow vector invalid delay value + pipeline OFF + input flow vector absent
+ * 2) Flow vector non-zero delay value + pipeline OFF + input flow vector absent
+ * 3) Flow vector invalid delay value + pipeline ON + input flow vector absent
+ * 4) Flow vector zero delay value + pipeline ON + input flow vector absent
+ * 5) Flow vector non-zero delay value + pipeline ON + input flow vector present
+ */
+#define CONFIG_PARAMETERS \
+    CT_GENERATE_PARAMETERS("dof_config", ADD_CONFIG_BASE_PRED1, ADD_CONFIG_BASE_PRED2, \
+                           ADD_CONFIG_VEC_DELAY_EXCEED_MAX, ADD_CONFIG_PIPELINE_OFF, ADD_CONFIG_VEC_IN_ABSENT, ARG), \
+    CT_GENERATE_PARAMETERS("dof_config", ADD_CONFIG_BASE_PRED1, ADD_CONFIG_BASE_PRED2, \
+                           ADD_CONFIG_VEC_DELAY_1, ADD_CONFIG_PIPELINE_OFF, ADD_CONFIG_VEC_IN_ABSENT, ARG), \
+    CT_GENERATE_PARAMETERS("dof_config", ADD_CONFIG_BASE_PRED1, ADD_CONFIG_BASE_PRED2, \
+                           ADD_CONFIG_VEC_DELAY_EXCEED_MAX, ADD_CONFIG_PIPELINE_ON, ADD_CONFIG_VEC_IN_ABSENT, ARG), \
+    CT_GENERATE_PARAMETERS("dof_config", ADD_CONFIG_BASE_PRED1, ADD_CONFIG_BASE_PRED2, \
+                           ADD_CONFIG_VEC_DELAY_0, ADD_CONFIG_PIPELINE_ON, ADD_CONFIG_VEC_IN_ABSENT, ARG), \
+    CT_GENERATE_PARAMETERS("dof_config", ADD_CONFIG_BASE_PRED1, ADD_CONFIG_BASE_PRED2, \
+                           ADD_CONFIG_VEC_DELAY_1, ADD_CONFIG_PIPELINE_ON, ADD_CONFIG_VEC_IN_PRESENT, ARG)
+
+
+TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeConfig, ArgConfig,
+    CONFIG_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_pyramid input_current = NULL, input_reference = NULL;
+    vx_image flow_vector_in = NULL, flow_vector_out = NULL;
+    vx_image flow_vector_out_img = NULL, confidence_img = NULL;
+    vx_image sof_mask = NULL;
+    vx_distribution confidence_histogram = NULL;
+    tivx_dmpac_dof_params_t params;
+    vx_user_data_object param_obj;
+    vx_user_data_object cs_obj;
+    vx_graph graph = 0;
+    vx_node node_dof = 0;
+    vx_node node_dof_vis = 0;
+    vx_status status;
+    vx_rectangle_t rect;
+    uint32_t checksum_expected;
+    uint32_t checksum_actual;
+    char output_file[256];
+    vx_reference ref[1];
+    vx_enum flowVectorType = VX_DF_IMAGE_U32;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    {
+        uint32_t width = 256, height = 128;
+        uint32_t flow_width = width;
+        uint32_t flow_height = height;
+        uint32_t levels = 3, i;
+        vx_enum format = VX_DF_IMAGE_U8;
+
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        tivx_dmpac_dof_params_init(&params);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        params.base_predictor[0] = arg_->base_predictor1;
+        params.base_predictor[1] = arg_->base_predictor2;
+        params.inter_predictor[0] = TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT;
+        params.inter_predictor[1] = TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT;
+        params.flow_vector_internal_delay_num = arg_->flow_vec_delay;
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+
+        if (arg_->vec_in_present == 1)
+        {
+            ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, flowVectorType), VX_TYPE_IMAGE);
+        }
+
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, flow_width, flow_height, flowVectorType), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
+                                                     param_obj,
+                                                     NULL,
+                                                     NULL,
+                                                     input_current,
+                                                     input_reference,
+                                                     flow_vector_in,
+                                                     NULL,
+                                                     NULL,
+                                                     flow_vector_out,
+                                                     confidence_histogram), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
+
+        if (arg_->enable_pipeline == 1)
+        {
+            vx_graph_parameter_queue_params_t   q[2];
+            uint32_t                            cnt = 0;
+            uint32_t                            i;
+            uint32_t                            pipelineDepth = 1;
+            vx_status                           vxStatus;
+
+            vxStatus = addParamByNodeIndex(graph, node_dof, 0);
+            ASSERT(vxStatus == VX_SUCCESS);
+
+            q[cnt++].refs_list = (vx_reference*)&param_obj;
+
+            if (arg_->vec_in_present == 1)
+            {
+                vxStatus = addParamByNodeIndex(graph, node_dof, 5);
+                ASSERT(vxStatus == VX_SUCCESS);
+                q[cnt++].refs_list = (vx_reference*)&flow_vector_in;
+            }
+
+            for (i = 0; i < cnt; i++)
+            {
+                q[i].graph_parameter_index = i;
+                q[i].refs_list_size = pipelineDepth;
+            }
+
+            vxStatus = vxSetGraphScheduleConfig(graph,
+                                                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                                                cnt,
+                                                q);
+
+            ASSERT(vxStatus == VX_SUCCESS);
+
+            /* explicitly set graph pipeline depth */
+            vxStatus = tivxSetGraphPipelineDepth(graph,
+                                                 pipelineDepth);
+
+            ASSERT(vxStatus == VX_SUCCESS);
+
+        }
+
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+        VX_CALL(vxReleaseNode(&node_dof));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleasePyramid(&input_current));
+        VX_CALL(vxReleasePyramid(&input_reference));
+        VX_CALL(vxReleaseImage(&flow_vector_out));
+        VX_CALL(vxReleaseDistribution(&confidence_histogram));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        if (flow_vector_in != NULL)
+        {
+            VX_CALL(vxReleaseImage(&flow_vector_in));
+        }
+
+        ASSERT(node_dof == 0);
+        ASSERT(node_dof_vis == 0);
+        ASSERT(graph == 0);
+        ASSERT(input_current == 0);
+        ASSERT(input_reference == 0);
+        ASSERT(flow_vector_in == 0);
+        ASSERT(flow_vector_out == 0);
+        ASSERT(sof_mask == 0);
+        ASSERT(confidence_histogram == 0);
+        ASSERT(param_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testPredictors, testNegativeGraph, testNegativeConfig)
 

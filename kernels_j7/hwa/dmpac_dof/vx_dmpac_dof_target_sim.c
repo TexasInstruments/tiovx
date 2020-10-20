@@ -75,6 +75,8 @@
 #define PYRAMIDAL_LEFT    2
 #define TEMPORAL          3
 
+#define TIVX_DMPAC_DOF_FLOW_VEC_QSIZE   (TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY+1)
+
 #ifdef VLAB_HWA
 
 typedef struct {
@@ -91,6 +93,10 @@ typedef struct {
     int confidence_histogram[TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS];
     DOFParams dofParams;
     int resv4;
+    uint32_t  flowVecIntDelay;
+    int32_t   outFlowVecWrIdx;
+    int32_t   outFlowVecRdIdx;
+    uintptr_t outFlowVecHistory[TIVX_DMPAC_DOF_FLOW_VEC_QSIZE];
 } tivxDmpacDofParams;
 
 #else
@@ -111,6 +117,10 @@ typedef struct {
     int sof_fv_height;
     int firstFrame;
     int temporalConfig;
+    uint32_t  flowVecIntDelay;
+    int32_t   outFlowVecWrIdx;
+    int32_t   outFlowVecRdIdx;
+    uintptr_t outFlowVecHistory[TIVX_DMPAC_DOF_FLOW_VEC_QSIZE];
 } tivxDmpacDofParams;
 
 #endif
@@ -376,6 +386,27 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 flow_vector_in_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_READ_ONLY));
         }
+        else if (prms->flowVecIntDelay != 0)
+        {
+            int32_t diff;
+
+            /* Check if we have enough history to use a past buffer. */
+            diff = prms->outFlowVecWrIdx - prms->outFlowVecRdIdx;
+
+            if (diff < 0)
+            {
+                diff += TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+            }
+
+            if (diff >= prms->flowVecIntDelay)
+            {
+                flow_vector_in_target_ptr = (void *)
+                    prms->outFlowVecHistory[prms->outFlowVecRdIdx++];
+
+                prms->outFlowVecRdIdx %= TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+            }
+        }
+
         if( sparse_of_config_desc != NULL)
         {
             tivx_dmpac_dof_sof_params_t *sof_params;
@@ -462,7 +493,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
         /* when NULL past prediction not used */
         past_prediction = NULL;
-        if(flow_vector_in_desc != NULL)
+        if(flow_vector_in_target_ptr != NULL)
         {
             lse_reformat_in_dof(flow_vector_in_desc, flow_vector_in_target_ptr, (uint32_t *)prms->past_prediction);
             past_prediction = prms->past_prediction;
@@ -555,6 +586,14 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
         /* kernel processing function complete */
+        /* Save the out flow vector. */
+        if (prms->flowVecIntDelay != 0)
+        {
+            prms->outFlowVecHistory[prms->outFlowVecWrIdx++] =
+                (uintptr_t)flow_vector_out_target_ptr;
+
+            prms->outFlowVecWrIdx %= TIVX_DMPAC_DOF_FLOW_VEC_QSIZE;
+        }
 
         /* copy output */
         lse_reformat_out_dof(flow_vector_out_desc, flow_vector_out_desc, flow_vector_out_target_ptr, prms->current_prediction);
@@ -706,8 +745,6 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
                                 (flow_vector_out_desc->format == (vx_df_image)VX_DF_IMAGE_U16) ? 0 : 1;
             prms->dofParams.model[0] = '\0';
             prms->firstFrame = 1;
-
-
 
             tivxDmpacDofSetPredictors(prms, params);
 
@@ -1007,6 +1044,8 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofParams *prms,
 static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
                         tivx_dmpac_dof_params_t *params)
 {
+    prms->flowVecIntDelay = 0;
+
     /* Check Base layer (all 4 are valid) */
     if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT) ||
        (params->base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_DELAY_LEFT))
@@ -1019,6 +1058,7 @@ static void tivxDmpacDofSetPredictors(tivxDmpacDofParams *prms,
     {
         prms->dofParams.baseLayerPredictorConfiguration[TEMPORAL] = 1;
         prms->temporalConfig = 1;
+        prms->flowVecIntDelay = params->flow_vector_internal_delay_num;
     }
 
     if((params->base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT) ||

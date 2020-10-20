@@ -67,6 +67,8 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_hwa_host_priv.h"
 
+#include <vx_internal.h>
+
 static vx_kernel vx_dmpac_dof_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
@@ -77,12 +79,44 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
 
+static vx_bool tivxDmpacDofIsPipelineEnabled(vx_node node);
+
+/* IMPORTANT NOTE:
+ * The following way of accessing the graph and node implementation
+ * details is prohibited in the user code and is restricted to the
+ * TIOVX framework code.
+ *
+ * This is an exception for this kernal implementation and copying
+ * this style of code should be avoided under any cost.
+ */
+static vx_bool tivxDmpacDofIsPipelineEnabled(vx_node node)
+{
+    tivx_graph_t   *g;
+    tivx_node_t    *n;
+    vx_bool         status;
+
+    n = (tivx_node_t *)node;
+    g = (tivx_graph_t *)n->graph;
+
+    if (g->schedule_mode == (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL)
+    {
+        status = (vx_bool)vx_false_e;
+    }
+    else
+    {
+        status = (vx_bool)vx_true_e;
+    }
+
+    return status;
+}
+
 static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status   status = (vx_status)VX_SUCCESS;
+    vx_bool     pipelineEnabled;
 
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
@@ -160,6 +194,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         sparse_of_map = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
         flow_vector_out = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
         confidence_histogram = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
+        pipelineEnabled = (vx_bool)tivxDmpacDofIsPipelineEnabled(node);
     }
 
 
@@ -554,11 +589,60 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         if((params.base_predictor[0] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL) ||
            (params.base_predictor[1] == TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL))
         {
-            if (NULL == flow_vector_in)
+            /* Temporal predictor is ON. */
+            if (params.flow_vector_internal_delay_num >
+                            TIVX_DMPAC_DOF_MAX_FLOW_VECTOR_DELAY)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameter configuration.base_predictor[n] set to TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, but parameter 'flow_vector_in' is NULL\n");
-                VX_PRINT(VX_ZONE_ERROR, "   'flow_vector_in' should be non-NULL when temporal prediction is enabled\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid value for "
+                         "'flow_vector_internal_delay_num'.\n");
+            }
+            else if (pipelineEnabled == (vx_bool)vx_false_e)
+            {
+                /* Pipeline is OFF. */
+                if (params.flow_vector_internal_delay_num != 0)
+                {
+                    /* Temporal predictor is ON and pipeline is OFF. The flow
+                     * vector input is expected to be handled by the caller and
+                     * hence the flow_vector_internal_delay_num should be 0.
+                     */
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Temporal predictor is ON and pipeline is OFF. The "
+                             "flow vector input is expected to be handled by the "
+                             "caller and hence the 'flow_vector_internal_delay_num' "
+                             "should be 0.\n");
+                }
+            }
+            else
+            {
+                /* Pipeline is ON. */
+                if ((NULL == flow_vector_in) && (params.flow_vector_internal_delay_num == 0))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Parameter configuration.base_predictor[n] set to "
+                             "TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, parameter "
+                             "'flow_vector_in' is NULL, graph is pipelined, "
+                             "and 'flow_vector_internal_delay_num' is ZERO.\n");
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "   Either 'flow_vector_in' should be "
+                             "non-NULL or the internal delay shoud be non-zero, "
+                             "when temporal prediction is enabled\n");
+                }
+                else if ((NULL != flow_vector_in) && (params.flow_vector_internal_delay_num != 0))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "Parameter configuration.base_predictor[n] set to "
+                             "TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL, parameter "
+                             "'flow_vector_in' is non-NULL, graph is pipelined, "
+                             "and 'flow_vector_internal_delay_num' is non-ZERO.\n");
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "   Either 'flow_vector_in' should be "
+                             "NULL or the internal delay shoud be zero, "
+                             "when temporal prediction is enabled\n");
+                }
             }
 
             if (NULL != sparse_of_map)
@@ -577,6 +661,10 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         }
         else
         {
+            /* Temporal predictor is OFF. */
+            /* Ignore flow_vector_internal_delay_num and no check needs to be
+             * performed.
+             */
             if (NULL != flow_vector_in)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
