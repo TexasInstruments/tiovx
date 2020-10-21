@@ -83,11 +83,11 @@ static vx_bool tivxDmpacDofIsPipelineEnabled(vx_node node);
 
 /* IMPORTANT NOTE:
  * The following way of accessing the graph and node implementation
- * details is prohibited in the user code and is restricted to the
- * TIOVX framework code.
+ * details is not recommended for application code in general, but is used
+ * here as this is internal TIOVX framework code.
  *
  * This is an exception for this kernal implementation and copying
- * this style of code should be avoided under any cost.
+ * this style of code should be generally avoided.
  */
 static vx_bool tivxDmpacDofIsPipelineEnabled(vx_node node)
 {

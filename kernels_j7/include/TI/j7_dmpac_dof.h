@@ -203,7 +203,7 @@ typedef struct {
      *
      *  In case (3) above, the node stores pointers to the previous output flow vectors
      *  to be used as potential inputs later so it is important that under this configuration
-     *  the hight level Application does not alter the output buffer data in any way. Also, the
+     *  the higher level application does not alter the output buffer data in any way. Also, the
      *  node parameter must be configured with the buffer depth appropriately such that all the
      *  configured buffers are used and recycled during the pipelining operation.
      */
