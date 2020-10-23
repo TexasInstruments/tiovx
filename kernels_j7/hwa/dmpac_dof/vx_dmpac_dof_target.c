@@ -777,8 +777,8 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 
         tivxDmpacDofSetCfgPrms(dofPrms, dofAppPrms, sofAppPrms, obj_desc);
 
-        if((DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor1) ||
-           (DOF_PREDICTOR_TEMPORAL == dofPrms->bPredictor2))
+        if((DOF_PREDICTOR_TEMPORAL == dofAppPrms->base_predictor[0]) ||
+           (DOF_PREDICTOR_TEMPORAL == dofAppPrms->base_predictor[1]))
         {
             /* Store the flow vector delay parameter. */
             dofObj->flowVecIntDelay = dofAppPrms->flow_vector_internal_delay_num;
