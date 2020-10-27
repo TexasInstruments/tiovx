@@ -65,6 +65,7 @@
 /* ========================================================================== */
 
 #include <vx_vpac_viss_target_priv.h>
+#include <math.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -86,6 +87,8 @@ static void tivxVpacVissDccMapH3aParams(tivxVpacVissObj *vissObj,
 static void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     const tivx_ae_awb_params_t *ae_awb_res);
+static int calc_dcc_gain_EV(int analog_gain_linear_Q10);
+static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
@@ -188,6 +191,8 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         {
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
+            tivxVpacVissDccMapYeeParams(vissObj, ae_awb_res);
+
             if (NULL != h3a_out_desc)
             {
                 tivxVpacVissDccMapH3aParams(vissObj, ae_awb_res);
@@ -286,6 +291,8 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         {
             tivxVpacVissDccMapNsf4Params(vissObj, aewb_result);
         }
+
+        tivxVpacVissDccMapYeeParams(vissObj, aewb_result);
 
         /* Update BLC Offset */
         tivxVpacVissDccMapBlc(vissObj, aewb_result);
@@ -418,12 +425,13 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
     n_regions = vissObj->dcc_out_prms.vissNumNSF4Inst;
 
-    if((NULL != ae_awb_res) && (ae_awb_res->ae_valid))
+    if ((NULL != ae_awb_res) &&  (ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
     {
+        int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
         dcc_status = dcc_search_NSF4(
             vissObj->dcc_out_prms.phPrmsNSF4,
             n_regions,
-            ae_awb_res->analog_gain,
+            dcc_gain_ev,
             vissObj->dcc_out_prms.vissNSF4Cfg,
             dccNsf4Cfg);
 
@@ -440,7 +448,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
     /* TODO: Does shading gain map to lscc enable? */
 
-    if ((NULL != vissObj) && (0 != vissObj->dcc_out_prms.useNsf4Cfg))
+    if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
     {
         if(0==dcc_status)
         {
@@ -494,6 +502,69 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
         }
 
         vissObj->vissCfgRef.nsf4Cfg = nsf4Cfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
+static int calc_dcc_gain_EV(int analog_gain_linear_Q10)
+{
+    int ag = analog_gain_linear_Q10;
+    if (ag <= 1024) ag = 1024;
+    int dcc_gain_in_ev = (int)(10 * (log(ag) / log(2) - 10) + 0.5);
+    return dcc_gain_in_ev;
+}
+
+static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res)
+{
+    uint32_t            cnt;
+    Fcp_EeConfig        *hwaCfg = NULL;
+    viss_yee_dcc_cfg_t  *dccCfg = NULL;
+    uint32_t n_regions = 0;
+    int32_t dcc_index = 0;
+
+    n_regions = vissObj->dcc_out_prms.vissNumYeeInst;
+
+    if ((0 != ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useVissYeeCfg))
+    {
+        int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
+        dcc_index = dcc_search_YEE(
+            vissObj->dcc_out_prms.phPrmsYee,
+            n_regions,
+            dcc_gain_ev);
+        dccCfg = &vissObj->dcc_out_prms.vissYeeCfg[dcc_index];
+    }
+
+    hwaCfg = &vissObj->vissCfg.eeCfg;
+
+    /* Map DCC Output Config to FVID2 Driver Config */
+    if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useVissYeeCfg) && (NULL != dccCfg))
+    {
+        hwaCfg->enable = (uint32_t)dccCfg->enable;
+        hwaCfg->yeeShift = (uint32_t)dccCfg->shift_amount;
+        hwaCfg->yeeEThr = (uint32_t)dccCfg->threshold_before_lut;
+        hwaCfg->yeeMergeSel = (uint32_t)dccCfg->merge_select;
+        hwaCfg->haloReductionOn = (uint32_t)dccCfg->halo_reduction_enable;
+        hwaCfg->yesEGain = (uint32_t)dccCfg->edge_sharpener_gain;
+        hwaCfg->yesEThr1 = (uint32_t)dccCfg->edge_sharpener_hpf_low_thresh;
+        hwaCfg->yesEThr2 = (uint32_t)dccCfg->edge_sharpener_hpf_high_thresh;
+        hwaCfg->yesGGain = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
+        hwaCfg->yesGOfset = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
+
+        for (cnt = 0U; cnt < 9; cnt++)
+        {
+            hwaCfg->coeff[cnt]  = dccCfg->ee_2d_filter_coeff[cnt];
+        }
+
+        hwaCfg->lut = vissObj->dcc_table_ptr.ee_lut;
+        for (cnt = 0U; cnt < FCP_EE_LUT_SIZE; cnt++)
+        {
+            hwaCfg->lut[cnt] = dccCfg->edge_intensity_lut[cnt];
+        }
+
+        vissObj->vissCfgRef.eeCfg = hwaCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
