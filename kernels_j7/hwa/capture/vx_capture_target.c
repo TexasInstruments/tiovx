@@ -549,7 +549,7 @@ static vx_status tivxCaptureSetCreateParams(
     tivx_capture_params_t *params;
     uint32_t chIdx, instId = 0U, instIdx;
     Csirx_CreateParams *createParams;
-    tivx_obj_desc_raw_image_t *raw_image;
+    tivx_obj_desc_raw_image_t *raw_image = NULL;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
 
@@ -650,8 +650,11 @@ static vx_status tivxCaptureSetCreateParams(
 
                 if ((uint32_t)TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
                 {
-                    createParams->chCfg[loopCnt].inCsiDataType =
-                        tivxCaptureExtractInCsiDataTypeFromRawImg(raw_image);
+                    if (NULL != raw_image)
+                    {
+                        createParams->chCfg[loopCnt].inCsiDataType =
+                            tivxCaptureExtractInCsiDataTypeFromRawImg(raw_image);
+                    }
                 }
                 else
                 {
@@ -1159,7 +1162,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             }
         }
 
-        if ((vx_status)VX_SUCCESS == status)
+        if (((vx_status)VX_SUCCESS == status) && (NULL != instParams))
         {
             Fvid2_TimeStampParams tsParams;
 

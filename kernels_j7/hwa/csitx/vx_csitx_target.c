@@ -441,7 +441,7 @@ static vx_status tivxCsitxSetCreateParams(
     tivx_csitx_params_t *params;
     uint32_t chIdx, instId = 0U, instIdx;
     Csitx_CreateParams *createParams;
-    tivx_obj_desc_raw_image_t *raw_image;
+    tivx_obj_desc_raw_image_t *raw_image = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
 
     csitx_config_target_ptr = tivxMemShared2TargetPtr(&obj_desc->mem_ptr);
@@ -516,8 +516,11 @@ static vx_status tivxCsitxSetCreateParams(
 
             if ((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE == (vx_enum)prms->img_obj_desc[0]->type)
             {
-                createParams->chCfg[loopCnt].outCsiDataType =
-                    tivxCsitxExtractOutCsiDataTypeFromRawImg(raw_image);
+                if (NULL != raw_image)
+                {
+                    createParams->chCfg[loopCnt].outCsiDataType =
+                        tivxCsitxExtractOutCsiDataTypeFromRawImg(raw_image);
+                }
             }
             else
             {

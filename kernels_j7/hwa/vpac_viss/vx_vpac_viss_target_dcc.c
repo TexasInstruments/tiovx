@@ -423,89 +423,93 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     uint32_t n_regions = 0;
     int32_t dcc_status = -1;
 
-    n_regions = vissObj->dcc_out_prms.vissNumNSF4Inst;
-
-    if ((NULL != ae_awb_res) &&  (ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
+    if (NULL != vissObj)
     {
-        int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
-        dcc_status = dcc_search_NSF4(
-            vissObj->dcc_out_prms.phPrmsNSF4,
-            n_regions,
-            dcc_gain_ev,
-            vissObj->dcc_out_prms.vissNSF4Cfg,
-            dccNsf4Cfg);
 
-        if(dcc_status < 0)
+        n_regions = vissObj->dcc_out_prms.vissNumNSF4Inst;
+
+        if ((NULL != ae_awb_res) &&  (ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
         {
-            VX_PRINT(VX_ZONE_ERROR, "dcc_search_NSF4 failed for analog_gain = 0x%x !!!\n", ae_awb_res->analog_gain);
-        }
-    }
+            int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
+            dcc_status = dcc_search_NSF4(
+                vissObj->dcc_out_prms.phPrmsNSF4,
+                n_regions,
+                dcc_gain_ev,
+                vissObj->dcc_out_prms.vissNSF4Cfg,
+                dccNsf4Cfg);
 
-    nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
-    lsccCfg = &nsf4Cfg->lsccCfg;
-
-    /* Map DCC Output Config to FVID2 Driver Config */
-
-    /* TODO: Does shading gain map to lscc enable? */
-
-    if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
-    {
-        if(0==dcc_status)
-        {
-            nsf4Cfg->mode = (uint32_t)dccNsf4Cfg->mode;
-            nsf4Cfg->tKnee = (uint32_t)dccNsf4Cfg->u1_knee;
-            nsf4Cfg->tnScale[0U] = (uint32_t)dccNsf4Cfg->tn1;
-            nsf4Cfg->tnScale[1U] = (uint32_t)dccNsf4Cfg->tn2;
-            nsf4Cfg->tnScale[2U] = (uint32_t)dccNsf4Cfg->tn3;
-
-            for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+            if(dcc_status < 0)
             {
-                for (cnt2 = 0U; cnt2 < NSF4_TN_MAX_SEGMENT; cnt2 ++)
-                {
-                    nsf4Cfg->tnCurve[cnt1][cnt2].posX  = dccNsf4Cfg->noise_thr_x[cnt1][cnt2];
-                    nsf4Cfg->tnCurve[cnt1][cnt2].posY  = dccNsf4Cfg->noise_thr_y[cnt1][cnt2];
-                    nsf4Cfg->tnCurve[cnt1][cnt2].slope = dccNsf4Cfg->noise_thr_s[cnt1][cnt2];
-                }
+                VX_PRINT(VX_ZONE_ERROR, "dcc_search_NSF4 failed for analog_gain = 0x%x !!!\n", ae_awb_res->analog_gain);
             }
-
-            lsccCfg->enable         = (uint32_t)dccNsf4Cfg->shading_gain;
-            lsccCfg->lensCenterX    = (uint32_t)dccNsf4Cfg->shd_x;
-            lsccCfg->lensCenterY    = (uint32_t)dccNsf4Cfg->shd_y;
-            lsccCfg->tCfg           = (uint32_t)dccNsf4Cfg->shd_t;
-            lsccCfg->khCfg          = (uint32_t)dccNsf4Cfg->shd_kh;
-            lsccCfg->kvCfg          = (uint32_t)dccNsf4Cfg->shd_kv;
-            lsccCfg->gMaxCfg        = (uint32_t)dccNsf4Cfg->shd_gmax;
-            lsccCfg->setSel         = (uint32_t)dccNsf4Cfg->shd_set_sel;
-
-            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
-            {
-                for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
-                {
-                     lsccCfg->pwlCurve[cnt1][cnt2].posX = dccNsf4Cfg->shd_lut_x[cnt1][cnt2];
-                     lsccCfg->pwlCurve[cnt1][cnt2].posY = dccNsf4Cfg->shd_lut_y[cnt1][cnt2];
-                     lsccCfg->pwlCurve[cnt1][cnt2].slope = dccNsf4Cfg->shd_lut_s[cnt1][cnt2];
-                 }
-            }
-
         }
 
-        /* Override gains from AWB results */
-        if (NULL != ae_awb_res)
+        nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
+        lsccCfg = &nsf4Cfg->lsccCfg;
+
+        /* Map DCC Output Config to FVID2 Driver Config */
+
+        /* TODO: Does shading gain map to lscc enable? */
+
+        if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
         {
-            if(1u == ae_awb_res->awb_valid)
+            if(0==dcc_status)
             {
+                nsf4Cfg->mode = (uint32_t)dccNsf4Cfg->mode;
+                nsf4Cfg->tKnee = (uint32_t)dccNsf4Cfg->u1_knee;
+                nsf4Cfg->tnScale[0U] = (uint32_t)dccNsf4Cfg->tn1;
+                nsf4Cfg->tnScale[1U] = (uint32_t)dccNsf4Cfg->tn2;
+                nsf4Cfg->tnScale[2U] = (uint32_t)dccNsf4Cfg->tn3;
+
                 for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
                 {
-                    nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+                    for (cnt2 = 0U; cnt2 < NSF4_TN_MAX_SEGMENT; cnt2 ++)
+                    {
+                        nsf4Cfg->tnCurve[cnt1][cnt2].posX  = dccNsf4Cfg->noise_thr_x[cnt1][cnt2];
+                        nsf4Cfg->tnCurve[cnt1][cnt2].posY  = dccNsf4Cfg->noise_thr_y[cnt1][cnt2];
+                        nsf4Cfg->tnCurve[cnt1][cnt2].slope = dccNsf4Cfg->noise_thr_s[cnt1][cnt2];
+                    }
+                }
+
+                lsccCfg->enable         = (uint32_t)dccNsf4Cfg->shading_gain;
+                lsccCfg->lensCenterX    = (uint32_t)dccNsf4Cfg->shd_x;
+                lsccCfg->lensCenterY    = (uint32_t)dccNsf4Cfg->shd_y;
+                lsccCfg->tCfg           = (uint32_t)dccNsf4Cfg->shd_t;
+                lsccCfg->khCfg          = (uint32_t)dccNsf4Cfg->shd_kh;
+                lsccCfg->kvCfg          = (uint32_t)dccNsf4Cfg->shd_kv;
+                lsccCfg->gMaxCfg        = (uint32_t)dccNsf4Cfg->shd_gmax;
+                lsccCfg->setSel         = (uint32_t)dccNsf4Cfg->shd_set_sel;
+
+                for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+                {
+                    for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
+                    {
+                         lsccCfg->pwlCurve[cnt1][cnt2].posX = dccNsf4Cfg->shd_lut_x[cnt1][cnt2];
+                         lsccCfg->pwlCurve[cnt1][cnt2].posY = dccNsf4Cfg->shd_lut_y[cnt1][cnt2];
+                         lsccCfg->pwlCurve[cnt1][cnt2].slope = dccNsf4Cfg->shd_lut_s[cnt1][cnt2];
+                     }
+                }
+
+            }
+
+            /* Override gains from AWB results */
+            if (NULL != ae_awb_res)
+            {
+                if(1u == ae_awb_res->awb_valid)
+                {
+                    for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+                    {
+                        nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+                    }
                 }
             }
+
+            vissObj->vissCfgRef.nsf4Cfg = nsf4Cfg;
+
+            /* Setting config flag to 1,
+             * assumes caller protects this flag */
+            vissObj->isConfigUpdated = 1U;
         }
-
-        vissObj->vissCfgRef.nsf4Cfg = nsf4Cfg;
-
-        /* Setting config flag to 1,
-         * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;
     }
 }
 
@@ -525,50 +529,53 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
     uint32_t n_regions = 0;
     int32_t dcc_index = 0;
 
-    n_regions = vissObj->dcc_out_prms.vissNumYeeInst;
-
-    if ((0 != ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useVissYeeCfg))
+    if (NULL != vissObj)
     {
-        int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
-        dcc_index = dcc_search_YEE(
-            vissObj->dcc_out_prms.phPrmsYee,
-            n_regions,
-            dcc_gain_ev);
-        dccCfg = &vissObj->dcc_out_prms.vissYeeCfg[dcc_index];
-    }
+        n_regions = vissObj->dcc_out_prms.vissNumYeeInst;
 
-    hwaCfg = &vissObj->vissCfg.eeCfg;
-
-    /* Map DCC Output Config to FVID2 Driver Config */
-    if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useVissYeeCfg) && (NULL != dccCfg))
-    {
-        hwaCfg->enable = (uint32_t)dccCfg->enable;
-        hwaCfg->yeeShift = (uint32_t)dccCfg->shift_amount;
-        hwaCfg->yeeEThr = (uint32_t)dccCfg->threshold_before_lut;
-        hwaCfg->yeeMergeSel = (uint32_t)dccCfg->merge_select;
-        hwaCfg->haloReductionOn = (uint32_t)dccCfg->halo_reduction_enable;
-        hwaCfg->yesEGain = (uint32_t)dccCfg->edge_sharpener_gain;
-        hwaCfg->yesEThr1 = (uint32_t)dccCfg->edge_sharpener_hpf_low_thresh;
-        hwaCfg->yesEThr2 = (uint32_t)dccCfg->edge_sharpener_hpf_high_thresh;
-        hwaCfg->yesGGain = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
-        hwaCfg->yesGOfset = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
-
-        for (cnt = 0U; cnt < 9; cnt++)
+        if ((0 != ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useVissYeeCfg))
         {
-            hwaCfg->coeff[cnt]  = dccCfg->ee_2d_filter_coeff[cnt];
+            int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
+            dcc_index = dcc_search_YEE(
+                vissObj->dcc_out_prms.phPrmsYee,
+                n_regions,
+                dcc_gain_ev);
+            dccCfg = &vissObj->dcc_out_prms.vissYeeCfg[dcc_index];
         }
 
-        hwaCfg->lut = vissObj->dcc_table_ptr.ee_lut;
-        for (cnt = 0U; cnt < FCP_EE_LUT_SIZE; cnt++)
+        hwaCfg = &vissObj->vissCfg.eeCfg;
+
+        /* Map DCC Output Config to FVID2 Driver Config */
+        if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useVissYeeCfg) && (NULL != dccCfg))
         {
-            hwaCfg->lut[cnt] = dccCfg->edge_intensity_lut[cnt];
+            hwaCfg->enable = (uint32_t)dccCfg->enable;
+            hwaCfg->yeeShift = (uint32_t)dccCfg->shift_amount;
+            hwaCfg->yeeEThr = (uint32_t)dccCfg->threshold_before_lut;
+            hwaCfg->yeeMergeSel = (uint32_t)dccCfg->merge_select;
+            hwaCfg->haloReductionOn = (uint32_t)dccCfg->halo_reduction_enable;
+            hwaCfg->yesEGain = (uint32_t)dccCfg->edge_sharpener_gain;
+            hwaCfg->yesEThr1 = (uint32_t)dccCfg->edge_sharpener_hpf_low_thresh;
+            hwaCfg->yesEThr2 = (uint32_t)dccCfg->edge_sharpener_hpf_high_thresh;
+            hwaCfg->yesGGain = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
+            hwaCfg->yesGOfset = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
+
+            for (cnt = 0U; cnt < 9; cnt++)
+            {
+                hwaCfg->coeff[cnt]  = dccCfg->ee_2d_filter_coeff[cnt];
+            }
+
+            hwaCfg->lut = vissObj->dcc_table_ptr.ee_lut;
+            for (cnt = 0U; cnt < FCP_EE_LUT_SIZE; cnt++)
+            {
+                hwaCfg->lut[cnt] = dccCfg->edge_intensity_lut[cnt];
+            }
+
+            vissObj->vissCfgRef.eeCfg = hwaCfg;
+
+            /* Setting config flag to 1,
+             * assumes caller protects this flag */
+            vissObj->isConfigUpdated = 1U;
         }
-
-        vissObj->vissCfgRef.eeCfg = hwaCfg;
-
-        /* Setting config flag to 1,
-         * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;
     }
 }
 

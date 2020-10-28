@@ -1207,7 +1207,7 @@ static vx_status tivxVpacMscScaleSetCoeffsCmd(tivxVpacMscScaleObj *msc_obj,
     uint32_t                          cnt;
     tivx_vpac_msc_coefficients_t     *coeffs = NULL;
     void                             *target_ptr;
-    Msc_Coeff                        *coeffCfg;
+    Msc_Coeff                        *coeffCfg = NULL;
 
     if (NULL != usr_data_obj)
     {
