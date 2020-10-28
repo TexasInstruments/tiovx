@@ -72,7 +72,7 @@ extern "C" {
 /*! \brief Max parameters in a kernel
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_KERNEL_MAX_PARAMS      (16u)
+#define TIVX_KERNEL_MAX_PARAMS      (64u)
 
 /*! \brief Max nodes taking output form a given node
  * \ingroup group_tivx_obj_desc_cfg
@@ -135,7 +135,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_GRAPH_MAX_OBJECTS                      (8u)
+#define TIVX_GRAPH_MAX_OBJECTS                      (16u)
 
 /*!
  * \brief Max number super node objects supported
@@ -212,7 +212,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_TENSOR_MAX_OBJECTS                     (64u)
+#define TIVX_TENSOR_MAX_OBJECTS                     (256u)
 
 /*!
  * \brief Max number lut objects supported
