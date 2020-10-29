@@ -854,6 +854,7 @@ static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *
 static void own_register_kernel(vx_context context, int numParams)
 {
     vx_kernel kernel = 0;
+    vx_uint32 i;
     vx_size size = local_size_auto_alloc;
 
     ASSERT_VX_OBJECT(kernel = vxAddUserKernel(
@@ -866,149 +867,29 @@ static void own_register_kernel(vx_context context, int numParams)
         own_Initialize,
         own_Deinitialize), VX_TYPE_KERNEL);
 
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT0, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
+    for (i = 0; i < (numParams/2); i++)
     {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT0), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
+        VX_CALL(vxAddParameterToKernel(kernel, i, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
+        {
+            vx_parameter parameter = 0;
+            vx_enum direction = 0;
+            ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, i), VX_TYPE_PARAMETER);
+            VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
+            ASSERT(direction == VX_INPUT);
+            VX_CALL(vxReleaseParameter(&parameter));
+        }
     }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT1, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
+    for (i = (numParams/2); i < numParams; i++)
     {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT1), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT2, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT2), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT3, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT3), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT4, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT4), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT5, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT5), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT6, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT6), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_INPUT7, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_INPUT7), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_INPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT0, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT0), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT1, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT1), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT2, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT2), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT3, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT3), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT4, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT4), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT5, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT5), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT6, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT6), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
-    }
-    VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT7, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
-    {
-        vx_parameter parameter = 0;
-        vx_enum direction = 0;
-        ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, OWN_PARAM_OUTPUT7), VX_TYPE_PARAMETER);
-        VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
-        ASSERT(direction == VX_OUTPUT);
-        VX_CALL(vxReleaseParameter(&parameter));
+        VX_CALL(vxAddParameterToKernel(kernel, i, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
+        {
+            vx_parameter parameter = 0;
+            vx_enum direction = 0;
+            ASSERT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, i), VX_TYPE_PARAMETER);
+            VX_CALL(vxQueryParameter(parameter, VX_PARAMETER_DIRECTION, &direction, sizeof(direction)));
+            ASSERT(direction == VX_OUTPUT);
+            VX_CALL(vxReleaseParameter(&parameter));
+        }
     }
     VX_CALL(vxSetKernelAttribute(kernel, VX_KERNEL_LOCAL_DATA_SIZE, &size, sizeof(size)));
     VX_CALL(vxFinalizeKernel(kernel));

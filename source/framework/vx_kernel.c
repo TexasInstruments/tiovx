@@ -412,6 +412,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 
                 if (ownIsValidType(kernel->signature.types[p]) == (vx_bool)vx_false_e)
                 {
+                    printf("p = %d\n", p);
                     VX_PRINT(VX_ZONE_ERROR, "Invalid kernel signature type\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
