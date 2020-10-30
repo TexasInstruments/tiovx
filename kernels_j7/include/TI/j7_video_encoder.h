@@ -273,12 +273,13 @@ void tivxRegisterHwaTargetVencKernels(void);
 void tivxUnRegisterHwaTargetVencKernels(void);
 
 /*! \brief [Graph] Creates a VIDEO_ENCODER Node.
- * \param [in] graph The reference to the graph.
- * \param [in] configuration The input object of a single params structure of
- *             type <tt>\ref tivx_video_encoder_params_t</tt>.
- * \param [in] input_image The output to be encoded. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
+ * \param [in] graph             The reference to the graph.
+ * \param [in] configuration     The input object of a single params structure of
+ *                               type <tt>\ref tivx_video_encoder_params_t</tt>.
+ * \param [in] input_image       The input image to be encoded. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
+ *                               Width and Height of vx_image object must each be a multiple of 16 (\see tivx_video_encoder_params_t::crop_left)
  * \param [out] output_bitstream The output object of a uint8_t buffer.
- *             Formatted as an H264 i-frame only stream.
+ *                               Formatted as an H264 i-frame only stream.
  * \see <tt>TIVX_KERNEL_VIDEO_ENCODER_NAME</tt>
  * \ingroup group_vision_function_video_encoder
  * \return <tt>\ref vx_node</tt>.
