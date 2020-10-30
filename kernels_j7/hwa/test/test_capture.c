@@ -1108,6 +1108,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
         }
 
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+
+        vxWaitEvent(context, &event, vx_true_e);
     }
 
     /* ensure all graph processing is complete */
@@ -1181,6 +1183,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
             }
 
             vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+
+            vxWaitEvent(context, &event, vx_true_e);
         }
 
         if (DISABLE_REENABLE_ALL_CH == arg_->camera_disable)
@@ -1224,6 +1228,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
                 }
 
                 vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+
+                vxWaitEvent(context, &event, vx_true_e);
             }
         }
     }
@@ -1259,8 +1265,6 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
     }
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
-
-    VX_CALL(appStopImageSensor(sensor_name, (1<<(num_capture_channels))-1)); /*Mask for 4 cameras*/
 
     /* Querying node for sensor stats */
     {
@@ -1329,6 +1333,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout, CA
         }
         vxUnmapUserDataObject((vx_user_data_object)refs[0], capture_stats_map_id);
     }
+
+    VX_CALL(appStopImageSensor(sensor_name, (1<<(num_capture_channels))-1)); /*Mask for 4 cameras*/
 
     VX_CALL(vxReleaseImage(&black_frame_invalid_params));
     VX_CALL(vxReleaseNode(&displayNode));
