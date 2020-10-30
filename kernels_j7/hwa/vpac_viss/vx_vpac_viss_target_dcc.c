@@ -529,7 +529,7 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
     uint32_t n_regions = 0;
     int32_t dcc_index = 0;
 
-    if (NULL != vissObj)
+    if ( (NULL != vissObj) && (NULL != ae_awb_res) )
     {
         n_regions = vissObj->dcc_out_prms.vissNumYeeInst;
 
