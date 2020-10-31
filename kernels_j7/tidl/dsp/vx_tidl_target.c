@@ -71,6 +71,8 @@
 #include "itidl_ti.h"
 #include "tivx_tidl_trace.h"
 #include "tivx_kernels_target_utils.h"
+#include "tidl_custom.h"
+
 
 #ifndef x86_64
 #include "c7x.h"
@@ -538,6 +540,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
 
             tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
+            tidlObj->createParams.TIDL_CustomLayerProcess = TIDL_customLayerProcess;
 
             if(TIDL_NET_VERSION != tidlObj->createParams.net->netVersion)
             {

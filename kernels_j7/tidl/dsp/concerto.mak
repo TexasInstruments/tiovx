@@ -9,6 +9,7 @@ IDIRS       += $(HOST_ROOT)/kernels/ivision/include
 IDIRS       += $(CUSTOM_KERNEL_PATH)/tidl/include
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
+IDIRS       += $(TIDL_PATH)/custom
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(PDK_PATH)/packages
