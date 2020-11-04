@@ -94,9 +94,6 @@ vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
     start  = strstr(inFilePath, "${");
     end    = strstr(inFilePath, "}");
 
-    /* Zero out the buffer. */
-    memset(outFilePath, 0, TIOVX_UTILS_MAXPATHLENGTH);
-
     if ((start == NULL) || (end == NULL))
     {
         len = strlen(inFilePath);
@@ -127,6 +124,7 @@ vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
         if (status == (vx_status)VX_SUCCESS)
         {
             strncpy(outFilePath, &start[2], len);
+            outFilePath[len] = '\0';
 
 #if defined(SYSBIOS)
             b = tivxPlatformGetEnv(outFilePath);
