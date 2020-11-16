@@ -18,6 +18,11 @@ IDIRS       += $(XDCTOOLS_PATH)/packages
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION -DSOC_J721E -D_TMS320C6X
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
+DEFS        += __aarch64__
+endif
+
 endif
 
 include $(FINALE)
