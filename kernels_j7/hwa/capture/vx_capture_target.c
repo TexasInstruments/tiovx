@@ -687,7 +687,15 @@ static vx_status tivxCaptureSetCreateParams(
             }
             /* set frame drop buffer parameters */
             createParams->frameDropBufLen = CAPTURE_FRAME_DROP_LEN;
-            createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, (int32_t)TIVX_MEM_EXTERNAL);
+            createParams->frameDropBuf = (uint64_t)tivxMemAlloc(createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
+
+            if (0 == createParams->frameDropBuf)
+            {
+                status = VX_ERROR_NO_MEMORY;
+                VX_PRINT(VX_ZONE_ERROR,
+                    " CAPTURE: ERROR: Insufficient memory for frameDropBuf!!!\n");
+                break;
+            }
         }
     }
 
@@ -1270,6 +1278,16 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                     Fvid2_delete(instParams->drvHandle, NULL);
                     instParams->drvHandle = NULL;
                 }
+
+                /* Freeing memory used for frame drop buf */
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    Csirx_CreateParams *createParams;
+
+                    createParams = &instParams->createPrms;
+
+                    tivxMemFree((void*)(uint32_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
+                }
             }
 
             if (NULL != prms->frame_available)
@@ -1411,6 +1429,16 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 if ((vx_status)VX_SUCCESS == status)
                 {
                     tivxCapturePrintStatus(instParams);
+                }
+
+                /* Freeing memory used for frame drop buf */
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    Csirx_CreateParams *createParams;
+
+                    createParams = &instParams->createPrms;
+
+                    tivxMemFree((void*)(uint32_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
 
                 /* Disable Error Events */
