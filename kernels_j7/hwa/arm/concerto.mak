@@ -1,5 +1,6 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F C66))
+ifeq ($(BUILD_HWA_KERNELS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_j7_arm
@@ -24,4 +25,5 @@ endif
 
 include $(FINALE)
 
+endif
 endif

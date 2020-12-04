@@ -1,5 +1,6 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F))
+ifeq ($(BUILD_HWA_KERNELS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_display
@@ -21,4 +22,5 @@ endif
 
 include $(FINALE)
 
+endif
 endif

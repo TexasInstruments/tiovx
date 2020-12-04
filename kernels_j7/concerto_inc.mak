@@ -5,6 +5,10 @@
 
 ifeq ($(TARGET_CPU),x86_64)
 
+STATIC_LIBS += vx_vxu
+
+ifeq ($(BUILD_HWA_KERNELS),yes)
+
 STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa vx_vxu
 
 STATIC_LIBS += vx_target_kernels_dmpac_sde
@@ -14,8 +18,8 @@ STATIC_LIBS += vx_target_kernels_vpac_ldc
 STATIC_LIBS += ldc
 
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
-STATIC_LIBS += vx_target_kernels_dmpac_dof
-STATIC_LIBS += vx_kernels_hwa_tests
+    STATIC_LIBS += vx_target_kernels_dmpac_dof
+    STATIC_LIBS += vx_kernels_hwa_tests
 endif
 
 STATIC_LIBS += vx_target_kernels_vpac_msc
@@ -30,21 +34,11 @@ SYS_SHARED_LIBS += glbce
 
 STATIC_LIBS += vx_target_kernels_j7_arm
 
-ifeq ($(TARGET_PLATFORM),J7)
-STATIC_LIBS += vx_target_kernels_display
-STATIC_LIBS += vx_target_kernels_capture
-STATIC_LIBS += vx_target_kernels_csitx
-
-STATIC_LIBS += vx_target_kernels_vdec
-STATIC_LIBS += drv_fw_decoder_tirtos
-endif
+endif #ifeq ($(BUILD_HWA_KERNELS),yes)
 
 STATIC_LIBS += vx_utils
-
 STATIC_LIBS += vx_tiovx_tidl_tests
-
 STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom
-
 STATIC_LIBS += C7100-host-emulation
 
 # Uncomment below to link to TIDL/MMALIB in host emulation mode instead of natural C mode on PC
@@ -86,4 +80,4 @@ ADDITIONAL_STATIC_LIBS += $(PDK_LIBS)
 
 STATIC_LIBS += $(MMA_LIBS)
 
-endif
+endif #ifeq ($(TARGET_CPU),x86_64)

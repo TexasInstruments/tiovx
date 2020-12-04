@@ -1,5 +1,6 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F))
+ifeq ($(BUILD_HWA_KERNELS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vdec
@@ -14,5 +15,7 @@ IDIRS       += $(VIDEO_CODEC_PATH)/ti-img-encode-decode/timmlib/include
 IDIRS       += $(VISION_APPS_PATH)
 
 include $(FINALE)
+
+endif
 endif
 
