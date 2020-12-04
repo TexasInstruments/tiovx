@@ -68,7 +68,7 @@ ifeq ($(BUILD_CT_TIOVX_IVISION),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_IVISION
 endif
 
-ifeq ($(BUILD_CT_TIOVX_HWA),yes)
+ifeq ($(BUILD_HWA_KERNELS)$(BUILD_CT_TIOVX_HWA),yesyes)
 CFLAGS      += -DBUILD_CT_TIOVX_HWA
 endif
 
