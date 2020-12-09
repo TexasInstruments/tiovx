@@ -213,12 +213,12 @@ TEST_WITH_ARG(tivxGraphStreaming, testScalar, Arg, STREAMING_PARAMETERS)
  * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
  *
  * Scalar source node connected to scalar sink node
- * Does not a set a trigger node since pipelining is not enabled
+ * Does not a set a trigger node
  * Both nodes on DSP1
- * Error will be shown in a print statement if the scalar sink fails
+ * Expecting an error since trigger node is not enabled with streaming
  *
  */
-TEST_WITH_ARG(tivxGraphStreaming, testSourceSinkNoTrigger, Arg, STREAMING_PARAMETERS)
+TEST(tivxGraphStreaming, negativeTestSourceSinkNoTrigger)
 {
     vx_graph graph;
     vx_context context = context_->vx_context_;
@@ -243,17 +243,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSinkNoTrigger, Arg, STREAMING_PARAME
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, NULL));
 
-    VX_CALL(vxVerifyGraph(graph));
-
-    VX_CALL(vxStartGraphStreaming(graph));
-
-    tivxTaskWaitMsecs(arg_->stream_time);
-
-    VX_CALL(vxStopGraphStreaming(graph));
-
-    VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
-
-    ASSERT(num_streams != 0);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     VX_CALL(vxReleaseScalar(&scalar));
     VX_CALL(vxReleaseNode(&n2));
@@ -1985,7 +1975,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
 }
 
 TESTCASE_TESTS(tivxGraphStreaming,
-               testSourceSinkNoTrigger,
+               negativeTestSourceSinkNoTrigger,
                testSourceSink1,
                testSourceSink2,
                testStreamStartStop,
