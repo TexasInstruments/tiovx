@@ -559,7 +559,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testValidTimeoutSet, TestArg, TEST_PARAMS)
     /* Initialize the timeout to a valid timeout value less tha vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
     objCntxt.vxContext           = context_->vx_context_;
-    cfgParams->createCmdTimeout  = 5;
+    cfgParams->createCmdTimeout  = 2;
     cfgParams->deleteCmdTimeout  = 7;
     cfgParams->controlCmdTimeout = 2;
     cfgParams->processCmdTimeout = 0;
@@ -672,7 +672,7 @@ TEST_WITH_ARG(tivxCmdTimeout, testTimeoutCreateFail, TestArg, TEST_PARAMS)
     /* Initialize the timeout to a valid timeout value less tha vxSetTimeoutVal. */
     cfgParams                    = &objCntxt.cfgParams;
     objCntxt.vxContext           = context_->vx_context_;
-    cfgParams->createCmdTimeout  = 5;
+    cfgParams->createCmdTimeout  = 2;
     cfgParams->deleteCmdTimeout  = 0;
     cfgParams->controlCmdTimeout = 0;
     cfgParams->processCmdTimeout = 0;
