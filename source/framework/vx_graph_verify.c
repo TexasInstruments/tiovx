@@ -2013,6 +2013,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 }
             }
 
+            /* Detects errors in pipelining parameters being set as graph parameter and multiple buffers at node */
+            if(status == (vx_status)VX_SUCCESS)
+            {
+                status = ownGraphValidatePipelineParameters(graph);
+                if(status != (vx_status)VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Error in pipelining parameters\n");
+                }
+            }
+
             if(status == (vx_status)VX_SUCCESS)
             {
                 /* Configure graph processing to account for any super nodes

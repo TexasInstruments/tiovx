@@ -498,6 +498,13 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
  */
 uint32_t ownGraphGetNumSchedule(vx_graph graph);
 
+/*!
+ * \brief Checks for invalid pipelining conditions (see: TIOVX-726)
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphValidatePipelineParameters(vx_graph graph);
+
 /*! \brief Sends user event to graph event queue
  *
  * \ingroup group_vx_graph

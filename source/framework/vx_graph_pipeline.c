@@ -915,3 +915,37 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
     }
     return num_schedule;
 }
+
+vx_status ownGraphValidatePipelineParameters(vx_graph graph)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t param_idx = 0U;
+
+    if ((vx_bool)vx_true_e == graph->is_pipelining_enabled)
+    {
+        for (param_idx = 0U; param_idx < graph->num_params; param_idx++)
+        {
+            vx_node node;
+            uint32_t node_idx;
+
+            node_idx = graph->parameters[param_idx].index;
+            node     = graph->parameters[param_idx].node;
+
+            if ( (0U != graph->parameters[param_idx].num_buf) &&
+                 (0U != node->parameter_index_num_buf[node_idx]) )
+            {
+                vx_reference node_ref;
+                vx_reference param_ref;
+
+                node_ref  = (vx_reference)node;
+                param_ref = (vx_reference)node->parameters[node_idx];
+
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid pipelining parameters\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameter %s of node %s has multiple buffers set both as a graph parameter and using tivxSetNodeParameterNumBufByIndex\n", param_ref->name, node_ref->name);
+            }
+        }
+    }
+
+    return status;
+}
