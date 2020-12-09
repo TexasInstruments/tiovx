@@ -949,3 +949,95 @@ vx_status ownGraphValidatePipelineParameters(vx_graph graph)
 
     return status;
 }
+
+static void ownGraphSetNumBuf(vx_graph graph, vx_node node, vx_reference ref, uint32_t prm_cur_idx)
+{
+    vx_reference node_ref;
+    uint32_t num_bufs = 1U;
+    uint32_t i;
+
+    for(i=0; i<graph->num_data_ref; i++)
+    {
+        if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
+        {
+            num_bufs += graph->data_ref_num_in_nodes[i];
+            break;
+        }
+    }
+
+    /* TODO: Handle source/sink nodes */
+
+    node->parameter_index_num_buf[prm_cur_idx] = num_bufs;
+
+    node_ref = (vx_reference)node;
+    VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
+    VX_PRINT(VX_ZONE_WARNING, "Setting number of buffers to %d\n", num_bufs);
+}
+
+static vx_bool isLeafNode(vx_graph graph, vx_node node)
+{
+    vx_bool is_leaf_node = vx_false_e;
+    uint32_t i = 0;
+
+    for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES; i++)
+    {
+        if (node == graph->leaf_nodes[i])
+        {
+            is_leaf_node = vx_true_e;
+            break;
+        }
+    }
+
+    return is_leaf_node;
+}
+
+void ownGraphDetectAndSetNumBuf(vx_graph graph)
+{
+    vx_node node_cur;
+    uint32_t node_cur_idx;
+    uint32_t prm_cur_idx;
+    uint32_t prm_dir;
+    uint32_t graph_param_idx = 0U;
+    vx_reference ref;
+    vx_bool is_ref_graph_param = (vx_bool)vx_false_e;
+
+    if ((vx_bool)vx_true_e == graph->is_pipelining_enabled)
+    {
+        for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+        {
+            node_cur = graph->nodes[node_cur_idx];
+
+            /* TODO: Is this check needed? */
+            if ((vx_bool)vx_false_e == isLeafNode(graph, node_cur))
+            {
+                for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
+                {
+                    ref = ownNodeGetParameterRef(node_cur, prm_cur_idx);
+                    prm_dir = (uint32_t)ownNodeGetParameterDir(node_cur, prm_cur_idx);
+
+                    if( (ref!=NULL) && ((vx_enum)prm_dir == VX_OUTPUT)) /* ref could be NULL due to optional parameters */
+                    {
+                        is_ref_graph_param = (vx_bool)vx_false_e;
+
+                        for (graph_param_idx = 0U; graph_param_idx < graph->num_params; graph_param_idx++)
+                        {
+                            if (ref == graph->parameters[graph_param_idx].refs_list[0])
+                            {
+                                is_ref_graph_param = (vx_bool)vx_true_e;
+                                break;
+                            }
+                        }
+
+                        if ( ((vx_bool)vx_false_e == is_ref_graph_param) &&
+                             (0U == node_cur->parameter_index_num_buf[prm_cur_idx]) )
+                        {
+                            ownGraphSetNumBuf(graph, node_cur, ref, prm_cur_idx);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return;
+}

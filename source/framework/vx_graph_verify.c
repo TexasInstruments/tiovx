@@ -2054,6 +2054,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status == (vx_status)VX_SUCCESS)
             {
+                /* detect num bufs */
+                ownGraphDetectAndSetNumBuf(graph);
+            }
+
+            if(status == (vx_status)VX_SUCCESS)
+            {
                 /* Allocate memory associated with data objects of this graph
                  * Memory resources are allocated in this step
                  * No need to free them in case of error, since they get free'ed during

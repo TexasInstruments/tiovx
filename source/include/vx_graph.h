@@ -505,6 +505,13 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph);
  */
 vx_status ownGraphValidatePipelineParameters(vx_graph graph);
 
+/*!
+ * \brief Sets buffers automatically if not already set (see: TIOVX-903)
+ *
+ * \ingroup group_vx_graph
+ */
+void ownGraphDetectAndSetNumBuf(vx_graph graph);
+
 /*! \brief Sends user event to graph event queue
  *
  * \ingroup group_vx_graph
