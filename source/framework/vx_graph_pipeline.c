@@ -171,6 +171,10 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                 uint32_t i;
 
                 graph->schedule_mode = graph_schedule_mode;
+
+                /* Pipelining is enabled */
+                graph->is_pipelining_enabled = (vx_bool)vx_true_e;
+
                 for(i=0; (i<graph_parameters_list_size) && (status == (vx_status)VX_SUCCESS); i++)
                 {
                     if((graph_parameters_queue_params_list[i].graph_parameter_index
@@ -857,6 +861,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             if (pipeline_depth < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
             {
                 graph->pipeline_depth = pipeline_depth;
+                graph->is_pipeline_depth_set = (vx_bool)vx_true_e;
                 tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", (uint16_t)graph->pipeline_depth+1U);
             }
             else

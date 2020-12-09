@@ -375,6 +375,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->stop_done = NULL;
             graph->delete_done = NULL;
             graph->schedule_mode = (vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL;
+            graph->is_pipelining_enabled = (vx_bool)vx_false_e;
+            graph->is_pipeline_depth_set = (vx_bool)vx_false_e;
             graph->schedule_pending_count = 0;
             graph->submitted_count = 0;
             graph->num_data_ref = 0;
@@ -540,6 +542,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_TIMEOUT failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_GRAPH_PIPELINE_DEPTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = graph->pipeline_depth;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Query TIVX_GRAPH_PIPELINE_DEPTH failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

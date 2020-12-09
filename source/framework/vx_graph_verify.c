@@ -1746,10 +1746,110 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
     return status;
 }
 
+static vx_bool isHeadNode(vx_graph graph, vx_node node)
+{
+    vx_bool is_head_node = vx_false_e;
+    uint32_t i = 0;
+
+    for (i = 0; i < TIVX_GRAPH_MAX_HEAD_NODES; i++)
+    {
+        if (node == graph->head_nodes[i])
+        {
+            is_head_node = vx_true_e;
+            break;
+        }
+    }
+
+    return is_head_node;
+}
+
+static void findHeadNodeDepth(vx_node node_cur, vx_uint32 *chain_depth)
+{
+    vx_node node_next;
+    uint32_t out_node_idx, initial_depth_depth = 0;
+
+    /* If this node contains an output, then increment chain depth */
+    if (ownNodeGetNumOutNodes(node_cur) > 0)
+    {
+        *chain_depth = *chain_depth + 1;
+        /* Set the chain depth */
+        initial_depth_depth = *chain_depth;
+    }
+
+    for(out_node_idx=0; out_node_idx<ownNodeGetNumOutNodes(node_cur); out_node_idx++)
+    {
+        vx_uint32 next_chain_depth = initial_depth_depth;
+        node_next = ownNodeGetNextNode(node_cur, out_node_idx);
+
+        findHeadNodeDepth(node_next, &next_chain_depth);
+
+        if (next_chain_depth > *chain_depth)
+        {
+            *chain_depth = next_chain_depth;
+        }
+    }
+
+    return;
+}
+
+static vx_uint32 ownGraphPipeDepth(vx_graph graph)
+{
+    vx_node node_cur;
+    uint32_t node_cur_idx;
+    uint32_t chain_depth = 0, max_chain_depth = 0;
+
+    for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+    {
+        node_cur = graph->nodes[node_cur_idx];
+
+        /* Loop through all nodes in the graph *
+         * If node is a head node, query depth *
+         */
+        if (vx_true_e == isHeadNode(graph, node_cur))
+        {
+            chain_depth = 1;
+
+            findHeadNodeDepth(node_cur, &chain_depth);
+
+            if (chain_depth > max_chain_depth)
+            {
+                max_chain_depth = chain_depth;
+            }
+        }
+    }
+
+    if (max_chain_depth > TIVX_GRAPH_MAX_PIPELINE_DEPTH)
+    {
+        VX_PRINT(VX_ZONE_WARNING, "Required pipe depth = %d but max pipe depth = %d\n", max_chain_depth, TIVX_GRAPH_MAX_PIPELINE_DEPTH);
+        VX_PRINT(VX_ZONE_WARNING, "Will need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
+        max_chain_depth = TIVX_GRAPH_MAX_PIPELINE_DEPTH;
+    }
+
+    return max_chain_depth;
+}
+
 static vx_status ownGraphNodePipeline(vx_graph graph)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    uint32_t node_id;
+    uint32_t node_id, calculated_pipe_depth;
+
+    if ((vx_bool)vx_true_e == graph->is_pipelining_enabled)
+    {
+        calculated_pipe_depth = ownGraphPipeDepth(graph);
+
+        if ((vx_bool)vx_false_e == graph->is_pipeline_depth_set)
+        {
+            graph->pipeline_depth = calculated_pipe_depth;
+        }
+        else
+        {
+            if (calculated_pipe_depth > graph->pipeline_depth)
+            {
+                VX_PRINT(VX_ZONE_WARNING, "Pipe depth set via tivxSetGraphPipelineDepth may not be optimal\n");
+                VX_PRINT(VX_ZONE_WARNING, "The calculated pipe depth value is %d\n", calculated_pipe_depth);
+            }
+        }
+    }
 
     for(node_id=0; node_id<graph->num_nodes; node_id++)
     {

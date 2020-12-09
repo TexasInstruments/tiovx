@@ -187,6 +187,12 @@ typedef struct _vx_graph {
     /*! \brief graph schedule mode as defined by vx_graph_schedule_mode_type_e */
     vx_enum schedule_mode;
 
+    /*! \brief graph pipelining enabled flag */
+    vx_bool is_pipelining_enabled;
+
+    /*! \brief graph pipeline depth set flag via tivxSetGraphPipelineDepth */
+    vx_bool is_pipeline_depth_set;
+
     /*! \brief number of graph schedule's that are requested but not submitted i.e pending */
     uint32_t schedule_pending_count;
 

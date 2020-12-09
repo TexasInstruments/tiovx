@@ -362,6 +362,7 @@ vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_nod
        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) != (vx_bool)vx_false_e))
     {
         graph->is_streaming_enabled = (vx_bool)vx_true_e;
+        graph->is_pipelining_enabled = (vx_bool)vx_true_e;
 
         status = (vx_status)VX_SUCCESS;
 
