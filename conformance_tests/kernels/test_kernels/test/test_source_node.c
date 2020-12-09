@@ -496,8 +496,6 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray3, Arg, STREAMING_PARAMETERS)
 
     vxSetReferenceName((vx_reference)n1, "Intermediate_node");
 
-    tivxSetNodeParameterNumBufByIndex(n1, 1u, num_buf);
-
     VX_CALL(vxReplicateNode(graph, n1, prms_replicate, 2u));
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkObjArrayNode(graph, obj_array_sink[0]), VX_TYPE_NODE);
