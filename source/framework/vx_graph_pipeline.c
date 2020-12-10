@@ -950,9 +950,9 @@ vx_status ownGraphValidatePipelineParameters(vx_graph graph)
     return status;
 }
 
-static void ownGraphSetNumBuf(vx_graph graph, vx_node node, vx_reference ref, uint32_t prm_cur_idx)
+/* Returning optimal num bufs as 1 plus number of input nodes connected to ref */
+static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
 {
-    vx_reference node_ref;
     uint32_t num_bufs = 1U;
     uint32_t i;
 
@@ -965,13 +965,7 @@ static void ownGraphSetNumBuf(vx_graph graph, vx_node node, vx_reference ref, ui
         }
     }
 
-    /* TODO: Handle source/sink nodes */
-
-    node->parameter_index_num_buf[prm_cur_idx] = num_bufs;
-
-    node_ref = (vx_reference)node;
-    VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
-    VX_PRINT(VX_ZONE_WARNING, "Setting number of buffers to %d\n", num_bufs);
+    return num_bufs;
 }
 
 static vx_bool isLeafNode(vx_graph graph, vx_node node)
@@ -1019,6 +1013,7 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                     {
                         is_ref_graph_param = (vx_bool)vx_false_e;
 
+                        /* Checking to see if node parameter is also graph parameter, breaking if so */
                         for (graph_param_idx = 0U; graph_param_idx < graph->num_params; graph_param_idx++)
                         {
                             if (ref == graph->parameters[graph_param_idx].refs_list[0])
@@ -1028,10 +1023,26 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                             }
                         }
 
-                        if ( ((vx_bool)vx_false_e == is_ref_graph_param) &&
-                             (0U == node_cur->parameter_index_num_buf[prm_cur_idx]) )
+                        if ( (vx_bool)vx_false_e == is_ref_graph_param )
                         {
-                            ownGraphSetNumBuf(graph, node_cur, ref, prm_cur_idx);
+                            uint32_t optimal_num_buf;
+                            vx_reference node_ref;
+
+                            node_ref = (vx_reference)node_cur;
+                            optimal_num_buf = ownGraphGetOptimalNumBuf(graph, ref);
+
+                            if (0U == node_cur->parameter_index_num_buf[prm_cur_idx])
+                            {
+                                node_cur->parameter_index_num_buf[prm_cur_idx] = optimal_num_buf;
+                                VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_WARNING, "Setting number of buffers to %d\n", node_cur->parameter_index_num_buf[prm_cur_idx]);
+                            }
+                            else if (optimal_num_buf > node_cur->parameter_index_num_buf[prm_cur_idx])
+                            {
+                                /* Flagging to user if the number of buffers set is less than optimal */
+                                VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_WARNING, "Optimal number of buffers = %d, set number of buffers = %d\n", optimal_num_buf, node_cur->parameter_index_num_buf[prm_cur_idx]);
+                            }
                         }
                     }
                 }
