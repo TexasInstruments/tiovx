@@ -2316,6 +2316,41 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
     }
     else
     {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR,"Invalid node\n");
+    }
+    return status;
+}
+
+vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, void *num_buf, vx_size size)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+    {
+        if( (index < ownNodeGetNumParameters(node))
+            && (ownNodeGetParameterDir(node, index) == (vx_enum)VX_OUTPUT)
+            )
+        {
+            if (VX_CHECK_PARAM(num_buf, size, vx_uint32, 0x3U))
+            {
+                *(vx_uint32 *)num_buf = node->parameter_index_num_buf[index];
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Query TIVX_NODE_TIMEOUT failed\n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid parameters\n");
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR,"Invalid node\n");
     }
     return status;

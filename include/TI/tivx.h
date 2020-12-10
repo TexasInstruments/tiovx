@@ -688,6 +688,30 @@ vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
  */
 vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf);
 
+/*!
+ * \brief Get number of buffers to allocate at output of a node parameter
+ *
+ * - If the buffers have not been set by tivxSetNodeParameterNumBufByIndex
+ *   and the graph is not in pipelining mode, the num_buf will be 0.
+ * - If the buffers have not been set by tivxSetNodeParameterNumBufByIndex
+ *   the graph is in pipelining mode and not verified, the num_buf will be 0.
+ * - If the buffers have not been set by tivxSetNodeParameterNumBufByIndex
+ *   the graph is in pipelining mode and verified, the num_buf will be set via
+ *   the framework based on the number of nodes connected to that buffer.
+ * - If the buffers have been set by tivxSetNodeParameterNumBufByIndex,
+ *   the num_buf will reflect this value regardless of if this is an optimal
+ *   configuration.
+ * - The node parameter specified MUST be a output parameter.
+ *
+ * \param [in]  node Node reference
+ * \param [in]  index Node parameter index
+ * \param [out] num_buf Number of buffers allocated at output parameter
+ * \param [in]  Size of num_buf (must by sizeof(uint32_t))
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, void *num_buf, vx_size size);
+
 /*! \brief Indicates to the implementation the depth of the graph pipeline
  *
  * \param [in] graph Graph reference

@@ -1348,7 +1348,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
     CT_Image ref_src[MAX_NUM_BUF] = {NULL}, vxdst;
-    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf, get_num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
 
@@ -1436,7 +1436,18 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
         tmp_num_buf = 1;
         /* intentionally not having multiple buffers just to test graph stalling in absence of buffers */
     }
+
+    /* Validating tivxGetNodeParameterNumBufByIndex API */
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+
+    ASSERT(get_num_buf==0);
+
     VX_CALL(set_num_buf_by_node_index(n0, 1, tmp_num_buf));
+
+    /* Validating tivxGetNodeParameterNumBufByIndex API */
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+
+    ASSERT(get_num_buf==tmp_num_buf);
 
     /* n1 and n2 run on different targets hence set output of n1 to have multiple buffers so
      * that n1 and n2 can run in a pipeline
