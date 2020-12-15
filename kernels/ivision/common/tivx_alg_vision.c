@@ -78,6 +78,7 @@ static vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle);
 static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
 static vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 static vx_int32 tivxAlgiVisionGetHeapId(vx_uint32 space, vx_uint32 attrs, vx_uint32 *heap_id);
+static void * activeHandle = NULL;
 
 static vx_int32 tivxAlgiVisionGetHeapId(vx_uint32 space, vx_uint32 attrs, vx_uint32 *heap_id)
 {
@@ -349,6 +350,12 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms
 
 vx_int32 tivxAlgiVisionDelete(void *algHandle)
 {
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
+    if(activeHandle == algHandle)
+    {
+        activeHandle = NULL;
+    }
     return tivxAlgiVisionDeleteAlg(algHandle);
 }
 
@@ -361,17 +368,21 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
-
+   if(activeHandle != algHandle)
+    {
+        if(activeHandle != NULL)
+        {
+            IM_Fxns *prevIvision = (IM_Fxns *)activeHandle;
+            prevIvision->fxns->ialg.algDeactivate((IALG_Handle)prevIvision);
+        }
+        ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
+        activeHandle = algHandle;
+    }
     status = ivision->fxns->algProcess((IVISION_Handle)ivision,
                                        inBufs,
                                        outBufs,
                                        inArgs,
                                        outArgs);
-
-
-    ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
-
     return status;
 }
 
