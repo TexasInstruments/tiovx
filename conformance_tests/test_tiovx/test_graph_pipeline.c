@@ -1438,14 +1438,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     }
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==0);
 
     VX_CALL(set_num_buf_by_node_index(n0, 1, tmp_num_buf));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==tmp_num_buf);
 
@@ -6031,7 +6031,7 @@ TEST(tivxGraphPipeline, testGraphPipelineDepthDetectionParallel)
 }
 
 /*
- *  d0     n0     d1     n1     d2    n4     d3     n3      d5
+ *  d0     n0     d1     n1     d2    n2     d3     n4      d5
  * IMG -- NOT -- IMG -- NOT -- IMG -- NOT -- IMG -- AND -- IMG
  *                |      n3                          |
  *                +  -- NOT -- IMG ------------------
@@ -6342,14 +6342,14 @@ TEST(tivxGraphPipeline, testBufferDepthDetection1)
     VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==0);
 
     VX_CALL(vxVerifyGraph(graph));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==2);
 
@@ -6448,14 +6448,14 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==0);
 
     VX_CALL(vxVerifyGraph(graph));
 
     /* Validating tivxGetNodeParameterNumBufByIndex API */
-    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf, sizeof(uint32_t)));
+    VX_CALL(tivxGetNodeParameterNumBufByIndex(n0, 1, &get_num_buf));
 
     ASSERT(get_num_buf==3);
 

@@ -107,8 +107,8 @@ static inline vx_bool tivxGraphSortStackPop(tivx_graph_sort_context *context, vx
 void ownGraphTopologicalSort(tivx_graph_sort_context *context,
     vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
 {
-    uint16_t cur_node_idx, out_node_idx, num_out_nodes, i;
-    vx_node cur_node, next_node;
+    uint16_t cur_node_idx, in_node_idx, out_node_idx, num_in_nodes, num_out_nodes, i;
+    vx_node cur_node, next_node, prev_node;
 
     if (num_nodes < TIVX_GRAPH_MAX_NODES)
     {
@@ -129,7 +129,22 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
         {
             context->sorted_nodes[cur_node_idx] = cur_node;
             cur_node_idx++;
+            num_in_nodes  = (uint16_t)ownNodeGetNumInNodes(cur_node);
             num_out_nodes = (uint16_t)ownNodeGetNumOutNodes(cur_node);
+
+            /* Setting a depth for each node based on how many nodes precede it */
+            for (in_node_idx=0; in_node_idx < num_in_nodes; in_node_idx++)
+            {
+                prev_node = ownNodeGetNextInNode(cur_node, in_node_idx);
+                if(prev_node != NULL)
+                {
+                    if (cur_node->node_depth <= prev_node->node_depth)
+                    {
+                        cur_node->node_depth = prev_node->node_depth + 1;
+                    }
+                }
+            }
+
             for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
             {
                 next_node = ownNodeGetNextNode(cur_node, out_node_idx);

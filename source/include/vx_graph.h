@@ -302,6 +302,18 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
  */
 void ownGraphTopologicalSort(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
 
+/*! \brief Query the leaf nodes of the graph for their depth to find the total depth
+ *         of the graph
+ *
+ * \param graph [in] graph object
+ *
+ * \return Calculated pipe depth
+ *
+ * \ingroup group_vx_graph
+ */
+vx_uint32 ownGraphGetPipeDepth(vx_graph graph);
+
+
 /*! \brief Abstracted check for checking if references match
  * "vx_true_e" will be returned if references match or if references parent object matches
  *

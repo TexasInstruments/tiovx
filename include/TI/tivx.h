@@ -706,11 +706,10 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  * \param [in]  node Node reference
  * \param [in]  index Node parameter index
  * \param [out] num_buf Number of buffers allocated at output parameter
- * \param [in]  Size of num_buf (must by sizeof(uint32_t))
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, void *num_buf, vx_size size);
+vx_status VX_API_CALL tivxGetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 *num_buf);
 
 /*! \brief Indicates to the implementation the depth of the graph pipeline
  *

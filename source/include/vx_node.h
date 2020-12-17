@@ -120,6 +120,9 @@ typedef struct _vx_node {
     /*! \brief Control API processing Timeout value in milli-sec. */
     vx_uint32       timeout_val;
 
+    /*! \brief Depth of a given node. */
+    vx_uint32       node_depth;
+
 } tivx_node_t;
 
 /**

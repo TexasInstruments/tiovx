@@ -74,32 +74,34 @@
  * \ingroup group_vx_debug
  */
 enum tivx_debug_zone_e {
-    VX_ZONE_ERROR       = 0,    /*!< Used for most errors */
-    VX_ZONE_WARNING     = 1,    /*!< Used to warning developers of possible issues */
-    VX_ZONE_API         = 2,    /*!< Used to trace API calls and return values */
-    VX_ZONE_INFO        = 3,    /*!< Used to show run-time processing debug */
+    VX_ZONE_ERROR        = 0,    /*!< Used for most errors */
+    VX_ZONE_WARNING      = 1,    /*!< Used to warning developers of possible issues */
+    VX_ZONE_API          = 2,    /*!< Used to trace API calls and return values */
+    VX_ZONE_INFO         = 3,    /*!< Used to show run-time processing debug */
 
-    VX_ZONE_PERF        = 4,    /*!< Used to show performance information */
-    VX_ZONE_CONTEXT     = 5,
-    VX_ZONE_OSAL        = 6,
-    VX_ZONE_REFERENCE   = 7,
+    VX_ZONE_PERF         = 4,    /*!< Used to show performance information */
+    VX_ZONE_CONTEXT      = 5,
+    VX_ZONE_OSAL         = 6,
+    VX_ZONE_REFERENCE    = 7,
 
-    VX_ZONE_ARRAY       = 8,
-    VX_ZONE_IMAGE       = 9,
-    VX_ZONE_SCALAR      = 10,
-    VX_ZONE_KERNEL      = 11,
+    VX_ZONE_ARRAY        = 8,
+    VX_ZONE_IMAGE        = 9,
+    VX_ZONE_SCALAR       = 10,
+    VX_ZONE_KERNEL       = 11,
 
-    VX_ZONE_GRAPH       = 12,
-    VX_ZONE_NODE        = 13,
-    VX_ZONE_PARAMETER   = 14,
-    VX_ZONE_DELAY       = 15,
+    VX_ZONE_GRAPH        = 12,
+    VX_ZONE_NODE         = 13,
+    VX_ZONE_PARAMETER    = 14,
+    VX_ZONE_DELAY        = 15,
 
-    VX_ZONE_TARGET      = 16,
-    VX_ZONE_LOG         = 17,
+    VX_ZONE_TARGET       = 16,
+    VX_ZONE_LOG          = 17,
 
-    VX_ZONE_INIT        = 18,
+    VX_ZONE_INIT         = 18,
 
-    VX_ZONE_MAX         = 32
+    VX_ZONE_OPTIMIZATION = 19,
+
+    VX_ZONE_MAX          = 32
 };
 
 #define VX_PRINT(zone, message, ...) do { tivx_print(((vx_enum)zone), "[%s:%u] "message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (1 == 0)

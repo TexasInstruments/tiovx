@@ -931,6 +931,9 @@ vx_status ownGraphValidatePipelineParameters(vx_graph graph)
             node_idx = graph->parameters[param_idx].index;
             node     = graph->parameters[param_idx].node;
 
+            /* Value of 0 is the default.  If the value is set 
+             * to 0, then the buffers have not been set.  Therefore,
+             * if both are nonzero, then there is an error, so flagging */
             if ( (0U != graph->parameters[param_idx].num_buf) &&
                  (0U != node->parameter_index_num_buf[node_idx]) )
             {
@@ -960,9 +963,17 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
     {
         if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
         {
+            /* Adding the number of nodes that consume this reference */
             num_bufs += graph->data_ref_num_in_nodes[i];
             break;
         }
+    }
+
+    if (num_bufs >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
+    {
+        VX_PRINT(VX_ZONE_OPTIMIZATION, "Required number of buffers = %d but max buffer depth = %d\n", num_bufs, TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1);
+        VX_PRINT(VX_ZONE_OPTIMIZATION, "Will need to increase the value of TIVX_OBJ_DESC_QUEUE_MAX_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
+        num_bufs = TIVX_OBJ_DESC_QUEUE_MAX_DEPTH-1;
     }
 
     return num_bufs;
@@ -1001,7 +1012,9 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
         {
             node_cur = graph->nodes[node_cur_idx];
 
-            /* TODO: Is this check needed? */
+            /* Not checking outputs of leaf nodes given that leaf node
+             * outputs are not being consumed and should be set as
+             * graph parameter if needed to be consumed downstream */
             if ((vx_bool)vx_false_e == isLeafNode(graph, node_cur))
             {
                 for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
@@ -1031,17 +1044,19 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                             node_ref = (vx_reference)node_cur;
                             optimal_num_buf = ownGraphGetOptimalNumBuf(graph, ref);
 
+                            /* Given that 0 is the default value, this if statement checks
+                             * for if the buffers have not been set at all */
                             if (0U == node_cur->parameter_index_num_buf[prm_cur_idx])
                             {
                                 node_cur->parameter_index_num_buf[prm_cur_idx] = optimal_num_buf;
-                                VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
-                                VX_PRINT(VX_ZONE_WARNING, "Setting number of buffers to %d\n", node_cur->parameter_index_num_buf[prm_cur_idx]);
+                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Buffer depth not set by user at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Setting number of buffers to %d\n", node_cur->parameter_index_num_buf[prm_cur_idx]);
                             }
                             else if (optimal_num_buf > node_cur->parameter_index_num_buf[prm_cur_idx])
                             {
                                 /* Flagging to user if the number of buffers set is less than optimal */
-                                VX_PRINT(VX_ZONE_WARNING, "Insufficient buffers set at node %s parameter %s\n", node_ref->name, ref->name);
-                                VX_PRINT(VX_ZONE_WARNING, "Optimal number of buffers = %d, set number of buffers = %d\n", optimal_num_buf, node_cur->parameter_index_num_buf[prm_cur_idx]);
+                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Internally computed buffer value greater than buffers set at node %s parameter %s\n", node_ref->name, ref->name);
+                                VX_PRINT(VX_ZONE_OPTIMIZATION, "Computed number of buffers = %d, set number of buffers = %d\n", optimal_num_buf, node_cur->parameter_index_num_buf[prm_cur_idx]);
                             }
                         }
                     }
@@ -1051,4 +1066,34 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
     }
 
     return;
+}
+
+vx_uint32 ownGraphGetPipeDepth(vx_graph graph)
+{
+    uint32_t pipe_depth = 1;
+    uint32_t node_cur_idx;
+    vx_node node_cur;
+
+    for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+    {
+        node_cur = graph->nodes[node_cur_idx];
+
+        if ((vx_bool)vx_true_e == isLeafNode(graph, node_cur))
+        {
+            if (pipe_depth <= node_cur->node_depth)
+            {
+                pipe_depth = node_cur->node_depth;
+            }
+        }
+    }
+
+    if ( (pipe_depth >= TIVX_GRAPH_MAX_PIPELINE_DEPTH) &&
+         ((vx_bool)vx_false_e == graph->is_pipeline_depth_set) )
+    {
+        VX_PRINT(VX_ZONE_OPTIMIZATION, "Required pipe depth = %d but max pipe depth = %d\n", pipe_depth, TIVX_GRAPH_MAX_PIPELINE_DEPTH-1);
+        VX_PRINT(VX_ZONE_OPTIMIZATION, "Will need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h to get full performance\n");
+        pipe_depth = TIVX_GRAPH_MAX_PIPELINE_DEPTH-1;
+    }
+
+    return pipe_depth;
 }
