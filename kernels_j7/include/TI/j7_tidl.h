@@ -106,6 +106,9 @@ typedef struct{
   /**TIDL input/output buffer descriptor*/
   sTIDL_IOBufDesc_t ioBufDesc;
 
+  /** Flag to enable optimization ivision alg activate, default it is disabled */
+  vx_uint32 optimize_ivision_activation;
+
 }tivxTIDLJ7Params;
 
 /*!
@@ -119,6 +122,7 @@ static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams)
 
   tidlParams->compute_config_checksum = 0;
   tidlParams->compute_network_checksum = 0;
+  tidlParams->optimize_ivision_activation = 0;
 
   memset(&tidlParams->ioBufDesc, 0, sizeof(sTIDL_IOBufDesc_t));
 }

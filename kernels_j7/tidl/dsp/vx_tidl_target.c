@@ -295,7 +295,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
                     &tidlObj->inBufs,
                     &tidlObj->outBufs,
                     (IVISION_InArgs  *)tidlObj->inArgs,
-                    (IVISION_OutArgs *)tidlObj->outArgs
+                    (IVISION_OutArgs *)tidlObj->outArgs,
+                    tidlObj->tidlParams.optimize_ivision_activation
                  );
 
         tivxCheckStatus(&status, tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
