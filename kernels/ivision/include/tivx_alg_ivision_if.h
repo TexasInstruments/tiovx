@@ -83,7 +83,8 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IVISION_InBufs *inBufs,
     IVISION_OutBufs *outBufs,
     IVISION_InArgs *inArgs,
-    IVISION_OutArgs *outArgs);
+    IVISION_OutArgs *outArgs,
+    vx_uint32 optAlgAct);
 
 vx_int32 tivxAlgiVisionControl(void *algHandle,
     IALG_Cmd cmd,

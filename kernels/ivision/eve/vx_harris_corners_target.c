@@ -193,7 +193,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
                             &prms->inBufs,
                             &prms->outBufs,
                             (IVISION_InArgs*)&prms->inArgs,
-                            (IVISION_OutArgs *)&prms->outArgs);
+                            (IVISION_OutArgs *)&prms->outArgs,
+                            0);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

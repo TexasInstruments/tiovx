@@ -363,12 +363,13 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IVISION_InBufs *inBufs,
     IVISION_OutBufs *outBufs,
     IVISION_InArgs *inArgs,
-    IVISION_OutArgs *outArgs)
+    IVISION_OutArgs *outArgs,
+    vx_uint32 optAlgAct)
 {
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
     vx_status status = (vx_status)VX_SUCCESS;
 
-   if(activeHandle != algHandle)
+    if((activeHandle != algHandle) || (optAlgAct == 0))
     {
         if(activeHandle != NULL)
         {
@@ -376,13 +377,24 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
             prevIvision->fxns->ialg.algDeactivate((IALG_Handle)prevIvision);
         }
         ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
-        activeHandle = algHandle;
+        if(optAlgAct == 1)
+        {
+            activeHandle = algHandle;
+        }
+        else
+        {
+            activeHandle = NULL;
+        }
     }
     status = ivision->fxns->algProcess((IVISION_Handle)ivision,
                                        inBufs,
                                        outBufs,
                                        inArgs,
                                        outArgs);
+    if(optAlgAct == 0)
+    {
+        ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
+    }                               
     return status;
 }
 

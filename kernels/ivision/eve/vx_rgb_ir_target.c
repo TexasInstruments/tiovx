@@ -201,7 +201,8 @@ static vx_status VX_CALLBACK tivxKernelRgbIrProcess(
         &prms->inBufs,
         &prms->outBufs,
         (IVISION_InArgs*)&prms->inArgs,
-        (IVISION_OutArgs *)&prms->outArgs);
+        (IVISION_OutArgs *)&prms->outArgs,
+        0);
 
     tivxCheckStatus(&status, tivxMemBufferUnmap(src_desc_target_ptr, src->mem_size[0],
         (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
