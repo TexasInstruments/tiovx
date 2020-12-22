@@ -80,26 +80,26 @@ enum tivx_debug_zone_e {
     VX_ZONE_INFO         = 3,    /*!< Used to show run-time processing debug */
 
     VX_ZONE_PERF         = 4,    /*!< Used to show performance information */
-    VX_ZONE_CONTEXT      = 5,
-    VX_ZONE_OSAL         = 6,
-    VX_ZONE_REFERENCE    = 7,
+    VX_ZONE_CONTEXT      = 5,    /*!< Used to show information related to context objects */
+    VX_ZONE_OSAL         = 6,    /*!< Used to show information related to the OS abstraction layer */
+    VX_ZONE_REFERENCE    = 7,    /*!< Used to show information related to reference objects */
 
-    VX_ZONE_ARRAY        = 8,
-    VX_ZONE_IMAGE        = 9,
-    VX_ZONE_SCALAR       = 10,
-    VX_ZONE_KERNEL       = 11,
+    VX_ZONE_ARRAY        = 8,    /*!< Used to show information related to array objects */
+    VX_ZONE_IMAGE        = 9,    /*!< Used to show information related to image objects */
+    VX_ZONE_SCALAR       = 10,   /*!< Used to show information related to scalar objects */
+    VX_ZONE_KERNEL       = 11,   /*!< Used to show information related to kernel objects */
 
-    VX_ZONE_GRAPH        = 12,
-    VX_ZONE_NODE         = 13,
-    VX_ZONE_PARAMETER    = 14,
-    VX_ZONE_DELAY        = 15,
+    VX_ZONE_GRAPH        = 12,   /*!< Used to show information related to graph objects */
+    VX_ZONE_NODE         = 13,   /*!< Used to show information related to node objects */
+    VX_ZONE_PARAMETER    = 14,   /*!< Used to show information related to parameter objects */
+    VX_ZONE_DELAY        = 15,   /*!< Used to show information related to delay objects */
 
-    VX_ZONE_TARGET       = 16,
-    VX_ZONE_LOG          = 17,
+    VX_ZONE_TARGET       = 16,   /*!< Used to show information related to OpenVX targets */
+    VX_ZONE_LOG          = 17,   /*!< Used to show generic logging information */
 
-    VX_ZONE_INIT         = 18,
+    VX_ZONE_INIT         = 18,   /*!< Used to show initialization logs */
 
-    VX_ZONE_OPTIMIZATION = 19,    /*!< Used to provide optimization tips */
+    VX_ZONE_OPTIMIZATION = 19,   /*!< Used to provide optimization tips */
 
     VX_ZONE_MAX          = 32
 };
