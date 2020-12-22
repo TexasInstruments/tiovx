@@ -99,7 +99,7 @@ enum tivx_debug_zone_e {
 
     VX_ZONE_INIT         = 18,
 
-    VX_ZONE_OPTIMIZATION = 19,
+    VX_ZONE_OPTIMIZATION = 19,    /*!< Used to provide optimization tips */
 
     VX_ZONE_MAX          = 32
 };
