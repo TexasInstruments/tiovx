@@ -37,7 +37,7 @@ ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
 endif
 
-ifeq ($(HOST_COMPILER),GCC_LINUX_ARM)
+ifeq ($(HOST_COMPILER), $(filter $(HOST_COMPILER), GCC_LINUX_ARM GCC_QNX_ARM))
 CFLAGS += -Wno-format-truncation
 CFLAGS += -Wno-sizeof-pointer-memaccess
 endif
