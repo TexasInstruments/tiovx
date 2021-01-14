@@ -961,11 +961,14 @@ static uint32_t ownGraphGetOptimalNumBuf(vx_graph graph, vx_reference ref)
 
     for(i=0; i<graph->num_data_ref; i++)
     {
-        if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
+        if (i < TIVX_GRAPH_MAX_DATA_REF)
         {
-            /* Adding the number of nodes that consume this reference */
-            num_bufs += graph->data_ref_num_in_nodes[i];
-            break;
+            if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != 0)
+            {
+                /* Adding the number of nodes that consume this reference */
+                num_bufs += graph->data_ref_num_in_nodes[i];
+                break;
+            }
         }
     }
 
