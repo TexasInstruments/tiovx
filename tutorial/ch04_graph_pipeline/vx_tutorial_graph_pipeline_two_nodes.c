@@ -267,7 +267,6 @@ void vx_tutorial_graph_pipeline_two_nodes()
 
     #if 0
     tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_pipeline_two_nodes");
-    tivxLogRtTrace(graph);
     #endif
     /** \endcode */
 

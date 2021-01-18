@@ -168,7 +168,8 @@ static vx_status log_graph_rt_trace(vx_graph graph)
     vx_status status = VX_SUCCESS;
 
     #if LOG_RT_TRACE_ENABLE
-    status = tivxLogRtTrace(graph);
+    /* If run time logging is needed, update to use tivxLogRtTraceEnable,
+     * tivxLogRtTraceDisable and tivxLogRtTraceExportToFile */
     #endif
     return status;
 }
