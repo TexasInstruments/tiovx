@@ -99,6 +99,8 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
     uint32_t inst_id);
+static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDccMapDpcParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -192,6 +194,8 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
             tivxVpacVissDccMapYeeParams(vissObj, ae_awb_res);
+            tivxVpacVissDccInitDpc(vissObj);
+            tivxVpacVissDccMapDpcParams(vissObj, ae_awb_res);
 
             if (NULL != h3a_out_desc)
             {
@@ -282,6 +286,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         }
 
         /* Apply DCC Output to VISS Driver config */
+        tivxVpacVissDccMapDpcParams(vissObj, aewb_result);
 
         /* Apply DCC Output and update CCM */
         tivxVpacVissDccMapCCMParams(vissObj, aewb_result);
@@ -576,6 +581,79 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
              * assumes caller protects this flag */
             vissObj->isConfigUpdated = 1U;
         }
+    }
+}
+
+// DPC must be enabled at startup time if it is included in DCC
+// otherwise switching DPC on later will cause image artifacts 
+static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj)
+{
+    if (NULL != vissObj)
+    {
+        Rfe_DpcOtfConfig *dpcCfg = &vissObj->vissCfg.dpcOtfCfg;
+        dpcCfg->enable = 0;
+        if (1U == vissObj->dcc_out_prms.useVissDpcCfg)
+        {
+            int k;
+            dpcCfg->enable = 1;
+            for (k = 0; k < 8; k++)
+            {
+                dpcCfg->threshold[k] = 65535;
+                dpcCfg->slope[0] = 0;
+            }
+        }
+
+        vissObj->vissCfgRef.dpcOtf = dpcCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
+static void tivxVpacVissDccMapDpcParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res)
+{
+    if (     (NULL != vissObj)
+          && (NULL != ae_awb_res)
+          && (1 == vissObj->dcc_out_prms.useVissDpcCfg)
+          && (0 != ae_awb_res->ae_valid)
+       )
+    {
+        uint32_t n_regions = vissObj->dcc_out_prms.vissNumDpcInst;
+        int32_t dcc_index = 0;
+
+        int dcc_gain_ev = calc_dcc_gain_EV(ae_awb_res->analog_gain);
+        dcc_index = dcc_search_DPC(
+            vissObj->dcc_out_prms.phPrmsDpc,
+            n_regions,
+            dcc_gain_ev);
+        viss_dpc_dcc_cfg_t * dccCfg = &vissObj->dcc_out_prms.vissDpcCfg[dcc_index];
+
+        Rfe_DpcOtfConfig *hwaCfg = &vissObj->vissCfg.dpcOtfCfg;
+
+        hwaCfg->enable = dccCfg->enable;
+        hwaCfg->threshold[0] = dccCfg->thr_0;
+        hwaCfg->threshold[1] = dccCfg->thr_512;
+        hwaCfg->threshold[2] = dccCfg->thr_1024;
+        hwaCfg->threshold[3] = dccCfg->thr_2048;
+        hwaCfg->threshold[4] = dccCfg->thr_4096;
+        hwaCfg->threshold[5] = dccCfg->thr_8192;
+        hwaCfg->threshold[6] = dccCfg->thr_16384;
+        hwaCfg->threshold[7] = dccCfg->thr_32768;
+        hwaCfg->slope[0] = dccCfg->slp_0;
+        hwaCfg->slope[1] = dccCfg->slp_512;
+        hwaCfg->slope[2] = dccCfg->slp_1024;
+        hwaCfg->slope[3] = dccCfg->slp_2048;
+        hwaCfg->slope[4] = dccCfg->slp_4096;
+        hwaCfg->slope[5] = dccCfg->slp_8192;
+        hwaCfg->slope[6] = dccCfg->slp_16384;
+        hwaCfg->slope[7] = dccCfg->slp_32768;
+
+        vissObj->vissCfgRef.dpcOtf = hwaCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
     }
 }
 
