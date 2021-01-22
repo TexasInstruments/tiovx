@@ -278,6 +278,7 @@ void tivxUnRegisterHwaTargetVencKernels(void);
  *                               type <tt>\ref tivx_video_encoder_params_t</tt>.
  * \param [in] input_image       The input image to be encoded. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
  *                               Width and Height of vx_image object must each be a multiple of 16 (\see tivx_video_encoder_params_t::crop_left)
+ *                               QCIF resolution (176x144) is not supported.
  * \param [out] output_bitstream The output object of a uint8_t buffer.
  *                               Formatted as an H264 i-frame only stream.
  * \see <tt>TIVX_KERNEL_VIDEO_ENCODER_NAME</tt>

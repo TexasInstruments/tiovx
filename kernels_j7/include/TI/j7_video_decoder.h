@@ -142,6 +142,7 @@ void tivxUnRegisterHwaTargetVdecKernels(void);
  *             input_bitstream \ref vx_user_data_object to reflect the size of the specific bitstream buffer frame.
  *             Must be formatted as an H264 i-frame only stream.
  * \param [out] output_image Decoded output. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
+ *             QCIF resolution (176x144) is not supported.
  * \see <tt>TIVX_KERNEL_VIDEO_DECODER_NAME</tt>
  * \ingroup group_vision_function_video_decoder
  * \return <tt>\ref vx_node</tt>.
