@@ -146,7 +146,8 @@ void tivxVideoDecoderErrorCb(struct mm_buffer *buff, mm_dec_process_cb cb_type);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-static tivx_target_kernel vx_video_decoder_target_kernel = NULL;
+static tivx_target_kernel vx_video_decoder_target_kernel_0 = NULL;
+static tivx_target_kernel vx_video_decoder_target_kernel_1 = NULL;
 
 static tivxVideoDecoderInstObj gTivxVideoDecoderInstObj;
 
@@ -157,14 +158,15 @@ static tivxVideoDecoderInstObj gTivxVideoDecoderInstObj;
 void tivxAddTargetKernelVideoDecoder(void)
 {
     vx_status status = (vx_status)VX_FAILURE;
-    char target_name[TIVX_TARGET_MAX_NAME];
+    char target_name[2][TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
     if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
     {
-        strncpy(target_name, TIVX_TARGET_VDEC1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name[0], TIVX_TARGET_VDEC1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name[1], TIVX_TARGET_VDEC2, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else
@@ -175,15 +177,25 @@ void tivxAddTargetKernelVideoDecoder(void)
 
     if (status == (vx_status)VX_SUCCESS)
     {
-        vx_video_decoder_target_kernel = tivxAddTargetKernelByName(
+        vx_video_decoder_target_kernel_0 = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VIDEO_DECODER_NAME,
-                            target_name,
+                            target_name[0],
                             tivxVideoDecoderProcess,
                             tivxVideoDecoderCreate,
                             tivxVideoDecoderDelete,
                             tivxVideoDecoderControl,
                             NULL);
-        if (NULL != vx_video_decoder_target_kernel)
+
+        vx_video_decoder_target_kernel_1 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VIDEO_DECODER_NAME,
+                            target_name[1],
+                            tivxVideoDecoderProcess,
+                            tivxVideoDecoderCreate,
+                            tivxVideoDecoderDelete,
+                            tivxVideoDecoderControl,
+                            NULL);
+
+        if (NULL != vx_video_decoder_target_kernel_0 || NULL != vx_video_decoder_target_kernel_1)
         {
             /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVideoDecoderInstObj.lock);
@@ -210,14 +222,23 @@ void tivxRemoveTargetKernelVideoDecoder(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status = tivxRemoveTargetKernel(vx_video_decoder_target_kernel);
-    if (status == (vx_status)VX_SUCCESS)
+    status = tivxRemoveTargetKernel(vx_video_decoder_target_kernel_0);
+    if (status == VX_SUCCESS)
     {
-        vx_video_decoder_target_kernel = NULL;
+        vx_video_decoder_target_kernel_0 = NULL;
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Decoder TargetKernel\n");
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Decoder Target Kernel\n");
+    }
+    status = tivxRemoveTargetKernel(vx_video_decoder_target_kernel_1);
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        vx_video_decoder_target_kernel_1 = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Remove Video Decoder Target Kernel\n");
     }
     if (0 != gTivxVideoDecoderInstObj.lock)
     {

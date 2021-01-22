@@ -556,7 +556,16 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     }
 }
 
-TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
+typedef struct {
+    const char* name;
+    int mode;
+} Arg_MultiStream;
+
+#define DECODER_PARAMETERS \
+    CT_GENERATE_PARAMETERS("serial", ARG, 0), \
+    CT_GENERATE_PARAMETERS("parallel", ARG, 1)
+
+TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, DECODER_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     tivx_video_decoder_params_t params_s;
@@ -658,8 +667,20 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
     uint8_t                  *data_ptr_uv_l;
 
     uint32_t i, j;
+    uint32_t exe_time[MAX_ITERATIONS];
+    uint64_t timestamp = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1))
+    char *second_target = TIVX_TARGET_VDEC1;
+    uint32_t expected_time_median = 29000;
+
+    if (arg_->mode == 1)
+    {
+        /* Run both VENC instances in parallel */
+        second_target = TIVX_TARGET_VDEC2;
+        expected_time_median = 23000;
+    }
+
+    if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1)) && (vx_true_e == tivxIsTargetEnabled(second_target)))
     {
         snprintf(cfg_file, MAX_ABS_FILENAME, "%s/tivx/video_decoder/dec_multi_channel_0.cfg", ct_get_test_file_path());
 
@@ -751,7 +772,7 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
                                            bitstream_obj_l,
                                            output_image_l), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_decode_s, VX_TARGET_STRING, TIVX_TARGET_VDEC1));
-        VX_CALL(vxSetNodeTarget(node_decode_l, VX_TARGET_STRING, TIVX_TARGET_VDEC1));
+        VX_CALL(vxSetNodeTarget(node_decode_l, VX_TARGET_STRING, second_target));
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -825,7 +846,11 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
             VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s,  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
             VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l,  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
 
+            timestamp = tivxPlatformGetTimeInUsecs();
+
             VX_CALL(vxProcessGraph(graph));
+
+            exe_time[i] = (uint32_t)(tivxPlatformGetTimeInUsecs() - timestamp);
 
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
             checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, 0, rect_y_s);
@@ -936,6 +961,16 @@ TEST(tivxHwaVideoDecoder, testMultiStreamProcessing)
             VX_CALL(vxUnmapImagePatch(output_image_l, map_id_image_uv_l));
 #endif
         }
+
+#if 0
+        for (i = 0; i < iterations; i++)
+        {
+            printf("exe_time[%d]=%u\n", i, exe_time[i]);
+        }
+#endif
+
+        ASSERT(exe_time[iterations-1] < (expected_time_median + 1000));
+        ASSERT(exe_time[iterations-1] > (expected_time_median - 1000));
 
         VX_CALL(vxReleaseNode(&node_decode_l));
         VX_CALL(vxReleaseNode(&node_decode_s));
