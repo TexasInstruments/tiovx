@@ -278,9 +278,12 @@ typedef struct
     uint32_t numCh; /*!< Number of channels to be processed on current instance of Node */
     uint32_t chVcNum[TIVX_CAPTURE_MAX_CH]; /*!< Virtual Channel Number for each channel */
     uint32_t chInstMap[TIVX_CAPTURE_MAX_CH]; /*!< Instance ID for each channel */
-    uint32_t timeout; /*!< Total timeout (in ms) for all cameras.  If this timeout is exceeded, cameras that have not been received are dead */
+    uint32_t timeout; /*!< Total timeout (in ms) for all cameras.  If this timeout is exceeded, cameras that have not been received are dead.
+                           The timeout value will only be considered if calling the \ref tivxCaptureRegisterErrorFrame API to enable error detection */
     uint32_t timeoutInitial; /*!< Initial failure timeout (in ms) for first time the capture node fails.  Once this
-                                  timeout has been exceeded, the "timeout" parameter will then be used. */
+                                  timeout has been exceeded, the "timeout" parameter will then be used.
+                                  The timeout value will only be considered if calling the \ref tivxCaptureRegisterErrorFrame
+                                  API to enable error detection */
 } tivx_capture_params_t;
 
 /*!
