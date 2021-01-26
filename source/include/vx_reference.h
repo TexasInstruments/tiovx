@@ -275,9 +275,18 @@ vx_reference ownCreateReferenceFromExemplar(
 
 
 /*! \brief Return reference given a obj desc ID
+ *         This API must only be called on the host
+ *         Use the \ref ownReferenceGetHostRefFromObjDescId
+ *         if needing to call from the remote cores
  * \ingroup group_vx_reference
  */
 vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id);
+
+/*! \brief Return 64 bit reference given a obj desc ID
+ *         Used to call on the remote cores
+ * \ingroup group_vx_reference
+ */
+uint64_t ownReferenceGetHostRefFromObjDescId(uint16_t obj_desc_id);
 
 #ifdef __cplusplus
 }
