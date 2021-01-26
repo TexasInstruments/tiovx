@@ -987,8 +987,8 @@ TEST_WITH_ARG(tivxHwaVideoEncoder, testMultiStreamProcessing, Arg_MultiStream, E
         }
 #endif
 
-        ASSERT(exe_time[iterations-1] < (expected_time_median + 1000));
-        ASSERT(exe_time[iterations-1] > (expected_time_median - 1000));
+        ASSERT(exe_time[iterations-1] < (expected_time_median + 3000));
+        ASSERT(exe_time[iterations-1] > (expected_time_median - 3000));
 
         VX_CALL(vxReleaseNode(&node_encode_l));
         VX_CALL(vxReleaseNode(&node_encode_s));
