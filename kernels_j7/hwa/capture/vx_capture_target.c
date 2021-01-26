@@ -1622,9 +1622,10 @@ static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
     vx_status                             status = (vx_status)VX_SUCCESS;
     uint16_t obj_desc_id = 0U;
     vx_reference ref = NULL;
+    uint64_t ref64 = 0;
     uint32_t bufId, chId, planeId;
 
-    ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id);
+    ref64 = ownReferenceGetHostRefFromObjDescId(obj_desc->obj_desc_id);
     tivxFlagBitSet(&obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
 
     /* Allocate object descriptors */
@@ -1632,7 +1633,11 @@ static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
     {
         for (bufId = 0U; bufId < TIVX_CAPTURE_MAX_NUM_BUFS; bufId++)
         {
+            /* Passing a NULL pointer as "ref" then overwriting it the next line w/ the 64 bit value */
             prms->error_obj_desc[chId][bufId] = tivxObjDescAlloc((vx_enum)obj_desc->type, ref);
+
+            /* Since vx_reference is a 32 bit address, this needs to use the 64 bit value of the host_ref */
+            prms->error_obj_desc[chId][bufId]->host_ref = ref64;
 
             if (NULL != prms->error_obj_desc[chId][bufId])
             {
