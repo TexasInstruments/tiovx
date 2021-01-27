@@ -4,5 +4,5 @@
 # and vsdk_tools_path.mak files from the tiovx directory.
 
 # set values of below to yes or no to include or exclude the modules from compile and link
-BUILD_HWA_DMPAC_DOF=yes
-BUILD_HWA_KERNELS=yes
+BUILD_HWA_DMPAC_DOF?=yes
+BUILD_HWA_KERNELS?=yes
