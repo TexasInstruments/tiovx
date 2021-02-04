@@ -516,14 +516,26 @@ vx_status ownNodeKernelInit(vx_node node)
                 if(((vx_bool)vx_true_e == node->is_super_node) ||
                    (NULL == node->super_node))
                 {
+                    vx_reference ref;
+
+                    ref = (vx_reference)node;
+
+                    VX_PRINT(VX_ZONE_INFO,"Calling create callback for node %s\n", ref->name);
+
                     status = ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, (vx_enum)TIVX_CMD_NODE_CREATE,
                         1, obj_desc_id, node->timeout_val);
+
+                    VX_PRINT(VX_ZONE_INFO,"Create callback for node %s completed\n", ref->name);
                 }
 
                 if(status!=(vx_status)VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                    vx_reference ref;
+
+                    ref = (vx_reference)node;
+
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed for node %s\n", ref->name);
                     VX_PRINT(VX_ZONE_ERROR,"Please be sure the target callbacks have been registered for this core\n");
                     VX_PRINT(VX_ZONE_ERROR,"If the target callbacks have been registered, please ensure no errors are occurring within the create callback of this kernel\n");
                 }
