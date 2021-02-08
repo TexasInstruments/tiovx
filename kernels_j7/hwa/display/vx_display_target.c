@@ -670,14 +670,14 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
                     {
                         tivxMemFree(displayParams->copyImagePtr[0][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
-                    if(displayParams->copyImagePtr[0][1])
+                    if(displayParams->copyImagePtr[1][0])
                     {
                         tivxMemFree(displayParams->copyImagePtr[1][0], displayParams->copyImageSize[0], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
                 }
                 if((displayParams->copyImageSize[1] != 0U) && ((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format))
                 {
-                    if(displayParams->copyImagePtr[1][0])
+                    if(displayParams->copyImagePtr[0][1])
                     {
                         tivxMemFree(displayParams->copyImagePtr[0][1], displayParams->copyImageSize[1], (vx_enum)TIVX_MEM_EXTERNAL);
                     }
