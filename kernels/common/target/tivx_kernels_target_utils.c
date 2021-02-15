@@ -133,6 +133,7 @@ void tivxInitBufParams(
                 buf_params[i].data_type = (uint32_t)VXLIB_INT16;
                 break;
             case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params[i].data_type = (uint32_t)VXLIB_UINT32;
                 break;
@@ -144,6 +145,7 @@ void tivxInitBufParams(
                 break;
             case (vx_df_image)VX_DF_IMAGE_YUYV:
             case (vx_df_image)VX_DF_IMAGE_UYVY:
+            case (vx_df_image)TIVX_DF_IMAGE_RGB565:
                 buf_params[i].data_type = (uint32_t)VXLIB_UINT16;
                 break;
             default:
@@ -228,6 +230,7 @@ void tivxInitTwoBufParams(
                 buf_params0[i].data_type = (uint32_t)VXLIB_INT16;
                 break;
             case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params0[i].data_type = (uint32_t)VXLIB_UINT32;
                 break;
@@ -239,6 +242,7 @@ void tivxInitTwoBufParams(
                 break;
             case (vx_df_image)VX_DF_IMAGE_YUYV:
             case (vx_df_image)VX_DF_IMAGE_UYVY:
+            case (vx_df_image)TIVX_DF_IMAGE_RGB565:
                 buf_params0[i].data_type = (uint32_t)VXLIB_UINT16;
                 break;
             default:
@@ -262,6 +266,7 @@ void tivxInitTwoBufParams(
                 buf_params1[i].data_type = (uint32_t)VXLIB_INT16;
                 break;
             case (vx_df_image)VX_DF_IMAGE_RGBX:
+            case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             case (vx_df_image)VX_DF_IMAGE_U32:
                 buf_params1[i].data_type = (uint32_t)VXLIB_UINT32;
                 break;
@@ -273,6 +278,7 @@ void tivxInitTwoBufParams(
                 break;
             case (vx_df_image)VX_DF_IMAGE_YUYV:
             case (vx_df_image)VX_DF_IMAGE_UYVY:
+            case (vx_df_image)TIVX_DF_IMAGE_RGB565:
                 buf_params1[i].data_type = (uint32_t)VXLIB_UINT16;
                 break;
             default:

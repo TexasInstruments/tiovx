@@ -295,15 +295,19 @@ class DfImage(Enum) :
     P12  = 15
     ## OpenVX equivalent = \ref TIVX_DF_IMAGE_NV12_P12
     NV12_P12  = 16
+    ## OpenVX equivalent = \ref TIVX_DF_IMAGE_RGB565
+    RGB565 = 17
+    ## OpenVX equivalent = \ref TIVX_DF_IMAGE_BGRX
+    BGRX = 18
 
     def get_vx_enum_name(df_format) :
-        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 :
+        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 or df_format == DfImage.RGB565 or df_format == DfImage.BGRX :
             return "TIVX_DF_IMAGE_" + df_format.name
         else :
             return "VX_DF_IMAGE_" + df_format.name
 
     def get_vx_name(df_format) :
-        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 :
+        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 or df_format == DfImage.RGB565 or df_format == DfImage.BGRX :
             return "tivx_df_image_e"
         else :
             return "vx_df_image_e"
