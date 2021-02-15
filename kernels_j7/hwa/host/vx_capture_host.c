@@ -162,6 +162,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
                     {
                         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "image format is invalid \n");
+                        VX_PRINT(VX_ZONE_ERROR, "image format should be an image of type:\n VX_DF_IMAGE_RGBX or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_U16 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV\n");
                     }
                 }
                 else

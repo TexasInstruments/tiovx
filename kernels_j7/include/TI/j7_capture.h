@@ -391,6 +391,9 @@ void tivxUnRegisterHwaTargetCaptureKernels(void);
             If using \ref vx_image, the image type MUST be one of the following formats:
             - \ref VX_DF_IMAGE_UYVY
             - \ref VX_DF_IMAGE_YUYV
+            - \ref VX_DF_IMAGE_U16
+            - \ref VX_DF_IMAGE_RGBX
+            - \ref TIVX_DF_IMAGE_BGRX
 
             The number of items in the output object array corresponds to the number of syncronized, homogeneous
             camera sensors assigned to the capture node.  Each item in an object array must have the same
