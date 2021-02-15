@@ -13,12 +13,12 @@ IMAGING_PATH ?= $(PSDK_PATH)/imaging
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_01_03_00_06
 
 TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_20.2.0.LTS
-CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.4.0.LTS
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.4.1.LTS
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.7
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu
-BIOS_PATH ?= $(PSDK_PATH)/bios_6_83_00_18
-XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_61_03_29_core
+BIOS_PATH ?= $(PSDK_PATH)/bios_6_83_02_07
+XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_61_04_40_core
 PDK_PATH ?= $(PSDK_PATH)/pdk
 PDK_QNX_PATH ?= $(PSDK_PATH)/psdkqa/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
