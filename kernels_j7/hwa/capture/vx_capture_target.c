@@ -401,6 +401,7 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGBX:
+        case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
         case (vx_df_image)VX_DF_IMAGE_U16:
@@ -846,7 +847,7 @@ static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
 
                 tmp_obj_desc_id = (uint32_t)fvid2Frame->appData;
                 tmp_timestamp = fvid2Frame->timeStamp64;
-                
+
                 tivxQueuePut(&prms->freeFvid2FrameQ[chId], (uintptr_t)fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 tivxQueuePut(&prms->pendingFrameQ[chId], (uintptr_t)tmp_obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 tivxQueuePut(&prms->pendingFrameTimestampQ[chId], tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
@@ -1015,7 +1016,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                 }
 
                 tivxCaptureGetObjDesc(prms, recv_obj_desc_id, output_desc, &timestamp);
-            
+
                 obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX]->timestamp = timestamp;
 
                 if (0U == prms->steady_state_started)

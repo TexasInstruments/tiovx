@@ -155,6 +155,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
                     tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, (vx_enum)VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
 
                     if (((vx_df_image)VX_DF_IMAGE_RGBX != img_fmt) &&
+                        ((vx_df_image)TIVX_DF_IMAGE_BGRX != img_fmt) &&
                         ((vx_df_image)VX_DF_IMAGE_U16 != img_fmt) &&
                         ((vx_df_image)VX_DF_IMAGE_UYVY != img_fmt) &&
                         ((vx_df_image)VX_DF_IMAGE_YUYV != img_fmt))

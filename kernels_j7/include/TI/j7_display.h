@@ -182,6 +182,7 @@ void tivxUnRegisterHwaTargetDisplayKernels(void);
  * \param [in] image         The input image in one of the below formats:
  *                           <tt>\ref VX_DF_IMAGE_RGB</tt>,
  *                           <tt>\ref VX_DF_IMAGE_RGBX</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_BGRX</tt>,
  *                           <tt>\ref VX_DF_IMAGE_UYVY</tt>,
  *                           <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *                           <tt>\ref VX_DF_IMAGE_U16</tt>,
