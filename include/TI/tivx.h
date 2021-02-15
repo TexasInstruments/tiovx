@@ -373,6 +373,11 @@ typedef enum _tivx_df_image_e {
      * The stride_x for this data format must be set to 2 */
     TIVX_DF_IMAGE_RGB565 = VX_DF_IMAGE('R','5','6','5'),
 
+    /*! \brief A single plane of 32-bit pixel as 4 interleaved 8-bit units of
+     * B then G then R data, then a <i>don't care</i> byte.
+     * This uses the BT709 full range by default.
+     */
+    TIVX_DF_IMAGE_BGRX = VX_DF_IMAGE('B','G','R','A'),
 } tivx_df_image_e;
 
 /*! \brief The enumeration of all TIVX operational error codes.
