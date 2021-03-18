@@ -83,7 +83,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define VIDEO_DECODER_MAX_HANDLES (2U)
+#define VIDEO_DECODER_MAX_HANDLES (8U)
 #define MM_DEC_SUCCESS            (0U)
 #define HW_ALIGN                  (64U)
 #define ALIGN_SIZE(x,y)           (((x + (y-1U)) / y) * y)
