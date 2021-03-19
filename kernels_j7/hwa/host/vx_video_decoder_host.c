@@ -165,6 +165,18 @@ static vx_status VX_CALLBACK tivxAddKernelVideoDecoderValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Decoder param 'bitstream_format' should be:\n TIVX_BITSTREAM_FORMAT_H264 \n");
         }
+
+        if ((output_image_w % 64) != 0)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Decoder param 'output_image' width should be multiple of 64\n");
+        }
+
+        if ((output_image_h % 64) != 0)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Decoder param 'output_image' height should be multiple of 64\n");
+        }
     }
 
     /* PARAMETER RELATIONSHIP CHECKING */

@@ -99,6 +99,22 @@ extern "C" {
 
 /*@}*/
 
+
+/*! \brief Image alignment size
+ *  \ingroup group_vision_function_video_decoder
+ *  \details The width and height of the output video image should both be a multiple of this value
+ */
+#define TIVX_VDEC_ALIGN_SIZE     (64U)
+
+/*! \brief Image alignment macro
+ *  \ingroup group_vision_function_video_decoder
+ *  \details Helper macro to properly size the width and height of the output image to properly satisfy the video codec HW constraints
+ *  This can be used on the valid width and height of the output image when calling \ref vxCreateImage, to make sure the buffer is properly
+ *  allocated \see tivxVideoDecoderNode output_image parameter
+ */
+#define TIVX_VDEC_ALIGN(size)    (((size + (TIVX_VDEC_ALIGN_SIZE-1)) / TIVX_VDEC_ALIGN_SIZE) * TIVX_VDEC_ALIGN_SIZE)
+
+
 /*********************************
  *    VIDEO_DECODER STRUCTURES
  *********************************/
@@ -133,6 +149,8 @@ void tivxRegisterHwaTargetVdecKernels(void);
 void tivxUnRegisterHwaTargetVdecKernels(void);
 
 /*! \brief [Graph] Creates a VIDEO_DECODER Node.
+ *  \note This node is only supported in graphs with pipelining enabled with 2 or more
+ *        input and output buffers. \see \ref TIOVX_PIPELINING
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of
  *             type <tt>\ref tivx_video_decoder_params_t</tt>.
@@ -142,7 +160,7 @@ void tivxUnRegisterHwaTargetVdecKernels(void);
  *             input_bitstream \ref vx_user_data_object to reflect the size of the specific bitstream buffer frame.
  *             Must be formatted as an H264 i-frame only stream.
  * \param [out] output_image Decoded output. Use <tt>\ref VX_DF_IMAGE_NV12 </tt> dataformat.
- *             QCIF resolution (176x144) is not supported.
+ *             QCIF resolution (176x144) is not supported.  Image width and height both must be multiple of 64.
  * \see <tt>TIVX_KERNEL_VIDEO_DECODER_NAME</tt>
  * \ingroup group_vision_function_video_decoder
  * \return <tt>\ref vx_node</tt>.

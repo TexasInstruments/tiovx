@@ -71,10 +71,26 @@
 #include "tivx_utils_checksum.h"
 #include "test_hwa_common.h"
 
+static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node,vx_uint32 node_parameter_index);
+static void app_find_user_object_array_index(vx_user_data_object object_array[], vx_reference ref, vx_int32 array_size, vx_int32 *array_idx);
+static void app_find_image_array_index(vx_image image_array[], vx_reference ref, vx_int32 array_size, vx_int32 *array_idx);
+
+static void printPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName)
+{
+    printf("[ %c%c ] Execution time for %9d pixels (avg = %4.6f ms, min = %4.6f ms, max = %4.6f ms)\n",
+        testName[0], testName[1],
+        numPixels,
+        performance.avg/1000000.0,
+        performance.min/1000000.0,
+        performance.max/1000000.0
+        );
+}
+
 TESTCASE(tivxHwaVideoDecoder, CT_VXContext, ct_setup_vx_context, 0)
 
 #define MAX_ABS_FILENAME   (1024u)
 #define MAX_ITERATIONS     (100u)
+#define MAX_NUM_BUF        (2u)
 
 #define DUMP_DECODED_VIDEO_TO_FILE
 
@@ -98,7 +114,7 @@ TEST(tivxHwaVideoDecoder, testNodeCreation)
         tivx_video_decoder_params_init(&params);
         ASSERT_VX_OBJECT(configuration_obj = vxCreateUserDataObject(context, "tivx_video_decoder_params_t", sizeof(tivx_video_decoder_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * width * height * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * TIVX_VDEC_ALIGN(width) * TIVX_VDEC_ALIGN(height) * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         VX_CALL(vxCopyUserDataObject(configuration_obj, 0, sizeof(tivx_video_decoder_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT_VX_OBJECT(output_image = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
@@ -334,7 +350,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     vx_user_data_object configuration_obj;
     uint8_t *bitstream;
     vx_map_id map_id;
-    vx_user_data_object bitstream_obj;
+    vx_user_data_object bitstream_obj[MAX_NUM_BUF] = {NULL};
 
     char cfg_file[MAX_ABS_FILENAME];
     char input_file[MAX_ABS_FILENAME];
@@ -342,7 +358,7 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     struct stream_info info;
 
     vx_size seek[MAX_ITERATIONS];
-    vx_image output_image = NULL;
+    vx_image output_image[MAX_NUM_BUF] = {NULL};
     vx_graph graph = 0;
     vx_node node_decode = 0;
     vx_status status = VX_SUCCESS;
@@ -359,6 +375,10 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
     vx_imagepatch_addressing_t image_addr_uv;
     uint8_t                  *data_ptr_y;
     uint8_t                  *data_ptr_uv;
+    uint32_t                 num_buf, pipeline_depth, buf_id;
+    vx_int32                 array_idx = -1, img_array_idx = -1;
+    vx_perf_t perf_ref;
+
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
     const uint32_t checksum_expected[MAX_ITERATIONS] =
     {
@@ -426,130 +446,306 @@ TEST(tivxHwaVideoDecoder, testSingleStreamProcessing)
         tivx_video_decoder_params_init(&params);
         ASSERT_VX_OBJECT(configuration_obj = vxCreateUserDataObject(context, "tivx_video_decoder_params_t", sizeof(tivx_video_decoder_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ASSERT_VX_OBJECT(bitstream_obj = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * info.width * info.height * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
         params.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
 
         VX_CALL(vxCopyUserDataObject(configuration_obj, 0, sizeof(tivx_video_decoder_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-        ASSERT_VX_OBJECT(output_image = vxCreateImage(context, info.width, info.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        num_buf = MAX_NUM_BUF;
+        pipeline_depth = MAX_NUM_BUF;
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(bitstream_obj[buf_id] = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * TIVX_VDEC_ALIGN(info.width) * TIVX_VDEC_ALIGN(info.height) * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(output_image[buf_id]  = vxCreateImage(context, TIVX_VDEC_ALIGN(info.width), TIVX_VDEC_ALIGN(info.height), VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        }
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node_decode = tivxVideoDecoderNode(graph,
                                            configuration_obj,
-                                           bitstream_obj,
-                                           output_image), VX_TYPE_NODE);
+                                           bitstream_obj[0],
+                                           output_image[0]), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_decode, VX_TARGET_STRING, TIVX_TARGET_VDEC1));
+
+        vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+        int graph_parameter_num = 0;
+        vx_int32 input_bitstream_graph_parameter_index;
+        vx_int32 output_image_graph_parameter_index;
+
+
+        add_graph_parameter_by_node_index(graph, node_decode, 1);
+        input_bitstream_graph_parameter_index = graph_parameter_num;
+        graph_parameters_queue_params_list[graph_parameter_num].graph_parameter_index = graph_parameter_num;
+        graph_parameters_queue_params_list[graph_parameter_num].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter_num].refs_list = (vx_reference*)&bitstream_obj[0];
+        graph_parameter_num++;
+
+        add_graph_parameter_by_node_index(graph, node_decode, 2);
+        output_image_graph_parameter_index = graph_parameter_num;
+        graph_parameters_queue_params_list[graph_parameter_num].graph_parameter_index = graph_parameter_num;
+        graph_parameters_queue_params_list[graph_parameter_num].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter_num].refs_list = (vx_reference*)&output_image[0];
+        graph_parameter_num++;
+
+        VX_CALL(vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            graph_parameter_num,
+            graph_parameters_queue_params_list));
+
+        tivxSetGraphPipelineDepth(graph, pipeline_depth);
 
         VX_CALL(vxVerifyGraph(graph));
 
+        int32_t pipeline = -num_buf;
+        int32_t enqueueCnt = 0;
         for (i = 0; i < info.num_iterations; i++)
         {
-            VX_CALL(vxMapUserDataObject(bitstream_obj, 0, info.bitstream_sizes[i], &map_id, (void*) &bitstream, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-
-            in_fp = fopen(input_file, "r");
-            if (NULL != in_fp)
+            if(pipeline < 0)
             {
-                seek_status = fseek(in_fp, seek[i], SEEK_SET);
-                if (0 == seek_status)
+                /* Enqueue output */
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index, (vx_reference*)&output_image[enqueueCnt], 1);
+                /* Fill the input buffer. */
+                VX_CALL(vxMapUserDataObject(bitstream_obj[enqueueCnt], 0, info.bitstream_sizes[i], &map_id, (void*) &bitstream, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+                in_fp = fopen(input_file, "r");
+                if (NULL != in_fp)
                 {
-                    num_read = fread(bitstream, sizeof(uint8_t), info.bitstream_sizes[i], in_fp);
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    if (info.bitstream_sizes[i] != num_read)
+                    seek_status = fseek(in_fp, seek[i], SEEK_SET);
+                    if (0 == seek_status)
                     {
-                        VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file);
-                        ASSERT(info.bitstream_sizes[i] == num_read);
+                        num_read = fread(bitstream, sizeof(uint8_t), info.bitstream_sizes[i], in_fp);
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        if (info.bitstream_sizes[i] != num_read)
+                        {
+                            VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file);
+                            ASSERT(info.bitstream_sizes[i] == num_read);
+                        }
                     }
-                }
-               else
-                {
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file);
-                    ASSERT(0 == seek_status);
-                }
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file);
-                ASSERT(NULL != in_fp);
-            }
-
-            VX_CALL(vxUnmapUserDataObject(bitstream_obj, map_id));
-            VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj,  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info.bitstream_sizes[i]), sizeof(vx_size)));
-
-            VX_CALL(vxProcessGraph(graph));
-
-#ifndef DUMP_DECODED_VIDEO_TO_FILE
-            checksum_actual = tivx_utils_simple_image_checksum(output_image, 0, rect_y);
-            ASSERT(checksum_expected[i] == checksum_actual);
-
-            rect_uv = rect_uv; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
-#else
-            VX_CALL(vxMapImagePatch(output_image,
-                                    &rect_y,
-                                    0,
-                                    &map_id_image_y,
-                                    &image_addr_y,
-                                    (void**) &data_ptr_y,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
-
-            VX_CALL(vxMapImagePatch(output_image,
-                                    &rect_uv,
-                                    1,
-                                    &map_id_image_uv,
-                                    &image_addr_uv,
-                                    (void**) &data_ptr_uv,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
-
-            if (i < 5)
-            {
-                out_fp = fopen(output_file, "ab");
-                if (NULL != out_fp)
-                {
-                    for(j = 0; j < info.height; j++)
+                   else
                     {
-                        num_read = fwrite(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, out_fp);
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file);
+                        ASSERT(0 == seek_status);
                     }
-                    for(j = 0; j < (info.height / 2); j++)
-                    {
-                        num_read += fwrite(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, out_fp);
-                    }
-
-                    fclose(out_fp);
-                    out_fp = NULL;
                 }
                 else
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file);
-                    ASSERT(NULL != out_fp);
+                    VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file);
+                    ASSERT(NULL != in_fp);
                 }
+
+                VX_CALL(vxUnmapUserDataObject(bitstream_obj[enqueueCnt], map_id));
+                VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info.bitstream_sizes[i]), sizeof(vx_size)));
+
+                /* Enqueue input - start execution */
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index, (vx_reference*)&bitstream_obj[enqueueCnt], 1);
+
+                enqueueCnt++;
+                enqueueCnt   = (enqueueCnt  >= num_buf)? 0 : enqueueCnt;
+                pipeline++;
             }
+            else if(pipeline >= 0)
+            {
+                vx_image out_image;
+                vx_user_data_object in_bitstream;
+                uint32_t num_refs;
+                /* Dequeue & Save output */
+                vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index, (vx_reference*)&out_image, 1, &num_refs);
+                app_find_image_array_index(output_image,(vx_reference)out_image, num_buf, &img_array_idx);
+                if(img_array_idx != -1)
+                {
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
+                    checksum_actual = tivx_utils_simple_image_checksum(output_image[img_array_idx], 0, rect_y);
+                    ASSERT(checksum_expected[i] == checksum_actual);
 
-            VX_CALL(vxUnmapImagePatch(output_image, map_id_image_y));
-            VX_CALL(vxUnmapImagePatch(output_image, map_id_image_uv));
+                    rect_uv = rect_uv; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
+#else
+                    VX_CALL(vxMapImagePatch(output_image[img_array_idx],
+                                            &rect_y,
+                                            0,
+                                            &map_id_image_y,
+                                            &image_addr_y,
+                                            (void**) &data_ptr_y,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
+
+                    VX_CALL(vxMapImagePatch(output_image[img_array_idx],
+                                            &rect_uv,
+                                            1,
+                                            &map_id_image_uv,
+                                            &image_addr_uv,
+                                            (void**) &data_ptr_uv,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
+
+                    if (i < 5)
+                    {
+                        out_fp = fopen(output_file, "ab");
+                        if (NULL != out_fp)
+                        {
+                            for(j = 0; j < info.height; j++)
+                            {
+                                num_read = fwrite(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, out_fp);
+                            }
+                            for(j = 0; j < (info.height / 2); j++)
+                            {
+                                num_read += fwrite(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, out_fp);
+                            }
+
+                            fclose(out_fp);
+                            out_fp = NULL;
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file);
+                            ASSERT(NULL != out_fp);
+                        }
+                    }
+
+                    VX_CALL(vxUnmapImagePatch(output_image[img_array_idx], map_id_image_y));
+                    VX_CALL(vxUnmapImagePatch(output_image[img_array_idx], map_id_image_uv));
 #endif
+                }
+                /* Dequeue input */
+                vxGraphParameterDequeueDoneRef(graph, input_bitstream_graph_parameter_index, (vx_reference*)&in_bitstream, 1, &num_refs);
 
+                /* Enqueue output */
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index, (vx_reference*)&out_image, 1);
+                app_find_user_object_array_index(bitstream_obj, (vx_reference)in_bitstream, num_buf, &array_idx);
+                if(array_idx != -1)
+                {
+                    /* Fill the input buffer. */
+                    VX_CALL(vxMapUserDataObject(bitstream_obj[array_idx], 0, info.bitstream_sizes[i], &map_id, (void*) &bitstream, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+                    in_fp = fopen(input_file, "r");
+                    if (NULL != in_fp)
+                    {
+                        seek_status = fseek(in_fp, seek[i], SEEK_SET);
+                        if (0 == seek_status)
+                        {
+                            num_read = fread(bitstream, sizeof(uint8_t), info.bitstream_sizes[i], in_fp);
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            if (info.bitstream_sizes[i] != num_read)
+                            {
+                                VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file);
+                                ASSERT(info.bitstream_sizes[i] == num_read);
+                            }
+                        }
+                        else
+                        {
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file);
+                            ASSERT(0 == seek_status);
+                        }
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file);
+                        ASSERT(NULL != in_fp);
+                    }
+                    VX_CALL(vxUnmapUserDataObject(bitstream_obj[array_idx], map_id));
+                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj[array_idx],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info.bitstream_sizes[i]), sizeof(vx_size)));
+                }
+                /* Enqueue input - start execution */
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index, (vx_reference*)&in_bitstream, 1);
+            }
         }
+        vxWaitGraph(graph);
+
+        /* Pipe-Down */
+        for(i = 0; i < num_buf; i++)
+        {
+            vx_image out_image;
+            uint32_t num_refs;
+            /* Dequeue & Save output */
+            vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index, (vx_reference*)&out_image, 1, &num_refs);
+            app_find_image_array_index(output_image,(vx_reference)out_image, num_buf, &img_array_idx);
+            if(img_array_idx != -1)
+            {
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
+                checksum_actual = tivx_utils_simple_image_checksum(output_image[img_array_idx], 0, rect_y);
+                ASSERT(checksum_expected[i] == checksum_actual);
+
+                rect_uv = rect_uv; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
+#else
+                VX_CALL(vxMapImagePatch(output_image[img_array_idx],
+                                        &rect_y,
+                                        0,
+                                        &map_id_image_y,
+                                        &image_addr_y,
+                                        (void**) &data_ptr_y,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                VX_CALL(vxMapImagePatch(output_image[img_array_idx],
+                                        &rect_uv,
+                                        1,
+                                        &map_id_image_uv,
+                                        &image_addr_uv,
+                                        (void**) &data_ptr_uv,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                if (i < 5)
+                {
+                    out_fp = fopen(output_file, "ab");
+                    if (NULL != out_fp)
+                    {
+                        for(j = 0; j < info.height; j++)
+                        {
+                            num_read = fwrite(data_ptr_y + (j * image_addr_y.stride_y), sizeof(uint8_t), info.width, out_fp);
+                        }
+                        for(j = 0; j < (info.height / 2); j++)
+                        {
+                            num_read += fwrite(data_ptr_uv + (j * image_addr_uv.stride_y), sizeof(uint8_t), info.width, out_fp);
+                        }
+
+                        fclose(out_fp);
+                        out_fp = NULL;
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file);
+                        ASSERT(NULL != out_fp);
+                    }
+                }
+
+                VX_CALL(vxUnmapImagePatch(output_image[img_array_idx], map_id_image_y));
+                VX_CALL(vxUnmapImagePatch(output_image[img_array_idx], map_id_image_uv));
+#endif
+            }
+        }
+
+        VX_CALL(vxQueryNode(node_decode, VX_NODE_PERFORMANCE, &perf_ref, sizeof(perf_ref)));
+        printPerformance(perf_ref, TIVX_VDEC_ALIGN(info.width)*TIVX_VDEC_ALIGN(info.height), "Decoder Node");
 
         VX_CALL(vxReleaseNode(&node_decode));
         VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseImage(&output_image));
-        VX_CALL(vxReleaseUserDataObject(&bitstream_obj));
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseImage(&output_image[buf_id]));
+            VX_CALL(vxReleaseUserDataObject(&bitstream_obj[buf_id]));
+        }
         VX_CALL(vxReleaseUserDataObject(&configuration_obj));
 
         ASSERT(node_decode == 0);
         ASSERT(graph == 0);
-        ASSERT(output_image == 0);
-        ASSERT(bitstream_obj == 0);
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            ASSERT(output_image[buf_id] == 0);
+            ASSERT(bitstream_obj[buf_id] == 0);
+        }
         ASSERT(configuration_obj == 0);
 
         tivxHwaUnLoadKernels(context);
@@ -576,12 +772,12 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
     uint8_t *bitstream_l;
     vx_map_id map_id_s;
     vx_map_id map_id_l;
-    vx_user_data_object bitstream_obj_s;
-    vx_user_data_object bitstream_obj_l;
+    vx_user_data_object bitstream_obj_s[MAX_NUM_BUF];
+    vx_user_data_object bitstream_obj_l[MAX_NUM_BUF];
     vx_size seek_s[MAX_ITERATIONS];
     vx_size seek_l[MAX_ITERATIONS];
-    vx_image output_image_s = NULL;
-    vx_image output_image_l = NULL;
+    vx_image output_image_s[MAX_NUM_BUF] = {NULL};
+    vx_image output_image_l[MAX_NUM_BUF] = {NULL};
     vx_graph graph = 0;
     vx_node node_decode_s = 0;
     vx_node node_decode_l = 0;
@@ -599,6 +795,8 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
     FILE* out_fp_l = NULL;
     size_t num_read;
     int seek_status;
+    vx_perf_t perf_ref;
+
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
     const uint32_t checksum_expected_s[MAX_ITERATIONS] =
     {
@@ -667,17 +865,24 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
     uint8_t                  *data_ptr_uv_l;
 
     uint32_t i, j;
-    uint32_t exe_time[MAX_ITERATIONS];
-    uint64_t timestamp = 0;
+    uint32_t num_buf;
+    uint32_t pipeline_depth;
+    uint32_t buf_id;
+    vx_int32 array_idx_s = -1;
+    vx_int32 array_idx_l = -1;
+    vx_int32 img_array_idx_s = -1;
+    vx_int32 img_array_idx_l = -1;
 
+    uint32_t exe_time[MAX_ITERATIONS] = {0};
+    uint64_t timestamp = 0;
     char *second_target = TIVX_TARGET_VDEC1;
-    uint32_t expected_time_median = 29000;
+    //uint32_t expected_time_median = 29000;
 
     if (arg_->mode == 1)
     {
         /* Run both VENC instances in parallel */
         second_target = TIVX_TARGET_VDEC2;
-        expected_time_median = 23000;
+        //expected_time_median = 23000;
     }
 
     if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VDEC1)) && (vx_true_e == tivxIsTargetEnabled(second_target)))
@@ -749,246 +954,541 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
         ASSERT_VX_OBJECT(configuration_obj_s = vxCreateUserDataObject(context, "tivx_video_decoder_params_t", sizeof(tivx_video_decoder_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         ASSERT_VX_OBJECT(configuration_obj_l = vxCreateUserDataObject(context, "tivx_video_decoder_params_t", sizeof(tivx_video_decoder_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ASSERT_VX_OBJECT(bitstream_obj_s = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * info_s.width * info_s.height * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        ASSERT_VX_OBJECT(bitstream_obj_l = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * info_l.width * info_l.height * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
         params_s.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
         params_l.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
 
         VX_CALL(vxCopyUserDataObject(configuration_obj_s, 0, sizeof(tivx_video_decoder_params_t), &params_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(configuration_obj_l, 0, sizeof(tivx_video_decoder_params_t), &params_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-        ASSERT_VX_OBJECT(output_image_s = vxCreateImage(context, info_s.width, info_s.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(output_image_l = vxCreateImage(context, info_l.width, info_l.height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-
+        num_buf = MAX_NUM_BUF;
+        pipeline_depth = MAX_NUM_BUF;
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(bitstream_obj_s[buf_id] = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * TIVX_VDEC_ALIGN(info_s.width) * TIVX_VDEC_ALIGN(info_s.height) * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(bitstream_obj_l[buf_id] = vxCreateUserDataObject(context, "video_bitstream", sizeof(uint8_t) * TIVX_VDEC_ALIGN(info_l.width) * TIVX_VDEC_ALIGN(info_l.height) * 3 / 2, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(output_image_s[buf_id] = vxCreateImage(context, TIVX_VDEC_ALIGN(info_s.width), TIVX_VDEC_ALIGN(info_s.height), VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(output_image_l[buf_id] = vxCreateImage(context, TIVX_VDEC_ALIGN(info_l.width), TIVX_VDEC_ALIGN(info_l.height), VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        }
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node_decode_s = tivxVideoDecoderNode(graph,
                                            configuration_obj_s,
-                                           bitstream_obj_s,
-                                           output_image_s), VX_TYPE_NODE);
+                                           bitstream_obj_s[0],
+                                           output_image_s[0]), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node_decode_l = tivxVideoDecoderNode(graph,
                                            configuration_obj_l,
-                                           bitstream_obj_l,
-                                           output_image_l), VX_TYPE_NODE);
+                                           bitstream_obj_l[0],
+                                           output_image_l[0]), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_decode_s, VX_TARGET_STRING, TIVX_TARGET_VDEC1));
         VX_CALL(vxSetNodeTarget(node_decode_l, VX_TARGET_STRING, second_target));
 
+        vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[4];
+
+        int graph_parameter = 0;
+        vx_int32 input_bitstream_graph_parameter_index_s;
+        vx_int32 input_bitstream_graph_parameter_index_l;
+        vx_int32 output_image_graph_parameter_index_s;
+        vx_int32 output_image_graph_parameter_index_l;
+
+
+        add_graph_parameter_by_node_index(graph, node_decode_s, 1);
+        input_bitstream_graph_parameter_index_s = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].graph_parameter_index = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter].refs_list = (vx_reference*)&bitstream_obj_s[0];
+        graph_parameter++;
+
+        add_graph_parameter_by_node_index(graph, node_decode_l, 1);
+        input_bitstream_graph_parameter_index_l = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].graph_parameter_index = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter].refs_list = (vx_reference*)&bitstream_obj_l[0];
+        graph_parameter++;
+
+        add_graph_parameter_by_node_index(graph, node_decode_s, 2);
+        output_image_graph_parameter_index_s = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].graph_parameter_index = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter].refs_list = (vx_reference*)&output_image_s[0];
+        graph_parameter++;
+
+        add_graph_parameter_by_node_index(graph, node_decode_l, 2);
+        output_image_graph_parameter_index_l = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].graph_parameter_index = graph_parameter;
+        graph_parameters_queue_params_list[graph_parameter].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[graph_parameter].refs_list = (vx_reference*)&output_image_l[0];
+        graph_parameter++;
+
+        VX_CALL(vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            graph_parameter,
+            graph_parameters_queue_params_list));
+
+        tivxSetGraphPipelineDepth(graph, pipeline_depth);
+
         VX_CALL(vxVerifyGraph(graph));
 
+
+        int32_t pipeline = -num_buf;
+        int32_t enqueueCnt = 0;
         for (i = 0; i < iterations; i++)
         {
-            VX_CALL(vxMapUserDataObject(bitstream_obj_s, 0, info_s.bitstream_sizes[i], &map_id_s, (void*) &bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-            VX_CALL(vxMapUserDataObject(bitstream_obj_l, 0, info_l.bitstream_sizes[i], &map_id_l, (void*) &bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-
-            in_fp = fopen(input_file_s, "r");
-            if (NULL != in_fp)
+            if(pipeline < 0)
             {
-                seek_status = fseek(in_fp, seek_s[i], SEEK_SET);
-                if (0 == seek_status)
+                /* Enqueue outputs */
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index_s, (vx_reference*)&output_image_s[enqueueCnt], 1);
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index_l, (vx_reference*)&output_image_l[enqueueCnt], 1);
+                /* Fill the input buffers. */
+                VX_CALL(vxMapUserDataObject(bitstream_obj_s[enqueueCnt], 0, info_s.bitstream_sizes[i], &map_id_s, (void*) &bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+                VX_CALL(vxMapUserDataObject(bitstream_obj_l[enqueueCnt], 0, info_l.bitstream_sizes[i], &map_id_l, (void*) &bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+                in_fp = fopen(input_file_s, "r");
+                if (NULL != in_fp)
                 {
-                    num_read = fread(bitstream_s, sizeof(uint8_t), info_s.bitstream_sizes[i], in_fp);
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    if (info_s.bitstream_sizes[i] != num_read)
+                    seek_status = fseek(in_fp, seek_s[i], SEEK_SET);
+                    if (0 == seek_status)
                     {
-                        VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file_s);
-                        ASSERT(info_s.bitstream_sizes[i] == num_read);
+                        num_read = fread(bitstream_s, sizeof(uint8_t), info_s.bitstream_sizes[i], in_fp);
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        if (info_s.bitstream_sizes[i] != num_read)
+                        {
+                            VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file_s);
+                            ASSERT(info_s.bitstream_sizes[i] == num_read);
+                        }
+                    }
+                   else
+                    {
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_s);
+                        ASSERT(0 == seek_status);
                     }
                 }
-               else
+                else
                 {
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_s);
-                    ASSERT(0 == seek_status);
+                    VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_s);
+                    ASSERT(NULL != in_fp);
                 }
-            }
-            else
-            {
-                VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_s);
-                ASSERT(NULL != in_fp);
-            }
 
-            in_fp = fopen(input_file_l, "r");
-            if (NULL != in_fp)
-            {
-                seek_status = fseek(in_fp, seek_l[i], SEEK_SET);
-                if (0 == seek_status)
+                in_fp = fopen(input_file_l, "r");
+                if (NULL != in_fp)
                 {
-                    num_read = fread(bitstream_l, sizeof(uint8_t), info_l.bitstream_sizes[i], in_fp);
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    if (info_l.bitstream_sizes[i] != num_read)
+                    seek_status = fseek(in_fp, seek_l[i], SEEK_SET);
+                    if (0 == seek_status)
                     {
-                        VX_PRINT(VX_ZONE_INFO," %s: Read less than expected!!!\n", input_file_l);
-                        ASSERT(info_l.bitstream_sizes[i] == num_read);
+                        num_read = fread(bitstream_l, sizeof(uint8_t), info_l.bitstream_sizes[i], in_fp);
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        if (info_l.bitstream_sizes[i] != num_read)
+                        {
+                            VX_PRINT(VX_ZONE_INFO," %s: Read less than expected!!!\n", input_file_l);
+                            ASSERT(info_l.bitstream_sizes[i] == num_read);
+                        }
+                    }
+                   else
+                    {
+                        fclose(in_fp);
+                        in_fp = NULL;
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_l);
+                        ASSERT(0 == seek_status);
                     }
                 }
-               else
+                else
                 {
-                    fclose(in_fp);
-                    in_fp = NULL;
-                    VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_l);
-                    ASSERT(0 == seek_status);
+                    VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_l);
+                    ASSERT(NULL != in_fp);
                 }
+
+                VX_CALL(vxUnmapUserDataObject(bitstream_obj_s[enqueueCnt], map_id_s));
+                VX_CALL(vxUnmapUserDataObject(bitstream_obj_l[enqueueCnt], map_id_l));
+                VX_CALL(vxCopyUserDataObject(bitstream_obj_s[enqueueCnt], 0, sizeof(uint8_t) * info_s.bitstream_sizes[i], bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                VX_CALL(vxCopyUserDataObject(bitstream_obj_l[enqueueCnt], 0, sizeof(uint8_t) * info_l.bitstream_sizes[i], bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
+                VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
+                /* Enqueue inputs - start execution */
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index_s, (vx_reference*)&bitstream_obj_s[enqueueCnt], 1);
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index_l, (vx_reference*)&bitstream_obj_l[enqueueCnt], 1);
+
+                enqueueCnt++;
+                enqueueCnt   = (enqueueCnt  >= num_buf)? 0 : enqueueCnt;
+                pipeline++;
             }
-            else
+            else if(pipeline >= 0)
             {
-                VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_l);
-                ASSERT(NULL != in_fp);
-            }
+                vx_image out_image_s, out_image_l;
+                vx_user_data_object in_bitstream_s, in_bitstream_l;
+                uint32_t num_refs;
+                /* Dequeue & Save outputs */
+                vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index_s, (vx_reference*)&out_image_s, 1, &num_refs);
+                vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index_l, (vx_reference*)&out_image_l, 1, &num_refs);
+                app_find_image_array_index(output_image_s,(vx_reference)out_image_s, num_buf, &img_array_idx_s);
+                app_find_image_array_index(output_image_l,(vx_reference)out_image_l, num_buf, &img_array_idx_l);
 
-            VX_CALL(vxUnmapUserDataObject(bitstream_obj_s, map_id_s));
-            VX_CALL(vxUnmapUserDataObject(bitstream_obj_l, map_id_l));
-            VX_CALL(vxCopyUserDataObject(bitstream_obj_s, 0, sizeof(uint8_t) * info_s.bitstream_sizes[i], bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-            VX_CALL(vxCopyUserDataObject(bitstream_obj_l, 0, sizeof(uint8_t) * info_l.bitstream_sizes[i], bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-            VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s,  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
-            VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l,  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
-
-            timestamp = tivxPlatformGetTimeInUsecs();
-
-            VX_CALL(vxProcessGraph(graph));
-
-            exe_time[i] = (uint32_t)(tivxPlatformGetTimeInUsecs() - timestamp);
-
+                if(img_array_idx_s != -1)
+                {
 #ifndef DUMP_DECODED_VIDEO_TO_FILE
-            checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, 0, rect_y_s);
-            checksum_actual_l = tivx_utils_simple_image_checksum(output_image_l, 0, rect_y_l);
-            ASSERT(checksum_expected_s[i] == checksum_actual_s);
-            ASSERT(checksum_expected_l[i] == checksum_actual_l);
-
-            rect_uv_s = rect_uv_s; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
-            rect_uv_l = rect_uv_l; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
-
+                    checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, 0, rect_y_s);
+                    ASSERT(checksum_expected_s[i] == checksum_actual_s);
+                    rect_uv_s = rect_uv_s; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
 #else
-            VX_CALL(vxMapImagePatch(output_image_s,
-                                    &rect_y_s,
-                                    0,
-                                    &map_id_image_y_s,
-                                    &image_addr_y_s,
-                                    (void**) &data_ptr_y_s,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
+                    VX_CALL(vxMapImagePatch(output_image_s[img_array_idx_s],
+                                            &rect_y_s,
+                                            0,
+                                            &map_id_image_y_s,
+                                            &image_addr_y_s,
+                                            (void**) &data_ptr_y_s,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
 
-            VX_CALL(vxMapImagePatch(output_image_s,
-                                    &rect_uv_s,
-                                    1,
-                                    &map_id_image_uv_s,
-                                    &image_addr_uv_s,
-                                    (void**) &data_ptr_uv_s,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
+                    VX_CALL(vxMapImagePatch(output_image_s[img_array_idx_s],
+                                            &rect_uv_s,
+                                            1,
+                                            &map_id_image_uv_s,
+                                            &image_addr_uv_s,
+                                            (void**) &data_ptr_uv_s,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
 
-            if (i < 5)
-            {
-                out_fp_s = fopen(output_file_s, "ab");
-                if (NULL != out_fp_s)
-                {
-                    for(j = 0; j < info_s.height; j++)
+                    if (i < 5)
                     {
-                        num_read = fwrite(data_ptr_y_s + (j * image_addr_y_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
-                    }
-                    for(j = 0; j < (info_s.height / 2); j++)
-                    {
-                        num_read += fwrite(data_ptr_uv_s + (j * image_addr_uv_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
-                    }
+                        out_fp_s = fopen(output_file_s, "ab");
+                        if (NULL != out_fp_s)
+                        {
+                            for(j = 0; j < info_s.height; j++)
+                            {
+                                num_read = fwrite(data_ptr_y_s + (j * image_addr_y_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
+                            }
+                            for(j = 0; j < (info_s.height / 2); j++)
+                            {
+                                num_read += fwrite(data_ptr_uv_s + (j * image_addr_uv_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
+                            }
 
-                    fclose(out_fp_s);
-                    out_fp_s = NULL;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_s);
-                    ASSERT(NULL != out_fp_s);
-                }
-            }
-
-            VX_CALL(vxUnmapImagePatch(output_image_s, map_id_image_y_s));
-            VX_CALL(vxUnmapImagePatch(output_image_s, map_id_image_uv_s));
-
-            VX_CALL(vxMapImagePatch(output_image_l,
-                                    &rect_y_l,
-                                    0,
-                                    &map_id_image_y_l,
-                                    &image_addr_y_l,
-                                    (void**) &data_ptr_y_l,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
-
-            VX_CALL(vxMapImagePatch(output_image_l,
-                                    &rect_uv_l,
-                                    1,
-                                    &map_id_image_uv_l,
-                                    &image_addr_uv_l,
-                                    (void**) &data_ptr_uv_l,
-                                    VX_READ_ONLY,
-                                    VX_MEMORY_TYPE_HOST,
-                                    VX_NOGAP_X
-                                    ));
-
-            if (i < 5)
-            {
-                out_fp_l = fopen(output_file_l, "ab");
-                if (NULL != out_fp_l)
-                {
-                    for(j = 0; j < info_l.height; j++)
-                    {
-                        num_read = fwrite(data_ptr_y_l + (j * image_addr_y_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
-                    }
-                    for(j = 0; j < (info_l.height / 2); j++)
-                    {
-                        num_read += fwrite(data_ptr_uv_l + (j * image_addr_uv_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
+                            fclose(out_fp_s);
+                            out_fp_s = NULL;
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_s);
+                            ASSERT(NULL != out_fp_s);
+                        }
                     }
 
-                    fclose(out_fp_l);
-                    out_fp_l = NULL;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_l);
-                    ASSERT(NULL != out_fp_l);
-                }
-            }
-
-            VX_CALL(vxUnmapImagePatch(output_image_l, map_id_image_y_l));
-            VX_CALL(vxUnmapImagePatch(output_image_l, map_id_image_uv_l));
+                    VX_CALL(vxUnmapImagePatch(output_image_s[img_array_idx_s], map_id_image_y_s));
+                    VX_CALL(vxUnmapImagePatch(output_image_s[img_array_idx_s], map_id_image_uv_s));
 #endif
-        }
+                }
+                if(img_array_idx_l != -1)
+                {
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
+                    checksum_actual_l = tivx_utils_simple_image_checksum(output_image_l, 0, rect_y_l);
+                    ASSERT(checksum_expected_l[i] == checksum_actual_l);
+                    rect_uv_l = rect_uv_l; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
+#else
+                    VX_CALL(vxMapImagePatch(output_image_l[img_array_idx_l],
+                                            &rect_y_l,
+                                            0,
+                                            &map_id_image_y_l,
+                                            &image_addr_y_l,
+                                            (void**) &data_ptr_y_l,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
 
-#if 0
-        for (i = 0; i < iterations; i++)
+                    VX_CALL(vxMapImagePatch(output_image_l[img_array_idx_l],
+                                            &rect_uv_l,
+                                            1,
+                                            &map_id_image_uv_l,
+                                            &image_addr_uv_l,
+                                            (void**) &data_ptr_uv_l,
+                                            VX_READ_ONLY,
+                                            VX_MEMORY_TYPE_HOST,
+                                            VX_NOGAP_X
+                                            ));
+
+                    if (i < 5)
+                    {
+                        out_fp_l = fopen(output_file_l, "ab");
+                        if (NULL != out_fp_l)
+                        {
+                            for(j = 0; j < info_l.height; j++)
+                            {
+                                num_read = fwrite(data_ptr_y_l + (j * image_addr_y_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
+                            }
+                            for(j = 0; j < (info_l.height / 2); j++)
+                            {
+                                num_read += fwrite(data_ptr_uv_l + (j * image_addr_uv_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
+                            }
+
+                            fclose(out_fp_l);
+                            out_fp_l = NULL;
+                        }
+                        else
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_l);
+                            ASSERT(NULL != out_fp_l);
+                        }
+                    }
+
+                    VX_CALL(vxUnmapImagePatch(output_image_l[img_array_idx_l], map_id_image_y_l));
+                    VX_CALL(vxUnmapImagePatch(output_image_l[img_array_idx_l], map_id_image_uv_l));
+#endif
+                }
+                /* Dequeue inputs. */
+                vxGraphParameterDequeueDoneRef(graph, input_bitstream_graph_parameter_index_s, (vx_reference*)&in_bitstream_s, 1, &num_refs);
+                vxGraphParameterDequeueDoneRef(graph, input_bitstream_graph_parameter_index_l, (vx_reference*)&in_bitstream_l, 1, &num_refs);
+
+                /* Enqueue outputs. */
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index_s, (vx_reference*)&out_image_s, 1);
+                vxGraphParameterEnqueueReadyRef(graph, output_image_graph_parameter_index_l, (vx_reference*)&out_image_l, 1);
+
+                app_find_user_object_array_index(bitstream_obj_s, (vx_reference)in_bitstream_s, num_buf, &array_idx_s);
+                app_find_user_object_array_index(bitstream_obj_l, (vx_reference)in_bitstream_l, num_buf, &array_idx_l);
+                if(array_idx_s != -1)
+                {
+                    /* Fill the input buffer. */
+                    VX_CALL(vxMapUserDataObject(bitstream_obj_s[enqueueCnt], 0, info_s.bitstream_sizes[i], &map_id_s, (void*) &bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+                    in_fp = fopen(input_file_s, "r");
+                    if (NULL != in_fp)
+                    {
+                        seek_status = fseek(in_fp, seek_s[i], SEEK_SET);
+                        if (0 == seek_status)
+                        {
+                            num_read = fread(bitstream_s, sizeof(uint8_t), info_s.bitstream_sizes[i], in_fp);
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            if (info_s.bitstream_sizes[i] != num_read)
+                            {
+                                VX_PRINT(VX_ZONE_INFO,"%s: Read less than expected!!!\n", input_file_s);
+                                ASSERT(info_s.bitstream_sizes[i] == num_read);
+                            }
+                        }
+                       else
+                        {
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_s);
+                            ASSERT(0 == seek_status);
+                        }
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_s);
+                        ASSERT(NULL != in_fp);
+                    }
+                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_s[enqueueCnt], map_id_s));
+                    VX_CALL(vxCopyUserDataObject(bitstream_obj_s[enqueueCnt], 0, sizeof(uint8_t) * info_s.bitstream_sizes[i], bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
+                }
+                if(array_idx_l != -1)
+                {
+                    /* Fill the input buffer. */
+                    VX_CALL(vxMapUserDataObject(bitstream_obj_l[enqueueCnt], 0, info_l.bitstream_sizes[i], &map_id_l, (void*) &bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+                    in_fp = fopen(input_file_l, "r");
+                    if (NULL != in_fp)
+                    {
+                        seek_status = fseek(in_fp, seek_l[i], SEEK_SET);
+                        if (0 == seek_status)
+                        {
+                            num_read = fread(bitstream_l, sizeof(uint8_t), info_l.bitstream_sizes[i], in_fp);
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            if (info_l.bitstream_sizes[i] != num_read)
+                            {
+                                VX_PRINT(VX_ZONE_INFO," %s: Read less than expected!!!\n", input_file_l);
+                                ASSERT(info_l.bitstream_sizes[i] == num_read);
+                            }
+                        }
+                       else
+                        {
+                            fclose(in_fp);
+                            in_fp = NULL;
+                            VX_PRINT(VX_ZONE_ERROR,"%s: Seek failed!!!\n", input_file_l);
+                            ASSERT(0 == seek_status);
+                        }
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_l);
+                        ASSERT(NULL != in_fp);
+                    }
+                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_l[enqueueCnt], map_id_l));
+                    VX_CALL(vxCopyUserDataObject(bitstream_obj_l[enqueueCnt], 0, sizeof(uint8_t) * info_l.bitstream_sizes[i], bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
+                }
+                /* Enqueue inputs - start execution. */
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index_s, (vx_reference*)&in_bitstream_s, 1);
+                vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index_l, (vx_reference*)&in_bitstream_l, 1);
+            }
+        }
+        vxWaitGraph(graph);
+
+        /* Pipe-Down */
+        for(i = 0; i < num_buf; i++)
         {
-            printf("exe_time[%d]=%u\n", i, exe_time[i]);
-        }
-#endif
+            vx_image out_image_s, out_image_l;
+            uint32_t num_refs;
+            /* Dequeue & Save outputs */
+            vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index_s, (vx_reference*)&out_image_s, 1, &num_refs);
+            vxGraphParameterDequeueDoneRef(graph, output_image_graph_parameter_index_l, (vx_reference*)&out_image_l, 1, &num_refs);
+            app_find_image_array_index(output_image_s,(vx_reference)out_image_s, num_buf, &img_array_idx_s);
+            app_find_image_array_index(output_image_l,(vx_reference)out_image_l, num_buf, &img_array_idx_l);
 
+            if(img_array_idx_s != -1)
+            {
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
+                checksum_actual_s = tivx_utils_simple_image_checksum(output_image_s, 0, rect_y_s);
+                ASSERT(checksum_expected_s[i] == checksum_actual_s);
+                rect_uv_s = rect_uv_s; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
+#else
+                VX_CALL(vxMapImagePatch(output_image_s[img_array_idx_s],
+                                        &rect_y_s,
+                                        0,
+                                        &map_id_image_y_s,
+                                        &image_addr_y_s,
+                                        (void**) &data_ptr_y_s,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                VX_CALL(vxMapImagePatch(output_image_s[img_array_idx_s],
+                                        &rect_uv_s,
+                                        1,
+                                        &map_id_image_uv_s,
+                                        &image_addr_uv_s,
+                                        (void**) &data_ptr_uv_s,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                if (i < 5)
+                {
+                    out_fp_s = fopen(output_file_s, "ab");
+                    if (NULL != out_fp_s)
+                    {
+                        for(j = 0; j < info_s.height; j++)
+                        {
+                            num_read = fwrite(data_ptr_y_s + (j * image_addr_y_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
+                        }
+                        for(j = 0; j < (info_s.height / 2); j++)
+                        {
+                            num_read += fwrite(data_ptr_uv_s + (j * image_addr_uv_s.stride_y), sizeof(uint8_t), info_s.width, out_fp_s);
+                        }
+
+                        fclose(out_fp_s);
+                        out_fp_s = NULL;
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_s);
+                        ASSERT(NULL != out_fp_s);
+                    }
+                }
+
+                VX_CALL(vxUnmapImagePatch(output_image_s[img_array_idx_s], map_id_image_y_s));
+                VX_CALL(vxUnmapImagePatch(output_image_s[img_array_idx_s], map_id_image_uv_s));
+#endif
+            }
+            if(img_array_idx_l != -1)
+            {
+#ifndef DUMP_DECODED_VIDEO_TO_FILE
+                checksum_actual_l = tivx_utils_simple_image_checksum(output_image_l, 0, rect_y_l);
+                ASSERT(checksum_expected_l[i] == checksum_actual_l);
+                rect_uv_l = rect_uv_l; /* dummy instruction to avoid compiler error. will be fixed with updated checksum API which can check for UV plane as well */
+#else
+                VX_CALL(vxMapImagePatch(output_image_l[img_array_idx_l],
+                                        &rect_y_l,
+                                        0,
+                                        &map_id_image_y_l,
+                                        &image_addr_y_l,
+                                        (void**) &data_ptr_y_l,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                VX_CALL(vxMapImagePatch(output_image_l[img_array_idx_l],
+                                        &rect_uv_l,
+                                        1,
+                                        &map_id_image_uv_l,
+                                        &image_addr_uv_l,
+                                        (void**) &data_ptr_uv_l,
+                                        VX_READ_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X
+                                        ));
+
+                if (i < 5)
+                {
+                    out_fp_l = fopen(output_file_l, "ab");
+                    if (NULL != out_fp_l)
+                    {
+                        for(j = 0; j < info_l.height; j++)
+                        {
+                            num_read = fwrite(data_ptr_y_l + (j * image_addr_y_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
+                        }
+                        for(j = 0; j < (info_l.height / 2); j++)
+                        {
+                            num_read += fwrite(data_ptr_uv_l + (j * image_addr_uv_l.stride_y), sizeof(uint8_t), info_l.width, out_fp_l);
+                        }
+
+                        fclose(out_fp_l);
+                        out_fp_l = NULL;
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"%s: output file not found!!!\n", output_file_l);
+                        ASSERT(NULL != out_fp_l);
+                    }
+                }
+
+                VX_CALL(vxUnmapImagePatch(output_image_l[img_array_idx_l], map_id_image_y_l));
+                VX_CALL(vxUnmapImagePatch(output_image_l[img_array_idx_l], map_id_image_uv_l));
+#endif
+            }
+        }
+
+#if 1
+        VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_ref, sizeof(perf_ref)));
+        printPerformance(perf_ref, TIVX_VDEC_ALIGN(info_s.width) * TIVX_VDEC_ALIGN(info_s.height) + TIVX_VDEC_ALIGN(info_l.width) * TIVX_VDEC_ALIGN(info_l.height), "Decoder Node");
+
+#endif
+#if 0
         ASSERT(exe_time[iterations-1] < (expected_time_median + 3000));
         ASSERT(exe_time[iterations-1] > (expected_time_median - 3000));
-
+#endif
         VX_CALL(vxReleaseNode(&node_decode_l));
         VX_CALL(vxReleaseNode(&node_decode_s));
         VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseImage(&output_image_l));
-        VX_CALL(vxReleaseImage(&output_image_s));
-        VX_CALL(vxReleaseUserDataObject(&bitstream_obj_l));
-        VX_CALL(vxReleaseUserDataObject(&bitstream_obj_s));
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseImage(&output_image_l[buf_id]));
+            VX_CALL(vxReleaseImage(&output_image_s[buf_id]));
+            VX_CALL(vxReleaseUserDataObject(&bitstream_obj_l[buf_id]));
+            VX_CALL(vxReleaseUserDataObject(&bitstream_obj_s[buf_id]));
+        }
         VX_CALL(vxReleaseUserDataObject(&configuration_obj_l));
         VX_CALL(vxReleaseUserDataObject(&configuration_obj_s));
 
         ASSERT(node_decode_l == 0);
         ASSERT(node_decode_s == 0);
         ASSERT(graph == 0);
-        ASSERT(output_image_l == 0);
-        ASSERT(output_image_s == 0);
-        ASSERT(bitstream_obj_l == 0);
-        ASSERT(bitstream_obj_s == 0);
+        for(buf_id = 0; buf_id < num_buf; buf_id++)
+        {
+            ASSERT(output_image_l[buf_id] == 0);
+            ASSERT(output_image_s[buf_id] == 0);
+            ASSERT(bitstream_obj_l[buf_id] == 0);
+            ASSERT(bitstream_obj_s[buf_id] == 0);
+        }
         ASSERT(configuration_obj_l == 0);
         ASSERT(configuration_obj_s == 0);
 
@@ -998,3 +1498,44 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
 
 TESTCASE_TESTS(tivxHwaVideoDecoder, testNodeCreation, testSingleStreamProcessing, testMultiStreamProcessing)
 
+/*
+ * Utility API used to add a graph parameter from a node, node parameter index
+ */
+static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node,
+    vx_uint32 node_parameter_index)
+{
+    vx_parameter parameter = vxGetParameterByIndex(node, node_parameter_index);
+
+    vxAddParameterToGraph(graph, parameter);
+    vxReleaseParameter(&parameter);
+}
+
+static void app_find_user_object_array_index(vx_user_data_object object_array[], vx_reference ref, vx_int32 array_size, vx_int32 *array_idx)
+{
+  vx_int32 i;
+
+  *array_idx = -1;
+  for(i = 0; i < array_size; i++)
+  {
+    if(ref == (vx_reference)object_array[i])
+    {
+      *array_idx = i;
+      break;
+    }
+  }
+}
+
+static void app_find_image_array_index(vx_image image_array[], vx_reference ref, vx_int32 array_size, vx_int32 *array_idx)
+{
+  vx_int32 i;
+
+  *array_idx = -1;
+  for(i = 0; i < array_size; i++)
+  {
+    if(ref == (vx_reference)image_array[i])
+    {
+      *array_idx = i;
+      break;
+    }
+  }
+}
