@@ -473,6 +473,8 @@ TEST(tivxHwaVideoEncoder, testSingleStreamProcessing)
         params.initial_qp_b = 0;
         params.min_qp = 0;
         params.max_qp = 0;
+        params.min_blk_size = TIVX_ENC_BLK_SZ_DEFAULT;
+        params.intra_pred_modes = 0;
 
         VX_CALL(vxCopyUserDataObject(configuration_obj, 0, sizeof(tivx_video_encoder_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -759,6 +761,8 @@ TEST_WITH_ARG(tivxHwaVideoEncoder, testMultiStreamProcessing, Arg_MultiStream, E
         params_s.initial_qp_b = 0;
         params_s.min_qp = 0;
         params_s.max_qp = 0;
+        params_s.min_blk_size = TIVX_ENC_BLK_SZ_DEFAULT;
+        params_s.intra_pred_modes = 0;
 
 
         params_l.bitstream_format = TIVX_BITSTREAM_FORMAT_H264;
@@ -779,6 +783,9 @@ TEST_WITH_ARG(tivxHwaVideoEncoder, testMultiStreamProcessing, Arg_MultiStream, E
         params_l.initial_qp_b = 0;
         params_l.min_qp = 0;
         params_l.max_qp = 0;
+        params_l.min_blk_size = TIVX_ENC_BLK_SZ_DEFAULT;
+        params_l.intra_pred_modes = 0;
+
 
         VX_CALL(vxCopyUserDataObject(configuration_obj_s, 0, sizeof(tivx_video_encoder_params_t), &params_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(configuration_obj_l, 0, sizeof(tivx_video_encoder_params_t), &params_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));

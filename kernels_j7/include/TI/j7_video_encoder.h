@@ -109,11 +109,39 @@ typedef enum {
     /**
      *  Enable CABAC encoding. Forces a minimum of MAIN PROFILE.
      */
-    TIVX_ENC_FEATURE_CABAC = 0x01,
+    TIVX_ENC_FEATURE_CABAC = 0x0001,
     /**
      *  Enable 8x8 transform. Forces a minimum of HIGH PROFILE.
      */
-    TIVX_ENC_FEATURE_8x8 = 0x02
+    TIVX_ENC_FEATURE_8x8 = 0x0002,
+    /**
+     *  Disable Intra 4x4 prediction.
+     */
+    TIVX_ENC_FEATURE_DISABLE_INTRA4x4 = 0x0004,
+    /**
+     *  Disable Intra 8x8 prediction.
+     */
+    TIVX_ENC_FEATURE_DISABLE_INTRA8x8 = 0x0008,
+    /**
+     *  Disable Intra 16x16 prediction.
+     */
+    TIVX_ENC_FEATURE_DISABLE_INTRA16x16 = 0x0010,
+    /**
+     *  Disable Inter 8x8 prediction.
+     */
+    TIVX_ENC_FEATURE_DISABLE_INTER8x8 = 0x0020,
+    /**
+     *  Only one 8x8 block may be divided into 4x4 block per MB
+     */
+    TIVX_ENC_FEATURE_RESTRICT_INTER4x4 = 0x0040,
+    /**
+     *  Disable 8x16 motion vector block size detection
+     */
+    TIVX_ENC_FEATURE_DISABLE_8x16_MV_DETECT = 0x0080,
+    /**
+     *  Disable 16x8 motion vector block size detection
+     */
+    TIVX_ENC_FEATURE_DISABLE_16x8_MV_DETECT = 0x0100
 } tivx_enc_features_e;
 
 /**
@@ -137,6 +165,27 @@ typedef enum {
     TIVX_ENC_SVBR
 } tivx_enc_rcmode_e;
 
+/**
+ *  Enum describing smallest blocksize used during motion search \n
+ */
+typedef enum {
+    /**
+     *  Driver picks the best possible block size for this encode session
+     */
+    TIVX_ENC_BLK_SZ_DEFAULT = 0,
+    /**
+     *  Use 16x16 block size for motion search. This is the smallest for h.263
+     */
+    TIVX_ENC_BLK_SZ_16x16,
+    /**
+     *  Use 'upto' 8x8 block size for motion search. This is the smallest for MPEG-4
+     */
+    TIVX_ENC_BLK_SZ_8x8,
+    /**
+     *  Use 'upto' 4x4 block size for motion search. This is the smallest for H.264
+     */
+    TIVX_ENC_BLK_SZ_4x4
+} tivx_enc_minblocksize_e;
 
 /*!
  * \brief The configuration data structure used by the VIDEO_ENCODER kernel.
@@ -254,6 +303,10 @@ typedef struct {
     uint32_t min_qp;
     /** See \ref initial_qp_i */
     uint32_t max_qp;
+    /** Min Block Size for motion search. See \ref tivx_enc_minblocksize_e */
+    uint32_t min_blk_size;
+    /** Controls H264COMP_INTRA_PRED_MODES register. Leave 0 for default. See TRM for details. */
+    uint32_t intra_pred_modes;
 } tivx_video_encoder_params_t;
 
 /*********************************

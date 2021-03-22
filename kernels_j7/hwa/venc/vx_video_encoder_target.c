@@ -477,11 +477,25 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
             status = VX_FAILURE;
         }
 
-        if (encoder_params->features | TIVX_ENC_FEATURE_CABAC)
+        if (encoder_params->features & TIVX_ENC_FEATURE_CABAC)
             venc_ctrl.features |= MM_ENC_FEATURE_CABAC;
-        if (encoder_params->features | TIVX_ENC_FEATURE_8x8)
+        if (encoder_params->features & TIVX_ENC_FEATURE_8x8)
             venc_ctrl.features |= MM_ENC_FEATURE_8x8;
-            
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_INTRA4x4)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_INTRA4x4;
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_INTRA8x8)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_INTRA8x8;
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_INTRA16x16)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_INTRA16x16;
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_INTER8x8)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_INTER8x8;
+        if (encoder_params->features & TIVX_ENC_FEATURE_RESTRICT_INTER4x4)
+            venc_ctrl.features |= MM_ENC_FEATURE_RESTRICT_INTER4x4;
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_8x16_MV_DETECT)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_8x16_MV_DETECT;
+        if (encoder_params->features & TIVX_ENC_FEATURE_DISABLE_16x8_MV_DETECT)
+            venc_ctrl.features |= MM_ENC_FEATURE_DISABLE_16x8_MV_DETECT;
+
         encoder_obj->inst_id = encoder_params->base_pipe;
 
         switch (encoder_params->rcmode)
@@ -512,6 +526,27 @@ static vx_status VX_CALLBACK tivxVideoEncoderCreate(
         venc_ctrl.initial_qp_b = encoder_params->initial_qp_b;
         venc_ctrl.min_qp = encoder_params->min_qp;
         venc_ctrl.max_qp = encoder_params->max_qp;
+
+        switch (encoder_params->min_blk_size)
+        {
+            case TIVX_ENC_BLK_SZ_DEFAULT:
+                venc_ctrl.min_blk_size = MM_ENC_BLK_SZ_DEFAULT;
+                break;
+            case TIVX_ENC_BLK_SZ_16x16:
+                venc_ctrl.min_blk_size = MM_ENC_BLK_SZ_16x16;
+                break;
+            case TIVX_ENC_BLK_SZ_8x8:
+                venc_ctrl.min_blk_size = MM_ENC_BLK_SZ_8x8;
+                break;
+            case TIVX_ENC_BLK_SZ_4x4:
+                venc_ctrl.min_blk_size = MM_ENC_BLK_SZ_4x4;
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "Invalid min_blk_size\n");
+                status = VX_FAILURE;
+        }
+
+        venc_ctrl.intra_pred_modes = encoder_params->intra_pred_modes;
 
         mm_status = MM_ENC_Create(&venc_params, &venc_ctrl, &encoder_obj->channel_id);
 
