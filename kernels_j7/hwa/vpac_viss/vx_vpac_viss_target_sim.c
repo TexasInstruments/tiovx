@@ -117,6 +117,8 @@ static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, 
 static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vpac_viss_params_t *vissPrms,
                                                tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
+tivx_ae_awb_params_t g_ae_awb_result;
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -537,7 +539,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             ae_awb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
         }
-
+        else
+        {
+            ae_awb_result = &g_ae_awb_result;
+        }
         /* Get image pointer(s) */
         for(i=0; i < num_exposures; i++)
         {
