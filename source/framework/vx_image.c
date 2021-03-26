@@ -30,6 +30,9 @@
 
 #include <vx_internal.h>
 
+#define TIVX_IMG_ALIGN_BYTES    (64U)
+#define TIVX_IMG_ALIGN(size)    (((size + (TIVX_IMG_ALIGN_BYTES-1)) / TIVX_IMG_ALIGN_BYTES) * TIVX_IMG_ALIGN_BYTES)
+
 static vx_bool ownIsSupportedFourcc(vx_df_image code);
 static vx_bool ownIsValidImage(vx_image image);
 static vx_bool ownIsOdd(vx_uint32 a);
@@ -236,6 +239,7 @@ static vx_status ownDestructImage(vx_reference ref)
     tivx_obj_desc_image_t *obj_desc = NULL;
     uint16_t plane_idx;
     vx_image image = (vx_image)ref;
+    uint32_t size = 0;
 
     if(ref->type == (vx_enum)VX_TYPE_IMAGE)
     {
@@ -247,12 +251,15 @@ static vx_status ownDestructImage(vx_reference ref)
                 || ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
              )
             {
-                for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
+                if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)(uintptr_t) NULL)
                 {
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr!=(uint64_t)(uintptr_t) NULL)
+                    for(plane_idx=0; plane_idx<obj_desc->planes-1; plane_idx++)
                     {
-                        tivxMemBufferFree(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx]);
+                        size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
                     }
+                    size += obj_desc->mem_size[plane_idx];
+
+                    tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
                 }
             }
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
@@ -270,6 +277,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
     tivx_obj_desc_image_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t plane_idx;
+    uint32_t size = 0;
 
     if(ref->type == (vx_enum)VX_TYPE_IMAGE)
     {
@@ -281,27 +289,48 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
             || ((vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_UNIFORM)
              )
             {
-                for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
+                /* We will allocate all planes in a single buffer and multiple plane pointers,
+                 * with appropriate alignment between them to account for HWA requirements.
+                 * This is required for Video Codec in PSDK 7.3 to have NV12 buffers be contiguous. */
+                for(plane_idx=0; plane_idx<obj_desc->planes-1; plane_idx++)
                 {
-                    /* memory is not allocated, so allocate it */
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)(uintptr_t)NULL)
-                    {
-                        tivxMemBufferAlloc(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx], (vx_enum)TIVX_MEM_EXTERNAL);
+                    size += TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx]);
+                }
+                size += obj_desc->mem_size[plane_idx];
 
-                        if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)(uintptr_t)NULL)
+                /* memory is not allocated, so allocate it */
+                if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
+                {
+                    tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, (vx_enum)TIVX_MEM_EXTERNAL);
+
+                    if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)(uintptr_t)NULL)
+                    {
+                        /* could not allocate memory */
+                        VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
+                    }
+                    else
+                    {
+                        obj_desc->mem_ptr[plane_idx].shared_ptr =
+                            tivxMemHost2SharedPtr(
+                                obj_desc->mem_ptr[0].host_ptr,
+                                (vx_enum)TIVX_MEM_EXTERNAL);
+                        for(plane_idx=1; plane_idx<obj_desc->planes; plane_idx++)
                         {
-                            /* could not allocate memory */
-                            VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                            break;
-                        }
-                        else
-                        {
+                            obj_desc->mem_ptr[plane_idx].mem_heap_region =
+                                obj_desc->mem_ptr[plane_idx-1].mem_heap_region;
+                            obj_desc->mem_ptr[plane_idx].host_ptr =
+                                obj_desc->mem_ptr[plane_idx-1].host_ptr +
+                                obj_desc->mem_size[plane_idx-1];
                             obj_desc->mem_ptr[plane_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
-                                    obj_desc->mem_ptr[plane_idx].
-                                    host_ptr,
+                                    obj_desc->mem_ptr[plane_idx].host_ptr,
                                     (vx_enum)TIVX_MEM_EXTERNAL);
+                            obj_desc->mem_ptr[plane_idx].dma_buf_fd =
+                                obj_desc->mem_ptr[plane_idx-1].dma_buf_fd;
+                            obj_desc->mem_ptr[plane_idx].dma_buf_fd_offset =
+                                obj_desc->mem_ptr[plane_idx-1].dma_buf_fd_offset +
+                                TIVX_IMG_ALIGN(obj_desc->mem_size[plane_idx-1]);
                         }
                     }
                 }
