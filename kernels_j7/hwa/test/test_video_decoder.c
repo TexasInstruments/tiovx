@@ -1252,7 +1252,7 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
                 if(array_idx_s != -1)
                 {
                     /* Fill the input buffer. */
-                    VX_CALL(vxMapUserDataObject(bitstream_obj_s[enqueueCnt], 0, info_s.bitstream_sizes[i], &map_id_s, (void*) &bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+                    VX_CALL(vxMapUserDataObject(bitstream_obj_s[array_idx_s], 0, info_s.bitstream_sizes[i], &map_id_s, (void*) &bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
                     in_fp = fopen(input_file_s, "r");
                     if (NULL != in_fp)
@@ -1282,14 +1282,14 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
                         VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_s);
                         ASSERT(NULL != in_fp);
                     }
-                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_s[enqueueCnt], map_id_s));
-                    VX_CALL(vxCopyUserDataObject(bitstream_obj_s[enqueueCnt], 0, sizeof(uint8_t) * info_s.bitstream_sizes[i], bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
+                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_s[array_idx_s], map_id_s));
+                    VX_CALL(vxCopyUserDataObject(bitstream_obj_s[array_idx_s], 0, sizeof(uint8_t) * info_s.bitstream_sizes[i], bitstream_s, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_s[array_idx_s],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_s.bitstream_sizes[i]), sizeof(vx_size)));
                 }
                 if(array_idx_l != -1)
                 {
                     /* Fill the input buffer. */
-                    VX_CALL(vxMapUserDataObject(bitstream_obj_l[enqueueCnt], 0, info_l.bitstream_sizes[i], &map_id_l, (void*) &bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+                    VX_CALL(vxMapUserDataObject(bitstream_obj_l[array_idx_l], 0, info_l.bitstream_sizes[i], &map_id_l, (void*) &bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
                     in_fp = fopen(input_file_l, "r");
                     if (NULL != in_fp)
@@ -1319,9 +1319,9 @@ TEST_WITH_ARG(tivxHwaVideoDecoder, testMultiStreamProcessing, Arg_MultiStream, D
                         VX_PRINT(VX_ZONE_ERROR,"%s: Input file not found!!!\n", input_file_l);
                         ASSERT(NULL != in_fp);
                     }
-                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_l[enqueueCnt], map_id_l));
-                    VX_CALL(vxCopyUserDataObject(bitstream_obj_l[enqueueCnt], 0, sizeof(uint8_t) * info_l.bitstream_sizes[i], bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l[enqueueCnt],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
+                    VX_CALL(vxUnmapUserDataObject(bitstream_obj_l[array_idx_l], map_id_l));
+                    VX_CALL(vxCopyUserDataObject(bitstream_obj_l[array_idx_l], 0, sizeof(uint8_t) * info_l.bitstream_sizes[i], bitstream_l, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                    VX_CALL(tivxSetUserDataObjectAttribute(bitstream_obj_l[array_idx_l],  TIVX_USER_DATA_OBJECT_VALID_SIZE, (void*)&(info_l.bitstream_sizes[i]), sizeof(vx_size)));
                 }
                 /* Enqueue inputs - start execution. */
                 vxGraphParameterEnqueueReadyRef(graph, input_bitstream_graph_parameter_index_s, (vx_reference*)&in_bitstream_s, 1);
