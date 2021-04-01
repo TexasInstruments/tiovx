@@ -1067,21 +1067,21 @@ static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
 
             if(3u == warp_matrix_desc->columns)
             {
-                vx_float32 temp_coeffA = (mat_addr[0] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffA = (mat_addr[0] / mat_addr[8]) * 4096.0f;
                 cfg->coeffA       = (int16_t)temp_coeffA;
-                vx_float32 temp_coeffB = (mat_addr[3] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffB = (mat_addr[3] / mat_addr[8]) * 4096.0f;
                 cfg->coeffB       = (int16_t)temp_coeffB;
-                vx_float32 temp_coeffC = (mat_addr[6] / mat_addr[9]) * 8.0f;
+                vx_float32 temp_coeffC = (mat_addr[6] / mat_addr[8]) * 8.0f;
                 cfg->coeffC       = (int16_t)temp_coeffC;
-                vx_float32 temp_coeffD = (mat_addr[1] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffD = (mat_addr[1] / mat_addr[8]) * 4096.0f;
                 cfg->coeffD       = (int16_t)temp_coeffD;
-                vx_float32 temp_coeffE = (mat_addr[4] / mat_addr[9]) * 4096.0f;
+                vx_float32 temp_coeffE = (mat_addr[4] / mat_addr[8]) * 4096.0f;
                 cfg->coeffE       = (int16_t)temp_coeffE;
-                vx_float32 temp_coeffF = (mat_addr[7] / mat_addr[9]) * 8.0f;
+                vx_float32 temp_coeffF = (mat_addr[7] / mat_addr[8]) * 8.0f;
                 cfg->coeffF       = (int16_t)temp_coeffF;
-                vx_float32 temp_coeffG = (mat_addr[2] / mat_addr[9]) * 8388608.0f;
+                vx_float32 temp_coeffG = (mat_addr[2] / mat_addr[8]) * 8388608.0f;
                 cfg->coeffG       = (int16_t)temp_coeffG;
-                vx_float32 temp_coeffH = (mat_addr[5] / mat_addr[9]) * 8388608.0f;
+                vx_float32 temp_coeffH = (mat_addr[5] / mat_addr[8]) * 8388608.0f;
                 cfg->coeffH       = (int16_t)temp_coeffH;
                 cfg->enableWarp   = 1;
             }

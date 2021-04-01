@@ -970,14 +970,14 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
 
             if(3 == warp_matrix_desc->columns)
             {
-                settings->affine_a = (int16_t)((mat_addr[0] / mat_addr[9]) * 4096.0f);
-                settings->affine_b = (int16_t)((mat_addr[3] / mat_addr[9]) * 4096.0f);
-                settings->affine_c = (int16_t)((mat_addr[6] / mat_addr[9]) * 8.0f);
-                settings->affine_d = (int16_t)((mat_addr[1] / mat_addr[9]) * 4096.0f);
-                settings->affine_e = (int16_t)((mat_addr[4] / mat_addr[9]) * 4096.0f);
-                settings->affine_f = (int16_t)((mat_addr[7] / mat_addr[9]) * 8.0f);
-                settings->affine_g = (int16_t)((mat_addr[2] / mat_addr[9]) * 8388608.0f);
-                settings->affine_h = (int16_t)((mat_addr[5] / mat_addr[9]) * 8388608.0f);
+                settings->affine_a = (int16_t)((mat_addr[0] / mat_addr[8]) * 4096.0f);
+                settings->affine_b = (int16_t)((mat_addr[3] / mat_addr[8]) * 4096.0f);
+                settings->affine_c = (int16_t)((mat_addr[6] / mat_addr[8]) * 8.0f);
+                settings->affine_d = (int16_t)((mat_addr[1] / mat_addr[8]) * 4096.0f);
+                settings->affine_e = (int16_t)((mat_addr[4] / mat_addr[8]) * 4096.0f);
+                settings->affine_f = (int16_t)((mat_addr[7] / mat_addr[8]) * 8.0f);
+                settings->affine_g = (int16_t)((mat_addr[2] / mat_addr[8]) * 8388608.0f);
+                settings->affine_h = (int16_t)((mat_addr[5] / mat_addr[8]) * 8388608.0f);
                 settings->pwarpen = 1;         // PWARP enable
             }
             else
