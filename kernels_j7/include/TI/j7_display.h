@@ -101,8 +101,22 @@ extern "C" {
  *
  *  \ingroup group_vision_function_display
  */
-#define TIVX_DISPLAY_SELECT_CHANNEL       (0x30000000u)
+#define TIVX_DISPLAY_SELECT_CHANNEL         (0x30000000u)
 
+/*! \brief Control Command to set the Crop parameters.
+ *
+ *          The display node supports cropping the input
+ *          image and then using scalar, zoom out/in effect could be
+ *          achieved. Typically for zoom effect, output
+ *          resolution ie scalar output resolution remains constant.
+ *          Only input crop parameters are changed.
+ *
+ *         This control command uses pointer to structure
+ *         tivx_display_crop_params_t as an input argument.
+ *
+ *  \ingroup group_vision_function_display
+ */
+#define TIVX_DISPLAY_SET_CROP_PARAMS        (0x30000001u)
 
 /*********************************
  *      Display Defines
@@ -132,6 +146,19 @@ extern "C" {
  *********************************/
 
 /*!
+ * \brief The configuration data structure for setting crop parameters.
+ *
+ * \ingroup group_vision_function_display
+ */
+typedef struct
+{
+    uint32_t  startX; /*!< Horizontal start for cropping */
+    uint32_t  startY; /*!< Vertical start for cropping */
+    uint32_t  width;  /*!< Width of crop window */
+    uint32_t  height; /*!< Height of crop window */
+} tivx_display_crop_params_t;
+
+/*!
  * \brief The configuration data structure used by the TIVX_KERNEL_DISPLAY kernel.
  *
  * \ingroup group_vision_function_display
@@ -143,6 +170,8 @@ typedef struct {
     uint32_t  outHeight;   /*!< Vertical Size of picture at display output */
     uint32_t  posX;        /*!< X position of the video buffer */
     uint32_t  posY;        /*!< Y position of the video buffer */
+    uint32_t  enableCropping; /*!< Flag to enable cropping */
+    tivx_display_crop_params_t cropPrms; /*!< Crop parameters */
 } tivx_display_params_t;
 
 /*! \brief Channels parameters for selecting channel to be displayed.

@@ -77,6 +77,16 @@
 
 typedef struct
 {
+    Fvid2_PosConfig     posCfg;
+    Dss_FrameRtParams   inFrmPrms;
+    Dss_FrameRtParams   outFrmPrms;
+    Dss_ScRtParams      scPrms;
+    Dss_DispRtParams    rtPrms;
+    tivx_obj_desc_t     *obj_desc;
+} tivxDisplayRtParams;
+
+typedef struct
+{
     uint32_t opMode;
     /**< Operation Mode of display kernel. Refer \ref Display_opMode for values */
     Fvid2_Frame copyFrame[DISPLAY_MAX_COPY_BUFFERS];
@@ -107,6 +117,7 @@ typedef struct
     /**< Queue memory */
     Fvid2_Frame fvid2Frames[TIVX_DISPLAY_MAX_NUM_BUFS];
     /**< FVID2 Frames that will be used for display */
+    tivxDisplayRtParams dispRtPrms[TIVX_DISPLAY_MAX_NUM_BUFS];
 
     uint64_t chromaBufAddr;
     /**< Chroma Buffer Address, used when input frame format is U16 */
@@ -116,6 +127,13 @@ typedef struct
 
     /**< Id of active channel */
     uint32_t active_channel;
+
+    uint32_t offset0;
+    uint32_t offset1;
+    tivx_display_crop_params_t cropPrms;
+    uint32_t bpp;
+
+    uint32_t isRtPrmsUpdated;
 } tivxDisplayParams;
 
 static tivx_target_kernel vx_display_target_kernel1 = NULL;
@@ -133,8 +151,9 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_desc_img,
-                                               Fvid2_Format *format);
+static vx_status tivxDisplayExtractFvid2Format(
+    tivxDisplayParams *dispPrms, tivx_display_params_t *inDispPrms,
+    const tivx_obj_desc_image_t *obj_desc_img, Fvid2_Format *format);
 static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData);
 static uint32_t tivxDisplayGetPipeType(uint32_t drvId);
 static int32_t tivxDisplayGetImageSize(const tivx_obj_desc_image_t *obj_desc_image,
@@ -143,12 +162,16 @@ static int32_t tivxDisplayGetImageSize(const tivx_obj_desc_image_t *obj_desc_ima
 static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
                                             const Fvid2_Format *fmt,
                                             const tivx_obj_desc_image_t *obj_desc_img);
+static void tivxDisplayCalcOffset(tivxDisplayParams *dispPrms);
+
 static vx_status VX_CALLBACK tivxDisplayControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static void tivxDisplayFreeChromaBuff(tivxDisplayParams *dispPrms);
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
+    const tivx_obj_desc_user_data_object_t *usr_data_obj);
+static vx_status tivxDisplaySetCropParams(tivxDisplayParams *dispPrms,
     const tivx_obj_desc_user_data_object_t *usr_data_obj);
 
 static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
@@ -189,13 +212,66 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
     return (status);
 }
 
-static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_desc_img,
-                                               Fvid2_Format *format)
+static vx_status tivxDisplaySetCropParams(tivxDisplayParams *dispPrms,
+    const tivx_obj_desc_user_data_object_t *usr_data_obj)
+{
+    vx_status                   status = (vx_status)VX_SUCCESS;
+    tivx_display_crop_params_t *ch_prms = NULL;
+    void                       *target_ptr;
+
+    if (NULL != usr_data_obj)
+    {
+        target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
+
+        tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+
+        if (sizeof(tivx_display_crop_params_t) ==
+                usr_data_obj->mem_size)
+        {
+            ch_prms = (tivx_display_crop_params_t *)target_ptr;
+            memcpy(&dispPrms->cropPrms, ch_prms, sizeof(tivx_display_crop_params_t));
+            dispPrms->isRtPrmsUpdated = 1;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return (status);
+}
+
+static vx_status tivxDisplayExtractFvid2Format(
+    tivxDisplayParams *dispPrms, tivx_display_params_t *inDispPrms,
+    const tivx_obj_desc_image_t *obj_desc_img, Fvid2_Format *format)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+
     Fvid2Format_init(format);
-    format->width = obj_desc_img->imagepatch_addr[0].dim_x;
-    format->height = obj_desc_img->imagepatch_addr[0].dim_y;
+
+    if (inDispPrms->enableCropping)
+    {
+        format->width = inDispPrms->cropPrms.width;
+        format->height = inDispPrms->cropPrms.height;
+
+        memcpy(&dispPrms->cropPrms,
+            &inDispPrms->cropPrms, sizeof(dispPrms->cropPrms));
+    }
+    else
+    {
+        format->width = obj_desc_img->imagepatch_addr[0].dim_x;
+        format->height = obj_desc_img->imagepatch_addr[0].dim_y;
+    }
     format->ccsFormat = FVID2_CCSF_BITS8_PACKED;
     format->scanFormat = FVID2_SF_PROGRESSIVE;
 
@@ -204,43 +280,52 @@ static vx_status tivxDisplayExtractFvid2Format(const tivx_obj_desc_image_t *obj_
         case (vx_df_image)TIVX_DF_IMAGE_RGB565:
             format->dataFormat = FVID2_DF_BGR16_565;
             format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 2;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGB:
             format->dataFormat = FVID2_DF_RGB24_888;
             format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 3;
             break;
         case (vx_df_image)VX_DF_IMAGE_RGBX:
             format->dataFormat = FVID2_DF_RGBX24_8888;
             format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 4;
             break;
         case (vx_df_image)TIVX_DF_IMAGE_BGRX:
             format->dataFormat = FVID2_DF_BGRX32_8888;
             format->pitch[FVID2_RGB_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 4;
             break;
         case (vx_df_image)VX_DF_IMAGE_UYVY:
             format->dataFormat = FVID2_DF_YUV422I_UYVY;
             format->pitch[FVID2_YUV_INT_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 2;
             break;
         case (vx_df_image)VX_DF_IMAGE_YUYV:
             format->dataFormat = FVID2_DF_YUV422I_YUYV;
             format->pitch[FVID2_YUV_INT_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 2;
             break;
         case (vx_df_image)VX_DF_IMAGE_NV12:
             format->dataFormat = FVID2_DF_YUV420SP_UV;
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[1].stride_y;
+            dispPrms->bpp = 1;
             break;
         case (vx_df_image)VX_DF_IMAGE_U16:
             format->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             format->dataFormat = FVID2_DF_YUV420SP_UV;
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 2;
             break;
         case (vx_df_image)VX_DF_IMAGE_U8:
             format->ccsFormat = FVID2_CCSF_BITS8_PACKED;
             format->dataFormat = FVID2_DF_YUV420SP_UV;
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = (uint32_t)obj_desc_img->imagepatch_addr[0].stride_y;
+            dispPrms->bpp = 1;
             break;
         default:
             status = (vx_status)VX_FAILURE;
@@ -470,13 +555,16 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             displayParams->dispParams.pipeCfg.outHeight = params->outHeight;
             displayParams->dispParams.layerPos.startX = params->posX;
             displayParams->dispParams.layerPos.startY = params->posY;
-            status = tivxDisplayExtractFvid2Format(obj_desc_image,
-                                                   &displayParams->dispParams.pipeCfg.inFmt);
+            status = tivxDisplayExtractFvid2Format(displayParams,
+                params, obj_desc_image,
+                &displayParams->dispParams.pipeCfg.inFmt);
             if((displayParams->dispParams.pipeCfg.inFmt.width != displayParams->dispParams.pipeCfg.outWidth) ||
                (displayParams->dispParams.pipeCfg.inFmt.height != displayParams->dispParams.pipeCfg.outHeight))
             {
                 displayParams->dispParams.pipeCfg.scEnable = TRUE;
             }
+
+            tivxDisplayCalcOffset(displayParams);
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -554,6 +642,8 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
 
             for(bufId = 0; bufId <TIVX_DISPLAY_MAX_NUM_BUFS; bufId++)
             {
+                displayParams->fvid2Frames[bufId].appData =
+                    &displayParams->dispRtPrms[bufId];
                 tivxQueuePut(&displayParams->fvid2FrameQ, (uintptr_t)&displayParams->fvid2Frames[bufId], TIVX_EVENT_TIMEOUT_NO_WAIT);
             }
         }
@@ -742,6 +832,12 @@ static vx_status VX_CALLBACK tivxDisplayControl(
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
+            case TIVX_DISPLAY_SET_CROP_PARAMS:
+            {
+                status = tivxDisplaySetCropParams(dispPrms,
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
+                break;
+            }
             default:
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Command Id\n");
@@ -752,6 +848,65 @@ static vx_status VX_CALLBACK tivxDisplayControl(
     }
 
     return (status);
+}
+
+static void tivxDisplayCalcOffset(tivxDisplayParams *dispPrms)
+{
+    Fvid2_Format *fmt;
+
+    if (NULL != dispPrms)
+    {
+        fmt = &dispPrms->dispParams.pipeCfg.inFmt;
+
+        dispPrms->offset0 = (dispPrms->cropPrms.startY * fmt->pitch[0]) +
+            dispPrms->cropPrms.startX * dispPrms->bpp;
+        if (fmt->dataFormat == FVID2_DF_YUV420SP_UV)
+        {
+            dispPrms->offset1 =
+                ((dispPrms->cropPrms.startY / 2) * fmt->pitch[0]) +
+                dispPrms->cropPrms.startX * dispPrms->bpp;
+        }
+        else
+        {
+            dispPrms->offset1 = dispPrms->offset0;
+        }
+    }
+}
+
+void tivxDisplayUpdateRtParams(tivxDisplayParams *dispPrms, Fvid2_Frame *frm)
+{
+    uint32_t             cnt;
+    tivxDisplayRtParams *rtPrms;
+    Fvid2_Format        *fmt;
+
+    if (dispPrms->isRtPrmsUpdated)
+    {
+        rtPrms = (tivxDisplayRtParams *)frm->appData;
+        fmt = &dispPrms->dispParams.pipeCfg.inFmt;
+
+        if (NULL != rtPrms)
+        {
+            rtPrms->inFrmPrms.width = dispPrms->cropPrms.width;
+            rtPrms->inFrmPrms.height = dispPrms->cropPrms.height;
+            for (cnt = 0; cnt < FVID2_MAX_PLANES; cnt ++)
+            {
+                rtPrms->inFrmPrms.pitch[cnt] = fmt->pitch[cnt];
+            }
+            rtPrms->inFrmPrms.dataFormat = fmt->dataFormat;
+
+            memset(&rtPrms->rtPrms, 0, sizeof(Dss_DispRtParams));
+            rtPrms->rtPrms.inFrmParams = &rtPrms->inFrmPrms;
+            frm->perFrameCfg = (void *)&rtPrms->rtPrms;
+
+            tivxDisplayCalcOffset(dispPrms);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Appdata is null !!!\n");
+        }
+
+        dispPrms->isRtPrmsUpdated = 0u;
+    }
 }
 
 static vx_status VX_CALLBACK tivxDisplayProcess(
@@ -767,6 +922,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     uint32_t size;
     Fvid2_FrameList frmList;
     Fvid2_Frame *frm;
+    tivxDisplayRtParams *rtPrms;
 
     if((num_params != TIVX_KERNEL_DISPLAY_MAX_PARAMS) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
@@ -822,11 +978,15 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             tivxQueueGet(&displayParams->fvid2FrameQ, (uintptr_t*)&frm, TIVX_EVENT_TIMEOUT_NO_WAIT);
             if(NULL != frm)
             {
+                tivxDisplayUpdateRtParams(displayParams, frm);
+
                 /* Assign buffer addresses */
-                frm->addr[0U] = (uint64_t)image_target_ptr1;
+                frm->addr[0U] = ((uint64_t)image_target_ptr1) +
+                    displayParams->offset0;
                 if((vx_df_image)VX_DF_IMAGE_NV12 == obj_desc_image->format)
                 {
-                    frm->addr[1U] = (uint64_t)image_target_ptr2;
+                    frm->addr[1U] = (uint64_t)image_target_ptr2 +
+                        displayParams->offset1;
                 }
 
                 if (((vx_df_image)VX_DF_IMAGE_U16 == obj_desc_image->format)||((vx_df_image)VX_DF_IMAGE_U8 == obj_desc_image->format))
@@ -834,7 +994,9 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                     frm->addr[1U] = displayParams->chromaBufAddr;
                 }
                 frm->fid = FVID2_FID_FRAME;
-                frm->appData = obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+
+                rtPrms = (tivxDisplayRtParams *)frm->appData;
+                rtPrms->obj_desc = obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
 
                 /* Create frame list */
                 frmList.numFrames  = 1U;
@@ -881,8 +1043,11 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 if((1U == frmList.numFrames) && (FVID2_SOK == fvid2_status))
                 {
                     frm = frmList.frames[0U];
+
+                    frm->perFrameCfg = NULL;
+                    rtPrms = (tivxDisplayRtParams *)frm->appData;
                     /* Return frame */
-                    obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX] = frm->appData;
+                    obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX] = rtPrms->obj_desc;
                     tivxQueuePut(&displayParams->fvid2FrameQ, (uintptr_t)frm, TIVX_EVENT_TIMEOUT_NO_WAIT);
                 }
                 else /* (1U != frmList.numFrames) || (((vx_status)VX_SUCCESS != status) && (FVID2_EAGAIN != status))*/
