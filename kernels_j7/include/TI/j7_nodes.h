@@ -90,6 +90,21 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             flow_vector_rgb,
                                       vx_image             confidence_image);
 
+/*! \brief [Graph] Creates a DISPLAY_M2M Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_DISPLAY_M2M_NAME</tt>
+ * \ingroup group_vision_function_display_m2m
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayM2MNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_image             input,
+                                      vx_image             output);
+
 #ifdef __cplusplus
 }
 #endif

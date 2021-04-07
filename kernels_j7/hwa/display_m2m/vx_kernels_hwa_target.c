@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,50 +60,50 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
-#include "tivx_kernels_host_utils.h"
+#ifdef BUILD_BAM
 
-#ifdef __cplusplus
-extern "C" {
+void tivxAddTargetKernelDisplayM2M(void);
+
+#else
+
+void tivxAddTargetKernelDisplayM2M(void);
+
 #endif
 
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
+#ifdef BUILD_BAM
 
+void tivxRemoveTargetKernelDisplayM2M(void);
 
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaKernels(void);
+#else
 
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaKernels(void);
+void tivxRemoveTargetKernelDisplayM2M(void);
 
-/*!
- * \brief Function to register HWA Kernels on the display_m2m Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaTargetDisplayM2MKernels(void);
+#endif
 
-/*!
- * \brief Function to un-register HWA Kernels on the display_m2m Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaTargetDisplayM2MKernels(void);
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+#ifdef BUILD_BAM
 
+    {&tivxAddTargetKernelDisplayM2M, &tivxRemoveTargetKernelDisplayM2M},
 
-#ifdef __cplusplus
+#else
+
+    {&tivxAddTargetKernelDisplayM2M, &tivxRemoveTargetKernelDisplayM2M},
+
+#endif
+};
+
+void tivxRegisterHwaTargetDisplayM2MKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
-#endif
 
-#endif /* VX_HWA_KERNELS_H_ */
-
+void tivxUnRegisterHwaTargetDisplayM2MKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

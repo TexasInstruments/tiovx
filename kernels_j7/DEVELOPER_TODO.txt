@@ -1,0 +1,71 @@
+# This file lists the places in the generated code where the developer is expected
+# to add custom code beyond what the script can generate.  This is generated as 
+# part of the KernelExportCode.export() function, but may also be called independently 
+# by calling the KernelExportCode.todo() function with the requirement that the 
+# CUSTOM_KERNEL_PATH environment variable is defined. This function simply searches
+# for the "< DEVELOPER_TODO ...>" string in all the files from this path, and lists them.
+# Removing the "< DEVELOPER_TODO ...>" comment block from the files will effectively remove those
+# lines from showing up in this file the next time KernelExportCode.todo() is run.
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/display_m2m/concerto.mak
+    12: Add any custom include paths using 'IDIRS' 
+
+    13: Add any custom preprocessor defines or build options needed using
+    14: 'CFLAGS'. 
+
+    15: Adjust which cores this library gets built on using 'SKIPBUILD'. 
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/display_m2m/vx_display_m2m_target.c
+    71: Uncomment if kernel context is needed  
+
+    103: Uncomment if kernel context is needed  
+
+    122: Uncomment if kernel context is needed  
+
+    130: Uncomment if kernel context is needed  
+
+    180: Add target kernel processing code here  
+
+    210: Uncomment if kernel context is needed  
+
+    215: (Optional) Add any target kernel create code here (e.g. allocating 
+    216: local memory buffers, one time initialization, etc)  
+
+    236: Uncomment if kernel context is needed  
+
+    271: Uncomment if kernel context is needed  
+
+    277: (Optional) Add any target kernel delete code here (e.g. freeing 
+    278: local memory buffers, etc)  
+
+    279: Uncomment if kernel context is needed  
+
+    311: (Optional) Add any target kernel control code here (e.g. commands 
+    312: the user can call to modify the processing of the kernel at run-time)  
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/host/vx_dmpac_sde_host.c
+    366: (Optional) Set padding values based on valid region if border mode is 
+    367: set to VX_BORDER_UNDEFINED and remove the if 0 and endif lines. 
+    368: Else, remove this entire if 0 ... endif block  
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/host/vx_dof_visualize_host.c
+    198: (Optional) Add any custom parameter type or range checking not 
+    199: covered by the code-generation script.)  
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/host/vx_display_m2m_host.c
+    185: (Optional) Add any custom parameter type or range checking not 
+    186: covered by the code-generation script.)  
+
+    188: (Optional) If intending to use a virtual data object, set metas using appropriate TI API. 
+    189: For a code example, please refer to the validate callback of the follow file: 
+    190: tiovx/kernels/openvx-core/host/vx_absdiff_host.c. For further information regarding metas, 
+    191: please refer to the OpenVX 1.1 spec p. 260, or search for vx_kernel_validate_f.  
+
+    222: (Optional) Set padding values based on valid region if border mode is 
+    223: set to VX_BORDER_UNDEFINED and remove the if 0 and endif lines. 
+    224: Else, remove this entire if 0 ... endif block  
+
+/ti/j7/workarea/tiovx/tiovx_dev/kernels_j7/hwa/host/vx_vpac_nf_generic_host.c
+    191: (Optional) Add any custom parameter type or range checking not 
+    192: covered by the code-generation script.)  
+

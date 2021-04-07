@@ -355,3 +355,20 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayM2MNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_image             input,
+                                      vx_image             output)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DISPLAY_M2M_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
