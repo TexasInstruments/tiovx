@@ -77,6 +77,7 @@
 #include <TI/j7_video_decoder.h>
 #include <TI/j7_video_encoder.h>
 #include <TI/j7_nodes.h>
+#include <TI/j7_display_m2m.h>
 
 #ifdef __cplusplus
 extern "C" {

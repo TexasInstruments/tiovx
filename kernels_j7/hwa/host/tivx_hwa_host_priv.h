@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2019 Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -79,6 +79,7 @@ vx_status tivxAddKernelCapture(vx_context context);
 vx_status tivxAddKernelCsitx(vx_context context);
 vx_status tivxAddKernelVideoDecoder(vx_context context);
 vx_status tivxAddKernelVideoEncoder(vx_context context);
+vx_status tivxAddKernelDisplayM2M(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
 vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
@@ -94,5 +95,6 @@ vx_status tivxRemoveKernelCapture(vx_context context);
 vx_status tivxRemoveKernelCsitx(vx_context context);
 vx_status tivxRemoveKernelVideoDecoder(vx_context context);
 vx_status tivxRemoveKernelVideoEncoder(vx_context context);
+vx_status tivxRemoveKernelDisplayM2M(vx_context context);
 
 #endif /* TIVX_HWA_HOST_PRIV_H_ */

@@ -92,6 +92,7 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6, 20, "TIVX_CAPT6", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7, 21, "TIVX_CAPT7", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8, 22, "TIVX_CAPT8", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M, 23, "TIVX_DISP_M2M", 14u);
 }
 
 void tivxPlatformDeleteTargets(void)
@@ -119,4 +120,5 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VENC1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VENC2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CSITX);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M);
 }

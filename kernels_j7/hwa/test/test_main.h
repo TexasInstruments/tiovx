@@ -99,27 +99,22 @@ TESTCASE(tivxHwaDisplayM2M)
 #if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureSplitMode)
-TESTCASE(tivxHwaDisplayM2M)
 #endif
 #if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureSplitMode)
-TESTCASE(tivxHwaDisplayM2M)
 #endif
 #if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
 TESTCASE(tivxHwaCsitxCsirx)
-TESTCASE(tivxHwaDisplayM2M)
 #endif
 /* Note: the following are implemented as applications in vision apps */
 #if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
 TESTCASE(tivxHwaCsitxCsirx)
-TESTCASE(tivxHwaDisplayM2M)
 #endif
 #if 0
 TESTCASE(tivxHwaCaptureDisplay)
 TESTCASE(tivxHwaCaptureVissDisplay)
 TESTCASE(tivxHwaCaptureVpacDisplay)
-TESTCASE(tivxHwaDisplayM2M)
 #endif
 TESTCASE(tivxHwaVideoDecoder)
 TESTCASE(tivxHwaVideoEncoder)
