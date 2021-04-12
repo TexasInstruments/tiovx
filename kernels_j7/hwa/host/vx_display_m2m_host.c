@@ -137,11 +137,11 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if ((configuration_size != sizeof(tivx_display_m2m_common_params_t)) ||
-            (strncmp(configuration_name, "tivx_display_m2m_common_params_t", sizeof(configuration_name)) != 0))
+        if ((configuration_size != sizeof(tivx_display_m2m_params_t)) ||
+            (strncmp(configuration_name, "tivx_display_m2m_params_t", sizeof(configuration_name)) != 0))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_display_m2m_common_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_display_m2m_params_t \n");
         }
 
         if( ((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&

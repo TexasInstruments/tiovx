@@ -67,14 +67,81 @@
 #include "tivx_kernel_display_m2m.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "tivx_hwa_display_m2m_priv.h"
+
+#include <TI/tivx_queue.h>
+#include <ti/drv/fvid2/fvid2.h>
+#include <ti/drv/dss/dss.h>
+#include <tivx_obj_desc_priv.h>
+#include <vx_reference.h>
+
+#define DISPLAY_MAX_VALID_PLANES                      2U
 
 /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
-#if 0
 typedef struct
 {
+    /*! IDs=> 0: Write-back pipe-line1 */
+    uint32_t instId;
+    /*! Number of pipe-lines used, should be set to '1' as blending is not supported currently */
+    uint32_t numPipe;
+    /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
+    uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
+    /*! IDs=> 0:Overlay1, 1:Overlay2, 2:Overlay3 and 3:Overlay4 */
+    uint32_t overlayId;
+    /*! FVID2 display driver handle */
+    Fvid2_Handle drvHandle;
+    /*! WB pipe create parameters */
+    Dss_WbCreateParams createParams;
+    /*! WB pipe create status */
+    Dss_WbCreateStatus createStatus;
+    /*! Callback parameters */
+    Fvid2_CbParams cbParams;
+    /*! WB pipe status */
+    Dss_WbStatus wbStatus;
+    /*! WB pipe configuration */
+    Dss_WbPipeCfgParams wbCfg;
+    /*! WB pipe DMA configuration */
+    CSL_DssWbPipeDmaCfg wbDmaCfg;
+    /*! WB pipe MFlag configuration */
+    Dss_WbPipeMflagParams wbMflagCfg;
+    /*! WB pipe CSC configuration */
+    CSL_DssCscCoeff wbCscCfg;
+    /*! Display pipe configuration */
+    Dss_PipeCfgParams pipeCfg[TIVX_DISPLAY_M2M_MAX_PIPE];
+    /*! Display pipe MFlag configuration */
+    Dss_PipeMflagParams mFlagCfg[TIVX_DISPLAY_M2M_MAX_PIPE];
+    /*! Display pipe CSC configuration */
+    Dss_PipeCscParams cscCfg[TIVX_DISPLAY_M2M_MAX_PIPE];
+    /*! Display Overlay configuration */
+    Dss_DctrlOverlayParams ovrCfg;
+    /*! Display Layer configuration */
+    Dss_DctrlOverlayLayerParams layerCfg;
+    /*! Display Global configuration */
+    Dss_DctrlGlobalDssParams globalParams;
+    /*! Mutex used for waiting for process completion */
+    tivx_event waitForProcessCmpl;
+    /**< Event indicating when a frame is available. */
+    tivx_queue freeFvid2FrameQ[TIVX_CAPTURE_MAX_CH];
+    /*! Display M2M Driver Input Frame List, used for providing
+     *  an array of input frames */
+    Fvid2_FrameList inFrmList;
+    /*! Display M2M Driver Output Frame List, used for providing
+     *  an array of output frames */
+    Fvid2_FrameList outFrmList;
+    /*! Display M2M Driver Input Frames */
+    Fvid2_Frame inFrm[TIVX_DISPLAY_M2M_MAX_NUM_IN_BUFS][TIVX_DISPLAY_M2M_MAX_PIPE];
+    /*! Display M2M Driver Output Frames */
+    Fvid2_Frame outFrm[TIVX_DISPLAY_M2M_MAX_NUM_OUT_BUFS];
+} tivxDisplayM2MDrvObj;
+
+typedef struct
+{
+    /*! Display M2M driver object */
+    tivxDisplayM2MDrvObj drvObj;
+    /*! Display M2M Node create parameters provided by application */
+    tivx_display_m2m_params_t createParams;
 } tivxDisplayM2MParams;
 
-#endif
 static tivx_target_kernel vx_display_m2m_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxDisplayM2MProcess(
@@ -228,7 +295,7 @@ static vx_status VX_CALLBACK tivxDisplayM2MCreate(
 
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_CONFIGURATION_IDX];
 
-        if (configuration_desc->mem_size != sizeof(tivx_display_m2m_common_params_t))
+        if (configuration_desc->mem_size != sizeof(tivx_display_m2m_params_t))
         {
             VX_PRINT(VX_ZONE_ERROR, "User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
             status = (vx_status)VX_FAILURE;

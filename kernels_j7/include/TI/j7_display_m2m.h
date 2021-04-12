@@ -80,6 +80,65 @@ extern "C" {
  */
 #define TIVX_KERNEL_DISPLAY_M2M_NAME          "com.ti.hwa.displaym2m"
 
+/*********************************
+ *      Display M2M Control Commands
+ *********************************/
+/*! \brief Control Command to return Display M2M statistics to application
+ *
+ *  \ingroup group_vision_function_display_m2m
+ *  This control command returns the status of the Display M2M node.
+ *  Please refer to #tivx_display_m2m_statistics_t structure.
+ */
+#define TIVX_DISPLAY_M2M_GET_STATISTICS                      (0x40000001u)
+
+/*********************************
+ *      Display M2M Defines
+ *********************************/
+
+/*********************************
+ *      Display M2M STRUCTURES
+ *********************************/
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_DISPLAY_M2M kernel.
+ *
+ * \ingroup group_vision_function_display_m2m
+ */
+typedef struct {
+    /*! IDs=> 0: Write-back pipe-line1 */
+    uint32_t instId; 
+    /*! Number of pipe-lines used, should be set to '1' as blending is not supported currently */
+    uint32_t numPipe;      
+    /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
+    uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE]; 
+    /*! IDs=> 0:Overlay1, 1:Overlay2, 2:Overlay3 and 3:Overlay4 */
+    uint32_t overlayId; 
+} tivx_display_m2m_params_t;
+
+/*!
+ * \brief Display M2M status structure used to get the current status.
+ *
+ * \ingroup group_vision_function_display_m2m
+ */
+typedef struct
+{
+    /*! Counter to keep track of how many requests are queued to the
+        driver.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t queueCount;
+    /*! Counter to keep track of how many requests are dequeued from the
+        driver.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t dequeueCount;
+    /*! Counter to keep track of how many requests are wrote back by the
+        driver.
+        Note: This counter will be reset at the time of driver init. */
+    uint32_t wbFrmCount;
+    /*! Counter to keep track of the occurrence of underflow error.
+        Note: This counter will be reset at the time of driver create and
+        during driver start. */
+    uint32_t overflowCount;
+} tivx_display_m2m_statistics_t;
+
 
 #ifdef __cplusplus
 }
