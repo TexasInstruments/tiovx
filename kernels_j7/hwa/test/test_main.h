@@ -78,28 +78,6 @@ TESTCASE(tivxHwaVpacMscPyramid)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaDisplayM2M)
 #endif
-#if defined(J7) || defined(PC)
-#if defined(BUILD_CT_TIOVX_HWA)
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
-#if defined(J7)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaDisplayM2M)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-TESTCASE(tivxHwaCaptureSplitMode)
-#endif
 #if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureSplitMode)
@@ -108,9 +86,6 @@ TESTCASE(tivxHwaCaptureSplitMode)
 TESTCASE(tivxHwaCsitxCsirx)
 #endif
 /* Note: the following are implemented as applications in vision apps */
-#if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
-TESTCASE(tivxHwaCsitxCsirx)
-#endif
 #if 0
 TESTCASE(tivxHwaCaptureDisplay)
 TESTCASE(tivxHwaCaptureVissDisplay)
@@ -123,4 +98,3 @@ TESTCASE(tivxHwaVideoEncoder)
 #endif
 
 #endif
-

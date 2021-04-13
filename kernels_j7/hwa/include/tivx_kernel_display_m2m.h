@@ -74,8 +74,6 @@ extern "C" {
 
 #define TIVX_KERNEL_DISPLAY_M2M_MAX_PARAMS            (3U)
 
-/* DSS pipe-lines number available in the SoC for blending in */
-#define TIVX_DISPLAY_M2M_MAX_PIPE                     (1U)
 #define TIVX_DISPLAY_M2M_MAX_NUM_IN_BUFS              (4U)
 #define TIVX_DISPLAY_M2M_MAX_NUM_OUT_BUFS             (4U)
 

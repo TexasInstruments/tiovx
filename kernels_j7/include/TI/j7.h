@@ -201,6 +201,10 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_CSITX     "CSITX"
+/*! \brief Target name for Display M2M
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M     "DSS_M2M"
 
 
 /*! \brief CPU ID for supported CPUs

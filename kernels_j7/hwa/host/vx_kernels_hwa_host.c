@@ -85,8 +85,8 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
     {&tivxAddKernelVideoDecoder, &tivxRemoveKernelVideoDecoder},
     {&tivxAddKernelVideoEncoder, &tivxRemoveKernelVideoEncoder},
-    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx}
-    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M},
+    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx},
+    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)

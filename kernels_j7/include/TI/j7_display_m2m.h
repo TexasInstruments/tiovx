@@ -94,6 +94,12 @@ extern "C" {
 /*********************************
  *      Display M2M Defines
  *********************************/
+/*! \brief Maximum number of display pipe-line supported in the DSS M2M node.
+ *         Multiple number of pipe-lines are needed to support blending.
+ *
+ *  \ingroup group_vision_function_display_m2m
+ */
+#define TIVX_DISPLAY_M2M_MAX_PIPE                     (1U)
 
 /*********************************
  *      Display M2M STRUCTURES
@@ -105,13 +111,21 @@ extern "C" {
  */
 typedef struct {
     /*! IDs=> 0: Write-back pipe-line1 */
-    uint32_t instId; 
+    uint32_t instId;
     /*! Number of pipe-lines used, should be set to '1' as blending is not supported currently */
-    uint32_t numPipe;      
+    uint32_t numPipe;
     /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
-    uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE]; 
+    uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
     /*! IDs=> 0:Overlay1, 1:Overlay2, 2:Overlay3 and 3:Overlay4 */
-    uint32_t overlayId; 
+    uint32_t overlayId;
+    /*!< Horizontal Size of picture at display M2M output */
+    uint32_t outWidth;
+    /*!< Vertical Size of picture at display M2M output */
+    uint32_t outHeight;
+    /*!< X position of the output video buffer */
+    uint32_t posX;
+    /*!< Y position of the output video buffer */
+    uint32_t posY;
 } tivx_display_m2m_params_t;
 
 /*!
@@ -136,7 +150,7 @@ typedef struct
     /*! Counter to keep track of the occurrence of underflow error.
         Note: This counter will be reset at the time of driver create and
         during driver start. */
-    uint32_t overflowCount;
+    uint32_t underflowCount;
 } tivx_display_m2m_statistics_t;
 
 
