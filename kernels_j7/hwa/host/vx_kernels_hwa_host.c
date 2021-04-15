@@ -185,7 +185,6 @@ void tivxHwaUnLoadKernels(vx_context context)
         /*tivxUnRegisterHwaTargetVencKernels();*/
 
         #endif
-               tivxUnRegisterHwaTargetDisplayM2MKernels();
 
         gIsHwaKernelsLoad = 0U;
     }

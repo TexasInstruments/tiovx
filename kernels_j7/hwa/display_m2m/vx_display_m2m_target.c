@@ -79,7 +79,6 @@
 
 #define DISPLAY_MAX_VALID_PLANES                      2U
 
-/* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
 typedef struct
 {
     /*! IDs=> 0: Write-back pipe-line1 */
@@ -183,7 +182,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
     tivxDisplayM2MParams *prms = NULL;
     tivxDisplayM2MDrvObj *drvObj;
     tivx_obj_desc_user_data_object_t *configuration_desc;
@@ -207,13 +205,11 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
 
     if((vx_status)VX_SUCCESS == status)
     {
-        /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
         uint32_t size;
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_CONFIGURATION_IDX];
         input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_INPUT_IDX];
         output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_OUTPUT_IDX];
 
-        /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
         status = tivxGetTargetKernelInstanceContext(kernel,
                                                     (void **)&prms, &size);
         if (((vx_status)VX_SUCCESS != status) || (NULL == prms) ||
@@ -261,7 +257,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
 
         /* call kernel processing function */
 
-        /* < DEVELOPER_TODO: Add target kernel processing code here > */
         drvObj = &prms->drvObj;
         /* Assign input buffer addresses */
         for (pipeIdx = 0U ; pipeIdx < drvObj->numPipe ; pipeIdx++)
@@ -277,7 +272,7 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
         /* Assign output buffer addresses */
         frm = drvObj->outFrm;
         frm->addr[0U] = (uint64_t)output_target_ptr;
-        if((vx_df_image)VX_DF_IMAGE_NV12 == input_desc->format)
+        if((vx_df_image)VX_DF_IMAGE_NV12 == output_desc->format)
         {
             frm->addr[1U] = (uint64_t)output_target_ptr2;
         }
@@ -317,17 +312,23 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
            input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_READ_ONLY));
 
-        tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr2,
-           input_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY));
+        if((vx_df_image)VX_DF_IMAGE_NV12 == input_desc->format)
+        {
+            tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr2,
+               input_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_READ_ONLY));
+        }
 
         tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr,
            output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
             (vx_enum)VX_WRITE_ONLY));
 
-        tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr2,
-           output_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY));
+        if((vx_df_image)VX_DF_IMAGE_NV12 == output_desc->format)
+        {
+            tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr2,
+               output_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
+        }
     }
 
     return status;
@@ -339,13 +340,10 @@ static vx_status VX_CALLBACK tivxDisplayM2MCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
     tivxDisplayM2MParams *prms = NULL;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *obj_desc_imageIn, *obj_desc_imageOut;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating */
-    /*                   local memory buffers, one time initialization, etc) > */
     if ( (num_params != TIVX_KERNEL_DISPLAY_M2M_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DISPLAY_M2M_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DISPLAY_M2M_INPUT_IDX])
@@ -366,7 +364,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MCreate(
             VX_PRINT(VX_ZONE_ERROR, "User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
             status = (vx_status)VX_FAILURE;
         }
-        /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
         prms = tivxMemAlloc(sizeof(tivxDisplayM2MParams), (vx_enum)TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
@@ -423,14 +420,10 @@ static vx_status VX_CALLBACK tivxDisplayM2MDelete(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
     tivxDisplayM2MParams *prms = NULL;
     uint32_t size;
     int32_t fvid2_status = FVID2_SOK;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing */
-    /*                   local memory buffers, etc) > */
-    /* < DEVELOPER_TODO: Uncomment if kernel context is needed > */
     if ( (num_params != TIVX_KERNEL_DISPLAY_M2M_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DISPLAY_M2M_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DISPLAY_M2M_INPUT_IDX])
@@ -469,6 +462,25 @@ static vx_status VX_CALLBACK tivxDisplayM2MDelete(
         if ((vx_status)VX_SUCCESS == status)
         {
             /* Dequeue all the request from the driver */
+            while ((vx_status)VX_SUCCESS == status)
+            {
+                fvid2_status = Fvid2_getProcessedRequest(prms->drvObj.drvHandle,
+                                                        &prms->drvObj.inFrmList,
+                                                        &prms->drvObj.outFrmList,
+                                                        0);
+                if (FVID2_SOK != fvid2_status)
+                {
+                    if (fvid2_status != FVID2_ENO_MORE_BUFFERS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Failed to Get Processed Request\n");
+                    }
+                    status = (vx_status)VX_FAILURE;
+                }
+            }
+            if (fvid2_status == FVID2_ENO_MORE_BUFFERS)
+            {
+                status = (vx_status)VX_SUCCESS;
+            }
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -540,8 +552,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MControl(
     void *target_ptr;
     tivx_obj_desc_user_data_object_t *usr_data_obj;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
     status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
     if (((vx_status)VX_SUCCESS != status)            ||
         (NULL == prms)                               ||
@@ -633,7 +643,7 @@ void tivxAddTargetKernelDisplayM2M(void)
 
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
-        strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_DISPLAY_M2M, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
     else

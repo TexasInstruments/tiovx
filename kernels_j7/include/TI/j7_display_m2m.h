@@ -114,9 +114,9 @@ typedef struct {
     uint32_t instId;
     /*! Number of pipe-lines used, should be set to '1' as blending is not supported currently */
     uint32_t numPipe;
-    /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
+    /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 */
     uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
-    /*! IDs=> 0:Overlay1, 1:Overlay2, 2:Overlay3 and 3:Overlay4 */
+    /*! IDs=> 1:Overlay2 */
     uint32_t overlayId;
     /*!< Horizontal Size of picture at display M2M output */
     uint32_t outWidth;
@@ -153,6 +153,29 @@ typedef struct
     uint32_t underflowCount;
 } tivx_display_m2m_statistics_t;
 
+/*********************************
+ *      Function Prototypes
+ *********************************/
+/*!
+ * \brief Function to initialize Display M2M Parameters
+ *
+ * \param prms  [in] Pointer to display M2M params configuration structure
+ *
+ * \ingroup group_vision_function_display_m2m
+ */
+void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms); 
+
+/*!
+ * \brief Function to register HWA Kernels on the display_m2m Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHwaTargetDisplayM2MKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the display_m2m Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHwaTargetDisplayM2MKernels(void);
 
 #ifdef __cplusplus
 }

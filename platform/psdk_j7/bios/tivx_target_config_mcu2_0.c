@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_j7.h>
 
 
-#define TIVX_TARGET_MCU2_0_MAX          (23)
+#define TIVX_TARGET_MCU2_0_MAX          (24)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
@@ -92,7 +92,7 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6, 20, "TIVX_CAPT6", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7, 21, "TIVX_CAPT7", 15u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8, 22, "TIVX_CAPT8", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M, 23, "TIVX_DISP_M2M", 14u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M, 23, "TIVX_DISP_M2M", 8u);
 }
 
 void tivxPlatformDeleteTargets(void)

@@ -147,6 +147,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
         if( ((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_RGBX != input_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_UYVY != input_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != input_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_NV12 != input_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -156,6 +157,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
         if( ((vx_df_image)VX_DF_IMAGE_RGB != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_RGBX != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_UYVY != output_fmt) &&
+            ((vx_df_image)VX_DF_IMAGE_YUYV != output_fmt) &&
             ((vx_df_image)VX_DF_IMAGE_NV12 != output_fmt))
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -181,14 +183,6 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
     }
 
     /* CUSTOM PARAMETER CHECKING */
-
-    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
-    /*                   covered by the code-generation script.) > */
-
-    /* < DEVELOPER_TODO: (Optional) If intending to use a virtual data object, set metas using appropriate TI API. */
-    /*                   For a code example, please refer to the validate callback of the follow file: */
-    /*                   tiovx/kernels/openvx-core/host/vx_absdiff_host.c. For further information regarding metas, */
-    /*                   please refer to the OpenVX 1.1 spec p. 260, or search for vx_kernel_validate_f. > */
 
     return status;
 }
@@ -219,16 +213,11 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MInitialize(vx_node node,
         prms.num_input_images = 1;
         prms.num_output_images = 1;
 
-        /* < DEVELOPER_TODO: (Optional) Set padding values based on valid region if border mode is */
-        /*                    set to VX_BORDER_UNDEFINED and remove the #if 0 and #endif lines. */
-        /*                    Else, remove this entire #if 0 ... #endif block > */
-        #if 0
         prms.top_pad = 0;
         prms.bot_pad = 0;
         prms.left_pad = 0;
         prms.right_pad = 0;
         prms.border_mode = VX_BORDER_UNDEFINED;
-        #endif
 
         status = tivxKernelConfigValidRect(&prms);
     }
@@ -299,7 +288,7 @@ vx_status tivxAddKernelDisplayM2M(vx_context context)
         if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M);
         }
         if (status == (vx_status)VX_SUCCESS)
         {
@@ -331,4 +320,19 @@ vx_status tivxRemoveKernelDisplayM2M(vx_context context)
     return status;
 }
 
+void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms)
+{
+    uint32_t loopCnt;
 
+    prms->instId  = 0U;
+    prms->numPipe = 1U;
+    for (loopCnt = 0U ; loopCnt < TIVX_DISPLAY_M2M_MAX_PIPE ; loopCnt++)
+    {
+        prms->pipeId[loopCnt] = 1U;
+    }
+    prms->overlayId = 1U;
+    prms->outWidth  = 1920U;
+    prms->outHeight = 1080U;
+    prms->posX      = 0U;
+    prms->posY      = 0U;
+}

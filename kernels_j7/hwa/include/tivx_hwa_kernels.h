@@ -87,19 +87,6 @@ void tivxRegisterHwaKernels(void);
  */
 void tivxUnRegisterHwaKernels(void);
 
-/*!
- * \brief Function to register HWA Kernels on the display_m2m Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaTargetDisplayM2MKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the display_m2m Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaTargetDisplayM2MKernels(void);
-
-
 #ifdef __cplusplus
 }
 #endif

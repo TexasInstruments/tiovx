@@ -62,39 +62,13 @@
 
 #include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
+#include <TI/j7_display_m2m.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
-
-#ifdef BUILD_BAM
-
-void tivxAddTargetKernelDisplayM2M(void);
-
-#else
-
-void tivxAddTargetKernelDisplayM2M(void);
-
-#endif
-
-#ifdef BUILD_BAM
-
-void tivxRemoveTargetKernelDisplayM2M(void);
-
-#else
-
-void tivxRemoveTargetKernelDisplayM2M(void);
-
-#endif
+#include "tivx_hwa_display_m2m_priv.h"
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-#ifdef BUILD_BAM
-
     {&tivxAddTargetKernelDisplayM2M, &tivxRemoveTargetKernelDisplayM2M},
-
-#else
-
-    {&tivxAddTargetKernelDisplayM2M, &tivxRemoveTargetKernelDisplayM2M},
-
-#endif
 };
 
 void tivxRegisterHwaTargetDisplayM2MKernels(void)
