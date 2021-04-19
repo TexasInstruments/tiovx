@@ -61,6 +61,7 @@
  */
 
 #include <stdio.h>
+
 #include "vx_vpac_viss_target_sim_priv.h"
 
 /* ========================================================================== */
@@ -86,6 +87,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms,
 static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms,
     uint32_t fcp_index);
 static void tivxVpacVissParseFcpParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseCacParams(tivxVpacVissParams *prms);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -102,6 +104,7 @@ vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms)
 
     tivxVpacVissParseRfeParams(prms);
     status = tivxVpacVissParseH3aParams(prms);
+    tivxVpacVissParseCacParams(prms);
     tivxVpacVissParseNsf4Params(prms);
     tivxVpacVissParseGlbceParams(prms);
     tivxVpacVissParseFcpParams(prms);
@@ -165,6 +168,49 @@ static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms)
     }
 }
 
+static void tivxVpacVissParseCacParams(tivxVpacVissParams *prms)
+{
+#ifdef VPAC3
+
+    if (NULL != prms)
+    {
+        Cac_Config             *cac_prms = &prms->cac_params;
+        tivxVpacVissObj        *vissObj = &prms->vissObj;
+        tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
+        Cac_Config             *cacCfg = vissCfgRef->cacCfg;
+
+        if (NULL != cac_prms)
+        {
+            if (NULL != cacCfg)
+            {
+                int32_t i;
+
+                memcpy(cac_prms, cacCfg, sizeof(Cac_Config));
+
+                /* Lut is interleaved, but c model needs 4 buffers */
+                for(i=0; i<2048; i++)
+                {
+                    prms->cac_lut[0][i] = (cac_prms->displacementLut[i] >>  0) & 0x000F;
+                    prms->cac_lut[1][i] = (cac_prms->displacementLut[i] >>  8) & 0x000F;
+                    prms->cac_lut[2][i] = (cac_prms->displacementLut[i] >> 16) & 0x000F;
+                    prms->cac_lut[3][i] = (cac_prms->displacementLut[i] >> 24) & 0x000F;
+                }
+
+                vissCfgRef->cacCfg = NULL;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "NULL pointer\n");
+    }
+#endif
+}
+
 static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms)
 {
     if (NULL != prms)
@@ -181,6 +227,60 @@ static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms)
         {
             if(NULL != nsf4Cfg)
             {
+#ifdef VPAC3
+                /* RawHistogram */
+                {
+                    uint32_t i;
+
+                    RawHistogram_Config *raw_hist_prms = &prms->raw_hist_params;
+                    Nsf4_HistConfig     *rawHistCfg = &nsf4Cfg->histCfg;
+
+                    raw_hist_prms->width = (uint16_t)prms->width;
+                    raw_hist_prms->height = (uint16_t)prms->height;
+                    raw_hist_prms->Lut_En = (uint8_t)rawHistCfg->histLut.enable;
+                    raw_hist_prms->Lut_BitDepth = (uint8_t)rawHistCfg->inBitWidth;
+                    raw_hist_prms->Phase_Select = (uint8_t)rawHistCfg->phaseSelect;
+
+                    for(i=0; i<NSF4_HIST_MAX_ROI; i++)
+                    {
+                        raw_hist_prms->ROI_ENABLE[i] = rawHistCfg->roi[i].enable;
+                        raw_hist_prms->ROI_START_X[i] = rawHistCfg->roi[i].start.startX;
+                        raw_hist_prms->ROI_START_Y[i] = rawHistCfg->roi[i].start.startY;
+                        raw_hist_prms->ROI_END_X[i] = rawHistCfg->roi[i].end.startX;
+                        raw_hist_prms->ROI_END_Y[i] = rawHistCfg->roi[i].end.startY;
+                    }
+
+                    if( NULL != rawHistCfg->histLut.tableAddr )
+                    {
+                        for(i=0; i<HIST_LUT_SIZE; i++)
+                        {
+                            raw_hist_prms->Hist_Lut[i] = (uint16_t)rawHistCfg->histLut.tableAddr[i];
+                        }
+                    }
+                }
+
+                /* DWB */
+                {
+                    uint32_t i, j;
+
+                    Nsf4_DwbConfig     *dwb_prms = &prms->dwb_params;
+                    Nsf4_DwbConfig     *dwbCfg = &nsf4Cfg->dwbCfg;
+
+                    memcpy(dwb_prms, dwbCfg, sizeof(Nsf4_DwbConfig));
+
+                    /* Lut is interleaved, but c model needs 4 buffers */
+                    for(j=0; j<FVID2_BAYER_COLOR_COMP_MAX; j++)
+                    {
+                        for(i=0; i<NSF4_DWB_MAX_SEGMENT; i++)
+                        {
+                            prms->dwb_x[j][i] = dwb_prms->dwbCurve[j][i].posX;
+                            prms->dwb_y[j][i] = dwb_prms->dwbCurve[j][i].posY;
+                            prms->dwb_s[j][i] = dwb_prms->dwbCurve[j][i].slope;
+                        }
+                    }
+                }
+#endif
+
                 nsf4_prms->iw               = prms->width;
                 nsf4_prms->ih               = prms->height;
                 nsf4_prms->ow               = prms->width;
@@ -441,11 +541,71 @@ static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms,
 
         if (NULL != fcfa_prms)
         {
+
+#ifdef VPAC3
+            Fcp_comDecomLutConfig *decomLutCfg =  vissCfgRef->fcpCfg[fcp_index].decomLutCfg;
+            Fcp_comDecomLutConfig *comLutCfg   =  vissCfgRef->fcpCfg[fcp_index].comLutCfg;
+
+            if( NULL != decomLutCfg )
+            {
+                fcfa_prms->dCmpdLutEn = (int16_t)decomLutCfg->enable;
+
+                for (cnt1 = 0u; cnt1 < FCP_MAX_COLOR_COMP; cnt1 ++)
+                {
+                    uint32_t *dCmpdLut = decomLutCfg->tableAddr[cnt1];
+
+                    if(NULL != dCmpdLut)
+                    {
+                        for (cnt2 = 0u; cnt2 < FLXD_LUT_SIZE; cnt2 ++)
+                        {
+                            fcfa_prms->dCmpdLut[cnt1][cnt2] = dCmpdLut[cnt2];
+                        }
+                    }
+                }
+                vissCfgRef->fcpCfg[fcp_index].decomLutCfg = NULL;
+            }
+            if( NULL != comLutCfg )
+            {
+                fcfa_prms->cmpdLutEn  = (int16_t)comLutCfg->enable;
+
+                for (cnt1 = 0u; cnt1 < FCP_MAX_COLOR_COMP; cnt1 ++)
+                {
+                    uint32_t *cmpdLut = comLutCfg->tableAddr[cnt1];
+
+                    if(NULL != cmpdLut)
+                    {
+                        for (cnt2 = 0u; cnt2 < FLXD_LUT_SIZE; cnt2 ++)
+                        {
+                            fcfa_prms->cmpdLut[cnt1][cnt2]  = (uint16_t)cmpdLut[cnt2];
+                        }
+                    }
+                }
+                vissCfgRef->fcpCfg[fcp_index].comLutCfg = NULL;
+            }
+#endif
             if(NULL != cfaCfg)
             {
                 fcfa_prms->imgWidth = prms->width;
                 fcfa_prms->imgWidth = prms->height;
 
+#ifdef VPAC3
+                fcfa_prms->processMode    = (int16_t)cfaCfg->enable16BitMode;
+                fcfa_prms->linearBitWidth = (int16_t)cfaCfg->linearBitWidth;
+                fcfa_prms->ccmEn          = (int16_t)cfaCfg->ccmEnable;
+
+                for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+                {
+                    /* driver has extra cfaCfg->firConfig[cnt].enable that isn't in the cmodel? */
+                    fcfa_prms->cfai_scalers[cnt] = (uint16_t)cfaCfg->firConfig[cnt].scaler;
+                    fcfa_prms->cfai_offsets[cnt] = (uint16_t)cfaCfg->firConfig[cnt].offset;
+
+                    fcfa_prms->CCM[cnt][0] = cfaCfg->ccmConfig[cnt].inputCh0;
+                    fcfa_prms->CCM[cnt][1] = cfaCfg->ccmConfig[cnt].inputCh1;
+                    fcfa_prms->CCM[cnt][2] = cfaCfg->ccmConfig[cnt].inputCh2;
+                    fcfa_prms->CCM[cnt][3] = cfaCfg->ccmConfig[cnt].inputCh3;
+                    fcfa_prms->CCM[cnt][4] = cfaCfg->ccmConfig[cnt].offset;
+                }
+#endif
                 for (cnt = 0u; cnt < 4u; cnt ++)
                 {
                     fcfa_prms->Set0GradHzMask[cnt]     = cfaCfg->gradHzPh[0u][cnt];

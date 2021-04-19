@@ -88,12 +88,6 @@ extern "C" {
  *      VPAC_VISS STRUCTURES
  *********************************/
 
-#ifdef VPAC3
-    #define TIVX_VPAC_VISS_FCP_NUM_INSTANCES    (2U)
-#else
-    #define TIVX_VPAC_VISS_FCP_NUM_INSTANCES    (1U)
-#endif
-
 typedef struct
 {
     /*! FVID2 VISS Driver Config for FCP CCM Module */
@@ -107,6 +101,11 @@ typedef struct
     Fcp_YuvSatLutConfig                 yuvSatLutCfg;
     Fcp_HistConfig                      histCfg;
     Fcp_EeConfig                        eeCfg;
+
+#ifdef VPAC3
+    Fcp_comDecomLutConfig               comLutCfg;
+    Fcp_comDecomLutConfig               decomLutCfg;
+#endif
 
 } tivxVpacVissFcpConfig;
 
@@ -145,6 +144,10 @@ typedef struct
     Glbce_PerceptConfig                 fwdPrcpCfg;
     Glbce_PerceptConfig                 revPrcpCfg;
 
+#ifdef VPAC3
+    Cac_Config                          cacCfg;
+#endif
+
     tivxVpacVissFcpConfig               fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
 
 } tivxVpacVissConfig;
@@ -160,6 +163,11 @@ typedef struct
     Fcp_YuvSatLutConfig                *yuvSatLutCfg;
     Fcp_EeConfig                       *eeCfg;
     Fcp_HistConfig                     *histCfg;
+
+#ifdef VPAC3
+    Fcp_comDecomLutConfig              *comLutCfg;
+    Fcp_comDecomLutConfig              *decomLutCfg;
+#endif
 
 } tivxVpacVissFcpConfigRef;
 
@@ -195,6 +203,10 @@ typedef struct
 
     H3a_Config                         *h3aCfg;
 
+#ifdef VPAC3
+    Cac_Config                         *cacCfg;
+#endif
+
     tivxVpacVissFcpConfigRef           fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
 
 } tivxVpacVissConfigRef;
@@ -212,6 +224,10 @@ typedef struct
     uint32_t                           rawfe_pwl_vshort_lut[FLXD_LUT_SIZE];
     uint32_t                           lsc_lut[RFE_LSC_TBL_SIZE];
     int32_t                            ee_lut[FCP_EE_LUT_SIZE];
+#ifdef VPAC3
+    int32_t                            cac_lut[CAC_LUT_SIZE];
+    uint32_t                           raw_hist_lut[NSF4_HISTOGRAM_LUT_SIZE];
+#endif
 } tivxVpacVissDccTables;
 
 typedef struct

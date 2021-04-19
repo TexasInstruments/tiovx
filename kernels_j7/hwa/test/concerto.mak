@@ -30,6 +30,10 @@ ifeq ($(BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_HWA_NEGATIVE_TESTS
 endif
 
+ifeq ($(BUILD_VPAC3),yes)
+DEFS        += VPAC3
+endif
+
 include $(FINALE)
 
 endif

@@ -29,8 +29,14 @@ STATIC_LIBS += vx_target_kernels_vpac_nf
 STATIC_LIBS += bl_filter_lib
 
 STATIC_LIBS += vx_target_kernels_vpac_viss
-STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils glbce
+STATIC_LIBS += rawfe nsf4 flexcc h3a ee utils glbce
 SYS_SHARED_LIBS += glbce
+
+ifeq ($(BUILD_VPAC3),yes)
+    STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3
+else
+    STATIC_LIBS += flexcfa
+endif
 
 STATIC_LIBS += vx_target_kernels_j7_arm
 

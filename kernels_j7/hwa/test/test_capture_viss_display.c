@@ -60,6 +60,7 @@
  *
  */
 
+
 #include <VX/vx.h>
 #include <TI/tivx.h>
 #include <TI/j7.h>
@@ -278,17 +279,17 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
 
         viss_params.sensor_dcc_id = 0;
         viss_params.use_case = 0;
-        viss_params.ee_mode = 0;
-        viss_params.mux_output0 = 4;
-        viss_params.mux_output1 = 0;
-        viss_params.mux_output2 = 4;
-        viss_params.mux_output3 = 0;
-        viss_params.mux_output4 = 3;
+        viss_params.fcp[0].ee_mode = 0;
+        viss_params.fcp[0].mux_output0 = 4;
+        viss_params.fcp[0].mux_output1 = 0;
+        viss_params.fcp[0].mux_output2 = 4;
+        viss_params.fcp[0].mux_output3 = 0;
+        viss_params.fcp[0].mux_output4 = 3;
         viss_params.bypass_glbce = 1;
         viss_params.bypass_nsf4 = 1;
         viss_params.h3a_in = 0;
         viss_params.h3a_aewb_af_mode = 0;
-        viss_params.chroma_mode = 0;
+        viss_params.fcp[0].chroma_mode = 0;
 
         VX_CALL(vxCopyUserDataObject(configuration, 0,
             sizeof(tivx_vpac_viss_params_t), &viss_params, VX_WRITE_ONLY,
@@ -311,7 +312,7 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
         ASSERT_VX_OBJECT(vissNode =
             tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
             raw_img, NULL, NULL, viss_nv12_out_img, NULL, NULL,
-            NULL, NULL), VX_TYPE_NODE);
+            NULL, NULL, NULL, NULL), VX_TYPE_NODE);
         VX_CALL(tivxReleaseRawImage(&raw_img));
 
         VX_CALL(tivxSetNodeParameterNumBufByIndex(vissNode, 6u, NUM_BUFS));
@@ -459,4 +460,3 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
 }
 
 TESTCASE_TESTS(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback)
-

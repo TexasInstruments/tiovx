@@ -25,6 +25,11 @@ IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(VISION_APPS_PATH)/
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
+
+ifeq ($(BUILD_VPAC3),yes)
+DEFS        += VPAC3 SOC_J721S2
+endif
+
 DEFS        += SOC_J721E
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include

@@ -60,6 +60,7 @@
  *
  */
 
+
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
@@ -241,7 +242,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -375,7 +376,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        tivx_vpac_viss_params_init(&params);
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -383,14 +384,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
-        params.mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
-        params.mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
-        params.mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
-        params.mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
-        params.mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
+        params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
+        params.fcp[0].mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
+        params.fcp[0].mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
+        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
+        params.fcp[0].mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
+        params.fcp[0].mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
         params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
@@ -401,7 +402,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -494,7 +495,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);*/
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        tivx_vpac_viss_params_init(&params);
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -502,14 +503,14 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode     = TIVX_VPAC_VISS_EE_MODE_OFF;
-        params.mux_output0 = TIVX_VPAC_VISS_MUX0_NV12_P12;
-        params.mux_output1 = 0;
-        params.mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
-        params.mux_output3 = 0;
-        params.mux_output4 = 3;
+        params.fcp[0].ee_mode     = TIVX_VPAC_VISS_EE_MODE_OFF;
+        params.fcp[0].mux_output0 = TIVX_VPAC_VISS_MUX0_NV12_P12;
+        params.fcp[0].mux_output1 = 0;
+        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
+        params.fcp[0].mux_output3 = 0;
+        params.fcp[0].mux_output4 = 3;
         params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 1; // Note: default glbce still giving issues when enabled
         params.bypass_nsf4 = 1; // TODO: untested
 
@@ -520,7 +521,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -782,15 +783,15 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
         tivx_vpac_viss_params_init(&params);
 
         params.sensor_dcc_id = sensor_dcc_id;
-        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
-        params.mux_output0 = 0;
-        params.mux_output1 = 0;
-        params.mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
-        params.mux_output3 = 0;
-        params.mux_output4 = 3;
+        params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
+        params.fcp[0].mux_output0 = 0;
+        params.fcp[0].mux_output1 = 0;
+        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
+        params.fcp[0].mux_output3 = 0;
+        params.fcp[0].mux_output4 = 3;
         params.h3a_in = TIVX_VPAC_VISS_H3A_IN_LSC;
         params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = arg_->bypass_glbce;
         params.bypass_nsf4 = arg_->bypass_nsf4;
 
@@ -873,7 +874,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, dcc_param_viss,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -1202,7 +1203,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         //ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        tivx_vpac_viss_params_init(&params);
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -1210,21 +1211,21 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 0;
-        params.mux_output0 = arg_->mux0;
-        params.mux_output1 = arg_->mux1;
-        params.mux_output2 = arg_->mux2;
-        params.mux_output3 = arg_->mux3;
-        params.mux_output4 = arg_->mux4;
+        params.fcp[0].ee_mode = 0;
+        params.fcp[0].mux_output0 = arg_->mux0;
+        params.fcp[0].mux_output1 = arg_->mux1;
+        params.fcp[0].mux_output2 = arg_->mux2;
+        params.fcp[0].mux_output3 = arg_->mux3;
+        params.fcp[0].mux_output4 = arg_->mux4;
         params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
+        params.fcp[0].chroma_mode = 0;
         params.bypass_glbce = 1;
         params.bypass_nsf4 = 1;
         params.h3a_in = 0;
 
         if (TIVX_VPAC_VISS_MUX2_YUV422 == arg_->mux2)
         {
-            params.chroma_mode = 1;
+            params.fcp[0].chroma_mode = 1;
         }
 
         VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
@@ -1234,7 +1235,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -1346,7 +1347,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        tivx_vpac_viss_params_init(&params);
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -1354,14 +1355,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.ee_mode = 0;
-        params.mux_output0 = arg_->mux0;
-        params.mux_output1 = arg_->mux1;
-        params.mux_output2 = arg_->mux2;
-        params.mux_output3 = arg_->mux3;
-        params.mux_output4 = arg_->mux4;
+        params.fcp[0].ee_mode = 0;
+        params.fcp[0].mux_output0 = arg_->mux0;
+        params.fcp[0].mux_output1 = arg_->mux1;
+        params.fcp[0].mux_output2 = arg_->mux2;
+        params.fcp[0].mux_output3 = arg_->mux3;
+        params.fcp[0].mux_output4 = arg_->mux4;
         params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
+        params.fcp[0].chroma_mode = 0;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
@@ -1372,7 +1373,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -2048,18 +2049,17 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        tivx_vpac_viss_params_init(&params);
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        params.ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
-        params.mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
-        params.mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
-        params.mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
-        params.mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
-        params.mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
+        params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
+        params.fcp[0].mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
+        params.fcp[0].mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
+        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
+        params.fcp[0].mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
+        params.fcp[0].mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
         params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
         params.bypass_glbce = 1;
         params.bypass_nsf4 = 0;
 
@@ -2080,7 +2080,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -2289,17 +2289,17 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
         ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t",
                                                             sizeof(tivx_h3a_data_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        params.mux_output0 = 0U;
-        params.mux_output1 = 0U;
-        params.mux_output2 = 0U;
-        params.mux_output3 = 0U;
-        params.mux_output4 = 3U;
+        params.fcp[0].mux_output0 = 0U;
+        params.fcp[0].mux_output1 = 0U;
+        params.fcp[0].mux_output2 = 0U;
+        params.fcp[0].mux_output3 = 0U;
+        params.fcp[0].mux_output4 = 3U;
         params.bypass_glbce = 0U;
         params.bypass_nsf4 = 0U;
         params.h3a_in = 0U;
         params.h3a_aewb_af_mode = 0U;
-        params.ee_mode = 0U;
-        params.chroma_mode = 0U;
+        params.fcp[0].ee_mode = 0U;
+        params.fcp[0].chroma_mode = 0U;
 
         switch (arg_->negative_test)
         {
@@ -2307,23 +2307,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.mux_output0 = 0;
+                    params.fcp[0].mux_output0 = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.mux_output0 = 4;
+                    params.fcp[0].mux_output0 = 4;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.mux_output0 = 5;
+                    params.fcp[0].mux_output0 = 5;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.mux_output0 = 5;
+                    params.fcp[0].mux_output0 = 5;
                 }
                 else
                 {
-                    params.mux_output0 = 2;
+                    params.fcp[0].mux_output0 = 2;
                 }
                 break;
             }
@@ -2331,23 +2331,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.mux_output1 = 0;
+                    params.fcp[0].mux_output1 = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.mux_output1 = 2;
+                    params.fcp[0].mux_output1 = 2;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.mux_output1 = 3;
+                    params.fcp[0].mux_output1 = 3;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.mux_output1 = 3;
+                    params.fcp[0].mux_output1 = 3;
                 }
                 else
                 {
-                    params.mux_output1 = 1;
+                    params.fcp[0].mux_output1 = 1;
                 }
                 break;
             }
@@ -2355,23 +2355,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.mux_output2 = 0;
+                    params.fcp[0].mux_output2 = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.mux_output2 = 5;
+                    params.fcp[0].mux_output2 = 5;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.mux_output2 = 6;
+                    params.fcp[0].mux_output2 = 6;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.mux_output2 = 6;
+                    params.fcp[0].mux_output2 = 6;
                 }
                 else
                 {
-                    params.mux_output2 = 6;
+                    params.fcp[0].mux_output2 = 6;
                 }
                 break;
             }
@@ -2379,23 +2379,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.mux_output3 = 0;
+                    params.fcp[0].mux_output3 = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.mux_output3 = 2;
+                    params.fcp[0].mux_output3 = 2;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.mux_output3 = 3;
+                    params.fcp[0].mux_output3 = 3;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.mux_output3 = 3;
+                    params.fcp[0].mux_output3 = 3;
                 }
                 else
                 {
-                    params.mux_output3 = 3;
+                    params.fcp[0].mux_output3 = 3;
                 }
                 break;
             }
@@ -2403,23 +2403,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.mux_output4 = 1;
+                    params.fcp[0].mux_output4 = 1;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.mux_output4 = 3;
+                    params.fcp[0].mux_output4 = 3;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.mux_output4 = 0;
+                    params.fcp[0].mux_output4 = 0;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.mux_output4 = 4;
+                    params.fcp[0].mux_output4 = 4;
                 }
                 else
                 {
-                    params.mux_output4 = 4;
+                    params.fcp[0].mux_output4 = 4;
                 }
                 break;
             }
@@ -2523,23 +2523,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.ee_mode = 0;
+                    params.fcp[0].ee_mode = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.ee_mode = 2;
+                    params.fcp[0].ee_mode = 2;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.ee_mode = 3;
+                    params.fcp[0].ee_mode = 3;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.ee_mode = 3;
+                    params.fcp[0].ee_mode = 3;
                 }
                 else
                 {
-                    params.ee_mode = 3;
+                    params.fcp[0].ee_mode = 3;
                 }
                 break;
             }
@@ -2547,23 +2547,23 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
             {
                 if (0U == arg_->condition)
                 {
-                    params.chroma_mode = 0;
+                    params.fcp[0].chroma_mode = 0;
                 }
                 else if (1U == arg_->condition)
                 {
-                    params.chroma_mode = 1;
+                    params.fcp[0].chroma_mode = 1;
                 }
                 else if (2U == arg_->condition)
                 {
-                    params.chroma_mode = 2;
+                    params.fcp[0].chroma_mode = 2;
                 }
                 else if (3U == arg_->condition)
                 {
-                    params.chroma_mode = 2;
+                    params.fcp[0].chroma_mode = 2;
                 }
                 else
                 {
-                    params.chroma_mode = 2;
+                    params.fcp[0].chroma_mode = 2;
                 }
                 break;
             }
@@ -2697,7 +2697,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 

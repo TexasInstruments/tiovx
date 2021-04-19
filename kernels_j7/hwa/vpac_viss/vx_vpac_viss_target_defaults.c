@@ -119,6 +119,7 @@ static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj,
     uint32_t fcp_index);
 static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj,
     uint32_t fcp_index);
+static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj);
 
 /***************************************************
  * Function call heirarchy in this file:
@@ -132,6 +133,7 @@ tivxVpacVissSetDefaultParams
   - tivxVpacVissDefaultMapDpcLutParams
   - tivxVpacVissDefaultMapLscParams
   - tivxVpacVissDefaultMapWb2Params
+- tivxVpacVissDefaultCacParams
 - tivxVpacVissDefaultMapNsf4Params
 - tivxVpacVissDefaultMapH3aParams
 - tivxVpacVissDefaultMapH3aLutParams
@@ -225,6 +227,14 @@ static int32_t yee_lut[] =
     #include "yee_lut.txt"
 };
 
+#ifdef VPAC3
+static int32_t dwb_lut[] =
+{
+    #include "dwb_lut.txt"
+};
+
+static int32_t cac_lut[CAC_LUT_SIZE] = {0};
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -240,6 +250,7 @@ vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
         vissObj->bypass_nsf4 = vissPrms->bypass_nsf4;
 
         tivxVpacVissDefaultMapRfeParams(vissObj);
+        tivxVpacVissDefaultMapCacParams(vissObj);
         tivxVpacVissDefaultMapNsf4Params(vissObj, ae_awb_res);
         if ((vx_bool)vx_true_e == vissObj->h3a_out_enabled)
         {
@@ -335,12 +346,45 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
     Nsf4v_Config       *nsf4Cfg = NULL;
     Nsf4_LsccConfig    *lsccCfg = NULL;
 
+#ifdef VPAC3
+    Nsf4_HistConfig    *rawHistCfg = NULL;
+    Nsf4_DwbConfig     *dwbCfg = NULL;
+#endif
+
     /* TODO: Does shading gain map to lscc enable? */
 
     if (NULL != vissObj)
     {
         nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
         lsccCfg = &nsf4Cfg->lsccCfg;
+
+#ifdef VPAC3
+        rawHistCfg = &nsf4Cfg->histCfg;
+        dwbCfg     = &nsf4Cfg->dwbCfg;
+
+        dwbCfg->enable = 1;
+        memcpy(dwbCfg->dwbCurve, dwb_lut, sizeof(dwbCfg->dwbCurve));
+
+        dwbCfg->dwbLineWeights[0][0] = 0;
+        dwbCfg->dwbLineWeights[0][1] = 0;
+        dwbCfg->dwbLineWeights[0][2] = 0;
+        dwbCfg->dwbLineWeights[0][3] = 256U;
+        dwbCfg->dwbLineWeights[0][4] = 0;
+        dwbCfg->dwbLineWeights[0][5] = 0;
+
+        dwbCfg->dwbLineWeights[1][0] = 0;
+        dwbCfg->dwbLineWeights[1][1] = 0;
+        dwbCfg->dwbLineWeights[1][2] = 256U;
+        dwbCfg->dwbLineWeights[1][3] = 0;
+        dwbCfg->dwbLineWeights[1][4] = 0;
+        dwbCfg->dwbLineWeights[1][5] = 0;
+
+        rawHistCfg->enable = 0;
+        rawHistCfg->inBitWidth = 12;
+        rawHistCfg->phaseSelect = 0;
+        memset(rawHistCfg->roi, 0 ,sizeof(Nsf4_HistRoi));
+        memset(&rawHistCfg->histLut, 0 ,sizeof(Nsf4_HistLutConfig));
+#endif
 
         nsf4Cfg->mode = 16u;
         nsf4Cfg->tKnee = 0u;
@@ -420,6 +464,30 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
          * assumes caller protects this flag */
         vissObj->isConfigUpdated = 1U;
     }
+}
+
+static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj)
+{
+#if VPAC3
+    Cac_Config  *cacCfg;
+
+    if (NULL != vissObj)
+    {
+        cacCfg = &vissObj->vissCfg.cacCfg;
+
+        cacCfg->colorEnable = 6U;
+        cacCfg->blkSize = 8U;
+        cacCfg->blkGridSize.hCnt = 0u;
+        cacCfg->blkGridSize.vCnt = 0u;
+        cacCfg->displacementLut = cac_lut;
+
+        vissObj->vissCfgRef.cacCfg = cacCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+#endif
 }
 
 static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj,
@@ -710,11 +778,58 @@ static void tivxVpacVissDefaultMapFcpParams(tivxVpacVissObj *vissObj)
 static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t fcp_index)
 {
     uint32_t cnt;
-    Fcp_CfaConfig *cfaCfg;
+    Fcp_CfaConfig *cfaCfg = NULL;
 
-    cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
     if (NULL != vissObj)
     {
+        cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
+
+#ifdef VPAC3
+        {
+            Fcp_comDecomLutConfig *decomLutCfg =  &vissObj->vissCfg.fcpCfg[fcp_index].decomLutCfg;
+            Fcp_comDecomLutConfig *comLutCfg   =  &vissObj->vissCfg.fcpCfg[fcp_index].comLutCfg;
+
+            if( NULL != decomLutCfg )
+            {
+                decomLutCfg->enable = 0;
+
+                for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+                {
+                    decomLutCfg->tableAddr[cnt] = NULL;
+                }
+                vissObj->vissCfgRef.fcpCfg[fcp_index].decomLutCfg = decomLutCfg;
+            }
+
+            if( NULL != comLutCfg )
+            {
+                comLutCfg->enable = 0;
+
+                for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+                {
+                    comLutCfg->tableAddr[cnt] = NULL;
+                }
+                vissObj->vissCfgRef.fcpCfg[fcp_index].comLutCfg = comLutCfg;
+            }
+
+            cfaCfg->enable16BitMode = 0;
+            cfaCfg->linearBitWidth = 12U;
+            cfaCfg->ccmEnable = 0;
+
+            for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+            {
+                cfaCfg->firConfig[cnt].enable = 0;
+                cfaCfg->firConfig[cnt].scaler = 1U<<8U;
+                cfaCfg->firConfig[cnt].offset = 0;
+
+                cfaCfg->ccmConfig[cnt].inputCh0 = 0;
+                cfaCfg->ccmConfig[cnt].inputCh1 = 0;
+                cfaCfg->ccmConfig[cnt].inputCh2 = 0;
+                cfaCfg->ccmConfig[cnt].inputCh3 = 0;
+                cfaCfg->ccmConfig[cnt].offset = 0;
+            }
+        }
+#endif
+
         /* DCC does not support CFA, so using default config from
          * example_Sensor/0/0/flexCFA_cfg test case */
         for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)

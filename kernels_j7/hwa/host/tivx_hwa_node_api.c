@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2019 Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -250,7 +250,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
                                       vx_image              output3,
                                       vx_image              output4,
                                       vx_user_data_object   h3a_output,
-                                      vx_distribution       histogram)
+                                      vx_distribution       histogram0,
+                                      vx_distribution       histogram1,
+                                      vx_distribution       raw_histogram)
 {
     vx_reference prms[] = {
             (vx_reference)configuration,
@@ -263,7 +265,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
             (vx_reference)output3,
             (vx_reference)output4,
             (vx_reference)h3a_output,
-            (vx_reference)histogram
+            (vx_reference)histogram0,
+            (vx_reference)histogram1,
+            (vx_reference)raw_histogram
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_VPAC_VISS_NAME,

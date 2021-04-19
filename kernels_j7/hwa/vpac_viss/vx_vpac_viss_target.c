@@ -233,9 +233,9 @@ static void tivxVpacVissSetIsInvalidFlag(tivx_obj_desc_t *obj_desc[])
             tivxFlagBitSet(&obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
         }
 
-        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX])
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX])
         {
-            tivxFlagBitSet(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+            tivxFlagBitSet(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
         }
     }
     else
@@ -255,9 +255,9 @@ static void tivxVpacVissSetIsInvalidFlag(tivx_obj_desc_t *obj_desc[])
             tivxFlagBitClear(&obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
         }
 
-        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX])
+        if (NULL != obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX])
         {
-            tivxFlagBitClear(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
+            tivxFlagBitClear(&obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX]->flags, TIVX_REF_FLAG_IS_INVALID);
         }
     }
 }
@@ -514,7 +514,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             vissDrvPrms->enableNsf4 = (uint32_t)FALSE;
         }
-        vissDrvPrms->edgeEnhancerMode = vissPrms->ee_mode;
+        vissDrvPrms->edgeEnhancerMode = vissPrms->fcp[0].ee_mode;
 
         /* Set the input image format and number of inputs from
          * raw image descriptor */
@@ -993,7 +993,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if ((vx_status)VX_SUCCESS == status)
     {
         vhwaVissRestoreCtx(vissObj);
-        
+
         cur_time = tivxPlatformGetTimeInUsecs();
 
         /* Submit the request to the driver */
@@ -1017,7 +1017,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 status = (vx_status)VX_FAILURE;
             }
         }
-        
+
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         vhwaVissSaveCtx(vissObj);
@@ -1172,11 +1172,11 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
     Vhwa_M2mVissParams       *vissDrvPrms;
     tivx_obj_desc_image_t    *im_desc;
 
-    mux_val[0U] = vissPrms->mux_output0;
-    mux_val[1U] = vissPrms->mux_output1;
-    mux_val[2U] = vissPrms->mux_output2;
-    mux_val[3U] = vissPrms->mux_output3;
-    mux_val[4U] = vissPrms->mux_output4;
+    mux_val[0U] = vissPrms->fcp[0].mux_output0;
+    mux_val[1U] = vissPrms->fcp[0].mux_output1;
+    mux_val[2U] = vissPrms->fcp[0].mux_output2;
+    mux_val[3U] = vissPrms->fcp[0].mux_output3;
+    mux_val[4U] = vissPrms->fcp[0].mux_output4;
     vissDrvPrms = &vissObj->vissPrms;
 
     out_start = TIVX_KERNEL_VPAC_VISS_OUT0_IDX;
@@ -1656,7 +1656,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
                     vissObj->ctx_mem_phys_ptr = tivxMemShared2PhysPtr(
                         vissObj->ctx_mem_ptr.shared_ptr,
                         (int32_t)vissObj->ctx_mem_ptr.mem_heap_region);
-                        
+
                     VX_PRINT(VX_ZONE_INFO, "TIOVX: VISS: GLBCE ctx mem @ 0x%08x or size %d B\n", (uint32_t)vissObj->ctx_mem_phys_ptr, vissObj->glbceStatInfo.size);
                 }
             }

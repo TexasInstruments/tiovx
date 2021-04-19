@@ -74,25 +74,21 @@ extern "C" {
 #include "nsf4.h"
 #include "h3a_ovx.h"
 #include "h3a_utils.h"
-#include "FLXD_demosaic.h"
 #include "flexcc_core.h"
 #include "ee.h"
+#ifdef VPAC3
+#include "FLXD_demosaic_vpac3.h"
+#include "cac_raw.h"
+#include "RawHistogram.h"
+#include "nsf4_wb.h"
+#else
+#include "FLXD_demosaic.h"
+#endif
+
 
 typedef struct
 {
-    uint32_t width;
-    uint32_t height;
-
     /* Pointers to buffers allocated at create time */
-    uint16_t *raw0_16;
-    uint16_t *raw1_16;
-    uint16_t *raw2_16;
-    uint16_t *scratch_rawfe_raw_out;
-    uint16_t *scratch_rawfe_h3a_out;
-    uint32_t *scratch_aew_result;
-    uint32_t *scratch_af_result;
-    uint16_t *scratch_nsf4v_out;
-    uint16_t *scratch_glbce_out;
     uint32_t *scratch_cfa_in;
     uint16_t *scratch_cfa_out[FLXD_NUM_FIR];
     uint16_t *scratch_cc_out[8];
@@ -109,25 +105,78 @@ typedef struct
     uint16_t *out_uv8_g8_c3_16;
     uint16_t *out_s8_b8_c4_16;
     uint16_t *scratch_ee_shift_in;
-    uint16_t *pScratch_nsf4v_out;
-    uint16_t *pScratch_glbce_out;
+    uint16_t *pScratch_cfa_in_16;
+
+    uint16_t bypass_cc;
+    uint16_t bypass_ee;
 
     uint16_t out_y8_r8_c2_bit_align;
     uint16_t out_uv8_g8_c3_bit_align;
     uint16_t out_s8_b8_c4_bit_align;
 
-    uint32_t buffer_size;
-    uint32_t aew_buffer_size;
-    uint32_t af_buffer_size;
     uint16_t pre_copy;
     uint16_t post_copy;
 
+} tivxVpacVissFcpPtrs;
+
+typedef struct
+{
+    uint32_t width;
+    uint32_t height;
+
+    /* Pointers to buffers allocated at create time */
+    uint16_t *raw0_16;
+    uint16_t *raw1_16;
+    uint16_t *raw2_16;
+    uint16_t *scratch_rawfe_raw_out;
+    uint16_t *scratch_rawfe_h3a_out;
+    uint32_t *scratch_aew_result;
+    uint32_t *scratch_af_result;
+    uint16_t *scratch_cac_out;        // NEW
+    uint32_t *scratch_raw_hist_out;   // NEW might be able to remove
+    uint16_t *scratch_nsf4v_out;
+    uint16_t *scratch_dwb_out;        // NEW
+    uint16_t *scratch_glbce_out;
+    tivxVpacVissFcpPtrs fcp[2];
+
+    /* Secondary pointers to buffers allocated in above list
+     * (used for multiplexer assignments) */
+    uint16_t *pScratch_cac_out;
+    uint16_t *pScratch_nsf4v_out;
+    uint16_t *pScratch_dwb_out;
+    uint16_t *pScratch_glbce_out;
+
+    uint16_t *out_0_16;
+    uint16_t *out_1_16;
+    uint16_t *out_2_16;
+    uint16_t *out_3_16;
+    uint16_t *out_4_16;
+
+    uint16_t out_0_align;
+    uint16_t out_1_align;
+    uint16_t out_2_align;
+    uint16_t out_3_align;
+    uint16_t out_4_align;
+
+    uint32_t buffer_size;
+    uint32_t aew_buffer_size;
+    uint32_t af_buffer_size;
+
     uint16_t bypass_glbce;
     uint16_t bypass_nsf4;
-    uint16_t bypass_cc;
-    uint16_t bypass_ee;
+    uint16_t bypass_cac;
+    uint16_t bypass_dwb;
 
     cfg_rawfe rawfe_params;
+#ifdef VPAC3
+    Cac_Config cac_params;
+    int32_t  cac_lut[4][2048];
+    RawHistogram_Config raw_hist_params;
+    Nsf4_DwbConfig dwb_params;
+    int dwb_x[4][8];
+    int dwb_y[4][8];
+    int dwb_s[4][8];
+#endif
     nsf4_settings nsf4_params;
     glbce_settings glbce_params;
     glbce_handle hGlbce;

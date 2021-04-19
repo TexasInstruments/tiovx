@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Texas Instruments Incorporated
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -77,6 +77,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
 
+static void tivx_vpac_viss1_params_init(tivx_vpac_viss_params_t *prms);
+
 static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
@@ -118,10 +120,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_df_image output4_fmt;
     vx_uint32 output4_w, output4_h;
 
-    vx_distribution histogram = NULL;
-    vx_int32 histogram_offset = 0;
-    vx_uint32 histogram_range = 0;
-    vx_size histogram_numBins = 0;
+    vx_distribution histogram0 = NULL;
+    vx_int32 histogram0_offset = 0;
+    vx_uint32 histogram0_range = 0;
+    vx_size histogram0_numBins = 0;
+
+    vx_distribution histogram1 = NULL;
+    vx_int32 histogram1_offset = 0;
+    vx_uint32 histogram1_range = 0;
+    vx_size histogram1_numBins = 0;
+
+    vx_distribution raw_histogram = NULL;
+    vx_int32 raw_histogram_offset = 0;
+    vx_uint32 raw_histogram_range = 0;
+    vx_size raw_histogram_numBins = 0;
 
     vx_user_data_object h3a_aew_af = NULL;
     vx_char h3a_aew_af_name[VX_MAX_REFERENCE_NAME];
@@ -130,6 +142,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_user_data_object dcc_param = NULL;
     vx_char dcc_param_name[VX_MAX_REFERENCE_NAME];
     vx_size dcc_param_size;
+
+    uint32_t fcp, outport;
+    vx_image output_ptrs[5];
+    int32_t i;
 
     if ( (num != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -150,11 +166,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         output2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
         output3 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
         output4 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
-        histogram = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
+        histogram0 = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX];
+        histogram1 = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM1_IDX];
+        raw_histogram = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_RAW_HISTOGRAM_IDX];
         h3a_aew_af = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
         dcc_param = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
     }
 
+    output_ptrs[0] = output0;
+    output_ptrs[1] = output1;
+    output_ptrs[2] = output2;
+    output_ptrs[3] = output3;
+    output_ptrs[4] = output4;
 
     /* PARAMETER ATTRIBUTE FETCH */
 
@@ -207,11 +230,25 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             tivxCheckStatus(&status, vxQueryImage(output4, (vx_enum)VX_IMAGE_HEIGHT, &output4_h, sizeof(output4_h)));
         }
 
-        if (NULL != histogram)
+        if (NULL != histogram0)
         {
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_BINS, &histogram_numBins, sizeof(histogram_numBins)));
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_RANGE, &histogram_range, sizeof(histogram_range)));
-            tivxCheckStatus(&status, vxQueryDistribution(histogram, (vx_enum)VX_DISTRIBUTION_OFFSET, &histogram_offset, sizeof(histogram_offset)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram0, (vx_enum)VX_DISTRIBUTION_BINS, &histogram0_numBins, sizeof(histogram0_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram0, (vx_enum)VX_DISTRIBUTION_RANGE, &histogram0_range, sizeof(histogram0_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram0, (vx_enum)VX_DISTRIBUTION_OFFSET, &histogram0_offset, sizeof(histogram0_offset)));
+        }
+
+        if (NULL != histogram1)
+        {
+            tivxCheckStatus(&status, vxQueryDistribution(histogram1, (vx_enum)VX_DISTRIBUTION_BINS, &histogram1_numBins, sizeof(histogram1_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram1, (vx_enum)VX_DISTRIBUTION_RANGE, &histogram1_range, sizeof(histogram1_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(histogram1, (vx_enum)VX_DISTRIBUTION_OFFSET, &histogram1_offset, sizeof(histogram1_offset)));
+        }
+
+        if (NULL != raw_histogram)
+        {
+            tivxCheckStatus(&status, vxQueryDistribution(raw_histogram, (vx_enum)VX_DISTRIBUTION_BINS, &raw_histogram_numBins, sizeof(raw_histogram_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(raw_histogram, (vx_enum)VX_DISTRIBUTION_RANGE, &raw_histogram_range, sizeof(raw_histogram_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(raw_histogram, (vx_enum)VX_DISTRIBUTION_OFFSET, &raw_histogram_offset, sizeof(raw_histogram_offset)));
         }
 
         if (NULL != h3a_aew_af)
@@ -260,20 +297,39 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         {
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output0_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output0_fmt) &&
-                ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output0_fmt))
+                ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output0_fmt)
+#if VPAC3
+             && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_NV12 != output0_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_YUYV != output0_fmt) &&
+                ((vx_df_image)VX_DF_IMAGE_UYVY != output0_fmt)
+#endif
+              )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_U8 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY\n");
+#else
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12\n");
+#endif
             }
         }
 
         if (NULL != output1)
         {
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output1_fmt) &&
-                ((vx_df_image)TIVX_DF_IMAGE_P12 != output1_fmt))
+                ((vx_df_image)TIVX_DF_IMAGE_P12 != output1_fmt)
+#if VPAC3
+             && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt)
+#endif
+                )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
+#else
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+#endif
             }
         }
 
@@ -282,12 +338,19 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if( ((vx_df_image)VX_DF_IMAGE_U8 != output2_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_U16 != output2_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output2_fmt) &&
+#if VPAC3
+                ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output2_fmt) &&
+#endif
                 ((vx_df_image)VX_DF_IMAGE_NV12 != output2_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_YUYV != output2_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_UYVY != output2_fmt) )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
+#else
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
+#endif
             }
         }
 
@@ -334,79 +397,179 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
     }
 
-    /* MUX VALUE CHECKING */
+#ifndef VPAC3
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        if (NULL != histogram1)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'histogram1' should be NULL for this SoC \n");
+        }
+        if (NULL != raw_histogram)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'raw_histogram' should be NULL for this SoC \n");
+        }
+
+        /* If user didn't use init function, or accidentally programmed VPAC3 only parameters, this sets it back to VPAC1 defautls */
+        tivx_vpac_viss1_params_init(&params);
+        vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+    }
+#endif
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (NULL != output0)
+        if (NULL != histogram0)
         {
-            if ((0u != params.mux_output0) && (3u != params.mux_output0) &&
-                (4u != params.mux_output0))
+            if(histogram0_numBins != 256)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output0\n");
+                VX_PRINT(VX_ZONE_ERROR, "'histogram0' should have 256 bins \n");
             }
         }
-        if (NULL != output1)
+        if (NULL != histogram1)
         {
-            if ((0u != params.mux_output1) && (2u != params.mux_output1))
+            if(histogram1_numBins != 256)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output1\n");
+                VX_PRINT(VX_ZONE_ERROR, "'histogram1' should have 256 bins \n");
             }
         }
-        if (NULL != output2)
+        if (NULL != raw_histogram)
         {
-            if (5u < params.mux_output2)
+            if(raw_histogram_numBins != 128)
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output2\n");
+                VX_PRINT(VX_ZONE_ERROR, "'raw_histogram' should have 128 bins \n");
             }
         }
-        if (NULL != output3)
+    }
+
+    /* MUX VALUE CHECKING */
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        int32_t fcp_mux_status[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][5] = {0};
+        int32_t chroma_mux_status[TIVX_VPAC_VISS_FCP_NUM_INSTANCES] = {0};
+        int32_t loop_chroma_mux_status = 0;
+        vx_df_image output_fmt[3];
+
+        for(i=0; i < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
         {
-            if (2u < params.mux_output3)
+            if ((TIVX_VPAC_VISS_MUX0_Y12      != params.fcp[i].mux_output0) &&
+                (TIVX_VPAC_VISS_MUX0_VALUE12  != params.fcp[i].mux_output0) &&
+                (TIVX_VPAC_VISS_MUX0_NV12_P12 != params.fcp[i].mux_output0))
             {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output3\n");
+                fcp_mux_status[i][0] = 1;
             }
-        }
-        if (NULL != output4)
-        {
-            if ((1u != params.mux_output4) && (2u != params.mux_output4) &&
-                (3u != params.mux_output4))
+            if ((TIVX_VPAC_VISS_MUX1_UV12 != params.fcp[i].mux_output1) &&
+                (TIVX_VPAC_VISS_MUX1_C1   != params.fcp[i].mux_output1))
             {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output4\n");
+                fcp_mux_status[i][1] = 1;
+            }
+            if (5u < params.fcp[i].mux_output2)
+            {
+                fcp_mux_status[i][2] = 1;
+            }
+            if (2u < params.fcp[i].mux_output3)
+            {
+                fcp_mux_status[i][3] = 1;
+            }
+            if ((TIVX_VPAC_VISS_MUX4_BLUE != params.fcp[i].mux_output4) &&
+                (TIVX_VPAC_VISS_MUX4_C4   != params.fcp[i].mux_output4) &&
+                (TIVX_VPAC_VISS_MUX4_SAT  != params.fcp[i].mux_output4))
+            {
+                fcp_mux_status[i][4] = 1;
             }
         }
 
-        if ((NULL != output0) && ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
-            (4u != params.mux_output0))
+        for (i=0; i<5; i++)
         {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Mux_output0 must be set to 4 for NV12 output\n");
+            if (NULL != output_ptrs[i])
+            {
+                fcp     = params.output_fcp_mapping[i] & 1U;
+                outport = params.output_fcp_mapping[i] & 2U;
+
+                if((i & 1) == 1) /* if i is 1 or 3 */
+                {
+                    outport++;
+                }
+                else if (i == 4)
+                {
+                    outport = i;
+                }
+
+                if (0 != fcp_mux_status[fcp][outport])
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for output_fcp_mapping[%d] OR \n", i);
+#endif
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for fcp[%d].mux_output%d\n", fcp, outport);
+                }
+            }
         }
-        if (NULL != output2)
+
+        output_fmt[0] = output0_fmt;
+        output_fmt[2] = output2_fmt;
+
+        for (i=0; i<3; i+=2) /* Iterate twice, once for output0, once for output2 */
         {
-            if (((vx_df_image)VX_DF_IMAGE_NV12 == output2_fmt) && (4u != params.mux_output2))
+            if (NULL != output_ptrs[i])
+            {
+                fcp     = params.output_fcp_mapping[i] & 1U;
+                outport = params.output_fcp_mapping[i] & 2U;
+
+                if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output_fmt[i]) &&
+                    ((0 != outport) || (TIVX_VPAC_VISS_MUX0_NV12_P12 != params.fcp[fcp].mux_output0)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                    VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output0 for NV12_P12 output of output0\n", i);
+#endif
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_NV12_P12 for NV12_P12 output of output%d\n", fcp, i);
+                }
+                if (((vx_df_image)VX_DF_IMAGE_NV12 == output_fmt[i]) &&
+                    ((2 != outport) || (TIVX_VPAC_VISS_MUX2_NV12 != params.fcp[fcp].mux_output2)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                    VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output2 for NV12 output of output0\n", i);
+#endif
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_NV12 for NV12 output of output%d\n", fcp, i);
+                }
+                if ((((vx_df_image)VX_DF_IMAGE_YUYV == output_fmt[i]) || ((vx_df_image)VX_DF_IMAGE_UYVY == output_fmt[i])) &&
+                    ((2 != outport) || (TIVX_VPAC_VISS_MUX2_YUV422 != params.fcp[fcp].mux_output2)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+#if VPAC3
+                    VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output2 for YUYV or UYVY output of output0\n", i);
+#endif
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_YUV422 for YUYV or UYVY output of output%d\n", fcp, i);
+                }
+            }
+        }
+
+        for(i=0; i < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
+        {
+            if ((TIVX_VPAC_VISS_MUX0_NV12_P12 == params.fcp[i].mux_output0) &&
+                (TIVX_VPAC_VISS_MUX2_YUV422 == params.fcp[i].mux_output2))
+            {
+                chroma_mux_status[i] = 1;
+                loop_chroma_mux_status = 1;
+            }
+        }
+
+        if (0 != loop_chroma_mux_status)
+        {
+            uint32_t fcp_of_0, fcp_of_2;
+            fcp_of_0 = params.output_fcp_mapping[0] & 1U;
+            fcp_of_2 = params.output_fcp_mapping[2] & 1U;
+
+            if ((fcp_of_0 == fcp_of_2) && (0 != chroma_mux_status[fcp_of_0]))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 4 for NV12 output\n");
+                VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
             }
-            if ((((vx_df_image)VX_DF_IMAGE_YUYV == output2_fmt) || ((vx_df_image)VX_DF_IMAGE_UYVY == output2_fmt)) &&
-                 (5u != params.mux_output2))
-            {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 5 for YUYV or UYVY output\n");
-            }
-        }
-        if ((NULL != output0) && ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
-            ((NULL != output2) &&
-                (((vx_df_image)VX_DF_IMAGE_UYVY == output2_fmt) || ((vx_df_image)VX_DF_IMAGE_YUYV == output2_fmt))))
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
         }
     }
 
@@ -427,7 +590,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'output0' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
             }
 
-            if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+            if ((((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output0_fmt) || ((vx_df_image)VX_DF_IMAGE_NV12 == output0_fmt)) &&
                 (output1 != NULL))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -449,7 +612,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'output2' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
             }
 
-            if (((vx_df_image)VX_DF_IMAGE_NV12 == output2_fmt) &&
+            if ((((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == output2_fmt) || ((vx_df_image)VX_DF_IMAGE_NV12 == output2_fmt)) &&
                 (output3 != NULL))
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -494,41 +657,40 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (NULL != output1)
+        uint32_t expected_height[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][4];
+        uint32_t output_height[4];
+
+        output_height[1] = output1_h;
+        output_height[3] = output3_h;
+
+        memset(expected_height, raw_h, sizeof(expected_height));
+
+        for(i=0; i < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
         {
-            if((0U == params.mux_output1) && (0U == params.chroma_mode))
+            if((TIVX_VPAC_VISS_MUX1_UV12 == params.fcp[i].mux_output1) &&
+               (TIVX_VPAC_VISS_CHROMA_MODE_420 == params.fcp[i].chroma_mode))
             {
-                if ((output1_h*2U) != raw_h)
-                {
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'output1' should have half the height of 'raw'\n");
-                }
+                expected_height[i][1] = raw_h/2;
             }
-            else
+
+            if((TIVX_VPAC_VISS_MUX3_UV8 == params.fcp[i].mux_output3) &&
+               (TIVX_VPAC_VISS_CHROMA_MODE_420 == params.fcp[i].chroma_mode))
             {
-                if ((output1_h) != raw_h)
-                {
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output1' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
-                }
+                expected_height[i][3] = raw_h/2;
             }
         }
-        if (NULL != output3)
+
+        for (i=1; i<4; i+=2) /* Iterate twice, once for output1, once for output3 */
         {
-            if((0U == params.mux_output3) && (0U == params.chroma_mode))
+            if (NULL != output_ptrs[i])
             {
-                if ((output3_h*2U) != raw_h)
+                fcp     = params.output_fcp_mapping[i] & 1U;
+                outport = (params.output_fcp_mapping[i] & 2U) + 1U;
+
+                if (output_height[i] != expected_height[fcp][outport])
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'output3' should have half the height of 'raw'\n");
-                }
-            }
-            else
-            {
-                if ((output3_h) != raw_h)
-                {
-                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output3' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'output%d' height should have value of %d\n", i, expected_height[fcp][i]);
                 }
             }
         }
@@ -536,6 +698,36 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        int32_t i;
+
+        for(i=0; i<4; i++)
+        {
+            if (3U < params.output_fcp_mapping[i])
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter output_fcp_mapping[%d] should be in range [0-3]\n", i);
+            }
+        }
+        if (1U < params.output_fcp_mapping[4])
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter output_fcp_mapping[4] should be either 0 or 1\n");
+        }
+        if (4U < params.fcp1_config)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter fcp1_config should be in range [0-4]\n");
+        }
+        if (1U < params.bypass_cac)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_cac should be either 0 or 1\n");
+        }
+        if (1U < params.bypass_dwb)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_dwb should be either 0 or 1\n");
+        }
         if (1U < params.bypass_glbce)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -562,19 +754,23 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter h3a_aewb_af_mode should be either:\n TIVX_VPAC_VISS_H3A_MODE_AEWB or TIVX_VPAC_VISS_H3A_MODE_AF\n");
         }
-        if ((TIVX_VPAC_VISS_EE_MODE_OFF != params.ee_mode) &&
-            (TIVX_VPAC_VISS_EE_MODE_Y12 != params.ee_mode) &&
-            (TIVX_VPAC_VISS_EE_MODE_Y8 != params.ee_mode))
+
+        for(i=0; i<TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
         {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameter ee_mode should be either:\n TIVX_VPAC_VISS_EE_MODE_OFF or TIVX_VPAC_VISS_EE_MODE_Y12 or TIVX_VPAC_VISS_EE_MODE_Y8\n");
-        }
-        if (((TIVX_VPAC_VISS_MUX1_UV12 == params.mux_output1) || (TIVX_VPAC_VISS_MUX3_UV8 == params.mux_output3)) &&
-            (TIVX_VPAC_VISS_CHROMA_MODE_420 != params.chroma_mode) &&
-            (TIVX_VPAC_VISS_CHROMA_MODE_422 != params.chroma_mode))
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameter chroma_mode should be either:\n TIVX_VPAC_VISS_CHROMA_MODE_420 or TIVX_VPAC_VISS_CHROMA_MODE_422\n");
+            if ((TIVX_VPAC_VISS_EE_MODE_OFF != params.fcp[i].ee_mode) &&
+                (TIVX_VPAC_VISS_EE_MODE_Y12 != params.fcp[i].ee_mode) &&
+                (TIVX_VPAC_VISS_EE_MODE_Y8 != params.fcp[i].ee_mode))
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter fcp[%d].ee_mode should be either:\n TIVX_VPAC_VISS_EE_MODE_OFF or TIVX_VPAC_VISS_EE_MODE_Y12 or TIVX_VPAC_VISS_EE_MODE_Y8\n", i);
+            }
+            if (((TIVX_VPAC_VISS_MUX1_UV12 == params.fcp[i].mux_output1) || (TIVX_VPAC_VISS_MUX3_UV8 == params.fcp[i].mux_output3)) &&
+                (TIVX_VPAC_VISS_CHROMA_MODE_420 != params.fcp[i].chroma_mode) &&
+                (TIVX_VPAC_VISS_CHROMA_MODE_422 != params.fcp[i].chroma_mode))
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter fcp[%d].chroma_mode should be either:\n TIVX_VPAC_VISS_CHROMA_MODE_420 or TIVX_VPAC_VISS_CHROMA_MODE_422\n", i);
+            }
         }
     }
 
@@ -770,7 +966,29 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         }
         if (status == (vx_status)VX_SUCCESS)
         {
-            /* Histogram Output */
+            /* Histogram0 Output */
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_DISTRIBUTION,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            /* Histogram1 Output */
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_TYPE_DISTRIBUTION,
+                        (vx_enum)VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            /* Raw Histogram Output */
             status = vxAddParameterToKernel(kernel,
                         index,
                         (vx_enum)VX_OUTPUT,
@@ -814,17 +1032,41 @@ vx_status tivxRemoveKernelVpacViss(vx_context context)
     return status;
 }
 
+/* These default allow VPAC3 to function like VPAC1 (mostly, build defines are also needed) */
+static void tivx_vpac_viss1_params_init(tivx_vpac_viss_params_t *prms)
+{
+    prms->output_fcp_mapping[0] =  0; /* TIVX_VPAC_VISS_MAP_FCP_OUTPUT(TIVX_VPAC_VISS_FCP0, TIVX_VPAC_VISS_FCP_OUT0);*/
+    prms->output_fcp_mapping[1] =  0; /* TIVX_VPAC_VISS_MAP_FCP_OUTPUT(TIVX_VPAC_VISS_FCP0, TIVX_VPAC_VISS_FCP_OUT1);*/
+    prms->output_fcp_mapping[2] = 2U; /* TIVX_VPAC_VISS_MAP_FCP_OUTPUT(TIVX_VPAC_VISS_FCP0, TIVX_VPAC_VISS_FCP_OUT2);*/
+    prms->output_fcp_mapping[3] = 2U; /* TIVX_VPAC_VISS_MAP_FCP_OUTPUT(TIVX_VPAC_VISS_FCP0, TIVX_VPAC_VISS_FCP_OUT3);*/
+    prms->output_fcp_mapping[4] =  0; /* TIVX_VPAC_VISS_MAP_FCP_OUTPUT(TIVX_VPAC_VISS_FCP0, TIVX_VPAC_VISS_FCP_OUT4);*/
+
+    prms->bypass_cac = 1U;
+    prms->bypass_dwb = 1U;
+}
+
 void tivx_vpac_viss_params_init(tivx_vpac_viss_params_t *prms)
 {
     if (NULL != prms)
     {
+
+        uint32_t i;
         memset(prms, 0x0, sizeof(tivx_vpac_viss_params_t));
 
-        prms->mux_output0 = 4U;
-        prms->mux_output2 = 4U;
-        prms->mux_output4 = 3U;
-        prms->ee_mode = 0U;
-        prms->chroma_mode = 0U;
+        tivx_vpac_viss1_params_init(prms);
+
+        for(i=0; i< TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
+        {
+            prms->fcp[i].mux_output0 = TIVX_VPAC_VISS_MUX0_NV12_P12;
+            prms->fcp[i].mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
+            prms->fcp[i].mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
+            prms->fcp[i].ee_mode     = TIVX_VPAC_VISS_EE_MODE_OFF;
+            prms->fcp[i].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+        }
+
+        prms->bypass_glbce = 1U;
+        prms->bypass_nsf4 = 1U;
+
         prms->enable_ctx = 0u;
     }
 }

@@ -460,7 +460,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_image_t *y8_r8_c2_desc;
     tivx_obj_desc_image_t *uv8_g8_c3_desc;
     tivx_obj_desc_image_t *s8_b8_c4_desc;
-    tivx_obj_desc_distribution_t *histogram_desc;
+    tivx_obj_desc_distribution_t *histogram0_desc;
+    tivx_obj_desc_distribution_t *histogram1_desc;
+    tivx_obj_desc_distribution_t *raw_histogram_desc;
     tivx_obj_desc_user_data_object_t *h3a_out_desc;
     tivxVpacVissParams *prms = NULL;
     tivxVpacVissObj    *vissObj = NULL;
@@ -486,7 +488,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
         uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
         s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
-        histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
+        histogram0_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX];
+        histogram1_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM1_IDX];
+        raw_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_HISTOGRAM_IDX];
         h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
@@ -511,7 +515,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         void *y8_r8_c2_target_ptr = NULL;
         void *uv8_g8_c3_target_ptr = NULL;
         void *s8_b8_c4_target_ptr = NULL;
-        void *histogram_target_ptr = NULL;
+        void *histogram0_target_ptr = NULL;
+        void *histogram1_target_ptr = NULL;
+        void *raw_histogram_target_ptr = NULL;
         void *h3a_aew_af_target_ptr = NULL;
         uint32_t num_exposures = raw_desc->params.num_exposures;
         tivx_ae_awb_params_t * ae_awb_result = NULL;
@@ -621,11 +627,27 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 (vx_enum)VX_WRITE_ONLY));
         }
 
-        if( histogram_desc != NULL)
+        if( histogram0_desc != NULL)
         {
-            histogram_target_ptr = tivxMemShared2TargetPtr(&histogram_desc->mem_ptr);
-            tivxCheckStatus(&status, tivxMemBufferMap(histogram_target_ptr,
-               histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            histogram0_target_ptr = tivxMemShared2TargetPtr(&histogram0_desc->mem_ptr);
+            tivxCheckStatus(&status, tivxMemBufferMap(histogram0_target_ptr,
+               histogram0_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
+        }
+
+        if( histogram1_desc != NULL)
+        {
+            histogram1_target_ptr = tivxMemShared2TargetPtr(&histogram1_desc->mem_ptr);
+            tivxCheckStatus(&status, tivxMemBufferMap(histogram1_target_ptr,
+               histogram1_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
+        }
+
+        if( raw_histogram_desc != NULL)
+        {
+            raw_histogram_target_ptr = tivxMemShared2TargetPtr(&raw_histogram_desc->mem_ptr);
+            tivxCheckStatus(&status, tivxMemBufferMap(raw_histogram_target_ptr,
+               raw_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY));
         }
 
@@ -654,10 +676,35 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         /* PROCESSING */
 
-        /*                                  |-------------------->
-         *                                  |        |----------->
-         * RAWFE -> NSF4 -> GLBCE -> FLEXCFA -> FLEXCC -> EE ---->
-         *     '--> H3A --->                         '--> HIST -->
+        /*
+         * FCP Instance
+         * ------------
+         *
+         *          |-------------------->|
+         *          |        |----------->|--[5]->
+         *   FLEXCFA -> FLEXCC -> EE ---->|
+         *                   |
+         *                   '--> HIST-->
+         *
+         *
+         * VPAC_VISS1
+         * ----------
+         *
+         * RAWFE -> NSF4 -> GLBCE -> FCP[0]--[5]->
+         *     '--> H3A --->            '--> HIST -->
+         *
+         *
+         * VPAC_VISS3
+         * ----------
+         *
+         *     |-------------------------------->|        |---------> HIST[1]
+         *     |       |------------------------>|        |
+         *     |       |            |----------->|---> FCP[1]--[5]-> |
+         *     |       |            |        |-->|                   |--[5]->
+         * RAWFE -> CAC -> NSF4+DWB -> GLBCE --------> FCP[0]--[5]-> |
+         *     |       '---> RawHist ---->                |
+         *     '--> H3A --->                              '---------> HIST[0]
+         *
          */
 
         /* RAWFE */
@@ -694,18 +741,44 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
             }
 
+#ifdef VPAC3
+            /* CAC */
+            if(0 == prms->bypass_cac)
+            {
+                cac_raw(1, prms->cac_params.colorEnable,
+                        prms->cac_lut[0], prms->cac_lut[1], prms->cac_lut[2], prms->cac_lut[3],
+                        prms->cac_params.blkSize, prms->cac_params.blkGridSize.hCnt, prms->cac_params.blkGridSize.vCnt,
+                        prms->scratch_rawfe_raw_out, prms->scratch_cac_out, prms->width, prms->height);
+            }
+
+            if( raw_histogram_desc != NULL)
+            {
+                RawHistogram_top (&prms->raw_hist_params, prms->pScratch_cac_out, prms->scratch_raw_hist_out);
+            }
+#endif
+
             /* NSF4 */
             if(0 == prms->bypass_nsf4)
             {
-                nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
+                nsf4_main(&prms->nsf4_params, prms->pScratch_cac_out, prms->scratch_nsf4v_out);
             }
+
+#ifdef VPAC3
+            /* NFS4_DWB */
+            if(0 == prms->bypass_dwb)
+            {
+                void *dwbLineWeights = &prms->dwb_params.dwbLineWeights;
+                wb_lut(1, dwbLineWeights, prms->dwb_x, prms->dwb_y, prms->dwb_s,
+                       prms->pScratch_nsf4v_out, prms->scratch_dwb_out, prms->width, prms->height);
+            }
+#endif
 
             /* GLBCE */
             if(0 == prms->bypass_glbce)
             {
                 int retval;
 
-                retval = glbce_process(prms->hGlbce, prms->pScratch_nsf4v_out, prms->scratch_glbce_out);
+                retval = glbce_process(prms->hGlbce, prms->pScratch_dwb_out, prms->scratch_glbce_out);
 
                 if(retval < 0)
                 {
@@ -717,70 +790,88 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            /* Convert glbce 16-bit output to 32-bit input to CFA */
-            for(i=0; i < (prms->buffer_size/2); i++)
-            {
-                prms->scratch_cfa_in[i] = (uint32_t)prms->pScratch_glbce_out[i];
-            }
+            int k;
 
-            /* FLEXCFA */
-            FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params[0]);
-
-            /* FLEXCC */
-            if(0 == prms->bypass_cc)
+            for(k=0; k < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; k++)
             {
-                flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params[0]);
-            }
+                /* Convert glbce 16-bit output to 32-bit input to CFA */
+                for(i=0; i < (prms->buffer_size/2); i++)
+                {
+                    prms->fcp[k].scratch_cfa_in[i] = (uint32_t)prms->fcp[k].pScratch_cfa_in_16[i];
+                }
 
-            /* EE */
-            if(0 == prms->bypass_ee)
-            {
-                tivxVpacVissCopyShift(prms->scratch_ee_shift_in, prms->scratch_ee_in, prms->buffer_size, prms->pre_copy);
-                ee_top(&prms->ee_params[0], prms->scratch_ee_in, prms->scratch_ee_out);
-                tivxVpacVissCopyShift(prms->scratch_ee_out, prms->scratch_ee_shift_out, prms->buffer_size, prms->post_copy);
+                /* FLEXCFA */
+                FLXD_Demosaic(prms->fcp[k].scratch_cfa_in, prms->fcp[k].scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params[k]);
+
+
+                /* FLEXCC */
+                if(0 == prms->fcp[k].bypass_cc)
+                {
+                    flexcc_top_processing(prms->fcp[k].scratch_cfa_out, prms->fcp[k].scratch_cc_out, prms->fcp[k].scratch_hist, &prms->flexcc_params[k]);
+                }
+
+                /* EE */
+                if(0 == prms->fcp[k].bypass_ee)
+                {
+                    tivxVpacVissCopyShift(prms->fcp[k].scratch_ee_shift_in, prms->fcp[k].scratch_ee_in, prms->buffer_size, prms->fcp[k].pre_copy);
+                    ee_top(&prms->ee_params[k], prms->fcp[k].scratch_ee_in, prms->fcp[k].scratch_ee_out);
+                    tivxVpacVissCopyShift(prms->fcp[k].scratch_ee_out, prms->fcp[k].scratch_ee_shift_out, prms->buffer_size, prms->fcp[k].post_copy);
+                }
             }
 
             /* Fill non-NULL output buffers (up to 7) */
 
             if( y12_desc != NULL)
             {
-                if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+                if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_NV12 == y12_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_YUYV == y12_desc->format) ||
+                     ((vx_df_image)VX_DF_IMAGE_UYVY == y12_desc->format))
                 {
-                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->out_y12_16, prms->out_uv12_c1_16, 12);
+                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->out_0_16, prms->out_1_16, prms->out_0_align);
                 }
                 else
                 {
-                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, NULL, prms->out_y12_16, NULL, 12);
+                    lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, NULL, prms->out_0_16, NULL, prms->out_0_align);
                 }
             }
             if( uv12_c1_desc != NULL)
             {
-                lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, NULL, prms->out_uv12_c1_16, NULL, 12);
+                lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, NULL, prms->out_1_16, NULL, prms->out_1_align);
             }
             if( y8_r8_c2_desc != NULL)
             {
-                if (((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
+                if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y8_r8_c2_desc->format) ||
+                    ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
                     ((vx_df_image)VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
                     ((vx_df_image)VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
                 {
-                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->out_y8_r8_c2_16, prms->out_uv8_g8_c3_16, prms->out_y8_r8_c2_bit_align);
+                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->out_2_16, prms->out_3_16, prms->out_2_align);
                 }
                 else
                 {
-                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, NULL, prms->out_y8_r8_c2_16, NULL, prms->out_y8_r8_c2_bit_align);
+                    lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, NULL, prms->out_2_16, NULL, prms->out_2_align);
                 }
             }
             if( uv8_g8_c3_desc != NULL)
             {
-                lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, NULL, prms->out_uv8_g8_c3_16, NULL, prms->out_uv8_g8_c3_bit_align);
+                lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, NULL, prms->out_3_16, NULL, prms->out_3_align);
             }
             if( s8_b8_c4_desc != NULL)
             {
-                lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, NULL, prms->out_s8_b8_c4_16, NULL, prms->out_s8_b8_c4_bit_align);
+                lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, NULL, prms->out_4_16, NULL, prms->out_4_align);
             }
-            if( histogram_desc != NULL)
+            if( histogram0_desc != NULL)
             {
-                memcpy(histogram_target_ptr, prms->scratch_hist, 256*sizeof(uint32_t));
+                memcpy(histogram0_target_ptr, prms->fcp[0].scratch_hist, 256*sizeof(uint32_t));
+            }
+            if( histogram1_desc != NULL)
+            {
+                memcpy(histogram1_target_ptr, prms->fcp[1].scratch_hist, 256*sizeof(uint32_t));
+            }
+            if( raw_histogram_desc != NULL)
+            {
+                memcpy(raw_histogram_target_ptr, prms->scratch_raw_hist_out, 128*sizeof(uint32_t));
             }
             if( h3a_out_desc != NULL)
             {
@@ -840,7 +931,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y12_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY));
 
-            if ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y12_desc->format) ||
+                ((vx_df_image)VX_DF_IMAGE_NV12 == y12_desc->format))
             {
                 tivxCheckStatus(&status, tivxMemBufferUnmap(uv12_c1_target_ptr,
                    y12_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
@@ -861,7 +953,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                y8_r8_c2_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY));
 
-            if ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
+            if (((vx_df_image)TIVX_DF_IMAGE_NV12_P12 == y8_r8_c2_desc->format) ||
+                ((vx_df_image)VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format))
             {
                 tivxCheckStatus(&status, tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
                    y8_r8_c2_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
@@ -883,10 +976,24 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 (vx_enum)VX_WRITE_ONLY));
         }
 
-        if( histogram_desc != NULL)
+        if( histogram0_desc != NULL)
         {
-            tivxCheckStatus(&status, tivxMemBufferUnmap(histogram_target_ptr,
-               histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+            tivxCheckStatus(&status, tivxMemBufferUnmap(histogram0_target_ptr,
+               histogram0_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
+        }
+
+        if( histogram1_desc != NULL)
+        {
+            tivxCheckStatus(&status, tivxMemBufferUnmap(histogram1_target_ptr,
+               histogram1_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
+                (vx_enum)VX_WRITE_ONLY));
+        }
+
+        if( raw_histogram_desc != NULL)
+        {
+            tivxCheckStatus(&status, tivxMemBufferUnmap(raw_histogram_target_ptr,
+               raw_histogram_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_WRITE_ONLY));
         }
 
@@ -964,7 +1071,7 @@ static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms)
 
     if (NULL != prms)
     {
-        uint32_t i;
+        uint32_t i, k;
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -1013,6 +1120,24 @@ static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms)
 
         if ((vx_status)VX_SUCCESS == status)
         {
+            prms->scratch_cac_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_cac_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            prms->scratch_dwb_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_dwb_out)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
             prms->scratch_nsf4v_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             if (NULL == prms->scratch_nsf4v_out)
             {
@@ -1031,70 +1156,82 @@ static vx_status tivxVpacVissAllocMem(tivxVpacVissParams *prms)
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            prms->scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->scratch_cfa_in)
+            prms->scratch_raw_hist_out = tivxMemAlloc(128*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+            if (NULL == prms->scratch_raw_hist_out)
             {
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
         }
 
-        for (i = 0; i < FLXD_NUM_FIR; i++)
+        for (k=0; k<TIVX_VPAC_VISS_FCP_NUM_INSTANCES;k++)
         {
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->scratch_cfa_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_cfa_out[i])
+                prms->fcp[k].scratch_cfa_in = tivxMemAlloc(prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->fcp[k].scratch_cfa_in)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
-        }
 
-        for (i = 0; i < 8; i++)
-        {
+            for (i = 0; i < FLXD_NUM_FIR; i++)
+            {
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    prms->fcp[k].scratch_cfa_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    if (NULL == prms->fcp[k].scratch_cfa_out[i])
+                    {
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
+                    }
+                }
+            }
+
+            for (i = 0; i < 8; i++)
+            {
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    prms->fcp[k].scratch_cc_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    if (NULL == prms->fcp[k].scratch_cc_out[i])
+                    {
+                        status = (vx_status)VX_ERROR_NO_MEMORY;
+                    }
+                }
+            }
+
             if ((vx_status)VX_SUCCESS == status)
             {
-                prms->scratch_cc_out[i] = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                if (NULL == prms->scratch_cc_out[i])
+                prms->fcp[k].scratch_hist = tivxMemAlloc(256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->fcp[k].scratch_hist)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
-        }
 
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            prms->scratch_hist = tivxMemAlloc(256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->scratch_hist)
+            if ((vx_status)VX_SUCCESS == status)
             {
-                status = (vx_status)VX_ERROR_NO_MEMORY;
+                prms->fcp[k].scratch_ee_in = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->fcp[k].scratch_ee_in)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
             }
-        }
 
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            prms->scratch_ee_in = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->scratch_ee_in)
+            if ((vx_status)VX_SUCCESS == status)
             {
-                status = (vx_status)VX_ERROR_NO_MEMORY;
+                prms->fcp[k].scratch_ee_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->fcp[k].scratch_ee_out)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
             }
-        }
 
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            prms->scratch_ee_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->scratch_ee_out)
+            if ((vx_status)VX_SUCCESS == status)
             {
-                status = (vx_status)VX_ERROR_NO_MEMORY;
-            }
-        }
-
-        if ((vx_status)VX_SUCCESS == status)
-        {
-            prms->scratch_ee_shift_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            if (NULL == prms->scratch_ee_shift_out)
-            {
-                status = (vx_status)VX_ERROR_NO_MEMORY;
+                prms->fcp[k].scratch_ee_shift_out = tivxMemAlloc(prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                if (NULL == prms->fcp[k].scratch_ee_shift_out)
+                {
+                    status = (vx_status)VX_ERROR_NO_MEMORY;
+                }
             }
         }
     }
@@ -1112,7 +1249,7 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
 
     if (NULL != prms)
     {
-        uint32_t i;
+        uint32_t i, k;
 
         if (NULL != prms->raw0_16)
         {
@@ -1149,6 +1286,16 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
             tivxMemFree(prms->scratch_af_result, prms->af_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->scratch_af_result = NULL;
         }
+        if (NULL != prms->scratch_cac_out)
+        {
+            tivxMemFree(prms->scratch_cac_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            prms->scratch_cac_out = NULL;
+        }
+        if (NULL != prms->scratch_dwb_out)
+        {
+            tivxMemFree(prms->scratch_dwb_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            prms->scratch_dwb_out = NULL;
+        }
         if (NULL != prms->scratch_nsf4v_out)
         {
             tivxMemFree(prms->scratch_nsf4v_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
@@ -1159,46 +1306,62 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
             tivxMemFree(prms->scratch_glbce_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
             prms->scratch_glbce_out = NULL;
         }
-        if (NULL != prms->scratch_cfa_in)
+        if (NULL != prms->scratch_raw_hist_out)
         {
-            tivxMemFree(prms->scratch_cfa_in, prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
-            prms->scratch_cfa_in = NULL;
+            tivxMemFree(prms->scratch_raw_hist_out, 128*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+            prms->scratch_raw_hist_out = NULL;
         }
-        for (i = 0; i < FLXD_NUM_FIR; i++)
+        for(k=0;k<TIVX_VPAC_VISS_FCP_NUM_INSTANCES;k++)
         {
-            if (NULL != prms->scratch_cfa_out[i])
+            if (NULL != prms->fcp[k].scratch_cfa_in)
             {
-                tivxMemFree(prms->scratch_cfa_out[i], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                prms->scratch_cfa_out[i] = NULL;
+                tivxMemFree(prms->fcp[k].scratch_cfa_in, prms->buffer_size*2, (vx_enum)TIVX_MEM_EXTERNAL);
+                prms->fcp[k].scratch_cfa_in = NULL;
             }
-        }
-        for (i = 0; i < 8; i++)
-        {
-            if (NULL != prms->scratch_cc_out[i])
+            for (i = 0; i < FLXD_NUM_FIR; i++)
             {
-                tivxMemFree(prms->scratch_cc_out[i], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                prms->scratch_cc_out[i] = NULL;
+                if (NULL != prms->fcp[k].scratch_cfa_out[i])
+                {
+                    tivxMemFree(prms->fcp[k].scratch_cfa_out[i], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    prms->fcp[k].scratch_cfa_out[i] = NULL;
+                }
             }
-        }
-        if (NULL != prms->scratch_hist)
-        {
-            tivxMemFree(prms->scratch_hist, 256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
-            prms->scratch_hist = NULL;
-        }
-        if (NULL != prms->scratch_ee_in)
-        {
-            tivxMemFree(prms->scratch_ee_in, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            prms->scratch_ee_in = NULL;
-        }
-        if (NULL != prms->scratch_ee_out)
-        {
-            tivxMemFree(prms->scratch_ee_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            prms->scratch_ee_out = NULL;
-        }
-        if (NULL != prms->scratch_ee_shift_out)
-        {
-            tivxMemFree(prms->scratch_ee_shift_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
-            prms->scratch_ee_shift_out = NULL;
+            for (i = 0; i < 8; i++)
+            {
+                if (NULL != prms->fcp[k].scratch_cc_out[i])
+                {
+                    tivxMemFree(prms->fcp[k].scratch_cc_out[i], prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                    prms->fcp[k].scratch_cc_out[i] = NULL;
+                }
+            }
+            if (NULL != prms->fcp[k].scratch_hist)
+            {
+                tivxMemFree(prms->fcp[k].scratch_hist, 256*sizeof(uint32_t), (vx_enum)TIVX_MEM_EXTERNAL);
+                prms->fcp[k].scratch_hist = NULL;
+            }
+            if (NULL != prms->fcp[k].scratch_ee_in)
+            {
+                tivxMemFree(prms->fcp[k].scratch_ee_in, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                prms->fcp[k].scratch_ee_in = NULL;
+            }
+            if (NULL != prms->fcp[k].scratch_ee_out)
+            {
+                tivxMemFree(prms->fcp[k].scratch_ee_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                prms->fcp[k].scratch_ee_out = NULL;
+            }
+            if (NULL != prms->fcp[k].scratch_ee_shift_out)
+            {
+                tivxMemFree(prms->fcp[k].scratch_ee_shift_out, prms->buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
+                prms->fcp[k].scratch_ee_shift_out = NULL;
+            }
+
+            prms->fcp[k].out_y12_16 = NULL;
+            prms->fcp[k].out_uv12_c1_16 = NULL;
+            prms->fcp[k].out_y8_r8_c2_16 = NULL;
+            prms->fcp[k].out_uv8_g8_c3_16 = NULL;
+            prms->fcp[k].out_s8_b8_c4_16 = NULL;
+            prms->fcp[k].scratch_ee_shift_in = NULL;
+            prms->fcp[k].pScratch_cfa_in_16 = NULL;
         }
 
         if(NULL != prms->dcc_out_buf)
@@ -1219,13 +1382,15 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
             prms->dcc_output_params = NULL;
         }
 
-        prms->out_y12_16 = NULL;
-        prms->out_uv12_c1_16 = NULL;
-        prms->out_y8_r8_c2_16 = NULL;
-        prms->out_uv8_g8_c3_16 = NULL;
-        prms->out_s8_b8_c4_16 = NULL;
-        prms->scratch_ee_shift_in = NULL;
+        prms->out_0_16 = NULL;
+        prms->out_1_16 = NULL;
+        prms->out_2_16 = NULL;
+        prms->out_3_16 = NULL;
+        prms->out_4_16 = NULL;
         prms->pScratch_nsf4v_out = NULL;
+        prms->pScratch_cac_out = NULL;
+        prms->pScratch_dwb_out = NULL;
+        prms->pScratch_glbce_out = NULL;
 
         if(prms->hGlbce != NULL)
         {
@@ -1280,25 +1445,52 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
     tivx_obj_desc_image_t *y8_r8_c2_desc;
     tivx_obj_desc_image_t *uv8_g8_c3_desc;
     tivx_obj_desc_image_t *s8_b8_c4_desc;
-    tivx_obj_desc_distribution_t *histogram_desc;
+    tivx_obj_desc_distribution_t *histogram0_desc;
+    tivx_obj_desc_distribution_t *histogram1_desc;
     tivx_obj_desc_user_data_object_t *h3a_out_desc;
 
     if((NULL != prms) && (NULL != vissPrms))
     {
-        uint32_t i;
+        uint32_t i,k;
 
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
         uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
         y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
         uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
         s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
-        histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
+        histogram0_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX];
+        histogram1_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM1_IDX];
         h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
-        /*                                  |-------------------->
-         *                                  |        |----------->
-         * RAWFE -> NSF4 -> GLBCE -> FLEXCFA -> FLEXCC -> EE ---->
-         *     '--> H3A --->                         '--> HIST -->
+        /*
+         * FCP Instance
+         * ------------
+         *
+         *          |-------------------->|
+         *          |        |----------->|--[5]->
+         *   FLEXCFA -> FLEXCC -> EE ---->|
+         *                   |
+         *                   '--> HIST-->
+         *
+         *
+         * VPAC_VISS1
+         * ----------
+         *
+         * RAWFE -> NSF4 -> GLBCE -> FCP[0]--[5]->
+         *     '--> H3A --->            '--> HIST -->
+         *
+         *
+         * VPAC_VISS3
+         * ----------
+         *
+         *     |-------------------------------->|        |---------> HIST[1]
+         *     |       |------------------------>|        |
+         *     |       |            |----------->|---> FCP[1]--[5]-> |
+         *     |       |            |        |-->|                   |--[5]->
+         * RAWFE -> CAC -> NSF4+DWB -> GLBCE --------> FCP[0]--[5]-> |
+         *     |       '---> RawHist ---->                |
+         *     '--> H3A --->                              '---------> HIST[0]
+         *
          */
 
         /* RAWFE */
@@ -1404,8 +1596,21 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
             }
         }
 
+        /* CAC */
+        prms->pScratch_cac_out = prms->scratch_rawfe_raw_out;
+#ifdef VPAC3
+        if(0 == vissPrms->bypass_cac)
+        {
+            prms->pScratch_cac_out = prms->scratch_cac_out;
+        }
+        else
+#endif
+        {
+            prms->bypass_cac = 1;
+        }
+
         /* NSF4 */
-        prms->pScratch_nsf4v_out = prms->scratch_rawfe_raw_out;
+        prms->pScratch_nsf4v_out = prms->pScratch_cac_out;
         if(0 == vissPrms->bypass_nsf4)
         {
             prms->pScratch_nsf4v_out = prms->scratch_nsf4v_out;
@@ -1415,8 +1620,21 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
             prms->bypass_nsf4 = 1;
         }
 
+        /* DWB */
+        prms->pScratch_dwb_out = prms->pScratch_nsf4v_out;
+#ifdef VPAC3
+        if((0 == vissPrms->bypass_dwb) && (1 == prms->dwb_params.enable))
+        {
+            prms->pScratch_dwb_out = prms->scratch_dwb_out;
+        }
+        else
+#endif
+        {
+            prms->bypass_dwb = 1;
+        }
+
         /* GLBCE */
-        prms->pScratch_glbce_out = prms->pScratch_nsf4v_out;
+        prms->pScratch_glbce_out = prms->pScratch_dwb_out;
         if(0 == vissPrms->bypass_glbce)
         {
             int retval;
@@ -1435,194 +1653,352 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
         }
 
         /* FLEXCFA */
+        prms->fcp[0].pScratch_cfa_in_16 = prms->pScratch_glbce_out;
+#ifdef VPAC3
+        prms->fcp[1].pScratch_cfa_in_16 = prms->pScratch_glbce_out;
 
-        /* FLEXCC */
-        if( ( NULL != y12_desc ) ||
-           (( NULL != uv12_c1_desc )   && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->mux_output1)) ||
-           (( NULL != y8_r8_c2_desc )  && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->mux_output2)) ||
-           (( NULL != uv8_g8_c3_desc ) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->mux_output3)) ||
-           (( NULL != s8_b8_c4_desc )  && (TIVX_VPAC_VISS_MUX4_C4 != vissPrms->mux_output4)) ||
-            ( NULL != histogram_desc))
+        if(TIVX_VPAC_VISS_FCP1_INPUT_RFE == vissPrms->fcp1_config)
         {
-            if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)) ||
-                (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == vissPrms->mux_output2)) )
-            {
-                prms->flexcc_params[0].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
-            }
-            else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))
-            {
-                prms->flexcc_params[0].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
-            }
-            else
-            {
-                prms->flexcc_params[0].ChromaMode = vissPrms->chroma_mode;
-            }
+            prms->fcp[1].pScratch_cfa_in_16 = prms->scratch_rawfe_raw_out;
         }
-        else
+        else if (TIVX_VPAC_VISS_FCP1_INPUT_CAC == vissPrms->fcp1_config)
         {
-            prms->bypass_cc = 1;
+            prms->fcp[1].pScratch_cfa_in_16 = prms->pScratch_cac_out;
         }
-
-        /* EE */
-        if(0 != vissPrms->ee_mode)
+        else if (TIVX_VPAC_VISS_FCP1_INPUT_NSF4 == vissPrms->fcp1_config)
         {
-            if((( NULL != y12_desc )       && (1 == vissPrms->ee_mode)) ||
-               (( NULL != y8_r8_c2_desc )  && (2 == vissPrms->ee_mode) &&
-                ((TIVX_VPAC_VISS_MUX2_Y8 == vissPrms->mux_output2) || (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->mux_output2) ||
-                 (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))))
-            {
-                prms->bypass_ee = 0;
-            }
-            else
-            {
-                prms->bypass_ee = 1;
-            }
+            prms->fcp[1].pScratch_cfa_in_16 = prms->pScratch_nsf4v_out;
         }
-        else
+#endif
+        for(k=0; k<TIVX_VPAC_VISS_FCP_NUM_INSTANCES; k++)
         {
-            prms->bypass_ee = 1;
-        }
-
-        /* Configure output muxes */
-
-        if( NULL != y12_desc )
-        {
-            if(((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
-                (TIVX_VPAC_VISS_MUX0_VALUE12 != vissPrms->mux_output0))
+            /* FLEXCC */
+            if((( NULL != y12_desc )       && (k == (vissPrms->output_fcp_mapping[0] & 1)) &&
+                    ((0 == (vissPrms->output_fcp_mapping[0] & 2)) ||
+                    ((2 == (vissPrms->output_fcp_mapping[0] & 2)) && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->fcp[k].mux_output2)))) ||
+               (( NULL != uv12_c1_desc )   && (k == (vissPrms->output_fcp_mapping[1] & 1)) &&
+                   (((0 == (vissPrms->output_fcp_mapping[1] & 2)) && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->fcp[k].mux_output1)) ||
+                    ((2 == (vissPrms->output_fcp_mapping[1] & 2)) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->fcp[k].mux_output3)))) ||
+               (( NULL != y8_r8_c2_desc )  && (k == (vissPrms->output_fcp_mapping[2] & 1)) &&
+                    ((0 == (vissPrms->output_fcp_mapping[2] & 2)) ||
+                    ((2 == (vissPrms->output_fcp_mapping[2] & 2)) && (TIVX_VPAC_VISS_MUX2_C2 != vissPrms->fcp[k].mux_output2)))) ||
+               (( NULL != uv8_g8_c3_desc ) && (k == (vissPrms->output_fcp_mapping[3] & 1)) &&
+                   (((0 == (vissPrms->output_fcp_mapping[3] & 2)) && (TIVX_VPAC_VISS_MUX1_C1 != vissPrms->fcp[k].mux_output1)) ||
+                    ((2 == (vissPrms->output_fcp_mapping[3] & 2)) && (TIVX_VPAC_VISS_MUX3_C3 != vissPrms->fcp[k].mux_output3)))) ||
+               (( NULL != s8_b8_c4_desc )  && (k == (vissPrms->output_fcp_mapping[4] & 1)) &&
+                                                                     (TIVX_VPAC_VISS_MUX4_C4 != vissPrms->fcp[k].mux_output4)) ||
+               (( NULL != histogram0_desc) && (k == 0)) ||
+               (( NULL != histogram1_desc) && (k == 1))
+              )
             {
-                prms->scratch_ee_shift_in = prms->scratch_cc_out[0]; /* y12 */
-                prms->out_y12_16 = prms->scratch_ee_shift_out;       /* y12 */
-                prms->pre_copy = Y12_PRE_COPY;
-                prms->post_copy = Y12_POST_COPY;
-            }
-            else
-            {
-                prms->out_y12_16 = prms->scratch_cc_out[0];    /* y12 */
-            }
-
-            if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)  /* NV12_P12 Format */
-            {
-                prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
-            }
-
-            if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->mux_output0)  /* Value Format */
-            {
-                prms->flexcc_params[0].MuxY12Out = 2; /* HSV value */
-            }
-            else
-            {
-                prms->flexcc_params[0].MuxY12Out = 1; /* YUV Luma */
-            }
-        }
-
-        if( NULL != uv12_c1_desc )
-        {
-            if(vissPrms->mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
-            {
-                prms->out_uv12_c1_16 = prms->scratch_cc_out[1]; /* uv12 */
-            }
-            else
-            {
-                prms->out_uv12_c1_16 = prms->scratch_cfa_out[0]; /* c1 */
-            }
-        }
-
-        if( NULL != y8_r8_c2_desc )
-        {
-            prms->out_y8_r8_c2_bit_align = 8;
-            if(vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
-            {
-                if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                if( (( NULL != y12_desc ) && (k == (vissPrms->output_fcp_mapping[0] & 1)) &&
+                     ((0 == (vissPrms->output_fcp_mapping[0] & 2) && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->fcp[k].mux_output0)) ||
+                      (2 == (vissPrms->output_fcp_mapping[0] & 2) && (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2))))   ||
+                    (( NULL != y8_r8_c2_desc ) && (k == (vissPrms->output_fcp_mapping[2] & 1)) &&
+                     ((0 == (vissPrms->output_fcp_mapping[2] & 2) && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->fcp[k].mux_output0)) ||
+                      (2 == (vissPrms->output_fcp_mapping[2] & 2) && (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2)))))
                 {
-                    prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
-                    prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
-                    prms->pre_copy = Y8_PRE_COPY;
-                    prms->post_copy = Y8_POST_COPY;
+                    prms->flexcc_params[k].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
+                }
+                else if ((( NULL != y12_desc ) && (k == (vissPrms->output_fcp_mapping[0] & 1)) &&
+                         (2 == (vissPrms->output_fcp_mapping[0] & 2) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->fcp[k].mux_output2)))   ||
+                        (( NULL != y8_r8_c2_desc ) && (k == (vissPrms->output_fcp_mapping[2] & 1)) &&
+                         (2 == (vissPrms->output_fcp_mapping[2] & 2) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->fcp[k].mux_output2))))
+                {
+                    prms->flexcc_params[k].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
                 }
                 else
                 {
-                    prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
+                    prms->flexcc_params[k].ChromaMode = vissPrms->fcp[k].chroma_mode;
                 }
             }
-            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
+            else
             {
-                prms->out_y8_r8_c2_16 = prms->scratch_cc_out[5]; /* r8 */
+                prms->fcp[k].bypass_cc = 1;
             }
-            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
+
+            /* EE */
+            if(0 != vissPrms->fcp[k].ee_mode)
             {
-                prms->out_y8_r8_c2_16 = prms->scratch_cfa_out[1]; /* c2 */
-                prms->out_y8_r8_c2_bit_align = 12;
-            }
-            else if (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
-            {
-                prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 (value) */
-            }
-            else if((vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (vissPrms->mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
-            {
-                if((0 == prms->bypass_ee) && (vissPrms->ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                uint32_t ee_mode_status[2] = {0};
+
+                if(1 == vissPrms->fcp[k].ee_mode)
                 {
-                    prms->scratch_ee_shift_in = prms->scratch_cc_out[2]; /* y8 */
-                    prms->out_y8_r8_c2_16 = prms->scratch_ee_shift_out;  /* y8 */
-                    prms->pre_copy = Y8_PRE_COPY;
-                    prms->post_copy = Y8_POST_COPY;
+                    ee_mode_status[0] = 1;
+                }
+
+                if ( (2 == vissPrms->fcp[k].ee_mode) &&
+                    ((TIVX_VPAC_VISS_MUX2_Y8     == vissPrms->fcp[k].mux_output2) ||
+                     (TIVX_VPAC_VISS_MUX2_NV12   == vissPrms->fcp[k].mux_output2) ||
+                     (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->fcp[k].mux_output2)))
+                {
+                    ee_mode_status[1] = 1;
+                }
+
+
+                if((( NULL != y12_desc )       && (k == (vissPrms->output_fcp_mapping[0] & 1)) &&
+                       (((0 == (vissPrms->output_fcp_mapping[0] & 2)) && (1 == ee_mode_status[0])) ||
+                        ((2 == (vissPrms->output_fcp_mapping[0] & 2)) && (1 == ee_mode_status[1]))))  ||
+                   (( NULL != y8_r8_c2_desc )  && (k == (vissPrms->output_fcp_mapping[2] & 1)) &&
+                       (((0 == (vissPrms->output_fcp_mapping[2] & 2)) && (1 == ee_mode_status[0])) ||
+                        ((2 == (vissPrms->output_fcp_mapping[2] & 2)) && (1 == ee_mode_status[1])))))
+                {
+                    prms->fcp[k].bypass_ee = 0;
                 }
                 else
                 {
-                    prms->out_y8_r8_c2_16 = prms->scratch_cc_out[2];  /* y8 */
+                    prms->fcp[k].bypass_ee = 1;
+                }
+            }
+            else
+            {
+                prms->fcp[k].bypass_ee = 1;
+            }
+        }
+
+        /* Configure FCP output muxes */
+
+        for(k=0; k<TIVX_VPAC_VISS_FCP_NUM_INSTANCES; k++)
+        {
+            uint32_t output_0_dual_channel = 0;
+            uint32_t output_2_dual_channel = 0;
+
+            /* y12 output [0] */
+
+            if(((0 == prms->fcp[k].bypass_ee) && (vissPrms->fcp[k].ee_mode == TIVX_VPAC_VISS_EE_MODE_Y12)) &&
+                (TIVX_VPAC_VISS_MUX0_VALUE12 != vissPrms->fcp[k].mux_output0))
+            {
+                prms->fcp[k].scratch_ee_shift_in = prms->fcp[k].scratch_cc_out[0]; /* y12 */
+                prms->fcp[k].out_y12_16 = prms->fcp[k].scratch_ee_shift_out;       /* y12 */
+                prms->fcp[k].pre_copy = Y12_PRE_COPY;
+                prms->fcp[k].post_copy = Y12_POST_COPY;
+            }
+            else
+            {
+                prms->fcp[k].out_y12_16 = prms->fcp[k].scratch_cc_out[0];    /* y12 */
+            }
+
+            if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->fcp[k].mux_output0)  /* NV12_P12 Format */
+            {
+                prms->fcp[k].out_uv12_c1_16 = prms->fcp[k].scratch_cc_out[1]; /* uv12 */
+                output_0_dual_channel = 1U;
+            }
+
+            if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->fcp[k].mux_output0)  /* Value Format */
+            {
+                prms->flexcc_params[k].MuxY12Out = 2; /* HSV value */
+            }
+            else
+            {
+                prms->flexcc_params[k].MuxY12Out = 1; /* YUV Luma */
+            }
+
+            /* uv12_c1 output [1] */
+
+            if(0 == output_0_dual_channel)
+            {
+                if(vissPrms->fcp[k].mux_output1 == TIVX_VPAC_VISS_MUX1_UV12)
+                {
+                    prms->fcp[k].out_uv12_c1_16 = prms->fcp[k].scratch_cc_out[1]; /* uv12 */
+                }
+                else
+                {
+                    prms->fcp[k].out_uv12_c1_16 = prms->fcp[k].scratch_cfa_out[0]; /* c1 */
+                }
+            }
+
+            /* y8_r8_c2 output [2] */
+
+            prms->fcp[k].out_y8_r8_c2_bit_align = 8;
+            if(vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_Y8)
+            {
+                if((0 == prms->fcp[k].bypass_ee) && (vissPrms->fcp[k].ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                {
+                    prms->fcp[k].scratch_ee_shift_in = prms->fcp[k].scratch_cc_out[2]; /* y8 */
+                    prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_ee_shift_out;  /* y8 */
+                    prms->fcp[k].pre_copy = Y8_PRE_COPY;
+                    prms->fcp[k].post_copy = Y8_POST_COPY;
+                }
+                else
+                {
+                    prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_cc_out[2];  /* y8 */
+                }
+            }
+            else if (vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_RED)
+            {
+                prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_cc_out[5]; /* r8 */
+            }
+            else if (vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_C2)
+            {
+                prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_cfa_out[1]; /* c2 */
+                prms->fcp[k].out_y8_r8_c2_bit_align = 12;
+            }
+            else if (vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_VALUE8)
+            {
+                prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_cc_out[2];  /* y8 (value) */
+            }
+            else if((vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_NV12) || (vissPrms->fcp[k].mux_output2 == TIVX_VPAC_VISS_MUX2_YUV422))
+            {
+                output_2_dual_channel = 1U;
+
+                if((0 == prms->fcp[k].bypass_ee) && (vissPrms->fcp[k].ee_mode == TIVX_VPAC_VISS_EE_MODE_Y8))
+                {
+                    prms->fcp[k].scratch_ee_shift_in = prms->fcp[k].scratch_cc_out[2]; /* y8 */
+                    prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_ee_shift_out;  /* y8 */
+                    prms->fcp[k].pre_copy = Y8_PRE_COPY;
+                    prms->fcp[k].post_copy = Y8_POST_COPY;
+                }
+                else
+                {
+                    prms->fcp[k].out_y8_r8_c2_16 = prms->fcp[k].scratch_cc_out[2];  /* y8 */
                 }
 
-                prms->out_uv8_g8_c3_bit_align = 8;
-                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* UV8 */
+                prms->fcp[k].out_uv8_g8_c3_bit_align = 8;
+                prms->fcp[k].out_uv8_g8_c3_16 = prms->fcp[k].scratch_cc_out[3]; /* UV8 */
             }
             else
             {
                 /* Not valid input */
             }
 
-            if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->mux_output2)  /* Value Format */
+            if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->fcp[k].mux_output2)  /* Value Format */
             {
-                prms->flexcc_params[0].MuxY8Out = 2; /* HSV value */
+                prms->flexcc_params[k].MuxY8Out = 2; /* HSV value */
             }
             else
             {
-                prms->flexcc_params[0].MuxY8Out = 1; /* YUV Luma */
+                prms->flexcc_params[k].MuxY8Out = 1; /* YUV Luma */
+            }
+
+            /* uv8_g8_c3 output */
+
+            if(0 == output_2_dual_channel)
+            {
+                prms->fcp[k].out_uv8_g8_c3_bit_align = 8;
+                if(vissPrms->fcp[k].mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
+                {
+                    prms->fcp[k].out_uv8_g8_c3_16 = prms->fcp[k].scratch_cc_out[3]; /* uv8 */
+                }
+                else if (vissPrms->fcp[k].mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
+                {
+                    prms->fcp[k].out_uv8_g8_c3_16 = prms->fcp[k].scratch_cc_out[6]; /* g8 */
+                }
+                else
+                {
+                    prms->fcp[k].out_uv8_g8_c3_16 = prms->fcp[k].scratch_cfa_out[2]; /* c3 */
+                    prms->fcp[k].out_uv8_g8_c3_bit_align = 12;
+                }
+            }
+
+            /* s8_b8_c4 output */
+
+            prms->fcp[k].out_s8_b8_c4_bit_align = 8;
+            if(vissPrms->fcp[k].mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
+            {
+                prms->fcp[k].out_s8_b8_c4_16 = prms->fcp[k].scratch_cc_out[4]; /* s8 */
+            }
+            else if (vissPrms->fcp[k].mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
+            {
+                prms->fcp[k].out_s8_b8_c4_16 = prms->fcp[k].scratch_cc_out[7]; /* b8 */
+            }
+            else
+            {
+                prms->fcp[k].out_s8_b8_c4_16 = prms->fcp[k].scratch_cfa_out[3]; /* c4 */
+                prms->fcp[k].out_s8_b8_c4_bit_align = 12;
+            }
+        }
+
+        /* Configure final output muxes */
+
+        if( NULL != y12_desc )
+        {
+            k = vissPrms->output_fcp_mapping[0] & 1U;
+
+            if(0 == (vissPrms->output_fcp_mapping[0] & 2)) /* [0] */
+            {
+                prms->out_0_16 = prms->fcp[k].out_y12_16;
+                prms->out_0_align = 12U;
+
+                if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->fcp[k].mux_output0)  /* NV12_P12 Format */
+                {
+                    prms->out_1_16 = prms->fcp[k].out_uv12_c1_16; /* uv12 */
+                }
+            }
+            else /* [2] */
+            {
+                prms->out_0_16 = prms->fcp[k].out_y8_r8_c2_16;
+                prms->out_0_align = prms->fcp[k].out_y8_r8_c2_bit_align;
+
+                if (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2)  /* NV12 Format */
+                {
+                    prms->out_1_16 = prms->fcp[k].out_uv8_g8_c3_16; /* uv8 */
+                }
+            }
+
+        }
+
+        if( NULL != uv12_c1_desc )
+        {
+            k = vissPrms->output_fcp_mapping[1] & 1U;
+
+            if(0 == (vissPrms->output_fcp_mapping[1] & 2)) /* [1] */
+            {
+                prms->out_1_16 = prms->fcp[k].out_uv12_c1_16;
+                prms->out_1_align = 12U;
+            }
+            else /* [3] */
+            {
+                prms->out_1_16 = prms->fcp[k].out_uv8_g8_c3_16;
+                prms->out_1_align = prms->fcp[k].out_uv8_g8_c3_bit_align;
+            }
+        }
+
+        if( NULL != y8_r8_c2_desc )
+        {
+            k = vissPrms->output_fcp_mapping[2] & 1U;
+
+            if(0 == (vissPrms->output_fcp_mapping[2] & 2))  /* [0] */
+            {
+                prms->out_2_16 = prms->fcp[k].out_y12_16;
+                prms->out_2_align = 12U;
+
+                if (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->fcp[k].mux_output0)  /* NV12_P12 Format */
+                {
+                    prms->out_3_16 = prms->fcp[k].out_uv12_c1_16; /* uv12 */
+                }
+            }
+            else /* [2] */
+            {
+                prms->out_2_16 = prms->fcp[k].out_y8_r8_c2_16;
+                prms->out_2_align = prms->fcp[k].out_y8_r8_c2_bit_align;
+
+                if (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2)  /* NV12 Format */
+                {
+                    prms->out_3_16 = prms->fcp[k].out_uv8_g8_c3_16; /* uv8 */
+                }
             }
         }
 
         if( NULL != uv8_g8_c3_desc )
         {
-            prms->out_uv8_g8_c3_bit_align = 8;
-            if(vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_UV8)
+            k = vissPrms->output_fcp_mapping[3] & 1U;
+
+            if(0 == (vissPrms->output_fcp_mapping[3] & 2))  /* [1] */
             {
-                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[3]; /* uv8 */
+                prms->out_3_16 = prms->fcp[k].out_uv12_c1_16;
+                prms->out_3_align = 12U;
             }
-            else if (vissPrms->mux_output3 == TIVX_VPAC_VISS_MUX3_GREEN)
+            else /* [3] */
             {
-                prms->out_uv8_g8_c3_16 = prms->scratch_cc_out[6]; /* g8 */
-            }
-            else
-            {
-                prms->out_uv8_g8_c3_16 = prms->scratch_cfa_out[2]; /* c3 */
-                prms->out_uv8_g8_c3_bit_align = 12;
+                prms->out_3_16 = prms->fcp[k].out_uv8_g8_c3_16;
+                prms->out_3_align = prms->fcp[k].out_uv8_g8_c3_bit_align;
             }
         }
 
         if( NULL != s8_b8_c4_desc )
         {
-            prms->out_s8_b8_c4_bit_align = 8;
-            if(vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_SAT)
-            {
-                prms->out_s8_b8_c4_16 = prms->scratch_cc_out[4]; /* s8 */
-            }
-            else if (vissPrms->mux_output4 == TIVX_VPAC_VISS_MUX4_BLUE)
-            {
-                prms->out_s8_b8_c4_16 = prms->scratch_cc_out[7]; /* b8 */
-            }
-            else
-            {
-                prms->out_s8_b8_c4_16 = prms->scratch_cfa_out[3]; /* c4 */
-                prms->out_s8_b8_c4_bit_align = 12;
-            }
+            prms->out_4_16 = prms->fcp[vissPrms->output_fcp_mapping[4] & 1].out_s8_b8_c4_16;
+            prms->out_4_align = prms->fcp[k].out_s8_b8_c4_bit_align;
         }
     }
     else

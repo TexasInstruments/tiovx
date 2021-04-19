@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Texas Instruments Incorporated
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -78,9 +78,10 @@ extern "C" {
 #define TIVX_KERNEL_VPAC_VISS_OUT3_IDX                  (7U)
 #define TIVX_KERNEL_VPAC_VISS_OUT4_IDX                  (8U)
 #define TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX            (9U)
-#define TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX             (10U)
-
-#define TIVX_KERNEL_VPAC_VISS_MAX_PARAMS                (11U)
+#define TIVX_KERNEL_VPAC_VISS_HISTOGRAM0_IDX            (10U)
+#define TIVX_KERNEL_VPAC_VISS_HISTOGRAM1_IDX            (11U)
+#define TIVX_KERNEL_VPAC_VISS_RAW_HISTOGRAM_IDX         (12U)
+#define TIVX_KERNEL_VPAC_VISS_MAX_PARAMS                (13U)
 
 #define TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT          (5U)
 
