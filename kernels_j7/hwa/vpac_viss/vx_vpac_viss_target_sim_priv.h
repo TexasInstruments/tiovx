@@ -75,9 +75,7 @@ extern "C" {
 #include "h3a_ovx.h"
 #include "h3a_utils.h"
 #include "FLXD_demosaic.h"
-#include "FLXD_config_reader.h"
 #include "flexcc_core.h"
-#include "flexcc_config_reader.h"
 #include "ee.h"
 
 typedef struct
