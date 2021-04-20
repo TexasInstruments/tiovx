@@ -77,10 +77,15 @@
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      (256U * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY1   (8u)
 
+#define DSS_M2M_NUM_CH                              (1U)
+#define DSS_M2M_NUM_CH_MAX                          (4U)
+
 #define DSS_M2M_CH0_WB_PIPE_INST_ID                 (0U)
 #define DSS_M2M_CH0_PIPE_NUM                        (1U)
 #define DSS_M2M_CH0_PIPE_INST_ID                    (0U)
-#define DSS_M2M_CH0_OVERLAY_ID                      (0U)
+/* Currently Only Overlay2 can be used for M2M operations,
+   this can be changed through DSS initialization API available in vision_apps */
+#define DSS_M2M_CH0_OVERLAY_ID                      (1U)
 #define DSS_M2M_CH0_IN_FRAME_FORMAT                 (VX_DF_IMAGE_YUYV)
 #define DSS_M2M_CH0_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH0_IN_FRAME_HEIGHT                 (1080U)
@@ -90,13 +95,28 @@
 #define DSS_M2M_CH0_POSX                            (0U)
 #define DSS_M2M_CH0_POSY                            (0U)
 
+#define DSS_M2M_CH1_WB_PIPE_INST_ID                 (0U)
+#define DSS_M2M_CH1_PIPE_NUM                        (1U)
+#define DSS_M2M_CH1_PIPE_INST_ID                    (0U)
+/* Currently Only Overlay2 can be used for M2M operations,
+   this can be changed through DSS initialization API available in vision_apps */
+#define DSS_M2M_CH1_OVERLAY_ID                      (1U)
+#define DSS_M2M_CH1_IN_FRAME_FORMAT                 (VX_DF_IMAGE_RGB)
+#define DSS_M2M_CH1_IN_FRAME_WIDTH                  (1920U)
+#define DSS_M2M_CH1_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH1_OUT_FRAME_FORMAT                (VX_DF_IMAGE_NV12)
+#define DSS_M2M_CH1_OUT_FRAME_WIDTH                 (1920U)
+#define DSS_M2M_CH1_OUT_FRAME_HEIGHT                (1080U)
+#define DSS_M2M_CH1_POSX                            (0U)
+#define DSS_M2M_CH1_POSY                            (0U)
+
+#define DSS_M2M_NODE_NAME_LEN_MAX                   (100U)
+
 TESTCASE(tivxHwaDisplayM2M, CT_VXContext, ct_setup_vx_context, 0)
 
-static vx_context context;
-static uint32_t loop_cnt;
-static tivx_event eventHandle_TaskFinished;
 
 typedef struct {
+    uint32_t taskId;
     uint32_t instId;
     uint32_t numPipe;
     uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
@@ -109,6 +129,10 @@ typedef struct {
     uint32_t outHeight;
     uint32_t posX;
     uint32_t posY;
+    tivx_event eventHandle_TaskFinished;
+    tivx_task taskHandle_m2m;
+    tivx_task_create_params_t taskParams_m2m;
+    char nodeName[DSS_M2M_NODE_NAME_LEN_MAX];
 } tivx_display_m2m_test_params_t;
 
 typedef struct {
@@ -128,16 +152,9 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("DisplayM2M", ADD_WIDTH, ADD_HEIGHT, ADD_LOOP_1000 ,ARG), \
 
-/*
- * Utility API used to add a graph parameter from a node, node parameter index
- */
-static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node, vx_uint32 node_parameter_index)
-{
-    vx_parameter parameter = vxGetParameterByIndex(node, node_parameter_index);
-
-    vxAddParameterToGraph(graph, parameter);
-    vxReleaseParameter(&parameter);
-}
+static vx_context context;
+static uint32_t gLoop_cnt;
+tivx_display_m2m_test_params_t gTestParams[DSS_M2M_NUM_CH_MAX];
 
 static void VX_CALLBACK tivxTask_m2m(void *app_var)
 {
@@ -159,7 +176,7 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
 
     ASSERT_VX_OBJECT(m2m_graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    printf("Graph 1: created...\n");
+    printf("Graph %d: created...\n", testParams->taskId);
 
     /* allocate Input and Output frame refs */
     ASSERT_VX_OBJECT(in_image = vxCreateImage(context,
@@ -173,10 +190,19 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
                                                testParams->outFmt),
                                                VX_TYPE_IMAGE);
 
-    printf("Graph 1: input and output images created...\n");
+    printf("Graph %d: input and output images created...\n", testParams->taskId);
 
     /* DSS M2M initialization */
     tivx_display_m2m_params_init(&local_m2m_config);
+    local_m2m_config.instId     = testParams->instId;
+    /* Only one pipeline is supported */
+    local_m2m_config.numPipe    = testParams->numPipe;
+    local_m2m_config.pipeId[0U] = testParams->pipeId[0U];
+    local_m2m_config.overlayId  = testParams->overlayId;
+    local_m2m_config.outWidth   = testParams->outWidth;
+    local_m2m_config.outHeight  = testParams->outHeight;
+    local_m2m_config.posX       = testParams->posX;
+    local_m2m_config.posY       = testParams->posY;
 
     ASSERT_VX_OBJECT(m2m_config = vxCreateUserDataObject(context,
                                         "tivx_display_m2m_params_t",
@@ -186,20 +212,17 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
 
     ASSERT_VX_OBJECT(m2m_node = tivxDisplayM2MNode(m2m_graph, m2m_config, in_image, out_image), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(m2m_node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY_M2M));
+    VX_CALL(vxSetNodeTarget(m2m_node, VX_TARGET_STRING, &testParams->nodeName[0U]));
+    
+    printf("Added \'%s\' node in graph %d\n", &testParams->nodeName[0U], testParams->taskId);
 
-    printf("Graph 1: verifying...\n");
+    printf("Graph %d: verifying...\n", testParams->taskId);
 
     VX_CALL(vxVerifyGraph(m2m_graph));
 
-    printf("Graph 1: verify done...\n");
+    printf("Graph %d: verify done...\n", testParams->taskId);
 
-    /* input @ node index 0, becomes csitx_graph parameter 1 */
-    add_graph_parameter_by_node_index(m2m_graph, m2m_node, 1);
-
-    printf("Graph 1: Added M2M Node to the graph...\n");
-
-    for (wbFrmCnt = 0U ; wbFrmCnt < loop_cnt ; wbFrmCnt++)
+    for (wbFrmCnt = 0U ; wbFrmCnt < gLoop_cnt ; wbFrmCnt++)
     {
         VX_CALL(vxProcessGraph(m2m_graph));
     }
@@ -211,63 +234,116 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
 
     VX_CALL(vxReleaseGraph(&m2m_graph));
 
-    printf("Graph 1: released...\n");
+    printf("Graph %d: released...\n", testParams->taskId);
 
     /*Signal the completion of m2m graph processing*/
-    tivxEventPost(eventHandle_TaskFinished);
+    tivxEventPost(testParams->eventHandle_TaskFinished);
 }
 
 TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
 {
-    tivx_task taskHandle_m2m;
-    tivx_task_create_params_t taskParams_m2m;
-    tivx_display_m2m_test_params_t testParams1;
-
     context = context_->vx_context_;
+    uint32_t taskIdx;
+    tivx_display_m2m_test_params_t *testParams;
+    uint32_t createTask = 0U;
 
     printf("Starting Display M2M  Conformance Test...\n");
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY_M2M))
+
+    /* Initialize global test parameters structure to '0' */
+    memset(&gTestParams[0U], 0, sizeof(gTestParams));
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY_M2M1))
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
         tivx_clr_debug_zone(VX_ZONE_INFO);
 
-        loop_cnt = arg_->loopCount;
+        gLoop_cnt = arg_->loopCount;
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&eventHandle_TaskFinished));
+        for (taskIdx = 0U ; taskIdx < DSS_M2M_NUM_CH ; taskIdx++)
+        {
+            createTask         = 0U;
+            testParams         = &gTestParams[taskIdx];
+            testParams->taskId = taskIdx;
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&testParams->eventHandle_TaskFinished));
+            switch (taskIdx)
+            {
+                case 0U:
+                    createTask = 1U;
+                    /* Initialize test parameters for task */
+                    testParams->instId     = DSS_M2M_CH0_WB_PIPE_INST_ID;
+                    testParams->numPipe    = DSS_M2M_CH0_PIPE_NUM;
+                    /* Note: Directly assigning as only one pipe is supported currently */
+                    testParams->pipeId[0U] = DSS_M2M_CH0_PIPE_INST_ID;
+                    testParams->overlayId  = DSS_M2M_CH0_OVERLAY_ID;
+                    testParams->inFmt      = DSS_M2M_CH0_IN_FRAME_FORMAT;
+                    testParams->inWidth    = DSS_M2M_CH0_IN_FRAME_WIDTH;
+                    testParams->inHeight   = DSS_M2M_CH0_IN_FRAME_HEIGHT;
+                    testParams->outFmt     = DSS_M2M_CH0_OUT_FRAME_FORMAT;
+                    testParams->outWidth   = DSS_M2M_CH0_OUT_FRAME_WIDTH;
+                    testParams->outHeight  = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
+                    testParams->posX       = DSS_M2M_CH0_POSX;
+                    testParams->posY       = DSS_M2M_CH0_POSY;
+                    strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M1);
+                break;
+                case 1U:
+                    createTask = 1U;
+                    /* Initialize test parameters for task 1 */
+                    testParams->instId     = DSS_M2M_CH1_WB_PIPE_INST_ID;
+                    testParams->numPipe    = DSS_M2M_CH1_PIPE_NUM;
+                    /* Note: Directly assigning as only one pipe is supported currently */
+                    testParams->pipeId[0U] = DSS_M2M_CH1_PIPE_INST_ID;
+                    testParams->overlayId  = DSS_M2M_CH1_OVERLAY_ID;
+                    testParams->inFmt      = DSS_M2M_CH1_IN_FRAME_FORMAT;
+                    testParams->inWidth    = DSS_M2M_CH1_IN_FRAME_WIDTH;
+                    testParams->inHeight   = DSS_M2M_CH1_IN_FRAME_HEIGHT;
+                    testParams->outFmt     = DSS_M2M_CH1_OUT_FRAME_FORMAT;
+                    testParams->outWidth   = DSS_M2M_CH1_OUT_FRAME_WIDTH;
+                    testParams->outHeight  = DSS_M2M_CH1_OUT_FRAME_HEIGHT;
+                    testParams->posX       = DSS_M2M_CH1_POSX;
+                    testParams->posY       = DSS_M2M_CH1_POSY;
+                break;
+                default:
+                break;
+            }
+            if (createTask == 1U)
+            {
+                /* Setting up task params for m2m_task */
+                tivxTaskSetDefaultCreateParams(&testParams->taskParams_m2m);
+                testParams->taskParams_m2m.task_main     = &tivxTask_m2m;
+                testParams->taskParams_m2m.app_var       = testParams;
+                testParams->taskParams_m2m.stack_ptr     = NULL;
+                testParams->taskParams_m2m.stack_size    = TIVX_TARGET_DEFAULT_STACK_SIZE;
+                testParams->taskParams_m2m.core_affinity = TIVX_TASK_AFFINITY_ANY;
+                testParams->taskParams_m2m.priority      = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
 
-        /* Initialize test parameters for task */
-        testParams1.instId     = DSS_M2M_CH0_WB_PIPE_INST_ID;
-        testParams1.numPipe    = DSS_M2M_CH0_PIPE_NUM;
-        /* Note: Directly assigning as only one pipe is supported currently */
-        testParams1.pipeId[0U] = DSS_M2M_CH0_PIPE_INST_ID;
-        testParams1.overlayId  = DSS_M2M_CH0_OVERLAY_ID;
-        testParams1.inFmt      = DSS_M2M_CH0_IN_FRAME_FORMAT;
-        testParams1.inWidth    = DSS_M2M_CH0_IN_FRAME_WIDTH;
-        testParams1.inHeight   = DSS_M2M_CH0_IN_FRAME_HEIGHT;
-        testParams1.outFmt     = DSS_M2M_CH0_OUT_FRAME_FORMAT;
-        testParams1.outWidth   = DSS_M2M_CH0_OUT_FRAME_WIDTH;
-        testParams1.outHeight  = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
-        testParams1.posX       = DSS_M2M_CH0_POSX;
-        testParams1.posY       = DSS_M2M_CH0_POSY;
+                printf("Creating Task %d...\n", testParams->taskId);
+                /* Create Tasks */
+                ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                                    tivxTaskCreate(&testParams->taskHandle_m2m,
+                                    &testParams->taskParams_m2m));
+            }
+        }
 
-        /* Setting up task params for m2m_task */
-        tivxTaskSetDefaultCreateParams(&taskParams_m2m);
-        taskParams_m2m.task_main = &tivxTask_m2m;
-        taskParams_m2m.app_var = &testParams1;
-        taskParams_m2m.stack_ptr = NULL;
-        taskParams_m2m.stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
-        taskParams_m2m.core_affinity = TIVX_TASK_AFFINITY_ANY;
-        taskParams_m2m.priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
-        /* Create Tasks */
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle_m2m, &taskParams_m2m));
+        /* wait here for all tasks to finish */
+        printf("Waiting for graphs to finish execution...\n");
+        for (taskIdx = 0U ; taskIdx < DSS_M2M_NUM_CH ; taskIdx++)
+        {
+            testParams = &gTestParams[taskIdx];
+            tivxEventWait(testParams->eventHandle_TaskFinished, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            printf("Received events from Task%d\n", testParams->taskId);
+        }
 
-        tivxEventWait(eventHandle_TaskFinished, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle_m2m));
-
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventDelete(&eventHandle_TaskFinished));
+        /* Delete tasks and sync events */
+        for (taskIdx = 0U ; taskIdx < DSS_M2M_NUM_CH ; taskIdx++)
+        {
+            testParams = &gTestParams[taskIdx];
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                                tivxTaskDelete(&testParams->taskHandle_m2m));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                                tivxEventDelete(&testParams->eventHandle_TaskFinished));
+        }
 
         tivxHwaUnLoadKernels(context);
 

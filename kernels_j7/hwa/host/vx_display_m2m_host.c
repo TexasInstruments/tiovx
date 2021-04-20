@@ -288,7 +288,7 @@ vx_status tivxAddKernelDisplayM2M(vx_context context)
         if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M1);
         }
         if (status == (vx_status)VX_SUCCESS)
         {
@@ -330,7 +330,7 @@ void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms)
     {
         prms->pipeId[loopCnt] = 1U;
     }
-    prms->overlayId = 1U;
+    prms->overlayId = 0U;
     prms->outWidth  = 1920U;
     prms->outHeight = 1080U;
     prms->posX      = 0U;

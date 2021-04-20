@@ -116,7 +116,7 @@ typedef struct {
     uint32_t numPipe;
     /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 */
     uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
-    /*! IDs=> 1:Overlay2 */
+    /*! IDs=> 0:Overlay1 1:Overlay2 2:Overlay3 3:Overlay4 */
     uint32_t overlayId;
     /*!< Horizontal Size of picture at display M2M output */
     uint32_t outWidth;
@@ -163,7 +163,7 @@ typedef struct
  *
  * \ingroup group_vision_function_display_m2m
  */
-void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms); 
+void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms);
 
 /*!
  * \brief Function to register HWA Kernels on the display_m2m Target
