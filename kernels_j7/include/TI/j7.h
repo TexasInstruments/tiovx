@@ -201,10 +201,22 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_CSITX     "CSITX"
-/*! \brief Target name for Display M2M
+/*! \brief Target name for Display M2M Node Instance 1
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DISPLAY_M2M1     "DSS_M2M1"
+/*! \brief Target name for Display M2M Node Instance 2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M2     "DSS_M2M2"
+/*! \brief Target name for Display M2M Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M3     "DSS_M2M3"
+/*! \brief Target name for Display M2M Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M4     "DSS_M2M4"
 
 
 /*! \brief CPU ID for supported CPUs

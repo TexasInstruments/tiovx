@@ -91,6 +91,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             confidence_image);
 
 /*! \brief [Graph] Creates a DISPLAY_M2M Node.
+ * This node can be used to do color space conversion like YUV422 to YUV420 OR
+ * RGB888 to YUV420 and vice versa. This node operates in Memory to Memory mode.
  * \param [in] graph The reference to the graph.
  * \param [in] configuration
  * \param [in] input

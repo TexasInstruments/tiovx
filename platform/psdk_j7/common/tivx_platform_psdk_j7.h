@@ -27,7 +27,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (32u)
+#define TIVX_PLATFORM_MAX_TARGETS            (35u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -159,8 +159,17 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for Capture8 */
     TIVX_TARGET_ID_CAPTURE8 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 22u),
 
-    /*! \brief target ID for Display M2M */
+    /*! \brief target ID for Display M2M1 */
     TIVX_TARGET_ID_DISPLAY_M2M1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 23u),
+    
+    /*! \brief target ID for Display M2M2 */
+    TIVX_TARGET_ID_DISPLAY_M2M2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 24u),
+    
+    /*! \brief target ID for Display M2M3 */
+    TIVX_TARGET_ID_DISPLAY_M2M3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 25u),
+    
+    /*! \brief target ID for Display M2M4 */
+    TIVX_TARGET_ID_DISPLAY_M2M4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 26u),
     
 } tivx_target_id_e;
 
@@ -202,7 +211,10 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_CAPTURE6, (vx_enum)TIVX_TARGET_ID_CAPTURE6},                           \
     {TIVX_TARGET_CAPTURE7, (vx_enum)TIVX_TARGET_ID_CAPTURE7},                           \
     {TIVX_TARGET_CAPTURE8, (vx_enum)TIVX_TARGET_ID_CAPTURE8},                           \
-    {TIVX_TARGET_DISPLAY_M2M1, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M1},                           \
+    {TIVX_TARGET_DISPLAY_M2M1, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M1},                   \
+    {TIVX_TARGET_DISPLAY_M2M2, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2},                   \
+    {TIVX_TARGET_DISPLAY_M2M3, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3},                   \
+    {TIVX_TARGET_DISPLAY_M2M4, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4},                   \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \

@@ -77,15 +77,18 @@
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      (256U * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY1   (8u)
 
-#define DSS_M2M_NUM_CH                              (1U)
+#define DSS_M2M_NUM_CH                              (2U)
 #define DSS_M2M_NUM_CH_MAX                          (4U)
 
-#define DSS_M2M_CH0_WB_PIPE_INST_ID                 (0U)
-#define DSS_M2M_CH0_PIPE_NUM                        (1U)
-#define DSS_M2M_CH0_PIPE_INST_ID                    (0U)
+/* Common Configurations across channels */
+#define DSS_M2M_WB_PIPE_INST_ID                     (0U)
+#define DSS_M2M_PIPE_NUM                            (1U)
+#define DSS_M2M_PIPE_INST_ID                        (0U)
 /* Currently Only Overlay2 can be used for M2M operations,
    this can be changed through DSS initialization API available in vision_apps */
-#define DSS_M2M_CH0_OVERLAY_ID                      (1U)
+#define DSS_M2M_OVERLAY_ID                          (1U)
+
+/* Channel 0 configurations */
 #define DSS_M2M_CH0_IN_FRAME_FORMAT                 (VX_DF_IMAGE_YUYV)
 #define DSS_M2M_CH0_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH0_IN_FRAME_HEIGHT                 (1080U)
@@ -95,12 +98,7 @@
 #define DSS_M2M_CH0_POSX                            (0U)
 #define DSS_M2M_CH0_POSY                            (0U)
 
-#define DSS_M2M_CH1_WB_PIPE_INST_ID                 (0U)
-#define DSS_M2M_CH1_PIPE_NUM                        (1U)
-#define DSS_M2M_CH1_PIPE_INST_ID                    (0U)
-/* Currently Only Overlay2 can be used for M2M operations,
-   this can be changed through DSS initialization API available in vision_apps */
-#define DSS_M2M_CH1_OVERLAY_ID                      (1U)
+/* Channel 1 configurations */
 #define DSS_M2M_CH1_IN_FRAME_FORMAT                 (VX_DF_IMAGE_RGB)
 #define DSS_M2M_CH1_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH1_IN_FRAME_HEIGHT                 (1080U)
@@ -110,10 +108,19 @@
 #define DSS_M2M_CH1_POSX                            (0U)
 #define DSS_M2M_CH1_POSY                            (0U)
 
+/* Channel 2 configurations */
+#define DSS_M2M_CH2_IN_FRAME_FORMAT                 (VX_DF_IMAGE_NV12)
+#define DSS_M2M_CH2_IN_FRAME_WIDTH                  (1920U)
+#define DSS_M2M_CH2_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH2_OUT_FRAME_FORMAT                (VX_DF_IMAGE_RGB)
+#define DSS_M2M_CH2_OUT_FRAME_WIDTH                 (1920U)
+#define DSS_M2M_CH2_OUT_FRAME_HEIGHT                (1080U)
+#define DSS_M2M_CH2_POSX                            (0U)
+#define DSS_M2M_CH2_POSY                            (0U)
+
 #define DSS_M2M_NODE_NAME_LEN_MAX                   (100U)
 
 TESTCASE(tivxHwaDisplayM2M, CT_VXContext, ct_setup_vx_context, 0)
-
 
 typedef struct {
     uint32_t taskId;
@@ -133,6 +140,7 @@ typedef struct {
     tivx_task taskHandle_m2m;
     tivx_task_create_params_t taskParams_m2m;
     char nodeName[DSS_M2M_NODE_NAME_LEN_MAX];
+    uint32_t iterationCnt;
 } tivx_display_m2m_test_params_t;
 
 typedef struct {
@@ -213,7 +221,7 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
     ASSERT_VX_OBJECT(m2m_node = tivxDisplayM2MNode(m2m_graph, m2m_config, in_image, out_image), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeTarget(m2m_node, VX_TARGET_STRING, &testParams->nodeName[0U]));
-    
+
     printf("Added \'%s\' node in graph %d\n", &testParams->nodeName[0U], testParams->taskId);
 
     printf("Graph %d: verifying...\n", testParams->taskId);
@@ -222,7 +230,7 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
 
     printf("Graph %d: verify done...\n", testParams->taskId);
 
-    for (wbFrmCnt = 0U ; wbFrmCnt < gLoop_cnt ; wbFrmCnt++)
+    for (wbFrmCnt = 0U ; wbFrmCnt < testParams->iterationCnt ; wbFrmCnt++)
     {
         VX_CALL(vxProcessGraph(m2m_graph));
     }
@@ -267,42 +275,52 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
             testParams         = &gTestParams[taskIdx];
             testParams->taskId = taskIdx;
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&testParams->eventHandle_TaskFinished));
+            testParams->instId     = DSS_M2M_WB_PIPE_INST_ID;
+            testParams->numPipe    = DSS_M2M_PIPE_NUM;
+            /* Note: Directly assigning as only one pipe is supported currently */
+            testParams->pipeId[0U] = DSS_M2M_PIPE_INST_ID;
+            testParams->overlayId  = DSS_M2M_OVERLAY_ID;
+            testParams->inFmt      = DSS_M2M_CH0_IN_FRAME_FORMAT;
+            testParams->iterationCnt = (gLoop_cnt / (taskIdx + 1U));
             switch (taskIdx)
             {
                 case 0U:
-                    createTask = 1U;
-                    /* Initialize test parameters for task */
-                    testParams->instId     = DSS_M2M_CH0_WB_PIPE_INST_ID;
-                    testParams->numPipe    = DSS_M2M_CH0_PIPE_NUM;
-                    /* Note: Directly assigning as only one pipe is supported currently */
-                    testParams->pipeId[0U] = DSS_M2M_CH0_PIPE_INST_ID;
-                    testParams->overlayId  = DSS_M2M_CH0_OVERLAY_ID;
-                    testParams->inFmt      = DSS_M2M_CH0_IN_FRAME_FORMAT;
-                    testParams->inWidth    = DSS_M2M_CH0_IN_FRAME_WIDTH;
-                    testParams->inHeight   = DSS_M2M_CH0_IN_FRAME_HEIGHT;
-                    testParams->outFmt     = DSS_M2M_CH0_OUT_FRAME_FORMAT;
-                    testParams->outWidth   = DSS_M2M_CH0_OUT_FRAME_WIDTH;
-                    testParams->outHeight  = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
-                    testParams->posX       = DSS_M2M_CH0_POSX;
-                    testParams->posY       = DSS_M2M_CH0_POSY;
+                    /* Initialize test parameters for task 0 */
+                    createTask               = 1U;
+                    testParams->inWidth      = DSS_M2M_CH0_IN_FRAME_WIDTH;
+                    testParams->inHeight     = DSS_M2M_CH0_IN_FRAME_HEIGHT;
+                    testParams->outFmt       = DSS_M2M_CH0_OUT_FRAME_FORMAT;
+                    testParams->outWidth     = DSS_M2M_CH0_OUT_FRAME_WIDTH;
+                    testParams->outHeight    = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
+                    testParams->posX         = DSS_M2M_CH0_POSX;
+                    testParams->posY         = DSS_M2M_CH0_POSY;
                     strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M1);
                 break;
                 case 1U:
-                    createTask = 1U;
+                    createTask               = 1U;
                     /* Initialize test parameters for task 1 */
-                    testParams->instId     = DSS_M2M_CH1_WB_PIPE_INST_ID;
-                    testParams->numPipe    = DSS_M2M_CH1_PIPE_NUM;
-                    /* Note: Directly assigning as only one pipe is supported currently */
-                    testParams->pipeId[0U] = DSS_M2M_CH1_PIPE_INST_ID;
-                    testParams->overlayId  = DSS_M2M_CH1_OVERLAY_ID;
-                    testParams->inFmt      = DSS_M2M_CH1_IN_FRAME_FORMAT;
-                    testParams->inWidth    = DSS_M2M_CH1_IN_FRAME_WIDTH;
-                    testParams->inHeight   = DSS_M2M_CH1_IN_FRAME_HEIGHT;
-                    testParams->outFmt     = DSS_M2M_CH1_OUT_FRAME_FORMAT;
-                    testParams->outWidth   = DSS_M2M_CH1_OUT_FRAME_WIDTH;
-                    testParams->outHeight  = DSS_M2M_CH1_OUT_FRAME_HEIGHT;
-                    testParams->posX       = DSS_M2M_CH1_POSX;
-                    testParams->posY       = DSS_M2M_CH1_POSY;
+                    testParams->inFmt        = DSS_M2M_CH1_IN_FRAME_FORMAT;
+                    testParams->inWidth      = DSS_M2M_CH1_IN_FRAME_WIDTH;
+                    testParams->inHeight     = DSS_M2M_CH1_IN_FRAME_HEIGHT;
+                    testParams->outFmt       = DSS_M2M_CH1_OUT_FRAME_FORMAT;
+                    testParams->outWidth     = DSS_M2M_CH1_OUT_FRAME_WIDTH;
+                    testParams->outHeight    = DSS_M2M_CH1_OUT_FRAME_HEIGHT;
+                    testParams->posX         = DSS_M2M_CH1_POSX;
+                    testParams->posY         = DSS_M2M_CH1_POSY;
+                    strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M2);
+                break;
+                case 2U:
+                    createTask               = 1U;
+                    /* Initialize test parameters for task 1 */
+                    testParams->inFmt        = DSS_M2M_CH2_IN_FRAME_FORMAT;
+                    testParams->inWidth      = DSS_M2M_CH2_IN_FRAME_WIDTH;
+                    testParams->inHeight     = DSS_M2M_CH2_IN_FRAME_HEIGHT;
+                    testParams->outFmt       = DSS_M2M_CH2_OUT_FRAME_FORMAT;
+                    testParams->outWidth     = DSS_M2M_CH2_OUT_FRAME_WIDTH;
+                    testParams->outHeight    = DSS_M2M_CH2_OUT_FRAME_HEIGHT;
+                    testParams->posX         = DSS_M2M_CH2_POSX;
+                    testParams->posY         = DSS_M2M_CH2_POSY;
+                    strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M3);
                 break;
                 default:
                 break;

@@ -289,6 +289,9 @@ vx_status tivxAddKernelDisplayM2M(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M3);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY_M2M4);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

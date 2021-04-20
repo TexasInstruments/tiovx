@@ -142,6 +142,9 @@ typedef struct
 } tivxDisplayM2MParams;
 
 static tivx_target_kernel vx_display_m2m_target_kernel1 = NULL;
+static tivx_target_kernel vx_display_m2m_target_kernel2 = NULL;
+static tivx_target_kernel vx_display_m2m_target_kernel3 = NULL;
+static tivx_target_kernel vx_display_m2m_target_kernel4 = NULL;
 
 static vx_status VX_CALLBACK tivxDisplayM2MProcess(
        tivx_target_kernel_instance kernel,
@@ -635,7 +638,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MControl(
 
 void tivxAddTargetKernelDisplayM2M(void)
 {
-    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -644,16 +646,34 @@ void tivxAddTargetKernelDisplayM2M(void)
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
     {
         strncpy(target_name, TIVX_TARGET_DISPLAY_M2M1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    else
-    {
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
         vx_display_m2m_target_kernel1 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DISPLAY_M2M_NAME,
+                            target_name,
+                            tivxDisplayM2MProcess,
+                            tivxDisplayM2MCreate,
+                            tivxDisplayM2MDelete,
+                            tivxDisplayM2MControl,
+                            NULL);
+        strncpy(target_name, TIVX_TARGET_DISPLAY_M2M2, TIVX_TARGET_MAX_NAME);
+        vx_display_m2m_target_kernel2 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DISPLAY_M2M_NAME,
+                            target_name,
+                            tivxDisplayM2MProcess,
+                            tivxDisplayM2MCreate,
+                            tivxDisplayM2MDelete,
+                            tivxDisplayM2MControl,
+                            NULL);
+        strncpy(target_name, TIVX_TARGET_DISPLAY_M2M3, TIVX_TARGET_MAX_NAME);
+        vx_display_m2m_target_kernel3 = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DISPLAY_M2M_NAME,
+                            target_name,
+                            tivxDisplayM2MProcess,
+                            tivxDisplayM2MCreate,
+                            tivxDisplayM2MDelete,
+                            tivxDisplayM2MControl,
+                            NULL);
+        strncpy(target_name, TIVX_TARGET_DISPLAY_M2M4, TIVX_TARGET_MAX_NAME);
+        vx_display_m2m_target_kernel4 = tivxAddTargetKernelByName(
                             TIVX_KERNEL_DISPLAY_M2M_NAME,
                             target_name,
                             tivxDisplayM2MProcess,
@@ -672,6 +692,24 @@ void tivxRemoveTargetKernelDisplayM2M(void)
     if (status == (vx_status)VX_SUCCESS)
     {
         vx_display_m2m_target_kernel1 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_display_m2m_target_kernel2);
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        vx_display_m2m_target_kernel2 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_display_m2m_target_kernel3);
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        vx_display_m2m_target_kernel3 = NULL;
+    }
+
+    status = tivxRemoveTargetKernel(vx_display_m2m_target_kernel4);
+    if (status == (vx_status)VX_SUCCESS)
+    {
+        vx_display_m2m_target_kernel4 = NULL;
     }
 }
 
