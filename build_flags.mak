@@ -36,3 +36,5 @@ BUILD_QNX_A72?=no
 
 # Applied to target mode only
 BUILD_VLAB?=no
+
+BUILD_VPAC3?=no
