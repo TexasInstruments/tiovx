@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -497,10 +497,10 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
 
     vissDrvPrms = &vissObj->vissPrms;
 
-    if (NULL != vissCfgRef->cfaLut16to12Cfg)
+    if (NULL != vissCfgRef->fcpCfg[0].cfaLut16to12Cfg)
     {
         fcpCtrl.module = FCP_MODULE_COMPANDING;
-        fcpCtrl.inComp = vissCfgRef->cfaLut16to12Cfg;
+        fcpCtrl.inComp = vissCfgRef->fcpCfg[0].cfaLut16to12Cfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -508,13 +508,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set COMP Config !!!\n");
         }
 
-        vissCfgRef->cfaLut16to12Cfg = NULL;
+        vissCfgRef->fcpCfg[0].cfaLut16to12Cfg = NULL;
     }
 
-    if (NULL != vissCfgRef->cfaCfg)
+    if (NULL != vissCfgRef->fcpCfg[0].cfaCfg)
     {
         fcpCtrl.module          = FCP_MODULE_CFA;
-        fcpCtrl.cfa             = vissCfgRef->cfaCfg;
+        fcpCtrl.cfa             = vissCfgRef->fcpCfg[0].cfaCfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -522,13 +522,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set CFA Config !!!\n");
         }
 
-        vissCfgRef->cfaCfg = NULL;
+        vissCfgRef->fcpCfg[0].cfaCfg = NULL;
     }
 
-    if (NULL != vissCfgRef->ccm)
+    if (NULL != vissCfgRef->fcpCfg[0].ccm)
     {
         fcpCtrl.module      = FCP_MODULE_CCM;
-        fcpCtrl.ccm         = vissCfgRef->ccm;
+        fcpCtrl.ccm         = vissCfgRef->fcpCfg[0].ccm;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -536,13 +536,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set CCM Config !!!\n");
         }
 
-        vissCfgRef->ccm = NULL;
+        vissCfgRef->fcpCfg[0].ccm = NULL;
     }
 
-    if (NULL != vissCfgRef->gamma)
+    if (NULL != vissCfgRef->fcpCfg[0].gamma)
     {
         fcpCtrl.module = FCP_MODULE_GAMMA;
-        fcpCtrl.gamma  = vissCfgRef->gamma;
+        fcpCtrl.gamma  = vissCfgRef->fcpCfg[0].gamma;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -550,13 +550,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set Gamma Config !!!\n");
         }
 
-        vissCfgRef->gamma = NULL;
+        vissCfgRef->fcpCfg[0].gamma = NULL;
     }
 
-    if (NULL != vissCfgRef->rgb2Hsv)
+    if (NULL != vissCfgRef->fcpCfg[0].rgb2Hsv)
     {
         fcpCtrl.module          = FCP_MODULE_RGB2HSV;
-        fcpCtrl.rgb2Hsv         = vissCfgRef->rgb2Hsv;
+        fcpCtrl.rgb2Hsv         = vissCfgRef->fcpCfg[0].rgb2Hsv;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -564,13 +564,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set RGB2HSV Config !!!\n");
         }
 
-        vissCfgRef->rgb2Hsv = NULL;
+        vissCfgRef->fcpCfg[0].rgb2Hsv = NULL;
     }
 
-    if (NULL != vissCfgRef->rgb2yuv)
+    if (NULL != vissCfgRef->fcpCfg[0].rgb2yuv)
     {
         fcpCtrl.module          = FCP_MODULE_RGB2YUV;
-        fcpCtrl.rgb2Yuv         = vissCfgRef->rgb2yuv;
+        fcpCtrl.rgb2Yuv         = vissCfgRef->fcpCfg[0].rgb2yuv;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -578,13 +578,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set RGB2YUV Config !!!\n");
         }
 
-        vissCfgRef->rgb2yuv = NULL;
+        vissCfgRef->fcpCfg[0].rgb2yuv = NULL;
     }
 
-    if (NULL != vissCfgRef->yuvSatLutCfg)
+    if (NULL != vissCfgRef->fcpCfg[0].yuvSatLutCfg)
     {
         fcpCtrl.module                  = FCP_MODULE_YUV_SAT_LUT;
-        fcpCtrl.yuvSatLut               = vissCfgRef->yuvSatLutCfg;
+        fcpCtrl.yuvSatLut               = vissCfgRef->fcpCfg[0].yuvSatLutCfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -592,13 +592,13 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set YUV_LUT Config !!!\n");
         }
 
-        vissCfgRef->yuvSatLutCfg = NULL;
+        vissCfgRef->fcpCfg[0].yuvSatLutCfg = NULL;
     }
 
-    if (NULL != vissCfgRef->histCfg)
+    if (NULL != vissCfgRef->fcpCfg[0].histCfg)
     {
         fcpCtrl.module                  = FCP_MODULE_HISTOGRAM;
-        fcpCtrl.hist                    = vissCfgRef->histCfg;
+        fcpCtrl.hist                    = vissCfgRef->fcpCfg[0].histCfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -606,37 +606,37 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set Histogram Config !!!\n");
         }
 
-        vissCfgRef->histCfg = NULL;
+        vissCfgRef->fcpCfg[0].histCfg = NULL;
     }
 
     if (((VHWA_M2M_VISS_EE_ON_LUMA12 == vissDrvPrms->edgeEnhancerMode) ||
          (VHWA_M2M_VISS_EE_ON_LUMA8 == vissDrvPrms->edgeEnhancerMode)) &&
-        (NULL != vissCfgRef->eeCfg))
+        (NULL != vissCfgRef->fcpCfg[0].eeCfg))
     {
         if (VHWA_M2M_VISS_EE_ON_LUMA12 == vissDrvPrms->edgeEnhancerMode)
         {
-            vissCfgRef->eeCfg->bypassY12 = FALSE;
-            vissCfgRef->eeCfg->eeForY12OrY8 = 0u;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassY12 = FALSE;
+            vissCfgRef->fcpCfg[0].eeCfg->eeForY12OrY8 = 0u;
         }
         else
         {
-            vissCfgRef->eeCfg->bypassY12 = TRUE;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassY12 = TRUE;
         }
 
         if (VHWA_M2M_VISS_EE_ON_LUMA8 == vissDrvPrms->edgeEnhancerMode)
         {
-            vissCfgRef->eeCfg->bypassY8 = FALSE;
-            vissCfgRef->eeCfg->eeForY12OrY8 = 1u;
-            vissCfgRef->eeCfg->leftShift = 2u;
-            vissCfgRef->eeCfg->rightShift = 2u;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassY8 = FALSE;
+            vissCfgRef->fcpCfg[0].eeCfg->eeForY12OrY8 = 1u;
+            vissCfgRef->fcpCfg[0].eeCfg->leftShift = 2u;
+            vissCfgRef->fcpCfg[0].eeCfg->rightShift = 2u;
         }
         else
         {
-            vissCfgRef->eeCfg->bypassY8 = TRUE;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassY8 = TRUE;
         }
 
         fcpCtrl.module              = FCP_MODULE_EE;
-        fcpCtrl.eeCfg               = vissCfgRef->eeCfg;
+        fcpCtrl.eeCfg               = vissCfgRef->fcpCfg[0].eeCfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,
             (void *)&fcpCtrl, NULL);
         if (FVID2_SOK != status)
@@ -644,7 +644,7 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
             VX_PRINT(VX_ZONE_ERROR, "Failed to set YEE Config !!!\n");
         }
 
-        vissCfgRef->eeCfg = NULL;
+        vissCfgRef->fcpCfg[0].eeCfg = NULL;
     }
 
     return (status);

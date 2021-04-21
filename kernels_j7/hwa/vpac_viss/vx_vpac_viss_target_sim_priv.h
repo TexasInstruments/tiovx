@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -134,9 +134,9 @@ typedef struct
     h3a_settings h3a_params;
     h3a_image h3a_in;
     tivx_h3a_aew_config aew_config;
-    FLXD_Config flexcfa_params;
-    Flexcc_Config flexcc_params;
-    ee_Config ee_params;
+    FLXD_Config flexcfa_params[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
+    Flexcc_Config flexcc_params[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
+    ee_Config ee_params[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
     vx_uint32 use_dcc;
     uint8_t * dcc_out_buf;
     vx_uint32 dcc_out_numbytes;

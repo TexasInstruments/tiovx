@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -88,13 +88,20 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
 static void tivxVpacVissDefaultMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDefaultMapCCMParams(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res);
-static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj);
+    tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index);
+static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapFcpParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
 static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDefaultMapDpcLutParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDefaultMapDpcOtfParams(tivxVpacVissObj *vissObj);
@@ -108,8 +115,10 @@ static void tivxVpacVissDefaultMapPwlParams(tivxVpacVissObj *vissObj,
     uint32_t inst_id);
 static void tivxVpacVissDefaultMapRfeParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDefaultMapH3aLutParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
+static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
 
 /***************************************************
  * Function call heirarchy in this file:
@@ -127,15 +136,16 @@ tivxVpacVissSetDefaultParams
 - tivxVpacVissDefaultMapH3aParams
 - tivxVpacVissDefaultMapH3aLutParams
 - tivxVpacVissDefaultMapGlbceParams
-- tivxVpacVissDefaultMapFlexCFAParams
-- tivxVpacVissDefaultMapFlexCCParams
-  - tivxVpacVissDefaultMapCCMParams(vissObj, NULL);
-  - tivxVpacVissDefaultMapRGB2YUVParams(vissObj);
-  - tivxVpacVissDefaultMapRGB2HSVParams(vissObj);
-  - tivxVpacVissDefaultMapGammaParams(vissObj);
-  - tivxVpacVissDefaultMapRGBLutParams(vissObj);
-  - tivxVpacVissDefaultMapHistParams(vissObj);
-  - tivxVpacVissDefaultMapEeParams(vissObj);
+- tivxVpacVissDefaultMapFcpParams
+  - tivxVpacVissDefaultMapFlexCFAParams
+  - tivxVpacVissDefaultMapFlexCCParams
+    - tivxVpacVissDefaultMapCCMParams(vissObj, NULL);
+    - tivxVpacVissDefaultMapRGB2YUVParams(vissObj);
+    - tivxVpacVissDefaultMapRGB2HSVParams(vissObj);
+    - tivxVpacVissDefaultMapGammaParams(vissObj);
+    - tivxVpacVissDefaultMapRGBLutParams(vissObj);
+    - tivxVpacVissDefaultMapHistParams(vissObj);
+    - tivxVpacVissDefaultMapEeParams(vissObj);
 - tivxVpacVissDefaultMapBlc
 
 ****************************************************/
@@ -237,9 +247,7 @@ vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
         }
         tivxVpacVissDefaultMapH3aLutParams(vissObj);
         tivxVpacVissDefaultMapGlbceParams(vissObj);
-        tivxVpacVissDefaultMapFlexCFAParams(vissObj);
-        tivxVpacVissDefaultMapFlexCCParams(vissObj);
-
+        tivxVpacVissDefaultMapFcpParams(vissObj);
         tivxVpacVissDefaultMapBlc(vissObj, ae_awb_res);
     }
     else
@@ -414,13 +422,14 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
     }
 }
 
-static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_HistConfig  *histCfg;
 
     if (NULL != vissObj)
     {
-        histCfg = &vissObj->vissCfg.histCfg;
+        histCfg = &vissObj->vissCfg.fcpCfg[fcp_index].histCfg;
 
         histCfg->enable = (uint32_t) FALSE;
         histCfg->input = FCP_HIST_IN_SEL_COLOR_RED;
@@ -429,7 +438,7 @@ static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj)
         histCfg->roi.cropWidth = 500u;
         histCfg->roi.cropHeight = 500u;
 
-        vissObj->vissCfgRef.histCfg = histCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].histCfg = histCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -437,13 +446,14 @@ static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_YuvSatLutConfig *yuvSatLutCfg;
 
     if (NULL != vissObj)
     {
-        yuvSatLutCfg = &vissObj->vissCfg.yuvSatLutCfg;
+        yuvSatLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].yuvSatLutCfg;
 
         yuvSatLutCfg->lumaInputBits = 10u;
         yuvSatLutCfg->enableLumaLut = (uint32_t) FALSE;
@@ -453,7 +463,7 @@ static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj)
         yuvSatLutCfg->enableSaturLut = (uint32_t) FALSE;
         yuvSatLutCfg->saturLutAddr = gflexcc_lut_12to8;
 
-        vissObj->vissCfgRef.yuvSatLutCfg = yuvSatLutCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].yuvSatLutCfg = yuvSatLutCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -461,13 +471,14 @@ static void tivxVpacVissDefaultMapRGBLutParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_GammaConfig *gamma;
 
     if (NULL != vissObj)
     {
-        gamma = &vissObj->vissCfg.gammaCfg;
+        gamma = &vissObj->vissCfg.fcpCfg[fcp_index].gammaCfg;
 
         gamma->enable = (uint32_t)TRUE;
         gamma->outClip = 10u;
@@ -475,7 +486,7 @@ static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj)
         gamma->tableC2 = gflexcc_contrast_lut;
         gamma->tableC3 = gflexcc_contrast_lut;
 
-        vissObj->vissCfgRef.gamma = gamma;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].gamma = gamma;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -483,13 +494,14 @@ static void tivxVpacVissDefaultMapGammaParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_Rgb2HsvConfig  *r2h = NULL;
 
     if (NULL != vissObj)
     {
-        r2h = &vissObj->vissCfg.rgb2hsvCfg;
+        r2h = &vissObj->vissCfg.fcpCfg[fcp_index].rgb2hsvCfg;
 
         r2h->inputSelect = FCP_RGB2HSV_INPUT_CONTRAST_OUTPUT;
         r2h->h1Input = FCP_RGB2HSV_H1_INPUT_RED_COLOR;
@@ -509,7 +521,7 @@ static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj)
         r2h->satMode = FCP_SAT_MODE_SUM_RGB_MINUS_MIN_RGB;
         r2h->satDiv = FCP_SAT_DIV_4096_MINUS_GREY;
 
-        vissObj->vissCfgRef.rgb2Hsv = r2h;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].rgb2Hsv = r2h;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -517,13 +529,14 @@ static void tivxVpacVissDefaultMapRGB2HSVParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_Rgb2YuvConfig  *r2y = NULL;
 
     if (NULL != vissObj)
     {
-        r2y = &vissObj->vissCfg.rgb2yuvCfg;
+        r2y = &vissObj->vissCfg.fcpCfg[fcp_index].rgb2yuvCfg;
 
         r2y->weights[0u][0u] = 77;
         r2y->weights[0u][1u] = 150;
@@ -539,7 +552,7 @@ static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj)
         r2y->offsets[1u]     = 128;
         r2y->offsets[2u]     = 128;
 
-        vissObj->vissCfgRef.rgb2yuv = r2y;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].rgb2yuv = r2y;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -548,14 +561,14 @@ static void tivxVpacVissDefaultMapRGB2YUVParams(tivxVpacVissObj *vissObj)
 }
 
 static void tivxVpacVissDefaultMapCCMParams(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res)
+    tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index)
 {
     uint32_t            cnt1, cnt2;
     Fcp_CcmConfig      *ccmCfg = NULL;
 
     if (NULL != vissObj)
     {
-        ccmCfg = &vissObj->vissCfg.ccmCfg;
+        ccmCfg = &vissObj->vissCfg.fcpCfg[fcp_index].ccmCfg;
 
         /* Map DCC Output Config to FVID2 Driver Config */
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
@@ -570,7 +583,7 @@ static void tivxVpacVissDefaultMapCCMParams(tivxVpacVissObj *vissObj,
         ccmCfg->weights[0][0] = 256;
         ccmCfg->weights[1][1] = 256;
         ccmCfg->weights[2][2] = 256;
-        vissObj->vissCfgRef.ccm = ccmCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].ccm = ccmCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -590,13 +603,14 @@ static void tivxVpacVissDefaultMapBlc(tivxVpacVissObj *vissObj,
     vissObj->isConfigUpdated = 1U;
 }
 
-static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index)
 {
     Fcp_EeConfig *eeCfg = NULL;
 
     if (NULL != vissObj)
     {
-        eeCfg = &vissObj->vissCfg.eeCfg;
+        eeCfg = &vissObj->vissCfg.fcpCfg[fcp_index].eeCfg;
 
         eeCfg->enable = TRUE;
         eeCfg->alignY12withChroma = FALSE;
@@ -628,7 +642,7 @@ static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj)
         eeCfg->yesGOfset = 0;
         eeCfg->lut = yee_lut;
 
-        vissObj->vissCfgRef.eeCfg = eeCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].eeCfg = eeCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -682,12 +696,23 @@ static void tivxVpacVissDefaultMapGlbceParams(tivxVpacVissObj *vissObj)
 
 }
 
-static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapFcpParams(tivxVpacVissObj *vissObj)
+{
+    uint32_t fcp_index;
+
+    for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+    {
+        tivxVpacVissDefaultMapFlexCFAParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapFlexCCParams(vissObj, fcp_index);
+    }
+}
+
+static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t fcp_index)
 {
     uint32_t cnt;
     Fcp_CfaConfig *cfaCfg;
 
-    cfaCfg = &vissObj->vissCfg.cfaCfg;
+    cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
     if (NULL != vissObj)
     {
         /* DCC does not support CFA, so using default config from
@@ -793,14 +818,14 @@ static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj)
         }
 
         {
-            Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
+            Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaLut16to12Cfg;
             lut16to12Cfg->enable    = 0u;
             lut16to12Cfg->inputBits = 12u;
             lut16to12Cfg->tableAddr = gcfa_lut_16to12;
-            vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
+            vissObj->vissCfgRef.fcpCfg[fcp_index].cfaLut16to12Cfg = lut16to12Cfg;
         }
 
-        vissObj->vissCfgRef.cfaCfg = cfaCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].cfaCfg = cfaCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -808,20 +833,19 @@ static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj, uint32_t fcp_index)
 {
     if (NULL != vissObj)
     {
-        tivxVpacVissDefaultMapCCMParams(vissObj, NULL);
-        tivxVpacVissDefaultMapRGB2YUVParams(vissObj);
-        tivxVpacVissDefaultMapRGB2HSVParams(vissObj);
-        tivxVpacVissDefaultMapGammaParams(vissObj);
-        tivxVpacVissDefaultMapRGBLutParams(vissObj);
-        tivxVpacVissDefaultMapHistParams(vissObj);
-        tivxVpacVissDefaultMapEeParams(vissObj);
+        tivxVpacVissDefaultMapCCMParams(vissObj, NULL, fcp_index);
+        tivxVpacVissDefaultMapRGB2YUVParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapRGB2HSVParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapGammaParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapRGBLutParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapHistParams(vissObj, fcp_index);
+        tivxVpacVissDefaultMapEeParams(vissObj, fcp_index);
     }
 }
-
 
 static void tivxVpacVissDefaultMapMergeParams(tivxVpacVissObj *vissObj,
     uint32_t inst_id)

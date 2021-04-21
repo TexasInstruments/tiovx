@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -724,19 +724,19 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
 
             /* FLEXCFA */
-            FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params);
+            FLXD_Demosaic(prms->scratch_cfa_in, prms->scratch_cfa_out, raw_desc->params.width, raw_desc->params.height, 12, &prms->flexcfa_params[0]);
 
             /* FLEXCC */
             if(0 == prms->bypass_cc)
             {
-                flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params);
+                flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params[0]);
             }
 
             /* EE */
             if(0 == prms->bypass_ee)
             {
                 tivxVpacVissCopyShift(prms->scratch_ee_shift_in, prms->scratch_ee_in, prms->buffer_size, prms->pre_copy);
-                ee_top(&prms->ee_params, prms->scratch_ee_in, prms->scratch_ee_out);
+                ee_top(&prms->ee_params[0], prms->scratch_ee_in, prms->scratch_ee_out);
                 tivxVpacVissCopyShift(prms->scratch_ee_out, prms->scratch_ee_shift_out, prms->buffer_size, prms->post_copy);
             }
 
@@ -1447,15 +1447,15 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
             if( (( NULL != y12_desc )      && (TIVX_VPAC_VISS_MUX0_NV12_P12 == vissPrms->mux_output0)) ||
                 (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_NV12     == vissPrms->mux_output2)) )
             {
-                prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
+                prms->flexcc_params[0].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_420; /* NV12 format is chosen on at least 1 output port */
             }
             else if (( NULL != y8_r8_c2_desc ) && (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->mux_output2))
             {
-                prms->flexcc_params.ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
+                prms->flexcc_params[0].ChromaMode = TIVX_VPAC_VISS_CHROMA_MODE_422; /* YUV422 interleaved is chosen */
             }
             else
             {
-                prms->flexcc_params.ChromaMode = vissPrms->chroma_mode;
+                prms->flexcc_params[0].ChromaMode = vissPrms->chroma_mode;
             }
         }
         else
@@ -1507,11 +1507,11 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
 
             if (TIVX_VPAC_VISS_MUX0_VALUE12 == vissPrms->mux_output0)  /* Value Format */
             {
-                prms->flexcc_params.MuxY12Out = 2; /* HSV value */
+                prms->flexcc_params[0].MuxY12Out = 2; /* HSV value */
             }
             else
             {
-                prms->flexcc_params.MuxY12Out = 1; /* YUV Luma */
+                prms->flexcc_params[0].MuxY12Out = 1; /* YUV Luma */
             }
         }
 
@@ -1581,11 +1581,11 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
 
             if (TIVX_VPAC_VISS_MUX2_VALUE8 == vissPrms->mux_output2)  /* Value Format */
             {
-                prms->flexcc_params.MuxY8Out = 2; /* HSV value */
+                prms->flexcc_params[0].MuxY8Out = 2; /* HSV value */
             }
             else
             {
-                prms->flexcc_params.MuxY8Out = 1; /* YUV Luma */
+                prms->flexcc_params[0].MuxY8Out = 1; /* YUV Luma */
             }
         }
 

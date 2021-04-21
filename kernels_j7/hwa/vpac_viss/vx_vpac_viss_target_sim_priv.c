@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2020 Texas Instruments Incorporated
+ * Copyright (c) 2020-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -79,9 +79,13 @@ static void tivxVpacVissParseH3aSrcParams(tivxVpacVissParams *prms);
 static vx_status tivxVpacVissParseH3aParams(tivxVpacVissParams *prms);
 static void tivxVpacVissParseNsf4Params(tivxVpacVissParams *prms);
 static void tivxVpacVissParseGlbceParams(tivxVpacVissParams *prms);
-static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms);
-static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms);
-static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms);
+static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index);
+static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index);
+static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index);
+static void tivxVpacVissParseFcpParams(tivxVpacVissParams *prms);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -100,9 +104,7 @@ vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms)
     status = tivxVpacVissParseH3aParams(prms);
     tivxVpacVissParseNsf4Params(prms);
     tivxVpacVissParseGlbceParams(prms);
-    tivxVpacVissParseFlxCfaParams(prms);
-    tivxVpacVissParseFlxCCParams(prms);
-    tivxVpacVissParseYeeParams(prms);
+    tivxVpacVissParseFcpParams(prms);
 
     return (status);
 }
@@ -110,6 +112,19 @@ vx_status tivxVpacVissSetConfigInSim(tivxVpacVissParams *prms)
 /* ========================================================================== */
 /*                          Local Functions                                   */
 /* ========================================================================== */
+
+
+static void tivxVpacVissParseFcpParams(tivxVpacVissParams *prms)
+{
+    uint32_t fcp_index;
+
+    for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+    {
+        tivxVpacVissParseFlxCfaParams(prms, fcp_index);
+        tivxVpacVissParseFlxCCParams(prms, fcp_index);
+        tivxVpacVissParseYeeParams(prms, fcp_index);
+    }
+}
 
 static void tivxVpacVissParseRfeParams(tivxVpacVissParams *prms)
 {
@@ -411,17 +426,18 @@ static vx_status tivxVpacVissParseH3aParams(tivxVpacVissParams *prms)
     return status;
 }
 
-static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)
+static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index)
 {
     if (NULL != prms)
     {
         uint32_t cnt, cnt1, cnt2, cfa_cnt;
 
-        FLXD_Config            *fcfa_prms = &prms->flexcfa_params;
+        FLXD_Config            *fcfa_prms = &prms->flexcfa_params[fcp_index];
         tivxVpacVissObj        *vissObj = &prms->vissObj;
         tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
-        Fcp_CfaConfig          *cfaCfg =  vissCfgRef->cfaCfg;
-        Vhwa_LutConfig         *lut16to12Cfg = vissCfgRef->cfaLut16to12Cfg;
+        Fcp_CfaConfig          *cfaCfg =  vissCfgRef->fcpCfg[fcp_index].cfaCfg;
+        Vhwa_LutConfig         *lut16to12Cfg = vissCfgRef->fcpCfg[fcp_index].cfaLut16to12Cfg;
 
         if (NULL != fcfa_prms)
         {
@@ -465,7 +481,7 @@ static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)
                     }
                 }
 
-                vissCfgRef->cfaCfg = NULL;
+                vissCfgRef->fcpCfg[fcp_index].cfaCfg = NULL;
             }
 
             if(NULL != lut16to12Cfg)
@@ -478,7 +494,7 @@ static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)
                     fcfa_prms->ToneLut[cnt] = lut16to12Cfg->tableAddr[cnt];
                 }
 
-                vissCfgRef->cfaLut16to12Cfg = NULL;
+                vissCfgRef->fcpCfg[fcp_index].cfaLut16to12Cfg = NULL;
             }
         }
         else
@@ -492,21 +508,22 @@ static void tivxVpacVissParseFlxCfaParams(tivxVpacVissParams *prms)
     }
 }
 
-static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
+static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index)
 {
     if (NULL != prms)
     {
         uint32_t cnt;
 
-        Flexcc_Config          *cc_prms = &prms->flexcc_params;
+        Flexcc_Config          *cc_prms = &prms->flexcc_params[fcp_index];
         tivxVpacVissObj        *vissObj = &prms->vissObj;
         tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
-        Fcp_CcmConfig          *ccmCfg =  vissCfgRef->ccm;
-        Fcp_Rgb2YuvConfig      *r2y = vissCfgRef->rgb2yuv;
-        Fcp_Rgb2HsvConfig      *r2h = vissCfgRef->rgb2Hsv;
-        Fcp_GammaConfig        *gamma = vissCfgRef->gamma;
-        Fcp_YuvSatLutConfig    *yuvSatLutCfg = vissCfgRef->yuvSatLutCfg;
-        Fcp_HistConfig         *histCfg = vissCfgRef->histCfg;
+        Fcp_CcmConfig          *ccmCfg =  vissCfgRef->fcpCfg[fcp_index].ccm;
+        Fcp_Rgb2YuvConfig      *r2y = vissCfgRef->fcpCfg[fcp_index].rgb2yuv;
+        Fcp_Rgb2HsvConfig      *r2h = vissCfgRef->fcpCfg[fcp_index].rgb2Hsv;
+        Fcp_GammaConfig        *gamma = vissCfgRef->fcpCfg[fcp_index].gamma;
+        Fcp_YuvSatLutConfig    *yuvSatLutCfg = vissCfgRef->fcpCfg[fcp_index].yuvSatLutCfg;
+        Fcp_HistConfig         *histCfg = vissCfgRef->fcpCfg[fcp_index].histCfg;
 
         if (NULL != cc_prms)
         {
@@ -537,7 +554,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
                 cc_prms->CCM1.Offset_2              = ccmCfg->offsets[1];
                 cc_prms->CCM1.Offset_3              = ccmCfg->offsets[2];
 
-                vissCfgRef->ccm = NULL;
+                vissCfgRef->fcpCfg[fcp_index].ccm = NULL;
             }
 
             if (NULL != r2y)
@@ -556,7 +573,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
                 cc_prms->RGB2YUV.Offset_2           = r2y->offsets[1u];
                 cc_prms->RGB2YUV.Offset_3           = r2y->offsets[2u];
 
-                vissCfgRef->rgb2yuv = NULL;
+                vissCfgRef->fcpCfg[fcp_index].rgb2yuv = NULL;
             }
 
             if (NULL != r2h)
@@ -590,7 +607,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
 
                 cc_prms->MuxRGBHSV                  = r2h->inputSelect;
 
-                vissCfgRef->rgb2Hsv = NULL;
+                vissCfgRef->fcpCfg[fcp_index].rgb2Hsv = NULL;
             }
 
             if (NULL != gamma)
@@ -605,7 +622,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
                     cc_prms->ContrastLut[2u][cnt] = gamma->tableC3[cnt];
                 }
 
-                vissCfgRef->gamma = NULL;
+                vissCfgRef->fcpCfg[fcp_index].gamma = NULL;
             }
 
             if (NULL != yuvSatLutCfg)
@@ -622,7 +639,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
                     cc_prms->S8B8Lut[cnt]           = yuvSatLutCfg->saturLutAddr[cnt];
                 }
 
-                vissCfgRef->yuvSatLutCfg = NULL;
+                vissCfgRef->fcpCfg[fcp_index].yuvSatLutCfg = NULL;
             }
 
             if (NULL != histCfg)
@@ -634,7 +651,7 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
                 cc_prms->HistSizeX                  = histCfg->roi.cropWidth;
                 cc_prms->HistSizeY                  = histCfg->roi.cropHeight;
 
-                vissCfgRef->histCfg = NULL;
+                vissCfgRef->fcpCfg[fcp_index].histCfg = NULL;
             }
         }
         else
@@ -648,14 +665,15 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms)
     }
 }
 
-static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms)
+static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms,
+    uint32_t fcp_index)
 {
     if (NULL != prms)
     {
-        ee_Config              *ee_prms = &prms->ee_params;
+        ee_Config              *ee_prms = &prms->ee_params[fcp_index];
         tivxVpacVissObj        *vissObj = &prms->vissObj;
         tivxVpacVissConfigRef  *vissCfgRef = &vissObj->vissCfgRef;
-        Fcp_EeConfig           *eeCfg = vissCfgRef->eeCfg;
+        Fcp_EeConfig           *eeCfg = vissCfgRef->fcpCfg[fcp_index].eeCfg;
 
         if ((NULL != ee_prms) && (NULL != eeCfg))
         {
@@ -718,7 +736,7 @@ static void tivxVpacVissParseYeeParams(tivxVpacVissParams *prms)
                 ee_prms->yee_table_s13[cnt] = eeCfg->lut[cnt];
             }
 
-            vissCfgRef->eeCfg = NULL;
+            vissCfgRef->fcpCfg[fcp_index].eeCfg = NULL;
         }
     }
     else

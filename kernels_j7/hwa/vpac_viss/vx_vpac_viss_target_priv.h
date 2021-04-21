@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -88,14 +88,34 @@ extern "C" {
  *      VPAC_VISS STRUCTURES
  *********************************/
 
+#ifdef VPAC3
+    #define TIVX_VPAC_VISS_FCP_NUM_INSTANCES    (2U)
+#else
+    #define TIVX_VPAC_VISS_FCP_NUM_INSTANCES    (1U)
+#endif
+
+typedef struct
+{
+    /*! FVID2 VISS Driver Config for FCP CCM Module */
+    Fcp_CcmConfig                       ccmCfg;
+    /*! FVID2 VISS Driver Config for Flex CFA */
+    Fcp_CfaConfig                       cfaCfg;
+    Vhwa_LutConfig                      cfaLut16to12Cfg;
+    Fcp_Rgb2YuvConfig                   rgb2yuvCfg;
+    Fcp_Rgb2HsvConfig                   rgb2hsvCfg;
+    Fcp_GammaConfig                     gammaCfg;
+    Fcp_YuvSatLutConfig                 yuvSatLutCfg;
+    Fcp_HistConfig                      histCfg;
+    Fcp_EeConfig                        eeCfg;
+
+} tivxVpacVissFcpConfig;
+
 typedef struct
 {
     /*! FVID2 VISS Driver Config for NSF4 Module */
     Nsf4v_Config                        nsf4Cfg;
     /*! FVID2 VISS Driver Config for H3A Module */
     H3a_Config                          h3aCfg;
-    /*! FVID2 VISS Driver Config for FCP CCM Module */
-    Fcp_CcmConfig                       ccmCfg;
     /*! FVID2 VISS Driver Config for RAWFE PWL Module */
     Rfe_PwlConfig                       pwlCfg1;
     /*! FVID2 VISS Driver Config for RAWFE PWL Module */
@@ -121,27 +141,28 @@ typedef struct
     /*! FVID2 VISS Driver Config for H3A LUT */
     Vhwa_LutConfig                      h3aLutCfg;
 
-    /*! FVID2 VISS Driver Config for Flex CFA */
-    Fcp_CfaConfig                       cfaCfg;
-
-    Vhwa_LutConfig                      cfaLut16to12Cfg;
-
-    Fcp_Rgb2YuvConfig                   rgb2yuvCfg;
-
-    Fcp_Rgb2HsvConfig                   rgb2hsvCfg;
-
-    Fcp_GammaConfig                     gammaCfg;
-
-    Fcp_YuvSatLutConfig                 yuvSatLutCfg;
-
-    Fcp_HistConfig                      histCfg;
-
     Glbce_Config                        glbceCfg;
     Glbce_PerceptConfig                 fwdPrcpCfg;
     Glbce_PerceptConfig                 revPrcpCfg;
 
-    Fcp_EeConfig                        eeCfg;
+    tivxVpacVissFcpConfig               fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
+
 } tivxVpacVissConfig;
+
+typedef struct
+{
+    Vhwa_LutConfig                     *cfaLut16to12Cfg;
+    Fcp_CfaConfig                      *cfaCfg;
+    Fcp_CcmConfig                      *ccm;
+    Fcp_GammaConfig                    *gamma;
+    Fcp_Rgb2HsvConfig                  *rgb2Hsv;
+    Fcp_Rgb2YuvConfig                  *rgb2yuv;
+    Fcp_YuvSatLutConfig                *yuvSatLutCfg;
+    Fcp_EeConfig                       *eeCfg;
+    Fcp_HistConfig                     *histCfg;
+
+} tivxVpacVissFcpConfigRef;
+
 
 typedef struct
 {
@@ -167,22 +188,15 @@ typedef struct
     Rfe_H3aInConfig                    *rfeH3aInCfg;
     Vhwa_LutConfig                     *h3aLutCfg;
 
-    Vhwa_LutConfig                     *cfaLut16to12Cfg;
-    Fcp_CfaConfig                      *cfaCfg;
-    Fcp_CcmConfig                      *ccm;
-    Fcp_GammaConfig                    *gamma;
-    Fcp_Rgb2HsvConfig                  *rgb2Hsv;
-    Fcp_Rgb2YuvConfig                  *rgb2yuv;
-    Fcp_YuvSatLutConfig                *yuvSatLutCfg;
-
     Nsf4v_Config                       *nsf4Cfg;
     Glbce_Config                       *glbceCfg;
     Glbce_PerceptConfig                *fwdPrcpCfg;
     Glbce_PerceptConfig                *revPrcpCfg;
 
     H3a_Config                         *h3aCfg;
-    Fcp_EeConfig                       *eeCfg;
-    Fcp_HistConfig                     *histCfg;
+
+    tivxVpacVissFcpConfigRef           fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
+
 } tivxVpacVissConfigRef;
 
 
@@ -233,7 +247,7 @@ typedef struct
     /*! Flag to indicate if DCC is used or not */
     uint32_t                            use_dcc;
     /*! Sensor DCC ID required for DCC parsing */
-	uint32_t                            sensor_dcc_id;
+    uint32_t                            sensor_dcc_id;
     /*! DCC Parsed output
      *  TODO: This instance can be very big, allocate it.
      */

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019-2020 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -88,19 +88,24 @@ static void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     const tivx_ae_awb_params_t *ae_awb_res);
 static int calc_dcc_gain_EV(int analog_gain_linear_Q10);
-static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res);
+static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res,
+    uint32_t fcp_index);
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res);
+    tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index);
 static void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj,
-     tivx_ae_awb_params_t *ae_awb_res);
-static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj);
+     tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index);
+static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj,
+    uint32_t fcp_index);
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
     uint32_t inst_id);
 static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapDpcParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res);
+
+static void tivxVpacVissDccMapFcpParams(tivxVpacVissObj *vissObj,
+     tivx_ae_awb_params_t *ae_awb_res);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -193,7 +198,6 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         {
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
-            tivxVpacVissDccMapYeeParams(vissObj, ae_awb_res);
             tivxVpacVissDccInitDpc(vissObj);
             tivxVpacVissDccMapDpcParams(vissObj, ae_awb_res);
 
@@ -203,9 +207,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             }
             tivxVpacVissDccMapH3aLutParams(vissObj);
             tivxVpacVissDccMapGlbceParams(vissObj);
-            tivxVpacVissDccMapFlexCFAParams(vissObj);
-            tivxVpacVissDccMapFlexCCParams(vissObj, ae_awb_res);
-
+            tivxVpacVissDccMapFcpParams(vissObj, ae_awb_res);
             tivxVpacVissDccMapBlc(vissObj, ae_awb_res);
         }
     }
@@ -248,6 +250,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     Rfe_GainOfstConfig              *wbCfg;
     dcc_parser_input_params_t       dcc_in;
     dcc_parser_input_params_t       *dcc_in_prms;
+    uint32_t                        fcp_index;
 
     vsCfg = &vissObj->vissCfg;
     dcc_in_prms = &dcc_in;
@@ -289,7 +292,10 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         tivxVpacVissDccMapDpcParams(vissObj, aewb_result);
 
         /* Apply DCC Output and update CCM */
-        tivxVpacVissDccMapCCMParams(vissObj, aewb_result);
+        for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+        {
+            tivxVpacVissDccMapCCMParams(vissObj, aewb_result, fcp_index);
+        }
 
         /* Update WB Gains in NSF4 if it is enabled */
         if (0u == vissObj->bypass_nsf4)
@@ -297,7 +303,10 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
             tivxVpacVissDccMapNsf4Params(vissObj, aewb_result);
         }
 
-        tivxVpacVissDccMapYeeParams(vissObj, aewb_result);
+        for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+        {
+            tivxVpacVissDccMapYeeParams(vissObj, aewb_result, fcp_index);
+        }
 
         /* Update BLC Offset */
         tivxVpacVissDccMapBlc(vissObj, aewb_result);
@@ -310,7 +319,11 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     {
         /* In case of multi-instance, these need to be updated in
          * driver (required until there is better ctx restore mechanism)*/
-        vissObj->vissCfgRef.ccm = &vissObj->vissCfg.ccmCfg;
+        for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+        {
+            vissObj->vissCfgRef.fcpCfg[fcp_index].ccm = &vissObj->vissCfg.fcpCfg[fcp_index].ccmCfg;
+        }
+
         if (0u == vissObj->bypass_nsf4)
         {
             if(1u == aewb_result->awb_valid)
@@ -526,7 +539,8 @@ static int calc_dcc_gain_EV(int analog_gain_linear_Q10)
     return dcc_gain_in_ev;
 }
 
-static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res)
+static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj,
+    const tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index)
 {
     uint32_t            cnt;
     Fcp_EeConfig        *hwaCfg = NULL;
@@ -548,7 +562,7 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
             dccCfg = &vissObj->dcc_out_prms.vissYeeCfg[dcc_index];
         }
 
-        hwaCfg = &vissObj->vissCfg.eeCfg;
+        hwaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].eeCfg;
 
         /* Map DCC Output Config to FVID2 Driver Config */
         if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useVissYeeCfg) && (NULL != dccCfg))
@@ -575,7 +589,7 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
                 hwaCfg->lut[cnt] = dccCfg->edge_intensity_lut[cnt];
             }
 
-            vissObj->vissCfgRef.eeCfg = hwaCfg;
+            vissObj->vissCfgRef.fcpCfg[fcp_index].eeCfg = hwaCfg;
 
             /* Setting config flag to 1,
              * assumes caller protects this flag */
@@ -585,7 +599,7 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj, const tivx_ae_
 }
 
 // DPC must be enabled at startup time if it is included in DCC
-// otherwise switching DPC on later will cause image artifacts 
+// otherwise switching DPC on later will cause image artifacts
 static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
@@ -658,11 +672,11 @@ static void tivxVpacVissDccMapDpcParams(tivxVpacVissObj *vissObj, const tivx_ae_
 }
 
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
-    tivx_ae_awb_params_t *ae_awb_res)
+    tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index)
 {
     uint32_t            cnt1, cnt2;
     Fcp_CcmConfig      *ccmCfg = NULL;
-    ccmCfg = &vissObj->vissCfg.ccmCfg;
+    ccmCfg = &vissObj->vissCfg.fcpCfg[fcp_index].ccmCfg;
 
     if (vissObj->dcc_out_prms.useCcmCfg != 0)
     {
@@ -689,7 +703,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
                 ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
             }
 
-            vissObj->vissCfgRef.ccm = ccmCfg;
+            vissObj->vissCfgRef.fcpCfg[fcp_index].ccm = ccmCfg;
 
             /* Setting config flag to 1,
              * assumes caller protects this flag */
@@ -717,7 +731,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
         ccmCfg->weights[0][0] = 256;
         ccmCfg->weights[1][1] = 256;
         ccmCfg->weights[2][2] = 256;
-        vissObj->vissCfgRef.ccm = ccmCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].ccm = ccmCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -806,7 +820,7 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
+static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t fcp_index)
 {
     uint32_t cnt;
     Fcp_CfaConfig *cfaCfg;
@@ -814,7 +828,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
 
     if (NULL != vissObj)
     {
-        cfaCfg = &vissObj->vissCfg.cfaCfg;
+        cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
         dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
     }
 
@@ -847,16 +861,16 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
         }
 
         {
-            Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
+            Vhwa_LutConfig *lut16to12Cfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaLut16to12Cfg;
             lut16to12Cfg->enable    = dcc_cfa_cfg->lut_enable;
             lut16to12Cfg->inputBits = dcc_cfa_cfg->bitWidth;
             lut16to12Cfg->tableAddr = vissObj->dcc_table_ptr.cfa_lut_16to12;
 
             memcpy(lut16to12Cfg->tableAddr, dcc_cfa_cfg->ToneLut, sizeof(uint32_t) * (uint32_t)FLXD_LUT_SIZE);
-            vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
+            vissObj->vissCfgRef.fcpCfg[fcp_index].cfaLut16to12Cfg = lut16to12Cfg;
         }
 
-        vissObj->vissCfgRef.cfaCfg = cfaCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].cfaCfg = cfaCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
@@ -865,11 +879,24 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
 }
 
 static void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj,
-     tivx_ae_awb_params_t *ae_awb_res)
+     tivx_ae_awb_params_t *ae_awb_res, uint32_t fcp_index)
 {
     if (NULL != vissObj)
     {
-        tivxVpacVissDccMapCCMParams(vissObj, ae_awb_res);
+        tivxVpacVissDccMapCCMParams(vissObj, ae_awb_res, fcp_index);
+    }
+}
+
+static void tivxVpacVissDccMapFcpParams(tivxVpacVissObj *vissObj,
+     tivx_ae_awb_params_t *ae_awb_res)
+{
+    uint32_t fcp_index;
+
+    for(fcp_index=0; fcp_index < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; fcp_index++)
+    {
+        tivxVpacVissDccMapYeeParams(vissObj, ae_awb_res, fcp_index);
+        tivxVpacVissDccMapFlexCFAParams(vissObj, fcp_index);
+        tivxVpacVissDccMapFlexCCParams(vissObj, ae_awb_res, fcp_index);
     }
 }
 
