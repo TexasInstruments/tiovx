@@ -334,8 +334,4 @@ void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms)
         prms->pipeId[loopCnt] = 1U;
     }
     prms->overlayId = 0U;
-    prms->outWidth  = 1920U;
-    prms->outHeight = 1080U;
-    prms->posX      = 0U;
-    prms->posY      = 0U;
 }

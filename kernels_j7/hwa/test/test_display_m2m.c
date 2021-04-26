@@ -95,8 +95,6 @@
 #define DSS_M2M_CH0_OUT_FRAME_FORMAT                (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH0_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH0_OUT_FRAME_HEIGHT                (1080U)
-#define DSS_M2M_CH0_POSX                            (0U)
-#define DSS_M2M_CH0_POSY                            (0U)
 
 /* Channel 1 configurations */
 #define DSS_M2M_CH1_IN_FRAME_FORMAT                 (VX_DF_IMAGE_RGB)
@@ -105,8 +103,6 @@
 #define DSS_M2M_CH1_OUT_FRAME_FORMAT                (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH1_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH1_OUT_FRAME_HEIGHT                (1080U)
-#define DSS_M2M_CH1_POSX                            (0U)
-#define DSS_M2M_CH1_POSY                            (0U)
 
 /* Channel 2 configurations */
 #define DSS_M2M_CH2_IN_FRAME_FORMAT                 (VX_DF_IMAGE_NV12)
@@ -115,8 +111,6 @@
 #define DSS_M2M_CH2_OUT_FRAME_FORMAT                (VX_DF_IMAGE_RGB)
 #define DSS_M2M_CH2_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH2_OUT_FRAME_HEIGHT                (1080U)
-#define DSS_M2M_CH2_POSX                            (0U)
-#define DSS_M2M_CH2_POSY                            (0U)
 
 #define DSS_M2M_NODE_NAME_LEN_MAX                   (100U)
 
@@ -207,10 +201,6 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
     local_m2m_config.numPipe    = testParams->numPipe;
     local_m2m_config.pipeId[0U] = testParams->pipeId[0U];
     local_m2m_config.overlayId  = testParams->overlayId;
-    local_m2m_config.outWidth   = testParams->outWidth;
-    local_m2m_config.outHeight  = testParams->outHeight;
-    local_m2m_config.posX       = testParams->posX;
-    local_m2m_config.posY       = testParams->posY;
 
     ASSERT_VX_OBJECT(m2m_config = vxCreateUserDataObject(context,
                                         "tivx_display_m2m_params_t",
@@ -292,8 +282,6 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->outFmt       = DSS_M2M_CH0_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH0_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
-                    testParams->posX         = DSS_M2M_CH0_POSX;
-                    testParams->posY         = DSS_M2M_CH0_POSY;
                     strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M1);
                 break;
                 case 1U:
@@ -305,8 +293,6 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->outFmt       = DSS_M2M_CH1_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH1_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH1_OUT_FRAME_HEIGHT;
-                    testParams->posX         = DSS_M2M_CH1_POSX;
-                    testParams->posY         = DSS_M2M_CH1_POSY;
                     strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M2);
                 break;
                 case 2U:
@@ -318,8 +304,6 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->outFmt       = DSS_M2M_CH2_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH2_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH2_OUT_FRAME_HEIGHT;
-                    testParams->posX         = DSS_M2M_CH2_POSX;
-                    testParams->posY         = DSS_M2M_CH2_POSY;
                     strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M3);
                 break;
                 default:

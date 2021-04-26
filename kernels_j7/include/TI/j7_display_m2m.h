@@ -110,22 +110,16 @@ extern "C" {
  * \ingroup group_vision_function_display_m2m
  */
 typedef struct {
-    /*! IDs=> 0: Write-back pipe-line1 */
+    /*! Write-back pipeline to use. IDs=> 0: Write-back pipe-line1 */
     uint32_t instId;
-    /*! Number of pipe-lines used, should be set to '1' as blending is not supported currently */
+    /*! Number of pipe-lines to be used,
+        should be set to '1' as blending is not supported currently */
     uint32_t numPipe;
-    /*! IDs=> 0:VID1, 1:VIDL1, 2:VID2 */
+    /*! IDs of pipe-lines to be used,
+        IDs=> 0:VID1, 1:VIDL1, 2:VID2 */
     uint32_t pipeId[TIVX_DISPLAY_M2M_MAX_PIPE];
-    /*! IDs=> 0:Overlay1 1:Overlay2 2:Overlay3 3:Overlay4 */
+    /*! Overlay to be used. IDs=> 0:Overlay1 1:Overlay2 2:Overlay3 3:Overlay4 */
     uint32_t overlayId;
-    /*!< Horizontal Size of picture at display M2M output */
-    uint32_t outWidth;
-    /*!< Vertical Size of picture at display M2M output */
-    uint32_t outHeight;
-    /*!< X position of the output video buffer */
-    uint32_t posX;
-    /*!< Y position of the output video buffer */
-    uint32_t posY;
 } tivx_display_m2m_params_t;
 
 /*!

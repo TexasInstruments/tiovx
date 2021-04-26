@@ -772,17 +772,22 @@ static vx_status tivxDisplayM2MSetCreateParams(
             drvObj->mFlagCfg[pipeIdx].pipeId      = drvObj->pipeId[pipeIdx];
             drvObj->cscCfg[pipeIdx].pipeId        = drvObj->pipeId[pipeIdx];
             dispParams->pipeCfg.pipeType          = CSL_DSS_VID_PIPE_TYPE_VID;
-            dispParams->pipeCfg.outWidth          = prms->createParams.outWidth;
-            dispParams->pipeCfg.outHeight         = prms->createParams.outHeight;
-            dispParams->layerPos.startX           = prms->createParams.posX;
-            dispParams->layerPos.startY           = prms->createParams.posY;
+            dispParams->layerPos.startX           = 0U;
+            dispParams->layerPos.startY           = 0U;
             dispParams->pipeCfg.scEnable          = FALSE;
             dispParams->alphaCfg.globalAlpha      = 0xFFU;
             dispParams->alphaCfg.preMultiplyAlpha = FALSE;
             status = tivxDisplayExtractFvid2Format(
                         obj_desc_imageIn,
                         &dispParams->pipeCfg.inFmt);
-            if (status != (vx_status)VX_SUCCESS)
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                /* Set video pipe output frame dimensions same as input as
+                   no scaling is done in video pipe-line */
+                dispParams->pipeCfg.outWidth  = dispParams->pipeCfg.inFmt.width;
+                dispParams->pipeCfg.outHeight = dispParams->pipeCfg.inFmt.height;
+            }
+            else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Input Image\n");
                 break;
@@ -793,10 +798,12 @@ static vx_status tivxDisplayM2MSetCreateParams(
         if ((vx_status)VX_SUCCESS == status)
         {
             wbPipeCfg               = &drvObj->wbCfg.pipeCfg;
-            wbPipeCfg->inFmt.width  = prms->createParams.outWidth;
-            wbPipeCfg->inFmt.height = prms->createParams.outHeight;
-            wbPipeCfg->inPos.startX = prms->createParams.posX;
-            wbPipeCfg->inPos.startY = prms->createParams.posY;
+            /* Set WB pipe input frame dimensions same as video pipe input/output frame,
+               no scaling is done in video pipe, it will be done in WB pipe-line */
+            wbPipeCfg->inFmt.width  = dispParams->pipeCfg.outWidth;
+            wbPipeCfg->inFmt.height = dispParams->pipeCfg.outHeight;
+            wbPipeCfg->inPos.startX = 0U;
+            wbPipeCfg->inPos.startY = 0U;
             status = tivxDisplayExtractFvid2Format(obj_desc_imageOut,
                                                    &wbPipeCfg->outFmt);
             if (status != (vx_status)VX_SUCCESS)
