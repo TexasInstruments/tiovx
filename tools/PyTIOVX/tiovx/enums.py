@@ -451,14 +451,6 @@ class Target(Enum) :
     DMPAC_DOF    = 18
     ## TIOVX equivalent = TIVX_TARGET_VPAC_VISS1
     VPAC_VISS1   = 19
-    ## TIOVX equivalent = TIVX_TARGET_VDEC1
-    VDEC1         = 20
-    ## TIOVX equivalent = TIVX_TARGET_VDEC2
-    VDEC2         = 21
-    ## TIOVX equivalent = TIVX_TARGET_VENC1
-    VENC1         = 22
-    ## TIOVX equivalent = TIVX_TARGET_VENC2
-    VENC2         = 23
     ## TIOVX equivalent = TIVX_TARGET_DSP_C7_1
     DSP_C7_1     = 24
     ## TIOVX equivalent = TIVX_TARGET_A72_0

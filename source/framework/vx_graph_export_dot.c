@@ -236,26 +236,6 @@ static void getNodeColor(vx_node node, char *node_color_name)
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cadetblue");
         }
         else
-        if(strncmp(target_name, "VDEC1", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "coral");
-        }
-        else
-        if(strncmp(target_name, "VDEC2", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "cornflowerblue");
-        }
-    else
-        if(strncmp(target_name, "VENC1", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "Sienna");
-        }
-        else
-        if(strncmp(target_name, "VENC2", TIVX_TARGET_MAX_NAME) == 0)
-        {
-            snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "Sepia");
-        }
-        else
         {
             /* do nothing */
         }

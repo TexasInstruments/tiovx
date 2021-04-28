@@ -164,10 +164,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CPU1},                               \
     {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
     {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_VDEC1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_VDEC2, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_VENC1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_VENC2, TIVX_TARGET_ID_CPU1}                                   \
 }
 
 #endif
