@@ -139,6 +139,8 @@ struct tivxCaptureParams_t
     /**< Internal FVID2 queue */
     tivx_queue pendingFrameQ[TIVX_CAPTURE_MAX_CH];
     /**< Internal pending frame queue */
+    tivx_queue pendingObjArrayQ;
+    /**< Internal pending obj arr queue */
     tivx_queue pendingFrameTimestampQ[TIVX_CAPTURE_MAX_CH];
     /**< Internal queue tracking time stamp of pending frames */
     uintptr_t fvid2_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
@@ -147,6 +149,8 @@ struct tivxCaptureParams_t
     /**< FVID2 frame structs */
     uintptr_t pending_frame_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< pending frame queue mem */
+    uintptr_t pending_obj_arr_q_mem[TIVX_CAPTURE_MAX_NUM_BUFS];
+    /**< pending obj arr queue mem */
     uintptr_t pending_frame_timestamp_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< pending frame queue mem */
     uint32_t timeout;
@@ -311,6 +315,8 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
     tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t **)prms->img_obj_desc,
                        prms->numCh);
+
+    tivxQueuePut(&prms->pendingObjArrayQ, (uintptr_t)output_desc, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
     /* Prepare and queue frame-list for each instance */
     for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
@@ -910,7 +916,7 @@ static void tivxCaptureGetObjDesc(tivxCaptureParams *prms,
 
         if(tmp_obj_desc!=NULL)
         {
-            tmp_obj_desc->scope_obj_desc_id = output_desc->base.obj_desc_id;
+            tmp_obj_desc->scope_obj_desc_id = (uint16_t)output_desc->base.obj_desc_id;
             tivxQueueGet(&prms->pendingFrameTimestampQ[chId], (uintptr_t*)&tmp_timestamp, TIVX_EVENT_TIMEOUT_NO_WAIT);
             tmp_obj_desc->timestamp = tmp_timestamp;
 
@@ -985,6 +991,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
             if ((vx_status)VX_SUCCESS == status)
             {
                 uint16_t *recv_obj_desc_id[TIVX_CAPTURE_MAX_CH];
+                tivx_obj_desc_object_array_t *recv_obj_arr_desc;
 
                 uint32_t is_all_ch_frame_available = 0;
 
@@ -1014,6 +1021,13 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                         }
                     }
                 }
+
+                /* Getting next obj arr obj desc from queue to populate with the latest dequeued frames */
+                tivxQueueGet(&prms->pendingObjArrayQ, (uintptr_t*)&recv_obj_arr_desc, TIVX_EVENT_TIMEOUT_NO_WAIT);
+
+                obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX] = (tivx_obj_desc_t *)recv_obj_arr_desc;
+
+                output_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_CAPTURE_OUTPUT_IDX];
 
                 tivxCaptureGetObjDesc(prms, recv_obj_desc_id, output_desc, &timestamp);
 
@@ -1221,6 +1235,17 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                     VX_PRINT(VX_ZONE_ERROR, ": Capture create failed!!!\r\n");
                     break;
                 }
+            }
+        }
+
+        /* Creating pending frame obj arr Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            status = tivxQueueCreate(&prms->pendingObjArrayQ, TIVX_CAPTURE_MAX_NUM_BUFS, prms->pending_obj_arr_q_mem, 0);
+
+            if ((vx_status)VX_SUCCESS != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, ": Capture create failed!!!\r\n");
             }
         }
 
@@ -1488,6 +1513,12 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
             {
                 tivxQueueDelete(&prms->pendingFrameQ[chId]);
             }
+        }
+
+        /* Deleting pending frame Q */
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            tivxQueueDelete(&prms->pendingObjArrayQ);
         }
 
         /* Freeing error object descriptors if they have been allocated */
