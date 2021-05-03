@@ -182,8 +182,6 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
         }
     }
 
-    /* CUSTOM PARAMETER CHECKING */
-
     return status;
 }
 

@@ -77,7 +77,7 @@
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      (256U * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY1   (8u)
 
-#define DSS_M2M_NUM_CH                              (2U)
+#define DSS_M2M_NUM_CH                              (3U)
 #define DSS_M2M_NUM_CH_MAX                          (4U)
 
 /* Common Configurations across channels */
@@ -111,6 +111,14 @@
 #define DSS_M2M_CH2_OUT_FRAME_FORMAT                (VX_DF_IMAGE_RGB)
 #define DSS_M2M_CH2_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH2_OUT_FRAME_HEIGHT                (1080U)
+
+/* Channel 3 configurations */
+#define DSS_M2M_CH3_IN_FRAME_FORMAT                 (VX_DF_IMAGE_NV12)
+#define DSS_M2M_CH3_IN_FRAME_WIDTH                  (1920U)
+#define DSS_M2M_CH3_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH3_OUT_FRAME_FORMAT                (VX_DF_IMAGE_YUYV)
+#define DSS_M2M_CH3_OUT_FRAME_WIDTH                 (1920U)
+#define DSS_M2M_CH3_OUT_FRAME_HEIGHT                (1080U)
 
 #define DSS_M2M_NODE_NAME_LEN_MAX                   (100U)
 
@@ -305,6 +313,17 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->outWidth     = DSS_M2M_CH2_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH2_OUT_FRAME_HEIGHT;
                     strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M3);
+                break;
+                case 3U:
+                    createTask               = 1U;
+                    /* Initialize test parameters for task 1 */
+                    testParams->inFmt        = DSS_M2M_CH3_IN_FRAME_FORMAT;
+                    testParams->inWidth      = DSS_M2M_CH3_IN_FRAME_WIDTH;
+                    testParams->inHeight     = DSS_M2M_CH3_IN_FRAME_HEIGHT;
+                    testParams->outFmt       = DSS_M2M_CH3_OUT_FRAME_FORMAT;
+                    testParams->outWidth     = DSS_M2M_CH3_OUT_FRAME_WIDTH;
+                    testParams->outHeight    = DSS_M2M_CH3_OUT_FRAME_HEIGHT;
+                    strcpy(&testParams->nodeName[0U], TIVX_TARGET_DISPLAY_M2M4);
                 break;
                 default:
                 break;
