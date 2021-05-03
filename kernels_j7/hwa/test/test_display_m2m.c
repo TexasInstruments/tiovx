@@ -77,7 +77,7 @@
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      (256U * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY1   (8u)
 
-#define DSS_M2M_NUM_CH                              (3U)
+#define DSS_M2M_NUM_CH                              (2U)
 #define DSS_M2M_NUM_CH_MAX                          (4U)
 
 /* Common Configurations across channels */
@@ -92,6 +92,9 @@
 #define DSS_M2M_CH0_IN_FRAME_FORMAT                 (VX_DF_IMAGE_YUYV)
 #define DSS_M2M_CH0_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH0_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH0_IN_FRAME_BPP                    (2U)
+#define DSS_M2M_CH0_IN_FRAME_PITCH                  (DSS_M2M_CH0_IN_FRAME_WIDTH * \
+                                                     DSS_M2M_CH0_IN_FRAME_BPP)
 #define DSS_M2M_CH0_OUT_FRAME_FORMAT                (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH0_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH0_OUT_FRAME_HEIGHT                (1080U)
@@ -100,6 +103,9 @@
 #define DSS_M2M_CH1_IN_FRAME_FORMAT                 (VX_DF_IMAGE_RGB)
 #define DSS_M2M_CH1_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH1_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH1_IN_FRAME_BPP                    (3U)
+#define DSS_M2M_CH1_IN_FRAME_PITCH                  (DSS_M2M_CH1_IN_FRAME_WIDTH * \
+                                                     DSS_M2M_CH1_IN_FRAME_BPP)
 #define DSS_M2M_CH1_OUT_FRAME_FORMAT                (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH1_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH1_OUT_FRAME_HEIGHT                (1080U)
@@ -108,6 +114,9 @@
 #define DSS_M2M_CH2_IN_FRAME_FORMAT                 (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH2_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH2_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH2_IN_FRAME_BPP                    (1U)
+#define DSS_M2M_CH2_IN_FRAME_PITCH                  (DSS_M2M_CH2_IN_FRAME_WIDTH * \
+                                                     DSS_M2M_CH2_IN_FRAME_BPP)
 #define DSS_M2M_CH2_OUT_FRAME_FORMAT                (VX_DF_IMAGE_RGB)
 #define DSS_M2M_CH2_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH2_OUT_FRAME_HEIGHT                (1080U)
@@ -116,11 +125,20 @@
 #define DSS_M2M_CH3_IN_FRAME_FORMAT                 (VX_DF_IMAGE_NV12)
 #define DSS_M2M_CH3_IN_FRAME_WIDTH                  (1920U)
 #define DSS_M2M_CH3_IN_FRAME_HEIGHT                 (1080U)
+#define DSS_M2M_CH3_IN_FRAME_BPP                    (1U)
+#define DSS_M2M_CH3_IN_FRAME_PITCH                  (DSS_M2M_CH3_IN_FRAME_WIDTH * \
+                                                     DSS_M2M_CH3_IN_FRAME_BPP)
 #define DSS_M2M_CH3_OUT_FRAME_FORMAT                (VX_DF_IMAGE_YUYV)
 #define DSS_M2M_CH3_OUT_FRAME_WIDTH                 (1920U)
 #define DSS_M2M_CH3_OUT_FRAME_HEIGHT                (1080U)
 
 #define DSS_M2M_NODE_NAME_LEN_MAX                   (100U)
+
+/* Preloaded image buffers */
+/* 1920 x 1080 buffers */
+extern uint32_t gTiovxCtDisplayArrayBGR888[1555200];
+extern uint32_t gTiovxCtDisplayArrayYUV420NV12[777600];
+extern uint32_t gTiovxCtDisplayArrayYUV422[1036800];
 
 TESTCASE(tivxHwaDisplayM2M, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -133,6 +151,8 @@ typedef struct {
     vx_df_image inFmt;
     uint32_t inWidth;
     uint32_t inHeight;
+    uint32_t inBpp;
+    uint32_t inPitch;
     vx_df_image outFmt;
     uint32_t outWidth;
     uint32_t outHeight;
@@ -179,6 +199,8 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
     vx_int32 i,j;
     vx_imagepatch_addressing_t addr;
     uint16_t *ptr = NULL;
+    vx_imagepatch_addressing_t image_addr;
+    vx_rectangle_t rect;
     vx_graph m2m_graph = 0;
     tivx_display_m2m_test_params_t *testParams =
                     (tivx_display_m2m_test_params_t *)app_var;
@@ -201,6 +223,45 @@ static void VX_CALLBACK tivxTask_m2m(void *app_var)
                                                VX_TYPE_IMAGE);
 
     printf("Graph %d: input and output images created...\n", testParams->taskId);
+
+    image_addr.dim_x    = testParams->inWidth;
+    image_addr.dim_y    = testParams->inHeight;
+    image_addr.stride_x = testParams->inBpp;
+    image_addr.stride_y = testParams->inPitch;
+    image_addr.scale_x  = VX_SCALE_UNITY;
+    image_addr.scale_y  = VX_SCALE_UNITY;
+    image_addr.step_x   = 1;
+    image_addr.step_y   = 1;
+    rect.start_x        = 0;
+    rect.start_y        = 0;
+    rect.end_x          = testParams->inWidth;
+    rect.end_y          = testParams->inHeight;
+
+    /* Copy reference input image to input buffer */
+    if (testParams->inFmt == VX_DF_IMAGE_RGB)
+    {
+        vxCopyImagePatch(in_image,
+                         &rect,
+                         0,
+                         &image_addr,
+                         (void *)gTiovxCtDisplayArrayBGR888,
+                         VX_WRITE_ONLY,
+                         VX_MEMORY_TYPE_HOST);
+    }
+    else if (testParams->inFmt == VX_DF_IMAGE_YUYV)
+    {
+        vxCopyImagePatch(in_image,
+                         &rect,
+                         0,
+                         &image_addr,
+                         (void *)gTiovxCtDisplayArrayYUV422,
+                         VX_WRITE_ONLY,
+                         VX_MEMORY_TYPE_HOST);
+    }
+    else
+    {
+        /* Update input buffer here for other formats */
+    }
 
     /* DSS M2M initialization */
     tivx_display_m2m_params_init(&local_m2m_config);
@@ -287,6 +348,8 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     createTask               = 1U;
                     testParams->inWidth      = DSS_M2M_CH0_IN_FRAME_WIDTH;
                     testParams->inHeight     = DSS_M2M_CH0_IN_FRAME_HEIGHT;
+                    testParams->inBpp        = DSS_M2M_CH0_IN_FRAME_BPP;
+                    testParams->inPitch      = DSS_M2M_CH0_IN_FRAME_PITCH;
                     testParams->outFmt       = DSS_M2M_CH0_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH0_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH0_OUT_FRAME_HEIGHT;
@@ -298,6 +361,8 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->inFmt        = DSS_M2M_CH1_IN_FRAME_FORMAT;
                     testParams->inWidth      = DSS_M2M_CH1_IN_FRAME_WIDTH;
                     testParams->inHeight     = DSS_M2M_CH1_IN_FRAME_HEIGHT;
+                    testParams->inBpp        = DSS_M2M_CH1_IN_FRAME_BPP;
+                    testParams->inPitch      = DSS_M2M_CH1_IN_FRAME_PITCH;
                     testParams->outFmt       = DSS_M2M_CH1_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH1_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH1_OUT_FRAME_HEIGHT;
@@ -309,6 +374,8 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->inFmt        = DSS_M2M_CH2_IN_FRAME_FORMAT;
                     testParams->inWidth      = DSS_M2M_CH2_IN_FRAME_WIDTH;
                     testParams->inHeight     = DSS_M2M_CH2_IN_FRAME_HEIGHT;
+                    testParams->inBpp        = DSS_M2M_CH2_IN_FRAME_BPP;
+                    testParams->inPitch      = DSS_M2M_CH2_IN_FRAME_PITCH;
                     testParams->outFmt       = DSS_M2M_CH2_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH2_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH2_OUT_FRAME_HEIGHT;
@@ -320,6 +387,8 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
                     testParams->inFmt        = DSS_M2M_CH3_IN_FRAME_FORMAT;
                     testParams->inWidth      = DSS_M2M_CH3_IN_FRAME_WIDTH;
                     testParams->inHeight     = DSS_M2M_CH3_IN_FRAME_HEIGHT;
+                    testParams->inBpp        = DSS_M2M_CH3_IN_FRAME_BPP;
+                    testParams->inPitch      = DSS_M2M_CH3_IN_FRAME_PITCH;
                     testParams->outFmt       = DSS_M2M_CH3_OUT_FRAME_FORMAT;
                     testParams->outWidth     = DSS_M2M_CH3_OUT_FRAME_WIDTH;
                     testParams->outHeight    = DSS_M2M_CH3_OUT_FRAME_HEIGHT;
