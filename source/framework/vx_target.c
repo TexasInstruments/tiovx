@@ -1269,7 +1269,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
         target->task_params.task_main = &tivxTargetTaskMain;
         target->task_params.app_var = target;
         strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
-        target->task_params.task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
+        target->task_params.task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
 
         target->targetExitRequest = (vx_bool)vx_false_e;
         target->targetExitDone = (vx_bool)vx_false_e;
@@ -1373,8 +1373,8 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params)
     params->task_stack_size = 0;
     params->task_core_affinity = 0;
     params->task_priority = TIVX_TASK_PRI_LOWEST;
-    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);
-    params->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
+    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME-1U);
+    params->task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
 }
 
 vx_enum tivxTargetGetCpuId(vx_enum target_id)

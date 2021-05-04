@@ -294,22 +294,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             /* Note that we don't need to do anything special for parameters to child graphs. */
         }
+
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_PARAMETER, "Assigned Node[%u] %p type:%08x ref="VX_FMT_REF"\n",
+                     index, node, type, value);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Specified: parameter[%u] type:%08x => "VX_FMT_REF"\n",
+                            index, type, value);
+            VX_PRINT(VX_ZONE_ERROR, "Required: parameter[%u] dir:%d type:%08x\n",
+                index,
+                node->kernel->signature.directions[index],
+                node->kernel->signature.types[index]);
+        }
     }
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_PARAMETER, "Assigned Node[%u] %p type:%08x ref="VX_FMT_REF"\n",
-                 index, node, type, value);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Specified: parameter[%u] type:%08x => "VX_FMT_REF"\n",
-                        index, type, value);
-        VX_PRINT(VX_ZONE_ERROR, "Required: parameter[%u] dir:%d type:%08x\n",
-            index,
-            node->kernel->signature.directions[index],
-            node->kernel->signature.types[index]);
-    }
     return status;
 }
 

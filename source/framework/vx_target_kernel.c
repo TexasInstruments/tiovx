@@ -126,10 +126,11 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                     g_target_kernel_table[i].kernel_id)
                 {
                     g_target_kernel_table[i].kernel_id = kernel_id;
-                    g_target_kernel_table[i].kernel_name[0] = (char)0;
+                    g_target_kernel_table[i].kernel_name[0] = '\0';
                     if(kernel_name!=NULL)
                     {
-                        strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME);
+                        strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME-1U);
+                        g_target_kernel_table[i].kernel_name[VX_MAX_KERNEL_NAME-1U] = '\0';
                         VX_PRINT(VX_ZONE_INFO, "registered kernel %s on target %s\n", kernel_name, target_name);
                     }
                     g_target_kernel_table[i].target_id =

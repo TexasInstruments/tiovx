@@ -451,8 +451,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
         {
             strncpy(kernel->target_name[kernel->num_targets],
                     target_name,
-                    TIVX_TARGET_MAX_NAME
+                    TIVX_TARGET_MAX_NAME-1U
                 );
+            kernel->target_name[kernel->num_targets][TIVX_TARGET_MAX_NAME-1U] = '\0';
             kernel->num_targets++;
             tivxLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", (uint16_t)kernel->num_targets);
         }

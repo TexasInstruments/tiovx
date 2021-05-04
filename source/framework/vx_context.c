@@ -88,7 +88,8 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
             if(ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 kernel_info[num_kernel_info].enumeration = kernel->enumeration;
-                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
+                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
+                kernel_info[num_kernel_info].name[VX_MAX_KERNEL_NAME-1U] = '\0';
                 num_kernel_info++;
             }
             if(num_kernel_info > max_kernels)
@@ -1454,7 +1455,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                 if (target_string != NULL)
                 {
                     context->imm_target_enum = (vx_enum)VX_TARGET_STRING;
-                    strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string));
+                    strncpy(context->imm_target_string, target_string, sizeof(context->imm_target_string)-1U);
                     context->imm_target_string[sizeof(context->imm_target_string) - 1U] = '\0';
                     status = (vx_status)VX_SUCCESS;
                 }
