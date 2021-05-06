@@ -1373,7 +1373,7 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params)
     params->task_stack_size = 0;
     params->task_core_affinity = 0;
     params->task_priority = TIVX_TASK_PRI_LOWEST;
-    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME-1U);
+    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);
     params->task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
 }
 
