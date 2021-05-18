@@ -43,7 +43,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
 {
     vx_status status = (vx_status)VX_SUCCESS;
     TaskP_Handle tskHndl;
-    TaskP_Params bios_task_prms;
+    TaskP_Params rtos_task_prms;
 
     if ((NULL != task) && (NULL != params))
     {
@@ -56,21 +56,21 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         task->app_var              = params->app_var;
 
         /* Filling TaskP_Params structure as defined in TaskP.h */
-        TaskP_Params_init(&bios_task_prms);
+        TaskP_Params_init(&rtos_task_prms);
 
-        bios_task_prms.stacksize = params->stack_size;
-        bios_task_prms.stack     = params->stack_ptr;
-        bios_task_prms.priority  = (int8_t)params->priority;
-        bios_task_prms.arg0      = (void*)(task);
-        bios_task_prms.arg1      = (void*)(task);
-        bios_task_prms.name      = (uint8_t*)&task->task_name[0];
+        rtos_task_prms.stacksize = params->stack_size;
+        rtos_task_prms.stack     = params->stack_ptr;
+        rtos_task_prms.priority  = (int8_t)params->priority;
+        rtos_task_prms.arg0      = (void*)(task);
+        rtos_task_prms.arg1      = (void*)(task);
+        rtos_task_prms.name      = (uint8_t*)&task->task_name[0];
 
         strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
         task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
         tskHndl = (void*)TaskP_create(
                             tivxTaskDefHandle,
-                            &bios_task_prms);
+                            &rtos_task_prms);
 
         if (NULL == tskHndl)
         {

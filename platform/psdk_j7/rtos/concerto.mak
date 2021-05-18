@@ -4,14 +4,14 @@ ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71))
 ifeq ($(TARGET_OS),SYSBIOS)
 
 include $(PRELUDE)
-TARGET      := vx_platform_psdk_j7_bios
+TARGET      := vx_platform_psdk_j7_rtos
 TARGETTYPE  := library
 
 CSOURCES    := 	tivx_event.c \
 				tivx_queue.c \
 				tivx_task.c \
 				tivx_mutex.c \
-				tivx_platform_bios.c \
+				tivx_platform_rtos.c \
 				../common/tivx_init.c \
 				../common/tivx_mem.c \
 				../common/tivx_ipc.c \

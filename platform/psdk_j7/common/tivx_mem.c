@@ -384,7 +384,7 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    /* Currently it is same as shared pointer for bios */
+    /* Currently it is same as shared pointer for rtos */
     return (shared_ptr);
 }
 
