@@ -81,6 +81,11 @@
 #define CSITX_INST_ID       (0U)
 #define CAPT_INST_ID        (0U)
 
+#define CSITX_LANE_BAND_SPEED       (TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS)
+#define CSIRX_LANE_BAND_SPEED       (TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS)
+#define CSITX_LANE_SPEED_MBPS       (800U)
+
+
 #define CSITX_ENABLE           (1U)
 #define CAPTURE1_ENABLE        (1U)
 #define CAPTURE2_ENABLE        (1U)
@@ -193,7 +198,7 @@ static void VX_CALLBACK tivxTask_capture(void *app_var)
     {
         local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
-    local_capture_config.instCfg[0U].laneBandSpeed = TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS;
+    local_capture_config.instCfg[0U].laneBandSpeed = CSIRX_LANE_BAND_SPEED;
     for (loopCnt = 0U; loopCnt < 1U; loopCnt++)
     {
         local_capture_config.chVcNum[loopCnt]   = 0U;
@@ -335,7 +340,7 @@ static void VX_CALLBACK tivxTask_capture1(void *app_var)
     {
         local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
-    local_capture_config.instCfg[0U].laneBandSpeed = TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS;
+    local_capture_config.instCfg[0U].laneBandSpeed = CSIRX_LANE_BAND_SPEED;
     for (loopCnt = 0U; loopCnt < 1U; loopCnt++)
     {
         local_capture_config.chVcNum[loopCnt]   = 1U;
@@ -477,7 +482,7 @@ static void VX_CALLBACK tivxTask_capture2(void *app_var)
     {
         local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
-    local_capture_config.instCfg[0U].laneBandSpeed = TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS;
+    local_capture_config.instCfg[0U].laneBandSpeed = CSIRX_LANE_BAND_SPEED;
     for (loopCnt = 0U; loopCnt < 1U; loopCnt++)
     {
         local_capture_config.chVcNum[loopCnt]   = 2U;
@@ -619,7 +624,7 @@ static void VX_CALLBACK tivxTask_capture3(void *app_var)
     {
         local_capture_config.instCfg[0U].dataLanesMap[loopCnt] = (loopCnt + 1u);
     }
-    local_capture_config.instCfg[0U].laneBandSpeed = TIVX_CAPTURE_LANE_BAND_SPEED_720_TO_800_MBPS;
+    local_capture_config.instCfg[0U].laneBandSpeed = CSIRX_LANE_BAND_SPEED;
     for (loopCnt = 0U; loopCnt < 1U; loopCnt++)
     {
         local_capture_config.chVcNum[loopCnt]   = 3U;
@@ -757,7 +762,7 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
 #if (CAPTURE4_ENABLE == 1U)
     tivxEventWait(eventHandle_TxStart3, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 #endif
-    /* Wait here for some time, this is needed for Capture/CSIRX nodes to get  
+    /* Wait here for some time, this is needed for Capture/CSIRX nodes to get
        created before CSITX node. This is needed for DPHY hand shake. */
     tivxTaskWaitMsecs(waitInMs);
     vx_graph csitx_graph = (vx_graph)app_var;
@@ -804,7 +809,8 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     local_csitx_config.instId[0U]                       = CSITX_INST_ID;
     local_csitx_config.instCfg[0U].rxCompEnable         = (uint32_t)vx_true_e;
     local_csitx_config.instCfg[0U].rxv1p3MapEnable      = (uint32_t)vx_true_e;
-    local_csitx_config.instCfg[0U].laneBandSpeed        = TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS;
+    local_csitx_config.instCfg[0U].laneBandSpeed        = CSITX_LANE_BAND_SPEED;
+    local_csitx_config.instCfg[0U].laneSpeedMbps        = CSITX_LANE_SPEED_MBPS;
     local_csitx_config.instCfg[0U].numDataLanes         = 4U;
     for (loopCnt = 0U ;
         loopCnt < local_csitx_config.instCfg[0U].numDataLanes ;

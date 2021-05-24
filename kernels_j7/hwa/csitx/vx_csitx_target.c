@@ -499,6 +499,7 @@ static vx_status tivxCsitxSetCreateParams(
         createParams->instCfg.rxCompEnable = params->instCfg[instIdx].rxCompEnable;
         createParams->instCfg.rxv1p3MapEnable = params->instCfg[instIdx].rxv1p3MapEnable;
         createParams->instCfg.dphyCfg.laneBandSpeed = params->instCfg[instIdx].laneBandSpeed;
+        createParams->instCfg.dphyCfg.laneSpeedMbps = params->instCfg[instIdx].laneSpeedMbps;
         createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
         for (loopCnt = 0U ;
              loopCnt < createParams->instCfg.numDataLanes ;

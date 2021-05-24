@@ -118,31 +118,133 @@ extern "C" {
  */
 #define TIVX_CSITX_MAX_INST                               (1U)
 
-/*! \brief Lane Band Speed: 770 Mbps to 870 Mbps 
+/*! \brief Lane Band Speed: 80 Mbps to 100 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_80_TO_100_MBPS              ((uint32_t) 0x00U)
+/*! \brief Lane Band Speed: 100 Mbps to 120 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_100_TO_120_MBPS             ((uint32_t) 0x01U)
+/*! \brief Lane Band Speed: 120 Mbps to 160 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_120_TO_160_MBPS             ((uint32_t) 0x02U)
+/*! \brief Lane Band Speed: 160 Mbps to 200 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_160_TO_200_MBPS             ((uint32_t) 0x03U)
+/*! \brief Lane Band Speed: 200 Mbps to 240 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_200_TO_240_MBPS             ((uint32_t) 0x04U)
+/*! \brief Lane Band Speed: 240 Mbps to 320 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_240_TO_320_MBPS             ((uint32_t) 0x05U)
+/*! \brief Lane Band Speed: 320 Mbps to 390 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_320_TO_390_MBPS             ((uint32_t) 0x06U)
+/*! \brief Lane Band Speed: 390 Mbps to 450 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_390_TO_450_MBPS             ((uint32_t) 0x07U)
+/*! \brief Lane Band Speed: 450 Mbps to 510 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_450_TO_510_MBPS             ((uint32_t) 0x08U)
+/*! \brief Lane Band Speed: 510 Mbps to 560 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_510_TO_560_MBPS             ((uint32_t) 0x09U)
+/*! \brief Lane Band Speed: 560 Mbps to 640 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_560_TO_640_MBPS             ((uint32_t) 0x0AU)
+/*! \brief Lane Band Speed: 640 Mbps to 690 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_640_TO_690_MBPS             ((uint32_t) 0x0BU)
+/*! \brief Lane Band Speed: 690 Mbps to 770 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_690_TO_770_MBPS             ((uint32_t) 0x0CU)
+/*! \brief Lane Band Speed: 770 Mbps to 870 Mbps
  *
  *  \ingroup group_vision_function_csitx
  */
 #define TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS             ((uint32_t) 0x0DU)
-/*! \brief Lane Band Speed: 1000 Mbps to 1200 Mbps 
+/*! \brief Lane Band Speed: 870 Mbps to 950 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_870_TO_950_MBPS             ((uint32_t) 0x0EU)
+/*! \brief Lane Band Speed: 950 Mbps to 1000 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_950_TO_1000_MBPS            ((uint32_t) 0x0FU)
+/*! \brief Lane Band Speed: 1000 Mbps to 1200 Mbps
  *
  *  \ingroup group_vision_function_csitx
  */
 #define TIVX_CSITX_LANE_BAND_SPEED_1000_TO_1200_MBPS           ((uint32_t) 0x10U)
-/*! \brief Lane Band Speed: 1400 Mbps to 1600 Mbps 
+/*! \brief Lane Band Speed: 1200 Mbps to 1400 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_1200_TO_1400_MBPS           ((uint32_t) 0x11U)
+/*! \brief Lane Band Speed: 1400 Mbps to 1600 Mbps
  *
  *  \ingroup group_vision_function_csitx
  */
 #define TIVX_CSITX_LANE_BAND_SPEED_1400_TO_1600_MBPS           ((uint32_t) 0x12U)
-/*! \brief Lane Band Speed: 2200 Mbps to 2500 Mbps 
+/*! \brief Lane Band Speed: 1600 Mbps to 1800 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_1600_TO_1800_MBPS           ((uint32_t) 0x13U)
+/*! \brief Lane Band Speed: 1800 Mbps to 2000 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_1800_TO_2000_MBPS           ((uint32_t) 0x14U)
+/*! \brief Lane Band Speed: 2000 Mbps to 2200 Mbps
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_BAND_SPEED_2000_TO_2200_MBPS           ((uint32_t) 0x15U)
+/*! \brief Lane Band Speed: 2200 Mbps to 2500 Mbps
  *
  *  \ingroup group_vision_function_csitx
  */
 #define TIVX_CSITX_LANE_BAND_SPEED_2200_TO_2500_MBPS           ((uint32_t) 0x16U)
-/*! \brief Lane Band Speed: Reserved 
+
+/*! \brief Lane Band Speed: Reserved
  *
  *  \ingroup group_vision_function_csitx
  */
 #define TIVX_CSITX_LANE_BAND_SPEED_RESERVED                    ((uint32_t) 0x17U)
+
+/*! \brief Lane Speed: Reserved
+ *
+ *  \ingroup group_vision_function_csitx
+ */
+#define TIVX_CSITX_LANE_SPEED_MBPS_RESERVED                    ((uint32_t) 0xFFFFFFFFU)
 
 /*********************************
  *      CSITX STRUCTURES
@@ -151,17 +253,21 @@ extern "C" {
  * \brief The CSITX DRV instance configuration data structure used by the TIVX_KERNEL_CSITX kernel.
  *
  * \ingroup group_vision_function_csitx
+ * Note: Application should at least provide valid value for 'laneBandSpeed' OR 'laneSpeedMbps'.
+ *       If 'laneBandSpeed' is provided, then 'laneSpeedMbps' is optional and driver assign this to default speed from that band.
+ *       If 'laneSpeedMbps' is provided, then 'laneBandSpeed' is ignored and driver will calculate this accordingly.
  */
 typedef struct
 {
     uint32_t rxCompEnable;          /*!< Flag indicating RX compatibility mode */
-    uint32_t rxv1p3MapEnable;       /*!< Flag indicating RX V1P3 mapping */       
+    uint32_t rxv1p3MapEnable;       /*!< Flag indicating RX V1P3 mapping */
     uint32_t numDataLanes;          /*!< Number of CSITX data lanes */
     uint32_t lanePolarityCtrl[5];   /*!< Data Lanes invert control array; note: size from (CSITX_TX_DATA_LANES_MAX + CSITX_TX_CLK_LANES_MAX) */
     uint32_t vBlank;                /*!< Vertical blanking in terms of number of line. */
     uint32_t hBlank;                /*!< Horizontal blanking in terms of number of pixels */
     uint32_t startDelayPeriod;      /*!< Delay in terms of micro-seconds before sending first line after enabling. Note: This is only applicable if chType is CSITX_CH_TYPE_COLORBAR. */
-    uint32_t laneBandSpeed;         /*!< Data rates for lane band control.*/
+    uint32_t laneBandSpeed;         /*!< Data rates for lane band control. This parameter is ignored if 'laneSpeedMbps' is provided. */
+    uint32_t laneSpeedMbps;         /*!< Exact data-rate for lane in Mbps. This parameter is optional if 'laneBandSpeed' is provided. */
 } tivx_csitx_inst_params_t;
 
 /*!
