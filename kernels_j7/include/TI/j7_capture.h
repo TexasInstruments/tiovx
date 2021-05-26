@@ -263,6 +263,36 @@ typedef struct
     uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
     uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
     uint32_t laneBandSpeed;         /*!<  Data rates for lane band control. */
+    uint32_t numPixels;             /*!< Number of pixels to output per clock cycle from the stream.
+     *   This is stream specific configuration and this is specific to "stream0"
+     *   i.e. it is common across all the channels going to DDR/Memory and
+     *   all the opened driver instances for given CSI-RX port/instance.
+     *
+     *   The width of the pixel interface (32 bits) and the bits per pixel for
+     *   the selected datatype will determine how many pixels can be output in
+     *   a single cycle.
+     *
+     *   For example:
+     *   Case 1: 2 channels - each RAW12 (bpp = 12 bits) capture,
+     *           valid values are 0 (1 pixel per clock) & 1 (2 pixels per clock).
+     *           12 bits x 2 pixels per clock  = 24 bits which is less
+     *           than pixel interface bus width (32 bits)
+     *   Case 2: 2 channels- one RAW12 (bpp = 12 bits) channel &
+     *                       one RGB888 (bpp = 24 bits) channel capture,
+     *           valid values are 0 i.e. 1 pixel per clock (lowest of the two).
+     *           RAW12: 12 bits x 2 pixels per clock  = 24 bits which is less
+     *           than pixel interface bus width (32 bits)
+     *           RGB888: 24 bits x 1 pixel per clock  = 24 bits which is less
+     *           than pixel interface bus width (32 bits)
+     *           Lowest of the two i.e. 1 pixel per clock is selected in this
+     *           case to ensure proper operation of the module.
+     *
+     *   Valid values are 0, 1, 2.
+     *   Default will be 1 pixel per clock (value of '00').
+     *   00 -> 1 pixel per clock
+     *   01 -> 2 pixels per clock
+     *   10 -> 4 pixels per clock
+     */
 } tivx_capture_inst_params_t;
 
 /*!

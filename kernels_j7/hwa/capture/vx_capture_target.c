@@ -639,7 +639,8 @@ static vx_status tivxCaptureSetCreateParams(
 
             /* set module configuration parameters */
             createParams->instCfg.enableCsiv2p0Support = params->instCfg[instIdx].enableCsiv2p0Support;
-            createParams->instCfg.enableErrbypass = (uint32_t)FALSE;
+            createParams->instCfg.enableErrbypass      = (uint32_t)FALSE;
+            createParams->instCfg.numPixelsStrm0       = params->instCfg[instIdx].numPixels;
             createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
             for (loopCnt = 0U ;
                  loopCnt < createParams->instCfg.numDataLanes ;
