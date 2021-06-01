@@ -38,3 +38,9 @@ BUILD_QNX_A72?=no
 BUILD_VLAB?=no
 
 BUILD_VPAC3?=no
+
+# RTOS selection for R5F - SYSBIOS or FREERTOS
+RTOS?=SYSBIOS
+
+# SOC selection - supported values: j721e
+SOC?=j721e
