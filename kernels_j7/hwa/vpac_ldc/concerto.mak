@@ -15,9 +15,13 @@ ifeq ($(TARGET_CPU),R5F)
     CSOURCES    += vx_vpac_ldc_target.c
     IDIRS       += $(PDK_PATH)/packages
     IDIRS       += $(VISION_APPS_PATH)/
-    IDIRS       += $(XDCTOOLS_PATH)/packages
-    IDIRS       += $(BIOS_PATH)/packages
-    DEFS        += SOC_J721E
+    ifeq ($(TARGET_OS),SYSBIOS)
+      IDIRS       += $(XDCTOOLS_PATH)/packages
+      IDIRS       += $(BIOS_PATH)/packages
+    endif
+    ifeq ($(SOC),j721e)
+      DEFS+=SOC_J721E
+    endif
   endif
 else
   CSOURCES    += vx_vpac_ldc_target_sim.c
@@ -25,7 +29,6 @@ else
 endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
-IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include
 IDIRS       += $(IMAGING_PATH)/algos/awb/include

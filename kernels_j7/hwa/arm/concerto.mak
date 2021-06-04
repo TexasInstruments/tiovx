@@ -12,7 +12,6 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
-IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)

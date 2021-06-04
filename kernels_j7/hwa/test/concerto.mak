@@ -7,8 +7,8 @@ include $(PRELUDE)
 TARGET      := vx_kernels_hwa_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
-IDIRS       += $(HOST_ROOT)/utils/include
+IDIRS       += $(TIOVX_PATH)/conformance_tests
+IDIRS       += $(TIOVX_PATH)/utils/include
 IDIRS       += $(VISION_APPS_PATH)/
 IDIRS       += $(IMAGING_PATH)/
 

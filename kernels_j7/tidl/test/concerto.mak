@@ -6,7 +6,7 @@ include $(PRELUDE)
 TARGET      := vx_tiovx_tidl_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
+IDIRS       += $(TIOVX_PATH)/conformance_tests
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
 IDIRS       += $(TIOVX_PATH)/utils/include

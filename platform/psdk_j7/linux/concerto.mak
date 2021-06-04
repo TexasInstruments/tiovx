@@ -22,7 +22,7 @@ CSOURCES    := \
     ../common/tivx_platform.c                       \
 	../common/tivx_mem.c                                      \
 
-IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(VISION_APPS_PATH)
 

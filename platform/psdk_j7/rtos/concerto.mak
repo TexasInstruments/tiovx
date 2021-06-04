@@ -1,7 +1,7 @@
 
 ifeq ($(TARGET_PLATFORM), J7)
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71))
-ifeq ($(TARGET_OS),SYSBIOS)
+ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS))
 
 include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_rtos
@@ -18,13 +18,16 @@ CSOURCES    := 	tivx_event.c \
 				../common/tivx_platform.c \
 				../common/tivx_host.c
 
-IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(VISION_APPS_PATH)
+
+ifeq ($(TARGET_OS),SYSBIOS)
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
-IDIRS       += $(VISION_APPS_PATH)
+endif
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

@@ -8,14 +8,18 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
-IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(PDK_PATH)/packages
-IDIRS       += $(XDCTOOLS_PATH)/packages
-IDIRS       += $(BIOS_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
 
+ifeq ($(TARGET_OS),SYSBIOS)
+IDIRS       += $(XDCTOOLS_PATH)/packages
+IDIRS       += $(BIOS_PATH)/packages
+endif
+
+ifeq ($(SOC),j721e)
 DEFS+=SOC_J721E
+endif
 
 include $(FINALE)
 

@@ -23,17 +23,21 @@ endif
 
 IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(VISION_APPS_PATH)/
-IDIRS       += $(XDCTOOLS_PATH)/packages
-IDIRS       += $(BIOS_PATH)/packages
+
+ifeq ($(TARGET_OS),SYSBIOS)
+  IDIRS       += $(XDCTOOLS_PATH)/packages
+  IDIRS       += $(BIOS_PATH)/packages
+endif
 
 ifeq ($(BUILD_VPAC3),yes)
 DEFS        += VPAC3 SOC_J721S2
 endif
 
-DEFS        += SOC_J721E
+ifeq ($(SOC),j721e)
+  DEFS+=SOC_J721E
+endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
-IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include
 IDIRS       += $(IMAGING_PATH)/algos/awb/include
