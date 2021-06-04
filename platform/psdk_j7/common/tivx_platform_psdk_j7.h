@@ -27,7 +27,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (35u)
+#define TIVX_PLATFORM_MAX_TARGETS            (31u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -126,38 +126,26 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for Display2 */
     TIVX_TARGET_ID_DISPLAY2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 11u),
 
-    /*! \brief target ID for VDEC1 */
-    TIVX_TARGET_ID_VDEC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_1, 12u),
-
-    /*! \brief target ID for VDEC2 */
-    TIVX_TARGET_ID_VDEC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_1, 13u),
-
-    /*! \brief target ID for VENC1 */
-    TIVX_TARGET_ID_VENC1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_1, 14u),
-
-    /*! \brief target ID for VENC2 */
-    TIVX_TARGET_ID_VENC2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_1, 15u),
-
     /*! \brief target ID for CSITX */
-    TIVX_TARGET_ID_CSITX = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 16u),
+    TIVX_TARGET_ID_CSITX = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 12u),
 
     /*! \brief target ID for Capture3 */
-    TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 17u),
+    TIVX_TARGET_ID_CAPTURE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 13u),
 
     /*! \brief target ID for Capture4 */
-    TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 18u),
+    TIVX_TARGET_ID_CAPTURE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 14u),
 
     /*! \brief target ID for Capture5 */
-    TIVX_TARGET_ID_CAPTURE5 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 19u),
+    TIVX_TARGET_ID_CAPTURE5 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 15u),
 
     /*! \brief target ID for Capture6 */
-    TIVX_TARGET_ID_CAPTURE6 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 20u),
+    TIVX_TARGET_ID_CAPTURE6 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 16u),
 
     /*! \brief target ID for Capture7 */
-    TIVX_TARGET_ID_CAPTURE7 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 21u),
+    TIVX_TARGET_ID_CAPTURE7 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 17u),
 
     /*! \brief target ID for Capture8 */
-    TIVX_TARGET_ID_CAPTURE8 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 22u),
+    TIVX_TARGET_ID_CAPTURE8 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 18u),
 
     /*! \brief target ID for Display M2M1 */
     TIVX_TARGET_ID_DISPLAY_M2M1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 23u),
@@ -200,10 +188,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_CAPTURE2, (vx_enum)TIVX_TARGET_ID_CAPTURE2},                           \
     {TIVX_TARGET_DISPLAY1, (vx_enum)TIVX_TARGET_ID_DISPLAY1},                           \
     {TIVX_TARGET_DISPLAY2, (vx_enum)TIVX_TARGET_ID_DISPLAY2},                           \
-    {TIVX_TARGET_VDEC1, (vx_enum)TIVX_TARGET_ID_VDEC1},                                 \
-    {TIVX_TARGET_VDEC2, (vx_enum)TIVX_TARGET_ID_VDEC2},                                 \
-    {TIVX_TARGET_VENC1, (vx_enum)TIVX_TARGET_ID_VENC1},                                 \
-    {TIVX_TARGET_VENC2, (vx_enum)TIVX_TARGET_ID_VENC2},                                 \
     {TIVX_TARGET_CSITX, (vx_enum)TIVX_TARGET_ID_CSITX},                                 \
     {TIVX_TARGET_CAPTURE3, (vx_enum)TIVX_TARGET_ID_CAPTURE3},                           \
     {TIVX_TARGET_CAPTURE4, (vx_enum)TIVX_TARGET_ID_CAPTURE4},                           \

@@ -74,8 +74,6 @@
 #include <TI/j7_capture.h>
 #include <TI/j7_display.h>
 #include <TI/j7_csitx.h>
-#include <TI/j7_video_decoder.h>
-#include <TI/j7_video_encoder.h>
 #include <TI/j7_nodes.h>
 #include <TI/j7_display_m2m.h>
 
@@ -181,22 +179,6 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DISPLAY2     "DISPLAY2"
-/*! \brief Target name for VDEC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VDEC1     "VDEC1"
-/*! \brief Target name for VDEC2
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VDEC2     "VDEC2"
-/*! \brief Target name for VENC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VENC1     "VENC1"
-/*! \brief Target name for VENC2
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VENC2     "VENC2"
 /*! \brief Target name for CSITX
  * \ingroup group_tivx_ext_targets
  */

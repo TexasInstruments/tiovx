@@ -77,8 +77,6 @@ vx_status tivxAddKernelVpacViss(vx_context context);
 vx_status tivxAddKernelDisplay(vx_context context);
 vx_status tivxAddKernelCapture(vx_context context);
 vx_status tivxAddKernelCsitx(vx_context context);
-vx_status tivxAddKernelVideoDecoder(vx_context context);
-vx_status tivxAddKernelVideoEncoder(vx_context context);
 vx_status tivxAddKernelDisplayM2M(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
@@ -93,8 +91,6 @@ vx_status tivxRemoveKernelVpacViss(vx_context context);
 vx_status tivxRemoveKernelDisplay(vx_context context);
 vx_status tivxRemoveKernelCapture(vx_context context);
 vx_status tivxRemoveKernelCsitx(vx_context context);
-vx_status tivxRemoveKernelVideoDecoder(vx_context context);
-vx_status tivxRemoveKernelVideoEncoder(vx_context context);
 vx_status tivxRemoveKernelDisplayM2M(vx_context context);
 
 #endif /* TIVX_HWA_HOST_PRIV_H_ */
