@@ -67,7 +67,7 @@ const char *tivx_utils_get_test_file_dir()
 {
     const char *env;
     
-#if defined(SYSBIOS)
+#if defined(SYSBIOS) || defined(FREERTOS)
     env = tivxPlatformGetEnv("VX_TEST_DATA_PATH");
 #else
     env = getenv("VX_TEST_DATA_PATH");
@@ -126,7 +126,7 @@ vx_status tivx_utils_expand_file_path(const char *inFilePath, char *outFilePath)
             strncpy(outFilePath, &start[2], len);
             outFilePath[len] = '\0';
 
-#if defined(SYSBIOS)
+#if defined(SYSBIOS) || defined(FREERTOS)
             b = tivxPlatformGetEnv(outFilePath);
 #else
             b = getenv(outFilePath);
