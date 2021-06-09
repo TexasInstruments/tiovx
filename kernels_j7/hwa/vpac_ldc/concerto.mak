@@ -5,7 +5,7 @@ ifeq ($(BUILD_HWA_KERNELS),yes)
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vpac_ldc
 TARGETTYPE  := library
-CSOURCES    := vx_kernels_hwa_target.c
+CSOURCES    := vx_kernels_hwa_target.c vx_vpac_ldc_target_dcc.c
 
 ifeq ($(TARGET_CPU),R5F)
   ifeq ($(BUILD_VLAB),yes)
@@ -13,19 +13,20 @@ ifeq ($(TARGET_CPU),R5F)
     IDIRS       += $(J7_C_MODELS_PATH)/include
   else
     CSOURCES    += vx_vpac_ldc_target.c
-    IDIRS       += $(PDK_PATH)/packages
-    IDIRS       += $(VISION_APPS_PATH)/
-    ifeq ($(TARGET_OS),SYSBIOS)
-      IDIRS       += $(XDCTOOLS_PATH)/packages
-      IDIRS       += $(BIOS_PATH)/packages
-    endif
-    ifeq ($(SOC),j721e)
-      DEFS+=SOC_J721E
-    endif
   endif
 else
-  CSOURCES    += vx_vpac_ldc_target_sim.c
+  CSOURCES    += vx_vpac_ldc_target_sim.c vx_vpac_ldc_target_sim_priv.c
   IDIRS       += $(J7_C_MODELS_PATH)/include
+endif
+
+IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(VISION_APPS_PATH)/
+ifeq ($(TARGET_OS),SYSBIOS)
+  IDIRS       += $(XDCTOOLS_PATH)/packages
+  IDIRS       += $(BIOS_PATH)/packages
+endif
+ifeq ($(SOC),j721e)
+  DEFS        += SOC_J721E
 endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include

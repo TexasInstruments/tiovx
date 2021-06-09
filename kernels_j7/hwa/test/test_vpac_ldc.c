@@ -64,18 +64,19 @@
 #include <TI/tivx.h>
 #include <TI/j7.h>
 #include "test_engine/test.h"
+#include "tivx_utils_file_rd_wr.h"
 #include <string.h>
 #include <math.h>
 #include <float.h>
 #include "tivx_utils_checksum.h"
 #include "test_hwa_common.h"
+#include <utils/iss/include/app_iss.h>
 
 #ifndef M_PI
 #define M_PIF   3.14159265358979323846f
 #else
 #define M_PIF   (vx_float32)M_PI
 #endif
-
 
 TESTCASE(tivxHwaVpacLdc, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -164,6 +165,250 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         tivxHwaUnLoadKernels(context);
     }
 }
+
+static vx_status readNV12Input(char* file_name, vx_image in_img)
+{
+    vx_status status;
+
+    status = vxGetStatus((vx_reference)in_img);
+
+    if(status == VX_SUCCESS)
+    {
+        FILE * fp = fopen(file_name,"rb");
+        vx_size arr_len;
+        vx_int32 i, j;
+
+        if(fp == NULL)
+        {
+            printf("Unable to open file %s \n", file_name);
+            return (VX_FAILURE);
+        }
+
+        {
+            vx_rectangle_t rect;
+            vx_imagepatch_addressing_t image_addr;
+            vx_map_id map_id;
+            void * data_ptr;
+            uint8_t *data_ptr_8;
+            vx_uint32  img_width;
+            vx_uint32  img_height;
+            vx_uint32 img_format;
+            vx_uint32  num_bytes = 0;
+
+            vxQueryImage(in_img, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+            vxQueryImage(in_img, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+            vxQueryImage(in_img, VX_IMAGE_FORMAT, &img_format, sizeof(vx_uint32));
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = img_width;
+            rect.end_y = img_height;
+            status = vxMapImagePatch(in_img,
+                                    &rect,
+                                    0,
+                                    &map_id,
+                                    &image_addr,
+                                    &data_ptr,
+                                    VX_WRITE_ONLY,
+                                    VX_MEMORY_TYPE_HOST,
+                                    VX_NOGAP_X);
+
+            /* Copy Luma */
+            data_ptr_8 = (uint8_t *)data_ptr;
+            for (j = 0; j < img_height; j++)
+            {
+                num_bytes += fread(data_ptr_8, 1, img_width, fp);
+                data_ptr_8 += image_addr.stride_y;
+            }
+
+            if(num_bytes != (img_width*img_height)) {
+                printf("Luma bytes read = %d, expected = %d\n", num_bytes, img_width*img_height);
+                return (VX_FAILURE);
+            }
+
+            vxUnmapImagePatch(in_img, map_id);
+
+            if(img_format == VX_DF_IMAGE_NV12)
+            {
+                rect.start_x = 0;
+                rect.start_y = 0;
+                rect.end_x = img_width;
+                rect.end_y = img_height / 2;
+                status = vxMapImagePatch(in_img,
+                                        &rect,
+                                        1,
+                                        &map_id,
+                                        &image_addr,
+                                        &data_ptr,
+                                        VX_WRITE_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X);
+
+
+                /* Copy CbCr */
+                num_bytes = 0;
+                data_ptr_8 = (uint8_t *)data_ptr;
+                for (j = 0; j < img_height/2; j++)
+                {
+                    num_bytes += fread(data_ptr_8, 1, img_width, fp);
+                    data_ptr_8 += image_addr.stride_y;
+                }
+
+                if(num_bytes != (img_width*img_height/2)) {
+                    printf("CbCr bytes read = %d, expected = %d\n", num_bytes, img_width*img_height/2);
+                    return (VX_FAILURE);
+                }
+
+                vxUnmapImagePatch(in_img, map_id);
+            }
+        }
+
+        fclose(fp);
+    }
+
+    return(status);
+}
+
+static vx_status save_image_from_ldc(vx_image y8, char *filename_prefix)
+{
+    char filename[MAXPATHLENGTH];
+    vx_status status;
+
+    snprintf(filename, MAXPATHLENGTH, "%s/%s_y8.bmp",
+        ct_get_test_file_path(), filename_prefix);
+
+    status = tivx_utils_save_vximage_to_bmpfile(filename, y8);
+
+    return status;
+}
+
+TEST(tivxHwaVpacLdc, testGraphProcessingDcc)
+{
+    vx_context context = context_->vx_context_;
+    vx_image input = 0, output = 0;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    tivx_vpac_ldc_params_t params;
+
+    vx_user_data_object dcc_param_ldc = NULL;
+    const vx_char dcc_ldc_user_data_object_name[] = "dcc_ldc";
+    vx_size dcc_buff_size = 1;
+    vx_map_id dcc_ldc_buf_map_id;
+    uint8_t * dcc_ldc_buf;
+    int32_t dcc_status;
+    uint32_t sensor_dcc_id;
+    uint32_t sensor_dcc_mode;
+    char *sensor_name = NULL;
+    char *file_name = NULL;
+    char file[MAXPATHLENGTH];
+    uint32_t checksum_expected[2] = {0x00f3ac34, 0xc8295b0e};
+    uint32_t checksum_actual;
+    size_t sz;
+    vx_rectangle_t rect;
+
+    sensor_name = SENSOR_SONY_IMX390_UB953_D3;
+    sensor_dcc_mode = 0;
+    sensor_dcc_id = 390;
+    file_name = "psdkra/app_single_cam/IMX390_001/0_output1.yuv";
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    {
+        tivxHwaLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(input = vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output = vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+
+        sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), file_name);
+        ASSERT_(return, (sz < MAXPATHLENGTH));
+
+        VX_CALL(readNV12Input(file, input));
+
+        tivx_vpac_ldc_params_init(&params);
+        params.luma_interpolation_type = 1;
+        params.dcc_camera_id = sensor_dcc_id;
+
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
+                                                            sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        /* Creating DCC */
+        dcc_buff_size = appIssGetDCCSizeLDC(sensor_name, sensor_dcc_mode);
+
+        ASSERT_VX_OBJECT(dcc_param_ldc = vxCreateUserDataObject( context, (const vx_char*)&dcc_ldc_user_data_object_name,
+            dcc_buff_size, NULL),(enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        VX_CALL(vxMapUserDataObject(
+            dcc_param_ldc,
+            0,
+            dcc_buff_size,
+            &dcc_ldc_buf_map_id,
+            (void **)&dcc_ldc_buf,
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            0
+        ));
+        memset(dcc_ldc_buf, 0xAB, dcc_buff_size);
+
+        dcc_status = appIssGetDCCBuffLDC(sensor_name, sensor_dcc_mode, dcc_ldc_buf, dcc_buff_size);
+        ASSERT(dcc_status == 0);
+
+        VX_CALL(vxUnmapUserDataObject(dcc_param_ldc, dcc_ldc_buf_map_id));
+        /* Done w/ DCC */
+
+        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
+                                param_obj,
+                                NULL,
+                                NULL,
+                                NULL,
+                                NULL,
+                                dcc_param_ldc,
+                                input,
+                                output,
+                                NULL), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxVerifyGraph(graph));
+        VX_CALL(vxProcessGraph(graph));
+
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 1920;
+        rect.end_y = 1080;
+
+        checksum_actual = tivx_utils_simple_image_checksum(output, 0, rect);
+        printf("0x%08x\n", checksum_actual);
+        ASSERT(checksum_expected[0] == checksum_actual);
+        rect.end_y /= 2;
+        checksum_actual = tivx_utils_simple_image_checksum(output, 1, rect);
+        printf("0x%08x\n", checksum_actual);
+        ASSERT(checksum_expected[1] == checksum_actual);
+
+        //save_image_from_ldc(input, "output/ldcin_y8");
+        //save_image_from_ldc(output, "output/ldcout_y8");
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseImage(&output));
+        VX_CALL(vxReleaseImage(&input));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&dcc_param_ldc));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(output == 0);
+        ASSERT(input == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(dcc_param_ldc == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
 
 enum CT_AffineMatrixType {
     VX_MATRIX_IDENT = 0,
@@ -829,6 +1074,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
             checksum_actual = tivx_utils_simple_image_checksum(output_image, 0, rect);
             ASSERT(checksum_expected == checksum_actual);
         }
+
+        //save_image_from_ldc(output_image, "output/ldc_y8");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -2050,4 +2297,4 @@ TEST(tivxHwaVpacLdc, testNegativeMatrixType)
 }
 
 
-TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessing, testGraphProcessingPerspective, testFormats, testNegativeGraph, testNegativeMatrixType, testGraphProcessingCommand)
+TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessingDcc, testGraphProcessing, testGraphProcessingPerspective, testFormats, testNegativeGraph, testNegativeMatrixType, testGraphProcessingCommand)

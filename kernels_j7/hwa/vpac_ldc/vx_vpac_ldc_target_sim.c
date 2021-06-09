@@ -60,43 +60,16 @@
  *
  */
 
-#include "TI/tivx.h"
-#include "TI/j7.h"
-#include "VX/vx.h"
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernel_vpac_ldc.h"
-#include "TI/tivx_target_kernel.h"
-#include "tivx_kernels_target_utils.h"
+#include "vx_vpac_ldc_target_sim_priv.h"
+
 #include "tivx_hwa_vpac_ldc_priv.h"
 #include "vx_kernels_hwa_target.h"
-#include "ldc.h"
 
 /* #define ENABLE_DEBUG_PRINT */
 
 #ifdef ENABLE_DEBUG_PRINT
 #include "stdio.h"
 #endif
-
-typedef struct
-{
-    /* Pointers to inputs and output */
-    uint16_t *inY_16;
-    uint16_t *inC_16;
-    uint16_t *outY_16[2];
-    uint16_t *outC_16[2];
-    uint32_t *mesh;
-    uint32_t inY_buffer_size;
-    uint32_t inC_buffer_size;
-    uint32_t outY0_buffer_size;
-    uint32_t outC1_buffer_size;
-    uint32_t outY2_buffer_size;
-    uint32_t outC3_buffer_size;
-    uint32_t mesh_buffer_size;
-    uint32_t input_align_12bit;
-
-    ldc_config config;
-
-} tivxVpacLdcParams;
 
 static tivx_target_kernel vx_vpac_ldc_target_kernel = NULL;
 
@@ -129,7 +102,6 @@ void tivxVpacLdcSetWarpParams(ldc_settings *settings,
 static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
     tivx_obj_desc_user_data_object_t *luma_user_desc,
     tivx_obj_desc_user_data_object_t *chroma_user_desc);
-static void xyMeshSwapCpy(uint32_t *output, uint32_t *input, uint32_t num_points);
 
 #ifdef ENABLE_DEBUG_PRINT
 void print_csettings(ldc_settings *settings)
@@ -365,6 +337,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     tivx_obj_desc_image_t            *in_img_desc = NULL;
     tivx_obj_desc_image_t            *out0_img_desc = NULL;
     tivx_obj_desc_image_t            *out1_img_desc = NULL;
+    tivx_obj_desc_user_data_object_t *dcc_buf_desc = NULL;
     tivxVpacLdcParams                *prms = NULL;
 
     if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
@@ -399,6 +372,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
             out1_img_desc = (tivx_obj_desc_image_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
+            dcc_buf_desc = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_VPAC_LDC_DCC_DB_IDX];
 
             if (NULL != in_img_desc)
             {
@@ -585,26 +560,50 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     }
                 }
 
+                prms->ldcObj.sensor_dcc_id = params->dcc_camera_id;
+
                 tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr, configuration_desc->mem_size,
                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
             }
 
-            /* Configure mesh table */
-            tivxVpacLdcSetMeshParams(&prms->config.settings,
-                mesh_prms_desc, mesh_img_desc, prms->mesh);
+            if (NULL != dcc_buf_desc)
+            {
+                status = tivxVpacLdcSetParamsFromDcc(&prms->ldcObj, dcc_buf_desc);
+                if(status == VX_SUCCESS)
+                {
+                    /* In one shot, syncronize the drv data structures to the sim data structures */
+                    status = tivxVpacLdcSetConfigInSim(prms);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "Failed to Parse and Set ldc Params to simulator data structures\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "TIVX_VPAC_LDC_CMD_SET_LDC_DCC_PARAMS returned 0x%x\n", status);
+                }
+            }
+            else
+            {
+                /* Configure mesh table */
+                tivxVpacLdcSetMeshParams(&prms->config.settings,
+                    mesh_prms_desc, mesh_img_desc, prms->mesh);
 
-            tivxVpacLdcSetRegionParams(&prms->config.settings,
-                region_prms_desc);
+                tivxVpacLdcSetRegionParams(&prms->config.settings,
+                    region_prms_desc);
 
-            /* Configure warp coefficients */
-            tivxVpacLdcSetWarpParams(&prms->config.settings,
-                warp_matrix_desc);
+                /* Configure warp coefficients */
+                tivxVpacLdcSetWarpParams(&prms->config.settings,
+                    warp_matrix_desc);
+            }
 
             prms->config.settings.ylut_en = 0;
             prms->config.settings.clut_en = 0;
 
-            // additional (not in cfg file)
-            prms->config.settings.DDR_S = 6;                        // must be 6 before running LDC
+            /* additional (not in cfg file) */
+            prms->config.settings.DDR_S = 6;                        /* must be 6 before running LDC */
 
         }
         else
@@ -701,6 +700,36 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
                 tivxVpacLdcSetWarpParams(&prms->config.settings,
                     (tivx_obj_desc_matrix_t *)obj_desc
                         [TIVX_VPAC_LDC_SET_PARAMS_WARP_MATRIX_IDX]);
+            }
+            break;
+        }
+        case TIVX_VPAC_LDC_CMD_SET_LDC_DCC_PARAMS:
+        {
+            status = 0;
+            tivx_obj_desc_user_data_object_t *dcc_buf_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[0];
+            if (NULL != dcc_buf_desc)
+            {
+                status = tivxVpacLdcSetParamsFromDcc(&prms->ldcObj, dcc_buf_desc);
+                if(status == VX_SUCCESS)
+                {
+                    /* In one shot, syncronize the drv data structures to the sim data structures */
+                    status = tivxVpacLdcSetConfigInSim(prms);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                            "Failed to Parse and Set ldc Params to simulator data structures\n");
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxVpacLdcSetParamsFromDcc returned 0x%x\n", status);
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "TIVX_VPAC_LDC_CMD_SET_LDC_DCC_PARAMS : dcc_buf_desc is NULL\n", status);
+                status = (vx_status)VX_FAILURE;
             }
             break;
         }
@@ -845,20 +874,6 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
     {
         settings->ldmapen = 0;     // LD back mapping enable
     }
-}
-
-static void xyMeshSwapCpy(uint32_t *output, uint32_t *input, uint32_t num_points)
-{
-    uint32_t i, in_val, out_val;
-
-    for(i=0; i<num_points; i++)
-    {
-        in_val = input[i];
-        out_val = ((in_val & 0xFFFF) << 16) | ((in_val >> 16) & 0xFFFF);
-        output[i] = out_val;
-    }
-
-    return;
 }
 
 static void tivxVpacLdcSetRegionParams(ldc_settings *settings,

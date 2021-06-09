@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2019 Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -64,23 +64,8 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "TI/tivx.h"
-#include "TI/j7.h"
-#include "VX/vx.h"
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernel_vpac_ldc.h"
-#include "TI/tivx_target_kernel.h"
-#include "tivx_kernels_target_utils.h"
-#include "tivx_hwa_vpac_ldc_priv.h"
-#include "TI/tivx_event.h"
-#include "TI/tivx_mutex.h"
-
-#include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
+#include <vx_vpac_ldc_target_priv.h>
 #include "utils/perf_stats/include/app_perf_stats.h"
-
-#include "idcc.h"
-
-#define LDC_REMAP_LUT_DRV_EN (0)
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -90,38 +75,6 @@
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
-
-typedef struct
-{
-    uint32_t                            isAlloc;
-    Vhwa_M2mLdcCreateArgs               createArgs;
-    Ldc_RdBwLimitConfig                 bwLimitCfg;
-    Ldc_Config                          ldc_cfg;
-    Fvid2_Handle                        handle;
-    tivx_event                          waitForProcessCmpl;
-    Ldc_ErrEventParams                  errEvtPrms;
-    Ldc_RdBwLimitConfig                 rdBwLimitCfg;
-#if LDC_REMAP_LUT_DRV_EN
-    Ldc_RemapLutCfg                     lut_cfg;
-#endif
-    uint32_t                            num_output;
-
-    Fvid2_FrameList                     inFrmList;
-    Fvid2_FrameList                     outFrmList;
-    Fvid2_Frame                         inFrm;
-    Fvid2_Frame                         outFrm[LDC_MAX_OUTPUT];
-    Fvid2_CbParams                      cbPrms;
-
-    uint32_t                            err_stat;
-    uint32_t                            sensor_dcc_id;
-} tivxVpacLdcObj;
-
-
-typedef struct
-{
-    tivx_mutex      lock;
-    tivxVpacLdcObj  ldc_obj[VHWA_M2M_LDC_MAX_HANDLES];
-} tivxVpacLdcInstObj;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -139,9 +92,6 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status tivxVpacLdcSetParamsFromDcc(
-    const tivxVpacLdcObj                   *ldc_obj,
-    const tivx_obj_desc_user_data_object_t *dcc_buf_desc);
 static vx_status VX_CALLBACK tivxVpacLdcControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
@@ -568,7 +518,18 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         if (NULL != dcc_buf_desc)
         {
             status = tivxVpacLdcSetParamsFromDcc(ldc_obj, dcc_buf_desc);
-            if(status != VX_SUCCESS)
+            if(status == VX_SUCCESS)
+            {
+                int32_t  fvid2_status;
+                fvid2_status = Fvid2_control(ldc_obj->handle,
+                    IOCTL_VHWA_M2M_LDC_SET_PARAMS, (void*)&ldc_obj->ldc_cfg, NULL);
+                if (FVID2_SOK != fvid2_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Fvid2_control Failed: Set Params \n");
+                    status = (vx_status)VX_FAILURE;
+                }
+            }
+            else
             {
                 VX_PRINT(VX_ZONE_ERROR, "TIVX_VPAC_LDC_CMD_SET_LDC_DCC_PARAMS returned 0x%x\n", status);
             }
@@ -666,123 +627,6 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
     return status;
 }
 
-static vx_status tivxVpacLdcSetParamsFromDcc(
-    const tivxVpacLdcObj                   *ldc_obj,
-    const tivx_obj_desc_user_data_object_t *dcc_buf_desc)
-{
-    Ldc_Config *ldc_cfg = (Ldc_Config *)&ldc_obj->ldc_cfg;
-    vx_status status = (vx_status)VX_SUCCESS;
-    int32_t  fvid2_status = FVID2_SOK;
-
-    if (NULL != dcc_buf_desc)
-    {
-        uint32_t ldc_dcc_num_bytes = dcc_buf_desc->mem_size;
-        dcc_parser_output_params_t *pout = tivxMemAlloc(sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-        if (NULL == pout)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to allocate DCC parser output buffer \n");
-            status = (vx_status)VX_FAILURE;
-        }
-        else
-        {
-            vpac_ldc_dcc_cfg_t    *pcfg   = &pout->vpacLdcCfg;
-            vpac_ldc_dcc_params_t *params = &pcfg->ldc_dcc_params;
-
-            void *target_ptr_dcc;
-            target_ptr_dcc = tivxMemShared2TargetPtr(&dcc_buf_desc->mem_ptr);
-            tivxCheckStatus(&status, tivxMemBufferMap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-
-            uint8_t * dcc_ldc_buf = (uint8_t *)target_ptr_dcc;
-            int32_t dcc_buf_size = (int32_t)dcc_buf_desc->mem_size;
-
-            dcc_parser_input_params_t parser_input = {
-                dcc_ldc_buf,
-                (uint32_t)dcc_buf_size,
-                0,
-                0,
-                0,
-                ldc_obj->sensor_dcc_id
-            };
-
-            pout->useVpacLdcCfg = 0;
-            dcc_update(&parser_input, pout);
-
-            if (1U == pout->useVpacLdcCfg)
-            {
-                ldc_cfg->perspTrnsformCfg.enableWarp = params->pwarpen;
-                ldc_cfg->perspTrnsformCfg.coeffA     = params->affine_a;
-                ldc_cfg->perspTrnsformCfg.coeffB     = params->affine_b;
-                ldc_cfg->perspTrnsformCfg.coeffC     = params->affine_c;
-                ldc_cfg->perspTrnsformCfg.coeffD     = params->affine_d;
-                ldc_cfg->perspTrnsformCfg.coeffE     = params->affine_e;
-                ldc_cfg->perspTrnsformCfg.coeffF     = params->affine_f;
-                ldc_cfg->perspTrnsformCfg.coeffG     = params->affine_g;
-                ldc_cfg->perspTrnsformCfg.coeffH     = params->affine_h;
-
-                ldc_cfg->enableMultiRegions          = params->regmode_en;
-                ldc_cfg->outputBlockWidth            = params->ld_obw;
-                ldc_cfg->outputBlockHeight           = params->ld_obh;
-                ldc_cfg->pixelPad                    = params->ld_pad;
-                ldc_cfg->outputStartX                = params->ld_initx;
-                ldc_cfg->outputStartY                = params->ld_inity;
-
-                if (1U == ldc_cfg->enableMultiRegions)
-                {
-                    int32_t cnt1, cnt2;
-                    for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_HORZ_REGIONS; cnt1 ++)
-                    {
-                        ldc_cfg->regCfg.width[cnt1] = params->ld_sf_width[cnt1];
-                    }
-
-                    for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_VERT_REGIONS; cnt1 ++)
-                    {
-                        ldc_cfg->regCfg.height[cnt1] = params->ld_sf_height[cnt1];
-                    }
-
-                    for (cnt1 = 0; cnt1 < (int32_t)LDC_MAX_VERT_REGIONS; cnt1 ++)
-                    {
-                        for (cnt2 = 0; cnt2 < (int32_t)LDC_MAX_HORZ_REGIONS; cnt2 ++)
-                        {
-                            ldc_cfg->regCfg.enable[cnt1][cnt2]      = params->ld_sf_en[cnt1][cnt2];
-                            ldc_cfg->regCfg.blockWidth[cnt1][cnt2]  = params->ld_sf_obw[cnt1][cnt2];
-                            ldc_cfg->regCfg.blockHeight[cnt1][cnt2] = params->ld_sf_obh[cnt1][cnt2];
-                            ldc_cfg->regCfg.pixelPad[cnt1][cnt2]    = params->ld_sf_pad[cnt1][cnt2];
-                        }
-                    }
-                }
-
-                if (0U != params->ldmapen)
-                {
-                    Ldc_LutCfg *lut_cfg        = &ldc_cfg->lutCfg;
-
-                    ldc_cfg->enableBackMapping = (uint32_t)TRUE;
-                    lut_cfg->width             = params->mesh_frame_w;
-                    lut_cfg->height            = params->mesh_frame_h;
-                    lut_cfg->dsFactor          = params->table_m;
-                    lut_cfg->lineOffset        = params->mesh_table_pitch;
-
-                    //TODO: need to translate to physical address in the future when MMU is on
-                    lut_cfg->address = (uint64_t)pcfg->mesh_table;
-                }
-            }
-
-            fvid2_status = Fvid2_control(ldc_obj->handle,
-                IOCTL_VHWA_M2M_LDC_SET_PARAMS, (void*)&ldc_obj->ldc_cfg, NULL);
-            if (FVID2_SOK != fvid2_status)
-            {
-                VX_PRINT(VX_ZONE_ERROR, "Fvid2_control Failed: Set Params \n");
-                status = (vx_status)VX_FAILURE;
-            }
-
-            tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr_dcc, dcc_buf_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-
-            tivxMemFree(pout, sizeof(dcc_parser_output_params_t), (vx_enum)TIVX_MEM_EXTERNAL);
-        }
-    }
-
-    return status;
-}
-
 static vx_status VX_CALLBACK tivxVpacLdcControl(
        tivx_target_kernel_instance kernel,
        uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
@@ -841,7 +685,18 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
                 if (NULL != dcc_buf_desc)
                 {
                     status = tivxVpacLdcSetParamsFromDcc(ldc_obj, dcc_buf_desc);
-                    if(status != VX_SUCCESS)
+                    if(status == VX_SUCCESS)
+                    {
+                        int32_t  fvid2_status;
+                        fvid2_status = Fvid2_control(ldc_obj->handle,
+                            IOCTL_VHWA_M2M_LDC_SET_PARAMS, (void*)&ldc_obj->ldc_cfg, NULL);
+                        if (FVID2_SOK != fvid2_status)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Fvid2_control Failed: Set Params \n");
+                            status = (vx_status)VX_FAILURE;
+                        }
+                    }
+                    else
                     {
                         VX_PRINT(VX_ZONE_ERROR, "tivxVpacLdcSetParamsFromDcc returned 0x%x\n", status);
                     }

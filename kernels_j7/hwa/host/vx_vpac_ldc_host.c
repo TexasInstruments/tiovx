@@ -550,6 +550,15 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Mesh parameter subsample_factor should be between 0 and 7 inclusive\n");
             }
         }
+
+        if (NULL != dcc_db)
+        {
+            if ((NULL != warp_matrix) || (NULL != region_prms) || (NULL != mesh_prms) || (NULL != mesh_img))
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "If dcc_db is used, then the following inputs should be NULL: warp_matrix, region_prms, mesh_prms, mesh_img.\n");
+            }
+        }
     }
 
     return status;
