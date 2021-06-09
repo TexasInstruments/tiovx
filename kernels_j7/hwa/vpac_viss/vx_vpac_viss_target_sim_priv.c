@@ -190,10 +190,10 @@ static void tivxVpacVissParseCacParams(tivxVpacVissParams *prms)
                 /* Lut is interleaved, but c model needs 4 buffers */
                 for(i=0; i<2048; i++)
                 {
-                    prms->cac_lut[0][i] = (cac_prms->displacementLut[i] >>  0) & 0x000F;
-                    prms->cac_lut[1][i] = (cac_prms->displacementLut[i] >>  8) & 0x000F;
-                    prms->cac_lut[2][i] = (cac_prms->displacementLut[i] >> 16) & 0x000F;
-                    prms->cac_lut[3][i] = (cac_prms->displacementLut[i] >> 24) & 0x000F;
+                    prms->cac_lut[0][i] = (int8_t)((cac_prms->displacementLut[i] >>  0) & 0x00FF);
+                    prms->cac_lut[1][i] = (int8_t)((cac_prms->displacementLut[i] >>  8) & 0x00FF);
+                    prms->cac_lut[2][i] = (int8_t)((cac_prms->displacementLut[i] >> 16) & 0x00FF);
+                    prms->cac_lut[3][i] = (int8_t)((cac_prms->displacementLut[i] >> 24) & 0x00FF);
                 }
 
                 vissCfgRef->cacCfg = NULL;
