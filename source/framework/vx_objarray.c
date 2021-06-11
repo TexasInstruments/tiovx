@@ -360,7 +360,7 @@ static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items
     {
         if (NULL != objarr->ref[i])
         {
-            /* increment the internal counter on the image, not the
+            /* decrement the internal counter on the object, not the
                external one */
             ownDecrementReference(objarr->ref[i], (vx_enum)VX_INTERNAL);
 
