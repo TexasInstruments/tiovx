@@ -458,7 +458,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_prms = (tivx_vpac_ldc_params_t *)target_ptr;
 
         /* Initialize LDC Config with defaults */
-        ldcCfg_init(ldc_cfg);
+        Ldc_ConfigInit(ldc_cfg);
 
         /* Set up input and output image formats */
         ldc_obj->num_output = 1U;
