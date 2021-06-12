@@ -88,7 +88,7 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_r
             (vx_enum)VX_NOGAP_X
             );
 
-        stride_xby2 = (image_addr.stride_x == 0) ? 3U : ((uint32_t)image_addr.stride_x*2U);
+        stride_xby2 = (image_addr.stride_x == 0) ? 3U : ((uint32_t)image_addr.stride_x/(uint32_t)image_addr.step_x*2U);
 
         if ((vx_status)VX_SUCCESS == status)
         {
