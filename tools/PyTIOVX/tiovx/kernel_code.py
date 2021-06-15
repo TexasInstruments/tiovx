@@ -1675,6 +1675,7 @@ class KernelExportCode :
             if self.prms_commented_out:
                 self.target_c_code.write_line("#endif" , files=self.prms_write)
         need_plane_idx_var = False
+        need_exposure_idx_var = False
         need_pyramid_idx_var = False
         printed_incrementer = False
         for prm in self.kernel.params :
@@ -1686,6 +1687,8 @@ class KernelExportCode :
                             break
                 if Type.PYRAMID == prm.type:
                     need_pyramid_idx_var = True
+            if Type.RAW_IMAGE == prm.type :
+                need_exposure_idx_var = True
             self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
             if prm.type == Type.PYRAMID :
                 self.target_c_code.write_line("%s *img_%s_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];" % (Type.get_obj_desc_name(Type.IMAGE), prm.name_lower) )
@@ -1700,6 +1703,8 @@ class KernelExportCode :
                     printed_incrementer = True
         if need_plane_idx_var is True :
             self.target_c_code.write_line("uint16_t plane_idx;")
+        if need_exposure_idx_var is True :
+            self.target_c_code.write_line("uint16_t exposure_idx;")
         if need_pyramid_idx_var is True and printed_incrementer is False :
             self.target_c_code.write_line("vx_uint32 i;")
 
@@ -1770,6 +1775,17 @@ class KernelExportCode :
                 self.target_c_code.write_line("void *%s_target_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS] = {NULL};" % prm.name_lower )
             elif prm.type == Type.OBJECT_ARRAY :
                 self.target_c_code.write_line("void *%s_target_ptr[TIVX_OBJECT_ARRAY_MAX_ITEMS] = {NULL};" % prm.name_lower )
+            elif prm.type == Type.RAW_IMAGE :
+                self.target_c_code.write_line("void *%s_target_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES] = {NULL};" % prm.name_lower )
+            elif prm.type == Type.IMAGE :
+                if len(prm.data_types) > 1 :
+                    for dt in prm.data_types[0:-1] :
+                        if DfImage.get_num_planes(DfImage.get_df_enum_from_string(dt)) > 1 :
+                            self.target_c_code.write_line("void *%s_target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL};" % prm.name_lower )
+                        else :
+                            self.target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
+                else :
+                    self.target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
             else :
                 self.target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
         self.target_c_code.write_newline()
@@ -1781,7 +1797,7 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type:
+                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type or Type.RAW_IMAGE == prm.type:
                     # Check if data type has multi-planes
                     self.multiplane = False
                     if len(prm.data_types) > 1 :
@@ -1793,9 +1809,9 @@ class KernelExportCode :
                         if self.multiplane :
                             self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                             self.target_c_code.write_open_brace()
-                            self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(&%s->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
+                            self.target_c_code.write_line("%s_target_ptr[plane_idx] = tivxMemShared2TargetPtr(&%s->mem_ptr[plane_idx]);" % (prm.name_lower, desc))
                             if prm.do_map :
-                                self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
+                                self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferMap(%s_target_ptr[plane_idx]," % prm.name_lower )
                                 self.target_c_code.write_line("   %s->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
                                 self.target_c_code.write_line("   (vx_enum)%s));" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
@@ -1805,6 +1821,15 @@ class KernelExportCode :
                                 self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                 self.target_c_code.write_line("   %s->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
                                 self.target_c_code.write_line("   (vx_enum)%s));" % Direction.get_access_type(prm.direction))
+                    elif prm.type == Type.RAW_IMAGE :
+                        self.target_c_code.write_line("for(exposure_idx=0; exposure_idx<%s->params.num_exposures; exposure_idx++)" % desc )
+                        self.target_c_code.write_open_brace()
+                        self.target_c_code.write_line("%s_target_ptr[exposure_idx] = tivxMemShared2TargetPtr(&%s->mem_ptr[exposure_idx]);" % (prm.name_lower, desc))
+                        if prm.do_map :
+                            self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferMap(%s_target_ptr[exposure_idx]," % prm.name_lower )
+                            self.target_c_code.write_line("   %s->mem_size[exposure_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                            self.target_c_code.write_line("   (vx_enum)%s));" % Direction.get_access_type(prm.direction))
+                        self.target_c_code.write_close_brace()
                     elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY:
                         if prm.type == Type.PYRAMID :
                             self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
@@ -1919,7 +1944,7 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type:
+                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type or Type.RAW_IMAGE == prm.type:
                     # Check if data type has multi-planes
                     self.multiplane = False
                     if len(prm.data_types) > 1 :
@@ -1931,7 +1956,7 @@ class KernelExportCode :
                         if self.multiplane :
                             self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                             self.target_c_code.write_open_brace()
-                            self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
+                            self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferUnmap(%s_target_ptr[plane_idx]," % prm.name_lower )
                             self.target_c_code.write_line("   %s->mem_size[plane_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
                             self.target_c_code.write_line("    (vx_enum)%s));" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
@@ -1939,6 +1964,13 @@ class KernelExportCode :
                             self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
                             self.target_c_code.write_line("   %s->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
                             self.target_c_code.write_line("    (vx_enum)%s));" % Direction.get_access_type(prm.direction))
+                    elif prm.type == Type.RAW_IMAGE :
+                        self.target_c_code.write_line("for(exposure_idx=0; exposure_idx<%s->params.num_exposures; exposure_idx++)" % desc )
+                        self.target_c_code.write_open_brace()
+                        self.target_c_code.write_line("tivxCheckStatus(&status, tivxMemBufferUnmap(%s_target_ptr[exposure_idx]," % prm.name_lower )
+                        self.target_c_code.write_line("   %s->mem_size[exposure_idx], (vx_enum)VX_MEMORY_TYPE_HOST," % desc)
+                        self.target_c_code.write_line("    (vx_enum)%s));" % Direction.get_access_type(prm.direction))
+                        self.target_c_code.write_close_brace()
                     elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY :
                         if self.multiplane :
                             if prm.type == Type.PYRAMID :
