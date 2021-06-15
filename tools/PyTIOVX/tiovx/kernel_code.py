@@ -3068,12 +3068,16 @@ class KernelExportCode :
         self.h_filename = "tivx_kernel_" + kernel.name_lower + ".h";
         self.host_c_filename = "vx_" + kernel.name_lower + "_host.c";
         self.target_c_filename = "vx_" + kernel.name_lower + "_target.c";
-        self.bam_target_c_filename = "vx_bam_" + kernel.name_lower + "_target.c";
+        # Disabling BAM generation while this is not supported
+        #self.bam_target_c_filename = "vx_bam_" + kernel.name_lower + "_target.c";
 
         self.target_uses_dsp = False
+        # Disabling BAM generation while this is not supported
+        '''
         for target in self.kernel.targets :
             if target == Target.DSP1 or target == Target.DSP2 :
                 self.target_uses_dsp = True
+        '''
 
         self.prms_write = 2
         if self.kernel.localMem == True :
