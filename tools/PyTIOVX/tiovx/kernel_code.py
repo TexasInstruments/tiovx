@@ -2147,6 +2147,7 @@ class KernelExportCode :
             eveAdded = False
             armAdded = False
             ipuAdded = False
+            c7xAdded = False
             targetCpuListString = "X86 x86_64 "
             for tar in kernel.targets :
                 if (tar == Target.DSP1 or tar == Target.DSP2) and (dspAdded == False) :
@@ -2161,6 +2162,9 @@ class KernelExportCode :
                 if (tar == Target.IPU1_0 or tar == Target.IPU1_1 or tar == Target.IPU2) and (ipuAdded == False) :
                     targetCpuListString+="M4 R5F "
                     ipuAdded = True
+                if (tar == Target.DSP_C7_1) and (c7xAdded == False) :
+                    targetCpuListString+="C71 "
+                    c7xAdded = True
             self.module_target_concerto_code.write_newline()
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), " + targetCpuListString + "))")
             self.module_target_concerto_code.write_newline()
@@ -2568,12 +2572,8 @@ class KernelExportCode :
             self.host_kernels_code.write_line("void tivxSetSelfCpuId(vx_enum cpu_id);")
             self.host_kernels_code.write_newline()
             for target in self.kernel.targets :
-                if Target.is_j6_target(target) :
-                    self.host_kernels_code.write_line("tivxSetSelfCpuId(%s);" % Cpu.get_vx_enum_name(Target.get_cpu(target)))
-                    self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
-                else :
-                    self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);")
-                    self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
+                self.host_kernels_code.write_line("tivxSetSelfCpuId(%s);" % Cpu.get_vx_enum_name(Target.get_cpu(target)))
+                self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
             self.host_kernels_code.write_line("#endif")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 1U;")
