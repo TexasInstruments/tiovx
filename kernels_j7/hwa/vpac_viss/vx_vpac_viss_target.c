@@ -586,6 +586,16 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         }
     }
 
+    /* before writing configuration set application buffer */
+    if ((vx_status) VX_SUCCESS == status)
+    {
+        status = tivxVpacVissSetConfigBuffer(vissObj);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set ConfigBuf in driver\n");
+        }
+    }
+
     if ((vx_status)VX_SUCCESS == status)
     {
         /* All Formats, frame size, module enables are set in
@@ -749,6 +759,11 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
             }
 
             tivxVpacVissDeInitDcc(vissObj);
+
+            if (true == vissObj->configurationBuffer.configThroughUdmaFlag)
+            {
+                tivxVpacVissDeleteConfigBuffer(vissObj);
+            }
 
             Fvid2_delete(vissObj->handle, NULL);
             vissObj->handle = NULL;

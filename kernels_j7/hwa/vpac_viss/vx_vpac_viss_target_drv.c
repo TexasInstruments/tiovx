@@ -123,6 +123,81 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj)
     return (status);
 }
 
+vx_status tivxVpacVissSetConfigBuffer(tivxVpacVissObj *vissObj)
+{
+    vx_status status =      (vx_status) VX_SUCCESS;
+    int32_t fvid2_status =  FVID2_SOK;
+
+    /* Initialize buffer pointer to NULL */
+    vissObj->configurationBuffer.bufferPtr = NULL;
+    /* Initialize length to zero */
+    vissObj->configurationBuffer.length = 0;
+    /* Initialize configThroughUDMA to false */
+    vissObj->configurationBuffer.configThroughUdmaFlag = false;
+
+    /* Get configuration buffer information */
+    fvid2_status = Fvid2_control(vissObj->handle,
+    IOCTL_VHWA_M2M_VISS_GET_BUFF_INFO, (void*) &vissObj->configurationBuffer,
+            NULL);
+
+    if (FVID2_SOK != fvid2_status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Get config buff info from driver\n");
+    }
+
+    if (FVID2_SOK == fvid2_status)
+    {
+        /* configThroughUdmaFlag is true, allocate config buffer */
+        if (true == vissObj->configurationBuffer.configThroughUdmaFlag)
+        {
+            /* allocate buffer for the length requested */
+            vissObj->configurationBuffer.bufferPtr = (uint32_t*) tivxMemAlloc(
+                    vissObj->configurationBuffer.length,
+                    (vx_enum) TIVX_MEM_EXTERNAL);
+            if (NULL == vissObj->configurationBuffer.bufferPtr)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "failed to allocate %d bytes !!!\n",
+                        vissObj->configurationBuffer.length);
+                fvid2_status = FVID2_EALLOC;
+            }
+            else
+            {
+                /* Set configuration buffer information */
+                fvid2_status = Fvid2_control(vissObj->handle,
+                IOCTL_VHWA_M2M_VISS_SET_BUFF_INFO,
+                        (void*) &vissObj->configurationBuffer, NULL);
+
+                if (FVID2_SOK != fvid2_status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                            "Failed to set config buff info into driver\n");
+                }
+            }
+        }
+    }
+    /* Convert FVID2 status to OpenVX Status */
+    if (FVID2_SOK != fvid2_status)
+    {
+        status = (vx_status) VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        status = (vx_status) VX_SUCCESS;
+    }
+
+    return (status);
+}
+
+void tivxVpacVissDeleteConfigBuffer(tivxVpacVissObj *vissObj)
+{
+    if (NULL != vissObj->configurationBuffer.bufferPtr)
+    {
+        tivxMemFree((void*) vissObj->configurationBuffer.bufferPtr,
+                vissObj->configurationBuffer.length,
+                (vx_enum) TIVX_MEM_EXTERNAL);
+    }
+}
+
 static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef)
 {

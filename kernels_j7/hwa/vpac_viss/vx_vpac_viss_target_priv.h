@@ -340,6 +340,8 @@ typedef struct
     uint64_t                            ctx_mem_phys_ptr;
     /*! Physical address of the context memory */
     Glbce_StatsInfo                     glbceStatInfo;
+    /*! configuration buffer, if configThroughUDMA is true */
+    Vhwa_M2mVissConfigAppBuff           configurationBuffer;
 } tivxVpacVissObj;
 
 typedef struct
@@ -387,6 +389,14 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
  */
 vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result);
+
+/*!
+ * This function is used to set configuration buffer in the driver.
+ */
+vx_status tivxVpacVissSetConfigBuffer(tivxVpacVissObj *vissObj);
+
+/* This function is used to free the config buffer memory */
+void tivxVpacVissDeleteConfigBuffer(tivxVpacVissObj *vissObj);
 
 #ifdef __cplusplus
 }
