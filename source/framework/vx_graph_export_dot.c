@@ -94,10 +94,10 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
 static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const char *prefix);
 static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                     tivx_data_ref_queue data_ref_q, uint32_t graph_parameter_index );
-static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
-static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
-static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
-static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
+static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status tivxExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
 
 static void getNodeColor(vx_node node, char *node_color_name)
 {
@@ -505,7 +505,7 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
     }
 }
 
-static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -769,7 +769,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
     }
 }
 
-static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -834,7 +834,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
     return status;
 }
 
-static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -1008,7 +1008,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, char *output_
     return status;
 }
 
-static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+static vx_status tivxExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -1360,7 +1360,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
     return status;
 }
 
-vx_status tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix)
+vx_status tivxExportGraphToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_FAILURE;
 

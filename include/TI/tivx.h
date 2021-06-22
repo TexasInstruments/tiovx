@@ -662,7 +662,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
+vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
 
 /*!
  * \brief Set number of buffers to allocate at output of a node parameter
