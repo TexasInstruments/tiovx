@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,84 +60,9 @@
 *
 */
 
-
-#ifndef TIVX_KERNELS_H_
-#define TIVX_KERNELS_H_
-
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
-
-#ifdef __cplusplus
-extern "C" {
+#if defined(J7)
+#if defined(BUILD_CT_TIOVX_TVM)
+TESTCASE(tivxTVM)
+#endif
 #endif
 
-/*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_int_common_kernel
- */
-#define TIVX_MODULE_NAME_OPENVX_CORE    "openvx-core"
-
-/*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext_ivision_kernel
- */
-#define TIVX_MODULE_NAME_IVISION    "ivision"
-
-/*!
- * \file
- * \brief The list of supported kernels in the TIOVX.
- */
-
-
-/*! \brief The list of available libraries in tivx */
-enum tivx_library_e {
-    /*! \brief The set of kernels supported in ivision. */
-   TIVX_LIBRARY_IVISION_BASE = 0,
-    /*! \brief TI Extension kernels. */
-   TIVX_LIBRARY_EXTENSION_BASE = 1,
-};
-
-/*!
- * \brief The list of kernels supported in ivision.
- *
- * \ingroup group_tivx_ext_ivision_kernel
- */
-enum tivx_kernel_ivision_e {
-    /*! \brief The Harris Corners Kernel.
-     * \see group_vision_function_harris
-     */
-    TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x0,
-    TIVX_KERNEL_IVISION_RGB_IR= VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x1,
-    /* insert new kernels here */
-    TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
-};
-
-/*!
- * \brief Used for the Application to create the tidl kernel from the context.
- * \ingroup group_vision_function_tidl
- *
- * \param [in]  context             OpenVX context which must be created using \ref vxCreateContext
- * \param [in]  num_input_tensors   Number of input vx_tensor objects to be created
- * \param [in]  num_output_tensors  Number of output vx_tensor objects to be created
- *
- * \returns Handle to vx_kernel object if successful, NULL otherwise
- *
- * \note The caller of this function should check status of the return vx_kernel handle
- *       and if found to be NULL must handle or propagate error appropriately.
- *
- */
-vx_kernel tivxAddKernelTIDL(vx_context context,
-                            uint32_t num_input_tensors,
-                            uint32_t num_output_tensors);
-
-/*!
- * \brief Used for the Application to create the tvm kernel from the context.
- * \ingroup group_vision_function_tvm
- */
-vx_kernel tivxAddKernelTVM(vx_context context,
-                           uint32_t num_input_tensors,
-                           uint32_t num_output_tensors);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif

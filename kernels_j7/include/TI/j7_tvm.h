@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_KERNELS_H_
-#define J7_KERNELS_H_
+#ifndef J7_TVM_H_
+#define J7_TVM_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -70,120 +70,75 @@
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
- */
+#define TIVX_TVM_J7_CHECKSUM_SIZE (64)
 
-/*! \brief Name for OpenVX Extension kernel module: hwa
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_HWA    "hwa"
+/* These correspond to parameter indices of the TVM node
+ * They can be useful to aid in setting replicate parameters if
+ * vxReplicateNode is used.
+ * 0: config: meta data for the kernel call (checksum, num inputs/output, etc)
+ * 1: deploy_mod:  tvm c7x deployable module built as shared lib
+ * 2: optional trace output
+ * 3 - ?: in_tensors, out_tensors
+*/
+#define TIVX_KERNEL_TVM_IN_CONFIG_IDX                   (0U)
+#define TIVX_KERNEL_TVM_IN_DEPLOY_MOD_IDX               (1U)
+#define TIVX_KERNEL_TVM_IN_TRACE_DATA_IDX               (2U)
+#define TIVX_KERNEL_TVM_IN_FIRST_TENSOR                 (3U)
+#define TIVX_KERNEL_TVM_NUM_BASE_PARAMETERS             (3U)
+#define TIVX_KERNEL_TVM_NUM_MIN_PARAMETERS             (TIVX_KERNEL_TVM_NUM_BASE_PARAMETERS + 2)
 
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
+#define TIVX_KERNEL_TVM_MAX_INPUT_TENSORS 16
+#define TIVX_KERNEL_TVM_MAX_TOTAL_INPUT_TENSOR_NAMES_SIZE 512
+#define TIVX_KERNEL_TVM_MAX_TOTAL_TENSORS 32
+#define TIVX_KERNEL_TVM_MAX_TENSOR_DIM    8
 
-/*! \brief Name for OpenVX Extension kernel module: tvm
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TVM    "tvm"
-
-/*! \brief dof_visualize kernel name
- *  \ingroup group_vision_function_dmpac_dof
- */
-#define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! \brief tvm kernel name
- *  \ingroup group_vision_function_tvm
- */
-#define TIVX_KERNEL_TVM_NAME          "com.ti.tvm"
-
-/*! End of group_vision_function_hwa */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
+/*! \brief Parameters describing a TVMRT Tensor */
+typedef struct{
+  uint32_t size_in_bytes;
+} tivxTVMTensorParams;
 
 /*!
- * \brief Used for the Application to load the hwa kernels into the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the hwa kernels from the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_hwa
- */
-void tivxTIDLUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tvm kernels into the context.
+ * \brief TVM params structure
  * \ingroup group_vision_function_tvm
  */
-void tivxTVMLoadKernels(vx_context context);
+typedef struct{
+  /** Checksum placeholder for TVM config params */
+  vx_uint8 config_checksum[TIVX_TVM_J7_CHECKSUM_SIZE];
 
-/*!
- * \brief Used for the Application to unload the tvm kernels from the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMUnLoadKernels(vx_context context);
+  /** Checksum placeholder for TVM deploy_mod params */
+  vx_uint8 deploy_mod_checksum[TIVX_TVM_J7_CHECKSUM_SIZE];
 
+  /** Flag to indicate if config params checksum is to be computed or not */
+  vx_uint32 compute_config_checksum;
 
+  /** Flag to indicate if network params checksum is to be computed or not */
+  vx_uint32 compute_network_checksum;
 
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxRegisterTIDLTargetKernels(void);
+  /** TVM input/output tensors */
+  vx_uint32 num_input_tensors;
+  vx_uint32 num_output_tensors;
 
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxUnRegisterTIDLTargetKernels(void);
+  /** TVM input tensors names are packed 0-terminated strings, offset array
+   *     points to the start of each name */
+  vx_uint32 input_names_offset[TIVX_KERNEL_TVM_MAX_INPUT_TENSORS];
+  vx_uint8  input_names[TIVX_KERNEL_TVM_MAX_TOTAL_INPUT_TENSOR_NAMES_SIZE];
 
-/*!
- * \brief Function to register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxRegisterTVMTargetKernels(void);
+  /** TVM tensors info for recreating DLTensors to interface with TVM runtime */
+  tivxTVMTensorParams tensors_params[TIVX_KERNEL_TVM_MAX_TOTAL_TENSORS];
 
-/*!
- * \brief Function to un-register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxUnRegisterTVMTargetKernels(void);
+  /** Flag to enable optimization ivision alg activate, default is disabled */
+  vx_uint32 optimize_ivision_activation;
+  /** Flag to indicate TVM RT debug level*/
+  vx_int32 tvm_rt_debug_level;
+  /** Flag to indicate TIDL debug trace log level*/
+  vx_int32 tidl_trace_log_level;
+  /** Flag to indicate TIDL debug trace write level*/
+  vx_int32 tidl_trace_write_level;
+
+} tivxTVMJ7Params;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* J7_KERNELS_H_ */
-
-
+#endif /* J7_TVM_H_ */

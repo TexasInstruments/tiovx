@@ -160,6 +160,27 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_tensor input_tensors[],
                                               vx_tensor output_tensors[]);
                                               
+/*! \brief [Graph] Creates a TVM Node.
+ * \param [in] graph Reference to vx_graph.
+ * \param [in] kernel Reference to vx_kernel.
+ * \param [in,out] appParams is an array of 2 parameters:
+ *             - config vx_user_data_object type corresponding to the configuration (named string: tivxTVMJ7Params)
+ *             - deploy_mod vx_user_data_object type corresponding to the TVM deployable module (named string: tivxTVMJ7DeployMod)
+ * \param [in] input_tensors Array of input tensors
+ *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
+ *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
+ * \param [out] output_tensors Array of output tensors
+ *
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_tvm
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxTVMNode(vx_graph  graph,
+                                             vx_kernel kernel,
+                                             vx_reference appParams[],
+                                             vx_tensor input_tensors[],
+                                             vx_tensor output_tensors[]);
+
 #ifdef __cplusplus
 }
 #endif

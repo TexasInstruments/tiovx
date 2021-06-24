@@ -1,0 +1,33 @@
+
+ Dynamic Loader API and Loader Core - Version Number Change Log
+ ==============================================================
+
+ Version Number Description
+ --------------------------
+
+ The version number associated with the Dynamic Loader API and the Loader Core
+ sources has three components:
+
+ <major version>.<minor version>.<patch version>
+
+ major version - is incremented if there is a change to the API that creates a
+                 compatibility discontinuity.
+
+ minor version - is incremented if functionality is added to the API without 
+                 causing a compatibility discontinuity.
+
+ patch version - is incremented if a defect has been repaired, a performance
+                 enhancement has been added, or the source code has been 
+		 refactored in some way. There should not be a compatibility
+		 discontinuity created by an increment to the patch version.
+
+ Version Number Change Log
+ -------------------------
+
+ 1.0.0 - 17 July 2009	- Initial release of dynamic loader API and loader 
+                          core sources.
+
+ 2.0.0 - 1 Feb 2013     - Add client handle to several DLIF functions.
+                        - Add DLIF_exit() for loader abort.
+
+

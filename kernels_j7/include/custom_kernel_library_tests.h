@@ -62,3 +62,4 @@
 
 #include "hwa/test/test_main.h"
 #include "kernels_j7/tidl/test/test_main.h"
+#include "kernels_j7/tvm/test/test_main.h"

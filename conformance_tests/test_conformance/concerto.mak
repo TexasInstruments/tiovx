@@ -65,6 +65,10 @@ ifeq ($(BUILD_CT_TIOVX_TIDL),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_TIDL
 endif
 
+ifeq ($(BUILD_CT_TIOVX_TVM),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_TVM
+endif
+
 ifeq ($(BUILD_CT_TIOVX_IVISION),yes)
 CFLAGS      += -DBUILD_CT_TIOVX_IVISION
 endif
