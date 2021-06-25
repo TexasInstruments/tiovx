@@ -470,6 +470,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
         {
             fprintf(stderr, "Can't open output file!\n");
             status = (vx_status)VX_FAILURE;
+            tivxMutexUnlock(g_tivx_log_resource_lock);
         }
         else
         {
