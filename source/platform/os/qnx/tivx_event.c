@@ -208,8 +208,8 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
                         if (micro >= 1000000LLU)
                         {
-                            micro %= 1000000LLU;
                             sec   += micro/1000000LLU;
+                            micro %= 1000000LLU;
                         }
 
                         ts.tv_nsec = micro * 1000;
