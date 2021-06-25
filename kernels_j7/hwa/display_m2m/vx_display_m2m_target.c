@@ -79,6 +79,8 @@
 
 #define DISPLAY_MAX_VALID_PLANES                      2U
 
+#define DISPLAY_M2M_MAX_HANDLES                       (10)
+
 typedef struct
 {
     /*! IDs=> 0: Write-back pipe-line1 */
@@ -135,16 +137,26 @@ typedef struct
 
 typedef struct
 {
+    /*! IDs=> 0: Object free, 1: allocated */
+    uint32_t isAlloc;
     /*! Display M2M driver object */
     tivxDisplayM2MDrvObj drvObj;
     /*! Display M2M Node create parameters provided by application */
     tivx_display_m2m_params_t createParams;
 } tivxDisplayM2MParams;
 
+typedef struct
+{
+    tivx_mutex      lock;
+    tivxDisplayM2MParams  m2mObj[DISPLAY_M2M_MAX_HANDLES];
+} tivxDisplayM2MInstObj;
+
 static tivx_target_kernel vx_display_m2m_target_kernel1 = NULL;
 static tivx_target_kernel vx_display_m2m_target_kernel2 = NULL;
 static tivx_target_kernel vx_display_m2m_target_kernel3 = NULL;
 static tivx_target_kernel vx_display_m2m_target_kernel4 = NULL;
+
+tivxDisplayM2MInstObj gTivxDispM2mInstObj;
 
 static vx_status VX_CALLBACK tivxDisplayM2MProcess(
        tivx_target_kernel_instance kernel,
@@ -179,6 +191,11 @@ static vx_status tivxDisplayExtractFvid2Format(
                                 const tivx_obj_desc_image_t *obj_desc_img,
                                 Fvid2_Format *format);
 
+static tivxDisplayM2MParams *tivxDispM2mAllocObject(tivxDisplayM2MInstObj *instObj);
+static void tivxDispM2mFreeObject(tivxDisplayM2MInstObj *instObj,
+    tivxDisplayM2MParams *m2mObj);
+
+
 static vx_status VX_CALLBACK tivxDisplayM2MProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -187,10 +204,8 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
     vx_status status = (vx_status)VX_SUCCESS;
     tivxDisplayM2MParams *prms = NULL;
     tivxDisplayM2MDrvObj *drvObj;
-    tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *input_desc;
     tivx_obj_desc_image_t *output_desc;
-    void *configuration_target_ptr;
     void *input_target_ptr, *input_target_ptr2;
     void *output_target_ptr, *output_target_ptr2;
     Fvid2_Frame *frm;
@@ -209,7 +224,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
     if((vx_status)VX_SUCCESS == status)
     {
         uint32_t size;
-        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_CONFIGURATION_IDX];
         input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_INPUT_IDX];
         output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_M2M_OUTPUT_IDX];
 
@@ -225,37 +239,19 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
 
     if((vx_status)VX_SUCCESS == status)
     {
-        configuration_target_ptr = tivxMemShared2TargetPtr(&configuration_desc->mem_ptr);
-        tivxCheckStatus(&status, tivxMemBufferMap(configuration_target_ptr,
-           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-           (vx_enum)VX_READ_ONLY));
-
         /* Update 'input_desc' to array from only single image input to
            support blending i.e. more than 1 number of pipes. */
         input_target_ptr = tivxMemShared2TargetPtr(&input_desc->mem_ptr[0]);
-        tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr,
-           input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-           (vx_enum)VX_READ_ONLY));
-
         if((vx_df_image)VX_DF_IMAGE_NV12 == input_desc->format)
         {
             input_target_ptr2 = tivxMemShared2TargetPtr(&input_desc->mem_ptr[1]);
-            tivxCheckStatus(&status, tivxMemBufferMap(input_target_ptr2,
-               input_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-               (vx_enum)VX_READ_ONLY));
         }
 
         output_target_ptr = tivxMemShared2TargetPtr(&output_desc->mem_ptr[0]);
-        tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr,
-           output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-           (vx_enum)VX_WRITE_ONLY));
 
         if((vx_df_image)VX_DF_IMAGE_NV12 == output_desc->format)
         {
             output_target_ptr2 = tivxMemShared2TargetPtr(&output_desc->mem_ptr[1]);
-            tivxCheckStatus(&status, tivxMemBufferMap(output_target_ptr2,
-               output_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-               (vx_enum)VX_WRITE_ONLY));
         }
 
         /* call kernel processing function */
@@ -306,32 +302,6 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
         }
 
         /* kernel processing function complete */
-
-        tivxCheckStatus(&status, tivxMemBufferUnmap(configuration_target_ptr,
-           configuration_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY));
-
-        tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr,
-           input_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_READ_ONLY));
-
-        if((vx_df_image)VX_DF_IMAGE_NV12 == input_desc->format)
-        {
-            tivxCheckStatus(&status, tivxMemBufferUnmap(input_target_ptr2,
-               input_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_READ_ONLY));
-        }
-
-        tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr,
-           output_desc->mem_size[0], (vx_enum)VX_MEMORY_TYPE_HOST,
-            (vx_enum)VX_WRITE_ONLY));
-
-        if((vx_df_image)VX_DF_IMAGE_NV12 == output_desc->format)
-        {
-            tivxCheckStatus(&status, tivxMemBufferUnmap(output_target_ptr2,
-               output_desc->mem_size[1], (vx_enum)VX_MEMORY_TYPE_HOST,
-                (vx_enum)VX_WRITE_ONLY));
-        }
     }
 
     return status;
@@ -367,12 +337,9 @@ static vx_status VX_CALLBACK tivxDisplayM2MCreate(
             VX_PRINT(VX_ZONE_ERROR, "User data object size on target does not match the size on host, possibly due to misalignment in data structure\n");
             status = (vx_status)VX_FAILURE;
         }
-        prms = tivxMemAlloc(sizeof(tivxDisplayM2MParams), (vx_enum)TIVX_MEM_EXTERNAL);
-        if (NULL != prms)
-        {
-            memset(prms, 0, sizeof(tivxDisplayM2MParams));
-        }
-        else
+
+        prms = tivxDispM2mAllocObject(&gTivxDispM2mInstObj);
+        if (NULL == prms)
         {
             status = (vx_status)VX_ERROR_NO_MEMORY;
             VX_PRINT(VX_ZONE_ERROR, "Unable to allocate local memory\n");
@@ -534,7 +501,8 @@ static vx_status VX_CALLBACK tivxDisplayM2MDelete(
         if ((NULL != prms) &&
             (sizeof(tivxDisplayM2MParams) == size))
         {
-            tivxMemFree(prms, size, (vx_enum)TIVX_MEM_EXTERNAL);
+            tivxDispM2mFreeObject(&gTivxDispM2mInstObj, prms);
+            //tivxMemFree(prms, size, (vx_enum)TIVX_MEM_EXTERNAL);
         }
     }
 
@@ -638,6 +606,7 @@ static vx_status VX_CALLBACK tivxDisplayM2MControl(
 
 void tivxAddTargetKernelDisplayM2M(void)
 {
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -681,6 +650,17 @@ void tivxAddTargetKernelDisplayM2M(void)
                             tivxDisplayM2MDelete,
                             tivxDisplayM2MControl,
                             NULL);
+
+        status = tivxMutexCreate(&gTivxDispM2mInstObj.lock);
+        if ((vx_status)VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to create Mutex\n");
+        }
+        else
+        {
+            memset(&gTivxDispM2mInstObj.m2mObj, 0x0,
+                sizeof(tivxDisplayM2MParams) * DISPLAY_M2M_MAX_HANDLES);
+        }
     }
 }
 
@@ -710,6 +690,11 @@ void tivxRemoveTargetKernelDisplayM2M(void)
     if (status == (vx_status)VX_SUCCESS)
     {
         vx_display_m2m_target_kernel4 = NULL;
+    }
+
+    if (NULL != gTivxDispM2mInstObj.lock)
+    {
+        tivxMutexDelete(&gTivxDispM2mInstObj.lock);
     }
 }
 
@@ -1077,4 +1062,50 @@ static vx_status tivxDisplayExtractFvid2Format(
     }
 
     return status;
+}
+
+static tivxDisplayM2MParams *tivxDispM2mAllocObject(tivxDisplayM2MInstObj *instObj)
+{
+    uint32_t                cnt;
+    tivxDisplayM2MParams *m2mObj = NULL;
+
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
+
+    for (cnt = 0U; cnt < DISPLAY_M2M_MAX_HANDLES; cnt ++)
+    {
+        if (0U == instObj->m2mObj[cnt].isAlloc)
+        {
+            m2mObj = &instObj->m2mObj[cnt];
+            memset(m2mObj, 0x0, sizeof(tivxDisplayM2MParams));
+            instObj->m2mObj[cnt].isAlloc = 1U;
+            break;
+        }
+    }
+
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
+
+    return (m2mObj);
+}
+
+static void tivxDispM2mFreeObject(tivxDisplayM2MInstObj *instObj,
+    tivxDisplayM2MParams *m2mObj)
+{
+    uint32_t cnt;
+
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
+
+    for (cnt = 0U; cnt < DISPLAY_M2M_MAX_HANDLES; cnt ++)
+    {
+        if (m2mObj == &instObj->m2mObj[cnt])
+        {
+            m2mObj->isAlloc = 0U;
+            break;
+        }
+    }
+
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
