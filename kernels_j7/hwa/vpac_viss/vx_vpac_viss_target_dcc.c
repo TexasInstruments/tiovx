@@ -103,7 +103,9 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
     uint32_t inst_id);
 static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapDpcParams(tivxVpacVissObj *vissObj, const tivx_ae_awb_params_t *ae_awb_res);
-
+#ifdef VPAC3
+static void tivxVpacVissDccMapCacParams(tivxVpacVissObj *vissObj);
+#endif
 static void tivxVpacVissDccMapFcpParams(tivxVpacVissObj *vissObj,
      tivx_ae_awb_params_t *ae_awb_res);
 
@@ -200,7 +202,9 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
             tivxVpacVissDccInitDpc(vissObj);
             tivxVpacVissDccMapDpcParams(vissObj, ae_awb_res);
-
+#ifdef VPAC3
+            tivxVpacVissDccMapCacParams(vissObj);
+#endif
             if (NULL != h3a_out_desc)
             {
                 tivxVpacVissDccMapH3aParams(vissObj, ae_awb_res);
@@ -443,7 +447,29 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 
     if (NULL != vissObj)
     {
+#ifdef VPAC3
+        {
+            int k;
+            viss_rawhist_dcc_cfg_t *dccCfg = &vissObj->dcc_out_prms.vissRawhistCfg;
+            Nsf4_HistConfig *hwaCfg = &vissObj->vissCfg.nsf4Cfg.histCfg;
+            hwaCfg->enable = dccCfg->enable;
+            hwaCfg->inBitWidth = dccCfg->lut_bits;
+            hwaCfg->phaseSelect = dccCfg->color_en;
 
+            hwaCfg->histLut.enable = dccCfg->lut_en;
+            hwaCfg->histLut.tableAddr = (uint16_t*)vissObj->dcc_table_ptr.raw_hist_lut;
+            memcpy(hwaCfg->histLut.tableAddr, dccCfg->rawhist_lut, sizeof(uint16_t)*NSF4_HISTOGRAM_LUT_SIZE);
+
+            for (k = 0; k < NSF4_HIST_MAX_ROI; k++)
+            {
+                hwaCfg->roi[k].enable = dccCfg->roi_en[k];
+                hwaCfg->roi[k].start.startX = dccCfg->roi_h_start[k];
+                hwaCfg->roi[k].start.startY = dccCfg->roi_v_start[k];
+                hwaCfg->roi[k].end.startX = dccCfg->roi_h_end[k];
+                hwaCfg->roi[k].end.startY = dccCfg->roi_v_end[k];
+            }
+        }
+#endif
         n_regions = vissObj->dcc_out_prms.vissNumNSF4Inst;
 
         if ((NULL != ae_awb_res) &&  (ae_awb_res->ae_valid) && (1 == vissObj->dcc_out_prms.useNsf4Cfg))
@@ -983,3 +1009,32 @@ void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj)
         tivxVpacVissDccMapLscParams(vissObj);
     }
 }
+
+#ifdef VPAC3
+static void tivxVpacVissDccMapCacParams(tivxVpacVissObj *vissObj)
+{
+    if ((NULL != vissObj) && (1 == vissObj->dcc_out_prms.useVissCacCfg))
+    {
+        viss_cac_dcc_cfg_t * dccCfg = &vissObj->dcc_out_prms.vissCacCfg;
+        Cac_Config *hwaCfg = &vissObj->vissCfg.cacCfg;
+        hwaCfg->colorEnable = dccCfg->color_en;
+        hwaCfg->blkSize = dccCfg->block_s;
+        hwaCfg->blkGridSize.hCnt = dccCfg->grid_w;
+        hwaCfg->blkGridSize.vCnt = dccCfg->grid_h;
+        hwaCfg->displacementLut = vissObj->dcc_table_ptr.cac_lut;
+
+        if(dccCfg->lut_size_in_bytes > CAC_LUT_SIZE)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "CAC table length is %d bytes, which is greater than CAC_LUT_SIZE (%d bytes)!!!\n", dccCfg->lut_size_in_bytes, CAC_LUT_SIZE);
+        }
+        memcpy(hwaCfg->displacementLut, dccCfg->cac_lut, dccCfg->lut_size_in_bytes);
+
+        vissObj->vissCfgRef.cacCfg = hwaCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+#endif
+
