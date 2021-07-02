@@ -38,6 +38,10 @@ ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA
 endif
 
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
+DEFS        += __aarch64__
+endif
+
 include $(FINALE)
 
 endif
