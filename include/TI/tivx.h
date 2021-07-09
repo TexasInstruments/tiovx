@@ -923,6 +923,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * - VX_TYPE_DISTRIBUTION
  * - VX_TYPE_MATRIX
  * - VX_TYPE_CONVOLUTION
+ * - TIVX_TYPE_RAW_IMAGE
  *
  * \param [in,out] ref The reference object to be updated.
  * \param [in] addr An array of pointers for holding the handles. The entries can be NULL.
@@ -957,6 +958,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * - VX_TYPE_DISTRIBUTION
  * - VX_TYPE_MATRIX
  * - VX_TYPE_CONVOLUTION
+ * - TIVX_TYPE_RAW_IMAGE
  *
  * \param [in]  ref The reference object to export the handles from.
  * \param [out] addr An array of pointers for holding the handles.
@@ -973,7 +975,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * A failure can occur for the following reasons:
  * - Unsupported reference object type
  * - The argument check fails
- * - Internal memory allocation fails
  * - The max number of handles specified is less than the number expected to be exported by the
  *   reference object.
  */

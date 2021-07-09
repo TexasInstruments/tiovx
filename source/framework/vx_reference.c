@@ -909,6 +909,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     volatile uint32_t      *mem_size;
     uint64_t                shared_ptr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
     uint32_t                numMemElem;
+    uint32_t                numNulls;
     uint32_t                i;
     vx_status               status;
 
@@ -1063,6 +1064,24 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 mem_size = &obj_desc->mem_size;
             }
         }
+        else if (ref->type == (vx_enum)TIVX_TYPE_RAW_IMAGE)
+        {
+            tivx_obj_desc_raw_image_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                numMemElem = obj_desc->params.num_exposures;
+                mem_ptr    = obj_desc->mem_ptr;
+                mem_size   = obj_desc->mem_size;
+            }
+        }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
@@ -1079,28 +1098,11 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             status = (vx_status)VX_FAILURE;
         }
 
-        /* Validate the sizes of the handles. */
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            for (i = 0; i < numMemElem; i++)
-            {
-                if (mem_size[i] != size[i])
-                {
-                    VX_PRINT(VX_ZONE_ERROR,
-                             "[Entry %d] Memory size mis-match: Expecting [%d] "
-                             "but given [%d]\n",
-                             i, mem_size[i], size[i]);
-
-                    status = (vx_status)VX_FAILURE;
-                }
-            }
-        }
-
         /* Validate the addr entries. */
+        numNulls = 0;
+
         if (status == (vx_status)VX_SUCCESS)
         {
-            uint32_t    numNulls = 0;
-
             for (i = 0; i < numMemElem; i++)
             {
                 if (addr[i] != NULL)
@@ -1133,6 +1135,25 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
         }
 
+        /* Validate the sizes of the handles. Do this only if we are not
+         * importing NULLs.
+         */
+        if ((status == (vx_status)VX_SUCCESS) && (numNulls == 0))
+        {
+            for (i = 0; i < numMemElem; i++)
+            {
+                if (mem_size[i] != size[i])
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "[Entry %d] Memory size mis-match: Expecting [%d] "
+                             "but given [%d]\n",
+                             i, mem_size[i], size[i]);
+
+                    status = (vx_status)VX_FAILURE;
+                }
+            }
+        }
+
         if (status == (vx_status)VX_SUCCESS)
         {
             /* Issue a warning if the number of handles passed is more than
@@ -1161,11 +1182,18 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                 if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
                 {
+                    void *hostPtr = (void*)(uintptr_t)mem_ptr[i].host_ptr;
+
                     /* Perform a cache write back. */
-                    tivxCheckStatus(&status, tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr[i].host_ptr,
-                                       mem_size[i],
-                                       (vx_enum)TIVX_MEM_EXTERNAL,
-                                       (vx_enum)VX_WRITE_ONLY));
+                    status = tivxMemBufferUnmap(hostPtr,
+                                                mem_size[i],
+                                                (vx_enum)TIVX_MEM_EXTERNAL,
+                                                (vx_enum)VX_WRITE_ONLY);
+
+                    if (status != (vx_status)VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap() failed.\n");
+                    }
                 }
             }
         }
@@ -1346,6 +1374,24 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 mem_size = &obj_desc->mem_size;
             }
         }
+        else if (ref->type == (vx_enum)TIVX_TYPE_RAW_IMAGE)
+        {
+            tivx_obj_desc_raw_image_t *obj_desc;
+
+            obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
+
+            if (obj_desc == NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                numMemElem = obj_desc->params.num_exposures;
+                mem_ptr    = obj_desc->mem_ptr;
+                mem_size   = obj_desc->mem_size;
+            }
+        }
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
@@ -1354,79 +1400,14 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 
         if (status == (vx_status)VX_SUCCESS)
         {
-            tivx_shared_mem_ptr_t   lMemPtr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
-            uint32_t                numAlloc = 0;
-
-            /* Update the object. */
             for (i = 0; i < numMemElem; i++)
             {
-                /* Allocate memory, if needed. Since we should not change the
-                 * state of the object for failure cases and since memory
-                 * allocation can fail in case of multiple element allocation,
-                 * use a local array for tracking allocations. The object will
-                 * be updated only when all requested memory blocks have been
-                 * allocated successfully.
-                 */
-                if (mem_ptr[i].host_ptr == (uint64_t)(uintptr_t)NULL)
-                {
-                    tivxMemBufferAlloc(&lMemPtr[i],
-                                       mem_size[i],
-                                       (vx_enum)TIVX_MEM_EXTERNAL);
-
-                    if (lMemPtr[i].host_ptr == (uint64_t)(uintptr_t)NULL)
-                    {
-                        /* Could not allocate memory */
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "Could not allocate user data object memory\n");
-                        status = (vx_status)VX_ERROR_NO_MEMORY;
-                        break;
-                    }
-                    else
-                    {
-                        /* Update the allocation counter. */
-                        numAlloc++;
-
-                        /* Since the host_ptr has been allocated here, there is
-                         * no need to validate the translation to shared_ptr.
-                         */
-                        lMemPtr[i].shared_ptr =
-                            tivxMemHost2SharedPtr(lMemPtr[i].host_ptr,
-                                                  (vx_enum)TIVX_MEM_EXTERNAL);
-                    }
-                }
-
-            } /* for (i = 0; i < numMemElem; i++) */
-
-            if (status == (vx_status)VX_SUCCESS)
-            {
-                for (i = 0; i < numMemElem; i++)
-                {
-                    /* Update the pointers only if allocation has been done
-                     * above. 'numAlloc' will be zero if allocations have not
-                     * been done in this function.
-                     */
-                    if (numAlloc != 0)
-                    {
-                        mem_ptr[i] = lMemPtr[i];
-                    }
-
-                    addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
-                    size[i] = mem_size[i];
-                }
-
-                /* Update the entry count. */
-                *num_entries = numMemElem;
+                addr[i] = (void *)(uintptr_t)mem_ptr[i].host_ptr;
+                size[i] = mem_size[i];
             }
-            else
-            {
-                /* Could not allocate memory for all the elements. Release any
-                 * partially allocated memory.
-                 */
-                for (i = 0; i < numAlloc; i++)
-                {
-                    tivxMemBufferFree(&lMemPtr[i], mem_size[i]);
-                }
-            }
+
+            /* Update the entry count. */
+            *num_entries = numMemElem;
 
         } /* if (status == (vx_status)VX_SUCCESS) */
 

@@ -22,6 +22,7 @@
  */
 
 #include <TI/tivx_obj_desc.h>
+#include <vx_internal.h>
 #include "test_tiovx.h"
 
 #define TIVX_TEST_FAIL_CLEANUP(x) {(x) = 1; goto cleanup;}
@@ -59,6 +60,7 @@ typedef struct
     TIVX_TEST_ENTRY(VX_TYPE_CONVOLUTION, 9), \
     TIVX_TEST_ENTRY(VX_TYPE_MATRIX, 8), \
     TIVX_TEST_ENTRY(VX_TYPE_DISTRIBUTION, 100), \
+    TIVX_TEST_ENTRY(TIVX_TYPE_RAW_IMAGE, 100), \
 
 TESTCASE(tivxMem, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -221,6 +223,28 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
 
         ref = (vx_reference)dist;
     }
+    else if (type == (vx_enum)TIVX_TYPE_RAW_IMAGE)
+    {
+        tivx_raw_image                  rawImage;
+        tivx_raw_image_create_params_t  params;
+
+        params.width                     = 128;
+        params.height                    = 128;
+        params.num_exposures             = 3;
+        params.line_interleaved          = vx_false_e;
+        params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+        params.format[0].msb             = 12;
+        params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+        params.format[1].msb             = 7;
+        params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+        params.format[2].msb             = 11;
+        params.meta_height_before        = 5;
+        params.meta_height_after         = 0;
+
+        rawImage = tivxCreateRawImage(context, &params);
+
+        ref = (vx_reference)rawImage;
+    }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", type);
@@ -277,6 +301,11 @@ static vx_status testTivxMemFreeObject(vx_reference ref, vx_enum type)
         {
             vx_distribution dist = (vx_distribution)ref;
             vxStatus = vxReleaseDistribution(&dist);
+        }
+        else if (type == (vx_enum)TIVX_TYPE_RAW_IMAGE)
+        {
+            tivx_raw_image  rawImage = (tivx_raw_image)ref;
+            vxStatus = tivxReleaseRawImage(&rawImage);
         }
         else
         {
@@ -405,9 +434,18 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
         }
     }
 
-    /* Export the handles from obj[0]. This forces the internal handles to be
-     * allocated and returned.
+    /* Allocate memory for obj[0]. This is not a public API. It is used here
+     * as a convenient mechanism for forcing internal handle allocation.
      */
+    vxStatus = ownReferenceAllocMem(ref[0]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export the handles from obj[0]. */
     maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
     vxStatus = tivxReferenceExportHandle(ref[0],
                                          virtAddr1,
@@ -445,6 +483,12 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
             VX_PRINT(VX_ZONE_ERROR,
                      "checkTranslation() failed for virtAddr1[%d].\n", i);
             TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+
+        /* For image, just check the first plane. */
+        if (type == (vx_enum)VX_TYPE_IMAGE)
+        {
+            break;
         }
     }
 
@@ -549,8 +593,8 @@ TEST(tivxMem, testReferenceImportNeg)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* Allocate objects. Both these objects should not have any
-     * internal memory allocated.
+    /* Allocate object. The object should not have any internal memory
+     * allocated.
      */
     ref = testTivxMemAllocObject(context, type, format);
 
@@ -582,6 +626,17 @@ TEST(tivxMem, testReferenceImportNeg)
     if (vxStatus != (vx_status)VX_FAILURE)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Allocate memory for obj. This is not a public API. It is used here
+     * as a convenient mechanism for forcing internal handle allocation.
+     */
+    vxStatus = ownReferenceAllocMem(ref);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
