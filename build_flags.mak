@@ -40,7 +40,7 @@ BUILD_VLAB?=no
 BUILD_VPAC3?=no
 
 # RTOS selection for R5F - SYSBIOS or FREERTOS
-RTOS?=SYSBIOS
+RTOS?=FREERTOS
 
 # SOC selection - supported values: j721e
 SOC?=j721e
