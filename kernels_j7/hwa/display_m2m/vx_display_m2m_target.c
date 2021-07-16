@@ -206,8 +206,8 @@ static vx_status VX_CALLBACK tivxDisplayM2MProcess(
     tivxDisplayM2MDrvObj *drvObj;
     tivx_obj_desc_image_t *input_desc;
     tivx_obj_desc_image_t *output_desc;
-    void *input_target_ptr, *input_target_ptr2;
-    void *output_target_ptr, *output_target_ptr2;
+    void *input_target_ptr, *input_target_ptr2 = NULL;
+    void *output_target_ptr, *output_target_ptr2 = NULL;
     Fvid2_Frame *frm;
     int32_t fvid2_status = FVID2_SOK;
     uint32_t pipeIdx;
