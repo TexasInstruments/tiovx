@@ -101,20 +101,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_uint32 raw_h;
 
     vx_image output0 = NULL;
-    vx_df_image output0_fmt;
+    vx_df_image output0_fmt = (vx_df_image)VX_DF_IMAGE_U8;
     vx_uint32 output0_w, output0_h;
 
     vx_image output1 = NULL;
     vx_df_image output1_fmt;
-    vx_uint32 output1_w, output1_h;
+    vx_uint32 output1_w, output1_h = 0;
 
     vx_image output2 = NULL;
-    vx_df_image output2_fmt;
+    vx_df_image output2_fmt = (vx_df_image)VX_DF_IMAGE_U8;
     vx_uint32 output2_w, output2_h;
 
     vx_image output3 = NULL;
     vx_df_image output3_fmt;
-    vx_uint32 output3_w, output3_h;
+    vx_uint32 output3_w, output3_h = 0;
 
     vx_image output4 = NULL;
     vx_df_image output4_fmt;
@@ -498,7 +498,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     outport = i;
                 }
 
-                if (0 != fcp_mux_status[fcp][outport])
+                if ( (fcp >= TIVX_VPAC_VISS_FCP_NUM_INSTANCES) ||
+                     (0 != fcp_mux_status[fcp][outport]))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 #if VPAC3
