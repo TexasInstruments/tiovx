@@ -88,6 +88,7 @@ typedef struct {
     uint32_t posX;
     uint32_t posY;
     uint32_t loopCount;
+    uint32_t enableCrop;
 } Arg;
 
 #define ADD_PIPE(testArgName, nextmacro, ...) \
@@ -132,11 +133,16 @@ typedef struct {
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
 
+#define ADD_DISABLE_CROP(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/enableCrop=0", __VA_ARGS__, 0))
+#define ADD_ENABLE_CROP(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/enableCrop=1", __VA_ARGS__, 1))
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("Display Node RGBX", ADD_PIPE, ADD_DATA_FORMAT_RGBX, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
-    CT_GENERATE_PARAMETERS("Display Node BGRX", ADD_PIPE, ADD_DATA_FORMAT_BGRX, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
-    CT_GENERATE_PARAMETERS("Display Node UYVY", ADD_PIPE, ADD_DATA_FORMAT_UYVY, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
-    CT_GENERATE_PARAMETERS("Display Node YUYV", ADD_PIPE, ADD_DATA_FORMAT_YUYV, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG)
+    CT_GENERATE_PARAMETERS("Display Node RGBX", ADD_PIPE, ADD_DATA_FORMAT_RGBX, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ADD_DISABLE_CROP, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node BGRX", ADD_PIPE, ADD_DATA_FORMAT_BGRX, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ADD_ENABLE_CROP, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node UYVY", ADD_PIPE, ADD_DATA_FORMAT_UYVY, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ADD_DISABLE_CROP, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node YUYV", ADD_PIPE, ADD_DATA_FORMAT_YUYV, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_YUV, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ADD_DISABLE_CROP, ARG)
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -264,6 +270,8 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
     vx_imagepatch_addressing_t image_addr;
     tivx_display_params_t params;
     vx_user_data_object param_obj;
+    vx_user_data_object crop_obj = NULL;
+    tivx_display_crop_params_t crop_params;
     vx_graph graph = 0;
     vx_node node = 0;
     vx_image disp_image_temp;
@@ -319,6 +327,18 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
         params.posX=arg_->posX;
         params.posY=arg_->posY;
 
+        if (1 == arg_->enableCrop)
+        {
+            params.enableCropping = 1;
+            params.cropPrms.startX = 16;
+            params.cropPrms.startY = 16;
+            params.cropPrms.width = arg_->outWidth - 16;
+            params.cropPrms.height = arg_->outHeight - 16;
+
+            ASSERT_VX_OBJECT(crop_obj =
+                vxCreateUserDataObject(context, "tivx_display_crop_params_t", sizeof(tivx_display_crop_params_t), &params.cropPrms), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        }
+
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -359,6 +379,24 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
             /* Dequeue one image buffer */
             vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&disp_image_temp, 1, &num_refs);
 
+            if ((1 == arg_->enableCrop) && (loop_count == (arg_->loopCount / 2)))
+            {
+                vx_reference refs[1];
+
+                params.cropPrms.startX = 100;
+                params.cropPrms.startY = 100;
+                params.cropPrms.width = arg_->outWidth - 100;
+                params.cropPrms.height = arg_->outHeight - 100;
+
+                vxCopyUserDataObject(crop_obj, 0,
+                    sizeof(tivx_display_crop_params_t),
+                    &params.cropPrms, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+                refs[0] = (vx_reference)crop_obj;
+                tivxNodeSendCommand(node, 0, TIVX_DISPLAY_SET_CROP_PARAMS,
+                    refs, 1u);
+            }
+
             /* Enqueue the same image buffer */
             vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&disp_image_temp, 1);
         }
@@ -371,6 +409,11 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
         VX_CALL(vxReleaseImage(&disp_image[0]));
         VX_CALL(vxReleaseImage(&disp_image[1]));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        if (1 == arg_->enableCrop)
+        {
+            VX_CALL(vxReleaseUserDataObject(&crop_obj));
+        }
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
