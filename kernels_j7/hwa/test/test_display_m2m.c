@@ -83,10 +83,10 @@
 /* Common Configurations across channels */
 #define DSS_M2M_WB_PIPE_INST_ID                     (0U)
 #define DSS_M2M_PIPE_NUM                            (1U)
-#define DSS_M2M_PIPE_INST_ID                        (0U)
+#define DSS_M2M_PIPE_INST_ID                        (3U)
 /* Currently Only Overlay2 can be used for M2M operations,
    this can be changed through DSS initialization API available in vision_apps */
-#define DSS_M2M_OVERLAY_ID                          (1U)
+#define DSS_M2M_OVERLAY_ID                          (3U)
 
 /* Channel 0 configurations */
 #define DSS_M2M_CH0_IN_FRAME_FORMAT                 (VX_DF_IMAGE_YUYV)

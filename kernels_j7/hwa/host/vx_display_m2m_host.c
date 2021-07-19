@@ -165,23 +165,6 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
         }
     }
 
-
-    /* PARAMETER RELATIONSHIP CHECKING */
-
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        if (input_w != output_w)
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH\n");
-        }
-        if (input_h != output_h)
-        {
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT\n");
-        }
-    }
-
     return status;
 }
 

@@ -796,6 +796,14 @@ static vx_status tivxDisplayM2MSetCreateParams(
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Input Image\n");
                 status = (vx_status)VX_FAILURE;
             }
+            else
+            {
+                if ((wbPipeCfg->inFmt.width != wbPipeCfg->outFmt.width) ||
+                    (wbPipeCfg->inFmt.height != wbPipeCfg->outFmt.height))
+                {
+                    wbPipeCfg->scEnable = TRUE;
+                }
+            }
         }
 
         /* Set Display WB pipeline parameters */
