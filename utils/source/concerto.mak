@@ -26,7 +26,12 @@ ifneq ($(TARGET_PLATFORM),PC)
 CSOURCES += tivx_utils_png_rd_wr_null.c
 endif
 
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72))
+CSOURCES += tivx_utils_ipc_ref_xfer.c
+endif
+
 IDIRS += $(TIOVX_PATH)/utils/include
+IDIRS += $(TIOVX_PATH)/source/include
 IDIRS += $(CUSTOM_KERNEL_PATH)/tidl/include
 
 include $(FINALE)

@@ -23,6 +23,7 @@
 
 #include <TI/tivx_obj_desc.h>
 #include <vx_internal.h>
+#include <tivx_utils_ipc_ref_xfer.h>
 #include "test_tiovx.h"
 
 #define TIVX_TEST_FAIL_CLEANUP(x) {(x) = 1; goto cleanup;}
@@ -119,11 +120,7 @@ static int32_t checkTranslation(const void *ptr, uint32_t size, int32_t expected
 
 static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uint32_t  aux)
 {
-    vx_status       vxStatus;
-    vx_reference    ref;
-
-    ref      = NULL;
-    vxStatus = (vx_status)VX_SUCCESS;
+    vx_reference    ref = NULL;
 
     if (type == (vx_enum)VX_TYPE_IMAGE)
     {
@@ -562,6 +559,292 @@ cleanup:
     TIVX_TEST_UPDATE_STATUS(testFail);
 }
 
+TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS)
+{
+    vx_context      context = context_->vx_context_;
+    tivx_utils_ref_ipc_msg_t   ipcMsg;
+    void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+    vx_reference    ref[2] = {NULL};
+    uint32_t        testFail = 0;
+    vx_enum         type = (vx_enum)arg_->type;
+    uint32_t        maxNumAddr;
+    uint32_t        numEntries1;
+    uint32_t        numEntries2;
+    uint32_t        i;
+    vx_status       vxStatus;
+
+    /* Allocate objects. */
+    ref[0] = testTivxMemAllocObject(context, type, arg_->aux);
+
+    if (ref[0] == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "testTivxMemAllocObject() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Allocate memory for obj[0]. This is not a public API. It is used here
+     * as a convenient mechanism for forcing internal handle allocation.
+     */
+    vxStatus = ownReferenceAllocMem(ref[0]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create the IPC message with the object export. */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create a new object with the exported information. ref[1] is
+     * NULL, so a new object will be created and handles will be imported.
+     */
+    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg, &ref[1]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_import_ref_from_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export the handles from obj[0]. */
+    maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
+    vxStatus = tivxReferenceExportHandle(ref[0],
+                                         virtAddr1,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries1);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export the handles from obj[1]. */
+    maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
+    vxStatus = tivxReferenceExportHandle(ref[1],
+                                         virtAddr2,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries2);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Check the number of entries. These should match. */
+    if (numEntries1 != numEntries2)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Number of entries do not match.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Compare the addresses exported from the objects. These should match. */
+    for (i = 0; i < numEntries1; i++)
+    {
+        if (virtAddr1[i] != virtAddr2[i])
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Address entry [%d] mis-match.\n", i);
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+    }
+
+    /* Two objects have the same handles, which will cause issues when the
+     * objects are released. We need to remove the handles from one of the
+     * objects. Let us remove them from obj[0]. We do this by importing NULL
+     * handles.
+     */
+    for (i = 0; i < maxNumAddr; i++)
+    {
+        virtAddr1[i] = NULL;
+    }
+
+    /* Import NULL handles into obj[0]. */
+    vxStatus = tivxReferenceImportHandle(ref[0],
+                                         (const void **)virtAddr1,
+                                         (const uint32_t *)size,
+                                         numEntries1);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle(NULL) failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+cleanup:
+
+    /* Free the objects. */
+    for (i = 0; i < 2; i++)
+    {
+        vxStatus = testTivxMemFreeObject(ref[i], type);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "testTivxMemFreeObject(%d) failed.\n", i);
+            testFail = 1;
+        }
+    }
+
+    TIVX_TEST_UPDATE_STATUS(testFail);
+}
+
+TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAMS)
+{
+    vx_context      context = context_->vx_context_;
+    tivx_utils_ref_ipc_msg_t   ipcMsg;
+    void           *virtAddr1[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    void           *virtAddr2[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+    vx_reference    ref[2] = {NULL};
+    uint32_t        testFail = 0;
+    vx_enum         type = (vx_enum)arg_->type;
+    uint32_t        maxNumAddr;
+    uint32_t        numEntries1;
+    uint32_t        numEntries2;
+    uint32_t        i;
+    vx_status       vxStatus;
+
+    /* Allocate objects. Both these objects should not have any
+     * internal memory allocated.
+     */
+    for (i = 0; i < 2; i++)
+    {
+        ref[i] = testTivxMemAllocObject(context, type, arg_->aux);
+
+        if (ref[i] == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "testTivxMemAllocObject() failed.\n");
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+    }
+
+    /* Allocate memory for obj[0]. This is not a public API. It is used here
+     * as a convenient mechanism for forcing internal handle allocation.
+     */
+    vxStatus = ownReferenceAllocMem(ref[0]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create the IPC message with the object export. */
+    vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_export_ref_for_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Create a new object with the exported information. ref[1] has
+     * a valid object so no new object will be created but only
+     * the handles will be imported.
+     */
+    vxStatus = tivx_utils_import_ref_from_ipc_xfer(context, &ipcMsg, &ref[1]);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivx_utils_import_ref_from_ipc_xfer() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export the handles from obj[0]. */
+    maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
+    vxStatus = tivxReferenceExportHandle(ref[0],
+                                         virtAddr1,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries1);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Export the handles from obj[1]. */
+    maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
+    vxStatus = tivxReferenceExportHandle(ref[1],
+                                         virtAddr2,
+                                         size,
+                                         maxNumAddr,
+                                         &numEntries2);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceExportHandle() failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Check the number of entries. These should match. */
+    if (numEntries1 != numEntries2)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Number of entries do not match.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+    /* Compare the addresses exported from the objects. These should match. */
+    for (i = 0; i < numEntries1; i++)
+    {
+        if (virtAddr1[i] != virtAddr2[i])
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Address entry [%d] mis-match.\n", i);
+            TIVX_TEST_FAIL_CLEANUP(testFail);
+        }
+    }
+
+    /* Two objects have the same handles, which will cause issues when the
+     * objects are released. We need to remove the handles from one of the
+     * objects. Let us remove them from obj[0]. We do this by importing NULL
+     * handles.
+     */
+    for (i = 0; i < maxNumAddr; i++)
+    {
+        virtAddr1[i] = NULL;
+    }
+
+    /* Import NULL handles into obj[0]. */
+    vxStatus = tivxReferenceImportHandle(ref[0],
+                                         (const void **)virtAddr1,
+                                         (const uint32_t *)size,
+                                         numEntries1);
+
+    if (vxStatus != (vx_status)VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle(NULL) failed.\n");
+        TIVX_TEST_FAIL_CLEANUP(testFail);
+    }
+
+cleanup:
+
+    /* Free the objects. */
+    for (i = 0; i < 2; i++)
+    {
+        vxStatus = testTivxMemFreeObject(ref[i], type);
+
+        if (vxStatus != (vx_status)VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "testTivxMemFreeObject(%d) failed.\n", i);
+            testFail = 1;
+        }
+    }
+
+    TIVX_TEST_UPDATE_STATUS(testFail);
+}
+
 TEST(tivxMem, testReferenceImportNeg)
 {
     vx_context      context = context_->vx_context_;
@@ -833,6 +1116,8 @@ TESTCASE_TESTS(tivxMem,
                testTranslateAddrMemAlloc,
                testTranslateAddrMalloc,
                testReferenceImportExport,
+               testReferenceImportExportIpcNullObj,
+               testReferenceImportExportIpcValidObj,
                testReferenceImportNeg,
                testReferenceExportNeg
 )
