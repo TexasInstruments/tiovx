@@ -103,6 +103,8 @@
 #define ENABLE_ALL_CH             6
 #define DISABLE_REENABLE_ALL_CH   7
 
+#define CAPTURE_TEST_FRAME_RATE   32000
+
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
 
 /*
@@ -343,8 +345,8 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
 
-            /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
-            ASSERT(timestamp > (prev_timestamp+33000));
+            /* The 30 FPS sensor parameters of IMX390 is around 32.4 ms latency in capture */
+            ASSERT(timestamp > (prev_timestamp+CAPTURE_TEST_FRAME_RATE));
 
             prev_timestamp = timestamp;
 
@@ -366,9 +368,9 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
             VX_CALL(vxQueryReference((vx_reference)element0, TIVX_REFERENCE_TIMESTAMP, &timestamp, sizeof(timestamp)));
 
-            /* Since the framerate is 30 fps, the timestamps should be 33.3ms apart */
+            /* The 30 FPS sensor parameters of IMX390 is around 32.4 ms latency in capture */
             /* TIOVX-995: Currently is around 32.5ms in broadcast mode */
-            ASSERT(timestamp > (prev_timestamp+33000));
+            ASSERT(timestamp > (prev_timestamp+CAPTURE_TEST_FRAME_RATE));
 
             prev_timestamp = timestamp;
 
