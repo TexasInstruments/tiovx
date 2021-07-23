@@ -851,11 +851,34 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
     uint32_t cnt;
     Fcp_CfaConfig *cfaCfg;
     viss_ipipe_cfa_flxd   * dcc_cfa_cfg = NULL;
+#ifdef VPAC3
+    viss_cfai3_dcc_ext    * dcc_cfai3_ext = NULL;
+#endif
 
     if (NULL != vissObj)
     {
         cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
-        dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
+#ifdef VPAC3 //VPAC3
+        if ((0 == fcp_index) && vissObj->dcc_out_prms.useVissCfai3aCfg)
+        {
+            dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCfai3aCfg.cfg_cfai1);
+            dcc_cfai3_ext = &(vissObj->dcc_out_prms.vissCfai3aCfg.cfg_cfai3);
+        }
+        else if ((1 == fcp_index) && vissObj->dcc_out_prms.useVissCfai3bCfg)
+        {
+            dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCfai3bCfg.cfg_cfai1);
+            dcc_cfai3_ext = &(vissObj->dcc_out_prms.vissCfai3bCfg.cfg_cfai3);
+        }
+        else if (vissObj->dcc_out_prms.useCfaCfg)
+        {
+            dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
+        }
+#else //VPAC1
+        if (vissObj->dcc_out_prms.useCfaCfg)
+        {
+            dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
+        }
+#endif
     }
 
     if (NULL != dcc_cfa_cfg)
@@ -896,6 +919,67 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
             vissObj->vissCfgRef.fcpCfg[fcp_index].cfaLut16to12Cfg = lut16to12Cfg;
         }
 
+#ifdef VPAC3 // CFAI3
+        if (NULL != dcc_cfai3_ext)
+        {
+            Fcp_comDecomLutConfig *compLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].comLutCfg;
+            Fcp_comDecomLutConfig *dcmpLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].decomLutCfg;
+ 
+            int k;
+
+            cfaCfg->enable16BitMode = dcc_cfai3_ext->process_mode;
+            if (cfaCfg->enable16BitMode)
+            {
+                cfaCfg->linearBitWidth = dcc_cfai3_ext->dcomp_lut_bw;
+                cfaCfg->ccmEnable = dcc_cfai3_ext->ccm_en;
+                dcmpLutCfg->enable = dcc_cfai3_ext->dcomp_lut_en;
+                compLutCfg->enable = dcc_cfai3_ext->comp_lut_en;
+
+                for (k = 0; k < FCP_MAX_COLOR_COMP; k++)
+                {
+                    cfaCfg->firConfig[k].enable = 1;
+                    cfaCfg->firConfig[k].scaler = dcc_cfai3_ext->out_scaler[k];
+                    cfaCfg->firConfig[k].offset = dcc_cfai3_ext->out_offset[k];
+
+                    if (cfaCfg->ccmEnable)
+                    {
+                        cfaCfg->ccmConfig[k].inputCh0 = dcc_cfai3_ext->ccm[k][0];
+                        cfaCfg->ccmConfig[k].inputCh1 = dcc_cfai3_ext->ccm[k][1];
+                        cfaCfg->ccmConfig[k].inputCh2 = dcc_cfai3_ext->ccm[k][2];
+                        cfaCfg->ccmConfig[k].inputCh3 = dcc_cfai3_ext->ccm[k][3];
+                        cfaCfg->ccmConfig[k].offset = dcc_cfai3_ext->ccm[k][4];
+                    }
+
+                    if (dcmpLutCfg->enable)
+                    {
+                        dcmpLutCfg->tableAddr[k] = &vissObj->dcc_table_ptr.dcmpLut[fcp_index][k][0];
+                    }
+                    if (compLutCfg->enable)
+                    {
+                        compLutCfg->tableAddr[k] = &vissObj->dcc_table_ptr.compLut[fcp_index][k][0];
+                    }
+                }
+
+                if (dcmpLutCfg->enable)
+                {
+                    memcpy(dcmpLutCfg->tableAddr[0], dcc_cfai3_ext->ccmlut_dcmpd_0, CFAI3_DCMPD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(dcmpLutCfg->tableAddr[1], dcc_cfai3_ext->ccmlut_dcmpd_1, CFAI3_DCMPD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(dcmpLutCfg->tableAddr[2], dcc_cfai3_ext->ccmlut_dcmpd_2, CFAI3_DCMPD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(dcmpLutCfg->tableAddr[3], dcc_cfai3_ext->ccmlut_dcmpd_3, CFAI3_DCMPD_LUT_SIZE * sizeof(uint32_t));
+                    vissObj->vissCfgRef.fcpCfg[fcp_index].decomLutCfg = dcmpLutCfg;
+                }
+
+                if (compLutCfg->enable)
+                {
+                    memcpy(compLutCfg->tableAddr[0], dcc_cfai3_ext->ccmlut_compd_0, FLXD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(compLutCfg->tableAddr[1], dcc_cfai3_ext->ccmlut_compd_1, FLXD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(compLutCfg->tableAddr[2], dcc_cfai3_ext->ccmlut_compd_2, FLXD_LUT_SIZE * sizeof(uint32_t));
+                    memcpy(compLutCfg->tableAddr[3], dcc_cfai3_ext->ccmlut_compd_3, FLXD_LUT_SIZE * sizeof(uint32_t));
+                    vissObj->vissCfgRef.fcpCfg[fcp_index].comLutCfg = compLutCfg;
+                }
+            }
+        }
+#endif
         vissObj->vissCfgRef.fcpCfg[fcp_index].cfaCfg = cfaCfg;
 
         /* Setting config flag to 1,
