@@ -227,8 +227,8 @@ typedef struct
 #ifdef VPAC3
     int32_t                            cac_lut[CAC_LUT_SIZE];
     uint32_t                           raw_hist_lut[NSF4_HISTOGRAM_LUT_SIZE];
-    uint32_t                           dcmpLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FLXD_LUT_SIZE];
-    uint32_t                           compLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FLXD_LUT_SIZE];
+    uint32_t                           dcmpLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FCP_MAX_COLOR_COMP][FLXD_LUT_SIZE];
+    uint32_t                           compLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FCP_MAX_COLOR_COMP][FLXD_LUT_SIZE];
 #endif
 } tivxVpacVissDccTables;
 
