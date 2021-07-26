@@ -228,16 +228,12 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 
         for (i = 0; i < numPlanes; i++)
         {
-            int32_t status;
+            vxStatus = tivxMemTranslateVirtAddr(ptrs[i],
+                                                &fd64,
+                                                &phyAddr);
 
-            status = tivxMemTranslateVirtAddr(ptrs[i],
-                                              &fd64,
-                                              &phyAddr);
-
-            if (status < 0)
+            if (vxStatus != (vx_status) VX_SUCCESS)
             {
-                vxStatus = (vx_status)VX_FAILURE;
-
                 VX_PRINT(VX_ZONE_ERROR,
                          "tivxMemTranslateVirtAddr() failed for "
                          "plane [%d]\n", i);
@@ -451,6 +447,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMemTranslateFd() failed for "
                          "plane [%d]\n", i);
+                break;
             }
         }
     }
