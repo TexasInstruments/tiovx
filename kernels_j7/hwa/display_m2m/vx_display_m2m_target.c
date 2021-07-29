@@ -774,13 +774,14 @@ static vx_status tivxDisplayM2MSetCreateParams(
             }
             else
             {
+                status = (vx_status)VX_FAILURE;
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Input Image\n");
                 break;
             }
         }
 
         /* Set Display WB pipeline parameters */
-        if ((vx_status)VX_SUCCESS == status)
+        if (((vx_status)VX_SUCCESS == status) && (pipeIdx < drvObj->numPipe))
         {
             wbPipeCfg               = &drvObj->wbCfg.pipeCfg;
             /* Set WB pipe input frame dimensions same as video pipe input/output frame,
