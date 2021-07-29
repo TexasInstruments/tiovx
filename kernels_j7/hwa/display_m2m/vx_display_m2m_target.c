@@ -724,7 +724,7 @@ static vx_status tivxDisplayM2MSetCreateParams(
     if (status == (vx_status)VX_SUCCESS)
     {
         createParams = (tivx_display_m2m_params_t *)cfgPtr;
-        memcpy(&prms->createParams, createParams, sizeof(tivxDisplayM2MParams));
+        memcpy(&prms->createParams, createParams, sizeof(tivx_display_m2m_params_t));
         drvObj = &prms->drvObj;
         /* Set Driver object */
         drvObj->instId    = createParams->instId;
