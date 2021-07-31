@@ -532,7 +532,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
     uint32_t node_id, pipe_id, target_id;
     #define TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH  (64u)
     vx_enum targets[TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH];
-    vx_status status = (vx_status)VX_FAILURE;
+    vx_status status = (vx_status)VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if (   (NULL != graph)
