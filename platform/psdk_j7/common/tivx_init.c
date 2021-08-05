@@ -6,7 +6,6 @@
  *
  *******************************************************************************
  */
-
 #include <vx_internal.h>
 #include <tivx_platform_psdk_j7.h>
 
@@ -23,9 +22,52 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 void tivxRegisterTestKernelsTargetArmKernels();
 void tivxUnRegisterTestKernelsTargetArmKernels();
 
-static uint8_t g_init_status = 0U;
+static void tivxInitLocal(void);
+static void tivxDeInitLocal(void);
+
+/* Counter for tracking the {init, de-init} calls. This is also used to
+ * guarantee a single init/de-init operation.
+ */
+static uint32_t g_init_status = 0U;
+
+#if defined(LINUX) || defined(QNX)
+#include <pthread.h>
+
+/* Mutex for controlling access to Init/De-Init. */
+static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void tivxInit(void)
+{
+    pthread_mutex_lock(&g_mutex);
+
+    tivxInitLocal();
+
+    pthread_mutex_unlock(&g_mutex);
+
+}
+
+void tivxDeInit(void)
+{
+    pthread_mutex_lock(&g_mutex);
+
+    tivxDeInitLocal();
+
+    pthread_mutex_unlock(&g_mutex);
+}
+
+#else
+void tivxInit(void)
+{
+    tivxInitLocal();
+}
+
+void tivxDeInit(void)
+{
+    tivxDeInitLocal();
+}
+#endif // defined(LINUX) || defined(QNX)
+
+static void tivxInitLocal(void)
 {
     if (0U == g_init_status)
     {
@@ -66,48 +108,56 @@ void tivxInit(void)
 
         tivxPlatformCreateTargets();
 
-        g_init_status = 1U;
-
         VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
     }
+
+    g_init_status++;
 }
 
-void tivxDeInit(void)
+static void tivxDeInitLocal(void)
 {
-    if (1U == g_init_status)
+    if (0U != g_init_status)
     {
-        tivxPlatformDeleteTargets();
+        g_init_status--;
 
-        /* DeInitialize Host */
-    #if defined (C66)
-        tivxUnRegisterOpenVXCoreTargetKernels();
-        #ifdef BUILD_TUTORIAL
-        tivxUnRegisterTutorialTargetKernels();
+        if (0U == g_init_status)
+        {
+            tivxPlatformDeleteTargets();
+
+            /* DeInitialize Host */
+        #if defined (C66)
+            tivxUnRegisterOpenVXCoreTargetKernels();
+            #ifdef BUILD_TUTORIAL
+            tivxUnRegisterTutorialTargetKernels();
+            #endif
         #endif
-    #endif
 
-    #ifdef BUILD_CONFORMANCE_TEST
-    #if defined (C66)
-        tivxUnRegisterCaptureTargetArmKernels();
-        tivxUnRegisterTestKernelsTargetArmKernels();
-    #endif
+        #ifdef BUILD_CONFORMANCE_TEST
+        #if defined (C66)
+            tivxUnRegisterCaptureTargetArmKernels();
+            tivxUnRegisterTestKernelsTargetArmKernels();
+        #endif
 
-    #if defined (C66)
-        tivxUnRegisterTestKernelsTargetC66Kernels();
-    #endif
-    #endif
+        #if defined (C66)
+            tivxUnRegisterTestKernelsTargetC66Kernels();
+        #endif
+        #endif
 
-        /* DeInitialize Target */
-        tivxTargetDeInit();
+            /* DeInitialize Target */
+            tivxTargetDeInit();
 
-        /* DeInitialize platform */
-        tivxPlatformDeInit();
+            /* DeInitialize platform */
+            tivxPlatformDeInit();
 
-        /* DeInitialize resource logging */
-        tivxLogResourceDeInit();
+            /* DeInitialize resource logging */
+            tivxLogResourceDeInit();
 
-        g_init_status = 0U;
-
-        VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
+            VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
+        }
+    }
+    else
+    {
+        /* ERROR. */
+        VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
     }
 }
