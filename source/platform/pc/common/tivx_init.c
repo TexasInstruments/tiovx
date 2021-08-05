@@ -60,7 +60,7 @@
 *
 */
 
-
+#include <pthread.h>
 
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
@@ -83,10 +83,18 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 void tivxRegisterTIDLTargetKernels(void);
 void tivxUnRegisterTIDLTargetKernels(void);
 
-static uint8_t g_init_status = 0U;
+/* Mutex for controlling access to Init/De-Init. */
+static pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+/* Counter for tracking the {init, de-init} calls. This is also used to
+ * guarantee a single init/de-init operation.
+ */
+static uint32_t g_init_status = 0U;
 
 void tivxInit(void)
 {
+    pthread_mutex_lock(&g_mutex);
+
     if (0U == g_init_status)
     {
         tivx_set_debug_zone(VX_ZONE_INIT);
@@ -151,43 +159,59 @@ void tivxInit(void)
 
         tivxPlatformCreateTargets();
 
-        g_init_status = 1U;
+        VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
     }
+
+    g_init_status++;
+
+    pthread_mutex_unlock(&g_mutex);
 }
 
 void tivxDeInit(void)
 {
-    if (1U == g_init_status)
+    pthread_mutex_lock(&g_mutex);
+
+    if (0U != g_init_status)
     {
-        tivxPlatformDeleteTargets();
+        g_init_status--;
 
-        #ifdef BUILD_CONFORMANCE_TEST
-        tivxUnRegisterCaptureTargetArmKernels();
-        tivxUnRegisterTestKernelsTargetC66Kernels();
-        #endif
+        if (0U == g_init_status)
+        {
+            tivxPlatformDeleteTargets();
 
-        /* DeInitialize Host */
-        tivxUnRegisterOpenVXCoreTargetKernels();
+            #ifdef BUILD_CONFORMANCE_TEST
+            tivxUnRegisterCaptureTargetArmKernels();
+            tivxUnRegisterTestKernelsTargetC66Kernels();
+            #endif
 
-        #ifdef BUILD_TUTORIAL
-        tivxUnRegisterTutorialTargetKernels();
-        #endif
+            /* DeInitialize Host */
+            tivxUnRegisterOpenVXCoreTargetKernels();
 
-        #ifndef _DISABLE_TIDL
-        tivxUnRegisterTIDLTargetKernels();
-        #endif
+            #ifdef BUILD_TUTORIAL
+            tivxUnRegisterTutorialTargetKernels();
+            #endif
 
-        tivxHostDeInit();
+            #ifndef _DISABLE_TIDL
+            tivxUnRegisterTIDLTargetKernels();
+            #endif
 
-        /* DeInitialize Target */
-        tivxTargetDeInit();
+            tivxHostDeInit();
 
-        /* DeInitialize platform */
-        tivxPlatformDeInit();
+            /* DeInitialize Target */
+            tivxTargetDeInit();
 
-        /* DeInitialize resource logging */
-        tivxLogResourceDeInit();
+            /* DeInitialize platform */
+            tivxPlatformDeInit();
 
-        g_init_status = 0U;
+            /* DeInitialize resource logging */
+            tivxLogResourceDeInit();
+        }
     }
+    else
+    {
+        /* ERROR. */
+        VX_PRINT(VX_ZONE_ERROR, "De-Initialization Error !!!\n");
+    }
+
+    pthread_mutex_unlock(&g_mutex);
 }
