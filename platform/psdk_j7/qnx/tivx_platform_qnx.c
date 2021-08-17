@@ -37,6 +37,12 @@ typedef struct tivx_platform_info
     /*! \brief POSIX semaphore to protect memory
      */
     sem_t *semaphore;
+    /*! \brief POSIX semaphore to protect Data Reference
+     */
+    sem_t *semaphore_data_ref;
+    /*! \brief POSIX semaphore to protect Log Memory
+     */
+    sem_t *semaphore_log_mem;
 } tivx_platform_info_t;
 
 
@@ -101,6 +107,26 @@ vx_status tivxPlatformInit(void)
             VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore create failed\n");
             status = (vx_status)VX_FAILURE;
         }
+        else
+        {
+            g_tivx_platform_info.semaphore_data_ref = sem_open("/tiovxsem_data_ref", (O_CREAT), (0x01C0), 1);
+
+            if (SEM_FAILED == g_tivx_platform_info.semaphore_data_ref)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_data_ref create failed\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
+                g_tivx_platform_info.semaphore_log_mem = sem_open("/tiovxsem_log_mem", (O_CREAT), (0x01C0), 1);
+
+                if (SEM_FAILED == g_tivx_platform_info.semaphore_log_mem)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "POSIX semaphore_log_mem create failed\n");
+                    status = (vx_status)VX_FAILURE;
+                }
+            }
+        }
     }
 
     return (status);
@@ -112,6 +138,8 @@ void tivxPlatformDeInit(void)
     int32_t i;
 
     sem_close(g_tivx_platform_info.semaphore);
+    sem_close(g_tivx_platform_info.semaphore_data_ref);
+    sem_close(g_tivx_platform_info.semaphore_log_mem);
 
     tivxIpcDeInit();
 
@@ -137,10 +165,12 @@ void tivxPlatformSystemLock(vx_enum lock_id)
              * data ref queue.
              * This lock in this platform is implemented via HW spinlock
              */
+            sem_wait(g_tivx_platform_info.semaphore_data_ref);
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
+            sem_wait(g_tivx_platform_info.semaphore_log_mem);
             appIpcHwLockAcquire(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID, APP_IPC_WAIT_FOREVER);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
@@ -163,10 +193,12 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
         {
             /* release the lock taken during tivxPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+            sem_post(g_tivx_platform_info.semaphore_data_ref);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
         {
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_LOG_RT_HW_SPIN_LOCK_ID);
+            sem_post(g_tivx_platform_info.semaphore_log_mem);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE==lock_id)
         {
