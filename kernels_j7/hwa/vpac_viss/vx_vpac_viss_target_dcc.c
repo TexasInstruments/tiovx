@@ -645,8 +645,8 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj,
     }
 }
 
-// DPC must be enabled at startup time if it is included in DCC
-// otherwise switching DPC on later will cause image artifacts
+/* DPC must be enabled at startup time if it is included in DCC */
+/* otherwise switching DPC on later will cause image artifacts  */
 static void tivxVpacVissDccInitDpc(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
@@ -764,7 +764,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
             */
          }
     }
-#ifdef VPAC3 //VPAC3 CC for MV
+#ifdef VPAC3 /* VPAC3 CC for MV */
     else if ( (vissObj->dcc_out_prms.useVissCcMvCfg != 0) && (fcp_index == 1) )
     {
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
@@ -914,7 +914,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
     if (NULL != vissObj)
     {
         cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
-#ifdef VPAC3 //VPAC3
+#ifdef VPAC3
         if ((0 == fcp_index) && vissObj->dcc_out_prms.useVissCfai3aCfg)
         {
             dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCfai3aCfg.cfg_cfai1);
@@ -929,7 +929,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
         {
             dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
         }
-#else //VPAC1
+#else /* VPAC1 */
         if (vissObj->dcc_out_prms.useCfaCfg)
         {
             dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
@@ -975,7 +975,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
             vissObj->vissCfgRef.fcpCfg[fcp_index].cfaLut16to12Cfg = lut16to12Cfg;
         }
 
-#ifdef VPAC3 // CFAI3
+#ifdef VPAC3 /* CFAI3 */
         if (NULL != dcc_cfai3_ext)
         {
             Fcp_comDecomLutConfig *compLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].comLutCfg;
