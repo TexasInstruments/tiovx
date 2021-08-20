@@ -151,6 +151,26 @@ void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj)
     }
 }
 
+static void tivxVpacVissDccMapWb1(tivxVpacVissObj *vissObj)
+{
+    uint32_t                    cnt;
+    dcc_parser_output_params_t *dcc_out_prms = &vissObj->dcc_out_prms;
+    Rfe_PwlConfig              *pwlCfg = &vissObj->vissCfg.pwlCfg3;
+
+    if (dcc_out_prms->useVissRawfeWb1VsCfg)
+    {
+        for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt++)
+        {
+            pwlCfg->gain[cnt] = dcc_out_prms->vissRawfeWb1VsCfg.gain[cnt];
+        }
+        vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     const tivx_obj_desc_user_data_object_t *dcc_buf_desc,
     const tivx_obj_desc_user_data_object_t *h3a_out_desc,
@@ -213,6 +233,7 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
             tivxVpacVissDccMapGlbceParams(vissObj);
             tivxVpacVissDccMapFcpParams(vissObj, ae_awb_res);
             tivxVpacVissDccMapBlc(vissObj, ae_awb_res);
+            tivxVpacVissDccMapWb1(vissObj);
         }
     }
 
@@ -704,7 +725,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     Fcp_CcmConfig      *ccmCfg = NULL;
     ccmCfg = &vissObj->vissCfg.fcpCfg[fcp_index].ccmCfg;
 
-    if (vissObj->dcc_out_prms.useCcmCfg != 0)
+    if ( (vissObj->dcc_out_prms.useCcmCfg != 0) && (fcp_index == 0) )
     {
         if(NULL != ae_awb_res)
         {
@@ -743,6 +764,41 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
             */
          }
     }
+#ifdef VPAC3 //VPAC3 CC for MV
+    else if ( (vissObj->dcc_out_prms.useVissCcMvCfg != 0) && (fcp_index == 1) )
+    {
+        for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
+        {
+            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
+            {
+                ccmCfg->weights[cnt1][cnt2] = vissObj->dcc_out_prms.vissCcMvCfg.ccm1[cnt1][cnt2];
+            }
+            ccmCfg->offsets[cnt1] = vissObj->dcc_out_prms.vissCcMvCfg.ccm1[cnt1][FCP_MAX_CCM_COEFF_IN_RAW];
+        }
+
+        Fcp_Rgb2YuvConfig *r2y = &vissObj->vissCfg.fcpCfg[fcp_index].rgb2yuvCfg;
+        for (cnt1 = 0u; cnt1 < FCP_MAX_RGB2YUV_COEFF; cnt1 ++)
+        {
+            for (cnt2 = 0u; cnt2 < FCP_MAX_RGB2YUV_COEFF; cnt2 ++)
+            {
+                r2y->weights[cnt1][cnt2] = vissObj->dcc_out_prms.vissCcMvCfg.rgb2yuv[cnt1][cnt2];
+            }
+            r2y->offsets[cnt1] = vissObj->dcc_out_prms.vissCcMvCfg.rgb2yuv[cnt1][FCP_MAX_RGB2YUV_COEFF];
+        }
+
+        Fcp_GammaConfig *gamma = &vissObj->vissCfg.fcpCfg[fcp_index].gammaCfg;
+        gamma->enable = vissObj->dcc_out_prms.vissCcMvCfg.contrast_en;
+        gamma->outClip = vissObj->dcc_out_prms.vissCcMvCfg.contrast_clip;
+
+        vissObj->vissCfgRef.fcpCfg[fcp_index].ccm = ccmCfg;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].rgb2yuv = r2y;
+        vissObj->vissCfgRef.fcpCfg[fcp_index].gamma = gamma;
+
+        /* Setting config flag to 1,
+            * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+#endif
     else
     {
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)

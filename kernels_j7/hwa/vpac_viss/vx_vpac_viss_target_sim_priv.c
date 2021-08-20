@@ -694,7 +694,14 @@ static void tivxVpacVissParseFlxCCParams(tivxVpacVissParams *prms,
             cc_prms->MuxY12Out                  = 1u; /* JGV No mapping to drv? */
             cc_prms->MuxY8Out                   = 1u; /* JGV No mapping to drv? */
             //cc_prms->ChromaMode                 = 0u; /* JGV Set externally in node */
-
+#ifdef VPAC3 // VPAC3 CC for MV
+            if (fcp_index > 0)
+            {
+                cc_prms->MuxC1_4                = 3u; /* JGV No mapping to drv? */
+                cc_prms->MuxY12Out              = 0u; /* JGV No mapping to drv? */
+                cc_prms->MuxY8Out               = 0u; /* JGV No mapping to drv? */
+            }
+#endif
             if (NULL != ccmCfg)
             {
                 cc_prms->CCM1.W11                   = ccmCfg->weights[0][0];
