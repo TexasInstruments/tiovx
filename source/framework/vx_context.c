@@ -275,6 +275,27 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     return status;
 }
 
+static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
+{
+    vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+
+    if ( (ownIsValidContext(context) == (vx_bool)vx_true_e) &&
+         (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
+    {
+        status = (vx_status)VX_SUCCESS;
+
+        if ( (kernel->enumeration >= (int32_t)VX_KERNEL_BASE(VX_ID_USER, 0U)) &&
+             (kernel->enumeration <  (int32_t)(VX_KERNEL_BASE(VX_ID_USER, 0U) + (int32_t)TIVX_MAX_KERNEL_ID)) )
+        {
+            uint32_t dynamic_user_kernel_idx = kernel->enumeration - VX_KERNEL_BASE(VX_ID_USER, 0U);
+
+            context->is_dynamic_user_kernel_id_used[dynamic_user_kernel_idx] = (vx_bool)vx_false_e;
+        }
+    }
+
+    return status;
+}
+
 vx_status ownContextFlushCmdPendQueue(vx_context context)
 {
     vx_status   status = (vx_status)VX_SUCCESS;
@@ -532,10 +553,21 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
             if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0U) )
             {
                 /* found free entry */
-                context->kerneltable[idx] = NULL;
-                context->num_unique_kernels--;
-                ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
-                tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
+
+                status = ownDeallocateUserKernelId(context, kernel);
+
+                if ((vx_status)VX_SUCCESS == status)
+                {
+                    context->kerneltable[idx] = NULL;
+                    context->num_unique_kernels--;
+                    ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+                    tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
+                }
+
                 break;
             }
         }
@@ -858,8 +890,6 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
             context->imm_border.mode = (vx_enum)VX_BORDER_UNDEFINED;
             context->imm_border_policy = (vx_enum)VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
-            context->next_dynamic_user_kernel_id = 0;
-            context->next_dynamic_user_library_id = 1;
             context->perf_enabled = (vx_bool)vx_false_e;
             context->imm_target_enum = (vx_enum)VX_TARGET_ANY;
             memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
@@ -875,6 +905,14 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             for(idx=0; idx<dimof(context->kerneltable); idx++)
             {
                 context->kerneltable[idx] = NULL;
+            }
+            for(idx=0; idx<TIVX_MAX_KERNEL_ID; idx++)
+            {
+                context->is_dynamic_user_kernel_id_used[idx] = (vx_bool)vx_false_e;
+            }
+            for(idx=0; idx<TIVX_MAX_LIBRARY_ID; idx++)
+            {
+                context->is_dynamic_user_library_id_used[idx] = (vx_bool)vx_false_e;
             }
             context->num_unique_kernels = 0;
             context->log_enabled = (vx_bool)vx_false_e;
@@ -1401,13 +1439,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != pKernelEnumId))
     {
+        uint32_t idx;
+
         (void)ownContextLock(context);
 
         status = (vx_status)VX_ERROR_NO_RESOURCES;
-        if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
+        for(idx=0; idx<TIVX_MAX_KERNEL_ID; idx++)
         {
-            *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)context->next_dynamic_user_kernel_id++;
-            status = (vx_status)VX_SUCCESS;
+            if (context->is_dynamic_user_kernel_id_used[idx] == (vx_bool)vx_false_e)
+            {
+                *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)(idx);
+                status = (vx_status)VX_SUCCESS;
+                context->is_dynamic_user_kernel_id_used[idx] = (vx_bool)vx_true_e;
+                break;
+            }
         }
 
         (void)ownContextUnlock(context);
@@ -1420,15 +1465,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == (vx_bool)vx_true_e) && (NULL != pLibraryId))
     {
+        uint32_t idx;
+
         ownContextLock(context);
 
-        status = (vx_status)VX_ERROR_NO_RESOURCES;
-        if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
+        for(idx=0; idx<(TIVX_MAX_LIBRARY_ID-1); idx++)
         {
-            *pLibraryId = (int32_t)context->next_dynamic_user_library_id;
-            context->next_dynamic_user_library_id =
-                context->next_dynamic_user_library_id + 1u;
-            status = (vx_status)VX_SUCCESS;
+            if (context->is_dynamic_user_library_id_used[idx] == (vx_bool)vx_false_e)
+            {
+                *pLibraryId = (int32_t)(idx+1);
+                status = (vx_status)VX_SUCCESS;
+                context->is_dynamic_user_library_id_used[idx+1] = (vx_bool)vx_true_e;
+                break;
+            }
         }
 
         ownContextUnlock(context);

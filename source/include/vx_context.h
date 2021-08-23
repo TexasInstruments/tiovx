@@ -100,10 +100,10 @@ typedef struct _vx_context {
     vx_border_t         imm_border;
     /*! \brief The unsupported border mode policy for immediate mode functions */
     vx_enum             imm_border_policy;
-    /*! \brief The next available dynamic user kernel ID */
-    vx_uint32           next_dynamic_user_kernel_id;
-    /*! \brief The next available dynamic user library ID */
-    vx_uint32           next_dynamic_user_library_id;
+    /*! \brief Flag indicating whether corresponding dynamic_user_kernel_id is being used */
+    vx_bool             is_dynamic_user_kernel_id_used[TIVX_MAX_KERNEL_ID];
+    /*! \brief Flag indicating whether corresponding dynamic_user_library_id is being used */
+    vx_bool             is_dynamic_user_library_id_used[TIVX_MAX_LIBRARY_ID];
     /*! \brief The immediate mode enumeration */
     vx_enum             imm_target_enum;
     /*! \brief The immediate mode target string */
