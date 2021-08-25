@@ -135,7 +135,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_GRAPH_MAX_OBJECTS                      (16u)
+#define TIVX_GRAPH_MAX_OBJECTS                      (128u)
 
 /*!
  * \brief Max number super node objects supported
