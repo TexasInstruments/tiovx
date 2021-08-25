@@ -91,13 +91,13 @@ void tivxUnRegisterTestKernelsKernels(void);
  * \brief Function to register TEST_KERNELS Kernels on the c66 Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetDspKernels(void);
 
 /*!
  * \brief Function to un-register TEST_KERNELS Kernels on the c66 Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxUnRegisterTestKernelsTargetDspKernels(void);
 
 /*!
  * \brief Function to register TEST_KERNELS Kernels on the arm Target

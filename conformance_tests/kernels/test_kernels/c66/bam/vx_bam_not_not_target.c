@@ -367,29 +367,9 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
 
 void tivxAddTargetKernelBamNotNot(void)
 {
-    vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    self_cpu = tivxGetSelfCpuId();
-
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    {
-        status = VX_FAILURE;
-    }
-
-    if (status == VX_SUCCESS)
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name))
     {
         vx_not_not_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_NOT_NOT_NAME,

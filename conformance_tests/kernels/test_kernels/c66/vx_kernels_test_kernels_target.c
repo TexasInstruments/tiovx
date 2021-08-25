@@ -97,12 +97,12 @@ static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
 #endif
 };
 
-void tivxRegisterTestKernelsTargetC66Kernels(void)
+void tivxRegisterTestKernelsTargetDspKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterTestKernelsTargetC66Kernels(void)
+void tivxUnRegisterTestKernelsTargetDspKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

@@ -2,7 +2,7 @@
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))
 
 include $(PRELUDE)
-TARGET      := vx_target_kernels_c66_bam
+TARGET      := vx_target_kernels_dsp_bam
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include

@@ -18,8 +18,8 @@ void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
-void tivxRegisterTestKernelsTargetC66Kernels(void);
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetDspKernels(void);
+void tivxUnRegisterTestKernelsTargetDspKernels(void);
 void tivxRegisterTIDLTargetKernels(void);
 void tivxUnRegisterTIDLTargetKernels(void);
 
@@ -64,7 +64,7 @@ void tivxInit(void)
     #endif
 
     #if defined (C66)
-        tivxRegisterTestKernelsTargetC66Kernels();
+        tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
 
@@ -90,7 +90,7 @@ void tivxDeInit(void)
     #endif
 
     #if defined (C66)
-        tivxUnRegisterTestKernelsTargetC66Kernels();
+        tivxUnRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
 

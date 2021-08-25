@@ -74,11 +74,11 @@ void tivxUnRegisterTutorialTargetKernels(void);
 void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
 
-void tivxRegisterTestKernelsTargetC66Kernels(void);
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetDspKernels(void);
+void tivxUnRegisterTestKernelsTargetDspKernels(void);
 
-void tivxRegisterTestKernelsTargetC66Kernels(void);
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetDspKernels(void);
+void tivxUnRegisterTestKernelsTargetDspKernels(void);
 
 void tivxRegisterTIDLTargetKernels(void);
 void tivxUnRegisterTIDLTargetKernels(void);
@@ -143,11 +143,11 @@ void tivxInit(void)
         #ifdef BUILD_CONFORMANCE_TEST
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetC66Kernels();
+        tivxRegisterTestKernelsTargetDspKernels();
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
         tivxRegisterCaptureTargetArmKernels();
-        tivxRegisterTestKernelsTargetC66Kernels();
+        tivxRegisterTestKernelsTargetDspKernels();
         #endif
 
         /* let rest of system think it is running on DSP1 */
@@ -181,7 +181,7 @@ void tivxDeInit(void)
 
             #ifdef BUILD_CONFORMANCE_TEST
             tivxUnRegisterCaptureTargetArmKernels();
-            tivxUnRegisterTestKernelsTargetC66Kernels();
+            tivxUnRegisterTestKernelsTargetDspKernels();
             #endif
 
             /* DeInitialize Host */
