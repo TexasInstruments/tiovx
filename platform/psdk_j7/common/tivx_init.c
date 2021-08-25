@@ -94,7 +94,7 @@ static void tivxInitLocal(void)
     #endif
 
     #ifdef BUILD_CONFORMANCE_TEST
-    #if defined (C66)
+    #if defined (R5F)
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
@@ -133,7 +133,7 @@ static void tivxDeInitLocal(void)
         #endif
 
         #ifdef BUILD_CONFORMANCE_TEST
-        #if defined (C66)
+        #if defined (R5F)
             tivxUnRegisterCaptureTargetArmKernels();
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
