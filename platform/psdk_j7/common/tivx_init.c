@@ -17,8 +17,8 @@ void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
 void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
-void tivxRegisterTestKernelsTargetC66Kernels(void);
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTestKernelsTargetDspKernels(void);
+void tivxUnRegisterTestKernelsTargetDspKernels(void);
 void tivxRegisterTestKernelsTargetArmKernels();
 void tivxUnRegisterTestKernelsTargetArmKernels();
 
@@ -100,7 +100,7 @@ static void tivxInitLocal(void)
     #endif
 
     #if defined (C66)
-        tivxRegisterTestKernelsTargetC66Kernels();
+        tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
 
@@ -139,7 +139,7 @@ static void tivxDeInitLocal(void)
         #endif
 
         #if defined (C66)
-            tivxUnRegisterTestKernelsTargetC66Kernels();
+            tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
         #endif
 
