@@ -135,7 +135,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_GRAPH_MAX_OBJECTS                      (128u)
+#define TIVX_GRAPH_MAX_OBJECTS                      (256u)
 
 /*!
  * \brief Max number super node objects supported
@@ -205,7 +205,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS                      (384u)
+#define TIVX_IMAGE_MAX_OBJECTS                      (512u + 1u)
 
 /*!
  * \brief Max number tensor objects supported
@@ -268,7 +268,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (72u)
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (256u)
 
 /*!
  * \brief Max number parameter objects supported
@@ -307,7 +307,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_REFERENCES     (512u + 64u)
+#define TIVX_CONTEXT_MAX_REFERENCES     (512u + 256u + 64u + 8u)
 
 
 /*!
