@@ -623,29 +623,9 @@ static void tivxOpticalFlowPyrLKFreeMem(tivxOpticalFlowPyrLkParams *prms)
 
 void tivxAddTargetKernelOpticalFlowPyrLk(void)
 {
-    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    self_cpu = tivxGetSelfCpuId();
-
-    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP1 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == (vx_enum)TIVX_CPU_ID_DSP2 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    else
-    {
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name))
     {
         vx_optical_flow_pyr_lk_target_kernel = tivxAddTargetKernel(
                             (vx_enum)VX_KERNEL_OPTICAL_FLOW_PYR_LK,

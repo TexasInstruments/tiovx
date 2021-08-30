@@ -210,22 +210,9 @@ static vx_status VX_CALLBACK tivxKernelOrDelete(
 void tivxAddTargetKernelOr(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    self_cpu = tivxGetSelfCpuId();
-
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name))
     {
-        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP1,
-                TIVX_TARGET_MAX_NAME);
-        }
-        else
-        {
-            strncpy(target_name, TIVX_TARGET_DSP2,
-                TIVX_TARGET_MAX_NAME);
-        }
         gTivxOrKernelInfo.target_kernel = tivxAddTargetKernel(
             gTivxOrKernelInfo.kernel_id,
             target_name,

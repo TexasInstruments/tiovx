@@ -362,3 +362,8 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
     return (status);
 }
 
+void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel)
+{
+    tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+    tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+}

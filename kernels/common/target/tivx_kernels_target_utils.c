@@ -391,3 +391,32 @@ void tivxReserveC66xL2MEM(void)
 #endif
 
 }
+
+vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
+    {
+        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
+        {
+            strncpy(target_name, TIVX_TARGET_DSP1,
+                TIVX_TARGET_MAX_NAME);
+        }
+        else
+        {
+            strncpy(target_name, TIVX_TARGET_DSP2,
+                TIVX_TARGET_MAX_NAME);
+        }
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+
+    return status;
+}
+

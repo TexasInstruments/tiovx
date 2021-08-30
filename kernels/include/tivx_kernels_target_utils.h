@@ -200,6 +200,13 @@ void tivxReserveC66xL2MEM(void);
 
 
 /*!
+ * \brief Function to assign platform-specific DSP target name
+ *
+ * \ingroup group_tivx_target_utils
+ */
+vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name);
+
+/*!
  * \ingroup group_tivx_target_utils
  */
 static inline vx_uint32 tivxComputePatchOffset(

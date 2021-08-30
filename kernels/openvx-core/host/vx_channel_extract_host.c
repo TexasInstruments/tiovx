@@ -367,8 +367,7 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         if ((vx_status)VX_SUCCESS == status)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
         }
         if ((vx_status)VX_SUCCESS == status)
         {

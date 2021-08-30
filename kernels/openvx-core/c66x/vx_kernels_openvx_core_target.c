@@ -186,3 +186,4 @@ void tivxUnRegisterOpenVXCoreTargetKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
+

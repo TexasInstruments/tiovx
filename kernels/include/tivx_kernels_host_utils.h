@@ -186,6 +186,13 @@ static inline void tivxKernelValidRectParams_init(
 vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
 
 
+/*!
+ * \brief Function to add platform-specific DSP kernel target
+ *
+ * \ingroup group_tivx_ext_host_kernel
+ */
+void tivxKernelsHostUtilsAddKernelTargetDsp(vx_kernel kernel);
+
 
 /*!
  *  STATIC INLINE FUNCTION DEFINITIONS
