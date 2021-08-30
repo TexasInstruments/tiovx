@@ -203,13 +203,8 @@ vx_status tivxAddKernelScalarSource2(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
             tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
             tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_1);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_A15_0);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU2);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
         if (status == VX_SUCCESS)
         {

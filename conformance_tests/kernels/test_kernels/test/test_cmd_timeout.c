@@ -55,8 +55,8 @@ typedef struct
 
 #define TEST_PARAMS \
     CT_GENERATE_PARAMETERS("TIVX_TARGET_A72_0", ARG, TIVX_TARGET_A72_0), \
-    CT_GENERATE_PARAMETERS("TIVX_TARGET_DSP1", ARG, TIVX_TARGET_DSP1), \
-    CT_GENERATE_PARAMETERS("TIVX_TARGET_DSP2", ARG, TIVX_TARGET_DSP2), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_IPU1_0", ARG, TIVX_TARGET_IPU1_0), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_IPU1_1", ARG, TIVX_TARGET_IPU1_1), \
 
 int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
 {
@@ -161,10 +161,10 @@ int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
         }
         else
         {
-            /* Set the node target to TIVX_TARGET_DSP1. */
+            /* Set the node target to TIVX_TARGET_IPU1_0. */
             vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
                                        VX_TARGET_STRING,
-                                       TIVX_TARGET_DSP1);
+                                       TIVX_TARGET_IPU1_0);
 
             if (vxStatus != (vx_status)VX_SUCCESS)
             {

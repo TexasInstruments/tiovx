@@ -203,7 +203,7 @@ TEST(tivxPyramidNode, testIntermediateNodeCreation)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidIntermediateNode(graph, pyr_in, pyr_out), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -235,7 +235,7 @@ TEST(tivxPyramidNode, testSourceNodeCreation)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_out), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -295,8 +295,8 @@ TEST_WITH_ARG(tivxPyramidNode, testObjectArrayPyramidPipeline, Arg, STREAMING_PA
     ASSERT_VX_OBJECT(n2 = tivxPyramidIntermediateNode(graph, pyr_1[0], pyr_2[0]), VX_TYPE_NODE);
     vxReplicateNode(graph, n2, pyr_intermediate_replicate, 2u);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -452,9 +452,9 @@ TEST_WITH_ARG(tivxPyramidNode, testDelayPyramidPipeline, Arg, STREAMING_PARAMETE
     ASSERT_VX_OBJECT(n3 = tivxPyramidIntermediateNode(graph, (vx_pyramid)vxGetReferenceFromDelay(delay, 0),
                           pyr_3[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -623,9 +623,9 @@ TEST_WITH_ARG(tivxPyramidNode, testDelayObjectArrayPyramidPipeline, Arg, STREAMI
                           pyr_3[0]), VX_TYPE_NODE);
     vxReplicateNode(graph, n3, pyr_intermediate_replicate, 2u);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);

@@ -183,56 +183,32 @@ static vx_status VX_CALLBACK tivxScalarSinkDelete(
 
 void tivxAddTargetKernelScalarSink(void)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = (vx_status)VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
     if ( (self_cpu == TIVX_CPU_ID_IPU1_0) ||
-          (self_cpu == TIVX_CPU_ID_A15_0) ||
-          (self_cpu == TIVX_CPU_ID_IPU2_0) ||
-          (self_cpu == TIVX_CPU_ID_IPU1_1) ||
-          (self_cpu == TIVX_CPU_ID_DSP1) ||
-          (self_cpu == TIVX_CPU_ID_DSP2))
+          (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         if (self_cpu == TIVX_CPU_ID_IPU1_0)
         {
             strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_A15_0)
-        {
-            strncpy(target_name, TIVX_TARGET_A15_0, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_IPU2_0)
-        {
-            strncpy(target_name, TIVX_TARGET_IPU2, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
         else if (self_cpu == TIVX_CPU_ID_IPU1_1)
         {
             strncpy(target_name, TIVX_TARGET_IPU1_1, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_DSP1)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
-        }
-        else if (self_cpu == TIVX_CPU_ID_DSP2)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-            status = VX_SUCCESS;
+            status = (vx_status)VX_SUCCESS;
         }
     }
     else
     {
-        status = VX_FAILURE;
+        status = (vx_status)VX_FAILURE;
     }
 
-    if (status == VX_SUCCESS)
+    if (status == (vx_status)VX_SUCCESS)
     {
         vx_scalar_sink_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_SCALAR_SINK_NAME,
