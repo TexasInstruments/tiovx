@@ -28,7 +28,7 @@ static void tivxDeInitLocal(void);
 /* Counter for tracking the {init, de-init} calls. This is also used to
  * guarantee a single init/de-init operation.
  */
-static uint32_t g_init_status = 0U;
+static uint32_t gInitCount = 0U;
 
 #if defined(LINUX) || defined(QNX)
 #include <pthread.h>
@@ -69,7 +69,7 @@ void tivxDeInit(void)
 
 static void tivxInitLocal(void)
 {
-    if (0U == g_init_status)
+    if (0U == gInitCount)
     {
         tivx_set_debug_zone((int32_t)VX_ZONE_INIT);
         tivx_set_debug_zone((int32_t)VX_ZONE_ERROR);
@@ -111,16 +111,16 @@ static void tivxInitLocal(void)
         VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
     }
 
-    g_init_status++;
+    gInitCount++;
 }
 
 static void tivxDeInitLocal(void)
 {
-    if (0U != g_init_status)
+    if (0U != gInitCount)
     {
-        g_init_status--;
+        gInitCount--;
 
-        if (0U == g_init_status)
+        if (0U == gInitCount)
         {
             tivxPlatformDeleteTargets();
 
