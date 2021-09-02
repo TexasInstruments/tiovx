@@ -70,7 +70,7 @@ static tivx_object_t g_tivx_objects;
 static tivx_mutex g_tivx_objects_lock;
 
 
-static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele);
+static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index);
 static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele);
 static vx_status ownFreeObject(
     const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
@@ -144,142 +144,144 @@ vx_status tivxObjectInit(void)
 vx_status tivxObjectDeInit(void)
 {
     vx_status status;
+    uint32_t error_index;
 
     status = tivxMutexDelete(&g_tivx_objects_lock);
 
     if ((vx_status)VX_SUCCESS == status)
     {
         status = ownCheckUseFlag(g_tivx_objects.isMfUse,
-            TIVX_META_FORMAT_MAX_OBJECTS);
+            TIVX_META_FORMAT_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is meta format use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is meta format use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isContextUse,
-            TIVX_CONTEXT_MAX_OBJECTS);
+            TIVX_CONTEXT_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is context use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is context use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isGraphUse,
-            TIVX_GRAPH_MAX_OBJECTS);
+            TIVX_GRAPH_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is graph use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is graph use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isNodeUse,
-            TIVX_NODE_MAX_OBJECTS);
+            TIVX_NODE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is node use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is node use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isKernelUse,
-            TIVX_KERNEL_MAX_OBJECTS);
+            TIVX_KERNEL_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is kernel use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is kernel use failed, index: %d\n", error_index);
+            VX_PRINT(VX_ZONE_ERROR, "kernel name: %s\n", g_tivx_objects.kernel[error_index].name);
         }
         status = ownCheckUseFlag(g_tivx_objects.isArrayUse,
-            TIVX_ARRAY_MAX_OBJECTS);
+            TIVX_ARRAY_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is array use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is array use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isUserDataObjectUse,
-            TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
+            TIVX_USER_DATA_OBJECT_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is user data object use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is user data object use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isRawImageUse,
-            TIVX_RAW_IMAGE_MAX_OBJECTS);
+            TIVX_RAW_IMAGE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is raw image use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is raw image use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isSuperNodeUse,
-            TIVX_SUPER_NODE_MAX_OBJECTS);
+            TIVX_SUPER_NODE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is super node use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is super node use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
-            TIVX_CONVOLUTION_MAX_OBJECTS);
+            TIVX_CONVOLUTION_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is convolution use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is convolution use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isDelayUse,
-            TIVX_DELAY_MAX_OBJECTS);
+            TIVX_DELAY_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is delay use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is delay use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isDistributionUse,
-            TIVX_DISTRIBUTION_MAX_OBJECTS);
+            TIVX_DISTRIBUTION_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is distribution use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is distribution use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isImageUse,
-            TIVX_IMAGE_MAX_OBJECTS);
+            TIVX_IMAGE_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is image use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is image use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isTensorUse,
-            TIVX_TENSOR_MAX_OBJECTS);
+            TIVX_TENSOR_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is tensor use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is tensor use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isLutUse,
-            TIVX_LUT_MAX_OBJECTS);
+            TIVX_LUT_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is LUT use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is LUT use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isMatrixUse,
-            TIVX_MATRIX_MAX_OBJECTS);
+            TIVX_MATRIX_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is matrix use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is matrix use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isPyramidUse,
-            TIVX_PYRAMID_MAX_OBJECTS);
+            TIVX_PYRAMID_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is pyramid use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is pyramid use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isRemapUse,
-            TIVX_REMAP_MAX_OBJECTS);
+            TIVX_REMAP_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is remap use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is remap use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isScalarUse,
-            TIVX_SCALAR_MAX_OBJECTS);
+            TIVX_SCALAR_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is scalar use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is scalar use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isThresholdUse,
-            TIVX_THRESHOLD_MAX_OBJECTS);
+            TIVX_THRESHOLD_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is threshold use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is threshold use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isErrorUse,
-            TIVX_ERROR_MAX_OBJECTS);
+            TIVX_ERROR_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is error use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is error use failed, index: %d\n", error_index);
         }
         status = ownCheckUseFlag(g_tivx_objects.isDataRefQUse,
-            TIVX_DATA_REF_Q_MAX_OBJECTS);
+            TIVX_DATA_REF_Q_MAX_OBJECTS, &error_index);
         if ((vx_status)VX_SUCCESS != status)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Is data ref q use failed\n");
+            VX_PRINT(VX_ZONE_ERROR, "Is data ref q use failed, index: %d\n", error_index);
         }
     }
 
@@ -798,7 +800,7 @@ static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele)
     }
 }
 
-static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele)
+static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele, uint32_t *error_index)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t i;
@@ -808,8 +810,11 @@ static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele)
         if ((vx_bool)vx_true_e == inUse[i])
         {
             status = (vx_status)VX_FAILURE;
+            break;
         }
     }
+
+    *error_index = i;
 
     return (status);
 }
