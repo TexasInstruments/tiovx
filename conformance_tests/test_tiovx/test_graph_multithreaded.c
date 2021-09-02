@@ -239,10 +239,6 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsSameTarget, Arg,
 
     ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph2, input_image2, alpha_scalar2, accum_image_final2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
-
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
-
     // Setting up task params for task 1
     tivxTaskSetDefaultCreateParams(&taskParams1);
     taskParams1.task_main = &tivxTask1;
@@ -376,15 +372,15 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
 
     ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph2, input_image2, alpha_scalar2, accum_image_final2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     }
     else
     {
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
 
     // Setting up task params for task 1
@@ -541,19 +537,19 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
 
     ASSERT_VX_OBJECT(node2_graph2 = vxAccumulateWeightedImageNode(graph2, accum_image_intermediate_graph2, alpha_scalar_final_graph2, accum_image_final_graph2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1_graph1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node1_graph1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node2_graph1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node2_graph1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     }
     else
     {
-        VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
 
     // Setting up task params for task 1
@@ -720,15 +716,15 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
 
     ASSERT_VX_OBJECT(node3 = vxAccumulateWeightedImageNode(graph3, input_image3, alpha_scalar3, accum_image_final3), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     }
     else
     {
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
 
     // Setting up task params for task 1
@@ -981,35 +977,35 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
 
     ASSERT_VX_OBJECT(node12 = vxAccumulateWeightedImageNode(graph2, accum_image_virtual_3_graph2, alpha_scalar_3_graph2, accum_image_final_graph2), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node5, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node5, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
-        VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node8, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node9, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node10, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, "DSP-2"));
-        VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node8, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node9, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node10, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     }
     else
     {
-        VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node8, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node9, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node10, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, "DSP-1"));
-        VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node8, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node9, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node10, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
 
     // Setting up task params for task 1
