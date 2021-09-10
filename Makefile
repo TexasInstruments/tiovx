@@ -1,5 +1,5 @@
 # Valid values are: psdkra
-BUILD_SDK?=tiovx_dev/psdkra
+BUILD_SDK?=psdkra
 
 include $(BUILD_SDK)_tools_path.mak
 include $(TIOVX_PATH)/build_flags.mak
