@@ -1,13 +1,11 @@
-
-# Valid values are: vsdk psdk
-BUILD_SDK?=vsdk
+# Valid values are: psdkra
+BUILD_SDK?=tiovx_dev/psdkra
 
 include $(BUILD_SDK)_tools_path.mak
-include build_flags_$(BUILD_SDK).mak
+include $(TIOVX_PATH)/build_flags.mak
 
 # Project specific build defs (don't change across different combos):
 BUILD_DEFS :=
-BUILD_DEFS += J6_VSDK
 ifeq ($(BUILD_IVISION_KERNELS),yes)
 BUILD_DEFS += BUILD_IVISION_KERNELS
 endif
@@ -24,10 +22,10 @@ ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 BUILD_DEFS += BUILD_CONFORMANCE_TEST
 endif
 
-
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
+DIRECTORIES += $(CUSTOM_PLATFORM_PATH)
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels
 DIRECTORIES += utils
@@ -47,74 +45,42 @@ endif
 
 TARGET_COMBOS :=
 
-ifeq ($(BUILD_TARGET_MODE),yes)
-  ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-	TARGET_COMBOS += TDAX:SYSBIOS:M4:1:debug:TIARMCGT
-	TARGET_COMBOS += TDAX:SYSBIOS:C66:1:debug:CGT6X
-	ifeq ($(BUILD_EVE),yes)
-	TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:debug:ARP32CGT
-	endif
-	TARGET_COMBOS += TDAX:SYSBIOS:A15:1:debug:GCC
-	ifneq ($(OS),Windows_NT)
-		ifeq ($(BUILD_LINUX_A15),yes)
-		TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC_LINUX_ARM
-		endif
-	endif
-  endif
-
-  ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-	TARGET_COMBOS += TDAX:SYSBIOS:M4:1:release:TIARMCGT
-	TARGET_COMBOS += TDAX:SYSBIOS:C66:1:release:CGT6X
-	ifeq ($(BUILD_EVE),yes)
-	TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:release:ARP32CGT
-	endif
-	TARGET_COMBOS += TDAX:SYSBIOS:A15:1:release:GCC
-	ifneq ($(OS),Windows_NT)
-		ifeq ($(BUILD_LINUX_A15),yes)
-		TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC_LINUX_ARM
-		endif
+ifeq ($(BUILD_EMULATION_MODE),yes)
+    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+        TARGET_COMBOS += PC:LINUX:x86_64:1:debug:GCC_LINUX
     endif
-  endif
+
+    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+        TARGET_COMBOS += PC:LINUX:x86_64:1:release:GCC_LINUX
+    endif
 endif
 
-ifeq ($(BUILD_EMULATION_MODE),yes)
-  ifeq ($(OS),Windows_NT)
+ifeq ($(BUILD_TARGET_MODE),yes)
     ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), x86_64 all))
-            TARGET_COMBOS += PC:WINDOWS:x86_64:1:debug:GCC_WINDOWS
+        TARGET_COMBOS += J7:$(RTOS):R5F:1:debug:TIARMCGT
+        TARGET_COMBOS += J7:SYSBIOS:A72:1:debug:GCC_SYSBIOS_ARM
+        TARGET_COMBOS += J7:SYSBIOS:C66:1:debug:CGT6X
+        TARGET_COMBOS += J7:SYSBIOS:C71:1:debug:CGT7X
+        ifeq ($(BUILD_LINUX_A72),yes)
+            TARGET_COMBOS += J7:LINUX:A72:1:debug:GCC_LINUX_ARM
         endif
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), X86 all))
-            TARGET_COMBOS += PC:WINDOWS:X86:1:debug:GCC_WINDOWS
+        ifeq ($(BUILD_QNX_A72),yes)
+            TARGET_COMBOS += J7:QNX:A72:1:debug:GCC_QNX_ARM
         endif
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), x86_64 all))
-            TARGET_COMBOS += PC:WINDOWS:x86_64:1:release:GCC_WINDOWS
+        TARGET_COMBOS += J7:$(RTOS):R5F:1:release:TIARMCGT
+        TARGET_COMBOS += J7:SYSBIOS:A72:1:release:GCC_SYSBIOS_ARM
+        TARGET_COMBOS += J7:SYSBIOS:C66:1:release:CGT6X
+        TARGET_COMBOS += J7:SYSBIOS:C71:1:release:CGT7X
+        ifeq ($(BUILD_LINUX_A72),yes)
+            TARGET_COMBOS += J7:LINUX:A72:1:release:GCC_LINUX_ARM
         endif
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), X86 all))
-            TARGET_COMBOS += PC:WINDOWS:X86:1:release:GCC_WINDOWS
-        endif
-    endif
-  else
-    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), x86_64 all))
-            TARGET_COMBOS += PC:LINUX:x86_64:1:debug:GCC_LINUX
-        endif
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), X86 all))
-            TARGET_COMBOS += PC:LINUX:X86:1:debug:GCC_LINUX
+        ifeq ($(BUILD_QNX_A72),yes)
+            TARGET_COMBOS += J7:QNX:A72:1:release:GCC_QNX_ARM
         endif
     endif
-
-    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), x86_64 all))
-            TARGET_COMBOS += PC:LINUX:x86_64:1:release:GCC_LINUX
-        endif
-        ifeq ($(BUILD_EMULATION_ARCH), $(filter $(BUILD_EMULATION_ARCH), X86 all))
-            TARGET_COMBOS += PC:LINUX:X86:1:release:GCC_LINUX
-        endif
-    endif
-  endif
 endif
 
 CONCERTO_ROOT ?= concerto
@@ -126,15 +92,25 @@ include $(CONCERTO_ROOT)/rules.mak
 
 # Project specific rules
 
-.PHONY: all
-all:
+.PHONY: all vision_apps_utils doxy_docs doxy_docs_design
+all: vision_apps_utils
+
+ifeq ($(BUILD_EMULATION_MODE),yes)
+vision_apps_utils:
+	BUILD_TARGET_MODE=no $(MAKE) -C $(VISION_APPS_PATH) app_utils_iss
+	BUILD_TARGET_MODE=no $(MAKE) -C $(VISION_APPS_PATH) cp_to_lib
+else
+vision_apps_utils:
+
+endif
 
 doxy_docs:
-	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
-	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_vsdk.html $(TIOVX_PATH)/tiovx_release_notes.html
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_j7_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
+	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra.html $(TIOVX_PATH)/tiovx_release_notes.html
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
-	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_j6/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_j7/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 
 doxy_docs_design:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt

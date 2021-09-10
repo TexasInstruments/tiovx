@@ -58,3 +58,5 @@ conformance_tests/test_data/tidl_models/
 
 # tools, generated files
 tools/tivx_log_rt/*.out
+
+*.swp
