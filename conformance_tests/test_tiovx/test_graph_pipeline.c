@@ -5536,7 +5536,7 @@ TEST(tivxGraphPipeline, negativeTestPyramidInconsistentRefs)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_1[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
