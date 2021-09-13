@@ -74,6 +74,9 @@ void tivxUnRegisterTutorialTargetKernels(void);
 void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
 
+void tivxRegisterTestKernelsTargetArmKernels(void);
+void tivxUnRegisterTestKernelsTargetArmKernels(void);
+
 void tivxRegisterTestKernelsTargetDspKernels(void);
 void tivxUnRegisterTestKernelsTargetDspKernels(void);
 
@@ -141,12 +144,21 @@ void tivxInit(void)
         #endif
 
         #ifdef BUILD_CONFORMANCE_TEST
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_IPU1_0);
         tivxRegisterCaptureTargetArmKernels();
+        tivxRegisterTestKernelsTargetArmKernels();
+
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_IPU1_1);
+        tivxRegisterCaptureTargetArmKernels();
+        tivxRegisterTestKernelsTargetArmKernels();
+
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_A72_0);
+        tivxRegisterTestKernelsTargetArmKernels();
+
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         tivxRegisterTestKernelsTargetDspKernels();
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetDspKernels();
         #endif
 
@@ -182,6 +194,7 @@ void tivxDeInit(void)
             #ifdef BUILD_CONFORMANCE_TEST
             tivxUnRegisterCaptureTargetArmKernels();
             tivxUnRegisterTestKernelsTargetDspKernels();
+            tivxUnRegisterTestKernelsTargetArmKernels();
             #endif
 
             /* DeInitialize Host */
