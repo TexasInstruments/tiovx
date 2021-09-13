@@ -107,9 +107,67 @@ extern "C" {
 #define TIVX_TARGET_A72_3      "A72-3"
 
 /*! \brief Target name for DSP_C7_1
+ *         This target task is first in priority.
+ *         Each of the C7X targets are assigned a different
+ *         task priority.  Subsequent C7X targets are assigned
+ *         lower priority than the preceding target (i.e.,
+ *         \ref TIVX_TARGET_DSP_C7_1_PRI_2 is lower priority
+ *         than \ref TIVX_TARGET_DSP_C7_1_PRI_1).  Therefore,
+ *         the \ref TIVX_TARGET_DSP_C7_1_PRI_2 target will be
+ *         preempted by \ref TIVX_TARGET_DSP_C7_1_PRI_1 once
+ *         the higher priority target is unblocked to execute.
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_DSP_C7_1    "DSP_C7-1"
+
+/*! \brief Target name for DSP_C7_1
+ *         This target task is first in priority.
+ *         This aliases to the same task as \ref TIVX_TARGET_DSP_C7_1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_1    TIVX_TARGET_DSP_C7_1
+
+/*! \brief Target name for DSP_C7-1_PRI_2
+ *         This target task is second in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_2    "DSP_C7-1_PRI_2"
+
+/*! \brief Target name for DSP_C7-1_PRI_3
+ *         This target task is third in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_3    "DSP_C7-1_PRI_3"
+
+/*! \brief Target name for DSP_C7-1_PRI_4
+ *         This target task is fourth in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_4    "DSP_C7-1_PRI_4"
+
+/*! \brief Target name for DSP_C7-1_PRI_5
+ *         This target task is fifth in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_5    "DSP_C7-1_PRI_5"
+
+/*! \brief Target name for DSP_C7-1_PRI_6
+ *         This target task is sixth in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_6    "DSP_C7-1_PRI_6"
+
+/*! \brief Target name for DSP_C7-1_PRI_7
+ *         This target task is seventh in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_7    "DSP_C7-1_PRI_7"
+
+/*! \brief Target name for DSP_C7-1_PRI_8
+ *         This target task is eighth in priority
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP_C7_1_PRI_8    "DSP_C7-1_PRI_8"
 
 /*! \brief Target name for VPAC NF
  * \ingroup group_tivx_ext_targets

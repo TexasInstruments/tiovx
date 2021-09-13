@@ -77,12 +77,14 @@
 #ifndef x86_64
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
-#define DISABLE_INTERRUPTS_DURING_PROCESS
+/* #define DISABLE_INTERRUPTS_DURING_PROCESS */
 #endif
 
 /* #define TIVX_TIDL_TARGET_DEBUG */
 
 #define TIDL_COPY_NETWORK_BUF
+
+#define TIDL_MAX_TARGETS (8u)
 
 typedef struct
 {
@@ -109,7 +111,19 @@ typedef struct
 
 } tivxTIDLObj;
 
-static tivx_target_kernel vx_tidl_target_kernel = NULL;
+static tivx_target_kernel vx_tidl_target_kernel[TIDL_MAX_TARGETS] = {NULL};
+
+static char target_name[TIDL_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
+{
+    TIVX_TARGET_DSP_C7_1_PRI_1,
+    TIVX_TARGET_DSP_C7_1_PRI_2,
+    TIVX_TARGET_DSP_C7_1_PRI_3,
+    TIVX_TARGET_DSP_C7_1_PRI_4,
+    TIVX_TARGET_DSP_C7_1_PRI_5,
+    TIVX_TARGET_DSP_C7_1_PRI_6,
+    TIVX_TARGET_DSP_C7_1_PRI_7,
+    TIVX_TARGET_DSP_C7_1_PRI_8
+};
 
 static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj);
 static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size, uint32_t loc);
@@ -673,32 +687,39 @@ static vx_status VX_CALLBACK tivxKernelTIDLControl(
 
 void tivxAddTargetKernelTIDL()
 {
-    char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
     if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
     {
-        strncpy(target_name, TIVX_TARGET_DSP_C7_1, TIVX_TARGET_MAX_NAME);
+        uint32_t i;
 
-        vx_tidl_target_kernel = tivxAddTargetKernelByName
-                                (
-                                  TIVX_KERNEL_TIDL_NAME,
-                                  target_name,
-                                  tivxKernelTIDLProcess,
-                                  tivxKernelTIDLCreate,
-                                  tivxKernelTIDLDelete,
-                                  tivxKernelTIDLControl,
-                                  NULL
-                                );
+        for (i = 0; i < TIDL_MAX_TARGETS; i++)
+        {
+            vx_tidl_target_kernel[i] = tivxAddTargetKernelByName
+                                    (
+                                      TIVX_KERNEL_TIDL_NAME,
+                                      target_name[i],
+                                      tivxKernelTIDLProcess,
+                                      tivxKernelTIDLCreate,
+                                      tivxKernelTIDLDelete,
+                                      tivxKernelTIDLControl,
+                                      NULL
+                                    );
+        }
     }
 }
 
 
 void tivxRemoveTargetKernelTIDL()
 {
-    tivxRemoveTargetKernel(vx_tidl_target_kernel);
+    uint32_t i;
+
+    for (i = 0; i < TIDL_MAX_TARGETS; i++)
+    {
+        tivxRemoveTargetKernel(vx_tidl_target_kernel[i]);
+    }
 }
 
 static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj)

@@ -358,6 +358,13 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_3);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_4);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_5);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_6);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_7);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_8);
         }
 
         if ( status == (vx_status)VX_SUCCESS)

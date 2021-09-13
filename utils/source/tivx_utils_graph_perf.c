@@ -90,7 +90,7 @@ vx_status tivx_utils_node_perf_print(vx_node node)
                 status = vxQueryNode(node, (vx_enum)VX_NODE_PERFORMANCE, &node_perf, sizeof(vx_perf_t));
                 if(status==(vx_status)VX_SUCCESS)
                 {
-                    printf(" NODE: %10s: %24s: avg = %6"PRIu64" usecs, min/max = %6"PRIu64" / %6"PRIu64" usecs, #executions = %10"PRIu64"\n",
+                    printf(" NODE: %14s: %24s: avg = %6"PRIu64" usecs, min/max = %6"PRIu64" / %6"PRIu64" usecs, #executions = %10"PRIu64"\n",
                         target_name,
                         node_name,
                         (node_perf.avg/1000u),

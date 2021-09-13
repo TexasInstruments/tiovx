@@ -163,7 +163,7 @@ extern "C" {
  *
  * \ingroup group_tivx_ext_host
  */
-#define TIVX_TARGET_MAX_NAME            (16u)
+#define TIVX_TARGET_MAX_NAME            (64u)
 
 /*! \brief String to name a OpenVX Host
  *

@@ -121,11 +121,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                          kernel,
                                          params,
                                          (uint32_t)num_params);
-
-        if(vxGetStatus((vx_reference)(node))==(vx_status)VX_SUCCESS)
-        {
-            vxSetNodeTarget(node, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1);
-        }
     }
 
     return node;

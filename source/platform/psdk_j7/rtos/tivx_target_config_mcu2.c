@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_j7.h>
 
 
-#define TIVX_TARGET_MCU2_0_MAX          (27)
+#define TIVX_TARGET_MCU2_MAX            (27U)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
@@ -22,7 +22,7 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id);
  * \brief Target Stack
  *******************************************************************************
  */
-static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_0_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
+static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)))
     ;
@@ -32,20 +32,20 @@ static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
-    
+
     if(tivxTargetGetCpuId(target_id) == tivxGetSelfCpuId() )
     {
         char target_name[TIVX_TARGET_MAX_NAME];
-        
+
         tivxTargetSetDefaultCreateParams(&target_create_prms);
-    
+
         target_create_prms.task_stack_ptr = gTarget_tskStack[i];
         target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
         target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
         target_create_prms.task_priority = task_pri;
         strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
         target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
-    
+
         status = tivxTargetCreate(target_id, &target_create_prms);
         if ((vx_status)VX_SUCCESS != status)
         {

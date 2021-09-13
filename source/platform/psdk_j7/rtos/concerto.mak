@@ -37,8 +37,13 @@ ifeq ($(HOST_COMPILER),GCC)
 
 endif
 
-ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C71 C66))
-CSOURCES += tivx_target_config_dsp.c
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C66))
+CSOURCES += tivx_target_config_c66.c
+SKIPBUILD=0
+endif
+
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C71))
+CSOURCES += tivx_target_config_c7.c
 SKIPBUILD=0
 endif
 
@@ -48,7 +53,7 @@ SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),R5F)
-CSOURCES += tivx_target_config_mcu2_0.c
+CSOURCES += tivx_target_config_mcu2.c
 SKIPBUILD=0
 endif
 
