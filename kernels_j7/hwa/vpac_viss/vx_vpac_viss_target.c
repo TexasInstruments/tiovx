@@ -1309,8 +1309,8 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
             else if ((msb <= 11U) && (msb >= 8U))
             {
                 fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
-	    }
-	    else if ((msb == 12U) || (msb == 13U))
+            }
+            else if ((msb == 12U) || (msb == 13U))
             {
                 fmt->ccsFormat = FVID2_CCSF_BITS14_UNPACKED16;
             }
