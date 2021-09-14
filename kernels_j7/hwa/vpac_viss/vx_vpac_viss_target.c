@@ -1305,7 +1305,16 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
             {
                 VX_PRINT(VX_ZONE_ERROR, "Invalid Format \n");
                 /* do nothing */
-            }else if (msb == 15U)
+            }
+            else if ((msb <= 11U) && (msb >= 8U))
+            {
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+	    }
+	    else if ((msb == 12U) || (msb == 13U))
+            {
+                fmt->ccsFormat = FVID2_CCSF_BITS14_UNPACKED16;
+            }
+            else if (msb == 15U)
             {
                 fmt->ccsFormat = FVID2_CCSF_BITS16_PACKED;
             }
