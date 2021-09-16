@@ -7,7 +7,7 @@ CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/source/platform
 
 VXLIB_PATH ?= $(PSDK_PATH)/vxlib
 J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
-TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_08_00_01_07/ti_dl
+TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_08_00_01_10/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_01_00_10
