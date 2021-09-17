@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,6 +74,15 @@ extern "C" {
  * \file
  * \brief The Display kernels in this kernel extension.
  */
+
+/*! \brief Target name for Display
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY1     "DISPLAY1"
+/*! \brief Target name for Display
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY2     "DISPLAY2"
 
 /*! \brief Display Kernel Name
  *  \ingroup group_vision_function_display

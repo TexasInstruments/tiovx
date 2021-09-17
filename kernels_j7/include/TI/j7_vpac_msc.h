@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,6 +74,15 @@ extern "C" {
  * \file
  * \brief The MSC kernels in this kernel extension.
  */
+
+/*! \brief Target name for VPAC MSC1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_MSC1    "VPAC_MSC1"
+/*! \brief Target name for VPAC MSC2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_MSC2    "VPAC_MSC2"
 
 /*! \brief vpac_msc scaler kernel name
  *  \ingroup group_vision_function_vpac_msc

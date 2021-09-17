@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,6 +74,11 @@ extern "C" {
  * \file
  * \brief The SDE kernels in this kernel extension.
  */
+
+/*! \brief Target name for DMPAC SDE
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DMPAC_SDE    "DMPAC_SDE"
 
 /*! \brief dmpac_sde kernel name
  *  \ingroup group_vision_function_dmpac_sde
@@ -163,7 +168,7 @@ void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
  * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
  * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_NV12</tt> (Y plane only), <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_NV12</tt> (Y plane only), <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]. <br> 
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]. <br>
  *                     The 3 bit 'Confidence' value is the result of passing the 7-bit confidence score through the user configured
  *                     \ref tivx_dmpac_sde_params_t::confidence_score_map range table to produce a 3-bit mapping.
  * \param [out] confidence_histogram (optional) Histogram of the full 7-bit confidence scores.  Must be configured to 128 bins.

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,6 +74,11 @@ extern "C" {
  * \file
  * \brief The DOF kernels in this kernel extension.
  */
+
+/*! \brief Target name for DMPAC DOF
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DMPAC_DOF    "DMPAC_DOF"
 
 /*! \brief dmpac_dof kernel name
  *  \ingroup group_vision_function_dmpac_dof

@@ -75,6 +75,23 @@ extern "C" {
  * \brief The Display M2M kernels in this kernel extension.
  */
 
+/*! \brief Target name for Display M2M Node Instance 1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M1     "DSS_M2M1"
+/*! \brief Target name for Display M2M Node Instance 2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M2     "DSS_M2M2"
+/*! \brief Target name for Display M2M Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M3     "DSS_M2M3"
+/*! \brief Target name for Display M2M Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M4     "DSS_M2M4"
+
 /*! \brief Display M2M kernel name
  *  \ingroup group_vision_function_display_m2m
  */
@@ -150,14 +167,6 @@ typedef struct
 /*********************************
  *      Function Prototypes
  *********************************/
-/*!
- * \brief Function to initialize Display M2M Parameters
- *
- * \param prms  [in] Pointer to display M2M params configuration structure
- *
- * \ingroup group_vision_function_display_m2m
- */
-void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms);
 
 /*!
  * \brief Function to register HWA Kernels on the display_m2m Target
@@ -170,6 +179,33 @@ void tivxRegisterHwaTargetDisplayM2MKernels(void);
  * \ingroup group_tivx_ext
  */
 void tivxUnRegisterHwaTargetDisplayM2MKernels(void);
+
+/*! \brief [Graph] Creates a DISPLAY_M2M Node.
+ * This node can be used to do color space conversion like YUV422 to YUV420 OR
+ * RGB888 to YUV420 and vice versa. This node operates in Memory to Memory mode.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_DISPLAY_M2M_NAME</tt>
+ * \ingroup group_vision_function_display_m2m
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayM2MNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_image             input,
+                                      vx_image             output);
+
+/*!
+ * \brief Function to initialize Display M2M Parameters
+ *
+ * \param prms  [in] Pointer to display M2M params configuration structure
+ *
+ * \ingroup group_vision_function_display_m2m
+ */
+void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms);
+
 
 #ifdef __cplusplus
 }

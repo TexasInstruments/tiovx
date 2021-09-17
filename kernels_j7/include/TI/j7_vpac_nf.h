@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -74,6 +74,11 @@ extern "C" {
  * \file
  * \brief The NF kernels in this kernel extension.
  */
+
+/*! \brief Target name for VPAC NF
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_NF      "VPAC_NF"
 
 /*! \brief vpac_nf_generic kernel name
  *  \ingroup group_vision_function_vpac_nf
