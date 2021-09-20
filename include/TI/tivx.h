@@ -60,9 +60,6 @@
 *
 */
 
-
-
-
 #ifndef VX_EXT_TI_H_
 #define VX_EXT_TI_H_
 
@@ -77,6 +74,7 @@
 #include <TI/tivx_tensor.h>
 #include <TI/tivx_ext_raw_image.h>
 #include <TI/tivx_ext_super_node.h>
+#include <TI/tivx_soc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,77 +84,6 @@ extern "C" {
  * \file
  * \brief Interface to TI extension APIs
  */
-
-/*! \brief Name for DSP target class, instance 1
- *
- *   Assigned to C66_0 core
- *
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DSP1        "DSP-1"
-
-/*! \brief Name for DSP target class, instance 2
- *
- *   Assigned to C66_1 core
- *
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DSP2        "DSP-2"
-
-/*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_EVE1        "EVE-1"
-
-/*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_EVE2        "EVE-2"
-
-/*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_EVE3        "EVE-3"
-
-/*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_EVE4        "EVE-4"
-
-/*! \brief Name for A15 target class, core 0
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_A15_0       "A15-0"
-
-/*! \brief Name for IPU1 target class, core 0
- *
- *   \if DOCS_J7
- *   Assigned to MCU2_0 core
- *   \else
- *   Assigned to M4_0 core
- *   \endif
- *
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_IPU1_0      "IPU1-0"
-
-/*! \brief Name for IPU1 target class, core 1
- *
- *   \if DOCS_J7
- *   Assigned to MCU2_1 core
- *   \else
- *   Assigned to M4_1 core
- *   \endif
- *
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_IPU1_1      "IPU1-1"
-
-/*! \brief Name for IPU2 target class
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_IPU2        "IPU2"
-
 
 /*!
  * \brief Max possible name of a target
@@ -210,64 +137,6 @@ extern "C" {
  */
 #define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ((uint32_t)-1)
 
-
-/*! \brief CPU ID for supported CPUs
- *
- *         CPU ID is defined in platform module since
- *         depending on platform the CPUs could be different
- *
- *         Current CPU IDs are defined assuming TDA2x/3x/2Ex
- *         family of SoCs
- *
- *         Caution: This enum is used as index into the array
- *         #g_ipc_cpu_id_map, so change in this enum will require
- *         change in this array as well.
- *
- *
- * \ingroup group_tivx_ext_host
- */
-typedef enum _tivx_cpu_id_e {
-
-    /*! \brief CPU ID for DSP1 */
-    TIVX_CPU_ID_DSP1 = 0,
-
-    /*! \brief CPU ID for DSP2 */
-    TIVX_CPU_ID_DSP2 = 1,
-
-    /*! \brief CPU ID for EVE1 */
-    TIVX_CPU_ID_EVE1 = 2,
-
-    /*! \brief CPU ID for EVE2 */
-    TIVX_CPU_ID_EVE2 = 3,
-
-    /*! \brief CPU ID for EVE3 */
-    TIVX_CPU_ID_EVE3 = 4,
-
-    /*! \brief CPU ID for EVE4 */
-    TIVX_CPU_ID_EVE4 = 5,
-
-    /*! \brief CPU ID for IPU1-0 */
-    TIVX_CPU_ID_IPU1_0 = 6,
-
-    /*! \brief CPU ID for IPU1-1 */
-    TIVX_CPU_ID_IPU1_1 = 7,
-
-    /*! \brief CPU ID for IPU2 */
-    TIVX_CPU_ID_IPU2_0 = 8,
-
-    /*! \brief CPU ID for A15-0 */
-    TIVX_CPU_ID_A15_0 = 9,
-
-    /*! \brief CPU ID for A15-0 */
-    TIVX_CPU_ID_A15_1 = 10,
-
-    /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 11,
-
-    /*! \brief Invalid CPU ID */
-    TIVX_CPU_ID_INVALID = 0xFF
-
-} tivx_cpu_id_e;
 
 /*! \brief Struct containing config parameters of given static value
  *

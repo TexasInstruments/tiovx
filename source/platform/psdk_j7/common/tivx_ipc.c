@@ -21,16 +21,12 @@ static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload);
  *   vision sdk cpu id.
  * \ingroup group_tivx_ipc
  */
-static uint32_t g_ipc_cpu_id_map[APP_IPC_CPU_MAX] = {
+static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     APP_IPC_CPU_C6x_1,
     APP_IPC_CPU_C6x_2,
     APP_IPC_CPU_C7x_1,
-    APP_IPC_CPU_INVALID,
-    APP_IPC_CPU_INVALID,
-    APP_IPC_CPU_INVALID,
     APP_IPC_CPU_MCU2_0, /* in j721e, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu2-0 */
     APP_IPC_CPU_MCU2_1, /* in j721e, TIOVX CPU IPU1-1 is mapped to vision_apps/pdk CPU mcu2-1 */
-    APP_IPC_CPU_INVALID,
     APP_IPC_CPU_MPU1_0,
     APP_IPC_CPU_INVALID,
 };
