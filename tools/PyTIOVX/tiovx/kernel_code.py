@@ -2340,7 +2340,6 @@ class KernelExportCode :
             self.include_customer_header_code = CodeGenerate(self.include_customer_header_filename)
             self.include_customer_header_code.write_ifndef_define(self.top_header_name.upper() + "_H_")
             self.include_customer_header_code.write_line("#include <TI/tivx.h>")
-            self.include_customer_header_code.write_line("#include <TI/j7.h>")
             self.include_customer_header_code.write_line("#include <" + self.company + "/" + self.top_header_name +
                                                           "_kernels.h>")
             self.include_customer_header_code.write_line("#include <" + self.company + "/" + self.top_header_name +

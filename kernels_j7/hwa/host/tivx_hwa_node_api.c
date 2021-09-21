@@ -61,7 +61,6 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/j7.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
                                       vx_user_data_object  configuration,

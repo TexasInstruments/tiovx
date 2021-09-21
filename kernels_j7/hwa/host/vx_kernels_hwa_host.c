@@ -61,7 +61,6 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/j7.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_host_utils.h"
 #include "tivx_hwa_host_priv.h"

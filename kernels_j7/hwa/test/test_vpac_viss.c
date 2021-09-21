@@ -64,7 +64,6 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
-#include <TI/j7.h>
 #include "test_engine/test.h"
 #include "tivx_utils_file_rd_wr.h"
 #include <string.h>

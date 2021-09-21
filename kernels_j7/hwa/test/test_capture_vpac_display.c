@@ -63,7 +63,6 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
-#include <TI/j7.h>
 #include "test_engine/test.h"
 #include <string.h>
 

@@ -66,10 +66,6 @@
 #include <TI/tivx_target_kernel.h>
 #include "tivx_core_host_priv.h"
 
-#if !defined(J6_VSDK)
-#include <TI/j7.h>
-#endif
-
 static vx_kernel vx_gaussian_pyramid_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,

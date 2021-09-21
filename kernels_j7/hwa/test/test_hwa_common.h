@@ -62,7 +62,6 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
-#include <TI/j7.h>
 #include "test_engine/test.h"
 
 void ct_teardown_hwa_kernels(void/*vx_context*/ **context_);

@@ -63,12 +63,10 @@
 #ifndef TIVX_TEST_PLATFORM_H_
 #define TIVX_TEST_PLATFORM_H_
 
-#if !defined(J6_VSDK)
-#include <TI/j7.h>
-#else /* defined(J6_VSDK) */
+#if defined(J6_VSDK)
 #define TIVX_CPU_ID_A72_0   TIVX_CPU_ID_A15_0
 #define TIVX_TARGET_A72_0   TIVX_TARGET_A15_0
-#endif /* !defined(J6_VSDK) */
+#endif /* defined(J6_VSDK) */
 
 #endif /* TIVX_TEST_PLATFORM_H_ */
 

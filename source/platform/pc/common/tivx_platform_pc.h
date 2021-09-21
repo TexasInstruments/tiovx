@@ -75,10 +75,6 @@ extern "C" {
  * \brief PC Platform APIs
  */
 
-#if !defined(J6_VSDK)
-#include <TI/j7.h>
-#endif
-
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
  * \ingroup group_tivx_platform

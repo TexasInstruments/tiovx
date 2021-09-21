@@ -20,7 +20,6 @@ extern "C" {
  * \brief Vision SDK Platform APIs
  */
 
-#include <TI/j7.h>
 #include <stdbool.h>
 
 /*! \brief Maximum number of targets and thus targetid supported

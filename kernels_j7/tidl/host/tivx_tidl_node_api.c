@@ -64,7 +64,6 @@
 #include <stdlib.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
-#include <TI/j7.h>
 #include <TI/j7_tidl.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
