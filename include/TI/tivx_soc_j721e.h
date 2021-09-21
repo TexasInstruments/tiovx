@@ -249,11 +249,8 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for A72-0 */
     TIVX_CPU_ID_A72_0 = 5,
 
-    // TODO Remove
-    TIVX_CPU_ID_EVE1 = 6,
-
     /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 7,
+    TIVX_CPU_ID_MAX = 6,
 
     /*! \brief Invalid CPU ID */
     TIVX_CPU_ID_INVALID = 0xFF
