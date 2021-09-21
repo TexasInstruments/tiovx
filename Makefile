@@ -63,7 +63,7 @@ endif
 
 ifeq ($(BUILD_TARGET_MODE),yes)
     ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:debug:TIARMCGT
+        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:debug:TIARMCGT_LLVM
         ifeq ($(TARGET_SOC),J7)
             TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:debug:CGT6X
         endif
@@ -77,7 +77,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:release:TIARMCGT
+        TARGET_COMBOS += $(TARGET_SOC):$(RTOS):R5F:1:release:TIARMCGT_LLVM
         ifeq ($(TARGET_SOC),J7)
             TARGET_COMBOS += $(TARGET_SOC):$(RTOS):C66:1:release:CGT6X
         endif

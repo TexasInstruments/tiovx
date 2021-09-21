@@ -19,13 +19,13 @@ OVX_INC=$(HOST_ROOT)/include $(HOST_ROOT)/kernels/include $(CUSTOM_KERNEL_PATH)/
 
 ifeq ($(BUILD_DEBUG),1)
 $(info TI_TOOLS_ROOT=$(TI_TOOLS_ROOT))
-$(info TIARMCGT_ROOT=$(TIARMCGT_ROOT))
+$(info TIARMCGT_LLVM_ROOT=$(TIARMCGT_LLVM_ROOT))
 endif
 
 # DEP_PROJECTS does not need to be set as the dependencies are contained in the build.
 
 SYSIDIRS := $(OVX_INC)
-SYSLDIRS := 
+SYSLDIRS :=
 
 SYSDEFS  :=
 
@@ -56,8 +56,8 @@ else
                  SYSLDIRS += $(GCC_LINUX_ARM_ROOT)/lib
               endif
         else
-            SYSIDIRS += $(TIARMCGT_ROOT)/include
-            SYSLDIRS += $(TIARMCGT_ROOT)/lib
+            SYSIDIRS += $(TIARMCGT_LLVM_ROOT)/include
+            SYSLDIRS += $(TIARMCGT_LLVM_ROOT)/lib
         endif
     else ifeq ($(TARGET_FAMILY),DSP)
         ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120))
