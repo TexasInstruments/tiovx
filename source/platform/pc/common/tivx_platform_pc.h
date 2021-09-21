@@ -107,7 +107,7 @@ typedef enum _tivx_target_id_e {
 
 } tivx_target_id_e;
 
-#if defined(J6_VSDK)
+#if defined(SOC_J6)
 
 /*! \brief Mapping of Target names with Target Ids
  *   Used to initialize internal structure

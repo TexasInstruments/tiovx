@@ -365,7 +365,7 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
         {
             /* add supported target's */
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
-#if !defined(J6_VSDK)
+#if !defined(SOC_J6)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
 #endif

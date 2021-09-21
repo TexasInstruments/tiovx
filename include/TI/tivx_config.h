@@ -288,7 +288,7 @@ extern "C" {
  * \brief Max number of Target that can exist on a CPU
  * \ingroup group_tivx_target_cfg
  */
-#if defined(J6_VSDK)
+#if defined(SOC_J6)
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
 #else
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU  (64u)

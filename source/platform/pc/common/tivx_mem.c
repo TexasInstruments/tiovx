@@ -240,7 +240,7 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
     return (void*)(uintptr_t)(shared_ptr->shared_ptr);
 }
 
-#ifdef J6_VSDK
+#ifdef SOC_J6
 void* Utils_memPhysToVirt(uint64_t phys_ptr)
 {
     return (void*)(uintptr_t)(phys_ptr);

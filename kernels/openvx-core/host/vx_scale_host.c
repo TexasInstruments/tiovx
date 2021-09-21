@@ -184,7 +184,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'type' value should be an enum of type:\n VX_INTERPOLATION_NEAREST_NEIGHBOR or VX_INTERPOLATION_BILINEAR or VX_INTERPOLATION_AREA \n");
         }
 
-#if !defined(J6_VSDK)
+#if !defined(SOC_J6)
         if ((0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME)) ||
             (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME)))
         {
@@ -386,7 +386,7 @@ vx_status tivxAddKernelScale(vx_context context)
         {
             /* add supported target's */
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
-#if !defined(J6_VSDK)
+#if !defined(SOC_J6)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
 #endif
