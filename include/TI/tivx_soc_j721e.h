@@ -87,7 +87,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface to TI extension APIs
+ * \brief Interface to j721e soc TI extension APIs
  */
 
 /*! \brief Target name for A72_0
@@ -204,14 +204,6 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_1      "IPU1-1"
-
-//TODO : Remove
-#define TIVX_TARGET_IPU2        "IPU2"
-#define TIVX_TARGET_EVE1        "EVE-1"
-#define TIVX_TARGET_EVE2        "EVE-2"
-#define TIVX_TARGET_EVE3        "EVE-3"
-#define TIVX_TARGET_EVE4        "EVE-4"
-#define TIVX_TARGET_A15_0       "A15-0"
 
 
 /*! \brief CPU ID for supported CPUs

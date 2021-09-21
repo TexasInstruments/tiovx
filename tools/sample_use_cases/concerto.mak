@@ -1,4 +1,5 @@
 
+ifeq ($(SOC), j6)
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72))
 
 include $(PRELUDE)
@@ -8,4 +9,5 @@ CSOURCES    := $(call all-c-files)
 
 include $(FINALE)
 
+endif
 endif

@@ -150,7 +150,6 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP_C7_1_PRI_8, TIVX_TARGET_ID_CPU1},                         \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
     {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_A72_1, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_A72_2, TIVX_TARGET_ID_CPU1},                                  \

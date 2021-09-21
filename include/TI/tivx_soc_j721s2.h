@@ -91,7 +91,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface to TI extension APIs
+ * \brief Interface to j721s2 soc TI extension APIs
  */
 
 /*! \brief Target name for A72_0
@@ -177,10 +177,13 @@ extern "C" {
  */
 #define TIVX_TARGET_DSP_C7_1_PRI_8    "DSP_C7-1_PRI_8"
 
-/*! \brief Target name for DSP_C7_2
+/*! \brief Name for DSP target class, instance 1
+ *
+ *   Assigned to DSP_C7_2 core (C7x without an MMA)
+ *
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_DSP_C7_2    "DSP_C7-2"
+#define TIVX_TARGET_DSP1        "DSP-1"
 
 /*! \brief Name for IPU1 target class, core 0
  *
@@ -197,14 +200,6 @@ extern "C" {
  * \ingroup group_tivx_ext_targets
  */
 #define TIVX_TARGET_IPU1_1      "IPU1-1"
-
-//TODO : Remove
-#define TIVX_TARGET_IPU2        "IPU2"
-#define TIVX_TARGET_EVE1        "EVE-1"
-#define TIVX_TARGET_EVE2        "EVE-2"
-#define TIVX_TARGET_EVE3        "EVE-3"
-#define TIVX_TARGET_EVE4        "EVE-4"
-#define TIVX_TARGET_A15_0       "A15-0"
 
 
 /*! \brief CPU ID for supported CPUs
