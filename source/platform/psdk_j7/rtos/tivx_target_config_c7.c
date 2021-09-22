@@ -73,14 +73,20 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id)
 
 void tivxPlatformCreateTargets(void)
 {
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1,       0, "TIVX_CPU_PRI1", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2, 1, "TIVX_CPU_PRI2", 14u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_3, 2, "TIVX_CPU_PRI3", 13u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_4, 3, "TIVX_CPU_PRI4", 12u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_5, 4, "TIVX_CPU_PRI5", 11u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6, 5, "TIVX_CPU_PRI6", 10u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7, 6, "TIVX_CPU_PRI7",  9u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8, 7, "TIVX_CPU_PRI8",  8u);
+    /*
+     * Note: All CPU tasks should be at a lower priority than APP_IPC_RPMESSAGE_RX_TASK_PRI, otherwise
+     *       new messages would be starved from getting enqueued into the various priority
+     *       worker threads.
+     * */
+
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1,       0, "TIVX_CPU_PRI1", 9u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2, 1, "TIVX_CPU_PRI2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_3, 2, "TIVX_CPU_PRI3", 7u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_4, 3, "TIVX_CPU_PRI4", 6u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_5, 4, "TIVX_CPU_PRI5", 5u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6, 5, "TIVX_CPU_PRI6", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7, 6, "TIVX_CPU_PRI7", 3u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8, 7, "TIVX_CPU_PRI8", 2u);
 }
 
 void tivxPlatformDeleteTargets(void)

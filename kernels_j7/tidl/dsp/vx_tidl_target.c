@@ -371,7 +371,7 @@ int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t siz
     return 0;
 }
 #ifdef x86_64
-/* Udma_init for target flow is done part of App Common Init 
+/* Udma_init for target flow is done part of App Common Init
    Udma is not used in in Host emulation mode of other module, but TIDL
    Has flows which uses UDMA. So intilizing here Specific to TIDL Init.
    This flow is controlled via flowCtrl in create Params
@@ -383,7 +383,7 @@ uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr,
                                       uint32_t chNum,
                                       void *appData)
 {
-	return (uint64_t)virtAddr;
+    return (uint64_t)virtAddr;
 }
 static void tidlX86Printf(const char *str)
 {
@@ -507,7 +507,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
           {
             sTIDL_Network_t *pNet = (sTIDL_Network_t *)network_target_ptr;
             uint8_t *pPerfInfo = (uint8_t *)network_target_ptr + pNet->dataFlowInfo;
-            
+
             VX_PRINT(VX_ZONE_INFO, "tidlObj->netSize = %d\n", tidlObj->netSize);
             VX_PRINT(VX_ZONE_INFO, "pNet->dataFlowInfo = %d \n", pNet->dataFlowInfo);
 
@@ -576,6 +576,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
                 if (NULL == tidlObj->algHandle)
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxAlgiVisionCreate returned NULL\n");
                     status = (vx_status)VX_FAILURE;
                 }
 
@@ -803,4 +804,26 @@ static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size,
     }
 
     return status;
+}
+
+/* Following functions declared by TIDL for internally disabling and enabling interrupts
+ * Must be defined by consumer of TIDL to make TIDL platform agnostic
+ */
+
+#ifndef x86_64
+static uint32_t oldIntState;
+#endif
+
+void TIDL_lockInterrupts()
+{
+#ifndef x86_64
+    oldIntState = HwiP_disable();
+#endif
+}
+
+void TIDL_unlockInterrupts()
+{
+#ifndef x86_64
+    HwiP_restore(oldIntState);
+#endif
 }

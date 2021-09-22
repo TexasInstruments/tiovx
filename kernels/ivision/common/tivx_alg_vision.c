@@ -327,6 +327,10 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms
                     /* do nothing */
                 }
             }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxAlgiVisionAllocMem Failed\n", numMemRec);
+            }
         }
         else
         {
@@ -369,6 +373,8 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
     vx_status status = (vx_status)VX_SUCCESS;
 
+#define MANAGE_ACTIVATE_DEACTIVATE_IN_TIOVX 0
+#if MANAGE_ACTIVATE_DEACTIVATE_IN_TIOVX
     if((activeHandle != algHandle) || (optAlgAct == 0))
     {
         if(activeHandle != NULL)
@@ -386,15 +392,18 @@ vx_int32 tivxAlgiVisionProcess(void *algHandle,
             activeHandle = NULL;
         }
     }
+#endif
     status = ivision->fxns->algProcess((IVISION_Handle)ivision,
                                        inBufs,
                                        outBufs,
                                        inArgs,
                                        outArgs);
+#if MANAGE_ACTIVATE_DEACTIVATE_IN_TIOVX
     if(optAlgAct == 0)
     {
         ivision->fxns->ialg.algDeactivate((IALG_Handle)ivision);
-    }                               
+    }
+#endif
     return status;
 }
 
