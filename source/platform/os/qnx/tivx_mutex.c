@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2019 Texas Instruments Incorporated
+* Copyright (c) 2017-2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -89,6 +89,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
         if(status!=0)
         {
+            pthread_mutex_destroy(&tmp_mutex->lock);
             free(tmp_mutex);
             *mutex = NULL;
             VX_PRINT(VX_ZONE_ERROR, "Mutex initialization failed\n");

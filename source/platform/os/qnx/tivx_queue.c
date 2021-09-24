@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2019 Texas Instruments Incorporated
+* Copyright (c) 2017-2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -83,7 +83,7 @@ vx_status tivxQueueCreate(
     vx_status status = (vx_status)VX_FAILURE;
     tivx_queue_context context = NULL;
 
-    if ((NULL != queue) && (NULL != queue_memory) && (0 != max_elements))
+    if ((NULL != queue) && (NULL != queue_memory) && (0U != max_elements))
     {
         /*
          * init queue to 0's
@@ -179,6 +179,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     {
         context = queue->context;
 
+        VX_PRINT(VX_ZONE_INFO, "if this hangs, please ensure all application threads have been destroyed\n");
         if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET))
         {
             pthread_cond_destroy(&(context)->condGet);
@@ -219,7 +220,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     queue->queue[queue->cur_wr] = data;
 
                     /* increment put pointer */
-                    queue->cur_wr = (queue->cur_wr + 1) % queue->max_ele;
+                    queue->cur_wr = (queue->cur_wr + 1U) % queue->max_ele;
 
                     /* increment count of number element in que */
                     queue->count++;
@@ -294,13 +295,13 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
         {
             do
             {
-                if (queue->count > 0)
+                if (queue->count > 0U)
                 {
                     /* extract the element */
                     *data = queue->queue[queue->cur_rd];
 
                     /* increment get pointer */
-                    queue->cur_rd = (queue->cur_rd + 1) % queue->max_ele;
+                    queue->cur_rd = (queue->cur_rd + 1U) % queue->max_ele;
 
                     /* decrmeent number of elements in que */
                     queue->count--;
@@ -371,7 +372,7 @@ vx_bool tivxQueueIsEmpty(const tivx_queue *queue)
         status = pthread_mutex_lock(&context->lock);
         if(status==0)
         {
-            if (queue->count == 0)
+            if (queue->count == 0U)
             {
                 is_empty = (vx_bool)vx_true_e;
             }
@@ -398,7 +399,7 @@ vx_status tivxQueuePeek(const tivx_queue *queue, uintptr_t *data)
         status = pthread_mutex_lock(&context->lock);
         if(status==0)
         {
-            if (queue->count > 0)
+            if (queue->count > 0U)
             {
                 /* 'peek' the element but dont extract it */
                 *data = queue->queue[queue->cur_rd];

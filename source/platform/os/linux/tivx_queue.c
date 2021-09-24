@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -153,7 +153,7 @@ vx_status tivxQueueCreate(
                     pthread_condattr_destroy(&cond_attr);
                 }
             }
-            if ((vx_status)(vx_status)VX_SUCCESS == status)
+            if ((vx_status)VX_SUCCESS == status)
             {
                 queue->blockedOnGet = (vx_bool)vx_false_e;
                 queue->blockedOnPut = (vx_bool)vx_false_e;
@@ -266,7 +266,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                     }
                 }
 
-                if ((vx_bool)(vx_bool)vx_true_e == do_break)
+                if ((vx_bool)vx_true_e == do_break)
                 {
                     break;
                 }
@@ -347,7 +347,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
                     }
                 }
 
-                if ((vx_bool)(vx_bool)vx_true_e == do_break)
+                if ((vx_bool)vx_true_e == do_break)
                 {
                     break;
                 }

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -71,7 +71,7 @@ int nanosleep(const struct timespec *req, struct timespec *rem);
 #else
 #include <unistd.h> /* for usleep */
 
-extern int usleep (__useconds_t __useconds);
+extern int usleep (useconds_t __useconds);
 
 #endif
 

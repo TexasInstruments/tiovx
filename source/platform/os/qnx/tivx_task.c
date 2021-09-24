@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2019 Texas Instruments Incorporated
+* Copyright (c) 2017-2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -216,11 +216,11 @@ vx_status tivxTaskDelete(tivx_task *task)
 void tivxTaskWaitMsecs(uint32_t msec)
 {
 #if _POSIX_C_SOURCE >= 199309L
-    struct timespec delay_time, remain_time;
+    struct timespec delay_time = {0}, remain_time = {0};
     int ret;
 
-    delay_time.tv_sec  = msec/1000;
-    delay_time.tv_nsec = (msec%1000)*1000000;
+    delay_time.tv_sec  = msec/1000U;
+    delay_time.tv_nsec = (msec%1000U)*1000000U;
 
     do
     {
