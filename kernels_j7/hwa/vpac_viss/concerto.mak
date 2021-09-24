@@ -33,10 +33,6 @@ ifeq ($(BUILD_VPAC3),yes)
 DEFS        += VPAC3 SOC_J721S2
 endif
 
-ifeq ($(SOC),j721e)
-  DEFS+=SOC_J721E
-endif
-
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include

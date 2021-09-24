@@ -58,10 +58,10 @@ LDIRS+=$(CGT7X_ROOT)/host_emulation
 LDIRS+=$(MMALIB_PATH)/lib/$(TARGET_BUILD)
 LDIRS+=$(TIDL_PATH)/lib/PC/dsp/algo/$(TARGET_BUILD)
 
-LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/j721e_hostemu/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+= $(PDK_PATH)/packages/ti/csl/lib/j721e/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+= $(PDK_PATH)/packages/ti/drv/sciclient/lib/j721e_hostemu/c7x-hostemu/$(TARGET_BUILD)
-LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/j721e/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/csl/lib/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/drv/sciclient/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
+LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
 
 
 LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)

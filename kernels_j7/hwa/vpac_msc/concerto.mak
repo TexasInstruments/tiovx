@@ -17,9 +17,6 @@ ifeq ($(TARGET_CPU),R5F)
       IDIRS       += $(XDCTOOLS_PATH)/packages
       IDIRS       += $(BIOS_PATH)/packages
     endif
-    ifeq ($(SOC),j721e)
-      DEFS+=SOC_J721E
-    endif
   endif
 else
   CSOURCES    := vx_vpac_msc_scale_target_sim.c vx_vpac_msc_pyramid_target_sim.c vx_vpac_msc_halfscalegaussian_target_sim.c vx_vpac_msc_multi_scale_output_target_sim.c

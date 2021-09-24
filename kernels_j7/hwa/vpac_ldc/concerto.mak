@@ -25,9 +25,6 @@ ifeq ($(TARGET_OS),SYSBIOS)
   IDIRS       += $(XDCTOOLS_PATH)/packages
   IDIRS       += $(BIOS_PATH)/packages
 endif
-ifeq ($(SOC),j721e)
-  DEFS        += SOC_J721E
-endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages

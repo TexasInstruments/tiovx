@@ -16,10 +16,6 @@ IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 endif
 
-ifeq ($(SOC),j721e)
-DEFS+=SOC_J721E
-endif
-
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA
 endif

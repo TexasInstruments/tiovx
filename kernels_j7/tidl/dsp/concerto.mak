@@ -22,10 +22,6 @@ endif
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION -D_TMS320C6X
 
-ifeq ($(SOC),j721e)
-	CFLAGS+=-DSOC_J721E
-endif
-
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), x86_64))
 DEFS        += __aarch64__
 endif

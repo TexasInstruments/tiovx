@@ -18,9 +18,6 @@ ifeq ($(TARGET_CPU),R5F)
       IDIRS       += $(XDCTOOLS_PATH)/packages
       IDIRS       += $(BIOS_PATH)/packages
     endif
-    ifeq ($(SOC),j721e)
-      DEFS+=SOC_J721E
-    endif
   endif
 else
 CSOURCES    += vx_dmpac_dof_target_sim.c
