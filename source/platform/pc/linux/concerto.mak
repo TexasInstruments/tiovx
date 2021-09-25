@@ -7,7 +7,7 @@ include $(PRELUDE)
 TARGET      := vx_platform_pc
 TARGETTYPE  := library
 
-OS_FILES_REL_PATH = ../../os/linux
+OS_FILES_REL_PATH = ../../os/posix
 COMMON_FILES_REL_PATH = ../common
 
 COMMON_FILES_BASE_PATH = $(TIOVX_PATH)/source/platform/pc/common

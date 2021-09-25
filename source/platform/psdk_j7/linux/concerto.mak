@@ -7,7 +7,7 @@ include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_linux
 TARGETTYPE  := library
 
-COMMON_FILES_REL_PATH = ../../../../source/platform/os/linux
+COMMON_FILES_REL_PATH = ../../../../source/platform/os/posix
 
 CSOURCES    := \
     $(COMMON_FILES_REL_PATH)/tivx_event.c \
