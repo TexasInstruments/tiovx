@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_PLATFORM), J7)
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2))
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71))
 ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS))
 
