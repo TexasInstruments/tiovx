@@ -326,6 +326,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 (is_found == (vx_bool)vx_false_e) /* not a duplicate kernel */
                 ||
                 (strncmp(name, "com.ti.tidl", VX_MAX_KERNEL_NAME)==0)
+                ||
+                (strncmp(name, "com.ti.img_proc.img.mosaic", VX_MAX_KERNEL_NAME)==0)
                 ))
             {
                 kernel = (vx_kernel)ownCreateReference(context, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, &context->base);
