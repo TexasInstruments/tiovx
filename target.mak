@@ -60,7 +60,7 @@ else
             SYSLDIRS += $(TIARMCGT_ROOT)/lib
         endif
     else ifeq ($(TARGET_FAMILY),DSP)
-        ifeq ($(TARGET_CPU),C71)
+        ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120))
             SYSIDIRS += $(CGT7X_ROOT)/include
             SYSLDIRS += $(CGT7X_ROOT)/lib
         else

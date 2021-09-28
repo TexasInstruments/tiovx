@@ -1,6 +1,6 @@
 
 ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2))
-ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71))
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71 C7120))
 ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS))
 
 include $(PRELUDE)
@@ -42,7 +42,7 @@ CSOURCES += tivx_target_config_c66.c
 SKIPBUILD=0
 endif
 
-ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C71))
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), C71 C7120))
 CSOURCES += tivx_target_config_c7.c
 SKIPBUILD=0
 endif
