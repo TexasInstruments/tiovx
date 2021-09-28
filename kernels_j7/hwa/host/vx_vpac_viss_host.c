@@ -298,7 +298,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output0_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output0_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output0_fmt)
-#if VPAC3
+#if defined(VPAC3)
              && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_NV12 != output0_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_YUYV != output0_fmt) &&
@@ -307,7 +307,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
               )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_U8 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY\n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12\n");
@@ -319,13 +319,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         {
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output1_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output1_fmt)
-#if VPAC3
+#if defined(VPAC3)
              && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt)
 #endif
                 )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -338,7 +338,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if( ((vx_df_image)VX_DF_IMAGE_U8 != output2_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_U16 != output2_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output2_fmt) &&
-#if VPAC3
+#if defined(VPAC3)
                 ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output2_fmt) &&
 #endif
                 ((vx_df_image)VX_DF_IMAGE_NV12 != output2_fmt) &&
@@ -346,7 +346,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 ((vx_df_image)VX_DF_IMAGE_UYVY != output2_fmt) )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
@@ -502,7 +502,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                      (0 != fcp_mux_status[fcp][outport]))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                     VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for output_fcp_mapping[%d] OR \n", i);
 #endif
                     VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for fcp[%d].mux_output%d\n", fcp, outport);
@@ -524,7 +524,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     ((0 != outport) || (TIVX_VPAC_VISS_MUX0_NV12_P12 != params.fcp[fcp].mux_output0)))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                     VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output0 for NV12_P12 output of output0\n", i);
 #endif
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_NV12_P12 for NV12_P12 output of output%d\n", fcp, i);
@@ -533,7 +533,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     ((2 != outport) || (TIVX_VPAC_VISS_MUX2_NV12 != params.fcp[fcp].mux_output2)))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                     VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output2 for NV12 output of output0\n", i);
 #endif
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_NV12 for NV12 output of output%d\n", fcp, i);
@@ -542,7 +542,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     ((2 != outport) || (TIVX_VPAC_VISS_MUX2_YUV422 != params.fcp[fcp].mux_output2)))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if VPAC3
+#if defined(VPAC3)
                     VX_PRINT(VX_ZONE_ERROR, "params.output_fcp_mapping[%d] must be set to output2 for YUYV or UYVY output of output0\n", i);
 #endif
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_YUV422 for YUYV or UYVY output of output%d\n", fcp, i);

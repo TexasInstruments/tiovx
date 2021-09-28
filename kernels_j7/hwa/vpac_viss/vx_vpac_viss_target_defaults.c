@@ -468,7 +468,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
 
 static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj)
 {
-#if VPAC3
+#if defined(VPAC3)
     Cac_Config  *cacCfg;
 
     if (NULL != vissObj)
