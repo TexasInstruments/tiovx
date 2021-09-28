@@ -87,6 +87,9 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6, 5, "TIVX_CPU_PRI6", 4u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7, 6, "TIVX_CPU_PRI7", 3u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8, 7, "TIVX_CPU_PRI8", 2u);
+    #if defined(SOC_J721S2)
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP1,           0, "TIVX_CPU",       8u);
+    #endif
 }
 
 void tivxPlatformDeleteTargets(void)
@@ -99,4 +102,7 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8);
+    #if defined(SOC_J721S2)
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP1);
+    #endif
 }
