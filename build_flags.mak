@@ -37,8 +37,6 @@ BUILD_QNX_A72?=no
 # Applied to target mode only
 BUILD_VLAB?=no
 
-BUILD_VPAC3?=no
-
 # RTOS selection for R5F - SYSBIOS or FREERTOS
 RTOS?=FREERTOS
 
@@ -47,6 +45,8 @@ SOC?=j721e
 
 ifeq ($(SOC),j721e)
 TARGET_SOC=J7
+BUILD_VPAC3=no
 else ifeq ($(SOC),j721s2)
 TARGET_SOC=J721S2
+BUILD_VPAC3=yes
 endif
