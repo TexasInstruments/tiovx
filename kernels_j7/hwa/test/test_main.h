@@ -60,7 +60,7 @@
  *
  */
 
-#if defined(J7) || defined(PC)
+#if defined(J7) || defined(J721S2) ||defined(PC)
 #if defined(BUILD_CT_TIOVX_HWA)
 TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
@@ -73,7 +73,7 @@ TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaVpacMscScaleMultiOutput)
 TESTCASE(tivxHwaVpacMscPyramid)
-#if defined(J7)
+#if defined(J7) || defined(J721S2)
 #if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaDisplayM2M)
