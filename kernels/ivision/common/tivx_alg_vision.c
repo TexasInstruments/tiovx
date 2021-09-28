@@ -317,11 +317,18 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms
                     tivxAlgiVisionDeleteAlg(algHandle);
                     algHandle = NULL;
                 }
-                else if ( ((vx_enum)cpuId== (vx_enum)TIVX_CPU_ID_DSP1) || ((vx_enum)cpuId== (vx_enum)TIVX_CPU_ID_DSP2))
+                else if ( (vx_enum)cpuId==(vx_enum)TIVX_CPU_ID_DSP1)
                 {
                     /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
                     tivxCheckStatus(&status, tivxMemBufferUnmap(memRec[0].base, memRec[0].size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
                 }
+                #if defined (SOC_J721E)
+                else if ( (vx_enum)cpuId==(vx_enum)TIVX_CPU_ID_DSP2)
+                {
+                    /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
+                    tivxCheckStatus(&status, tivxMemBufferUnmap(memRec[0].base, memRec[0].size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
+                }
+                #endif
                 else
                 {
                     /* do nothing */

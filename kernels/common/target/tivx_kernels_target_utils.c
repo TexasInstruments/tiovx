@@ -399,6 +399,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
 
     self_cpu = tivxGetSelfCpuId();
 
+    #if defined(SOC_J721E)
     if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
     {
         if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
@@ -416,6 +417,19 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     {
         status = (vx_status)VX_FAILURE;
     }
+    #endif
+
+    #if defined(SOC_J721S2)
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
+    {
+        strncpy(target_name, TIVX_TARGET_DSP1,
+            TIVX_TARGET_MAX_NAME);
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif
 
     return status;
 }

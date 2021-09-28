@@ -185,6 +185,15 @@ extern "C" {
  */
 #define TIVX_TARGET_DSP1        "DSP-1"
 
+/*! \brief Name for DSP target class, instance 1
+ *
+ *   Aliases to \ref TIVX_TARGET_DSP1 in order to
+ *   maintain compatibility with J721E
+ *
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DSP2        TIVX_TARGET_DSP1
+
 /*! \brief Name for IPU1 target class, core 0
  *
  *   Assigned to MCU2_0 core
