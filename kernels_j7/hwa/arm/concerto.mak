@@ -26,3 +26,29 @@ include $(FINALE)
 
 endif
 endif
+
+ifeq ($(TARGET_PLATFORM),J721S2)
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71))
+
+include $(PRELUDE)
+TARGET      := vx_target_kernels_j7_arm
+TARGETTYPE  := library
+CSOURCES    := vx_kernels_hwa_target.c vx_dof_visualize_target.c
+
+IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
+IDIRS       += $(VXLIB_PATH)/packages
+
+ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
+DEFS += BUILD_HWA_DMPAC_DOF
+endif
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7100 C7120))
+DEFS += C6X_MIGRATION _TMS320C6600
+endif
+
+include $(FINALE)
+
+endif
+
+endif

@@ -92,6 +92,7 @@
 #include <TI/tivx_target_kernel.h>
 #include <vx_tutorial_kernels.h>
 #include <tivx_kernels_common_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 /** \brief Index of input image in parameter list */
 #define PHASE_RGB_IN0_IMG_IDX   (0u)
@@ -270,35 +271,9 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbControl(tivx_target_kernel_instance ker
 void vxTutorialAddTargetKernelPhaseRgb(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
-    vx_enum self_cpu;
 
-    /**
-     * - Get CPU ID of the running CPU
-     *
-     * Add kernel to target framework only if it is supported on this target
-     * \code
-     */
-    self_cpu = tivxGetSelfCpuId();
-    /** \endcode */
-
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_DSP1) || (self_cpu == (vx_enum)TIVX_CPU_ID_DSP2))
+    if( (vx_status)VX_SUCCESS == tivxKernelsTargetUtilsAssignTargetNameDsp(target_name))
     {
-        /**
-         * - Find target name based on currently running CPU
-         *
-         * \code
-         */
-        if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP1,
-                TIVX_TARGET_MAX_NAME);
-        }
-        else
-        {
-            strncpy(target_name, TIVX_TARGET_DSP2,
-                TIVX_TARGET_MAX_NAME);
-        }
-        /** \endcode */
 
         /**
          * - Register target kernel to TIOVX framework

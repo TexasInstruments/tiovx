@@ -86,11 +86,22 @@ static void tivxInitLocal(void)
         tivxTargetInit();
 
         /* Initialize Host */
+    #if defined (SOC_J721E)
     #if defined (C66)
         tivxRegisterOpenVXCoreTargetKernels();
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
         #endif
+    #endif
+    #endif
+
+    #if defined (SOC_J721S2)
+    #if defined (C71)
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
+    #endif
     #endif
 
     #ifdef BUILD_CONFORMANCE_TEST
@@ -99,8 +110,16 @@ static void tivxInitLocal(void)
         tivxRegisterTestKernelsTargetArmKernels();
     #endif
 
+    #if defined (SOC_J721E)
     #if defined (C66)
         tivxRegisterTestKernelsTargetDspKernels();
+    #endif
+    #endif
+
+    #if defined (SOC_J721S2)
+    #if defined (C71)
+        tivxRegisterTestKernelsTargetDspKernels();
+    #endif
     #endif
     #endif
 
@@ -125,11 +144,22 @@ static void tivxDeInitLocal(void)
             tivxPlatformDeleteTargets();
 
             /* DeInitialize Host */
+        #if defined (SOC_J721E)
         #if defined (C66)
             tivxUnRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
             tivxUnRegisterTutorialTargetKernels();
             #endif
+        #endif
+        #endif
+
+        #if defined (SOC_J721S2)
+        #if defined (C71)
+            tivxUnRegisterOpenVXCoreTargetKernels();
+            #ifdef BUILD_TUTORIAL
+            tivxUnRegisterTutorialTargetKernels();
+            #endif
+        #endif
         #endif
 
         #ifdef BUILD_CONFORMANCE_TEST
@@ -138,8 +168,16 @@ static void tivxDeInitLocal(void)
             tivxUnRegisterTestKernelsTargetArmKernels();
         #endif
 
+        #if defined (SOC_J721E)
         #if defined (C66)
             tivxUnRegisterTestKernelsTargetDspKernels();
+        #endif
+        #endif
+
+        #if defined (SOC_J721S2)
+        #if defined (C71)
+            tivxUnRegisterTestKernelsTargetDspKernels();
+        #endif
         #endif
         #endif
 

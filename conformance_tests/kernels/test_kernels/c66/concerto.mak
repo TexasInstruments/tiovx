@@ -23,3 +23,32 @@ endif
 include $(FINALE)
 
 endif
+
+ifeq ($(TARGET_PLATFORM),J721S2)
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71))
+
+include $(PRELUDE)
+TARGET      := vx_target_kernels_dsp
+TARGETTYPE  := library
+CSOURCES    := $(call all-c-files)
+IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
+IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
+IDIRS       += $(HOST_ROOT)/kernels/include
+IDIRS       += $(VXLIB_PATH)/packages
+
+DEFS += CORE_DSP
+
+ifeq ($(BUILD_BAM),yes)
+DEFS += BUILD_BAM
+endif
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7100 C7120))
+DEFS += C6X_MIGRATION _TMS320C6600
+endif
+
+include $(FINALE)
+
+endif
+
+endif
