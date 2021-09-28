@@ -8,8 +8,7 @@
  */
 
 #include <vx_internal.h>
-#include <tivx_platform_psdk_j7.h>
-
+#include <tivx_platform_psdk.h>
 
 #define TIVX_TARGET_MCU2_MAX            (27U)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)

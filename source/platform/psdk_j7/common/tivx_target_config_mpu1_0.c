@@ -8,7 +8,7 @@
  */
 
 #include <vx_internal.h>
-#include <tivx_platform_psdk_j7.h>
+#include <tivx_platform_psdk.h>
 
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (64U*1024U)
 

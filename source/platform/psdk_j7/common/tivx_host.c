@@ -8,7 +8,7 @@
  */
 
 #include <vx_internal.h>
-#include <tivx_platform_psdk_j7.h>
+#include <tivx_platform_psdk.h>
 
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
