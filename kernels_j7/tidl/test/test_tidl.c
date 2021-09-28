@@ -76,7 +76,7 @@
  * This is the size of trace buffer allocated in host memory and
  * shared with target.
  */
-#define TIVX_TIDL_TRACE_DATA_SIZE  (256 * 1024 * 1024)
+#define TIVX_TIDL_TRACE_DATA_SIZE  (257 * 1024 * 1024)
 
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
