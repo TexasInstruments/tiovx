@@ -39,7 +39,7 @@ endif
 
 ifeq ($(TARGET_PLATFORM),J721S2)
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C7120))
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_openvx_core

@@ -211,8 +211,7 @@ extern "C" {
  *         CPU ID is defined in platform module since
  *         depending on platform the CPUs could be different
  *
- *         Current CPU IDs are defined assuming TDA2x/3x/2Ex
- *         family of SoCs
+ *         Current CPU IDs are defined assuming J721E SoC
  *
  *         Caution: This enum is used as index into the array
  *         #g_ipc_cpu_id_map, so change in this enum will require
