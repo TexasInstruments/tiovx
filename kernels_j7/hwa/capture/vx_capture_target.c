@@ -1395,11 +1395,10 @@ static void tivxCapturePrintStatus(tivxCaptureInstParams *prms)
             printf(   " dataIdErrorCount: %d\r\n", prms->captStatus.dataIdErrorCount);
             printf(   " invalidAccessCount: %d\r\n", prms->captStatus.invalidAccessCount);
             printf(   " invalidSpCount: %d\r\n", prms->captStatus.invalidSpCount);
-            printf(   " strmFIFOOvflCount[0]: %d\r\n", prms->captStatus.strmFIFOOvflCount[0]);
-            printf(   " strmFIFOOvflCount[1]: %d\r\n", prms->captStatus.strmFIFOOvflCount[1]);
-            printf(   " strmFIFOOvflCount[2]: %d\r\n", prms->captStatus.strmFIFOOvflCount[2]);
-            printf(   " strmFIFOOvflCount[3]: %d\r\n", prms->captStatus.strmFIFOOvflCount[3]);
-
+            for(cnt = 0U ; cnt < CSIRX_NUM_STREAM ; cnt ++)
+            {
+                printf(   " strmFIFOOvflCount[%d]: %d\r\n", cnt, prms->captStatus.strmFIFOOvflCount[cnt]);
+            }
             printf(   " Channel Num | Frame Queue Count | Frame De-queue Count | Frame Drop Count | Error Frame Count |\r\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {

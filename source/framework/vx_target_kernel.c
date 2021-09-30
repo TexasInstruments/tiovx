@@ -304,19 +304,13 @@ vx_status tivxTargetKernelCreate(
 
         if ((NULL != knl) && (NULL != knl->create_func))
         {
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Executing create callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Executing create callback for kernel [%s]\n", knl->kernel_name);
 
             status = knl->create_func(
                 target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
 
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Done executing create callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Done executing create callback for kernel [%s]\n", knl->kernel_name);
         }
         else
         {
@@ -342,19 +336,13 @@ vx_status tivxTargetKernelDelete(
 
         if ((NULL != knl) && (NULL != knl->delete_func))
         {
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Executing delete callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Executing delete callback for kernel [%s]\n", knl->kernel_name);
 
             status = knl->delete_func(
                 target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
 
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Done executing delete callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Done executing delete callback for kernel [%s]\n", knl->kernel_name);
         }
         else
         {
@@ -380,10 +368,7 @@ vx_status tivxTargetKernelExecute(
 
         if ((NULL != knl) && (NULL != knl->process_func))
         {
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Executing process callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Executing process callback for kernel [%s]\n", knl->kernel_name);
 
             tivxPlatformActivate();
             status = knl->process_func(
@@ -391,10 +376,7 @@ vx_status tivxTargetKernelExecute(
                 knl->caller_priv_arg);
             tivxPlatformDeactivate();
 
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Done executing process callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Done executing process callback for kernel [%s]\n", knl->kernel_name);
 
             if((vx_status)VX_SUCCESS != status)
             {
@@ -426,19 +408,13 @@ vx_status tivxTargetKernelControl(
 
         if ((NULL != knl) && (NULL != knl->control_func))
         {
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Executing control callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Executing control callback for kernel [%s]\n", knl->kernel_name);
 
             status = knl->control_func(
                 target_kernel_instance, node_cmd_id, obj_desc, num_params,
                 knl->caller_priv_arg);
 
-            if (NULL != knl->kernel_name)
-            {
-                VX_PRINT(VX_ZONE_INFO, "Done executing control callback for kernel [%s]\n", knl->kernel_name);
-            }
+            VX_PRINT(VX_ZONE_INFO, "Done executing control callback for kernel [%s]\n", knl->kernel_name);
         }
         else
         {
