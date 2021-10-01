@@ -391,7 +391,7 @@ static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
     }
     else
     {
-        dispPrms->chromaBufAddr = NULL;
+        dispPrms->chromaBufAddr = (uint64_t)NULL;
         dispPrms->chromaBufSize = 0x0;
     }
 

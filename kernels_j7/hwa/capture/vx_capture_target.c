@@ -367,11 +367,13 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
                 if (NULL != fvid2Frame)
                 {
+                    uint32_t obj_desc_id_u32 = (uint32_t)obj_desc_id;
+
                     /* Put into frame list as it is for same driver instance */
                     frmList.frames[frmList.numFrames]           = fvid2Frame;
                     frmList.frames[frmList.numFrames]->chNum    = (chId - startChIdx);
                     frmList.frames[frmList.numFrames]->addr[0U] = captured_frame;
-                    frmList.frames[frmList.numFrames]->appData  = (void *)obj_desc_id;
+                    frmList.frames[frmList.numFrames]->appData  = (void *)obj_desc_id_u32;
                     frmList.numFrames++;
                 }
                 else
@@ -1332,7 +1334,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
                     /* Disable Error Events */
                     fvid2_status = Fvid2_control(instParams->drvHandle,
                                            IOCTL_CSIRX_UNREGISTER_EVENT,
-                                           CSIRX_EVENT_GROUP_ERROR,
+                                           (void *)CSIRX_EVENT_GROUP_ERROR,
                                            NULL);
                     if(FVID2_SOK != fvid2_status)
                     {
@@ -1507,7 +1509,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 /* Disable Error Events */
                 fvid2_status = Fvid2_control(instParams->drvHandle,
                                        IOCTL_CSIRX_UNREGISTER_EVENT,
-                                       CSIRX_EVENT_GROUP_ERROR,
+                                       (void *)CSIRX_EVENT_GROUP_ERROR,
                                        NULL);
                 if(FVID2_SOK != fvid2_status)
                 {

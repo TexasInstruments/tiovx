@@ -459,8 +459,8 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 }
             }
 
-            dofObj->inFrm[DOF_INPUT_TEMPORAL_PRED].addr[0] = NULL;
-            dofObj->inFrm[DOF_INPUT_SOF].addr[0] = NULL;
+            dofObj->inFrm[DOF_INPUT_TEMPORAL_PRED].addr[0] = (uint64_t)NULL;
+            dofObj->inFrm[DOF_INPUT_SOF].addr[0] = (uint64_t)NULL;
 
             if(0U == pyr_lvl)
             {
@@ -923,16 +923,16 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
                 tivxEventDelete(&dofObj->waitForProcessCmpl);
             }
 
-            if (NULL != (int32_t)dofObj->inter_buff1)
+            if ((int32_t)NULL != (int32_t)dofObj->inter_buff1)
             {
                 tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff1), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                dofObj->inter_buff1 = NULL;
+                dofObj->inter_buff1 = (uint64_t)NULL;
             }
 
-            if (NULL != (int32_t)dofObj->inter_buff2)
+            if ((int32_t)NULL != (int32_t)dofObj->inter_buff2)
             {
                 tivxMemFree( (void*)(uintptr_t)(dofObj->inter_buff2), dofObj->inter_buff_size, (vx_enum)TIVX_MEM_EXTERNAL);
-                dofObj->inter_buff2 = NULL;
+                dofObj->inter_buff2 = (uint64_t)NULL;
             }
 
             tivxDmpacDofFreeObject(&gTivxDmpacDofInstObj, dofObj);

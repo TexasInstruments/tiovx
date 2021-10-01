@@ -145,7 +145,7 @@ static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const vx_float6
 static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bitw,
     uint8_t filtSize, vx_float64 sigma_s, vx_float64 sigma_r, vx_float64 *f_wt_lut, uint8_t out_bitw,
     uint32_t *i_wt_lut_spatial, uint32_t *i_wt_lut_full);
-static void tivxVpacNfBilateralInterleaveTables(const uint32_t * const *i_lut, uint8_t numTables,
+static void tivxVpacNfBilateralInterleaveTables(uint32_t * const *i_lut, uint8_t numTables,
     uint32_t rangeLutEntries);
 static uint32_t getSubRangeBits(uint16_t i);
 static vx_status tivxVpacNfBilateralSetHtsLimitCmd(
@@ -943,10 +943,10 @@ static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bi
     return returnVal;
 }
 
-static void tivxVpacNfBilateralInterleaveTables(const uint32_t * const *i_lut, uint8_t numTables,
+static void tivxVpacNfBilateralInterleaveTables(uint32_t * const *i_lut, uint8_t numTables,
     uint32_t rangeLutEntries)
 {
-    const uint32_t *oldLut = *i_lut;
+    uint32_t *const oldLut = *i_lut;
     uint32_t newLut[LUT_ROWS*256] = {0};
     uint32_t i, j;
 

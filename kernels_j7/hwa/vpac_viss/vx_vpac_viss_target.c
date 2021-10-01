@@ -1669,7 +1669,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             {
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
                     vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_INTERNAL_L3);
-                if (NULL == (int32_t)vissObj->ctx_mem_ptr.host_ptr)
+                if ((int32_t)NULL == (int32_t)vissObj->ctx_mem_ptr.host_ptr)
                 {
                     vissObj->ctx_mem_phys_ptr = 0u;
                     status = (vx_status)VX_ERROR_NO_MEMORY;
