@@ -207,23 +207,22 @@ static vx_status ownDestructRawImage(vx_reference ref)
     return (vx_status)VX_SUCCESS;
 }
 
-static vx_status ownAllocRawImageBuffer(vx_reference ref)
+vx_status ownDeriveRawImageBufferPointers(vx_reference ref)
 {
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
     uint16_t exp_idx;
 
-    if(ref->type == TIVX_TYPE_RAW_IMAGE)
+    if(ref != NULL)
     {
-        obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
-
-        if(obj_desc != NULL)
+        if(ref->type == TIVX_TYPE_RAW_IMAGE)
         {
-            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
+            obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
+
+            if(obj_desc != NULL)
             {
                 uint32_t img_line_offset = obj_desc->params.meta_height_before;
                 uint32_t meta_line_offset = 0;
-                vx_bool new_allocation = (vx_bool)vx_false_e;
 
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
@@ -231,33 +230,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                     uint32_t img_byte_offset, meta_byte_offset;
                     uint32_t exposure_offset = 0;
 
-                    /* memory is not allocated, so allocate it */
-                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL) &&
-                        ((obj_desc->params.line_interleaved == (vx_bool)vx_false_e) || (exp_idx == 0U))
-                      )
-                    {
-                        tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
-
-                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL)
-                        {
-                            /* could not allocate memory */
-                            VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
-                            status = (vx_status)VX_ERROR_NO_MEMORY;
-                            break;
-                        }
-                        else
-                        {
-                            new_allocation = (vx_bool)vx_true_e;
-
-                            obj_desc->mem_ptr[exp_idx].shared_ptr =
-                                tivxMemHost2SharedPtr(
-                                    obj_desc->mem_ptr[exp_idx].
-                                    host_ptr,
-                                    (vx_enum)TIVX_MEM_EXTERNAL);
-                        }
-                    }
-
-                    if ( new_allocation == (vx_bool)vx_true_e )
+                    if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)(uintptr_t)NULL)
                     {
                         if( obj_desc->params.line_interleaved == (vx_bool)vx_true_e )
                         {
@@ -294,6 +267,81 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                             obj_desc->meta_after_ptr[exp_idx].shared_ptr = obj_desc->mem_ptr[alloc_idx].shared_ptr + meta_byte_offset;
                         }
                     }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_INFO, "host_ptr is NULl so setting derived pointers also to NULL!\n");
+
+                        obj_desc->img_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->img_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+
+                        obj_desc->meta_before_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->meta_before_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+
+                        obj_desc->meta_after_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
+                        obj_desc->meta_after_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
+                    }
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
+                status = (vx_status)VX_ERROR_INVALID_VALUE;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "reference type is not a raw image\n");
+            status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "reference handle is NULL!\n");
+        status = (vx_status)VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
+static vx_status ownAllocRawImageBuffer(vx_reference ref)
+{
+    tivx_obj_desc_raw_image_t *obj_desc = NULL;
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint16_t exp_idx;
+
+    if(ref->type == TIVX_TYPE_RAW_IMAGE)
+    {
+        obj_desc = (tivx_obj_desc_raw_image_t *)ref->obj_desc;
+
+        if(obj_desc != NULL)
+        {
+            if ( (vx_enum)obj_desc->create_type == (vx_enum)TIVX_IMAGE_NORMAL )
+            {
+                for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
+                {
+                    /* memory is not allocated, so allocate it */
+                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL) &&
+                        ((obj_desc->params.line_interleaved == (vx_bool)vx_false_e) || (exp_idx == 0U))
+                      )
+                    {
+                        tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], (vx_enum)TIVX_MEM_EXTERNAL);
+
+                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL)
+                        {
+                            /* could not allocate memory */
+                            VX_PRINT(VX_ZONE_ERROR, "could not allocate memory\n");
+                            status = (vx_status)VX_ERROR_NO_MEMORY;
+                            break;
+                        }
+                        else
+                        {
+                            obj_desc->mem_ptr[exp_idx].shared_ptr =
+                                tivxMemHost2SharedPtr(
+                                    obj_desc->mem_ptr[exp_idx].
+                                    host_ptr,
+                                    (vx_enum)TIVX_MEM_EXTERNAL);
+                        }
+                    }
                 }
             }
         }
@@ -309,6 +357,10 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
+    if((vx_status)VX_SUCCESS == status)
+    {
+        status = ownDeriveRawImageBufferPointers(ref);
+    }
     return status;
 }
 
