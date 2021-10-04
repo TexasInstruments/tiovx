@@ -82,6 +82,10 @@ static vx_status VX_CALLBACK tivxScalarIntermediateDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxScalarIntermediateControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarIntermediateProcess(
        tivx_target_kernel_instance kernel,
@@ -104,7 +108,6 @@ static vx_status VX_CALLBACK tivxScalarIntermediateProcess(
     {
         in_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_SCALAR_INTERMEDIATE_IN_IDX];
         out_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_SCALAR_INTERMEDIATE_OUT_IDX];
-
     }
 
     if(VX_SUCCESS == status)
@@ -129,9 +132,6 @@ static vx_status VX_CALLBACK tivxScalarIntermediateCreate(
 {
     vx_status status = VX_SUCCESS;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating */
-    /*                   local memory buffers, one time initialization, etc) > */
-
     return status;
 }
 
@@ -142,8 +142,56 @@ static vx_status VX_CALLBACK tivxScalarIntermediateDelete(
 {
     vx_status status = VX_SUCCESS;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing */
-    /*                   local memory buffers, etc) > */
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxScalarIntermediateControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    switch (node_cmd_id)
+    {
+        case TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY:
+        {
+            if (NULL != obj_desc[0])
+            {
+                void *target_ptr;
+                tivx_obj_desc_user_data_object_t *usr_data_obj;
+                tivx_scalar_intermediate_control_t *replicate_prms = NULL;
+
+                usr_data_obj = (tivx_obj_desc_user_data_object_t *)obj_desc[0U];
+
+                target_ptr = tivxMemShared2TargetPtr(&usr_data_obj->mem_ptr);
+
+                tivxCheckStatus(&status, tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+
+                if (sizeof(tivx_scalar_intermediate_control_t) ==
+                        usr_data_obj->mem_size)
+                {
+                    replicate_prms = (tivx_scalar_intermediate_control_t *)target_ptr;
+
+                    replicate_prms->is_target_kernel_replicated = tivxIsTargetKernelInstanceReplicated(kernel);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid Size \n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+
+                tivxCheckStatus(&status, tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "User Data Object is NULL \n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+    }
 
     return status;
 }
@@ -183,7 +231,7 @@ void tivxAddTargetKernelScalarIntermediate(void)
                             tivxScalarIntermediateProcess,
                             tivxScalarIntermediateCreate,
                             tivxScalarIntermediateDelete,
-                            NULL,
+                            tivxScalarIntermediateControl,
                             NULL);
     }
 }

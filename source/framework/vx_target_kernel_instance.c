@@ -77,6 +77,7 @@ vx_status tivxTargetKernelInstanceInit(void)
         g_target_kernel_instance_table[i].kernel_id = (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID;
         g_target_kernel_instance_table[i].index = i;
         g_target_kernel_instance_table[i].state = (vx_enum)VX_NODE_STATE_STEADY;
+        g_target_kernel_instance_table[i].is_kernel_instance_replicated = (vx_bool)vx_false_e;
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
@@ -132,6 +133,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
                     tmp_kernel_instance->kernel_context = NULL;
                     tmp_kernel_instance->kernel_context_size = 0;
                     tmp_kernel_instance->kernel = kernel;
+                    tmp_kernel_instance->is_kernel_instance_replicated = (vx_bool)vx_false_e;
                     if (kernel->num_pipeup_bufs > 1U)
                     {
                         tmp_kernel_instance->state = (vx_enum)VX_NODE_STATE_PIPEUP;
@@ -296,4 +298,14 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
     }
 }
 
+VX_API_ENTRY vx_bool tivxIsTargetKernelInstanceReplicated(tivx_target_kernel_instance kernel_instance)
+{
+    vx_bool retVal = (vx_bool)vx_false_e;
 
+    if (NULL != kernel_instance)
+    {
+        retVal = (vx_bool)kernel_instance->is_kernel_instance_replicated;
+    }
+
+    return retVal;
+}

@@ -224,6 +224,14 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
     vx_border_t *border_mode);
 
 /*!
+ * \brief Checks if supplied node is replicated.  Returns vx_true if the given
+ *        node is replicated and vx_false if not.
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+VX_API_ENTRY vx_bool tivxIsTargetKernelInstanceReplicated(tivx_target_kernel_instance kernel_instance);
+
+/*!
  * \brief Get target kernel for a given target kernel instance
  *
  * \ingroup group_tivx_target_kernel_instance

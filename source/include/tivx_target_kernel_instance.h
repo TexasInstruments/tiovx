@@ -111,6 +111,9 @@ typedef struct _tivx_target_kernel_instance {
     /*! tile height for the kernel */
     uint32_t block_height;
 
+    /*! flag indicating whether or not the parameter is replicated */
+    vx_bool is_kernel_instance_replicated;
+
 } tivx_target_kernel_instance_t;
 
 /*!

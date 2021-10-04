@@ -125,30 +125,35 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME     "com.ti.capture.scalar_intermediate"
 
+/*! \brief Scalar intermediate replicate query
+ *  \see group_vision_function_capture
+ */
+#define TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY                (0x50000000u)
+
 /*! End of group_vision_function_capture */
 
 /*!
  * \brief Used for the Application to load the capture kernels into the context.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_capture
  */
 void tivxCaptureLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the capture kernels from the context.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_capture
  */
 void tivxCaptureUnLoadKernels(vx_context context);
 
 /*!
  * \brief Used to print the performance of the kernels.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_capture
  */
 void tivxCapturePrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
 
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
  *
- * \ingroup group_vision_function_vpac_viss
+ * \ingroup group_vision_function_capture
  */
 typedef struct {
     /* not needed from algo */
@@ -160,6 +165,17 @@ typedef struct {
     uint32_t  height;
     vx_df_image  format;
 } tivx_file_read_params_t;
+
+
+/*!
+ * \brief Structure for querying whether or not node is replicated
+ *
+ * \ingroup group_vision_function_capture
+ */
+typedef struct
+{
+    vx_bool is_target_kernel_replicated;
+} tivx_scalar_intermediate_control_t;
 
 #ifdef __cplusplus
 }

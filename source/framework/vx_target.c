@@ -782,6 +782,12 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             target_kernel_instance->block_width = node_obj_desc->block_width;
             target_kernel_instance->block_height = node_obj_desc->block_height;
 
+            if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
+                (vx_bool)vx_true_e)
+            {
+                target_kernel_instance->is_kernel_instance_replicated = (vx_bool)vx_true_e;
+            }
+
             /* save index key for fast retrival of handle during run-time */
             node_obj_desc->target_kernel_index[cnt] =
                 tivxTargetKernelInstanceGetIndex(target_kernel_instance);

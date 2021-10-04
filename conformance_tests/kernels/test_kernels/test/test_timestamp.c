@@ -305,6 +305,44 @@ TEST_WITH_ARG(tivxTimestamp, testTimestampPropagation, Arg, STREAMING_PARAMETERS
     /* ensure all graph processing is complete */
     vxWaitGraph(graph);
 #endif
+
+    {
+        vx_reference refs[1];
+        vx_user_data_object replicate_query;
+        tivx_scalar_intermediate_control_t *replicate_struct;
+        vx_map_id map_id;
+        uint32_t *data_ptr;
+        vx_imagepatch_addressing_t addr;
+        vx_rectangle_t rect;
+
+        replicate_query =
+            vxCreateUserDataObject(context, "tivx_scalar_intermediate_control_t" ,
+            sizeof(tivx_scalar_intermediate_control_t), NULL);
+
+        refs[0] = (vx_reference)replicate_query;
+        tivxNodeSendCommand(n1, 0,
+            TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY, refs, 1u);
+
+        vxMapUserDataObject(
+                (vx_user_data_object)refs[0],
+                0,
+                sizeof(tivx_scalar_intermediate_control_t),
+                &map_id,
+                (void **)&data_ptr,
+                VX_READ_ONLY,
+                VX_MEMORY_TYPE_HOST,
+                0
+            );
+
+        replicate_struct = (tivx_scalar_intermediate_control_t*)data_ptr;
+
+        ASSERT(replicate_struct->is_target_kernel_replicated==(vx_bool)vx_true_e);
+
+        vxUnmapUserDataObject((vx_user_data_object)refs[0], map_id);
+
+        VX_CALL(vxReleaseUserDataObject(&replicate_query));
+    }
+
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseNode(&n2));
