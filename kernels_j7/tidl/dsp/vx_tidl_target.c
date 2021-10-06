@@ -108,6 +108,8 @@ typedef struct
 
     void                *algHandle;
 
+    tivxTIDLTraceDataManager mgr;
+
 } tivxTIDLObj;
 
 static tivx_target_kernel vx_tidl_target_kernel[TIDL_MAX_TARGETS] = {NULL};
@@ -124,11 +126,47 @@ static char target_name[TIDL_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
     TIVX_TARGET_DSP_C7_1_PRI_8
 };
 
+/* OpenVX Node callbacks */
+static vx_status VX_CALLBACK tivxKernelTIDLCreate(tivx_target_kernel_instance kernel,
+  tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelTIDLProcess(tivx_target_kernel_instance kernel,
+    tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxKernelTIDLDelete(tivx_target_kernel_instance kernel,
+    tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+
+/* TIDL App function callbacks */
+static int32_t TIDL_lockInterrupts();
+static void TIDL_unlockInterrupts(int32_t oldIntState);
+static int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr);
+static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size, void * tracePtr);
+
+/* File Private functions */
 static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj);
 static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size, uint32_t loc);
 static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize);
+static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig);
+static int32_t tidl_AllocNetOutputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig);
 
-static tivxTIDLTraceDataManager mgr;
+
+/*
+ * Following static lock/unlock functions passed as function pointers to TIDL to internally
+ * disable and enable interrupts around critical section.
+ */
+static int32_t TIDL_lockInterrupts()
+{
+    int32_t oldIntState = 0;
+#ifndef x86_64
+    oldIntState = HwiP_disable();
+#endif
+    return oldIntState;
+}
+
+static void TIDL_unlockInterrupts(int32_t oldIntState)
+{
+#ifndef x86_64
+    HwiP_restore(oldIntState);
+#endif
+}
 
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig)
 {
@@ -264,7 +302,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
         tidlObj->outArgs = out_args_target_ptr;
 
-        tivxTIDLTraceDataClear(&mgr);
+        tivxTIDLTraceDataClear(&tidlObj->mgr);
 
         traceData  = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_TRACE_DATA_IDX];
         if((tidlObj->createParams.traceWriteLevel > 0) && (traceData != NULL))
@@ -272,7 +310,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
           trace_data_target_ptr = tivxMemShared2TargetPtr(&traceData->mem_ptr);
           tivxCheckStatus(&status, tivxMemBufferMap(trace_data_target_ptr, traceData->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY));
 
-          tivxTIDLTraceDataInit(&mgr, trace_data_target_ptr, traceData->mem_size);
+          tivxTIDLTraceDataInit(&tidlObj->mgr, trace_data_target_ptr, traceData->mem_size);
         }
 
         /* Idx 0 - config data,
@@ -317,7 +355,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
         if((tidlObj->createParams.traceWriteLevel > 0) && (traceData != NULL))
         {
-           tivxTIDLTraceWriteEOB(&mgr);
+           tivxTIDLTraceWriteEOB(&tidlObj->mgr);
 
            tivxCheckStatus(&status, tivxMemBufferUnmap(trace_data_target_ptr, traceData->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY));
         }
@@ -342,7 +380,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     return (status);
 }
 
-int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
+static int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
 {
     static char buf[1024];
 
@@ -353,19 +391,49 @@ int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
     return 0;
 }
 
-int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size)
+static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size, void * tracePtr)
 {
+    int32_t arg_errors = 0;
+    tivxTIDLTraceDataManager *mgr = (tivxTIDLTraceDataManager *)tracePtr;
 
-    if(mgr.current != NULL)
+    if(mgr == NULL)
     {
-      tivxTIDLTraceHeader header;
+        VX_PRINT(VX_ZONE_ERROR, "tracePtr set to NULL");
+        arg_errors++;
+    }
+    if(fileName == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "fileName set to NULL");
+        arg_errors++;
+    }
+    if(addr == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "addr set to NULL");
+        arg_errors++;
+    }
+    if(size == 0)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "size set to 0");
+        arg_errors++;
+    }
 
-      strcpy(header.fileName, fileName);
-      header.size   = size;
-      header.offset = mgr.current_capacity + sizeof(tivxTIDLTraceHeader);
+    if(arg_errors == 0)
+    {
+        if(mgr->current != NULL)
+        {
+            tivxTIDLTraceHeader header;
 
-      tivxTIDLTraceSetData(&mgr, (uint8_t *)&header, sizeof(tivxTIDLTraceHeader));
-      tivxTIDLTraceSetData(&mgr, addr, size);
+            strcpy(header.fileName, fileName);
+            header.size   = size;
+            header.offset = mgr->current_capacity + sizeof(tivxTIDLTraceHeader);
+
+            tivxTIDLTraceSetData(mgr, (uint8_t *)&header, sizeof(tivxTIDLTraceHeader));
+            tivxTIDLTraceSetData(mgr, addr, size);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "mgr->current is not initialized");
+        }
     }
 
     return 0;
@@ -378,8 +446,11 @@ int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t siz
 */
 #include <ti/drv/udma/udma.h>
 static struct Udma_DrvObj  x86udmaDrvObj;
+static uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr, uint32_t chNum, void *appData);
+static void tidlX86Printf(const char *str);
+static void * tidlX86UdmaInit( void);
 
-uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr,
+static uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr,
                                       uint32_t chNum,
                                       void *appData)
 {
@@ -388,7 +459,7 @@ uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr,
 static void tidlX86Printf(const char *str)
 {
 }
-void * tidlX86UdmaInit( void)
+static void * tidlX86UdmaInit( void)
 {
     static uint8_t firstCall = 1;
     if(firstCall)
@@ -519,8 +590,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         {
           create_params_target_ptr = tivxMemShared2TargetPtr(&createParams->mem_ptr);
           tivxCheckStatus(&status, tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_AND_WRITE));
+        }
 
+        if ((vx_status)VX_SUCCESS == status)
+        {
           memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
+          tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
+          tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
+          tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -677,51 +754,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelTIDLControl(
-    tivx_target_kernel_instance kernel, uint32_t node_cmd_id,
-    tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return ((vx_status)VX_SUCCESS);
-}
-
-void tivxAddTargetKernelTIDL()
-{
-    vx_enum self_cpu;
-
-    self_cpu = tivxGetSelfCpuId();
-
-    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
-    {
-        uint32_t i;
-
-        for (i = 0; i < TIDL_MAX_TARGETS; i++)
-        {
-            vx_tidl_target_kernel[i] = tivxAddTargetKernelByName
-                                    (
-                                      TIVX_KERNEL_TIDL_NAME,
-                                      target_name[i],
-                                      tivxKernelTIDLProcess,
-                                      tivxKernelTIDLCreate,
-                                      tivxKernelTIDLDelete,
-                                      tivxKernelTIDLControl,
-                                      NULL
-                                    );
-        }
-    }
-}
-
-
-void tivxRemoveTargetKernelTIDL()
-{
-    uint32_t i;
-
-    for (i = 0; i < TIDL_MAX_TARGETS; i++)
-    {
-        tivxRemoveTargetKernel(vx_tidl_target_kernel[i]);
-    }
-}
-
 static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj)
 {
     if (NULL != tidlObj)
@@ -806,24 +838,40 @@ static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size,
     return status;
 }
 
-/* Following functions declared by TIDL for internally disabling and enabling interrupts
- * Must be defined by consumer of TIDL to make TIDL platform agnostic
- */
+/* Public Functions */
 
-#ifndef x86_64
-static uint32_t oldIntState;
-#endif
-
-void TIDL_lockInterrupts()
+void tivxAddTargetKernelTIDL()
 {
-#ifndef x86_64
-    oldIntState = HwiP_disable();
-#endif
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
+    {
+        uint32_t i;
+
+        for (i = 0; i < TIDL_MAX_TARGETS; i++)
+        {
+            vx_tidl_target_kernel[i] = tivxAddTargetKernelByName
+                                    (
+                                      TIVX_KERNEL_TIDL_NAME,
+                                      target_name[i],
+                                      tivxKernelTIDLProcess,
+                                      tivxKernelTIDLCreate,
+                                      tivxKernelTIDLDelete,
+                                      NULL,
+                                      NULL
+                                    );
+        }
+    }
 }
 
-void TIDL_unlockInterrupts()
+void tivxRemoveTargetKernelTIDL()
 {
-#ifndef x86_64
-    HwiP_restore(oldIntState);
-#endif
+    uint32_t i;
+
+    for (i = 0; i < TIDL_MAX_TARGETS; i++)
+    {
+        tivxRemoveTargetKernel(vx_tidl_target_kernel[i]);
+    }
 }

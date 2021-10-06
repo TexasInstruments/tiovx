@@ -94,36 +94,50 @@ vx_status tivx_utils_tidl_trace_write(vx_user_data_object traceData, char *prefi
 
             offset = 0;
             header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, (uint64_t)sizeof(tivxTIDLTraceHeader));
-            offset += sizeof(tivxTIDLTraceHeader);
-            while(strncmp(header->fileName, "EOB", 3) != 0)
+
+            if (header == NULL)
             {
-                FILE *fp;
-                uint8_t *data_ptr;
-                char file_name[TIVX_TIDL_TRACE_FILE_NAME_SIZE+1];
-
-                data_ptr = tivxTIDLTraceGetData(&mgr, header->offset, header->size);
-                offset += header->size;
-
-                snprintf(file_name, TIVX_TIDL_TRACE_FILE_NAME_SIZE, "%s%s", prefix, header->fileName);
-
-                fp = fopen(file_name, "wb");
-
-                if(fp == NULL)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Unable to open file %s !\n", file_name);
-                    status = (vx_status)VX_FAILURE;
-                    break;
-                }
-                VX_PRINT(VX_ZONE_INFO,"Writing %s of size %d bytes... ", file_name, header->size);
-
-                fwrite(data_ptr, header->size, sizeof(uint8_t), fp);
-                fflush(fp);
-                fclose(fp);
-
-                VX_PRINT(VX_ZONE_INFO, "Done! \n");
-
-                header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, sizeof(tivxTIDLTraceHeader));
+                VX_PRINT(VX_ZONE_ERROR,"TIDL Trace Buffer Capacity too small for header!\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else if ((header->size == 0) || (header->offset == 0))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"TIDL Trace Buffer empty\n");
+                status = (vx_status)VX_FAILURE;
+            }
+            else
+            {
                 offset += sizeof(tivxTIDLTraceHeader);
+                while(strncmp(header->fileName, "EOB", 3) != 0)
+                {
+                    FILE *fp;
+                    uint8_t *data_ptr;
+                    char file_name[TIVX_TIDL_TRACE_FILE_NAME_SIZE+1];
+
+                    data_ptr = tivxTIDLTraceGetData(&mgr, header->offset, header->size);
+                    offset += header->size;
+
+                    snprintf(file_name, TIVX_TIDL_TRACE_FILE_NAME_SIZE, "%s%s", prefix, header->fileName);
+
+                    fp = fopen(file_name, "wb");
+
+                    if(fp == NULL)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Unable to open file %s !\n", file_name);
+                        status = (vx_status)VX_FAILURE;
+                        break;
+                    }
+                    VX_PRINT(VX_ZONE_INFO,"Writing %s of size %d bytes... ", file_name, header->size);
+
+                    fwrite(data_ptr, header->size, sizeof(uint8_t), fp);
+                    fflush(fp);
+                    fclose(fp);
+
+                    VX_PRINT(VX_ZONE_INFO, "Done! \n");
+
+                    header = (tivxTIDLTraceHeader *)tivxTIDLTraceGetData(&mgr, offset, sizeof(tivxTIDLTraceHeader));
+                    offset += sizeof(tivxTIDLTraceHeader);
+                }
             }
 
             vxUnmapUserDataObject(traceData, map_id);

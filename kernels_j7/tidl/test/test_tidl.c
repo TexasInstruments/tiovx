@@ -69,6 +69,7 @@
 #include <math.h>
 #include "itidl_ti.h"
 #include "tivx_utils_tidl_trace.h"
+#include <TI/tivx_task.h>
 
 #define DEBUG_TEST_TIDL
 
@@ -76,7 +77,7 @@
  * This is the size of trace buffer allocated in host memory and
  * shared with target.
  */
-#define TIVX_TIDL_TRACE_DATA_SIZE  (257 * 1024 * 1024)
+#define TIVX_TIDL_TRACE_DATA_SIZE  (128 * 1024 * 1024)
 
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -875,4 +876,232 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-TESTCASE_TESTS(tivxTIDL, testTIDL)
+TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph1 = 0, graph2 = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_kernel kernel = 0;
+
+    vx_perf_t perf_node;
+    vx_perf_t perf_graph;
+
+    vx_user_data_object  config;
+    vx_user_data_object  network;
+    vx_user_data_object  createParams;
+    vx_user_data_object  inArgs;
+    vx_user_data_object  outArgs;
+    vx_user_data_object  traceData1;
+    vx_user_data_object  traceData2;
+
+    vx_tensor input_tensor[1];
+    vx_tensor output_tensor1[1];
+    vx_tensor output_tensor2[1];
+
+    vx_int32    refid = 895;
+
+    vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
+    char filepath[MAXPATHLENGTH];
+    size_t sz;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_1) &&
+        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_2))
+    {
+        uint32_t num_input_tensors  = 0;
+        uint32_t num_output_tensors = 0;
+
+        tivxTIDLLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_tidl_kernels, CT_GC_OBJECT);
+
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->config);
+        ASSERT(sz < MAXPATHLENGTH);
+
+        ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        kernel = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors);
+
+        ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+        ASSERT_VX_OBJECT(graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->network);
+        ASSERT(sz < MAXPATHLENGTH);
+
+        ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(createParams = setCreateParams(context, arg_->read_raw_padded, arg_->trace_write_flag), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(inArgs = setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(outArgs = setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(input_tensor[0] = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+
+        ASSERT_VX_OBJECT(output_tensor1[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+        ASSERT_VX_OBJECT(output_tensor2[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+
+        /* This is an optional parameter can be NULL as well. */
+        if(arg_->trace_write_flag == 1)
+        {
+            ASSERT_VX_OBJECT(traceData1 = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(traceData2 = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        }
+        else
+        {
+            traceData1 = NULL;
+            traceData2 = NULL;
+        }
+
+        vx_reference params1[] = {
+                (vx_reference)config,
+                (vx_reference)network,
+                (vx_reference)createParams,
+                (vx_reference)inArgs,
+                (vx_reference)outArgs,
+                (vx_reference)traceData1
+        };
+
+        vx_reference params2[] = {
+                (vx_reference)config,
+                (vx_reference)network,
+                (vx_reference)createParams,
+                (vx_reference)inArgs,
+                (vx_reference)outArgs,
+                (vx_reference)traceData2
+        };
+
+        ASSERT_VX_OBJECT(node1 = tivxTIDLNode(graph1, kernel, params1, input_tensor, output_tensor1), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node2 = tivxTIDLNode(graph2, kernel, params2, input_tensor, output_tensor2), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1_PRI_2));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1_PRI_1));
+
+        if(arg_->read_raw_padded)
+        {
+            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.y");
+            ASSERT(sz < MAXPATHLENGTH);
+
+            #ifdef DEBUG_TEST_TIDL
+            printf("Reading input file %s ...\n", filepath);
+            #endif
+
+            VX_CALL(readInputRawPadded(context, config, &input_tensor[0], &filepath[0]));
+        }
+        else
+        {
+            sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.bmp");
+            ASSERT(sz < MAXPATHLENGTH);
+
+            #ifdef DEBUG_TEST_TIDL
+            printf("Reading input file %s ...\n", filepath);
+            #endif
+
+            VX_CALL(readInput(context, config, &input_tensor[0], &filepath[0]));
+        }
+        #ifdef DEBUG_TEST_TIDL
+        printf("Verifying graph ...\n");
+        #endif
+
+        VX_CALL(vxVerifyGraph(graph1));
+        VX_CALL(vxVerifyGraph(graph2));
+
+        tivxLogRtTraceEnable(graph1);
+        tivxLogRtTraceEnable(graph2);
+
+        #ifdef DEBUG_TEST_TIDL
+        printf("Running graph ...\n");
+        #endif
+        VX_CALL(vxScheduleGraph(graph1));
+        tivxTaskWaitMsecs(1+(10*arg_->trace_write_flag));
+        VX_CALL(vxScheduleGraph(graph2));
+
+        VX_CALL(vxWaitGraph(graph1));
+        VX_CALL(vxWaitGraph(graph2));
+
+        #ifdef DEBUG_TEST_TIDL
+        printf("Showing output ...\n");
+        #endif
+
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/tidl_preempt%d.bin", ct_get_test_file_path(), arg_->trace_write_flag);
+        ASSERT(sz < MAXPATHLENGTH);
+
+        tivxLogRtTraceExportToFile(filepath);
+        tivxLogRtTraceDisable(graph1);
+        tivxLogRtTraceDisable(graph2);
+
+        VX_CALL(displayOutput(config, &output_tensor1[0], refid));
+        VX_CALL(displayOutput(config, &output_tensor2[0], refid));
+
+        if(arg_->trace_write_flag == 1)
+        {
+            sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/airshow_256x256_2.", ct_get_test_file_path());
+            ASSERT(sz < MAXPATHLENGTH);
+            VX_CALL(tivx_utils_tidl_trace_write(traceData2, filepath));
+            sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/airshow_256x256_1.", ct_get_test_file_path());
+            ASSERT(sz < MAXPATHLENGTH);
+            VX_CALL(tivx_utils_tidl_trace_write(traceData1, filepath));
+       } else {
+#if !defined(PC)
+            vx_perf_t perf1, perf2;
+
+            VX_CALL(vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf1, sizeof(perf1)));
+            VX_CALL(vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf2, sizeof(perf2)));
+
+            /* Since node 1 is running first, but at lower priority, it gets preempted by node2, which is higher priority.
+             * Node 1 therefore should be about twice the execution time as node 2 + context switch time */
+            printf("perf1.avg = %lu\n", perf1.avg);
+            printf("perf2.avg = %lu\n", perf2.avg);
+
+            ASSERT(perf1.avg > (perf2.avg*2));
+#endif
+       }
+
+        VX_CALL(vxReleaseNode(&node1));
+        VX_CALL(vxReleaseNode(&node2));
+        VX_CALL(vxReleaseGraph(&graph1));
+        VX_CALL(vxReleaseGraph(&graph2));
+
+        ASSERT(node1 == 0);
+        ASSERT(node2 == 0);
+        ASSERT(graph1 == 0);
+        ASSERT(graph2 == 0);
+
+        VX_CALL(vxReleaseUserDataObject(&config));
+        VX_CALL(vxReleaseUserDataObject(&network));
+        VX_CALL(vxReleaseUserDataObject(&createParams));
+        VX_CALL(vxReleaseUserDataObject(&inArgs));
+        VX_CALL(vxReleaseUserDataObject(&outArgs));
+
+        if(arg_->trace_write_flag == 1)
+        {
+           VX_CALL(vxReleaseUserDataObject(&traceData1));
+           VX_CALL(vxReleaseUserDataObject(&traceData2));
+        }
+
+        VX_CALL(vxReleaseTensor(&input_tensor[0]));
+        VX_CALL(vxReleaseTensor(&output_tensor1[0]));
+        VX_CALL(vxReleaseTensor(&output_tensor2[0]));
+
+        ASSERT(config == 0);
+        ASSERT(network == 0);
+        ASSERT(createParams == 0);
+        ASSERT(inArgs == 0);
+        ASSERT(outArgs == 0);
+
+        if(arg_->trace_write_flag == 1)
+        {
+            ASSERT(outArgs == 0);
+        }
+
+        ASSERT(input_tensor[0]  == 0);
+        ASSERT(output_tensor1[0] == 0);
+        ASSERT(output_tensor2[0] == 0);
+
+        tivxTIDLUnLoadKernels(context);
+
+        vxRemoveKernel(kernel);
+    }
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+
+TESTCASE_TESTS(tivxTIDL, testTIDL, testTIDLPreempt)
