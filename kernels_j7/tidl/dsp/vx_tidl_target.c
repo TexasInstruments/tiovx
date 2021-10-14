@@ -382,12 +382,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
 static int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
 {
+#if 0
     static char buf[1024];
 
     vsnprintf(buf, 1024, format, va_args_ptr);
 
     printf(buf);
-
+#endif
     return 0;
 }
 
