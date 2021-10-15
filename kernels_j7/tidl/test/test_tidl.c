@@ -70,6 +70,7 @@
 #include "itidl_ti.h"
 #include "tivx_utils_tidl_trace.h"
 #include <TI/tivx_task.h>
+#include <inttypes.h>
 
 #define DEBUG_TEST_TIDL
 
@@ -1048,8 +1049,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
 
             /* Since node 1 is running first, but at lower priority, it gets preempted by node2, which is higher priority.
              * Node 1 therefore should be about twice the execution time as node 2 + context switch time */
-            printf("perf1.avg = %lu\n", perf1.avg);
-            printf("perf2.avg = %lu\n", perf2.avg);
+            printf("perf1.avg = %" PRIu64 "\n", perf1.avg);
+            printf("perf2.avg = %" PRIu64 "\n", perf2.avg);
 
             ASSERT(perf1.avg > (perf2.avg*2));
 #endif
