@@ -63,7 +63,7 @@
 #if defined(J7) || defined(PC)
 #if defined(BUILD_CT_TIOVX_HWA)
 TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
+//TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaVpacLdc)
 TESTCASE(tivxHwaVpacMscGaussianPyramid)
 TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
