@@ -69,9 +69,9 @@ TEST_WITH_ARG(tivxTensor, testCreateTensor, Arg,
 
     ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    EXPECT_VX_ERROR(tensor_uint64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT64, 0), VX_ERROR_INVALID_TYPE);
+    ASSERT_VX_OBJECT(tensor_uint64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT64, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    EXPECT_VX_ERROR(tensor_int64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT64, 0), VX_ERROR_INVALID_TYPE);
+    ASSERT_VX_OBJECT(tensor_int64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT64, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     EXPECT_VX_ERROR(tensor_float64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT64, 0), VX_ERROR_INVALID_TYPE);
     
@@ -84,6 +84,8 @@ TEST_WITH_ARG(tivxTensor, testCreateTensor, Arg,
     VX_CALL(vxReleaseTensor(&tensor_uint16));
     VX_CALL(vxReleaseTensor(&tensor_uint8));
     VX_CALL(vxReleaseTensor(&tensor_int8));
+    VX_CALL(vxReleaseTensor(&tensor_uint64));
+    VX_CALL(vxReleaseTensor(&tensor_int64));
 }
 
 TEST_WITH_ARG(tivxTensor, testQueryTensor, Arg,
