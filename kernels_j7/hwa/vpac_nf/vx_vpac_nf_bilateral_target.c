@@ -742,7 +742,8 @@ static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const vx_float6
     uint32_t numTables = (uint32_t)1U << (uint32_t)subRangeBits;
     uint8_t tableNum;
     uint32_t rangeLutEntries = (uint32_t)256 >> (uint32_t)subRangeBits;
-    vx_float64   f_lut[LUT_ROWS * 256];
+    uint32_t f_lut_size = LUT_ROWS * 256 * sizeof(vx_float64);
+    vx_float64   *f_lut = tivxMemAlloc(f_lut_size, (vx_enum)TIVX_MEM_EXTERNAL);
 
     for (tableNum = 0; tableNum < numTables; tableNum++)
     {
@@ -766,6 +767,8 @@ static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, const vx_float6
             &i_lut[tableNum * (uint32_t)LUT_ROWS * rangeLutEntries]
             );
     }
+
+    tivxMemFree(f_lut, f_lut_size, (vx_enum)TIVX_MEM_EXTERNAL);
 
     if (numTables > 1U)
     {
@@ -947,8 +950,11 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t * const *i_lut, uint8_t
     uint32_t rangeLutEntries)
 {
     uint32_t *const oldLut = *i_lut;
-    uint32_t newLut[LUT_ROWS*256] = {0};
+    uint32_t newLutSize = LUT_ROWS * 256 * sizeof(uint32_t);
+    uint32_t *newLut = tivxMemAlloc(newLutSize, (vx_enum)TIVX_MEM_EXTERNAL);
     uint32_t i, j;
+
+    memset(newLut, 0, (uint32_t)LUT_ROWS * 256 * sizeof(uint32_t));
 
     for (j = 0; j < numTables; j++)
     {
@@ -959,6 +965,8 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t * const *i_lut, uint8_t
     }
 
     memcpy((uint32_t *)oldLut, newLut, (uint32_t)LUT_ROWS*256U*sizeof(uint32_t));
+
+    tivxMemFree(newLut, newLutSize, (vx_enum)TIVX_MEM_EXTERNAL);
 }
 
 static uint32_t getSubRangeBits(uint16_t i)
