@@ -18,8 +18,6 @@ ifeq ($(TARGET_CPU),R5F)
       IDIRS       += $(BIOS_PATH)/packages
     endif
   endif
-  # This is a workaround for a failure when enabling clang for optimized mode (-02 or above)
-  CFLAGS += -O1
 else
   CSOURCES    := vx_vpac_nf_generic_target_sim.c vx_vpac_nf_bilateral_target_sim.c
   IDIRS       += $(J7_C_MODELS_PATH)/include
