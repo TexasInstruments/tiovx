@@ -85,13 +85,13 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscScaleValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num, vx_meta_format metas[]);
-static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscScaleInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params);
-static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscPyramidValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num, vx_meta_format metas[]);
-static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscPyramidInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params);
 
 /* ========================================================================== */
@@ -131,8 +131,8 @@ vx_status tivxAddKernelVpacMscMultiScale(vx_context context)
                     kernel_id,
                     NULL,
                     TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS,
-                    tivxAddKernelVpacMscScaleValidate,
-                    tivxAddKernelVpacMscScaleInitialize,
+                    tivxVpacMscScaleValidate,
+                    tivxVpacMscScaleInitialize,
                     NULL);
 
         status = vxGetStatus((vx_reference)kernel);
@@ -258,8 +258,8 @@ vx_status tivxAddKernelVpacMscPyramid(vx_context context)
                     kernel_id,
                     NULL,
                     TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS,
-                    tivxAddKernelVpacMscPyramidValidate,
-                    tivxAddKernelVpacMscPyramidInitialize,
+                    tivxVpacMscPyramidValidate,
+                    tivxVpacMscPyramidInitialize,
                     NULL);
 
         status = vxGetStatus((vx_reference)kernel);
@@ -495,7 +495,7 @@ void tivx_vpac_msc_output_params_init(tivx_vpac_msc_output_params_t *prms)
 /*                              OPENVX Callbacks                              */
 /* ========================================================================== */
 
-static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscScaleValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params, vx_meta_format metas[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -634,7 +634,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleValidate(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscScaleInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params)
 {
     uint32_t out_idx;
@@ -700,7 +700,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscScaleInitialize(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscPyramidValidate(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num, vx_meta_format metas[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -827,7 +827,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidValidate(vx_node node,
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxAddKernelVpacMscPyramidInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxVpacMscPyramidInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
