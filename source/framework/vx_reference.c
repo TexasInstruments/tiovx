@@ -1197,11 +1197,6 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                 }
             }
         }
-
-        if((status == (vx_status)VX_SUCCESS) && (ref->type == (vx_enum)TIVX_TYPE_RAW_IMAGE))
-        {
-            status = ownDeriveRawImageBufferPointers(ref);
-        }
     }
 
     return status;

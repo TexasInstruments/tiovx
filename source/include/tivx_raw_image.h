@@ -80,20 +80,6 @@ typedef struct _tivx_raw_image
 } tivx_raw_image_t;
 
 
-/*!
- * \brief Function to derive raw image pointers such as pixel buffer,
- *        meta before, meta after from alloc pointer. This function
- *        should be called after freshly allocating raw image buffer
- *        or after importing an external buffer.
- *
- * \param ref [in] reference to tivx_raw_image
- *
- * \return VX_SUCCESS on success
- *
- * \ingroup group_tivx_raw_image
- */
-vx_status ownDeriveRawImageBufferPointers(vx_reference ref);
-
 #ifdef __cplusplus
 }
 #endif
