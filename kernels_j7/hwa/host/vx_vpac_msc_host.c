@@ -637,67 +637,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleValidate(vx_node node,
 static vx_status VX_CALLBACK tivxVpacMscScaleInitialize(vx_node node,
     const vx_reference parameters[ ], vx_uint32 num_params)
 {
-    uint32_t out_idx;
-    vx_status status = (vx_status)VX_SUCCESS;
-    tivxKernelValidRectParams prms;
-
-    if ((num_params != TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX]) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX]))
-    {
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR,
-            "One or more REQUIRED parameters are set to NULL\n");
-    }
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        tivxKernelValidRectParams_init(&prms);
-
-        prms.num_input_images = 0u;
-        prms.num_output_images = 0u;
-        out_idx = 0u;
-
-        prms.in_img[0u] =
-            (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX];
-        prms.num_input_images ++;
-
-        prms.out_img[out_idx] =
-            (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX];
-        out_idx ++;
-
-        if(NULL != parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT1_IMG_IDX])
-        {
-            prms.out_img[out_idx] =
-                (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT1_IMG_IDX];
-            out_idx ++;
-        }
-
-        if(NULL != parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT2_IMG_IDX])
-        {
-            prms.out_img[out_idx] =
-                (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT2_IMG_IDX];
-            out_idx ++;
-        }
-
-        if(NULL != parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT3_IMG_IDX])
-        {
-            prms.out_img[out_idx] =
-                (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT3_IMG_IDX];
-            out_idx ++;
-        }
-
-        if(NULL != parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT4_IMG_IDX])
-        {
-            prms.out_img[out_idx] =
-                (vx_image)parameters[TIVX_KERNEL_VPAC_MSC_SCALE_OUT4_IMG_IDX];
-            out_idx ++;
-        }
-        prms.num_output_images = out_idx;
-
-        status = tivxKernelConfigValidRect(&prms);
-    }
-
-    return status;
+    return (vx_status)VX_SUCCESS;
 }
 
 static vx_status VX_CALLBACK tivxVpacMscPyramidValidate(vx_node node,
