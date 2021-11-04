@@ -478,7 +478,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
             hwaCfg->phaseSelect = dccCfg->color_en;
 
             hwaCfg->histLut.enable = dccCfg->lut_en;
-            hwaCfg->histLut.tableAddr = (uint16_t*)vissObj->dcc_table_ptr.raw_hist_lut;
+            hwaCfg->histLut.tableAddr = vissObj->dcc_table_ptr.raw_hist_lut;
             memcpy(hwaCfg->histLut.tableAddr, dccCfg->rawhist_lut, sizeof(uint16_t)*NSF4_HISTOGRAM_LUT_SIZE);
 
             for (k = 0; k < NSF4_HIST_MAX_ROI; k++)
@@ -980,7 +980,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32_t f
         {
             Fcp_comDecomLutConfig *compLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].comLutCfg;
             Fcp_comDecomLutConfig *dcmpLutCfg = &vissObj->vissCfg.fcpCfg[fcp_index].decomLutCfg;
- 
+
             int k;
 
             cfaCfg->enable16BitMode = dcc_cfai3_ext->process_mode;
