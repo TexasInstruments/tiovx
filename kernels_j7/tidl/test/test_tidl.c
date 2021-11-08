@@ -271,6 +271,9 @@ static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw
               prms->quantRangeExpansionFactor     = 1.0;
               prms->quantRangeUpdateFactor        = 0.0;
 
+              /* Default is float max, so to test preemption logic, set to 0 ms to preempt for each layer */
+              prms->maxPreEmptDelay               = 0.0f;
+
               if(trace_write_flag == 1)
               {
                 prms->traceLogLevel                 = 1;
