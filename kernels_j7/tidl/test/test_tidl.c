@@ -276,7 +276,7 @@ static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw
 
               if(trace_write_flag == 1)
               {
-                prms->traceLogLevel                 = 1;
+                prms->traceLogLevel                 = 0;
                 prms->traceWriteLevel               = 1;
               }
               else
