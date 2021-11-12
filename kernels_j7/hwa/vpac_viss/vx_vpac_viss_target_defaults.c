@@ -362,7 +362,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
         rawHistCfg = &nsf4Cfg->histCfg;
         dwbCfg     = &nsf4Cfg->dwbCfg;
 
-        dwbCfg->enable = 1;
+        dwbCfg->enable = 0;
         memcpy(dwbCfg->dwbCurve, dwb_lut, sizeof(dwbCfg->dwbCurve));
 
         dwbCfg->dwbLineWeights[0][0] = 0;
