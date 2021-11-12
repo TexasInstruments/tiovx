@@ -63,10 +63,6 @@
 #ifndef TIVX_SOC_H_
 #define TIVX_SOC_H_
 
-#ifndef SOC_J721E
-#define SOC_J721E
-#endif
-
 #if   defined(SOC_J6)
 #include <TI/tivx_soc_j6.h>
 #elif defined(SOC_J721E)
