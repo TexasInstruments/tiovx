@@ -122,10 +122,12 @@ void tivxInit(void)
         tivxRegisterTutorialTargetKernels();
         #endif
 
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
-        tivxRegisterOpenVXCoreTargetKernels();
-        #ifdef BUILD_TUTORIAL
-        tivxRegisterTutorialTargetKernels();
+        #if defined (SOC_J721E)
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
+            tivxRegisterOpenVXCoreTargetKernels();
+            #ifdef BUILD_TUTORIAL
+            tivxRegisterTutorialTargetKernels();
+            #endif
         #endif
 
         #ifndef _DISABLE_TIDL
@@ -158,8 +160,10 @@ void tivxInit(void)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         tivxRegisterTestKernelsTargetDspKernels();
 
+        #if defined (SOC_J721E)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP2);
         tivxRegisterTestKernelsTargetDspKernels();
+        #endif
         #endif
 
         /* let rest of system think it is running on DSP1 */
