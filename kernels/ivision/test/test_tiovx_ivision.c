@@ -88,19 +88,21 @@ void IVisionLoadKernels(vx_context context)
     {
         tivxRegisterIVisionCoreKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_IVISION);
-        gIsIVisionKernelsLoad = 1U;
     }
+    gIsIVisionKernelsLoad++;
 }
 
 void IVisionUnLoadKernels(vx_context context)
 {
-    if ((1u == gIsIVisionKernelsLoad) &&
-        (NULL != context))
+    if (gIsIVisionKernelsLoad > 0)
     {
-        vxUnloadKernels(context, TIVX_MODULE_NAME_IVISION);
-        tivxUnRegisterIVisionCoreKernels();
-
-        gIsIVisionKernelsLoad = 0U;
-    }
+		gIsIVisionKernelsLoad--;
+		if ((0 == gIsIVisionKernelsLoad) &&
+			(NULL != context))
+		{
+			vxUnloadKernels(context, TIVX_MODULE_NAME_IVISION);
+			tivxUnRegisterIVisionCoreKernels();
+		}
+	}
 }
 
