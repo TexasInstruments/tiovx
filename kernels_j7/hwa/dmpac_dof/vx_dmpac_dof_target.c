@@ -1235,6 +1235,11 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
                     img_current_desc[pyr_cnt]->imagepatch_addr[0].dim_x * 2u;
             }
+            if (pyr_cnt < (dofPrms->tPrmdLvl-1u))
+            {
+                dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
+                    (uint32_t)img_current_desc[pyr_cnt+1u]->imagepatch_addr[0].dim_x * 2u;
+            }
         }
         else
         {
@@ -1246,7 +1251,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                 tivxDmpacDofSetFmt(fmt, img_current_desc[pyr_cnt-1U]);
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
-                        (uint32_t)img_current_desc[pyr_cnt-1U]->imagepatch_addr[0].stride_y;
+                        (uint32_t)img_current_desc[pyr_cnt]->imagepatch_addr[0].dim_x * 2u;
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
                     (uint32_t)img_current_desc[pyr_cnt-1U]->imagepatch_addr[0].dim_x * 2u;
@@ -1259,7 +1264,7 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
                 tivxDmpacDofSetFmt(fmt, input_curr_base_desc);
 
                 dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
-                        (uint32_t)input_curr_base_desc->imagepatch_addr[0].stride_y;
+                        (uint32_t)img_current_desc[0u]->imagepatch_addr[0].dim_x * 2u;
             }
         }
 
