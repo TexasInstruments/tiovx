@@ -192,6 +192,30 @@ static tivx_target_kernel vx_dmpac_dof_target_kernel = NULL;
 
 tivxDmpacDofInstObj gTivxDmpacDofInstObj;
 
+/* Default Confidence score configuration, matching with cmodel */
+static const Dof_ConfScoreParam gConfScPrms = {
+    224,
+    {
+        {{7, 6, 0},{0x0000000b, 0x00000010, 0x00000000}, {0x00000395, 0xfffffc6b, 0xfffffc6b, 0xfffffc6b}},
+        {{7, 5, 7},{0x0000001b, 0x00000052, 0x00000001}, {0xffffec00, 0x00001400, 0x00001400, 0xffffec00}},
+        {{7, 5, 0},{0x0000001b, 0x00000052, 0x00000000}, {0x0000127e, 0xffffed82, 0x0000127e, 0x0000127e}},
+        {{0, 5, 5},{0x00000254, 0x000000af, 0x000001ef}, {0xffffff23, 0x000000dd, 0xffffff23, 0x000000dd}},
+        {{6, 5, 7},{0x00000003, 0x00000214, 0x0000000b}, {0x000000ab, 0xffffff55, 0xffffff55, 0x000000ab}},
+        {{6, 5, 5},{0x0000000a, 0x0000022c, 0x00000052}, {0x000000a6, 0xffffff5a, 0x000000a6, 0xffffff5a}},
+        {{6, 7, 6},{0x00000010, 0x0000000b, 0x00000023}, {0xffffff3d, 0x000000c3, 0x000000c3, 0xffffff3d}},
+        {{7, 5, 7},{0x00000006, 0x0000023c, 0x0000001b}, {0x00000089, 0xffffff77, 0xffffff77, 0x00000089}},
+        {{7, 0, 0},{0x00000011, 0x000002b4, 0x0000053f}, {0x00000072, 0xffffff8e, 0xffffff8e, 0x00000072}},
+        {{6, 7, 0},{0x00000010, 0x0000000b, 0x000002e5}, {0xffffff7f, 0x00000081, 0x00000081, 0xffffff7f}},
+        {{6, 4, 5},{0x00000003, 0x00001141, 0x0000018f}, {0xffffff85, 0x0000007b, 0xffffff85, 0x0000007b}},
+        {{0, 5, 5},{0x000001f4, 0x000001e3, 0x000001bb}, {0x00000082, 0xffffff7e, 0xffffff7e, 0x00000082}},
+        {{6, 4, 5},{0x00000003, 0x0000129c, 0x00000123}, {0xffffffb8, 0x00000048, 0xffffffb8, 0x00000048}},
+        {{5, 5, 6},{0x000000af, 0x00000012, 0x0000006a}, {0xffffffb5, 0x0000004b, 0xffffffb5, 0x0000004b}},
+        {{4, 1, 7},{0x00002e5a, 0x00000001, 0x000000c6}, {0xffffffb3, 0x0000004d, 0xffffffb3, 0x0000004d}},
+        {{5, 5, 5},{0x000000a3, 0x000000a3, 0x000002de}, {0xffffc000, 0x00000000, 0x00000000, 0xffffc000}},
+    }
+};
+
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -818,6 +842,8 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     if ((vx_status)VX_SUCCESS == status)
     {
         Vhwa_m2mConfScoreParamInit(&dofObj->csPrms);
+
+        memcpy(&dofObj->csPrms, &gConfScPrms, sizeof(Dof_ConfScoreParam));
 
         fvid2_status = Fvid2_control(dofObj->handle, VHWA_M2M_IOCTL_DOF_SET_CONF_SCORE_PARAMS,
                                 &dofObj->csPrms, NULL);
