@@ -99,8 +99,14 @@ vx_status tivxPlatformInit(void)
          * to serialize access to critical resources shared between processes
          * example, obj desc shared memory
          * mode/permissions = 00700 octal = 0x01C0
+         * mode/permissions = 00777 octal = 0x01ff
          */
-        g_tivx_platform_info.semaphore = sem_open("/tiovxsem", (O_CREAT), (0x01C0), 1);
+        /* TIOVX-1165 : If OpenVX needs to be accessed by multiple applications with different
+         * user accounts, then the spinlock semaphors should be created with read/write access
+         * for all accounts, not just the account that initializes OpenVX. */
+        #define TIVX_SEM_OPEN_MODE  (0x01ff)
+
+        g_tivx_platform_info.semaphore = sem_open("/tiovxsem", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
         if (SEM_FAILED == g_tivx_platform_info.semaphore)
         {
@@ -109,7 +115,7 @@ vx_status tivxPlatformInit(void)
         }
         else
         {
-            g_tivx_platform_info.semaphore_data_ref = sem_open("/tiovxsem_data_ref", (O_CREAT), (0x01C0), 1);
+            g_tivx_platform_info.semaphore_data_ref = sem_open("/tiovxsem_data_ref", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
             if (SEM_FAILED == g_tivx_platform_info.semaphore_data_ref)
             {
@@ -118,7 +124,7 @@ vx_status tivxPlatformInit(void)
             }
             else
             {
-                g_tivx_platform_info.semaphore_log_mem = sem_open("/tiovxsem_log_mem", (O_CREAT), (0x01C0), 1);
+                g_tivx_platform_info.semaphore_log_mem = sem_open("/tiovxsem_log_mem", (O_CREAT), (TIVX_SEM_OPEN_MODE), 1);
 
                 if (SEM_FAILED == g_tivx_platform_info.semaphore_log_mem)
                 {
