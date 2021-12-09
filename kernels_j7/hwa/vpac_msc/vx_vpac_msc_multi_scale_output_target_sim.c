@@ -147,7 +147,7 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxMscScaleParams *prms,
 static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj[], uint16_t num_params);
 static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms,
-    uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider);
+    uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider, vx_df_image format);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -408,7 +408,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
             {
                 uint32_t ow = dst[cnt]->imagepatch_addr[0].dim_x;
                 uint32_t oh = dst[cnt]->imagepatch_addr[0].dim_y;
-                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 1);
+                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 1, dst[cnt]->format);
             }
             else
             {
@@ -476,7 +476,7 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
             {
                 uint32_t ow = dst[cnt]->imagepatch_addr[1].dim_x;
                 uint32_t oh = dst[cnt]->imagepatch_addr[1].dim_y / dst[cnt]->imagepatch_addr[1].step_y;
-                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 2);
+                status = tivxVpacMscScaleUpdateOutputSettings(prms, ow, oh, cnt, 2, dst[cnt]->format);
             }
             else
             {
@@ -1010,8 +1010,9 @@ static vx_status tivxVpacMscScaleSetCropParamsCmd(tivxMscScaleParams *prms,
     return (status);
 }
 
-static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms, uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider)
+static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms, uint32_t ow, uint32_t oh, uint32_t cnt, uint32_t h_divider, vx_df_image format)
 {
+
     vx_status status = (vx_status)VX_SUCCESS;
     float temp_horzAccInit, temp_vertAccInit;
     uint32_t int_horzAccInit, int_vertAccInit;
@@ -1068,6 +1069,13 @@ static vx_status tivxVpacMscScaleUpdateOutputSettings(tivxMscScaleParams *prms, 
         else
         {
             prms->config.settings.unitParams[cnt].x_offset = prms->user_crop_start_x[cnt] + prms->user_offset_x[cnt];
+        }
+
+        /* TIOVX-1129: If NV12, x_offset should be an even number to not flip the chroma channels */
+        if ((format == (vx_df_image)VX_DF_IMAGE_NV12) && ((prms->config.settings.unitParams[cnt].x_offset & 1U) == 1U))
+        {
+            prms->config.settings.unitParams[cnt].x_offset--;
+            prms->config.settings.unitParams[cnt].initPhaseX = 4095U;
         }
     }
     else

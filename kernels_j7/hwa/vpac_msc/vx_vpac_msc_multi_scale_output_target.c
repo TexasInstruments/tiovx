@@ -1151,6 +1151,14 @@ static void tivxVpacMscScaleUpdateStartPhases(const tivxVpacMscScaleObj *msc_obj
         {
             sc_cfg->inRoi.cropStartX = msc_obj->user_crop_start_x[cnt] + msc_obj->user_offset_x[cnt];
         }
+
+        /* TIOVX-1129: If NV12, x_offset should be an even number to not flip the chroma channels */
+        if ((msc_obj->msc_prms.outFmt[msc_obj->sc_map_idx[cnt]].dataFormat == FVID2_DF_YUV420SP_UV) &&
+            ((sc_cfg->inRoi.cropStartX & 1U) == 1U))
+        {
+            sc_cfg->inRoi.cropStartX--;
+            sc_cfg->horzAccInit = 4095U;
+        }
     }
     else
     {

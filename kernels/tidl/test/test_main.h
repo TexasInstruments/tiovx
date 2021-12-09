@@ -60,7 +60,8 @@
 *
 */
 
+#if defined(J6)
 #if defined(BUILD_CT_TIOVX_TIDL)
 TESTCASE(tivxTIDL)
 #endif
-
+#endif
