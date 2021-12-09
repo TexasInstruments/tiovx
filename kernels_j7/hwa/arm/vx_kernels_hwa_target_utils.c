@@ -68,9 +68,6 @@
 
 void lse_reformat_in(const tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch, uint8_t out_bit_alignment)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)src->imagepatch_addr[ch].dim_x;
     int32_t h = (int32_t)src->imagepatch_addr[ch].dim_y / (int32_t)src->imagepatch_addr[ch].step_y;
@@ -142,9 +139,6 @@ void lse_reformat_in(const tivx_obj_desc_image_t *src, void* src_target_ptr, uin
 
 void lse_reformat_out(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t ch)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)dst->imagepatch_addr[ch].dim_x;
     int32_t h = (int32_t)dst->imagepatch_addr[ch].dim_y / (int32_t)dst->imagepatch_addr[ch].step_y;
@@ -211,9 +205,6 @@ void lse_reformat_out(const tivx_obj_desc_image_t *src, const tivx_obj_desc_imag
 
 void lse_interleave_422(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)dst->imagepatch_addr[0].dim_x;
     int32_t h = (int32_t)dst->imagepatch_addr[0].dim_y / (int32_t)dst->imagepatch_addr[0].step_y;
@@ -221,9 +212,7 @@ void lse_interleave_422(const tivx_obj_desc_image_t *src, const tivx_obj_desc_im
     uint16_t downshift = input_bits-8U;
     int32_t y,u;
 
-    uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
-        tivxComputePatchOffset(rect.start_x, rect.start_y,
-        &dst->imagepatch_addr[0]));
+    uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr);
 
     if ((vx_df_image)VX_DF_IMAGE_YUYV == dst->format)
     {
@@ -249,7 +238,6 @@ void lse_interleave_422(const tivx_obj_desc_image_t *src, const tivx_obj_desc_im
 
 void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16_0[], uint16_t src16_1[], uint16_t input_bits)
 {
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)src->imagepatch_addr[0].dim_x;
     int32_t h = (int32_t)src->imagepatch_addr[0].dim_y / (int32_t)src->imagepatch_addr[0].step_y;
@@ -257,9 +245,7 @@ void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr
     uint16_t downshift = input_bits-8U;
     int32_t y,u;
 
-    uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
-        tivxComputePatchOffset(rect.start_x, rect.start_y,
-        &src->imagepatch_addr[0]));
+    uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr);
 
     if ((vx_df_image)VX_DF_IMAGE_YUYV == src->format)
     {
@@ -285,9 +271,6 @@ void lse_deinterleave_422(const tivx_obj_desc_image_t *src, void *src_target_ptr
 
 void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr, uint32_t *src32)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)src->imagepatch_addr[0].dim_x;
     int32_t h = (int32_t)src->imagepatch_addr[0].dim_y;
@@ -365,9 +348,6 @@ void lse_reformat_in_dof(const tivx_obj_desc_image_t *src, void *src_target_ptr,
 
 void lse_reformat_out_dof(const tivx_obj_desc_image_t *src, const tivx_obj_desc_image_t *dst, void *dst_target_ptr, const int32_t *dst32)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)dst->imagepatch_addr[0].dim_x;
     int32_t h = (int32_t)dst->imagepatch_addr[0].dim_y;
@@ -411,9 +391,6 @@ void lse_reformat_out_dof(const tivx_obj_desc_image_t *src, const tivx_obj_desc_
 
 void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exposure)
 {
-    /* Get the correct offset of the images from the valid roi parameter,
-       Assuming valid Roi is same images */
-    vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
     int32_t w = (int32_t)src->imagepatch_addr[exposure].dim_x;
     int32_t h = (int32_t)src->imagepatch_addr[exposure].dim_y;
@@ -427,9 +404,7 @@ void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target
 
     if ((vx_enum)TIVX_RAW_IMAGE_8_BIT == (vx_enum)src->params.format[idx].pixel_container)
     {
-        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
-            tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exposure]));
+        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr);
 
         for(j = 0; j < h; j++)
         {
@@ -442,9 +417,7 @@ void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target
     }
     else if((vx_enum)TIVX_RAW_IMAGE_16_BIT == (vx_enum)src->params.format[idx].pixel_container)
     {
-        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
-            tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exposure]));
+        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr);
         stride /= 2;
 
         for(j = 0; j < h; j++)
@@ -458,9 +431,7 @@ void lse_reformat_in_viss(const tivx_obj_desc_raw_image_t *src, void* src_target
     }
     else /* TIVX_RAW_IMAGE_P12_BIT */
     {
-        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
-            tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[exposure]));
+        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr);
         stride /= 4;
 
         for(j = 0; j < h; j++)
