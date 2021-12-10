@@ -22,6 +22,7 @@ include $(PRELUDE)
 TARGET      := vx_conformance_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
+IDIRS       += $(HOST_ROOT)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
