@@ -103,14 +103,10 @@ kernel.setParameterRelationship(["IN_OBJECT_ARRAY",  "OUT_OBJECT_ARRAY"], [Attri
 # Setting target cores
 kernel.setTarget(Target.IPU1_0)
 kernel.setTarget(Target.IPU1_1)
-kernel.setTarget(Target.IPU2)
-kernel.setTarget(Target.A15_0)
+kernel.setTarget(Target.A72_0)
 kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP2)
-kernel.setTarget(Target.EVE1)
-kernel.setTarget(Target.EVE2)
-kernel.setTarget(Target.EVE3)
-kernel.setTarget(Target.EVE4)
+kernel.setTarget(Target.DSP_C7_1)
 
 code.export(kernel)
 code.exportDiagram(kernel)
