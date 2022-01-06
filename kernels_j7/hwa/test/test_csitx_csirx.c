@@ -86,10 +86,10 @@
 
 
 #define CSITX_ENABLE           (1U)
-#define CAPTURE1_ENABLE        (1U)
-#define CAPTURE2_ENABLE        (1U)
-#define CAPTURE3_ENABLE        (1U)
-#define CAPTURE4_ENABLE        (1U)
+#define CAPTURE1_ENABLE        (0U)
+#define CAPTURE2_ENABLE        (0U)
+#define CAPTURE3_ENABLE        (0U)
+#define CAPTURE4_ENABLE        (0U)
 
 /* Default is RAW image */
 #define CAPTURE_FORMAT         (TIVX_TYPE_RAW_IMAGE)

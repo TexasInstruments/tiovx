@@ -82,9 +82,7 @@ TESTCASE(tivxHwaDisplayM2M)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureSplitMode)
 #endif
-#if defined(BUILD_CT_TIOVX_HWA_CSITX_TESTS)
 TESTCASE(tivxHwaCsitxCsirx)
-#endif
 /* Note: the following are implemented as applications in vision apps */
 #if 0
 TESTCASE(tivxHwaCaptureDisplay)
