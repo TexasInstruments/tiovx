@@ -550,17 +550,20 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
           }
         }
 
-        #ifdef TIDL_COPY_NETWORK_BUF
-        tidlObj->tidlNet = tivxMemAlloc(network->mem_size, (vx_enum)TIVX_MEM_EXTERNAL);
-        tidlObj->netSize = network->mem_size;
-        if (NULL == tidlObj->tidlNet)
+        if ((vx_status)VX_SUCCESS == status)
         {
-            status = (vx_status)VX_ERROR_NO_MEMORY;
+            #ifdef TIDL_COPY_NETWORK_BUF
+            tidlObj->tidlNet = tivxMemAlloc(network->mem_size, (vx_enum)TIVX_MEM_EXTERNAL);
+            tidlObj->netSize = network->mem_size;
+            if (NULL == tidlObj->tidlNet)
+            {
+                status = (vx_status)VX_ERROR_NO_MEMORY;
+            }
+            #else
+            tidlObj->tidlNet = NULL;
+            tidlObj->netSize = 0;
+            #endif
         }
-        #else
-        tidlObj->tidlNet = NULL;
-        tidlObj->netSize = 0;
-        #endif
 
         if ((vx_status)VX_SUCCESS == status)
         {
