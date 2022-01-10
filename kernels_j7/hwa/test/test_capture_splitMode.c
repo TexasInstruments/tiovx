@@ -427,8 +427,9 @@ TEST_WITH_ARG(tivxHwaCaptureSplitMode, testCaptureSplitModeTest, Arg, PARAMETERS
 
     context = context_->vx_context_;
 
-    if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE2)))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE2));
+
     {
         /* Setting to num buf */
         num_buf = 4;

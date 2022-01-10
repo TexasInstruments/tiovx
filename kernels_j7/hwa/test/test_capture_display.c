@@ -167,8 +167,9 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
     vx_user_data_object switch_ch_obj;
     tivx_display_select_channel_params_t channel_prms;
 
-    if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

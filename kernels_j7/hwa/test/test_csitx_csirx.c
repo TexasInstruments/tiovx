@@ -908,11 +908,22 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
 
     context = context_->vx_context_;
 
-    if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CSITX)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE2)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE3)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE4)))
+#if (CSITX_ENABLE == 1U)
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CSITX));
+#endif
+#if (CAPTURE1_ENABLE == 1U)
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1));
+#endif
+#if (CAPTURE2_ENABLE == 1U)
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE2));
+#endif
+#if (CAPTURE3_ENABLE == 1U)
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE3));
+#endif
+#if (CAPTURE4_ENABLE == 1U)
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE4));
+#endif
+
     {
         /* Setting to num buf */
         num_buf = 4;

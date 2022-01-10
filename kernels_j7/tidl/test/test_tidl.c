@@ -743,7 +743,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1));
+
     {
         uint32_t num_input_tensors  = 0;
         uint32_t num_output_tensors = 0;
@@ -910,8 +911,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_1) &&
-        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_2))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_2));
+
     {
         uint32_t num_input_tensors  = 0;
         uint32_t num_output_tensors = 0;

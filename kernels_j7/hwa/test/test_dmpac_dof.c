@@ -481,7 +481,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
     vx_reference ref[1];
     vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF));
+
     {
         uint32_t width = 256, height = 128;
         uint32_t flow_width = width;
@@ -844,7 +845,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testPredictors, ArgPredictors,
     vx_reference ref[1];
     vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    ASSERT((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF)));
+
     {
         uint32_t width = 256, height = 128;
         uint32_t flow_width = width;
@@ -1010,7 +1012,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
     vx_status status;
     vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    ASSERT((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF)));
+
     {
         uint32_t width = 256, height = 128;
         uint32_t levels = 5;
@@ -1438,7 +1441,8 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeConfig, ArgConfig,
     vx_reference ref[1];
     vx_enum flowVectorType = VX_DF_IMAGE_U32;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    ASSERT((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF)));
+
     {
         uint32_t width = 256, height = 128;
         uint32_t flow_width = width;

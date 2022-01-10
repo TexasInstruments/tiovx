@@ -294,7 +294,8 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
     vx_graph graph = 0;
     vx_node node = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -530,7 +531,8 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
     CT_Image srcR = NULL;
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE));
+
     {
         rect.start_x = 0;
         rect.start_y = 0;
@@ -649,7 +651,8 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
     CT_Image srcR = NULL;
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -963,7 +966,8 @@ TEST(tivxHwaDmpacSde, testRealGraphProcessing)
     vx_border_t border;
     border.mode = VX_BORDER_UNDEFINED;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

@@ -80,7 +80,8 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
     vx_graph graph = 0;
     vx_node node = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -307,7 +308,8 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     CT_Image src = NULL;
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+
     {
         rect.start_x = 0;
         rect.start_y = 0;
@@ -396,7 +398,8 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
     CT_Image src = NULL;
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

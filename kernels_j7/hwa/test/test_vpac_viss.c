@@ -216,7 +216,8 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -355,7 +356,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     raw_params.meta_height_before = 0;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height;
 
@@ -471,7 +473,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
     raw_params.meta_height_before = 0;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height;
 
@@ -763,7 +766,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     raw_params.format[0].msb = 11;
     raw_params.meta_height_before = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height, i;
 
@@ -1076,7 +1080,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height;
 
@@ -1326,7 +1331,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height;
 
@@ -2028,7 +2034,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
     CT_Image src0 = NULL, src1 = NULL,  src2 = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         vx_uint32 width, height;
 
@@ -2264,7 +2271,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

@@ -173,7 +173,8 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
     vx_node node = 0;
     uint32_t loop_count = arg_->loopCount;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -278,7 +279,8 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
     uint32_t loop_count = arg_->loopCount;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

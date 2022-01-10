@@ -56,7 +56,8 @@ TEST_WITH_ARG(tivxHwaVpacMscScale, testNodeCreation, ArgCreate, PARAMETERS_CREAT
         target_name = TIVX_TARGET_VPAC_MSC2;
     }
 
-    if (vx_true_e == tivxIsTargetEnabled(target_name))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(target_name));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -573,8 +574,9 @@ TEST_WITH_ARG(tivxHwaVpacMscScale, testGraphProcessing, Arg,
 
     CT_Image src = NULL, dst = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
-        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -634,8 +636,9 @@ TEST_WITH_ARG(tivxHwaVpacMscScale, testImmediateProcessing, Arg,
 
     CT_Image src = NULL, dst = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1) &&
-        vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

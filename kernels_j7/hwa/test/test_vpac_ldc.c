@@ -93,7 +93,8 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -311,7 +312,8 @@ TEST(tivxHwaVpacLdc, testGraphProcessingDcc)
     sensor_dcc_id = 390;
     file_name = "psdkra/app_single_cam/IMX390_001/0_output1.yuv";
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -972,7 +974,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         rect.start_x = 0;
         rect.start_y = 0;
@@ -1423,7 +1426,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingPerspective, Arg,
 
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         rect.start_x = 0;
         rect.start_y = 0;
@@ -1616,7 +1620,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
 
     CT_Image input = NULL, output = NULL, output2 = NULL, dual_out = NULL;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
 
@@ -1824,7 +1829,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
     uint32_t checksum_expected;
     vx_rectangle_t rect;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -1906,7 +1912,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
@@ -2248,7 +2255,8 @@ TEST(tivxHwaVpacLdc, testNegativeMatrixType)
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

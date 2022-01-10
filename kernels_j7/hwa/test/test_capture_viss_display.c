@@ -180,9 +180,10 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
         {vx_false_e, vx_false_e, vx_false_e, vx_true_e, vx_false_e, vx_false_e,
          vx_true_e, vx_false_e, vx_false_e, vx_false_e, vx_false_e};
 
-    if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)) &&
-        (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1)) )
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);

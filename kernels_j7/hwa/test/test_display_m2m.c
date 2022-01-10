@@ -318,7 +318,8 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
     /* Initialize global test parameters structure to '0' */
     memset(&gTestParams[0U], 0, sizeof(gTestParams));
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY_M2M1))
+    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY_M2M1));
+
     {
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
