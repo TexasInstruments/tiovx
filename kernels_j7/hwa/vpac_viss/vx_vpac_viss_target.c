@@ -425,6 +425,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         {
                             viss_aewb_channel[i] = 1u;
                             vissObj->channel_id = i;
+                            memset(&viss_aewb_results[vissObj->channel_id], 0x0, sizeof(tivx_ae_awb_params_t));
                             loop_break = 1;
                         }
                         status = tivxMutexUnlock(viss_aewb_lock[i]);
