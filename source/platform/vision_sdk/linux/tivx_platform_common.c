@@ -288,3 +288,7 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
         *shm_size = 0;
     }
 }
+
+void tivxPlatformTaskInit()
+{
+}

@@ -1200,6 +1200,9 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
     uint16_t obj_desc_id;
     vx_status status = (vx_status)VX_SUCCESS;
 
+    /* Adding OS-specific task init functions */
+    tivxPlatformTaskInit();
+
     while(target->targetExitRequest == (vx_bool)vx_false_e)
     {
         status = tivxTargetDequeueObjDesc(target,

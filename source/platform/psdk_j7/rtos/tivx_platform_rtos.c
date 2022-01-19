@@ -10,6 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk.h>
 #include <utils/ipc/include/app_ipc.h>
+#include <utils/misc/include/app_misc.h>
 #include <utils/udma/include/app_udma.h>
 
 void tivxPlatformResetObjDescTableInfo(void);
@@ -294,4 +295,9 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
         tivxLogRtResetShm(*shm_base, *shm_size);
     }
+}
+
+void tivxPlatformTaskInit()
+{
+    appUtilsTaskInit();
 }

@@ -347,3 +347,7 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
         appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
     }
 }
+
+void tivxPlatformTaskInit()
+{
+}

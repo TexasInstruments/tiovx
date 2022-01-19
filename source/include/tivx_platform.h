@@ -244,6 +244,13 @@ void tivxPlatformDeactivate(void);
  */
 void *tivxPlatformGetDmaObj(void);
 
+/*!
+ * \brief Utility function to call OS-specific task init functions
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformTaskInit(void);
+
 #ifdef __cplusplus
 }
 #endif
