@@ -29,11 +29,13 @@
 #define TIVX_TEST_FAIL_CLEANUP(x) {(x) = 1; goto cleanup;}
 #define TIVX_TEST_UPDATE_STATUS(x) {if ((x)) CT_RecordFailure();}
 
-#define TIVX_TEST_MAX_NUM_ADDR  (8U)
+#define TIVX_TEST_MAX_NUM_ADDR  (TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
 
 #define TIVX_TEST_SUCCESS                           (0)
 #define TIVX_TEST_ERROR_STATUS_CHECK_FAILED         (-1)
 #define TIVX_TEST_ERROR_POINTER_CHECK_FAILED        (-2)
+
+#define TIVX_TEST_MAX_PYRAMID_LEVELS                (4)
 
 typedef struct
 {
@@ -62,6 +64,13 @@ typedef struct
     TIVX_TEST_ENTRY(VX_TYPE_MATRIX, 8), \
     TIVX_TEST_ENTRY(VX_TYPE_DISTRIBUTION, 100), \
     TIVX_TEST_ENTRY(TIVX_TYPE_RAW_IMAGE, 100), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_RGB), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_RGBX), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_NV12), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_NV21), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_UYVY), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_IYUV), \
+    TIVX_TEST_ENTRY(VX_TYPE_PYRAMID, VX_DF_IMAGE_U8), \
 
 TESTCASE(tivxMem, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -242,6 +251,23 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
 
         ref = (vx_reference)rawImage;
     }
+    else if (type == (vx_enum)VX_TYPE_PYRAMID)
+    {
+        vx_pyramid  pyramid;
+        vx_size     levels = TIVX_TEST_MAX_PYRAMID_LEVELS;
+        vx_uint32   width = 640;
+        vx_uint32   height = 480;
+        vx_float32  scale = VX_SCALE_PYRAMID_HALF;
+
+        pyramid = vxCreatePyramid(context, levels, scale, width, height, aux);
+
+        if (pyramid == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid() failed.\n");
+        }
+
+        ref = (vx_reference)pyramid;
+    }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", type);
@@ -303,6 +329,11 @@ static vx_status testTivxMemFreeObject(vx_reference ref, vx_enum type)
         {
             tivx_raw_image  rawImage = (tivx_raw_image)ref;
             vxStatus = tivxReleaseRawImage(&rawImage);
+        }
+        else if (type == (vx_enum)VX_TYPE_PYRAMID)
+        {
+            vx_pyramid  pyramid = (vx_pyramid)ref;
+            vxStatus = vxReleasePyramid(&pyramid);
         }
         else
         {
@@ -414,6 +445,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
     uint32_t        maxNumAddr;
     uint32_t        numEntries1;
     uint32_t        numEntries2;
+    uint32_t        numPlanes;
     uint32_t        i;
     vx_status       vxStatus;
 
@@ -468,8 +500,38 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
+    /* For images and pyramids, the internal memory allocation across planes
+     * is monolithic so address translation needs to be checked only for the
+     * first plane.
+     *
+     * The following logic sets up 'numPlanes' variable to allow skipping
+     * the checks for intermediate planes in a given imabe.
+     */
+    if (type == (vx_enum)VX_TYPE_IMAGE)
+    {
+        /* For image, just check the first plane so force the loop exit
+         * by setting 'numPlanes' to exceed loop count after the first
+         * check.
+         */
+        numPlanes = numEntries1;
+    }
+    else if (type == (vx_enum)VX_TYPE_PYRAMID)
+    {
+        /* Translate only the first plane of each level so set up the
+         * 'numPlanes' to skip intermediate planes and jump to the next
+         * level.
+         */
+        numPlanes = numEntries1/TIVX_TEST_MAX_PYRAMID_LEVELS;
+    }
+    else
+    {
+        /* Default is to check every plane translation. */
+        numPlanes = 1;
+    }
+
     /* Check address translation. */
-    for (i = 0; i < numEntries1; i++)
+    i = 0;
+    while (i < numEntries1)
     {
         int32_t     status;
 
@@ -482,11 +544,7 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
             TIVX_TEST_FAIL_CLEANUP(testFail);
         }
 
-        /* For image, just check the first plane. */
-        if (type == (vx_enum)VX_TYPE_IMAGE)
-        {
-            break;
-        }
+        i += numPlanes;
     }
 
     /* Export the handles from obj[1]. */

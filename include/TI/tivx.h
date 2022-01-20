@@ -793,6 +793,21 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * - VX_TYPE_MATRIX
  * - VX_TYPE_CONVOLUTION
  * - TIVX_TYPE_RAW_IMAGE
+ * - TIVX_TYPE_PYRAMID
+ *
+ * For TIVX_TYPE_PYRAMID type, the references are packed for each level. If the image type has multiple
+ * planes then all the handles for a given level are packed contiguously before the handles of the next
+ * level. For example if the pyramid object has N levels and each level has image with X levels then the
+ * packing will look like:
+ * Level 0 Plane 0
+ * Level 0 Plane 1
+ * ...........
+ * Level 0 Plane (X-1)
+ * ...........
+ * Level (N-1) Plane 0
+ * Level (N-1) Plane 1
+ * ...........
+ * Level (N-1) Plane (X-1)
  *
  * \param [in,out] ref The reference object to be updated.
  * \param [in] addr An array of pointers for holding the handles. The entries can be NULL.
@@ -828,6 +843,21 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * - VX_TYPE_MATRIX
  * - VX_TYPE_CONVOLUTION
  * - TIVX_TYPE_RAW_IMAGE
+ * - TIVX_TYPE_PYRAMID
+ *
+ * For TIVX_TYPE_PYRAMID type, the references are packed for each level. If the image type has multiple
+ * planes then all the handles for a given level are packed contiguously before the handles of the next
+ * level. For example if the pyramid object has N levels and each level has image with X levels then the
+ * packing will look like:
+ * Level 0 Plane 0
+ * Level 0 Plane 1
+ * ...........
+ * Level 0 Plane (X-1)
+ * ...........
+ * Level (N-1) Plane 0
+ * Level (N-1) Plane 1
+ * ...........
+ * Level (N-1) Plane (X-1)
  *
  * \param [in]  ref The reference object to export the handles from.
  * \param [out] addr An array of pointers for holding the handles.

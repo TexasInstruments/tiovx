@@ -77,12 +77,13 @@ extern "C" {
 /*!
  * \brief Max possible planes value to be used in the import/export message.
  *        This is a MAX of the following values:
- *        - TIVX_IMAGE_MAX_PLANES
+ *        - TIVX_IMAGE_MAX_PLANES * TIVX_PYRAMID_MAX_LEVEL_OBJECTS
  *        - TIVX_CONTEXT_MAX_TENSOR_DIMS
  *        - TIVX_RAW_IMAGE_MAX_EXPOSURES
  */
 #define VX_IPC_MAX_VX_PLANES \
-            (TIVX_UTILS_MAX(TIVX_UTILS_MAX(TIVX_IMAGE_MAX_PLANES,\
+            (TIVX_UTILS_MAX(TIVX_UTILS_MAX(TIVX_IMAGE_MAX_PLANES*\
+                                           TIVX_PYRAMID_MAX_LEVEL_OBJECTS,\
                                            TIVX_CONTEXT_MAX_TENSOR_DIMS),\
                             TIVX_RAW_IMAGE_MAX_EXPOSURES))
 
@@ -107,6 +108,21 @@ typedef struct
         /*!< \brief Number of data planes in image */
         vx_uint32 planes;
     } img;
+
+    struct {
+        /*!< \brief The width of the 0th image in pixels. */
+        vx_uint32 width;
+        /*!< \brief The height of the 0th image in pixels. */
+        vx_uint32 height;
+        /*!< \brief The <tt>\ref vx_df_image_e</tt> format of the image. */
+        vx_df_image format;
+        /*!< \brief The number of scale levels */
+        vx_size levels;
+        /*!< \brief The ratio between each level */
+        vx_float32 scale;
+        /*!< \brief Number of data planes in image */
+        vx_uint32 planes;
+    } pmd;
 
     /*!< \brief structure containing information about array
                 used when type is set to VX_TYPE_ARRAY */
@@ -181,7 +197,21 @@ typedef struct
     /** Image Meta information. */
     tivx_utils_meta_format_t    meta;
 
-    /** Size of the exported handles. */
+    /** Size of the exported handles.
+     * For TIVX_TYPE_PYRAMID type, the sizes are packed for each level. If the image type has multiple
+     * planes then all the handles for a given level are packed contiguously before the handles of the next
+     * level. For example if the pyramid object has N levels and each level has image with X levels then the
+     * packing will look like:
+     * Level 0 Plane 0
+     * Level 0 Plane 1
+     * ...........
+     * Level 0 Plane (X-1)
+     * ...........
+     * Level (N-1) Plane 0
+     * Level (N-1) Plane 1
+     * ...........
+     * Level (N-1) Plane (X-1)
+     */
     uint32_t                    handleSizes[VX_IPC_MAX_VX_PLANES];
 
 } tivx_utils_ref_desc_t;
@@ -194,7 +224,21 @@ typedef struct
     /** Number of valid entries in 'size' and 'fd' arrays below. */
     uint32_t                numFd;
 
-    /** Descriptors accociated with the openVX object handles. */
+    /** Descriptors associated with the openVX object handles.
+     * For TIVX_TYPE_IMAGE, the FD corresponding to only the first plane will be packed.
+     *
+     * For TIVX_TYPE_PYRAMID type, the FD are packed for the first plane of each level.
+     * For example if the pyramid object has N levels and each level has image with X
+     * levels then the packing will look like:
+     * Level 0 Plane 0
+     * Level 1 Plane 0
+     * Level 0 Plane (X-1)
+     * ...........
+     * Level (N-1) Plane (X-1)
+     *
+     * The receiver should use the fd[] information along with the refDesc->handleSizes[]
+     * information to derive the information for subsequent levels/planes.
+     */
     uint64_t                fd[VX_IPC_MAX_VX_PLANES];
 
 } tivx_utils_ref_ipc_msg_t;
@@ -212,6 +256,7 @@ typedef struct
  *        - VX_TYPE_MATRIX
  *        - VX_TYPE_CONVOLUTION
  *        - TIVX_TYPE_RAW_IMAGE
+ *        - TIVX_TYPE_PYRAMID
  *
  * \param [in] ref  A valid openVX reference whose information will be exported
  * \param [out] ipcMsg  Exported object information
@@ -234,6 +279,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
  *        - VX_TYPE_MATRIX
  *        - VX_TYPE_CONVOLUTION
  *        - TIVX_TYPE_RAW_IMAGE
+ *        - TIVX_TYPE_PYRAMID
  *
  * \param [in] context  A valid openVX context
  * \param [in,out] ipcMsg  Exported object information
