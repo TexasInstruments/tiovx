@@ -276,7 +276,7 @@ static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw
 
               if(trace_write_flag == 1)
               {
-                prms->traceLogLevel                 = 0;
+                prms->traceLogLevel                 = 1;
                 prms->traceWriteLevel               = 1;
               }
               else
@@ -1045,7 +1045,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
             sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/airshow_256x256_1.", ct_get_test_file_path());
             ASSERT(sz < MAXPATHLENGTH);
             VX_CALL(tivx_utils_tidl_trace_write(traceData1, filepath));
-       } else {
+       }
+       {
 #if !defined(PC)
             vx_perf_t perf1, perf2;
 
