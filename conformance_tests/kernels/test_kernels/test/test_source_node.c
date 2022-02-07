@@ -887,6 +887,13 @@ TEST_WITH_ARG(tivxSourceNode, testSinkObjArray5, Arg, STREAMING_PARAMETERS)
 
 
 /* TIOVX-956 test case */
+/*
+ * ScalarSourceNode "streaming" data to two ScalarSink2Node's
+ *
+ *   tivxScalarIntermediateNode --> scalar (data) --->    Full obj arr    ---> tivxScalarSinkObjArrayNode
+ *                                     |
+ *                                     |------------->  Obj Array element ---> tivxScalarIntermediateNode
+ */
 TEST_WITH_ARG(tivxSourceNode, testSinkObjArray6, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
