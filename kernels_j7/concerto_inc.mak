@@ -45,11 +45,7 @@ endif #ifeq ($(BUILD_HWA_KERNELS),yes)
 STATIC_LIBS += vx_utils
 STATIC_LIBS += vx_tiovx_tidl_tests
 STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom
-ifeq ($(SOC),j721e)
-    STATIC_LIBS += C7100-host-emulation
-else
-    STATIC_LIBS += C7120-host-emulation
-endif
+STATIC_LIBS += $(C7X_VERSION)-host-emulation
 
 # Uncomment below to link to TIDL/MMALIB in host emulation mode instead of natural C mode on PC
 # STATIC_LIBS += mmalib_x86_64 mmalib_cn_x86_64 common_x86_64
@@ -59,7 +55,7 @@ SYS_SHARED_LIBS += rt dl png z
 
 LDIRS+=$(J7_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(CGT7X_ROOT)/host_emulation
-LDIRS+=$(MMALIB_PATH)/lib/$(TARGET_BUILD)
+LDIRS+=$(MMALIB_PATH)/lib/$(C7X_VERSION)/$(TARGET_BUILD)
 LDIRS+=$(TIDL_PATH)/lib/PC/dsp/algo/$(TARGET_BUILD)
 
 LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
