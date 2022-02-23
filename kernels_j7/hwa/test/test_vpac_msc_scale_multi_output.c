@@ -1102,6 +1102,325 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FixedPattern_t
     ASSERT(src_image == 0);
 }
 
+static vx_status readNV12Input(char* file_name, vx_image in_img)
+{
+    vx_status status;
+
+    status = vxGetStatus((vx_reference)in_img);
+
+    if(status == VX_SUCCESS)
+    {
+        FILE * fp = fopen(file_name,"rb");
+        vx_size arr_len;
+        vx_int32 i, j;
+
+        if(fp == NULL)
+        {
+            printf("Unable to open file %s \n", file_name);
+            return (VX_FAILURE);
+        }
+
+        {
+            vx_rectangle_t rect;
+            vx_imagepatch_addressing_t image_addr;
+            vx_map_id map_id;
+            void * data_ptr;
+            uint8_t *data_ptr_8;
+            vx_uint32  img_width;
+            vx_uint32  img_height;
+            vx_uint32 img_format;
+            vx_uint32  num_bytes = 0;
+
+            vxQueryImage(in_img, VX_IMAGE_WIDTH, &img_width, sizeof(vx_uint32));
+            vxQueryImage(in_img, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
+            vxQueryImage(in_img, VX_IMAGE_FORMAT, &img_format, sizeof(vx_uint32));
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = img_width;
+            rect.end_y = img_height;
+            status = vxMapImagePatch(in_img,
+                                    &rect,
+                                    0,
+                                    &map_id,
+                                    &image_addr,
+                                    &data_ptr,
+                                    VX_WRITE_ONLY,
+                                    VX_MEMORY_TYPE_HOST,
+                                    VX_NOGAP_X);
+
+            /* Copy Luma */
+            data_ptr_8 = (uint8_t *)data_ptr;
+            for (j = 0; j < img_height; j++)
+            {
+                num_bytes += fread(data_ptr_8, 1, img_width, fp);
+                data_ptr_8 += image_addr.stride_y;
+            }
+
+            if(num_bytes != (img_width*img_height)) {
+                printf("Luma bytes read = %d, expected = %d\n", num_bytes, img_width*img_height);
+                return (VX_FAILURE);
+            }
+
+            vxUnmapImagePatch(in_img, map_id);
+
+            if(img_format == VX_DF_IMAGE_NV12)
+            {
+                rect.start_x = 0;
+                rect.start_y = 0;
+                rect.end_x = img_width;
+                rect.end_y = img_height / 2;
+                status = vxMapImagePatch(in_img,
+                                        &rect,
+                                        1,
+                                        &map_id,
+                                        &image_addr,
+                                        &data_ptr,
+                                        VX_WRITE_ONLY,
+                                        VX_MEMORY_TYPE_HOST,
+                                        VX_NOGAP_X);
+
+
+                /* Copy CbCr */
+                num_bytes = 0;
+                data_ptr_8 = (uint8_t *)data_ptr;
+                for (j = 0; j < img_height/2; j++)
+                {
+                    num_bytes += fread(data_ptr_8, 1, img_width, fp);
+                    data_ptr_8 += image_addr.stride_y;
+                }
+
+                if(num_bytes != (img_width*img_height/2)) {
+                    printf("CbCr bytes read = %d, expected = %d\n", num_bytes, img_width*img_height/2);
+                    return (VX_FAILURE);
+                }
+
+                vxUnmapImagePatch(in_img, map_id);
+            }
+        }
+
+        fclose(fp);
+    }
+
+    return(status);
+}
+
+/* Write NV12 output image */
+static vx_int32 write_output_image_fp(FILE * fp, vx_image out_image)
+{
+    vx_uint32 width, height;
+    vx_df_image df;
+    vx_imagepatch_addressing_t image_addr;
+    vx_rectangle_t rect;
+    vx_map_id map_id1, map_id2;
+    void *data_ptr1, *data_ptr2;
+    uint8_t *temp_ptr = NULL;
+    vx_uint32 num_bytes_per_pixel = 1;
+    vx_uint32 num_luma_bytes_written_to_file = 0, num_chroma_bytes_written_to_file = 0, num_bytes_written_to_file = 0;
+    vx_int32 i;
+
+    vxQueryImage(out_image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+    vxQueryImage(out_image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+    vxQueryImage(out_image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+
+    printf("out width =  %d\n", width);
+    printf("out height =  %d\n", height);
+    printf("out format =  %d\n", df);
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+    rect.end_x = width;
+    rect.end_y = height;
+
+    vxMapImagePatch(out_image,
+        &rect,
+        0,
+        &map_id1,
+        &image_addr,
+        &data_ptr1,
+        VX_WRITE_ONLY,
+        VX_MEMORY_TYPE_HOST,
+        VX_NOGAP_X
+        );
+
+    if(!data_ptr1)
+    {
+        printf("data_ptr1 is NULL \n");
+        fclose(fp);
+        return -1;
+    }
+
+    temp_ptr = (uint8_t *)data_ptr1;
+    for(i=0; i<height; i++)
+    {
+        num_luma_bytes_written_to_file += fwrite(temp_ptr, 1, width*num_bytes_per_pixel, fp);
+        temp_ptr += image_addr.stride_y;
+    }
+
+    vxMapImagePatch(out_image,
+        &rect,
+        1,
+        &map_id2,
+        &image_addr,
+        &data_ptr2,
+        VX_WRITE_ONLY,
+        VX_MEMORY_TYPE_HOST,
+        VX_NOGAP_X
+        );
+
+    if(!data_ptr2)
+    {
+        printf("data_ptr2 is NULL \n");
+        fclose(fp);
+        return -1;
+    }
+
+    temp_ptr = (uint8_t *)data_ptr2;
+    for(i=0; i<height/2; i++)
+    {
+        num_chroma_bytes_written_to_file += fwrite(temp_ptr, 1, width*num_bytes_per_pixel, fp);
+        temp_ptr += image_addr.stride_y;
+    }
+
+    num_bytes_written_to_file = num_luma_bytes_written_to_file + num_chroma_bytes_written_to_file;
+
+    vxUnmapImagePatch(out_image, map_id1);
+    vxUnmapImagePatch(out_image, map_id2);
+
+    return num_bytes_written_to_file;
+}
+
+/* Open and write NV12 output image */
+static vx_int32 write_output_image_nv12_8bit(char * file_name, vx_image out)
+{
+    FILE * fp;
+    printf("Opening file %s \n", file_name);
+
+    fp = fopen(file_name, "wb");
+    if(!fp)
+    {
+        printf("Unable to open file %s\n", file_name);
+        return -1;
+    }
+    vx_uint32 len1 = write_output_image_fp(fp, out);
+    printf("Written image \n");
+    fclose(fp);
+    printf("%d bytes written to %s\n", len1, file_name);
+    return len1 ;
+}
+
+
+TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_Nv12, ArgFixed, PARAMETERS_FIX)
+{
+    vx_context context = context_->vx_context_;
+    int w = 1920, h = 1080, i, j, crop_mode = 0;
+    int dst_width = w/2, dst_height = h/2;
+    vx_image src_image = 0, dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_user_data_object coeff_obj, crop_obj;
+    tivx_vpac_msc_coefficients_t coeffs;
+    tivx_vpac_msc_crop_params_t crop;
+    vx_reference refs[5] = {0};
+    vx_rectangle_t rect;
+    uint32_t checksum_actual;
+    vx_enum interpolation = VX_INTERPOLATION_BILINEAR;
+    char *target_name = TIVX_TARGET_VPAC_MSC1;
+    char *input_file_name = "psdkra/app_single_cam/IMX390_001/0_output1.yuv";
+    char *output_file_name = "output/msc_out.yuv";
+    char file[MAXPATHLENGTH];
+    size_t sz;
+    int run_cnt;
+
+    if(1 == arg_->msc_instance)
+    {
+        target_name = TIVX_TARGET_VPAC_MSC2;
+    }
+
+    ASSERT(vx_true_e == tivxIsTargetEnabled(target_name));
+
+    tivxHwaLoadKernels(context);
+    CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
+
+    ASSERT_VX_OBJECT(src_image = vxCreateImage(context, w, h, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), input_file_name);
+    ASSERT_(return, (sz < MAXPATHLENGTH));
+
+    VX_CALL(readNV12Input(file, src_image));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = tivxVpacMscScaleNode(graph, src_image,
+        dst_image, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, target_name));
+
+    scale_set_coeff(&coeffs, interpolation);
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    /* Set Coefficients */
+    ASSERT_VX_OBJECT(coeff_obj = vxCreateUserDataObject(context,
+        "tivx_vpac_msc_coefficients_t",
+        sizeof(tivx_vpac_msc_coefficients_t), NULL),
+        (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    VX_CALL(vxCopyUserDataObject(coeff_obj, 0,
+        sizeof(tivx_vpac_msc_coefficients_t), &coeffs, VX_WRITE_ONLY,
+        VX_MEMORY_TYPE_HOST));
+
+    refs[0] = (vx_reference)coeff_obj;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+        tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
+        refs, 1u));
+
+    VX_CALL(vxReleaseUserDataObject(&coeff_obj));
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), output_file_name);
+    ASSERT_(return, (sz < MAXPATHLENGTH));
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+
+    for(run_cnt=0; run_cnt<4; run_cnt++)
+    {
+        VX_CALL(vxProcessGraph(graph));
+
+        //write_output_image_nv12_8bit(file, dst_image);
+
+        rect.end_x = dst_width;
+        rect.end_y = dst_height;
+
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
+        printf("luma  =0x%08x\n", checksum_actual);
+        ASSERT((uint32_t)0x59ab963a == checksum_actual);
+
+        rect.end_x = dst_width/2;
+        rect.end_y = dst_height/2;
+
+        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 1, rect);
+        printf("chroma=0x%08x\n", checksum_actual);
+        ASSERT((uint32_t)0x08661321 == checksum_actual);
+    }
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    tivxHwaUnLoadKernels(context);
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+}
+
+
 
 #define SCALE_TEST_ONE_OUTPUT(interpolation, inputDataGenerator, inputDataFile, scale, crop_mode, checksum, nextmacro, ...) \
     CT_EXPAND(nextmacro(STR_##interpolation "/" inputDataFile "/" #scale "/crop=" #crop_mode, __VA_ARGS__, \
@@ -1848,6 +2167,7 @@ TESTCASE_TESTS(tivxHwaVpacMscScaleMultiOutput,
     testNodeCreation,
     testGraphProcessing_FixedPattern,
     testGraphProcessing_FixedPattern_tiovx_1129,
+    testGraphProcessing_Nv12,
     testGraphProcessing_OneOutput,
     testGraphProcessing_TwoOutput,
     testGraphProcessing_ThreeOutput,
