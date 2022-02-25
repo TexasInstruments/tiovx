@@ -56,7 +56,7 @@ SYS_SHARED_LIBS += rt dl png z
 LDIRS+=$(J7_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(CGT7X_ROOT)/host_emulation
 LDIRS+=$(MMALIB_PATH)/lib/$(C7X_VERSION)/$(TARGET_BUILD)
-LDIRS+=$(TIDL_PATH)/lib/PC/dsp/algo/$(TARGET_BUILD)
+LDIRS+=$(TIDL_PATH)/lib/$(SOC)/PC/algo/$(TARGET_BUILD)
 
 LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
 LDIRS+= $(PDK_PATH)/packages/ti/csl/lib/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
