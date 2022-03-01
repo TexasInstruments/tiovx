@@ -10,7 +10,7 @@ J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
 TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_00_06/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_02
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_03
 
 TIARMCGT_LLVM_ROOT ?= $(PSDK_PATH)/ti-cgt-armllvm_1.3.0.LTS
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_2.1.1.LTS
