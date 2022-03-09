@@ -248,7 +248,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
                         status = (vx_status)VX_FAILURE;
                         do_break = (vx_bool)vx_true_e; /* non-blocking, so exit with error */
                     }
-                    else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
+                    else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
                     {
                         /* blocking on que put enabled */
                         queue->blockedOnPut = (vx_bool)vx_true_e;
