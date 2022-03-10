@@ -75,6 +75,7 @@ typedef struct
     tivx_obj_desc_t *old_obj_desc[MAX_OLD_OBJ_DESC];
     uint8_t local_val;
     uint8_t do_error_print;
+    uint8_t instance;
 } tivxScalarSink2Params;
 
 static tivx_target_kernel vx_scalar_sink_target_kernel = NULL;
@@ -135,6 +136,19 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
             prms->local_val++;
         }
 
+        in_desc = (tivx_obj_desc_scalar_t *)
+                tivxGetObjDescElement(obj_desc[TIVX_KERNEL_SCALAR_SINK_IN_IDX],
+                0);
+
+
+        if (prms->old_obj_desc[0]!=NULL)
+        {
+            if (prms->old_obj_desc[0]==(tivx_obj_desc_t*)in_desc)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "descriptor is repeating!!\n");
+            }
+        }
+
         /* hold onto current obj_desc and release old obj desc */
         obj_desc[TIVX_KERNEL_SCALAR_SINK_IN_IDX] = prms->old_obj_desc[0];
         prms->old_obj_desc[0] = (tivx_obj_desc_t*)in_desc;
@@ -143,13 +157,15 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
         {
             if(prms->do_error_print>0)
                 prms->do_error_print--;
-            VX_PRINT(VX_ZONE_ERROR, "error #%d, local val %d != given val %d !!!\n", prms->do_error_print, prms->local_val, in_value);
+            VX_PRINT(VX_ZONE_ERROR, "error #%d, local val %d != given val %d , instance %d!!!\n", prms->do_error_print, prms->local_val, in_value, prms->instance);
             status = VX_FAILURE;
         }
     }
 
     return status;
 }
+
+static uint8_t inst_counter = 0;
 
 static vx_status VX_CALLBACK tivxScalarSink2Create(
        tivx_target_kernel_instance kernel,
@@ -167,6 +183,8 @@ static vx_status VX_CALLBACK tivxScalarSink2Create(
 
     prms->local_val = 0;
     prms->do_error_print = 10; /* max number of times to do error print */
+    prms->instance = inst_counter;
+    inst_counter++;
 
     for(i=0; i<MAX_OLD_OBJ_DESC; i++)
     {
