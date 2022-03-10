@@ -344,11 +344,12 @@ static void tivxTargetNodeDescReleaseParameter(
                     vx_bool *is_prm_released)
 {
     uint32_t flags;
-    uint16_t node_id;
+    uint16_t node_id, num_in_nodes;
     tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
     vx_bool do_release_ref;
     vx_bool do_release_ref_to_queue;
     tivx_obj_desc_t *obj_desc;
+    tivx_obj_desc_t *parent_obj_desc;
 
     *is_prm_released = (vx_bool)vx_false_e;
     blocked_nodes.num_nodes = 0;
@@ -372,15 +373,28 @@ static void tivxTargetNodeDescReleaseParameter(
         {
             obj_desc->in_node_done_cnt++;
 
-            /* In order to fix TIOVX-956, this if statement was modified to become the below check
-             * The bug found that when a replicated node output was consumed by both another replicated
-             * node as well as a node consuming the full object array, the reference was never released.
-             * This was because the do_release_ref_to_queue was not set to true because the two consumed
+            /* In order to fix TIOVX-956 and TIOVX-1151, th bracketed logic was added to handle multiple obj arr
+             * situations. The bug found that when a replicated node output was consumed by both another
+             * replicated node as well as a node consuming the full object array, the reference was never
+             * released. This was because the do_release_ref_to_queue was not set to true because the two consumed
              * descriptors were different, i.e., the replicated node input was an element of an obj array
              * and the full obj array was the obj array itself.  Therefore, instead of checking the
-             * in_node_done_cnt of the obj_desc, we check the in_done_node_cnt of the data_ref_q_obj_desc
-             * which is the same for both objects */
-            if (do_release_ref == (vx_bool)vx_true_e)
+             * in_node_done_cnt of the obj_desc, we need to also query the parent_obj_desc to see if this obj desc
+             * has also been released and check this against the check the data_ref_q_obj_desc->num_in_nodes. */
+            {
+                parent_obj_desc = tivxObjDescGet(obj_desc->scope_obj_desc_id);
+
+                if(parent_obj_desc!=NULL)
+                {
+                    num_in_nodes = obj_desc->in_node_done_cnt + parent_obj_desc->in_node_done_cnt;
+                }
+                else
+                {
+                    num_in_nodes = obj_desc->in_node_done_cnt;
+                }
+            }
+
+            if(num_in_nodes==data_ref_q_obj_desc->num_in_nodes)
             {
                 do_release_ref_to_queue = (vx_bool)vx_true_e;
                 /* Note: This is needed because the delay obj_desc does not get re-acquired for each slot.
