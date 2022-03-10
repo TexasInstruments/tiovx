@@ -996,7 +996,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 frm->fid = FVID2_FID_FRAME;
 
                 rtPrms = (tivxDisplayRtParams *)frm->appData;
-                rtPrms->obj_desc = obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+                rtPrms->obj_desc = (tivx_obj_desc_t*)obj_desc_image;
 
                 /* Create frame list */
                 frmList.numFrames  = 1U;
