@@ -214,6 +214,12 @@ vx_status tivxAddKernelDisplay(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
+    if (status == VX_SUCCESS)
+    {
+        tivxSetKernelSinkDepth(kernel, 2);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
