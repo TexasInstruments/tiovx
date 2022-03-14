@@ -373,7 +373,7 @@ static void tivxTargetNodeDescReleaseParameter(
         {
             obj_desc->in_node_done_cnt++;
 
-            /* In order to fix TIOVX-956 and TIOVX-1151, th bracketed logic was added to handle multiple obj arr
+            /* In order to fix TIOVX-956 and TIOVX-1151, the bracketed logic was added to handle multiple obj arr
              * situations. The bug found that when a replicated node output was consumed by both another
              * replicated node as well as a node consuming the full object array, the reference was never
              * released. This was because the do_release_ref_to_queue was not set to true because the two consumed
