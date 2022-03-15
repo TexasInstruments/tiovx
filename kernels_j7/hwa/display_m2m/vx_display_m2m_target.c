@@ -781,7 +781,7 @@ static vx_status tivxDisplayM2MSetCreateParams(
         }
 
         /* Set Display WB pipeline parameters */
-        if ((vx_status)VX_SUCCESS == status)
+        if (((vx_status)VX_SUCCESS == status) && (pipeIdx > 0))
         {
             wbPipeCfg               = &drvObj->wbCfg.pipeCfg;
             /* Set WB pipe input frame dimensions same as video pipe input/output frame,

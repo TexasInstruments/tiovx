@@ -127,7 +127,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             meta->img.planes = obj_desc->planes;
 
             /* For images, only plane[0] is allocated and plane[1]..plane[N-1]
-             * pointers are offset from plane[0]. Given this, we need to 
+             * pointers are offset from plane[0]. Given this, we need to
              * compute the size of the buffer allocated for the image available
              * as plane[0] handle. The size is the sum of sizes of all
              * the planes.
@@ -242,7 +242,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             meta->pmd.planes = img_obj_desc->planes;
 
             /* For images, only plane[0] is allocated and plane[1]..plane[N-1]
-             * pointers are offset from plane[0]. Given this, we need to 
+             * pointers are offset from plane[0]. Given this, we need to
              * compute the size of the buffer allocated for the image available
              * as plane[0] handle. The size is the sum of sizes of all
              * the planes.
@@ -264,7 +264,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
              *
              * All the above 6 entries will be transferred to the receiver but
              * only the first two entries i.e. lHandleSizes[0,1] will be translated.
-             * 
+             *
              * The receiver then can use entries lHandleSizes[2..] to derive the
              * individual plane sizes and adjust the image plane pointers.
              */
@@ -326,7 +326,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
                                               tivx_utils_ref_ipc_msg_t *ipcMsg,
                                               vx_reference              *ref)
 {
-    void                           *ptrs[VX_IPC_MAX_VX_PLANES];
+    void                           *ptrs[VX_IPC_MAX_VX_PLANES] = {0};
     void                           *phyAddr[VX_IPC_MAX_VX_PLANES];
     tivx_utils_meta_format_t const *meta;
     tivx_utils_ref_desc_t          *refDesc;
@@ -586,7 +586,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
         {
             uint32_t   *planeSizePtr;
             void       *lPtrs[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
-            uint32_t    lHandleSizes[VX_IPC_MAX_VX_PLANES];
+            uint32_t    lHandleSizes[VX_IPC_MAX_VX_PLANES] = {0};
             uint32_t    cnt;
             uint32_t    j;
 

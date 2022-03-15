@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_display_m2m_params_t params;
 
     vx_image input = NULL;
     vx_uint32 input_w;
@@ -142,6 +143,19 @@ static vx_status VX_CALLBACK tivxAddKernelDisplayM2MValidate(vx_node node,
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_display_m2m_params_t \n");
+        }
+        else
+        {
+            status = vxCopyUserDataObject(configuration, 0, sizeof(tivx_display_m2m_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if(1U != params.numPipe)
+            {
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'configuration.numPipe' should be set to 1 as blending is not supported currently \n");
+            }
         }
 
         if( ((vx_df_image)VX_DF_IMAGE_RGB != input_fmt) &&

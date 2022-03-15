@@ -692,14 +692,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         }
         else
         {
-            #ifdef TIDL_COPY_NETWORK_BUF
-            if (NULL != tidlObj->tidlNet)
-            {
-                tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, (vx_enum)TIVX_MEM_EXTERNAL);
-            }
-            #endif
             if (NULL != tidlObj)
             {
+                #ifdef TIDL_COPY_NETWORK_BUF
+                if (NULL != tidlObj->tidlNet)
+                {
+                    tivxMemFree(tidlObj->tidlNet, tidlObj->netSize, (vx_enum)TIVX_MEM_EXTERNAL);
+                }
+                #endif
                 tivxTIDLFreeMem(tidlObj);
             }
         }
@@ -783,7 +783,7 @@ static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize)
   {
     int32_t elems;
 
-    if ((remSize - TIVX_TIDL_J7_CHECKSUM_SIZE) < 0)
+    if (remSize < TIVX_TIDL_J7_CHECKSUM_SIZE)
     {
       elems = TIVX_TIDL_J7_CHECKSUM_SIZE - remSize;
       remSize += TIVX_TIDL_J7_CHECKSUM_SIZE;
