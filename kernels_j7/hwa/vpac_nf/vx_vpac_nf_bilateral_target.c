@@ -954,19 +954,26 @@ static void tivxVpacNfBilateralInterleaveTables(uint32_t * const *i_lut, uint8_t
     uint32_t *newLut = tivxMemAlloc(newLutSize, (vx_enum)TIVX_MEM_EXTERNAL);
     uint32_t i, j;
 
-    memset(newLut, 0, (uint32_t)LUT_ROWS * 256 * sizeof(uint32_t));
-
-    for (j = 0; j < numTables; j++)
+    if (NULL != newLut)
     {
-        for (i = 0; i < ((uint32_t)LUT_ROWS * rangeLutEntries); i++)
+        memset(newLut, 0, (uint32_t)LUT_ROWS * 256 * sizeof(uint32_t));
+
+        for (j = 0; j < numTables; j++)
         {
-            newLut[(numTables * i) + j] = oldLut[((j * (uint32_t)LUT_ROWS) * rangeLutEntries) + i];
+            for (i = 0; i < ((uint32_t)LUT_ROWS * rangeLutEntries); i++)
+            {
+                newLut[(numTables * i) + j] = oldLut[((j * (uint32_t)LUT_ROWS) * rangeLutEntries) + i];
+            }
         }
+
+        memcpy((uint32_t *)oldLut, newLut, (uint32_t)LUT_ROWS*256U*sizeof(uint32_t));
+
+        tivxMemFree(newLut, newLutSize, (vx_enum)TIVX_MEM_EXTERNAL);
     }
-
-    memcpy((uint32_t *)oldLut, newLut, (uint32_t)LUT_ROWS*256U*sizeof(uint32_t));
-
-    tivxMemFree(newLut, newLutSize, (vx_enum)TIVX_MEM_EXTERNAL);
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Failed to Alloc Nf newLut\n");
+    }
 }
 
 static uint32_t getSubRangeBits(uint16_t i)
