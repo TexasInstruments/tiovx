@@ -113,21 +113,21 @@ vision_apps_utils:
 endif
 
 doxy_docs:
-	cat tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_j7_linux.cfg > /tmp/user_guide_j7_linux.cfg
-	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_j7_linux.cfg
+	cat tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_$(SOC)_linux.cfg
+	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_$(SOC)_linux.cfg
 ifneq ($(SOC),j721e)
-	$(PRINT)           include/TI/tivx_soc_j721e.h \\ >> /tmp/user_guide_j7_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j721e.h \\ >> /tmp/user_guide_j721s2_linux.cfg
 endif
 ifneq ($(SOC),j721s2)
-	$(PRINT)           include/TI/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j7_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j721e_linux.cfg
 endif
-	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_j7_linux.cfg
-	$(DOXYGEN) /tmp/user_guide_j7_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
-	$(CLEAN) /tmp/user_guide_j7_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_$(SOC)_linux.cfg
+	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
+	$(CLEAN) /tmp/user_guide_$(SOC)_linux.cfg
 	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra.html $(TIOVX_PATH)/tiovx_release_notes.html
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
-	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_j7/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
 	$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 
 doxy_docs_design:
