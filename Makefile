@@ -124,7 +124,7 @@ endif
 	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_$(SOC)_linux.cfg
 	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
 	$(CLEAN) /tmp/user_guide_$(SOC)_linux.cfg
-	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra.html $(TIOVX_PATH)/tiovx_release_notes.html
+	$(COPY) tiovx_dev/internal_docs/tiovx_release_notes_psdkra_$(SOC).html $(TIOVX_PATH)/tiovx_release_notes.html
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
 	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
