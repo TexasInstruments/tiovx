@@ -87,7 +87,7 @@ extern "C" {
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32u)
+#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (64u)
 
 /*! \brief Maximum number of objects supported in object array
  * \ingroup group_tivx_obj_desc_cfg
@@ -97,7 +97,7 @@ extern "C" {
 /*! \brief Max possible nodes in graph
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_GRAPH_MAX_NODES               (32u)
+#define TIVX_GRAPH_MAX_NODES               (64u)
 
 /*! \brief Max possible super nodes in graph
  * \ingroup group_tivx_obj_desc_cfg
@@ -114,7 +114,7 @@ extern "C" {
 /*! \brief Max number of replicated nodes
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_NODE_MAX_REPLICATE            (32u)
+#define TIVX_NODE_MAX_REPLICATE            (64u)
 
 /*!
  * \brief Max number meta format objects supported
@@ -149,7 +149,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_NODE_MAX_OBJECTS                       (32u)
+#define TIVX_NODE_MAX_OBJECTS                       (64u)
 
 /*!
  * \brief Max number kernel objects supported
@@ -233,7 +233,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS                    (48u)
+#define TIVX_PYRAMID_MAX_OBJECTS                    (64u)
 
 /*!
  * \brief Max number remap objects supported
@@ -282,7 +282,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DATA_REF_Q_MAX_OBJECTS                 (64u)
+#define TIVX_DATA_REF_Q_MAX_OBJECTS                 (128u)
 
 /*!
  * \brief Max number of Target that can exist on a CPU
@@ -307,7 +307,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_REFERENCES     (512u + 256u + 64u + 8u)
+#define TIVX_CONTEXT_MAX_REFERENCES     (512u + 256u + 64u + 8u + 32 + 64 + 32)
 
 
 /*!
@@ -322,7 +322,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_USER_STRUCTS   (64u)
+#define TIVX_CONTEXT_MAX_USER_STRUCTS   (128u)
 
 /*! \brief Maximum targets a kernel can run on
  * \ingroup group_tivx_target_kernel_cfg
@@ -390,7 +390,7 @@ extern "C" {
 /*! \brief Max possible parameters in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_PARAMS              (8u)
+#define TIVX_GRAPH_MAX_PARAMS              (16u)
 
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg

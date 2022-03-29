@@ -1313,6 +1313,8 @@ TEST(tivxBoundary2, testGraphParamBoundary)
     vx_graph   graph;
     vx_uint32 i;
 
+    if (TIVX_GRAPH_MAX_PARAMS == 8)
+    {
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     vx_kernel kernels[] = {
@@ -1366,6 +1368,11 @@ TEST(tivxBoundary2, testGraphParamBoundary)
     tivx_resource_stats_t stats;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_PARAMS", &stats));
     ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_PARAMS);
+    }
+    else
+    {
+        printf("To fully test the TIVX_GRAPH_MAX_PARAMS value, set it to 8 in tiovx/include/TI/tivx_config.h and re-run this test case\n");
+    }
 
 }
 
@@ -2167,6 +2174,8 @@ TEST(tivxNegativeBoundary2, negativeTestGraphParamBoundary)
     vx_graph   graph;
     vx_uint32 i;
 
+    if (TIVX_GRAPH_MAX_PARAMS == 8)
+    {
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     vx_kernel kernels[] = {
@@ -2219,6 +2228,11 @@ TEST(tivxNegativeBoundary2, negativeTestGraphParamBoundary)
         ASSERT(parameters[i] == NULL);
     }
     VX_CALL(vxReleaseGraph(&graph));
+    }
+    else
+    {
+        printf("To fully test the TIVX_GRAPH_MAX_PARAMS value, set it to 8 in tiovx/include/TI/tivx_config.h and re-run this test case\n");
+    }
 }
 
 /* TIVX_THRESHOLD_MAX_OBJECTS */

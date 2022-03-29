@@ -81,7 +81,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (640U)
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (1024U)
 
 /*!
  * \brief Max possible planes of data in an image
