@@ -61,7 +61,6 @@
  */
 
 #include "TI/tivx.h"
-#include "TI/j7.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_display_m2m.h"
 #include "TI/tivx_target_kernel.h"

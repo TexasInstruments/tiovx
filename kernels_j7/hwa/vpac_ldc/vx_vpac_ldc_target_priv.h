@@ -64,7 +64,6 @@
 #define VX_VPAC_LDC_TARGET_PRIV_H_
 
 #include "TI/tivx.h"
-#include "TI/j7.h"
 #include "VX/vx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_ldc.h"

@@ -61,7 +61,6 @@
  */
 #include <stdio.h>
 #include "TI/tivx.h"
-#include "TI/j7.h"
 #include "TI/tivx_event.h"
 #include "VX/vx.h"
 #include "tivx_hwa_kernels.h"

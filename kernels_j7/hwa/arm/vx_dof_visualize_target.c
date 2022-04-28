@@ -63,7 +63,6 @@
 #ifdef BUILD_HWA_DMPAC_DOF
 
 #include "TI/tivx.h"
-#include "TI/j7.h"
 #include "VX/vx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_dof_visualize.h"

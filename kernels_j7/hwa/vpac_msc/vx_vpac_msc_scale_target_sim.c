@@ -61,7 +61,6 @@
  */
 
 #include "TI/tivx.h"
-#include "TI/j7.h"
 #include "VX/vx.h"
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_scale.h>
