@@ -30,7 +30,15 @@ ifeq ($(TARGET_OS),SYSBIOS)
 endif
 
 ifeq ($(BUILD_VPAC3),yes)
-DEFS        += VPAC3 SOC_J721S2
+DEFS        += VPAC3
+endif
+
+ifeq ($(TARGET_PLATFORM),J721S2)
+DEFS        += SOC_J721S2
+endif
+
+ifeq ($(TARGET_PLATFORM),J784S4)
+DEFS        += SOC_J784S4
 endif
 
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include

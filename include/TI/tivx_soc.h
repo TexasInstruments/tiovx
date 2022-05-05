@@ -69,8 +69,10 @@
 #include <TI/tivx_soc_j721e.h>
 #elif defined(SOC_J721S2)
 #include <TI/tivx_soc_j721s2.h>
+#elif defined(SOC_J784S4)
+#include <TI/tivx_soc_j784s4.h>
 #else
-#error Must define SOC_<SOC_NAME>, options: SOC_J6, SOC_J721E, SOC_J721S2
+#error Must define SOC_<SOC_NAME>, options: SOC_J6, SOC_J721E, SOC_J721S2, SOC_J784S4
 #endif
 
 #endif

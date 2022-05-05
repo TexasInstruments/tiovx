@@ -1668,7 +1668,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             }
             else
             {
-                #if defined(SOC_J721S2)
+                #if defined(SOC_J721S2) || defined(SOC_J784S4)
                 /* ADASVISION-5065: Currently using TIVX_MEM_EXTERNAL while OCMC RAM is not enabled */
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
                     vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_EXTERNAL);

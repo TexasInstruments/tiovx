@@ -431,6 +431,18 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     }
     #endif
 
+    #if defined(SOC_J784S4)
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP_C7_2)
+    {
+        strncpy(target_name, TIVX_TARGET_DSP1,
+            TIVX_TARGET_MAX_NAME);
+    }
+    else
+    {
+        status = (vx_status)VX_FAILURE;
+    }
+    #endif
+
     return status;
 }
 

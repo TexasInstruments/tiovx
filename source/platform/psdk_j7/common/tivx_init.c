@@ -95,7 +95,7 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4)
     #if defined (C71) || defined (C7120)
         tivxRegisterOpenVXCoreTargetKernels();
         #ifdef BUILD_TUTORIAL
@@ -116,7 +116,7 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4)
     #if defined (C71) || defined (C7120)
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
@@ -153,7 +153,7 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4)
         #if defined (C71) || defined (C7120)
             tivxUnRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
@@ -174,7 +174,7 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4)
         #if defined (C71) || defined (C7120)
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif

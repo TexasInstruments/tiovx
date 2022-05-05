@@ -79,16 +79,42 @@ void tivxPlatformCreateTargets(void)
      *       worker threads.
      * */
 
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1,       0, "TIVX_CPU_PRI1", 9u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2, 1, "TIVX_CPU_PRI2", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_3, 2, "TIVX_CPU_PRI3", 7u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_4, 3, "TIVX_CPU_PRI4", 6u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_5, 4, "TIVX_CPU_PRI5", 5u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6, 5, "TIVX_CPU_PRI6", 4u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7, 6, "TIVX_CPU_PRI7", 3u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8, 7, "TIVX_CPU_PRI8", 2u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1,       0, "TIVX_C7_1_PRI1", 9u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2, 1, "TIVX_C7_1_PRI2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_3, 2, "TIVX_C7_1_PRI3", 7u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_4, 3, "TIVX_C7_1_PRI4", 6u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_5, 4, "TIVX_C7_1_PRI5", 5u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_6, 5, "TIVX_C7_1_PRI6", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_7, 6, "TIVX_C7_1_PRI7", 3u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8, 7, "TIVX_C7_1_PRI8", 2u);
     #if defined(SOC_J721S2)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP1,           0, "TIVX_CPU",       8u);
+    #endif
+    #if defined(SOC_J784S4)
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2,       0, "TIVX_C7_2_PRI1", 9u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_2, 1, "TIVX_C7_2_PRI2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3, 2, "TIVX_C7_2_PRI3", 7u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_4, 3, "TIVX_C7_2_PRI4", 6u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_5, 4, "TIVX_C7_2_PRI5", 5u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_6, 5, "TIVX_C7_2_PRI6", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_7, 6, "TIVX_C7_2_PRI7", 3u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_8, 7, "TIVX_C7_2_PRI8", 2u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3,       0, "TIVX_C7_3_PRI1", 9u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_2, 1, "TIVX_C7_3_PRI2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_3, 2, "TIVX_C7_3_PRI3", 7u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_4, 3, "TIVX_C7_3_PRI4", 6u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_5, 4, "TIVX_C7_3_PRI5", 5u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_6, 5, "TIVX_C7_3_PRI6", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_7, 6, "TIVX_C7_3_PRI7", 3u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_8, 7, "TIVX_C7_3_PRI8", 2u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4,       0, "TIVX_C7_4_PRI1", 9u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_2, 1, "TIVX_C7_4_PRI2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_3, 2, "TIVX_C7_4_PRI3", 7u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_4, 3, "TIVX_C7_4_PRI4", 6u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_5, 4, "TIVX_C7_4_PRI5", 5u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_6, 5, "TIVX_C7_4_PRI6", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_7, 6, "TIVX_C7_4_PRI7", 3u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_8, 7, "TIVX_C7_4_PRI8", 2u);
     #endif
 }
 
@@ -104,5 +130,31 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_8);
     #if defined(SOC_J721S2)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP1);
+    #endif
+    #if defined(SOC_J784S4)
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_3);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_5);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_6);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_7);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_2_PRI_8);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_3);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_5);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_6);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_7);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_3_PRI_8);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_3);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_4);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_5);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_6);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_7);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_4_PRI_8);
     #endif
 }

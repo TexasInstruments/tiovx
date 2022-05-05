@@ -40,7 +40,7 @@ BUILD_VLAB?=no
 # RTOS selection for R5F - SYSBIOS or FREERTOS
 RTOS?=FREERTOS
 
-# SOC selection - supported values: j721e, j721s2
+# SOC selection - supported values: j721e, j721s2, j784s4
 SOC?=j721e
 
 ifeq ($(SOC),j721e)
@@ -50,6 +50,11 @@ C7X_TARGET=C71
 C7X_VERSION=C7100
 else ifeq ($(SOC),j721s2)
 TARGET_SOC=J721S2
+BUILD_VPAC3=yes
+C7X_TARGET=C7120
+C7X_VERSION=C7120
+else ifeq ($(SOC),j784s4)
+TARGET_SOC=J784S4
 BUILD_VPAC3=yes
 C7X_TARGET=C7120
 C7X_VERSION=C7120

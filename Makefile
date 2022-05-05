@@ -26,6 +26,8 @@ ifeq ($(SOC),j721e)
     BUILD_DEFS += SOC_J721E
 else ifeq ($(SOC),j721s2)
     BUILD_DEFS += SOC_J721S2
+else ifeq ($(SOC),j784s4)
+    BUILD_DEFS += SOC_J784S4
 endif
 
 DIRECTORIES :=
@@ -115,11 +117,17 @@ endif
 doxy_docs:
 	cat tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_$(SOC)_linux.cfg > /tmp/user_guide_$(SOC)_linux.cfg
 	$(PRINT) EXCLUDE = \\ >> /tmp/user_guide_$(SOC)_linux.cfg
-ifneq ($(SOC),j721e)
-	$(PRINT)           include/TI/tivx_soc_j721e.h \\ >> /tmp/user_guide_j721s2_linux.cfg
-endif
-ifneq ($(SOC),j721s2)
+ifeq ($(SOC),j721e)
 	$(PRINT)           include/TI/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j721e_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j784s4.h \\ >> /tmp/user_guide_j721e_linux.cfg
+endif
+ifeq ($(SOC),j721s2)
+	$(PRINT)           include/TI/tivx_soc_j721e.h  \\ >> /tmp/user_guide_j721s2_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j784s4.h \\ >> /tmp/user_guide_j721s2_linux.cfg
+endif
+ifeq ($(SOC),j784s4)
+	$(PRINT)           include/TI/tivx_soc_j721e.h  \\ >> /tmp/user_guide_j784s4_linux.cfg
+	$(PRINT)           include/TI/tivx_soc_j721s2.h \\ >> /tmp/user_guide_j784s4_linux.cfg
 endif
 	$(PRINT)           include/TI/tivx_soc_j6.h >> /tmp/user_guide_$(SOC)_linux.cfg
 	$(DOXYGEN) /tmp/user_guide_$(SOC)_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
