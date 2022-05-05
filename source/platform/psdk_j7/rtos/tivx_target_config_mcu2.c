@@ -68,7 +68,7 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id)
 
 void tivxPlatformCreateTargets(void)
 {
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_IPU1_0, 0, "TIVX_CPU_0", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0, 0, "TIVX_CPU_0", 4u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_NF, 1, "TIVX_NF", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1, 2, "TIVX_LDC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1, 3, "TIVX_MSC1", 8u);
@@ -91,12 +91,14 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2, 20, "TIVX_DISP_M2M2", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3, 21, "TIVX_DISP_M2M3", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4, 22, "TIVX_DISP_M2M4", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_IPU1_1, 23, "TIVX_CPU_1", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_1, 23, "TIVX_CPU_1", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_0, 24, "TIVX_MCU3_0", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_1, 25, "TIVX_MCU3_1", 4u);
 }
 
 void tivxPlatformDeleteTargets(void)
 {
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_IPU1_0);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_NF);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1);
@@ -119,5 +121,7 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4);
-    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_IPU1_1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU2_1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU3_0);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU3_1);
 }

@@ -221,7 +221,9 @@ void tivxAddTargetKernelScalarSource(void)
     self_cpu = tivxGetSelfCpuId();
 
     if ( (self_cpu == TIVX_CPU_ID_IPU1_0) ||
-          (self_cpu == TIVX_CPU_ID_IPU1_1))
+          (self_cpu == TIVX_CPU_ID_IPU1_1) ||
+          (self_cpu == TIVX_CPU_ID_MCU3_0) ||
+          (self_cpu == TIVX_CPU_ID_MCU3_1))
     {
         if (self_cpu == TIVX_CPU_ID_IPU1_0)
         {
@@ -231,6 +233,16 @@ void tivxAddTargetKernelScalarSource(void)
         else if (self_cpu == TIVX_CPU_ID_IPU1_1)
         {
             strncpy(target_name, TIVX_TARGET_IPU1_1, TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_MCU3_0)
+        {
+            strncpy(target_name, TIVX_TARGET_MCU3_0, TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_MCU3_1)
+        {
+            strncpy(target_name, TIVX_TARGET_MCU3_1, TIVX_TARGET_MAX_NAME);
             status = (vx_status)VX_SUCCESS;
         }
     }
