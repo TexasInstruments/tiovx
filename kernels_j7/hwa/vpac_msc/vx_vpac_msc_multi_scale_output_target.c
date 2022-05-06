@@ -203,8 +203,8 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
     {
         /* Reset all values to 0 */
         memset(gTivxVpacMscMScaleInstObj, 0x0,

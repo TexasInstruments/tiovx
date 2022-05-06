@@ -101,8 +101,8 @@ kernel.setParameterRelationship(["IN_THRESHOLD",     "OUT_THRESHOLD"],    [Attri
 kernel.setParameterRelationship(["IN_OBJECT_ARRAY",  "OUT_OBJECT_ARRAY"], [Attribute.ObjectArray.NUMITEMS, Attribute.ObjectArray.ITEMTYPE])
 
 # Setting target cores
-kernel.setTarget(Target.IPU1_0)
-kernel.setTarget(Target.IPU1_1)
+kernel.setTarget(Target.MCU2_0)
+kernel.setTarget(Target.MCU2_1)
 kernel.setTarget(Target.A72_0)
 kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP2)

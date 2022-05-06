@@ -12,7 +12,7 @@ kernel = Kernel("tensor_test")
 kernel.setParameter(Type.TENSOR, Direction.INPUT, ParamState.REQUIRED, "INPUT")
 kernel.setParameter(Type.TENSOR, Direction.OUTPUT, ParamState.REQUIRED, "OUTPUT")
 
-kernel.setTarget(Target.IPU1_0)
+kernel.setTarget(Target.MCU2_0)
 code.export(kernel)
 
 

@@ -73,8 +73,8 @@ kernel.setParameter(Type.OBJECT_ARRAY,  Direction.OUTPUT, ParamState.REQUIRED, "
 
 
 # Setting target cores
-kernel.setTarget(Target.IPU1_0)
-kernel.setTarget(Target.IPU1_1)
+kernel.setTarget(Target.MCU2_0)
+kernel.setTarget(Target.MCU2_1)
 kernel.setTarget(Target.A72_0)
 kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP2)

@@ -934,7 +934,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->distribution_39 
           );
         vxSetReferenceName( (vx_reference)usecase->node_40, "node_40");
-        vxSetNodeTarget(usecase->node_40, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_IPU1_0);
+        vxSetNodeTarget(usecase->node_40, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_MCU2_0);
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -945,7 +945,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->image_41 
           );
         vxSetReferenceName( (vx_reference)usecase->node_43, "node_43");
-        vxSetNodeTarget(usecase->node_43, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_IPU1_1);
+        vxSetNodeTarget(usecase->node_43, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_MCU2_1);
     }
     if (status == (vx_status)VX_SUCCESS)
     {

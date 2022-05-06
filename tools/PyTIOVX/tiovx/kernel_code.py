@@ -264,9 +264,9 @@ class KernelExportCode :
             return "goldenrod4"
         if target == Target.A15_0 :
             return "lightblue"
-        if target == Target.IPU1_0 :
+        if target == Target.MCU2_0 :
             return "grey"
-        if target == Target.IPU1_1 :
+        if target == Target.MCU2_1 :
             return "LightSalmon"
         if target == Target.IPU2 :
             return "MediumOrchid"
@@ -2159,7 +2159,7 @@ class KernelExportCode :
                 if (tar == Target.A15_0) and (armAdded == False) :
                     targetCpuListString+="A15 A72 "
                     armAdded = True
-                if (tar == Target.IPU1_0 or tar == Target.IPU1_1 or tar == Target.IPU2) and (ipuAdded == False) :
+                if (tar == Target.MCU2_0 or tar == Target.MCU2_1 or tar == Target.IPU2) and (ipuAdded == False) :
                     targetCpuListString+="M4 R5F "
                     ipuAdded = True
                 if (tar == Target.DSP_C7_1) and (c7xAdded == False) :

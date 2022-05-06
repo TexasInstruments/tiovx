@@ -265,8 +265,8 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
     inst_start = TIVX_VPAC_MSC_G_PMG_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if (((vx_enum)TIVX_CPU_ID_IPU1_0 == self_cpu) ||
-        ((vx_enum)TIVX_CPU_ID_IPU1_1 == self_cpu))
+    if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu) ||
+        ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscPmdInstObj[inst_start], 0x0,
@@ -390,8 +390,8 @@ void tivxAddTargetKernelVpacMscPyramid(void)
     inst_start = TIVX_VPAC_MSC_PMD_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if (((vx_enum)TIVX_CPU_ID_IPU1_0 == self_cpu) ||
-        ((vx_enum)TIVX_CPU_ID_IPU1_1 == self_cpu))
+    if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu) ||
+        ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscPmdInstObj[inst_start], 0x0,

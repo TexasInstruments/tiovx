@@ -3,7 +3,7 @@ digraph uc_sample_05 {
   label = "uc_sample_05"
   ColorScheme [shape=none, margin=0, label=<
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-        <TR><TD bgcolor="yellow">EVE1</TD></TR>        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="gold">EVE2</TD></TR>        <TR><TD bgcolor="orange">EVE3</TD></TR>        <TR><TD bgcolor="lightblue">A15_0</TD></TR>        <TR><TD bgcolor="darkturquoise">DSP2</TD></TR>        <TR><TD bgcolor="goldenrod4">EVE4</TD></TR>        <TR><TD bgcolor="grey">IPU1_0</TD></TR>        <TR><TD bgcolor="LightSalmon">IPU1_1</TD></TR>        <TR><TD bgcolor="MediumOrchid">IPU2</TD></TR>        </TABLE>>];
+        <TR><TD bgcolor="yellow">EVE1</TD></TR>        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="gold">EVE2</TD></TR>        <TR><TD bgcolor="orange">EVE3</TD></TR>        <TR><TD bgcolor="lightblue">A15_0</TD></TR>        <TR><TD bgcolor="darkturquoise">DSP2</TD></TR>        <TR><TD bgcolor="goldenrod4">EVE4</TD></TR>        <TR><TD bgcolor="grey">MCU2_0</TD></TR>        <TR><TD bgcolor="LightSalmon">MCU2_1</TD></TR>        <TR><TD bgcolor="MediumOrchid">IPU2</TD></TR>        </TABLE>>];
 
 
 

@@ -116,11 +116,11 @@ img_out_combine = Image(1280, 720, DfImage.U8)
 node_combine = NodeChannelCombine(img_out_phase, img_out_remap, img_out_canny, img_out_nonlinear_filter, img_out_combine, target=Target.A15_0)
 
 dist = Distribution(10, 1, 100)
-node_histogram = NodeHistogram(img_out_combine, dist, target=Target.IPU1_0);
+node_histogram = NodeHistogram(img_out_combine, dist, target=Target.MCU2_0);
 
 img_out_lut = Image(1280, 720, DfImage.U8)
 lut = Lut(Type.UINT8, 255)
-node_lut = NodeTableLookup(img_out_remap, lut, img_out_lut, target=Target.IPU1_1);
+node_lut = NodeTableLookup(img_out_remap, lut, img_out_lut, target=Target.MCU2_1);
 
 img_out_and = Image(1280, 720, DfImage.U8);
 node_and = NodeAnd(img_out_lut, img_out_nonlinear_filter, img_out_and, target=Target.IPU2)

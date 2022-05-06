@@ -109,9 +109,9 @@ class ExportImage (Export) :
             return "goldenrod4"
         if target == Target.A15_0 :
             return "lightblue"
-        if target == Target.IPU1_0 :
+        if target == Target.MCU2_0 :
             return "grey"
-        if target == Target.IPU1_1 :
+        if target == Target.MCU2_1 :
             return "LightSalmon"
         if target == Target.IPU2 :
             return "MediumOrchid"

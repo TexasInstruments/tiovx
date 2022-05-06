@@ -201,8 +201,8 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
     inst_start = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if (((vx_enum)TIVX_CPU_ID_IPU1_0 == self_cpu) ||
-        ((vx_enum)TIVX_CPU_ID_IPU1_1 == self_cpu))
+    if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu) ||
+        ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -330,8 +330,8 @@ void tivxAddTargetKernelVpacMscScale(void)
     inst_start = TIVX_VPAC_MSC_SCALE_IMAGE_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) ||
+        (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,

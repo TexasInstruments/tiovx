@@ -151,12 +151,12 @@ static void getNodeColor(vx_node node, char *node_color_name)
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
         }
         else
-        if(strncmp(target_name, "IPU1-0", TIVX_TARGET_MAX_NAME) == 0)
+        if(strncmp(target_name, "MCU2-0", TIVX_TARGET_MAX_NAME) == 0)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "grey");
         }
         else
-        if(strncmp(target_name, "IPU1-1", TIVX_TARGET_MAX_NAME) == 0)
+        if(strncmp(target_name, "MCU2-1", TIVX_TARGET_MAX_NAME) == 0)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "LightSalmon");
         }

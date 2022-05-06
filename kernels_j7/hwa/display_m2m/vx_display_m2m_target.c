@@ -611,7 +611,7 @@ void tivxAddTargetKernelDisplayM2M(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0 )
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
     {
         strncpy(target_name, TIVX_TARGET_DISPLAY_M2M1, TIVX_TARGET_MAX_NAME);
         vx_display_m2m_target_kernel1 = tivxAddTargetKernelByName(

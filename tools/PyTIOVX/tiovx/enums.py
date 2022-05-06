@@ -387,8 +387,8 @@ class Cpu(Enum) :
     EVE3     = 6
     EVE4     = 7
     A15_0    = 8
-    IPU1_0   = 9
-    IPU1_1   = 10
+    MCU2_0   = 9
+    MCU2_1   = 10
     IPU2     = 11
     DSP_C7_1 = 12
     A72_0    = 13
@@ -428,10 +428,10 @@ class Target(Enum) :
     EVE4    = 7
     ## TIOVX equivalent = \ref TIVX_TARGET_A15_0
     A15_0   = 8
-    ## TIOVX equivalent = \ref TIVX_TARGET_IPU1_0
-    IPU1_0  = 9
-    ## TIOVX equivalent = \ref TIVX_TARGET_IPU1_1
-    IPU1_1  = 10
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_0
+    MCU2_0  = 9
+    ## TIOVX equivalent = \ref TIVX_TARGET_MCU2_1
+    MCU2_1  = 10
     ## TIOVX equivalent = \ref TIVX_TARGET_IPU2
     IPU2    = 11
     ## Below are J7 targets
@@ -477,9 +477,9 @@ class Target(Enum) :
             return eve
         if target == Target.A15_0 :
             return a15
-        if target == Target.IPU1_0 :
+        if target == Target.MCU2_0 :
             return ipu
-        if target == Target.IPU1_1 :
+        if target == Target.MCU2_1 :
             return ipu
         if target == Target.IPU2 :
             return ipu
@@ -520,9 +520,9 @@ class Target(Enum) :
             return True
         if target == Target.A15_0 :
             return True
-        if target == Target.IPU1_0 :
+        if target == Target.MCU2_0 :
             return True
-        if target == Target.IPU1_1 :
+        if target == Target.MCU2_1 :
             return True
         if target == Target.IPU2 :
             return True
@@ -544,28 +544,28 @@ class Target(Enum) :
             return Cpu.EVE4
         if target == Target.A15_0 :
             return Cpu.A15_0
-        if target == Target.IPU1_0 :
-            return Cpu.IPU1_0
-        if target == Target.IPU1_1 :
-            return Cpu.IPU1_1
+        if target == Target.MCU2_0 :
+            return Cpu.MCU2_0
+        if target == Target.MCU2_1 :
+            return Cpu.MCU2_1
         if target == Target.IPU2 :
             return Cpu.IPU2
         if target == Target.VPAC_NF :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.VPAC_LDC1 :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.VPAC_LDC2 :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.VPAC_MSC1 :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.VPAC_MSC2 :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.DMPAC_SDE :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.DMPAC_DOF :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.VPAC_VISS1 :
-            return Cpu.IPU1_0
+            return Cpu.MCU2_0
         if target == Target.DSP_C7_1 :
             return Cpu.DSP_C7_1
         if target == Target.A72_0 :

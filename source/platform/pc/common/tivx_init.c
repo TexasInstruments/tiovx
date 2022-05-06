@@ -146,11 +146,11 @@ void tivxInit(void)
         #endif
 
         #ifdef BUILD_CONFORMANCE_TEST
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_IPU1_0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
 
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_IPU1_1);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
 

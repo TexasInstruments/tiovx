@@ -122,7 +122,7 @@ void tivxHwaLoadKernels(vx_context context)
          */
         /* These three lines only work on PC emulation mode ...
          * this will need to be updated when moving to target */
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_IPU1_0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
 
         tivxRegisterHwaTargetVpacNfKernels();
 

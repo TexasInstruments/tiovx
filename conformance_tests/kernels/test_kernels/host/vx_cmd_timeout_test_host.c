@@ -245,8 +245,8 @@ vx_status tivxAddKernelCmdTimeoutTest(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_A72_0);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
         }
         if (status == (vx_status)VX_SUCCESS)
         {

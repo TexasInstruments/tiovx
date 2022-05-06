@@ -1950,7 +1950,7 @@ void tivxAddTargetKernelCapture(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if((self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_IPU1_1))
+    if((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
     {
         strncpy(target_name, TIVX_TARGET_CAPTURE1, TIVX_TARGET_MAX_NAME);
         vx_capture_target_kernel1 = tivxAddTargetKernelByName(
