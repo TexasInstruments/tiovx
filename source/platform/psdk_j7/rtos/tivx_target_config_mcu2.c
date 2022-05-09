@@ -17,6 +17,12 @@
 #endif
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
+#if defined(SAFERTOS)
+#define TIVX_TARGET_DEFAULT_STACK_ALIGNMENT  TIVX_TARGET_DEFAULT_STACK_SIZE
+#else
+#define TIVX_TARGET_DEFAULT_STACK_ALIGNMENT  8192
+#endif
+
 static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char *name, uint32_t task_pri);
 static void tivxPlatformDeleteTargetId(vx_enum target_id);
 
@@ -27,7 +33,7 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id);
  */
 static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
-__attribute__ ((aligned(8192)))
+__attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
     ;
 
 

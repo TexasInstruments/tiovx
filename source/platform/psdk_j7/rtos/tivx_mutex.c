@@ -36,6 +36,8 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
             VX_PRINT(VX_ZONE_ERROR, "  the value of OSAL_TIRTOS_MAX_SEMAPHOREP_PER_SOC\n");
             #elif FREERTOS
             VX_PRINT(VX_ZONE_ERROR, "  the value of OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC\n");
+            #elif SAFERTOS
+            VX_PRINT(VX_ZONE_ERROR, "  the value of OSAL_SAFERTOS_MAX_SEMAPHOREP_PER_SOC\n");
             #endif
             VX_PRINT(VX_ZONE_ERROR, "  in pdk/packages/ti/osal/soc/<>/osal_soc.h\n");
         }

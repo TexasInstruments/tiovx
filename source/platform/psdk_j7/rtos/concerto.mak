@@ -1,7 +1,7 @@
 
 ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2 J784S4))
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71 C7120))
-ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS))
+ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS SAFERTOS))
 
 include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_rtos
