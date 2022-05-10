@@ -75,7 +75,7 @@ static char menu[] = {
 #ifndef _DISABLE_TIDL
     "\n 4: TI-DL"
 #endif
-    "\n 5: Run tutorial"
+    "\n 5: MCU3_0/MCU3_1 demo"
     "\n a: Run All"
     "\n"
     "\n x: Exit"
@@ -93,6 +93,10 @@ void vx_tutorial_run_all()
     vx_tutorial_image_run_all();
     vx_tutorial_graph_run_all();
     vx_tutorial_graph_pipeline_run_all();
+    if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
+    {
+        vx_tutorial_mcu3_0_demo();
+    }
 }
 
 void vx_tutorial_run_interactive()
@@ -125,7 +129,14 @@ void vx_tutorial_run_interactive()
 #endif
                 break;
             case '5':
-                vx_tutorial_mcu3_0_demo();
+                if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
+                {
+                    vx_tutorial_mcu3_0_demo();
+                }
+                else
+                {
+                    printf("Demo is disabled as MCU3_0 or MCU3_1 is not enabled\n");
+                }
                 break;
             case 'a':
                 vx_tutorial_run_all();

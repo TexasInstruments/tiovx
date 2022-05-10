@@ -65,6 +65,7 @@
 
 #include <stdio.h>
 #include <VX/vx.h>
+#include <TI/tivx.h>
 
 
 #include <ch02_image/vx_tutorial_image.h>

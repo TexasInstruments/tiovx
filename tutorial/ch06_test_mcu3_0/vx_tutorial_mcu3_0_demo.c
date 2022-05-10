@@ -111,11 +111,25 @@ void vx_tutorial_mcu3_0_demo()
      */
     node0 = tivxScalarSourceNode(graph, scalar);
     vxSetReferenceName((vx_reference)node0, "Scalar_Source 1");
-    vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+    if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+    {
+        vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+    }
+    else
+    {
+        vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+    }
 
     node1 = tivxScalarIntermediateNode(graph, scalar, scalar_out);
     vxSetReferenceName((vx_reference)node1, "Scalar_Source 2");
-    vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+    if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+    {
+        vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+    }
+    else
+    {
+        vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+    }
     /** \endcode */
 
 
