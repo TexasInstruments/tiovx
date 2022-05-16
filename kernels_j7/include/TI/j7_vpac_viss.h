@@ -83,11 +83,6 @@ extern "C" {
  * \brief The VISS kernels in this kernel extension.
  */
 
-/*! \brief Target name for VPAC VISS1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_VISS1   "VPAC_VISS1"
-
 /*! \brief vpac_viss kernel name
  *  \ingroup group_vision_function_vpac_viss
  */

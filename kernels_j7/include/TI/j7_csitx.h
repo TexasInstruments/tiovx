@@ -75,11 +75,6 @@ extern "C" {
  * \brief The CSITX kernels in this kernel extension.
  */
 
-/*! \brief Target name for CSITX
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_CSITX     "CSITX"
-
 /*! \brief csitx kernel name
  *  \ingroup group_vision_function_csitx
  */

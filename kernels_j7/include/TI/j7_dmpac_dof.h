@@ -75,11 +75,6 @@ extern "C" {
  * \brief The DOF kernels in this kernel extension.
  */
 
-/*! \brief Target name for DMPAC DOF
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DMPAC_DOF    "DMPAC_DOF"
-
 /*! \brief dmpac_dof kernel name
  *  \ingroup group_vision_function_dmpac_dof
  */

@@ -75,11 +75,6 @@ extern "C" {
  * \brief The LDC kernels in this kernel extension.
  */
 
-/*! \brief Target name for VPAC LDC1
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_VPAC_LDC1    "VPAC_LDC1"
-
 /*! \brief vpac_ldc kernel name
  *  \ingroup group_vision_function_vpac_ldc
  */

@@ -75,11 +75,6 @@ extern "C" {
  * \brief The SDE kernels in this kernel extension.
  */
 
-/*! \brief Target name for DMPAC SDE
- * \ingroup group_tivx_ext_targets
- */
-#define TIVX_TARGET_DMPAC_SDE    "DMPAC_SDE"
-
 /*! \brief dmpac_sde kernel name
  *  \ingroup group_vision_function_dmpac_sde
  */

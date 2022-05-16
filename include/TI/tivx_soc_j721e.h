@@ -237,6 +237,115 @@ extern "C" {
  */
 #define TIVX_TARGET_MCU3_1      "MCU3-1"
 
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE1     "CAPTURE1"
+
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE2     "CAPTURE2"
+
+/*! \brief Target name for Capture Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE3     "CAPTURE3"
+
+/*! \brief Target name for Capture Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE4     "CAPTURE4"
+
+/*! \brief Target name for Capture Node Instance 5
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE5     "CAPTURE5"
+
+/*! \brief Target name for Capture Node Instance 6
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE6     "CAPTURE6"
+
+/*! \brief Target name for Capture Node Instance 7
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE7     "CAPTURE7"
+
+/*! \brief Target name for Capture Node Instance 8
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE8     "CAPTURE8"
+
+/*! \brief Target name for CSITX
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CSITX     "CSITX"
+
+/*! \brief Target name for Display M2M Node Instance 1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M1     "DSS_M2M1"
+
+/*! \brief Target name for Display M2M Node Instance 2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M2     "DSS_M2M2"
+
+/*! \brief Target name for Display M2M Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M3     "DSS_M2M3"
+
+/*! \brief Target name for Display M2M Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY_M2M4     "DSS_M2M4"
+
+/*! \brief Target name for Display
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY1     "DISPLAY1"
+
+/*! \brief Target name for Display
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DISPLAY2     "DISPLAY2"
+
+/*! \brief Target name for DMPAC DOF
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DMPAC_DOF    "DMPAC_DOF"
+
+/*! \brief Target name for DMPAC SDE
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_DMPAC_SDE    "DMPAC_SDE"
+
+/*! \brief Target name for VPAC LDC1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_LDC1    "VPAC_LDC1"
+
+/*! \brief Target name for VPAC MSC1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_MSC1    "VPAC_MSC1"
+
+/*! \brief Target name for VPAC MSC2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_MSC2    "VPAC_MSC2"
+
+/*! \brief Target name for VPAC NF
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_NF      "VPAC_NF"
+
+/*! \brief Target name for VPAC VISS1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_VPAC_VISS1   "VPAC_VISS1"
 
 /*! \brief CPU ID for supported CPUs
  *
