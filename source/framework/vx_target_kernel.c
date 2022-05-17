@@ -261,7 +261,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
             if(kernel_name!=NULL)
             {
                 /* kernel registered using name, compare using kernel_name string */
-                if( (tivx_obj_desc_strncmp(kernel_name, tmp_knl->kernel_name, VX_MAX_KERNEL_NAME)==0)
+                if( (tivx_obj_desc_strncmp_delim(kernel_name, tmp_knl->kernel_name, VX_MAX_KERNEL_NAME, ':')==0)
                     && (target_id == tmp_knl->target_id)
                     )
                 {

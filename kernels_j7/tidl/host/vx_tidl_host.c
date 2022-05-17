@@ -66,6 +66,7 @@
 #include <TI/tivx_config.h>
 #include <TI/j7_tidl.h>
 #include "tivx_kernels_host_utils.h"
+#include <stdio.h>
 
 static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -226,159 +227,168 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
     vx_enum kernel_id;
     uint32_t index;
     uint32_t i;
+    vx_char tidl_kernel_name[VX_MAX_KERNEL_NAME];
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
+    /* Create kernel name by concatonating TIDL kernel name with number of input and output tensors to create a unique kernel */
+    snprintf( tidl_kernel_name, VX_MAX_KERNEL_NAME, "%s:%d:%d", TIVX_KERNEL_TIDL_NAME, num_input_tensors, num_output_tensors );
+
+    kernel = vxGetKernelByName(context, tidl_kernel_name);
+
+    if ( NULL == kernel)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        /* Number of parameters are config + network + createParams + inArgs + outArgs + traceData + input tensors + output tensors */
-        uint32_t num_params = TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
-
-        if ( (num_params <= TIVX_KERNEL_MAX_PARAMS) &&
-             (num_input_tensors != 0U) &&
-             (num_output_tensors != 0U))
+        status = vxAllocateUserKernelId(context, &kernel_id);
+        if(status != (vx_status)VX_SUCCESS)
         {
-            kernel = vxAddUserKernel(
-                                context,
-                                TIVX_KERNEL_TIDL_NAME,
-                                kernel_id,
-                                NULL,
-                                num_params,
-                                tivxAddKernelTIDLValidate,
-                                NULL,
-                                NULL);
+            VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+        }
 
-            status = vxGetStatus((vx_reference)kernel);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            /* Number of parameters are config + network + createParams + inArgs + outArgs + traceData + input tensors + output tensors */
+            uint32_t num_params = TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
+
+            if ( (num_params <= TIVX_KERNEL_MAX_PARAMS) &&
+                 (num_input_tensors != 0U) &&
+                 (num_output_tensors != 0U))
+            {
+                kernel = vxAddUserKernel(
+                                    context,
+                                    tidl_kernel_name,
+                                    kernel_id,
+                                    NULL,
+                                    num_params,
+                                    tivxAddKernelTIDLValidate,
+                                    NULL,
+                                    NULL);
+
+                status = vxGetStatus((vx_reference)kernel);
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "invalid values for num_input_tensors or num_output_tensors \n");
+                status = (vx_status)VX_FAILURE;
+            }
+        }
+        if ( status == (vx_status)VX_SUCCESS)
+        {
+            index = 0;
+
+            status = vxAddParameterToKernel(kernel,
+                index,
+                (vx_enum)VX_INPUT,
+                VX_TYPE_USER_DATA_OBJECT,
+                (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                );
+            index++;
+
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    (vx_enum)VX_INPUT,
+                    VX_TYPE_USER_DATA_OBJECT,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    (vx_enum)VX_INPUT,
+                    VX_TYPE_USER_DATA_OBJECT,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    (vx_enum)VX_INPUT,
+                    VX_TYPE_USER_DATA_OBJECT,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    (vx_enum)VX_OUTPUT,
+                    VX_TYPE_USER_DATA_OBJECT,
+                    (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
+            if (status == (vx_status)VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    (vx_enum)VX_OUTPUT,
+                    VX_TYPE_USER_DATA_OBJECT,
+                    (vx_enum)VX_PARAMETER_STATE_OPTIONAL
+                    );
+                index++;
+            }
+            if (status == VX_SUCCESS)
+            {
+                for(i = 0; i < num_input_tensors; i++)
+                {
+                    if ( status == (vx_status)VX_SUCCESS)
+                    {
+                        status = vxAddParameterToKernel(kernel,
+                            index,
+                            (vx_enum)VX_INPUT,
+                            (vx_enum)VX_TYPE_TENSOR,
+                            (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                            );
+                        index++;
+                    }
+                }
+
+                for(i = 0; i < num_output_tensors; i++)
+                {
+                    if ( status == (vx_status)VX_SUCCESS)
+                    {
+                        status = vxAddParameterToKernel(kernel,
+                            index,
+                            (vx_enum)VX_OUTPUT,
+                            (vx_enum)VX_TYPE_TENSOR,
+                            (vx_enum)VX_PARAMETER_STATE_REQUIRED
+                            );
+                        index++;
+                    }
+                }
+            }
+
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                /* add supported target's */
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_2);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_3);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_4);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_5);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_6);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_7);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_8);
+            }
+
+            if ( status == (vx_status)VX_SUCCESS)
+            {
+                status = vxFinalizeKernel(kernel);
+            }
+            if( status != (vx_status)VX_SUCCESS)
+            {
+                vxReleaseKernel(&kernel);
+                kernel = NULL;
+            }
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "invalid values for num_input_tensors or num_output_tensors \n");
-            status = (vx_status)VX_FAILURE;
-        }
-    }
-    if ( status == (vx_status)VX_SUCCESS)
-    {
-        index = 0;
-
-        status = vxAddParameterToKernel(kernel,
-            index,
-            (vx_enum)VX_INPUT,
-            VX_TYPE_USER_DATA_OBJECT,
-            (vx_enum)VX_PARAMETER_STATE_REQUIRED
-            );
-        index++;
-
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                (vx_enum)VX_INPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
-        }
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                (vx_enum)VX_INPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
-        }
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                (vx_enum)VX_INPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
-        }
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                (vx_enum)VX_OUTPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
-        }
-        if (status == (vx_status)VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                (vx_enum)VX_OUTPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                (vx_enum)VX_PARAMETER_STATE_OPTIONAL
-                );
-            index++;
-        }
-        if (status == VX_SUCCESS)
-        {
-            for(i = 0; i < num_input_tensors; i++)
-            {
-                if ( status == (vx_status)VX_SUCCESS)
-                {
-                    status = vxAddParameterToKernel(kernel,
-                        index,
-                        (vx_enum)VX_INPUT,
-                        (vx_enum)VX_TYPE_TENSOR,
-                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                        );
-                    index++;
-                }
-            }
-
-            for(i = 0; i < num_output_tensors; i++)
-            {
-                if ( status == (vx_status)VX_SUCCESS)
-                {
-                    status = vxAddParameterToKernel(kernel,
-                        index,
-                        (vx_enum)VX_OUTPUT,
-                        (vx_enum)VX_TYPE_TENSOR,
-                        (vx_enum)VX_PARAMETER_STATE_REQUIRED
-                        );
-                    index++;
-                }
-            }
-        }
-
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_2);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_3);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_4);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_5);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_6);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_7);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_8);
-        }
-
-        if ( status == (vx_status)VX_SUCCESS)
-        {
-            status = vxFinalizeKernel(kernel);
-        }
-        if( status != (vx_status)VX_SUCCESS)
-        {
-            vxReleaseKernel(&kernel);
             kernel = NULL;
         }
-    }
-    else
-    {
-        kernel = NULL;
     }
 
     return kernel;

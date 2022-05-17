@@ -418,3 +418,24 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
     return ret;
 }
 
+int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint32_t size, char delim)
+{
+    volatile uint8_t *d=(volatile uint8_t*)dst;
+    volatile uint8_t *s=(volatile uint8_t*)src;
+    uint32_t i;
+    int32_t ret = 0;
+
+    for(i=0; i<size; i++)
+    {
+        if((d[i] != s[i]) || (d[i] == 0U) || (s[i] == 0U) || (d[i] == delim) || (s[i] == delim))
+        {
+            if((d[i] != delim) && (s[i] != delim))
+            {
+                ret = ((int32_t)d[i] - (int32_t)s[i]);
+            }
+            break;
+        }
+    }
+    return ret;
+}
+

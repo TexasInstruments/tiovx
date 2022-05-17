@@ -921,12 +921,12 @@ tivx_obj_desc_t *tivxGetObjDescElement(tivx_obj_desc_t *obj_desc, uint16_t elem_
  *   IMPORTANT NOTE:
  *   On some SoCs, obj desc's are allocated in a memory region where
  *   unaligned access results in 'Bus Error'. The fields with a obj desc
- *   are properly aligned so making a access to obj desc fields is fine.
+ *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
- *   used, it could result in a unaligned access. To avoid this, below functions
+ *   used, it could result in an unaligned access. To avoid this, below functions
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
- *   this kind of structure assignmen should be avoided and below function used instead
+ *   this kind of structure assignment should be avoided and below function used instead
  *
  * \ingroup group_tivx_obj_desc
  */
@@ -938,12 +938,12 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
  *   IMPORTANT NOTE:
  *   On some SoCs, obj desc's are allocated in a memory region where
  *   unaligned access results in 'Bus Error'. The fields with a obj desc
- *   are properly aligned so making a access to obj desc fields is fine.
+ *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
- *   used, it could result in a unaligned access. To avoid this, below functions
+ *   used, it could result in an unaligned access. To avoid this, below functions
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
- *   this kind of structure assignmen should be avoided and below function used instead
+ *   this kind of structure assignment should be avoided and below function used instead
  *
  * \ingroup group_tivx_obj_desc
  */
@@ -955,12 +955,12 @@ void tivx_obj_desc_memcpy(volatile void *dst, volatile void *src, uint32_t size)
  *   IMPORTANT NOTE:
  *   On some SoCs, obj desc's are allocated in a memory region where
  *   unaligned access results in 'Bus Error'. The fields with a obj desc
- *   are properly aligned so making a access to obj desc fields is fine.
+ *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
- *   used, it could result in a unaligned access. To avoid this, below functions
+ *   used, it could result in an unaligned access. To avoid this, below functions
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
- *   this kind of structure assignmen should be avoided and below function used instead
+ *   this kind of structure assignment should be avoided and below function used instead
  *
  * \ingroup group_tivx_obj_desc
  */
@@ -973,16 +973,36 @@ void tivx_obj_desc_memset(volatile void *dst, uint8_t val, uint32_t size);
  *   IMPORTANT NOTE:
  *   On some SoCs, obj desc's are allocated in a memory region where
  *   unaligned access results in 'Bus Error'. The fields with a obj desc
- *   are properly aligned so making a access to obj desc fields is fine.
+ *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
- *   used, it could result in a unaligned access. To avoid this, below functions
+ *   used, it could result in an unaligned access. To avoid this, below functions
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
- *   this kind of structure assignmen should be avoided and below function used instead
+ *   this kind of structure assignment should be avoided and below function used instead
  *
  * \ingroup group_tivx_obj_desc
  */
 int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t size);
+
+/*!
+ * \brief Utility function for memory/string compare operation on object descriptor pointers with delimiter
+ *
+ *   The function only compares until there is a mismatch, it gets to the end of the string, or it gets to
+ *   the delimiter.  If the strings are the same before one of them reaches a delimiter, the result is still 0
+ *
+ *   IMPORTANT NOTE:
+ *   On some SoCs, obj desc's are allocated in a memory region where
+ *   unaligned access results in 'Bus Error'. The fields with a obj desc
+ *   are properly aligned so making an access to obj desc fields is fine.
+ *   But when APIs like strncpy, memcpy, memset are
+ *   used, it could result in an unaligned access. To avoid this, below functions
+ *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
+ *   this kind of structure assignment should be avoided and below function used instead
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+int32_t tivx_obj_desc_strncmp_delim(volatile void *dst, volatile void *src, uint32_t size, char delim);
 
 #ifdef __cplusplus
 }
