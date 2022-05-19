@@ -374,6 +374,9 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_NF);
+            #if defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_NF);
+            #endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {

@@ -728,6 +728,9 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_LDC1);
+            #if defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_LDC1);
+            #endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {

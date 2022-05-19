@@ -272,6 +272,12 @@ vx_status tivxAddKernelCapture(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE6);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE7);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE8);
+            #if defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE9);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE10);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE11);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE12);
+            #endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {

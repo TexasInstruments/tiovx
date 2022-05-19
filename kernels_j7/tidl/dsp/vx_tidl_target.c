@@ -83,8 +83,6 @@
 
 #define TIDL_COPY_NETWORK_BUF
 
-#define TIDL_MAX_TARGETS (8u)
-
 typedef struct
 {
     IVISION_BufDesc     inBufDesc[TIDL_MAX_ALG_IN_BUFS];
@@ -112,9 +110,7 @@ typedef struct
 
 } tivxTIDLObj;
 
-static tivx_target_kernel vx_tidl_target_kernel[TIDL_MAX_TARGETS] = {NULL};
-
-static char target_name[TIDL_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
+static char target_name[][TIVX_TARGET_MAX_NAME] =
 {
     TIVX_TARGET_DSP_C7_1_PRI_1,
     TIVX_TARGET_DSP_C7_1_PRI_2,
@@ -123,8 +119,38 @@ static char target_name[TIDL_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
     TIVX_TARGET_DSP_C7_1_PRI_5,
     TIVX_TARGET_DSP_C7_1_PRI_6,
     TIVX_TARGET_DSP_C7_1_PRI_7,
-    TIVX_TARGET_DSP_C7_1_PRI_8
+    TIVX_TARGET_DSP_C7_1_PRI_8,
+#if defined(SOC_J784S4)
+    TIVX_TARGET_DSP_C7_2_PRI_1,
+    TIVX_TARGET_DSP_C7_2_PRI_2,
+    TIVX_TARGET_DSP_C7_2_PRI_3,
+    TIVX_TARGET_DSP_C7_2_PRI_4,
+    TIVX_TARGET_DSP_C7_2_PRI_5,
+    TIVX_TARGET_DSP_C7_2_PRI_6,
+    TIVX_TARGET_DSP_C7_2_PRI_7,
+    TIVX_TARGET_DSP_C7_2_PRI_8,
+    TIVX_TARGET_DSP_C7_3_PRI_1,
+    TIVX_TARGET_DSP_C7_3_PRI_2,
+    TIVX_TARGET_DSP_C7_3_PRI_3,
+    TIVX_TARGET_DSP_C7_3_PRI_4,
+    TIVX_TARGET_DSP_C7_3_PRI_5,
+    TIVX_TARGET_DSP_C7_3_PRI_6,
+    TIVX_TARGET_DSP_C7_3_PRI_7,
+    TIVX_TARGET_DSP_C7_3_PRI_8,
+    TIVX_TARGET_DSP_C7_4_PRI_1,
+    TIVX_TARGET_DSP_C7_4_PRI_2,
+    TIVX_TARGET_DSP_C7_4_PRI_3,
+    TIVX_TARGET_DSP_C7_4_PRI_4,
+    TIVX_TARGET_DSP_C7_4_PRI_5,
+    TIVX_TARGET_DSP_C7_4_PRI_6,
+    TIVX_TARGET_DSP_C7_4_PRI_7,
+    TIVX_TARGET_DSP_C7_4_PRI_8,
+#endif
 };
+
+#define TIDL_MAX_TARGETS (sizeof(target_name)/sizeof(target_name[0]))
+
+static tivx_target_kernel vx_tidl_target_kernel[TIDL_MAX_TARGETS] = {NULL};
 
 /* OpenVX Node callbacks */
 static vx_status VX_CALLBACK tivxKernelTIDLCreate(tivx_target_kernel_instance kernel,
