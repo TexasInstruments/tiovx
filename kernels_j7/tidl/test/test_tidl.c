@@ -697,11 +697,33 @@ typedef struct {
     const char* network;
     uint32_t read_raw_padded;
     uint32_t trace_write_flag;
+    char* target_string_1;
+    char* target_string_2;
 } Arg;
 
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET1_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_2_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_2_PRI_1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_1))
+
+#define ADD_SET_TARGET2_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_2_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_2_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_2))
+#else
+#define ADD_SET_TARGET1_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1))
+
+#define ADD_SET_TARGET2_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_2))
+#endif
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET1_PARAMETERS, ADD_SET_TARGET2_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET1_PARAMETERS, ADD_SET_TARGET2_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
 
 static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
 {
@@ -743,7 +765,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_1));
 
     {
         uint32_t num_input_tensors  = 0;
@@ -794,6 +816,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         };
 
         ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, input_tensor, output_tensor), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string_1));
 
         if(arg_->read_raw_padded)
         {
@@ -911,8 +935,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_1));
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP_C7_1_PRI_2));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_2));
 
     {
         uint32_t num_input_tensors  = 0;
@@ -978,8 +1002,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
         ASSERT_VX_OBJECT(node1 = tivxTIDLNode(graph1, kernel, params1, input_tensor, output_tensor1), VX_TYPE_NODE);
         ASSERT_VX_OBJECT(node2 = tivxTIDLNode(graph2, kernel, params2, input_tensor, output_tensor2), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1_PRI_2));
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP_C7_1_PRI_1));
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, arg_->target_string_2));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, arg_->target_string_1));
 
         if(arg_->read_raw_padded)
         {

@@ -186,7 +186,27 @@ static vx_int32 write_output_image_nv12_8bit(char * file_name, vx_image out)
     return len1 ;
 }
 
-TEST(tivxHwaVpacViss, testNodeCreation)
+typedef struct
+{
+    const char* testName;
+    CT_Image(*generator)(const char* fileName, int width, int height);
+    char* target_string;
+
+} SetTarget_Arg;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC2_VISS1))
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1))
+#endif
+
+#define SET_NODE_TARGET_PARAMETERS \
+    CT_GENERATE_PARAMETERS("target", ADD_SET_TARGET_PARAMETERS, ARG, NULL)
+
+TEST_WITH_ARG(tivxHwaVpacViss, testNodeCreation, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
@@ -216,7 +236,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -244,7 +264,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -290,6 +310,7 @@ typedef struct {
     const char* testName;
     int width, height, exposures;
     vx_bool line_interleaved;
+    char* target_string;
 } Arg;
 
 #define ADD_SIZE_2048x1024(testArgName, nextmacro, ...) \
@@ -314,7 +335,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=640x480", __VA_ARGS__, 640, 480))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP1, ADD_LINE_FALSE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP1, ADD_LINE_FALSE, ADD_SET_TARGET_PARAMETERS, ARG), \
     /*CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP2, ADD_LINE_FALSE, ARG), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP3, ADD_LINE_FALSE, ARG), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP1, ADD_LINE_TRUE, ARG), \
@@ -356,7 +377,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     raw_params.meta_height_before = 0;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height;
@@ -405,7 +426,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -441,7 +462,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     }
 }
 
-TEST(tivxHwaVpacViss, testGraphProcessingFile)
+TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFile, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
@@ -473,7 +494,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
     raw_params.meta_height_before = 0;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height;
@@ -525,7 +546,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingFile)
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -606,6 +627,7 @@ typedef struct {
     int results_2a;
     int bypass_glbce;
     int bypass_nsf4;
+    char* target_string;
 } ArgDcc;
 
 static uint32_t viss_checksums_luma_ref[60] = {
@@ -679,7 +701,7 @@ static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a,
 #endif
 
 #define PARAMETERS_DCC \
-    CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ARG)
+    CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ADD_SET_TARGET_PARAMETERS, ARG)
 
 TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DCC)
 {
@@ -766,7 +788,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     raw_params.format[0].msb = 11;
     raw_params.meta_height_before = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height, i;
@@ -879,7 +901,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         ct_read_raw_image(raw, file_name, 2, downshift_bits);
 
@@ -962,6 +984,7 @@ typedef struct {
     const char* testName;
     int width, height, exposures, mux0, mux1, mux2, mux3, mux4;
     vx_bool line_interleaved;
+    char* target_string;
 } Arg_mux;
 
 static uint8_t isMuxValid(int mux0, int mux1, int mux2, int mux3, int mux4)
@@ -1046,7 +1069,7 @@ static uint8_t isMuxValid(int mux0, int mux1, int mux2, int mux3, int mux4)
    mux0 = 4, mux1 = 0 */
 
 #define MUX_PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x48, ADD_EXP1, ADD_MUX0, ADD_MUX1, ADD_MUX2, ADD_MUX3, ADD_MUX4, ADD_LINE_FALSE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x48, ADD_EXP1, ADD_MUX0, ADD_MUX1, ADD_MUX2, ADD_MUX3, ADD_MUX4, ADD_LINE_FALSE, ADD_SET_TARGET_PARAMETERS, ARG), \
 
 TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
     MUX_PARAMETERS
@@ -1080,7 +1103,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height;
@@ -1241,7 +1264,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMux, Arg_mux,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         if (VX_SUCCESS == vxVerifyGraph(graph))
         {
@@ -1331,7 +1354,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height;
@@ -1380,7 +1403,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testMuxNegative, Arg_mux,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         if (0 == isMuxValid(arg_->mux0, arg_->mux1, arg_->mux2, arg_->mux3, arg_->mux4))
         {
@@ -1996,7 +2019,7 @@ static vx_int32 ct_cmp_hist(vx_distribution hist, vx_distribution hist_ref)
     return error;
 }
 
-TEST(tivxHwaVpacViss, testGraphProcessingRaw)
+TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingRaw, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
@@ -2034,7 +2057,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
     CT_Image src0 = NULL, src1 = NULL,  src2 = NULL;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         vx_uint32 width, height;
@@ -2210,6 +2233,7 @@ typedef struct {
     const char* testName;
     int negative_test;
     int condition;
+    char* target_string;
 } ArgNegative;
 
 #define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
@@ -2237,7 +2261,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/condition=upper_negative", __VA_ARGS__, 3)), \
     CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 #define PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
+    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ADD_SET_TARGET_PARAMETERS, ARG)
 
 TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     PARAMETERS_NEGATIVE)
@@ -2271,7 +2295,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
     raw_params.meta_height_before = 5;
     raw_params.meta_height_after = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -2706,7 +2730,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         if(2 > arg_->condition)
         {

@@ -76,6 +76,9 @@ static char menu[] = {
     "\n 4: TI-DL"
 #endif
     "\n 5: MCU3_0/MCU3_1 demo"
+#if defined(SOC_J784S4)
+    "\n 6: MCU4_0/MCU4_1 demo"
+#endif
     "\n a: Run All"
     "\n"
     "\n x: Exit"
@@ -95,8 +98,14 @@ void vx_tutorial_run_all()
     vx_tutorial_graph_pipeline_run_all();
     if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
     {
-        vx_tutorial_mcu3_0_demo();
+        vx_tutorial_mcu_demo(vx_true_e);
     }
+#if defined(SOC_J784S4)
+    if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_1)))
+    {
+        vx_tutorial_mcu_demo(vx_false_e);
+    }
+#endif
 }
 
 void vx_tutorial_run_interactive()
@@ -131,13 +140,25 @@ void vx_tutorial_run_interactive()
             case '5':
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
                 {
-                    vx_tutorial_mcu3_0_demo();
+                    vx_tutorial_mcu_demo(vx_true_e);
                 }
                 else
                 {
                     printf("Demo is disabled as MCU3_0 or MCU3_1 is not enabled\n");
                 }
                 break;
+#if defined(SOC_J784S4)
+            case '6':
+                if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_1)))
+                {
+                    vx_tutorial_mcu_demo(vx_false_e);
+                }
+                else
+                {
+                    printf("Demo is disabled as MCU4_0 or MCU4_1 is not enabled\n");
+                }
+                break;
+#endif
             case 'a':
                 vx_tutorial_run_all();
                 break;

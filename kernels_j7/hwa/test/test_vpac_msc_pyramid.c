@@ -33,25 +33,32 @@ TESTCASE(tivxHwaVpacMscPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* testName;
-    int msc;
+    char* target_string;
     int dummy;
 } ArgCreate;
 
-/* Leaving enabled only for J7 b/c in PC emulation there is a conflict of CPU ID names */
-#ifdef J7
-#define ADD_MSC_INSTANCE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/MSC_2", __VA_ARGS__, 2))
+#ifndef PC
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC2))
 #else
-#define ADD_MSC_INSTANCE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1))
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2))
+#endif
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1))
 #endif
 
 #define ADD_DUMMY(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "", __VA_ARGS__, 0))
 
 #define PARAMETERS_CREATE \
-    CT_GENERATE_PARAMETERS("instance", ADD_MSC_INSTANCE, ADD_DUMMY, ARG)
+    CT_GENERATE_PARAMETERS("instance", ADD_SET_TARGET_PARAMETERS, ADD_DUMMY, ARG)
 
 
 TEST_WITH_ARG(tivxHwaVpacMscPyramid, testNodeCreation, ArgCreate, PARAMETERS_CREATE)
@@ -67,14 +74,8 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testNodeCreation, ArgCreate, PARAMETERS_CRE
     const vx_uint32 height   = 480;
     const vx_df_image format = VX_DF_IMAGE_U8;
     char nodeTarget[TIVX_TARGET_MAX_NAME];
-    char *target_name = TIVX_TARGET_VPAC_MSC1;
 
-    if(2 == arg_->msc)
-    {
-        target_name = TIVX_TARGET_VPAC_MSC2;
-    }
-
-    ASSERT(vx_true_e == tivxIsTargetEnabled(target_name));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
 
@@ -122,11 +123,11 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testNodeCreation, ArgCreate, PARAMETERS_CRE
 
         ASSERT_VX_OBJECT(node = tivxVpacMscPyramidNode(graph, input, pyr), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, target_name));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxQueryNode(node, TIVX_NODE_TARGET_STRING, &nodeTarget, sizeof(nodeTarget)));
 
-        ASSERT(strncmp(nodeTarget, target_name, TIVX_TARGET_MAX_NAME) == 0);
+        ASSERT(strncmp(nodeTarget, arg_->target_string, TIVX_TARGET_MAX_NAME) == 0);
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -575,7 +576,7 @@ typedef struct {
     const char* fileName;
     vx_border_t border;
     int width, height;
-    int msc;
+    char* target_string;
     vx_float32 scale;
 } Arg;
 
@@ -588,13 +589,9 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=256x256", __VA_ARGS__, 256, 256)), \
     CT_EXPAND(nextmacro(testArgName "/sz=640x480", __VA_ARGS__, 640, 480))
 
-#define ADD_MSC(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/MSC_1", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/MSC_2", __VA_ARGS__, 2))
-
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET_MODIFIED, ADD_MSC, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET_MODIFIED, ADD_SET_TARGET_PARAMETERS, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
 
 TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessing, Arg,
     PARAMETERS
@@ -614,8 +611,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessing, Arg,
 
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1));
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -641,14 +637,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessing, Arg,
             VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
         }
 
-        if (1 == arg_->msc)
-        {
-            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-        }
-        else
-        {
-            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
-        }
+        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -724,7 +713,7 @@ static uint32_t expected_cksm[] = {
     CT_EXPAND(nextmacro(testArgName "/TWO_THIRDS_SCALE", __VA_ARGS__, 0.66f)) \
 
 #define PARAMETERS_CKSUM \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_MSC, ADD_VX_SCALE_CKSUM, ARG, gaussian_pyramid_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS, ADD_VX_SCALE_CKSUM, ARG, gaussian_pyramid_read_image, "lena.bmp")
 
 TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
     PARAMETERS_CKSUM
@@ -745,8 +734,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
 
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1));
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC2));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -772,19 +760,12 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testGraphProcessingChecksum, Arg,
             VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
         }
 
-        if (1 == arg_->msc)
-        {
-            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
-        }
-        else
-        {
-            ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC2));
-        }
+        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxVerifyGraph(graph));
 
         /* Test half of the tests using control command for updating coefficients, other half using default */
-        if(arg_->msc == 1)
+        if((strncmp(TIVX_TARGET_VPAC_MSC1, arg_->target_string, TIVX_TARGET_MAX_NAME) == 0))
         {
             // Set custom filter coefficients
             vx_user_data_object coeff_obj;

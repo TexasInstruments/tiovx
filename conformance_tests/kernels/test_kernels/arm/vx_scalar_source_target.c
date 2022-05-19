@@ -246,6 +246,22 @@ void tivxAddTargetKernelScalarSource(void)
             status = (vx_status)VX_SUCCESS;
         }
     }
+    #if defined(SOC_J784S4)
+    else if ( (self_cpu == TIVX_CPU_ID_MCU4_0) ||
+              (self_cpu == TIVX_CPU_ID_MCU4_1) )
+    {
+        if (self_cpu == TIVX_CPU_ID_MCU4_0)
+        {
+            strncpy(target_name, TIVX_TARGET_MCU4_0, TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_MCU4_1)
+        {
+            strncpy(target_name, TIVX_TARGET_MCU4_1, TIVX_TARGET_MAX_NAME);
+            status = (vx_status)VX_SUCCESS;
+        }
+    }
+    #endif
     else
     {
         status = (vx_status)VX_FAILURE;

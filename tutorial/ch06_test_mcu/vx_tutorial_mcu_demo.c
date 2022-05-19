@@ -67,9 +67,9 @@
 #include <utility.h>
 #include <TI/tivx_test_kernels.h>
 #include <TI/tivx_capture.h>
-#include "vx_tutorial_mcu3_0_demo.h"
+#include "vx_tutorial_mcu_demo.h"
 
-void vx_tutorial_mcu3_0_demo()
+void vx_tutorial_mcu_demo(vx_bool use_mcu3_core)
 {
     vx_graph graph;
     vx_context context;
@@ -80,7 +80,7 @@ void vx_tutorial_mcu3_0_demo()
     vx_node node0, node1;
     vx_status status;
 
-    printf(" vx_tutorial_mcu3_0_demo: Tutorial Started !!! \n");
+    printf(" vx_tutorial_mcu_demo: Tutorial Started !!! \n");
     /**
      * - Create OpenVX context.
      *
@@ -111,25 +111,57 @@ void vx_tutorial_mcu3_0_demo()
      */
     node0 = tivxScalarSourceNode(graph, scalar);
     vxSetReferenceName((vx_reference)node0, "Scalar_Source 1");
-    if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+    if (vx_true_e == use_mcu3_core)
     {
-        vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+        if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+        {
+            vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+        }
+        else
+        {
+            vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+        }
     }
+    #if defined(SOC_J784S4)
     else
     {
-        vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+        if(tivxIsTargetEnabled(TIVX_TARGET_MCU4_0))
+        {
+            vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU4_0);
+        }
+        else
+        {
+            vxSetNodeTarget(node0, VX_TARGET_STRING, TIVX_TARGET_MCU4_1);
+        }
     }
+    #endif
 
     node1 = tivxScalarIntermediateNode(graph, scalar, scalar_out);
     vxSetReferenceName((vx_reference)node1, "Scalar_Source 2");
-    if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+    if (vx_true_e == use_mcu3_core)
     {
-        vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+        if(tivxIsTargetEnabled(TIVX_TARGET_MCU3_0))
+        {
+            vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_0);
+        }
+        else
+        {
+            vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+        }
     }
+    #if defined(SOC_J784S4)
     else
     {
-        vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU3_1);
+        if(tivxIsTargetEnabled(TIVX_TARGET_MCU4_0))
+        {
+            vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU4_0);
+        }
+        else
+        {
+            vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_MCU4_1);
+        }
     }
+    #endif
     /** \endcode */
 
 
@@ -250,6 +282,6 @@ void vx_tutorial_mcu3_0_demo()
     vxReleaseContext(&context);
     /** \endcode */
 
-    printf(" vx_tutorial_mcu3_0_demo: Tutorial Done !!! \n");
+    printf(" vx_tutorial_mcu_demo: Tutorial Done !!! \n");
     printf(" \n");
 }

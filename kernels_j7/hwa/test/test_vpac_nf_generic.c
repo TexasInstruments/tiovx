@@ -58,8 +58,27 @@ static void convolution_data_fill_random_128(int cols, int rows, vx_int16* data)
         data[i] = (vx_uint8)CT_RNG_NEXT_INT(*seed, (uint32_t)-128, 128);
 }
 
+typedef struct
+{
+    const char* testName;
+    CT_Image(*generator)(const char* fileName, int width, int height);
+    char* target_string;
 
-TEST(tivxHwaVpacNfGeneric, testNodeCreation)
+} SetTarget_Arg;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_NF", __VA_ARGS__, TIVX_TARGET_VPAC2_NF))
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF))
+#endif
+
+#define SET_NODE_TARGET_PARAMETERS \
+    CT_GENERATE_PARAMETERS("target", ADD_SET_TARGET_PARAMETERS, ARG, NULL)
+
+TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNodeCreation, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
@@ -71,7 +90,7 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
     vx_graph graph = 0;
     vx_node node = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -90,7 +109,7 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
 
         ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -247,6 +266,7 @@ typedef struct {
     vx_df_image dst_format;
     vx_border_t border;
     int width, height;
+    char* target_string;
 } Arg;
 
 typedef struct {
@@ -261,6 +281,7 @@ typedef struct {
     int width, height;
     int negative_test;
     int condition;
+    char* target_string;
 } ArgNegative;
 
 static uint32_t nf_generic_checksums_ref[4*7*2] = {
@@ -371,7 +392,7 @@ static uint32_t get_checksum(vx_int32 cols, vx_int32 rows, vx_int32 shift, void 
 #endif
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("lena", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("lena", ADD_CONV_SIZE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS, ARG, convolve_read_image, "lena.bmp")
 
 #define ADD_CONV_SIZE_NEGATIVE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/conv=5x5", __VA_ARGS__, 5, 5))
@@ -397,7 +418,7 @@ static uint32_t get_checksum(vx_int32 cols, vx_int32 rows, vx_int32 shift, void 
     CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 
 #define PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("testNegative", ADD_CONV_SIZE_NEGATIVE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS_NEGATIVE, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG, convolve_generate_random, NULL)
+    CT_GENERATE_PARAMETERS("testNegative", ADD_CONV_SIZE_NEGATIVE, ADD_CONV_SHIFT, ADD_CONV_GENERATORS_NEGATIVE, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ADD_SET_TARGET_PARAMETERS, ARG, convolve_generate_random, NULL)
 
 TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     PARAMETERS
@@ -419,7 +440,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     CT_Image src = NULL, dst = NULL;
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         rect.start_x = 0;
@@ -457,7 +478,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
@@ -468,9 +489,13 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
 
         ASSERT_NO_FAILURE(convolve_check(src, dst, border, arg_->cols, arg_->rows, data, arg_->shift, arg_->dst_format));
 
-        checksum_expected = get_checksum(arg_->cols, arg_->rows, arg_->shift, arg_->convolution_data_generator);
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-        ASSERT(checksum_expected == checksum_actual);
+        if (arg_->convolution_data_generator == convolution_data_fill_identity)
+        {
+            checksum_expected = get_checksum(arg_->cols, arg_->rows, arg_->shift, arg_->convolution_data_generator);
+            checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
+
+            ASSERT(checksum_expected == checksum_actual);
+        }
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -510,7 +535,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
     CT_Image src = NULL, dst = NULL;
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -740,7 +765,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
 
         ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 

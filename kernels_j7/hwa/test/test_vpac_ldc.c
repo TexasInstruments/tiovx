@@ -79,7 +79,28 @@
 
 TESTCASE(tivxHwaVpacLdc, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaVpacLdc, testNodeCreation)
+typedef struct
+{
+    const char* testName;
+    CT_Image(*generator)(const char* fileName, int width, int height);
+    char* target_string;
+
+} SetTarget_Arg;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_LDC1", __VA_ARGS__, TIVX_TARGET_VPAC_LDC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_LDC1", __VA_ARGS__, TIVX_TARGET_VPAC2_LDC1))
+#else
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_LDC1", __VA_ARGS__, TIVX_TARGET_VPAC_LDC1))
+#endif
+
+#define SET_NODE_TARGET_PARAMETERS \
+    CT_GENERATE_PARAMETERS("target", ADD_SET_TARGET_PARAMETERS, ARG, NULL)
+
+
+TEST_WITH_ARG(tivxHwaVpacLdc, testNodeCreation, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image input = 0, output = 0;
@@ -93,7 +114,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -145,7 +166,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
                                 output,
                                 NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -282,7 +303,7 @@ static vx_status save_image_from_ldc(vx_image y8, char *filename_prefix)
     return status;
 }
 
-TEST(tivxHwaVpacLdc, testGraphProcessingDcc)
+TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingDcc, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image input = 0, output = 0;
@@ -312,7 +333,7 @@ TEST(tivxHwaVpacLdc, testGraphProcessingDcc)
     sensor_dcc_id = 390;
     file_name = "psdkra/app_single_cam/IMX390_001/0_output1.yuv";
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -372,7 +393,7 @@ TEST(tivxHwaVpacLdc, testGraphProcessingDcc)
                                 output,
                                 NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
@@ -777,18 +798,21 @@ typedef struct {
     int input_mode;
     int output_mode;
     int mesh_mode;
+    char* target_string;
 } Arg;
 
 typedef struct {
     const char* testName;
     int input_data_format;
     int output_data_format;
+    char* target_string;
 } ArgFormats;
 
 typedef struct {
     const char* testName;
     int negative_test;
     int condition;
+    char* target_string;
 } ArgNegative;
 
 #define ADD_VX_BORDERS_WARP_AFFINE(testArgName, nextmacro, ...) \
@@ -820,7 +844,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/MESH_M1", __VA_ARGS__, 2))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES_LENA, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ARG, warp_affine_read_image_8u, "lena.bmp", 0, 0)
+    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_SMALL_SET, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_BILINEAR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ADD_VX_INPUT_MODES_LENA, ADD_VX_OUTPUT_MODES, ADD_VX_MESH_MODES, ADD_SET_TARGET_PARAMETERS, ARG, warp_affine_read_image_8u, "lena.bmp", 0, 0)
 
 #define ADD_VX_IN_FORMATS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_U8", __VA_ARGS__, VX_DF_IMAGE_U8)), \
@@ -840,7 +864,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/VX_DF_IMAGE_YUYV", __VA_ARGS__, VX_DF_IMAGE_YUYV))
 
 #define PARAMETERS_FORMATS \
-    CT_GENERATE_PARAMETERS("testFormats", ADD_VX_IN_FORMATS, ADD_VX_OUT_FORMATS, ARG)
+    CT_GENERATE_PARAMETERS("testFormats", ADD_VX_IN_FORMATS, ADD_VX_OUT_FORMATS, ADD_SET_TARGET_PARAMETERS, ARG)
 
 
 #define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
@@ -863,7 +887,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/condition=middle_negative", __VA_ARGS__, 4))
 
 #define PARAMETERS_NEGATIVE \
-    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
+    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ADD_SET_TARGET_PARAMETERS, ARG)
 
 static uint32_t ldc_checksums_ref[3*2*3*2*3] = {
     0x362f22f2, 0xd6dcdec7, 0xd6dcdec7, 0x362f22f2,
@@ -974,7 +998,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         rect.start_x = 0;
@@ -1052,7 +1076,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
                         dual_out_image),
                         VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
@@ -1426,7 +1450,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingPerspective, Arg,
 
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         rect.start_x = 0;
@@ -1505,7 +1529,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingPerspective, Arg,
                         dual_out_image),
                         VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
@@ -1590,10 +1614,11 @@ typedef struct {
     CT_Image(*generator)(const char* fileName, int width, int height);
     const char* fileName;
     int width, height;
+    char* target_string;
 } ArgCmd;
 
 #define PARAMETERS_CMD \
-    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_NONE, ARG, warp_affine_read_image_8u, "lena.bmp")
+    CT_GENERATE_PARAMETERS("lena", ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS, ARG, warp_affine_read_image_8u, "lena.bmp")
 
 TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD)
 {
@@ -1620,7 +1645,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
 
     CT_Image input = NULL, output = NULL, output2 = NULL, dual_out = NULL;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -1675,7 +1700,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessingCommand, ArgCmd, PARAMETERS_CMD
                         dual_out_image),
                         VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         //VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
@@ -1829,7 +1854,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
     uint32_t checksum_expected;
     vx_rectangle_t rect;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -1862,7 +1887,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testFormats, ArgFormats,
                         NULL),
                         VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         if (0 == isFormatComboValid(arg_->input_data_format, arg_->output_data_format, 0))
         {
@@ -1912,7 +1937,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -2207,7 +2232,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
                                 output,
                                 NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         if(2 > arg_->condition)
         {
@@ -2241,7 +2266,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeGraph, ArgNegative, PARAMETERS_NEGATIV
 }
 
 
-TEST(tivxHwaVpacLdc, testNegativeMatrixType)
+TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeMatrixType, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image input = 0, output = 0;
@@ -2255,7 +2280,7 @@ TEST(tivxHwaVpacLdc, testNegativeMatrixType)
     const vx_size matrix_cols = 2;
     const vx_size matrix_data_size = 2 * matrix_rows * matrix_cols;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
 
     {
         tivxHwaLoadKernels(context);
@@ -2280,7 +2305,7 @@ TEST(tivxHwaVpacLdc, testNegativeMatrixType)
                                 output,
                                 NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
         ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 

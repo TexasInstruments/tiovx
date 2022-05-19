@@ -60,4 +60,13 @@
 *
 */
 
-void vx_tutorial_mcu3_0_demo();
+/*
+ * \brief Additional MCU usage
+ *
+ *        Connects two nodes that and performs graph streaming between nodes
+ *
+ *        If use_mcu3_core is set to vx_true_e, this will use MCU3-0/MCU3-1
+ *        If use_mcu3_core is set to vx_false_e and using J784S4, this will
+ *        use MCU4-0/MCU4-1
+ */
+void vx_tutorial_mcu_demo(vx_bool use_mcu3_core);

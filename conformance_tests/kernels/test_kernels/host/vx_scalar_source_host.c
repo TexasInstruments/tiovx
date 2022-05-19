@@ -197,6 +197,10 @@ vx_status tivxAddKernelScalarSource(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_MCU2_1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MCU3_0);
             tivxAddKernelTarget(kernel, TIVX_TARGET_MCU3_1);
+            #if defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU4_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MCU4_1);
+            #endif
         }
         if (status == VX_SUCCESS)
         {

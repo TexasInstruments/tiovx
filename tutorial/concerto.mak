@@ -47,7 +47,7 @@ CH05_SOURCES := \
 	ch05_tidl/imagenet_class_labels.c \
 
 CH06_SOURCES := \
-	ch06_test_mcu3_0/vx_tutorial_mcu3_0_demo.c \
+	ch06_test_mcu/vx_tutorial_mcu_demo.c \
 
 ifeq ($(TARGET_PLATFORM),PC)
 CFLAGS += -DHOST_EMULATION
