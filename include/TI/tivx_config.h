@@ -291,7 +291,7 @@ extern "C" {
 #if defined(SOC_J6)
 #define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
 #else
-#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (64u)
+#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (128u)
 #endif
 
 /*!
