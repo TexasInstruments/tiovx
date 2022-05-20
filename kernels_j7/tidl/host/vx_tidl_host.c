@@ -68,12 +68,12 @@
 #include "tivx_kernels_host_utils.h"
 #include <stdio.h>
 
-static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
+static vx_status VX_CALLBACK tivxTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params,
             vx_meta_format metas[]);
 
-static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
+static vx_status VX_CALLBACK tivxTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params,
             vx_meta_format metas[])
@@ -257,7 +257,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
                                     kernel_id,
                                     NULL,
                                     num_params,
-                                    tivxAddKernelTIDLValidate,
+                                    tivxTIDLValidate,
                                     NULL,
                                     NULL);
 
