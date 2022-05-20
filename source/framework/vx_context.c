@@ -552,7 +552,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         {
             if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0U) )
             {
-                /* found free entry */
+                /* found kernel entry */
 
                 status = ownDeallocateUserKernelId(context, kernel);
 
@@ -560,7 +560,6 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                 {
                     context->kerneltable[idx] = NULL;
                     context->num_unique_kernels--;
-                    ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
                     tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                 }
                 else

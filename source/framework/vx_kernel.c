@@ -30,6 +30,24 @@
 
 #include <vx_internal.h>
 
+static vx_status ownDestructKernel(vx_reference ref);
+
+/* This will only get called if user calls vxRemoveKernel, AND all references
+ * are released */
+static vx_status ownDestructKernel(vx_reference ref)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+    vx_kernel kernel = (vx_kernel)ref;
+
+    if(kernel != NULL)
+    {
+        VX_PRINT(VX_ZONE_INFO, "Kernel %s destructor called (removed from context)\n", kernel->name);
+        status = ownRemoveKernelFromContext(kernel->base.context, kernel);
+    }
+    return status;
+}
+
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -226,8 +244,50 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
         }
         else
         {
-            /* remove from context if it exists in context */
-            ownRemoveKernelFromContext(kernel->base.context, kernel);
+            /* This is the first time vxRemoveKernel is called on this kernel */
+            if ( kernel->base.destructor_callback == NULL )
+            {
+                /* By default, we don't want to destruct user kernel unless user calls vxRemoveKernel,
+                 * at which point we set the destructor callback so that it gets removed when all references
+                 * are removed */
+                kernel->base.destructor_callback = &ownDestructKernel;
+
+                /* Decrementing internal ref count given when it was added to context.  Do this now even though
+                 * kernel will be removed in destructor.  This is needed so that the destructor will properly
+                 * get called when all other references have been released */
+                ownDecrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
+            }
+
+/* The following logic is to throw an error if :
+ *   1. vxRemoveKernel is called on a kernel more than once
+ *   2. the external reference count is > 1 when vxRemoveKernel is called
+ *   3. the internal reference count is > 0 when vxRemoveKernel is called.
+ *   The OpenVX specification says that a VX_FAILURE is returned if there are any remaining external or
+ *   internal references.
+ *   TIOVX deviates from the spec to give more application flexibility, and will allow this function to
+ *   be called with outstanding references, and the destructor should ensure that it is finally removed
+ *   when other references are released. In order to change to match OpenVX spec, remove #if 0 below */
+#if 0
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "vxRemoveKernel has been called on Kernel %s more than once, perhaps you meant to call vxReleaseKernel?\n", kernel->name);
+                status = (vx_status)VX_FAILURE;
+            }
+
+            if ( kernel->base.external_count > 1U ) /* Calling vxReleaseKernel below should decrement from 1 to 0 */
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Kernel %s has remaining external references, check if you have released \n", kernel->name);
+                VX_PRINT(VX_ZONE_ERROR, "  all associated references to the kernel object \n" );
+                status = (vx_status)VX_FAILURE;
+            }
+
+            if ( kernel->base.internal_count > 0U ) /* Calling ownDecrementReference above should have decremented this from 1 to 0 */
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Kernel %s has remaining internal references, check if you have released \n", kernel->name);
+                VX_PRINT(VX_ZONE_ERROR, "  all associated graphs (vxReleaseGraph) or removed all associated nodes (vxRemoveNode)\n" );
+                status = (vx_status)VX_FAILURE;
+            }
+#endif
 
             status = vxReleaseKernel(&kernel);
         }
@@ -361,8 +421,12 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                         kernel->signature.types[idx] = (vx_enum)VX_TYPE_INVALID;
                         kernel->signature.states[idx] = (vx_enum)VX_TYPE_INVALID;
                     }
+                    /* By default, we don't want to destruct user kernel unless user calls vxRemoveKernel,
+                     * at which point we set the destructor callback so that it gets removed when all references
+                     * are removed */
+                    kernel->base.destructor_callback = NULL;
                     kernel->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseKernel;
-                    if(kernel->is_target_kernel == (vx_bool)(vx_bool)vx_false_e)
+                    if(kernel->is_target_kernel == (vx_bool)vx_false_e)
                     {
                         /* for user kernel, add to HOST target by default */
                         tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
