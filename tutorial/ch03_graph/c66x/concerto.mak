@@ -18,7 +18,7 @@ include $(FINALE)
 
 endif
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_CPU), J721S2 J784S4))
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721S2 J784S4))
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7120))
 
