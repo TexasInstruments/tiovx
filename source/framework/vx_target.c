@@ -838,6 +838,10 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                     params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
                 }
             }
+
+            /* Linking the reference to the node object descriptor */
+            target_kernel_instance->node_obj_desc = node_obj_desc;
+
             /* copy border mode also in the target_kernel_instance */
             tivx_obj_desc_memcpy(&target_kernel_instance->border_mode, &node_obj_desc->border_mode, (uint32_t)sizeof(vx_border_t));
 

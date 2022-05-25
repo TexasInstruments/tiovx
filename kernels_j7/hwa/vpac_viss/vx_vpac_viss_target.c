@@ -808,7 +808,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_user_data_object_t *config_desc = NULL;
     tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
     tivx_obj_desc_user_data_object_t *h3a_out_desc = NULL;
-    uint64_t cur_time;
+    uint64_t start_time, cur_time;
     tivx_ae_awb_params_t   aewb_params;
 
     /* Check for mandatory descriptor */
@@ -1008,9 +1008,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        tivxLogRtTraceKernelInstanceExeStart(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA);
         vhwaVissRestoreCtx(vissObj);
+        tivxLogRtTraceKernelInstanceExeEnd(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA);
 
-        cur_time = tivxPlatformGetTimeInUsecs();
+        start_time = tivxPlatformGetTimeInUsecs();
+
+        tivxLogRtTraceKernelInstanceExeStart(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_HWA);
 
         /* Submit the request to the driver */
         fvid2_status = Fvid2_processRequest(vissObj->handle, &vissObj->inFrmList,
@@ -1034,15 +1038,18 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
         }
 
-        cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
+        cur_time = tivxPlatformGetTimeInUsecs();
+        tivxLogRtTraceKernelInstanceExeEnd(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_HWA);
 
+        tivxLogRtTraceKernelInstanceExeStart(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA);
         vhwaVissSaveCtx(vissObj);
+        tivxLogRtTraceKernelInstanceExeEnd(kernel, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA);
     }
 
     if ((vx_status)VX_SUCCESS == status)
     {
         appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
-            (uint32_t)cur_time,
+            (uint32_t)(cur_time-start_time),
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
             );
     }

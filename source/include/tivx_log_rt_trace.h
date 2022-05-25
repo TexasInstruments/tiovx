@@ -77,6 +77,25 @@ extern "C" {
  * \ingroup group_tivx_log_rt_trace
  */
 
+
+/*!
+ * \brief Init run-time logger module
+ *
+ * - Called internally during tivxInit. Should NOT be called by user
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtInit();
+
+/*!
+ * \brief Reset shared memory used for logging
+ *
+ * - Called internally during tivxInit. Should NOT be called by user
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtResetShm(void *shm_base, uint32_t shm_size);
+
 /*!
  * \brief Log trace on node execute start
  *
@@ -118,7 +137,6 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj
  * \ingroup group_tivx_log_rt_trace
  */
 void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc);
-
 
 #ifdef __cplusplus
 }

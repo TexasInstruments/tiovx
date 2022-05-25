@@ -78,6 +78,7 @@ vx_status tivxTargetKernelInstanceInit(void)
         g_target_kernel_instance_table[i].index = i;
         g_target_kernel_instance_table[i].state = (vx_enum)VX_NODE_STATE_STEADY;
         g_target_kernel_instance_table[i].is_kernel_instance_replicated = (vx_bool)vx_false_e;
+        g_target_kernel_instance_table[i].node_obj_desc = NULL;
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
@@ -134,6 +135,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
                     tmp_kernel_instance->kernel_context_size = 0;
                     tmp_kernel_instance->kernel = kernel;
                     tmp_kernel_instance->is_kernel_instance_replicated = (vx_bool)vx_false_e;
+                    tmp_kernel_instance->node_obj_desc = NULL;
                     if (kernel->num_pipeup_bufs > 1U)
                     {
                         tmp_kernel_instance->state = (vx_enum)VX_NODE_STATE_PIPEUP;

@@ -1,4 +1,4 @@
-/* 
+/*
 *
 * Copyright (c) 2018 Texas Instruments Incorporated
 *
@@ -75,53 +75,60 @@
 
 /** \brief Event logger queue header, structure size MUST be 64b aligned */
 typedef struct {
-    
+
     uint32_t rd_index;     /**< queue read index within event log */
     uint32_t wr_index;     /**< queue write index within event log */
     uint32_t count;        /**< number of element in queue */
-    uint32_t rsv[1];       /**< used to aligned to 64b */  
-    
+    uint32_t rsv[1];       /**< used to aligned to 64b */
+
 } tivx_log_rt_queue_t;
 
 /** \brief Event logger shared memory data structure header */
 typedef struct {
-    
+
     tivx_log_rt_queue_t queue; /**< event logger queue header */
     tivx_log_rt_index_t index[TIVX_LOG_RT_INDEX_MAX]; /**< event logger index entries */
-    
+
 } tivx_log_rt_shm_header_t;
 
 /** \brief Event logger object */
 typedef struct {
-    
+
     vx_bool is_valid; /**< vx_true_e: event logging is valid and can be used, else event logging is not supported */
-    
+
     void    *log_rt_shm_base; /**< base address of shared memory */
     uint32_t log_rt_shm_size; /**< size of shared memory */
-    
+
     tivx_log_rt_queue_t *queue; /**< pointer to queue header within shared memory */
     tivx_log_rt_index_t *index; /**< pointer to identifier index within shared memory */
-    
+
     tivx_log_rt_entry_t *event_log_base; /**< pointer to event log within shared memory */
     uint32_t event_log_max_entries; /**< max possible events in event log */
-    
+
 } tivx_log_rt_obj_t;
 
 static tivx_log_rt_obj_t g_tivx_log_rt_obj;
 
+static void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name);
+static vx_bool tivxLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class);
+static vx_bool tivxLogRtTraceFindEventName(char *event_name);
+static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable);
+static void tivxLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type);
+
+
 void tivxLogRtInit()
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-    
+
     memset(obj, 0, sizeof(tivx_log_rt_obj_t));
-        
+
     tivxPlatformGetLogRtShmInfo(&obj->log_rt_shm_base, &obj->log_rt_shm_size);
-    
+
     if(obj->log_rt_shm_base != NULL && obj->log_rt_shm_size > sizeof(tivx_log_rt_shm_header_t))
     {
         obj->is_valid = vx_true_e;
     }
-    
+
     if(obj->is_valid)
     {
         obj->queue          = (tivx_log_rt_queue_t*)( (uintptr_t)obj->log_rt_shm_base );
@@ -133,17 +140,17 @@ void tivxLogRtInit()
 
 void tivxLogRtResetShm(void *shm_base, uint32_t shm_size)
 {
-    tivx_log_rt_queue_t *queue; 
+    tivx_log_rt_queue_t *queue;
     tivx_log_rt_index_t *index;
     uint32_t i;
-    
+
     queue = (tivx_log_rt_queue_t*)( (uintptr_t)shm_base );
     index = (tivx_log_rt_index_t*)( (uintptr_t)shm_base + sizeof(tivx_log_rt_queue_t) );
 
     queue->rd_index = 0;
     queue->wr_index = 0;
     queue->count = 0;
-    
+
     for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
     {
         index[i].event_class = TIVX_LOG_RT_EVENT_CLASS_INVALID;
@@ -157,14 +164,14 @@ static vx_bool tivxLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     vx_bool is_found = vx_false_e;
-    
+
     if(obj->is_valid)
     {
         uint32_t i;
-        
+
         for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
         {
-            if(    obj->index[i].event_class == event_class 
+            if(    obj->index[i].event_class == event_class
                 && obj->index[i].event_id == event_id
                 )
             {
@@ -180,14 +187,14 @@ static vx_bool tivxLogRtTraceFindEventName(char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     vx_bool is_found = vx_false_e;
-    
+
     if(obj->is_valid)
     {
         uint32_t i;
-        
+
         for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
         {
-            if( tivx_obj_desc_strncmp(obj->index[i].event_name, event_name, TIVX_LOG_RT_EVENT_NAME_MAX) 
+            if( tivx_obj_desc_strncmp(obj->index[i].event_name, event_name, TIVX_LOG_RT_EVENT_NAME_MAX)
                 == 0
                 )
             {
@@ -199,15 +206,15 @@ static vx_bool tivxLogRtTraceFindEventName(char *event_name)
     return is_found;
 }
 
-void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
+static void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-    
+
     if(obj->is_valid)
     {
         uint32_t i;
         vx_bool do_add_event = vx_true_e;
-        
+
         if(tivxLogRtTraceFindEventId(event_id, event_class)==vx_true_e)
         {
             VX_PRINT(VX_ZONE_WARNING,"Log RT event %ld of event class %d already exists, not adding again\n", event_id, (uint32_t)event_class);
@@ -218,12 +225,12 @@ void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *
             if(tivxLogRtTraceFindEventName(event_name)==vx_true_e)
             {
                 VX_PRINT(VX_ZONE_WARNING,"Log RT event name %s of event %ld of event class %d already exists, not adding again."
-                    "Recommend to use a unique event name.\n", 
+                    "Recommend to use a unique event name.\n",
                     event_name, event_id, (uint32_t)event_class);
                 do_add_event = vx_false_e;
             }
         }
-        if(do_add_event)        
+        if(do_add_event)
         {
             for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
             {
@@ -243,14 +250,14 @@ void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *
 void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
-    
+
     if(obj->is_valid)
     {
         uint32_t i;
-        
+
         for(i=0; i<TIVX_LOG_RT_INDEX_MAX; i++)
         {
-            if(    obj->index[i].event_class == event_class 
+            if(    obj->index[i].event_class == event_class
                 && obj->index[i].event_id == event_id)
             {
                 /* index entry found, mark it as empty */
@@ -270,21 +277,21 @@ static vx_status tivxLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_writ
     uint32_t write_size;
     ssize_t ret_size;
     vx_status status = VX_SUCCESS;
-    
+
     while(buf != NULL && bytes_to_write != 0)
     {
         if(bytes_to_write < tmp_buf_size)
             write_size = bytes_to_write;
         else
             write_size = tmp_buf_size;
-            
-        
-            
+
+
+
         tivx_obj_desc_memcpy(tmp_buf, buf, write_size);
         ret_size = write(fd, tmp_buf, write_size);
         buf += write_size;
         bytes_to_write -= write_size;
-       
+
         if(ret_size < write_size)
         {
             status = VX_FAILURE;
@@ -302,9 +309,9 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 
     int fd = -1;
     vx_bool is_write_to_file = vx_false_e;
-    
+
     if(obj->is_valid)
-    {    
+    {
         if(filename!=NULL)
         {
             fd = open(filename, O_CREAT | O_WRONLY, S_IRWXU | S_IRWXG | S_IRWXO );
@@ -318,13 +325,13 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                 is_write_to_file = vx_true_e;
             }
         }
-        
+
         if( status==VX_SUCCESS )
         {
             uint32_t tmp_buf_size = 128*1024;
             void *tmp_buf = malloc(tmp_buf_size);
             uint32_t num_log_entries;
-            
+
             if(tmp_buf == NULL)
             {
                 status = VX_FAILURE;
@@ -339,33 +346,33 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                 bytes_to_write_2 = 0;
                 buf_1 = NULL;
                 buf_2 = NULL;
-                
+
                 tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
-            
+
                 if(is_write_to_file)
                 {
                     buf_1 = (uint8_t*)obj->index;
                     bytes_to_write_1 = TIVX_LOG_RT_INDEX_MAX*sizeof(tivx_log_rt_index_t);
-                    
-                    status = tivxLogRtFileWrite(fd, 
-                        buf_1, bytes_to_write_1, 
+
+                    status = tivxLogRtFileWrite(fd,
+                        buf_1, bytes_to_write_1,
                         tmp_buf, tmp_buf_size);
-                    
+
                     if(status != VX_SUCCESS)
-                    {    
-                        VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log index\n");                        
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log index\n");
                     }
                 }
-        
+
                 tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
-                
+
                 bytes_to_write_1 = 0;
                 bytes_to_write_2 = 0;
                 buf_1 = NULL;
                 buf_2 = NULL;
-        
+
                 tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
-                
+
                 num_log_entries = queue->count;
                 if(num_log_entries > 0)
                 {
@@ -378,100 +385,133 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                     {
                         bytes_to_write_1 = (obj->event_log_max_entries - queue->rd_index)*sizeof(tivx_log_rt_entry_t);
                         buf_1 = (uint8_t*)&obj->event_log_base[queue->rd_index];
-                        
+
                         bytes_to_write_2 = queue->wr_index*sizeof(tivx_log_rt_entry_t);
                         buf_2 = (uint8_t*)&obj->event_log_base[0];
-                    }                    
+                    }
                 }
-                
+
                 tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
-                
+
                 if(is_write_to_file)
                 {
                     if(status == VX_SUCCESS)
                     {
-                        status = tivxLogRtFileWrite(fd, 
-                            buf_1, bytes_to_write_1, 
+                        status = tivxLogRtFileWrite(fd,
+                            buf_1, bytes_to_write_1,
                             tmp_buf, tmp_buf_size);
-                            
+
                         if(status == VX_SUCCESS)
-                        {    
-                            tivxLogRtFileWrite(fd, 
-                                buf_2, bytes_to_write_2, 
+                        {
+                            tivxLogRtFileWrite(fd,
+                                buf_2, bytes_to_write_2,
                                 tmp_buf, tmp_buf_size);
                         }
-                        
+
                         if(status != VX_SUCCESS)
-                        {    
-                            VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log\n");                        
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Unable to write run-time log\n");
                         }
                     }
                 }
-                
+
                 if(num_log_entries > 0)
                 {
                     volatile uint32_t tmp;
-                    
+
                     tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
-                    queue->count -= num_log_entries;    
+                    queue->count -= num_log_entries;
                     queue->rd_index = (queue->rd_index + num_log_entries) % obj->event_log_max_entries;
                     tmp = queue->count;
                     tmp; /* readback to make sure update has reached the memory */
                     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
                 }
-                
+
                 free(tmp_buf);
             }
-            
+
             if(is_write_to_file)
             {
                 close(fd);
             }
         }
     }
-    
+
     return status;
 }
 #endif
 
-void tivxLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type)
+static void tivxLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     tivx_log_rt_entry_t *entry;
     tivx_log_rt_queue_t *queue = obj->queue;
     volatile uint32_t tmp;
-    
+
     if(obj->is_valid)
     {
         tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT);
-        
+
         if( queue->count < obj->event_log_max_entries )
         {
             entry = &obj->event_log_base[queue->wr_index];
-            
+
             entry->timestamp   = timestamp;
             entry->event_id    = event_id;
             entry->event_value = event_value;
             entry->event_class = event_class;
             entry->event_type  = event_type;
-                    
+
             queue->wr_index = (queue->wr_index+1) % obj->event_log_max_entries;
             queue->count++;
-            
+
             tmp = queue->count; /* readback to make sure update has reached the memory */
             tmp;
         }
-    
-        tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);   
+
+        tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_LOG_RT);
     }
 }
+
+void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, char *event_name)
+{
+    char name[TIVX_LOG_RT_EVENT_NAME_MAX];
+    snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
+    tivxLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
+}
+
+void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index)
+{
+    tivxLogRtTraceRemoveEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, NULL);
+}
+
+void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, uint16_t event_index)
+{
+    if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            kernel->node_obj_desc->base.host_ref+event_index, 0,
+            TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_START);
+    }
+}
+
+void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint16_t event_index)
+{
+    if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
+    {
+        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            kernel->node_obj_desc->base.host_ref+event_index, 0,
+            TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_END);
+    }
+}
+
 
 void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc)
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp, 
-            node_obj_desc->base.host_ref, node_obj_desc->pipeline_id, 
+        tivxLogRtTraceLogEvent(timestamp,
+            node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
 }
@@ -480,8 +520,8 @@ void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp, 
-            node_obj_desc->base.host_ref, node_obj_desc->pipeline_id, 
+        tivxLogRtTraceLogEvent(timestamp,
+            node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }
@@ -490,8 +530,8 @@ void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *grap
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp, 
-            graph_obj_desc->base.obj_desc_id, graph_obj_desc->pipeline_id, 
+        tivxLogRtTraceLogEvent(timestamp,
+            graph_obj_desc->base.obj_desc_id, graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_START);
     }
 }
@@ -500,9 +540,9 @@ void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp, 
-            graph_obj_desc->base.obj_desc_id, 
-            graph_obj_desc->pipeline_id, 
+        tivxLogRtTraceLogEvent(timestamp,
+            graph_obj_desc->base.obj_desc_id,
+            graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }
@@ -511,8 +551,8 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(), 
-            target->target_id, 0, 
+        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_START);
     }
 }
@@ -521,8 +561,8 @@ void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_d
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(), 
-            target->target_id, 0, 
+        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+            target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }
@@ -540,7 +580,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
         && (graph->verified == (vx_bool)vx_true_e))
     {
         tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);
-        
+
         for(target_id=0; target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH; target_id++)
         {
             targets[target_id] = (vx_enum)TIVX_TARGET_ID_INVALID;
@@ -579,7 +619,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
                     }
                 }
                 if(node->obj_desc[0] != NULL)
-                {                    
+                {
                     vx_bool done = (vx_bool)vx_false_e;
                     for(target_id=0;target_id<TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH;target_id++)
                     {
@@ -601,16 +641,16 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
                 }
             }
         }
-        
+
         if(is_enable)
         {
             tivxLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
         }
         else
         {
-            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);            
+            tivxLogRtTraceRemoveEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
         }
-        
+
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
             if(graph->obj_desc[pipe_id] != NULL)
@@ -637,7 +677,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
             }
 
             tivxPlatformGetTargetName(targets[target_id], target_name);
-            
+
             if(is_enable)
             {
                 tivxLogRtTraceAddEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);

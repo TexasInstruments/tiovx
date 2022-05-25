@@ -77,68 +77,51 @@ extern "C" {
 
 
 /*!
- * \brief Enable run-time logging of graph trace 
- * 
- *        - By default run-time logging is disabled.
- *        - This API MUST be called after vxVerifyGraph and before starting the graph execution
+ * \brief Enable run-time logging of graph trace
+ *
+ *  - By default run-time logging is disabled.
+ *  - This API MUST be called after vxVerifyGraph and before starting the graph execution
  *
  * \param [in] graph Graph reference
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_log_rt_trace_host
  */
 vx_status VX_API_CALL tivxLogRtTraceEnable(vx_graph graph);
 
 /*!
- * \brief Sisable run-time logging of graph trace 
- * 
- *        - By default run-time logging is disabled.
- *        - This API MUST be called after graph executions have stopped and before calling vxReleaseGraph 
+ * \brief Sisable run-time logging of graph trace
+ *
+ *  - By default run-time logging is disabled.
+ *  - This API MUST be called after graph executions have stopped and before calling vxReleaseGraph
  *
  * \param [in] graph Graph reference
  *
- * \ingroup group_tivx_ext_host
+ * \ingroup group_tivx_log_rt_trace_host
  */
 vx_status VX_API_CALL tivxLogRtTraceDisable(vx_graph graph);
 
 /*!
  * \brief Saved current log events to file and clear the event log memory
- * 
- *        - This API can be called while graphs are executing
- *        - Each time API is called, current log events are saved to the file 'filename'
- *          and existing log is cleared.
- *        - Calling this API periodically avoids the event log from getting full.
- *        - Thus this API allows to continously store data to a file on the filesystem, limited only by the
- *          size of free space on the filesystem.
- *        - The data stored in the file can be visualized by doing below
- *          - Copy the saved file(s) to PC
- *          - Convert the binary data to 'VCD - Value Change Dump' format
- *          - Use a opensource tool like gtkwave to visualize the data 
- * 
+ *
+ * - This API can be called while graphs are executing
+ * - Each time API is called, current log events are saved to the file 'filename'
+ *   and existing log is cleared.
+ * - Calling this API periodically avoids the event log from getting full.
+ * - Thus this API allows to continously store data to a file on the filesystem, limited only by the
+ *   size of free space on the filesystem.
+ * - The data stored in the file can be visualized by doing below
+ * - Copy the saved file(s) to PC
+ * - Convert the binary data to 'VCD - Value Change Dump' format
+ * - Use a opensource tool like gtkwave to visualize the data
+ *
  * \param [in] filename Filename to save the log data into. When filename is NULL, data is not saved, only the event log is cleared.
  *
- * \ingroup group_tivx_ext_host
+ * \pre \ref tivxLogRtTraceEnable
+ *
+ * \ingroup group_tivx_log_rt_trace_host
  */
 vx_status VX_API_CALL tivxLogRtTraceExportToFile(char *filename);
 
-
-/*!
- * \brief Reset shared memory used for logging
- * 
- *        - Called internally during tivxInit. Should NOT be called by user
- * 
- * \ingroup group_tivx_ext_host
- */
-void tivxLogRtResetShm(void *shm_base, uint32_t shm_size);
-
-
-/*!
- * \brief Init run-time logger module
- * 
- *        - Called internally during tivxInit. Should NOT be called by user
- * 
- * \ingroup group_tivx_ext_host
- */
-void tivxLogRtInit();
 
 #ifdef __cplusplus
 }

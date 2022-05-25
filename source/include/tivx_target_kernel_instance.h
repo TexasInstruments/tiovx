@@ -114,6 +114,9 @@ typedef struct _tivx_target_kernel_instance {
     /*! flag indicating whether or not the parameter is replicated */
     vx_bool is_kernel_instance_replicated;
 
+    /*! \brief Pointer to object descriptor of corresponding node */
+    tivx_obj_desc_node_t *node_obj_desc;
+
 } tivx_target_kernel_instance_t;
 
 /*!

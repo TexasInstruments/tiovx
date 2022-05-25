@@ -270,6 +270,66 @@ static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_v
     *flag_var = value;
 }
 
+/*!
+ * \brief Add real-time log event in host side initilize callback for user kernel
+ *
+ * - This API is intended to be called from within the initialization callback
+ *   of a user kernel.
+ * - For a given node, multiple such events can be added, therefore each one should be
+ *   given a different index used to identify the event within the node.
+ * - Since the scope of the indexing is within a single node, it is permissible to reuse
+ *   index values across nodes without any issue (for example, event_index of 0 can be used at
+ *   most once per node).
+ *
+ * \param [in] node         The node object that the event is to be asociated with
+ * \param [in] event_index  Unique identifier of specific event within node
+ * \param [in] *event_name  The node object associated with the event
+ *
+ * \ingroup group_tivx_log_rt_trace_host
+ */
+void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, char *event_name);
+
+/*!
+ * \brief Remove real-time log event in host side deinitilize callback for user kernel
+ *
+ * - This API is intended to be called from within the deinitialization callback
+ *   of a user kernel.
+ *
+ * \param [in] node         The node object that the event is to be asociated with
+ * \param [in] event_index  Unique identifier of specific event within node
+ *
+ * \pre \ref tivxLogRtTraceKernelInstanceAddEvent
+ * \ingroup group_tivx_log_rt_trace_host
+ *
+ */
+void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index);
+
+/*!
+ * \brief Log trace on target kernel instance execute start
+ *
+ * - This API is intended to be called from within a target-side callback
+ *   of a user kernel (process callback, for example).
+ *
+ * \param [in] kernel       The target kernel instance object from the argument list of the target side callback
+ * \param [in] event_index  Event index to trigger the start trace for
+ *
+ * \ingroup group_tivx_log_rt_trace_target
+ */
+void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, uint16_t event_index);
+
+/*!
+ * \brief Log trace on target kernel instance execute end
+ *
+ * - This API is intended to be called from within a target-side callback
+ *   of a user kernel (process callback, for example).
+ *
+ * \param [in] kernel       The target kernel instance object from the argument list of the target side callback
+ * \param [in] event_index  Event index to trigger the end trace for
+ *
+ * \ingroup group_tivx_log_rt_trace_target
+ */
+void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint16_t event_index);
+
 #ifdef __cplusplus
 }
 #endif

@@ -85,6 +85,9 @@ extern "C" {
 
 #define TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT          (5U)
 
+#define TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_HWA       (0U)
+#define TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA       (1U)
+
 #ifdef __cplusplus
 }
 #endif

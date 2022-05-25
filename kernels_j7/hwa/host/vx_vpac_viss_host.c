@@ -75,6 +75,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVpacVissInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+static vx_status VX_CALLBACK tivxAddKernelVpacVissDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
 
 static void tivx_vpac_viss1_params_init(tivx_vpac_viss_params_t *prms);
 
@@ -826,8 +829,38 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissInitialize(vx_node node,
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivxLogRtTraceKernelInstanceAddEvent(node, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_HWA, "VISS_HWA");
+        tivxLogRtTraceKernelInstanceAddEvent(node, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA, "VISS_DMA");
+    }
+
     return status;
 }
+
+static vx_status VX_CALLBACK tivxAddKernelVpacVissDeinitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if ((num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS) ||
+        (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX]) ||
+        (NULL == parameters[TIVX_KERNEL_VPAC_VISS_RAW_IDX]))
+    {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        tivxLogRtTraceKernelInstanceRemoveEvent(node, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_HWA);
+        tivxLogRtTraceKernelInstanceRemoveEvent(node, TIVX_KERNEL_VPAC_VISS_RT_TRACE_OFFSET_DMA);
+    }
+
+    return status;
+}
+
 
 vx_status tivxAddKernelVpacViss(vx_context context)
 {
@@ -852,7 +885,7 @@ vx_status tivxAddKernelVpacViss(vx_context context)
                     TIVX_KERNEL_VPAC_VISS_MAX_PARAMS,
                     tivxAddKernelVpacVissValidate,
                     tivxAddKernelVpacVissInitialize,
-                    NULL);
+                    tivxAddKernelVpacVissDeinitialize);
 
         status = vxGetStatus((vx_reference)kernel);
     }

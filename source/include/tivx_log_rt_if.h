@@ -63,7 +63,7 @@
 
 
 #ifndef TIVX_LOG_RT_IF_H_
-#define TIVX_LOG_RT_IF_H_ 
+#define TIVX_LOG_RT_IF_H_
 
 #include <stdint.h>
 
@@ -79,6 +79,9 @@
 #define TIVX_LOG_RT_EVENT_CLASS_GRAPH       (0x1u)
 /** \brief EVent Class: Target */
 #define TIVX_LOG_RT_EVENT_CLASS_TARGET      (0x2u)
+/** \brief EVent Class: Kernel instance */
+#define TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE (0x3u)
+
 /** \brief EVent Class: Invalid */
 #define TIVX_LOG_RT_EVENT_CLASS_INVALID     (0xFFFFu)
 
@@ -89,23 +92,23 @@
 
 /** \brief Event indetifier to event name index */
 typedef struct {
-    
+
     uint64_t event_id;    /**< event indentifier */
     uint16_t event_class; /**< event class */
-    uint16_t rsv[3];      /**< used to aligned to 64b */ 
+    uint16_t rsv[3];      /**< used to aligned to 64b */
     uint8_t  event_name[TIVX_LOG_RT_EVENT_NAME_MAX]; /**< event indentifier name */
-    
+
 } tivx_log_rt_index_t;
 
 /** \brief Event logger event entry */
 typedef struct {
-    
+
     uint64_t timestamp;   /**< timestamp of the event */
     uint64_t event_id;    /**< event identifier */
     uint32_t event_value; /**< event value */
     uint16_t event_class; /**< event class */
     uint16_t event_type;  /**< event type */
-    
+
 } tivx_log_rt_entry_t;
 
 
