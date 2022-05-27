@@ -1,4 +1,4 @@
-
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7))
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F))
 ifeq ($(BUILD_HWA_KERNELS),yes)
 
@@ -19,6 +19,7 @@ endif
 
 include $(FINALE)
 
+endif
 endif
 endif
 
