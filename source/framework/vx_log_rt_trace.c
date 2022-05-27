@@ -477,7 +477,11 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
 {
     char name[TIVX_LOG_RT_EVENT_NAME_MAX];
     snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
-    tivxLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
+
+    if(vx_false_e == tivxLogRtTraceFindEventName(name))
+    {
+        tivxLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
+    }
 }
 
 void tivxLogRtTraceKernelInstanceRemoveEvent(vx_node node, uint16_t event_index)
