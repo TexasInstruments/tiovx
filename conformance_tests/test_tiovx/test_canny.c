@@ -18,6 +18,7 @@
 #include "test_tiovx.h"
 #include <stdint.h>
 #include <VX/vx.h>
+#include <VX/vx_compatibility.h>
 #include <stdio.h>
 #include "shared_functions.h"
 
@@ -30,6 +31,8 @@
 #define CREF_EDGE 2
 #define CREF_LINK 1
 #define CREF_NONE 0
+
+#define MAXLENGTH   (512u)
 
 
 static uint8_t box3x3_calculate(CT_Image src, uint32_t x, uint32_t y)
@@ -844,6 +847,138 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
     printPerformance(perf_graph, lena->width*lena->height, "G");
 }
 
+TEST(tivxCanny, robustnessTest)
+{
+    vx_context context = context_->vx_context_;
+
+    const vx_uint32 imageWidth = 300;
+    const vx_uint32 imageHeight = 300;
+    const vx_uint32 imageChannel = 3;
+    vx_image inputImage = vxCreateImage(context, imageWidth, imageHeight, VX_DF_IMAGE_RGB);
+    VX_CALL(vxSetReferenceName( (vx_reference)inputImage, "inputImage"));
+    vx_image outputImage = vxCreateImage(context, imageWidth, imageHeight, VX_DF_IMAGE_RGB);
+    VX_CALL(vxSetReferenceName( (vx_reference)outputImage, "outputImage"));
+
+    /// Create the graph
+    // It creates a graph with one input image and one output image (both RGB) which can be provided through the mechanism of graph parameters.
+    // Graph converts first input RGB image into greyscale image to find edges using Canny Edge Detector after smoothing with Gaussian filter.
+    // Then, it makes the edges black and AND the edges back with the Y value so as to super-impose a black background.
+    // Finally, it converts greyscale image into RGB image and stores it in output image.
+    vx_graph graph = vxCreateGraph(context);
+
+    const vx_uint8 numyuv = 2; // Number of YUV images needed
+    const vx_uint8 numu8 = 15; // Number of U8 images needed
+    const vx_uint8 numnodes = numyuv+numu8+1;
+    vx_image imgsu8[numu8], imgsyuv[numyuv];
+    vx_node nodes[numnodes];
+
+    vx_threshold hyst = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_INT16);
+    VX_CALL(vxSetReferenceName( (vx_reference)hyst, "hyst"));
+    vx_pixel_value_t lower_value = {{200}};
+    vx_pixel_value_t upper_value = {{230}};
+    vxSetThresholdAttribute(hyst, VX_THRESHOLD_ATTRIBUTE_THRESHOLD_LOWER, &lower_value.S32, sizeof(lower_value.S32));
+    vxSetThresholdAttribute(hyst, VX_THRESHOLD_ATTRIBUTE_THRESHOLD_UPPER, &upper_value.S32, sizeof(upper_value.S32));
+    char     refName[MAXLENGTH];
+
+    for (int i = 0; i < numyuv; i++) {
+        imgsyuv[i] = vxCreateImage(context, imageWidth, imageHeight, VX_DF_IMAGE_IYUV);
+        snprintf(refName, MAXLENGTH,
+             "imgsyuv_%d", i);
+        VX_CALL(vxSetReferenceName( (vx_reference)imgsyuv[i], refName));
+    }
+    for (int i = 0; i < numu8 - 2; i++) {
+        imgsu8[i] = vxCreateImage(context, imageWidth, imageHeight, VX_DF_IMAGE_U8);
+        snprintf(refName, MAXLENGTH,
+             "imgsu8_%d", i);
+        VX_CALL(vxSetReferenceName( (vx_reference)imgsu8[i], refName));
+    }
+    imgsu8[13] = vxCreateImage(context, imageWidth / 2, imageHeight / 2, VX_DF_IMAGE_U8);
+    VX_CALL(vxSetReferenceName( (vx_reference)imgsu8[13], "imgsu8_13"));
+    imgsu8[14] = vxCreateImage(context, imageWidth / 2, imageHeight / 2, VX_DF_IMAGE_U8);
+    VX_CALL(vxSetReferenceName( (vx_reference)imgsu8[14], "imgsu8_14"));
+
+    // First, make a greyscale image by converting RGB to YUV and extracting the Y
+    nodes[0] = vxColorConvertNode(graph, inputImage, imgsyuv[0]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[0], "n0"));
+
+    // Get the parameter that will be the input and add it to the graph
+    vx_parameter parameter = vxGetParameterByIndex(nodes[0], 0);
+    vxAddParameterToGraph(graph, parameter);
+    vxReleaseParameter(&parameter);
+
+    nodes[1] = vxChannelExtractNode(graph, imgsyuv[0], VX_CHANNEL_Y, imgsu8[0]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[1], "n1"));
+
+    // Apply Gaussian filter to reduce noise in image
+    nodes[2] = vxGaussian3x3Node(graph, imgsu8[0], imgsu8[1]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[2], "n2"));
+    nodes[3] = vxGaussian3x3Node(graph, imgsu8[1], imgsu8[2]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[3], "n3"));
+    nodes[4] = vxGaussian3x3Node(graph, imgsu8[2], imgsu8[3]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[4], "n4"));
+    nodes[5] = vxGaussian3x3Node(graph, imgsu8[3], imgsu8[4]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[5], "n5"));
+    nodes[6] = vxGaussian3x3Node(graph, imgsu8[4], imgsu8[5]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[6], "n6"));
+    nodes[7] = vxGaussian3x3Node(graph, imgsu8[5], imgsu8[6]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[7], "n7"));
+    nodes[8] = vxGaussian3x3Node(graph, imgsu8[6], imgsu8[7]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[8], "n8"));
+    nodes[9] = vxGaussian3x3Node(graph, imgsu8[7], imgsu8[8]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[9], "n9"));
+    nodes[10] = vxGaussian3x3Node(graph, imgsu8[8], imgsu8[9]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[10], "n10"));
+
+    // Use a Canny detector on the greyscale image to find edges
+    nodes[11] = vxCannyEdgeDetectorNode(graph, imgsu8[9], hyst, 3, VX_NORM_L2, imgsu8[10]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[11], "n11"));
+
+    // Make the edges black and AND the edges back with the Y value so as to super-impose a black background
+    nodes[12] = vxNotNode(graph, imgsu8[10], imgsu8[11]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[12], "n12"));
+    nodes[13] = vxAndNode(graph, imgsu8[0], imgsu8[11], imgsu8[12]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[13], "n13"));
+
+    // Get the U and V channels and combine the color channels to give a YUV output image
+    nodes[14] = vxChannelExtractNode(graph, imgsyuv[0], VX_CHANNEL_U, imgsu8[13]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[14], "n14"));
+    nodes[15] = vxChannelExtractNode(graph, imgsyuv[0], VX_CHANNEL_V, imgsu8[14]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[15], "n15"));
+    nodes[16] = vxChannelCombineNode(graph, imgsu8[12], imgsu8[13], imgsu8[14], NULL, imgsyuv[1]);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[16], "n16"));
+
+    // Convert the YUV to RGB output
+    nodes[17] = vxColorConvertNode(graph, imgsyuv[1], outputImage);
+    VX_CALL(vxSetReferenceName( (vx_reference)nodes[17], "n17"));
+
+    // Get the parameter that will be the output and add it to the graph
+    parameter = vxGetParameterByIndex(nodes[17], 1);
+    vxAddParameterToGraph(graph, parameter);
+    vxReleaseParameter(&parameter);
+
+    // Give the graph a name
+    vxSetReferenceName((vx_reference)graph, "TestGraphWithGraphParameter");
+
+    // Execute the graph
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    // Release resources
+    for (int i = 0; i < numyuv; i++) {
+        VX_CALL(vxReleaseImage(&imgsyuv[i]));
+    }
+    for (int i = 0; i < numu8; i++) {
+         VX_CALL(vxReleaseImage(&imgsu8[i]));
+    }
+    VX_CALL(vxReleaseImage(&inputImage));
+    VX_CALL(vxReleaseImage(&outputImage));
+    VX_CALL(vxReleaseThreshold(&hyst));
+    for (int i = 0; i < numnodes; i++) {
+        VX_CALL(vxReleaseNode(&nodes[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 #ifdef BUILD_BAM
 #define testCannySupernode testCannySupernode
 #else
@@ -854,5 +989,6 @@ TESTCASE_TESTS(tivxCanny,
                virtImage,
                multipleNode,
                negativeTestBorderMode,
-               testCannySupernode
+               testCannySupernode,
+               robustnessTest
                )
