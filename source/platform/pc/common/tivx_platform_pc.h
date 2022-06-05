@@ -76,7 +76,7 @@ extern "C" {
  */
 
 /*! \brief Maximum number of targets and thus targetid supported
- *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
+ *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
 #if defined (SOC_J784S4)

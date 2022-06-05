@@ -71,61 +71,56 @@
 extern "C" {
 #endif
 
+#include <TI/tivx_config.h>
+
 /*!
  * \file
  * \brief Implementation of Target Object APIs
  */
 
 /*! \brief Target ID bit mask
+ *  \details Set assuming max 256 Targets
  * \ingroup group_tivx_target
  */
-#if defined(SOC_J6)
-#define TIVX_TARGET_INST_MASK (0xFu)
-#else
-#define TIVX_TARGET_INST_MASK (0x3Fu)
-#endif
+#define TIVX_TARGET_INST_MASK (0xFFu)
 
 /*! \brief Target ID bit mask
+ *  \details Target ID is in lowest position, so shift of 0
  * \ingroup group_tivx_target
  */
 #define TIVX_TARGET_INST_SHIFT (0x0u)
 
 /*! \brief CPU ID bit mask
+ *  \details This is CPU from the perspective of different OS.  For example
+ *  if there are dual core A72 running 1 instance of HLOS, then this counts
+ *  as 1 CPU.
+ *  Set assuming max 16 CPUs
  * \ingroup group_tivx_target
  */
-#if defined(SOC_J6)
 #define TIVX_CPU_ID_MASK    (0xFu)
-#else
-#define TIVX_CPU_ID_MASK    (0x3Fu)
-#endif
 
 /*! \brief CPU ID bit shift
+ *  \details CPU ID is in higher position, so shift of 8 to get above TIVX_TARGET_INST_MASK
  * \ingroup group_tivx_target
  */
-#if defined(SOC_J6)
-#define TIVX_CPU_ID_SHIFT   (0x4)
-#else
-#define TIVX_CPU_ID_SHIFT   (0x6)
-#endif
+#define TIVX_CPU_ID_SHIFT   (0x8)
 
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
-#if defined(SOC_J6)
-#define TIVX_TARGET_ID_MASK     (0xFFu)
-#else
-#define TIVX_TARGET_ID_MASK     (0xFFFu)
-#endif
+#define TIVX_TARGET_ID_MASK    (((uint32_t)TIVX_CPU_ID_MASK << (uint32_t)TIVX_CPU_ID_SHIFT) | \
+                                ((uint32_t)TIVX_TARGET_INST_MASK << (uint32_t)TIVX_TARGET_INST_SHIFT))
 
 /*! \brief Target ID bit shift
  * \ingroup group_tivx_target
  */
-#define TIVX_TARGET_ID_SHIFT    (0x0u)
+#define TIVX_TARGET_ID_SHIFT    (TIVX_TARGET_INST_SHIFT)
 
 /*! \brief Make target based on CPU ID
  *
  *         Currently it assumes there are max 16 CPUs in system
- *         and max 16 targets on a given CPU in system
+ *         and max 256 targets on a given CPU in system
+ *         (PC emulation is worst case as all targets are on x86)
  *
  * \ingroup group_tivx_target
  */
