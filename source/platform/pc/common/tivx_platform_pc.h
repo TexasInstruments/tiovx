@@ -80,7 +80,7 @@ extern "C" {
  * \ingroup group_tivx_platform
  */
 #if defined (SOC_J784S4)
-#define TIVX_PLATFORM_MAX_TARGETS            (73u)
+#define TIVX_PLATFORM_MAX_TARGETS            (74u)
 #else
 #define TIVX_PLATFORM_MAX_TARGETS            (43u)
 #endif
@@ -91,25 +91,6 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (1024U)
 
 
-/*! \brief Target ID for supported targets
- * \ingroup group_tivx_platform
- */
-typedef enum _tivx_target_id_e {
-
-    /*! \brief target ID for CPU1 */
-    TIVX_TARGET_ID_CPU1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 0),
-
-    /*! \brief target ID for CPU2 */
-    TIVX_TARGET_ID_CPU2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 1),
-
-    /*! \brief target ID for CPU3 */
-    TIVX_TARGET_ID_CPU3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 2),
-
-    /*! \brief target ID for CPU4 */
-    TIVX_TARGET_ID_CPU4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 3),
-
-} tivx_target_id_e;
-
 #if defined(SOC_J6)
 
 /*! \brief Mapping of Target names with Target Ids
@@ -117,19 +98,19 @@ typedef enum _tivx_target_id_e {
  *
  * \ingroup group_tivx_platform
  */
-#define TIVX_TARGET_INFO                                                       \
-{                                                                              \
-    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_EVE1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
+#define TIVX_TARGET_INFO                                     \
+{                                                            \
+    {TIVX_TARGET_DSP1,   0},                                 \
+    {TIVX_TARGET_DSP2,   1},                                 \
+    {TIVX_TARGET_EVE1,   2},                                 \
+    {TIVX_TARGET_EVE2,   3},                                 \
+    {TIVX_TARGET_EVE3,   4},                                 \
+    {TIVX_TARGET_EVE4,   5},                                 \
+    {TIVX_TARGET_IPU1_0, 6},                                 \
+    {TIVX_TARGET_IPU1_1, 7},                                 \
+    {TIVX_TARGET_IPU2,   8},                                 \
+    {TIVX_TARGET_A15_0,  9},                                 \
+    {TIVX_TARGET_HOST,  10},                                 \
 }
 
 #elif defined (SOC_J721E)
@@ -141,38 +122,49 @@ typedef enum _tivx_target_id_e {
  */
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
-    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_1_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU2_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU2_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_2, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_3, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_CPU2},                                \
-    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_CPU3},                              \
-    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_CPU1},                             \
-    {TIVX_TARGET_CAPTURE1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_DSP1, 0},                                   \
+    {TIVX_TARGET_DSP2, 1},                                   \
+    {TIVX_TARGET_DSP_C7_1, 2},                               \
+    {TIVX_TARGET_DSP_C7_1_PRI_2, 3},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_3, 4},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_4, 5},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_5, 6},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_6, 7},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_7, 8},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_8, 9},                         \
+    {TIVX_TARGET_IPU1_0, 10},                                 \
+    {TIVX_TARGET_IPU1_1, 11},                                 \
+    {TIVX_TARGET_MCU2_0, 12},                                 \
+    {TIVX_TARGET_MCU2_1, 13},                                 \
+    {TIVX_TARGET_MCU3_0, 14},                                 \
+    {TIVX_TARGET_MCU3_1, 15},                                 \
+    {TIVX_TARGET_A72_0, 16},                                  \
+    {TIVX_TARGET_A72_1, 17},                                  \
+    {TIVX_TARGET_A72_2, 18},                                  \
+    {TIVX_TARGET_A72_3, 19},                                  \
+    {TIVX_TARGET_HOST, 20},                                   \
+    {TIVX_TARGET_VPAC_NF, 21},                                \
+    {TIVX_TARGET_VPAC_LDC1, 22},                              \
+    {TIVX_TARGET_VPAC_MSC1, 23},                              \
+    {TIVX_TARGET_VPAC_MSC2, 24},                              \
+    {TIVX_TARGET_DMPAC_SDE, 25},                              \
+    {TIVX_TARGET_DMPAC_DOF, 26},                              \
+    {TIVX_TARGET_VPAC_VISS1, 27},                             \
+    {TIVX_TARGET_CAPTURE1, 28},                               \
+    {TIVX_TARGET_CAPTURE2, 29},                               \
+    {TIVX_TARGET_CAPTURE3, 30},                               \
+    {TIVX_TARGET_CAPTURE4, 31},                               \
+    {TIVX_TARGET_CAPTURE5, 32},                               \
+    {TIVX_TARGET_CAPTURE6, 33},                               \
+    {TIVX_TARGET_CAPTURE7, 34},                               \
+    {TIVX_TARGET_CAPTURE8, 35},                               \
+    {TIVX_TARGET_DISPLAY1, 36},                               \
+    {TIVX_TARGET_DISPLAY2, 37},                               \
+    {TIVX_TARGET_DISPLAY_M2M1, 38},                        \
+    {TIVX_TARGET_DISPLAY_M2M2, 39},                        \
+    {TIVX_TARGET_DISPLAY_M2M3, 40},                        \
+    {TIVX_TARGET_DISPLAY_M2M4, 41},                        \
+    {TIVX_TARGET_CSITX, 42},                               \
 }
 
 #elif defined (SOC_J721S2)
@@ -184,37 +176,48 @@ typedef enum _tivx_target_id_e {
  */
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
-    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_1_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU2_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU2_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_2, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_3, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_CPU2},                                \
-    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_CPU3},                              \
-    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_CPU1},                             \
-    {TIVX_TARGET_CAPTURE1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_DSP1, 0},                                   \
+    {TIVX_TARGET_DSP_C7_1, 1},                               \
+    {TIVX_TARGET_DSP_C7_1_PRI_2, 2},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_3, 3},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_4, 4},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_5, 5},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_6, 6},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_7, 7},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_8, 8},                         \
+    {TIVX_TARGET_IPU1_0, 9},                                 \
+    {TIVX_TARGET_IPU1_1, 10},                                \
+    {TIVX_TARGET_MCU2_0, 11},                                \
+    {TIVX_TARGET_MCU2_1, 12},                                \
+    {TIVX_TARGET_MCU3_0, 13},                                \
+    {TIVX_TARGET_MCU3_1, 14},                                \
+    {TIVX_TARGET_A72_0, 15},                                 \
+    {TIVX_TARGET_A72_1, 16},                                 \
+    {TIVX_TARGET_A72_2, 17},                                 \
+    {TIVX_TARGET_A72_3, 18},                                 \
+    {TIVX_TARGET_HOST, 19},                                  \
+    {TIVX_TARGET_VPAC_NF, 20},                               \
+    {TIVX_TARGET_VPAC_LDC1, 21},                             \
+    {TIVX_TARGET_VPAC_MSC1, 22},                             \
+    {TIVX_TARGET_VPAC_MSC2, 23},                             \
+    {TIVX_TARGET_DMPAC_SDE, 24},                             \
+    {TIVX_TARGET_DMPAC_DOF, 25},                             \
+    {TIVX_TARGET_VPAC_VISS1, 26},                            \
+    {TIVX_TARGET_CAPTURE1, 27},                              \
+    {TIVX_TARGET_CAPTURE2, 28},                              \
+    {TIVX_TARGET_CAPTURE3, 29},                              \
+    {TIVX_TARGET_CAPTURE4, 30},                              \
+    {TIVX_TARGET_CAPTURE5, 31},                              \
+    {TIVX_TARGET_CAPTURE6, 32},                              \
+    {TIVX_TARGET_CAPTURE7, 33},                              \
+    {TIVX_TARGET_CAPTURE8, 34},                              \
+    {TIVX_TARGET_DISPLAY1, 35},                              \
+    {TIVX_TARGET_DISPLAY2, 36},                              \
+    {TIVX_TARGET_DISPLAY_M2M1, 37},                          \
+    {TIVX_TARGET_DISPLAY_M2M2, 38},                          \
+    {TIVX_TARGET_DISPLAY_M2M3, 39},                          \
+    {TIVX_TARGET_DISPLAY_M2M4, 40},                          \
+    {TIVX_TARGET_CSITX, 41},                                 \
 }
 
 #elif defined (SOC_J784S4)
@@ -226,65 +229,80 @@ typedef enum _tivx_target_id_e {
  */
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
-    {TIVX_TARGET_DSP_C7_1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_1_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_1_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_2_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_2_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_3_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_3_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DSP_C7_4_PRI_2, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_3, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_4, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_5, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_6, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_7, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_DSP_C7_4_PRI_8, TIVX_TARGET_ID_CPU1},                         \
-    {TIVX_TARGET_MCU2_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU2_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU3_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU4_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_MCU4_1, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_A72_0, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_1, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_2, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_A72_3, TIVX_TARGET_ID_CPU1},                                  \
-    {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_CPU2},                                \
-    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_CPU3},                              \
-    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_CPU4},                              \
-    {TIVX_TARGET_VPAC2_NF, TIVX_TARGET_ID_CPU2},                               \
-    {TIVX_TARGET_VPAC2_LDC1, TIVX_TARGET_ID_CPU3},                             \
-    {TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_ID_CPU4},                             \
-    {TIVX_TARGET_VPAC2_MSC2, TIVX_TARGET_ID_CPU4},                             \
-    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_CPU1},                              \
-    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_CPU1},                             \
-    {TIVX_TARGET_VPAC2_VISS1, TIVX_TARGET_ID_CPU1},                             \
-    {TIVX_TARGET_CAPTURE1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_CPU1},                               \
-    {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_CPU1},                               \
+    {TIVX_TARGET_DSP_C7_1, 0},                               \
+    {TIVX_TARGET_DSP_C7_1_PRI_2, 1},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_3, 2},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_4, 3},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_5, 4},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_6, 5},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_7, 6},                         \
+    {TIVX_TARGET_DSP_C7_1_PRI_8, 7},                         \
+    {TIVX_TARGET_DSP_C7_2, 8},                               \
+    {TIVX_TARGET_DSP_C7_2_PRI_2, 9},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_3, 10},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_4, 11},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_5, 12},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_6, 13},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_7, 14},                         \
+    {TIVX_TARGET_DSP_C7_2_PRI_8, 15},                         \
+    {TIVX_TARGET_DSP_C7_3, 16},                               \
+    {TIVX_TARGET_DSP_C7_3_PRI_2, 17},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_3, 18},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_4, 19},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_5, 20},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_6, 21},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_7, 22},                         \
+    {TIVX_TARGET_DSP_C7_3_PRI_8, 23},                         \
+    {TIVX_TARGET_DSP_C7_4, 24},                               \
+    {TIVX_TARGET_DSP_C7_4_PRI_2, 25},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_3, 26},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_4, 27},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_5, 28},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_6, 29},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_7, 30},                         \
+    {TIVX_TARGET_DSP_C7_4_PRI_8, 31},                         \
+    {TIVX_TARGET_MCU2_0, 32},                                 \
+    {TIVX_TARGET_MCU2_1, 33},                                 \
+    {TIVX_TARGET_MCU3_0, 34},                                 \
+    {TIVX_TARGET_MCU3_1, 35},                                 \
+    {TIVX_TARGET_MCU4_0, 36},                                 \
+    {TIVX_TARGET_MCU4_1, 37},                                 \
+    {TIVX_TARGET_A72_0, 38},                                  \
+    {TIVX_TARGET_A72_1, 39},                                  \
+    {TIVX_TARGET_A72_2, 40},                                  \
+    {TIVX_TARGET_A72_3, 41},                                  \
+    {TIVX_TARGET_HOST, 42},                                   \
+    {TIVX_TARGET_VPAC_NF, 43},                                \
+    {TIVX_TARGET_VPAC_LDC1, 44},                              \
+    {TIVX_TARGET_VPAC_MSC1, 45},                              \
+    {TIVX_TARGET_VPAC_MSC2, 46},                              \
+    {TIVX_TARGET_VPAC2_NF, 47},                               \
+    {TIVX_TARGET_VPAC2_LDC1, 48},                             \
+    {TIVX_TARGET_VPAC2_MSC1, 49},                             \
+    {TIVX_TARGET_VPAC2_MSC2, 50},                             \
+    {TIVX_TARGET_DMPAC_SDE, 51},                              \
+    {TIVX_TARGET_DMPAC_DOF, 52},                              \
+    {TIVX_TARGET_VPAC_VISS1, 53},                             \
+    {TIVX_TARGET_VPAC2_VISS1, 54},                             \
+    {TIVX_TARGET_CAPTURE1, 55},                               \
+    {TIVX_TARGET_CAPTURE2, 56},                               \
+    {TIVX_TARGET_CAPTURE3, 57},                               \
+    {TIVX_TARGET_CAPTURE4, 58},                               \
+    {TIVX_TARGET_CAPTURE5, 59},                               \
+    {TIVX_TARGET_CAPTURE6, 60},                               \
+    {TIVX_TARGET_CAPTURE7, 61},                               \
+    {TIVX_TARGET_CAPTURE8, 62},                               \
+    {TIVX_TARGET_CAPTURE9, 63},                               \
+    {TIVX_TARGET_CAPTURE10, 64},                               \
+    {TIVX_TARGET_CAPTURE11, 65},                               \
+    {TIVX_TARGET_CAPTURE12, 66},                               \
+    {TIVX_TARGET_DISPLAY1, 67},                               \
+    {TIVX_TARGET_DISPLAY2, 68},                               \
+    {TIVX_TARGET_DISPLAY_M2M1, 69},                          \
+    {TIVX_TARGET_DISPLAY_M2M2, 70},                          \
+    {TIVX_TARGET_DISPLAY_M2M3, 71},                          \
+    {TIVX_TARGET_DISPLAY_M2M4, 72},                          \
+    {TIVX_TARGET_CSITX, 73},                                 \
 }
 
 #endif
