@@ -166,8 +166,8 @@ void tivxInit(void)
         #endif
         #endif
 
-        /* let rest of system think it is running on DSP1 */
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+        /* let rest of system think it is running on CPU 0 */
+        tivxSetSelfCpuId((vx_enum)0);
 
         tivxHostInit();
 

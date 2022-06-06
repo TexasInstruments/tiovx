@@ -81,8 +81,12 @@ extern "C" {
  */
 #if defined (SOC_J784S4)
 #define TIVX_PLATFORM_MAX_TARGETS            (74u)
-#else
+#elif defined (SOC_J721E)
 #define TIVX_PLATFORM_MAX_TARGETS            (43u)
+#elif defined (SOC_J721S2)
+#define TIVX_PLATFORM_MAX_TARGETS            (42u)
+#elif defined (SOC_J6)
+#define TIVX_PLATFORM_MAX_TARGETS            (11u)
 #endif
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
@@ -110,7 +114,10 @@ extern "C" {
     {TIVX_TARGET_IPU1_1, 7},                                 \
     {TIVX_TARGET_IPU2,   8},                                 \
     {TIVX_TARGET_A15_0,  9},                                 \
-    {TIVX_TARGET_HOST,  10},                                 \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST,  9},                                 \
 }
 
 #elif defined (SOC_J721E)
@@ -142,29 +149,32 @@ extern "C" {
     {TIVX_TARGET_A72_1, 17},                                  \
     {TIVX_TARGET_A72_2, 18},                                  \
     {TIVX_TARGET_A72_3, 19},                                  \
-    {TIVX_TARGET_HOST, 20},                                   \
-    {TIVX_TARGET_VPAC_NF, 21},                                \
-    {TIVX_TARGET_VPAC_LDC1, 22},                              \
-    {TIVX_TARGET_VPAC_MSC1, 23},                              \
-    {TIVX_TARGET_VPAC_MSC2, 24},                              \
-    {TIVX_TARGET_DMPAC_SDE, 25},                              \
-    {TIVX_TARGET_DMPAC_DOF, 26},                              \
-    {TIVX_TARGET_VPAC_VISS1, 27},                             \
-    {TIVX_TARGET_CAPTURE1, 28},                               \
-    {TIVX_TARGET_CAPTURE2, 29},                               \
-    {TIVX_TARGET_CAPTURE3, 30},                               \
-    {TIVX_TARGET_CAPTURE4, 31},                               \
-    {TIVX_TARGET_CAPTURE5, 32},                               \
-    {TIVX_TARGET_CAPTURE6, 33},                               \
-    {TIVX_TARGET_CAPTURE7, 34},                               \
-    {TIVX_TARGET_CAPTURE8, 35},                               \
-    {TIVX_TARGET_DISPLAY1, 36},                               \
-    {TIVX_TARGET_DISPLAY2, 37},                               \
-    {TIVX_TARGET_DISPLAY_M2M1, 38},                        \
-    {TIVX_TARGET_DISPLAY_M2M2, 39},                        \
-    {TIVX_TARGET_DISPLAY_M2M3, 40},                        \
-    {TIVX_TARGET_DISPLAY_M2M4, 41},                        \
-    {TIVX_TARGET_CSITX, 42},                               \
+    {TIVX_TARGET_VPAC_NF, 20},                                \
+    {TIVX_TARGET_VPAC_LDC1, 21},                              \
+    {TIVX_TARGET_VPAC_MSC1, 22},                              \
+    {TIVX_TARGET_VPAC_MSC2, 23},                              \
+    {TIVX_TARGET_DMPAC_SDE, 24},                              \
+    {TIVX_TARGET_DMPAC_DOF, 25},                              \
+    {TIVX_TARGET_VPAC_VISS1, 26},                             \
+    {TIVX_TARGET_CAPTURE1, 27},                               \
+    {TIVX_TARGET_CAPTURE2, 28},                               \
+    {TIVX_TARGET_CAPTURE3, 29},                               \
+    {TIVX_TARGET_CAPTURE4, 30},                               \
+    {TIVX_TARGET_CAPTURE5, 31},                               \
+    {TIVX_TARGET_CAPTURE6, 32},                               \
+    {TIVX_TARGET_CAPTURE7, 33},                               \
+    {TIVX_TARGET_CAPTURE8, 34},                               \
+    {TIVX_TARGET_DISPLAY1, 35},                               \
+    {TIVX_TARGET_DISPLAY2, 36},                               \
+    {TIVX_TARGET_DISPLAY_M2M1, 37},                           \
+    {TIVX_TARGET_DISPLAY_M2M2, 38},                           \
+    {TIVX_TARGET_DISPLAY_M2M3, 39},                           \
+    {TIVX_TARGET_DISPLAY_M2M4, 40},                           \
+    {TIVX_TARGET_CSITX, 41},                                  \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST, 16},                                   \
 }
 
 #elif defined (SOC_J721S2)
@@ -195,29 +205,32 @@ extern "C" {
     {TIVX_TARGET_A72_1, 16},                                 \
     {TIVX_TARGET_A72_2, 17},                                 \
     {TIVX_TARGET_A72_3, 18},                                 \
-    {TIVX_TARGET_HOST, 19},                                  \
-    {TIVX_TARGET_VPAC_NF, 20},                               \
-    {TIVX_TARGET_VPAC_LDC1, 21},                             \
-    {TIVX_TARGET_VPAC_MSC1, 22},                             \
-    {TIVX_TARGET_VPAC_MSC2, 23},                             \
-    {TIVX_TARGET_DMPAC_SDE, 24},                             \
-    {TIVX_TARGET_DMPAC_DOF, 25},                             \
-    {TIVX_TARGET_VPAC_VISS1, 26},                            \
-    {TIVX_TARGET_CAPTURE1, 27},                              \
-    {TIVX_TARGET_CAPTURE2, 28},                              \
-    {TIVX_TARGET_CAPTURE3, 29},                              \
-    {TIVX_TARGET_CAPTURE4, 30},                              \
-    {TIVX_TARGET_CAPTURE5, 31},                              \
-    {TIVX_TARGET_CAPTURE6, 32},                              \
-    {TIVX_TARGET_CAPTURE7, 33},                              \
-    {TIVX_TARGET_CAPTURE8, 34},                              \
-    {TIVX_TARGET_DISPLAY1, 35},                              \
-    {TIVX_TARGET_DISPLAY2, 36},                              \
-    {TIVX_TARGET_DISPLAY_M2M1, 37},                          \
-    {TIVX_TARGET_DISPLAY_M2M2, 38},                          \
-    {TIVX_TARGET_DISPLAY_M2M3, 39},                          \
-    {TIVX_TARGET_DISPLAY_M2M4, 40},                          \
-    {TIVX_TARGET_CSITX, 41},                                 \
+    {TIVX_TARGET_VPAC_NF, 19},                               \
+    {TIVX_TARGET_VPAC_LDC1, 20},                             \
+    {TIVX_TARGET_VPAC_MSC1, 21},                             \
+    {TIVX_TARGET_VPAC_MSC2, 22},                             \
+    {TIVX_TARGET_DMPAC_SDE, 23},                             \
+    {TIVX_TARGET_DMPAC_DOF, 24},                             \
+    {TIVX_TARGET_VPAC_VISS1, 25},                            \
+    {TIVX_TARGET_CAPTURE1, 26},                              \
+    {TIVX_TARGET_CAPTURE2, 27},                              \
+    {TIVX_TARGET_CAPTURE3, 28},                              \
+    {TIVX_TARGET_CAPTURE4, 29},                              \
+    {TIVX_TARGET_CAPTURE5, 30},                              \
+    {TIVX_TARGET_CAPTURE6, 31},                              \
+    {TIVX_TARGET_CAPTURE7, 32},                              \
+    {TIVX_TARGET_CAPTURE8, 33},                              \
+    {TIVX_TARGET_DISPLAY1, 34},                              \
+    {TIVX_TARGET_DISPLAY2, 35},                              \
+    {TIVX_TARGET_DISPLAY_M2M1, 36},                          \
+    {TIVX_TARGET_DISPLAY_M2M2, 37},                          \
+    {TIVX_TARGET_DISPLAY_M2M3, 38},                          \
+    {TIVX_TARGET_DISPLAY_M2M4, 39},                          \
+    {TIVX_TARGET_CSITX, 40},                                 \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST, 15},                                   \
 }
 
 #elif defined (SOC_J784S4)
@@ -271,38 +284,41 @@ extern "C" {
     {TIVX_TARGET_A72_1, 39},                                  \
     {TIVX_TARGET_A72_2, 40},                                  \
     {TIVX_TARGET_A72_3, 41},                                  \
-    {TIVX_TARGET_HOST, 42},                                   \
-    {TIVX_TARGET_VPAC_NF, 43},                                \
-    {TIVX_TARGET_VPAC_LDC1, 44},                              \
-    {TIVX_TARGET_VPAC_MSC1, 45},                              \
-    {TIVX_TARGET_VPAC_MSC2, 46},                              \
-    {TIVX_TARGET_VPAC2_NF, 47},                               \
-    {TIVX_TARGET_VPAC2_LDC1, 48},                             \
-    {TIVX_TARGET_VPAC2_MSC1, 49},                             \
-    {TIVX_TARGET_VPAC2_MSC2, 50},                             \
-    {TIVX_TARGET_DMPAC_SDE, 51},                              \
-    {TIVX_TARGET_DMPAC_DOF, 52},                              \
-    {TIVX_TARGET_VPAC_VISS1, 53},                             \
-    {TIVX_TARGET_VPAC2_VISS1, 54},                             \
-    {TIVX_TARGET_CAPTURE1, 55},                               \
-    {TIVX_TARGET_CAPTURE2, 56},                               \
-    {TIVX_TARGET_CAPTURE3, 57},                               \
-    {TIVX_TARGET_CAPTURE4, 58},                               \
-    {TIVX_TARGET_CAPTURE5, 59},                               \
-    {TIVX_TARGET_CAPTURE6, 60},                               \
-    {TIVX_TARGET_CAPTURE7, 61},                               \
-    {TIVX_TARGET_CAPTURE8, 62},                               \
-    {TIVX_TARGET_CAPTURE9, 63},                               \
-    {TIVX_TARGET_CAPTURE10, 64},                               \
-    {TIVX_TARGET_CAPTURE11, 65},                               \
-    {TIVX_TARGET_CAPTURE12, 66},                               \
-    {TIVX_TARGET_DISPLAY1, 67},                               \
-    {TIVX_TARGET_DISPLAY2, 68},                               \
-    {TIVX_TARGET_DISPLAY_M2M1, 69},                          \
-    {TIVX_TARGET_DISPLAY_M2M2, 70},                          \
-    {TIVX_TARGET_DISPLAY_M2M3, 71},                          \
-    {TIVX_TARGET_DISPLAY_M2M4, 72},                          \
-    {TIVX_TARGET_CSITX, 73},                                 \
+    {TIVX_TARGET_VPAC_NF, 42},                                \
+    {TIVX_TARGET_VPAC_LDC1, 43},                              \
+    {TIVX_TARGET_VPAC_MSC1, 44},                              \
+    {TIVX_TARGET_VPAC_MSC2, 45},                              \
+    {TIVX_TARGET_VPAC2_NF, 46},                               \
+    {TIVX_TARGET_VPAC2_LDC1, 47},                             \
+    {TIVX_TARGET_VPAC2_MSC1, 48},                             \
+    {TIVX_TARGET_VPAC2_MSC2, 49},                             \
+    {TIVX_TARGET_DMPAC_SDE, 50},                              \
+    {TIVX_TARGET_DMPAC_DOF, 51},                              \
+    {TIVX_TARGET_VPAC_VISS1, 52},                             \
+    {TIVX_TARGET_VPAC2_VISS1, 53},                             \
+    {TIVX_TARGET_CAPTURE1, 54},                               \
+    {TIVX_TARGET_CAPTURE2, 55},                               \
+    {TIVX_TARGET_CAPTURE3, 56},                               \
+    {TIVX_TARGET_CAPTURE4, 57},                               \
+    {TIVX_TARGET_CAPTURE5, 58},                               \
+    {TIVX_TARGET_CAPTURE6, 59},                               \
+    {TIVX_TARGET_CAPTURE7, 60},                               \
+    {TIVX_TARGET_CAPTURE8, 61},                               \
+    {TIVX_TARGET_CAPTURE9, 62},                               \
+    {TIVX_TARGET_CAPTURE10, 63},                               \
+    {TIVX_TARGET_CAPTURE11, 64},                               \
+    {TIVX_TARGET_CAPTURE12, 65},                               \
+    {TIVX_TARGET_DISPLAY1, 66},                               \
+    {TIVX_TARGET_DISPLAY2, 67},                               \
+    {TIVX_TARGET_DISPLAY_M2M1, 68},                          \
+    {TIVX_TARGET_DISPLAY_M2M2, 69},                          \
+    {TIVX_TARGET_DISPLAY_M2M3, 70},                          \
+    {TIVX_TARGET_DISPLAY_M2M4, 71},                          \
+    {TIVX_TARGET_CSITX, 72},                                 \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST, 38},                                  \
 }
 
 #endif
