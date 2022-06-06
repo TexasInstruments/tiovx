@@ -87,5 +87,6 @@ TESTCASE(tivxReference)
 TESTCASE(tivxBmpRdWr)
 TESTCASE(tivxMem)
 TESTCASE(tivxMapImage)
+TESTCASE(tivxNestedUserNode)
 #endif
 
