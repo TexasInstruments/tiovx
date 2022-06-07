@@ -374,6 +374,9 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -382,6 +385,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
     {
         VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     // Setting up task params for task 1
     tivxTaskSetDefaultCreateParams(&taskParams1);
@@ -541,6 +545,10 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
 
     VX_CALL(vxSetNodeTarget(node2_graph1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -551,6 +559,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
         VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
         VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     // Setting up task params for task 1
     tivxTaskSetDefaultCreateParams(&taskParams1);
@@ -718,6 +727,9 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -726,6 +738,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
     {
         VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     // Setting up task params for task 1
     tivxTaskSetDefaultCreateParams(&taskParams1);
@@ -989,6 +1002,14 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
 
     VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node8, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node9, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node10, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(node7, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -1007,6 +1028,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
         VX_CALL(vxSetNodeTarget(node11, VX_TARGET_STRING, TIVX_TARGET_DSP1));
         VX_CALL(vxSetNodeTarget(node12, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     // Setting up task params for task 1
     tivxTaskSetDefaultCreateParams(&taskParams1);

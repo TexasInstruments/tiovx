@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_CAPTURE
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_capture.h"
@@ -568,3 +570,5 @@ vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference frame)
 
     return status;
 }
+
+#endif /* BUILD_CAPTURE */

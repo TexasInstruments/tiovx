@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DMPAC_DOF
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -1563,3 +1564,4 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeConfig, ArgConfig,
 
 TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testPredictors, testNegativeGraph, testNegativeConfig)
 
+#endif /* BUILD_DMPAC_DOF */

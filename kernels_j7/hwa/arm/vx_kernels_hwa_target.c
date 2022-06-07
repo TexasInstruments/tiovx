@@ -70,7 +70,7 @@
 
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    #ifdef BUILD_HWA_DMPAC_DOF
+    #ifdef BUILD_DMPAC_DOF
     {&tivxAddTargetKernelDofVisualize, &tivxRemoveTargetKernelDofVisualize},
     #endif
 };

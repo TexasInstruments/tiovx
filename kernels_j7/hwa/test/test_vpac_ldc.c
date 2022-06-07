@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_VPAC_LDC
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -2330,3 +2331,5 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testNegativeMatrixType, SetTarget_Arg, SET_NODE_TA
 
 
 TESTCASE_TESTS(tivxHwaVpacLdc, testNodeCreation, testGraphProcessingDcc, testGraphProcessing, testGraphProcessingPerspective, testFormats, testNegativeGraph, testNegativeMatrixType, testGraphProcessingCommand)
+
+#endif /* BUILD_VPAC_LDC */

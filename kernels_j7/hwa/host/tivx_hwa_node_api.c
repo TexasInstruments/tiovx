@@ -62,6 +62,7 @@
 
 #include <TI/tivx.h>
 
+#ifdef BUILD_VPAC_NF
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_image             input,
@@ -99,7 +100,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_DMPAC_SDE
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_image             left,
@@ -120,7 +123,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_VPAC_LDC
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_matrix            warp_matrix,
@@ -149,7 +154,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+
+#ifdef BUILD_VPAC_MSC
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscScaleNode(vx_graph graph,
                                       vx_image             in_img,
                                       vx_image             out0_img,
@@ -187,7 +195,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscPyramidNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_DMPAC_DOF
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_image             input_current_base,
@@ -237,7 +247,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_VPAC_VISS
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
                                       vx_user_data_object   configuration,
                                       vx_user_data_object   ae_awb_result,
@@ -274,7 +286,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_DISPLAY
 VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
                                             vx_graph graph,
                                             vx_user_data_object configuration,
@@ -286,36 +300,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_DISPLAY_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
-
-VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
-                                      vx_user_data_object  input,
-                                      vx_object_array      output)
-{
-    vx_reference prms[] = {
-            (vx_reference)input,
-            (vx_reference)output
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_CAPTURE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
-
-VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_object_array             input)
-{
-    vx_reference prms[] = {
-            (vx_reference)configuration,
-            (vx_reference)input
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_CSITX_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -337,4 +321,38 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayM2MNode(vx_graph graph,
                                            dimof(prms));
     return node;
 }
+#endif
 
+#ifdef BUILD_CAPTURE
+VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
+                                      vx_user_data_object  input,
+                                      vx_object_array      output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CAPTURE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+#endif
+
+#ifdef BUILD_CSITX
+VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_object_array             input)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CSITX_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+#endif

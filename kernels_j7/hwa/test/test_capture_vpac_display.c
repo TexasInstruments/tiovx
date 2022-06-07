@@ -59,7 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
+#if defined (BUILD_CAPTURE) && defined(BUILD_DISPLAY)
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -538,3 +538,5 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
 }
 
 TESTCASE_TESTS(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback)
+
+#endif /* BUILD_CAPTURE & BUILD_DISPLAY */

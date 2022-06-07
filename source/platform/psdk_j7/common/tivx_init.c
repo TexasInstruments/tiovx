@@ -104,6 +104,15 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
+    #if defined (SOC_AM62A)
+    #if defined (C7504)
+        tivxRegisterOpenVXCoreTargetKernels();
+        #ifdef BUILD_TUTORIAL
+        tivxRegisterTutorialTargetKernels();
+        #endif
+    #endif
+    #endif
+
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined (R5F)
         tivxRegisterCaptureTargetArmKernels();
@@ -118,6 +127,12 @@ static void tivxInitLocal(void)
 
     #if defined (SOC_J721S2) || defined (SOC_J784S4)
     #if defined (C71) || defined (C7120)
+        tivxRegisterTestKernelsTargetDspKernels();
+    #endif
+    #endif
+
+    #if defined (SOC_AM62A)
+    #if defined (C7504)
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
@@ -162,6 +177,15 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
+        #if defined (SOC_AM62A)
+        #if defined (C7504)
+            tivxUnRegisterOpenVXCoreTargetKernels();
+            #ifdef BUILD_TUTORIAL
+            tivxUnRegisterTutorialTargetKernels();
+            #endif
+        #endif
+        #endif
+
         #ifdef BUILD_CONFORMANCE_TEST
         #if defined (R5F)
             tivxUnRegisterCaptureTargetArmKernels();
@@ -176,6 +200,12 @@ static void tivxDeInitLocal(void)
 
         #if defined (SOC_J721S2) || defined (SOC_J784S4)
         #if defined (C71) || defined (C7120)
+            tivxUnRegisterTestKernelsTargetDspKernels();
+        #endif
+        #endif
+
+        #if defined (SOC_AM62A)
+        #if defined (C7504)
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
         #endif

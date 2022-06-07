@@ -153,7 +153,11 @@ void tivxAddTargetKernelVpacViss(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+#ifdef SOC_AM62A
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+#else
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#endif
     {
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -517,6 +521,17 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         {
             vissDrvPrms->enableNsf4 = (uint32_t)FALSE;
         }
+
+        #ifdef VPAC3L
+        if (0U == vissPrms->bypass_pcid)
+        {
+            vissDrvPrms->enablePcid = (uint32_t)TRUE;
+        }
+        else
+        {
+            vissDrvPrms->enablePcid = (uint32_t)FALSE;
+        }        
+        #endif
         vissDrvPrms->edgeEnhancerMode = vissPrms->fcp[0].ee_mode;
 
         /* Set the input image format and number of inputs from
@@ -538,7 +553,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Set default values for ALL viss configuration parameters */
-
     if ((vx_status)VX_SUCCESS == status)
     {
         status = tivxVpacVissSetDefaultParams(vissObj, vissPrms, NULL);
@@ -763,10 +777,12 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 
             tivxVpacVissDeInitDcc(vissObj);
 
+#ifndef SOC_AM62A 
             if (true == vissObj->configurationBuffer.configThroughUdmaFlag)
             {
                 tivxVpacVissDeleteConfigBuffer(vissObj);
             }
+#endif
 
             Fvid2_delete(vissObj->handle, NULL);
             vissObj->handle = NULL;
@@ -1123,7 +1139,6 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
             }
         }
     }
-
     return (status);
 }
 
@@ -1151,7 +1166,11 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
             memset(vissObj, 0x0, sizeof(tivxVpacVissObj));
             instObj->vissObj[cnt].isAlloc = 1U;
 
+            #ifdef SOC_AM62A
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+            #else
             if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+            #endif
             {
                 instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VISS_DRV_INST0;
                 instObj->vissObj[cnt].hwa_perf_id      = APP_PERF_HWA_VPAC1_VISS;
@@ -1236,6 +1255,17 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
 
             if ((vx_status)VX_SUCCESS == status)
             {
+                #ifdef VPAC3L
+                if(TIVX_VPAC_VISS_IR_ENABLE == vissPrms->enable_ir_op)
+                {
+                    outPrms->isIrOut = VHWA_VISS_IROUT_ENABLED;
+                } 
+                else
+                {
+                    outPrms->isIrOut = VHWA_VISS_IROUT_DISABLED;
+                }
+                #endif
+                
                 outPrms->enable = TRUE;
                 outPrms->fmt.width = im_desc->width;
                 outPrms->fmt.height = im_desc->height;
@@ -1580,6 +1610,46 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
             }
             break;
         }
+        #ifdef VPAC3L
+        case 6U:
+        {
+            /* Map single plane storage format */
+            status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
+            
+            /* Only packed 8 and unpacked 16 IR supported in this case*/
+            if (TIVX_KERNEL_VPAC_VISS_OUT0_IDX == out_id)
+            {
+                *fmt = FVID2_DF_RAW08;
+            }
+            else if (TIVX_KERNEL_VPAC_VISS_OUT2_IDX == out_id)
+            {
+                *fmt = FVID2_DF_RAW12;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "mux6 is supported only on output0/2 \n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+            break;
+        }
+        case 7U:
+        {
+            /* Map single plane storage format */
+            status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
+
+            /* Only packed 12 IR supported in this case */
+            if (TIVX_KERNEL_VPAC_VISS_OUT0_IDX == out_id)
+            {
+                *fmt = FVID2_DF_RAW12;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "mux7 is supported only on output0 \n");
+                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            }
+            break;
+        }
+        #endif
         default:
         {
             VX_PRINT(VX_ZONE_ERROR, "Invalid value of mux \n");
@@ -1697,7 +1767,7 @@ static vx_status vhwaVissAllocMemForCtx(tivxVpacVissObj *vissObj,
             }
             else
             {
-                #if defined(SOC_J721S2) || defined(SOC_J784S4)
+                #if defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM62A)
                 /* ADASVISION-5065: Currently using TIVX_MEM_EXTERNAL while OCMC RAM is not enabled */
                 tivxMemBufferAlloc(&vissObj->ctx_mem_ptr,
                     vissObj->glbceStatInfo.size, (vx_enum)TIVX_MEM_EXTERNAL);
@@ -1749,6 +1819,7 @@ static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj)
 
 static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
 {
+#ifndef SOC_AM62A 
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
     int32_t status;
@@ -1772,10 +1843,12 @@ static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
         #endif
     }
     #endif
+#endif
 }
 
 static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj)
 {
+#ifndef SOC_AM62A
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
     int32_t status;
@@ -1799,6 +1872,7 @@ static void vhwaVissSaveCtx(const tivxVpacVissObj *vissObj)
         #endif
     }
     #endif
+#endif
 }
 
 /* ========================================================================== */

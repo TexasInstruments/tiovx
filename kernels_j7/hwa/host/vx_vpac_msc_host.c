@@ -64,6 +64,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
+#ifdef BUILD_VPAC_MSC
 
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
@@ -793,3 +794,4 @@ static vx_status VX_CALLBACK tivxVpacMscPyramidInitialize(vx_node node,
 /*                          Local Functions                                   */
 /* ========================================================================== */
 
+#endif

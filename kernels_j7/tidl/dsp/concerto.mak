@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C71 C7120))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C71 C7120 C7504))
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_tidl

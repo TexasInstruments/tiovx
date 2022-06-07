@@ -23,6 +23,8 @@
 #include <TI/tivx_capture_nodes.h>
 #include <TI/tivx_task.h>
 
+#if !defined(SOC_AM62A)
+
 TESTCASE(tivxTestSinkNode,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
@@ -318,6 +320,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
  *                          |
  *                          |----------------> ScalarSink2Node
  */
+
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -415,6 +418,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
  *                          |
  *                          |-----------------> ScalarSink2Node
  */
+
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -503,7 +507,10 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+
 TESTCASE_TESTS(tivxTestSinkNode,
     testSinkNode,
     testSourceSinkNode,
     testSourceSinkNode2)
+
+#endif

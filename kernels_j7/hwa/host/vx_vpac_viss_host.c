@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_VPAC_VISS
 
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
@@ -300,7 +301,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output0_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output0_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output0_fmt)
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
              && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_NV12 != output0_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_YUYV != output0_fmt) &&
@@ -309,7 +310,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
               )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_U8 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY\n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12\n");
@@ -321,13 +322,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         {
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output1_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output1_fmt)
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
              && ((vx_df_image)VX_DF_IMAGE_U8 != output0_fmt)
 #endif
                 )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_U8 \n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
@@ -340,7 +341,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if( ((vx_df_image)VX_DF_IMAGE_U8 != output2_fmt) &&
                 ((vx_df_image)VX_DF_IMAGE_U16 != output2_fmt) &&
                 ((vx_df_image)TIVX_DF_IMAGE_P12 != output2_fmt) &&
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
                 ((vx_df_image)TIVX_DF_IMAGE_NV12_P12 != output2_fmt) &&
 #endif
                 ((vx_df_image)VX_DF_IMAGE_NV12 != output2_fmt) &&
@@ -348,7 +349,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 ((vx_df_image)VX_DF_IMAGE_UYVY != output2_fmt) )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-#if defined(VPAC3)
+#if defined(VPAC3) || defined (VPAC3L)
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
 #else
                 VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
@@ -399,7 +400,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
     }
 
-#ifndef VPAC3
+#if !defined (VPAC3) && !defined (VPAC3L) 
     if ((vx_status)VX_SUCCESS == status)
     {
         if (NULL != histogram1)
@@ -459,7 +460,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         {
             if ((TIVX_VPAC_VISS_MUX0_Y12      != params.fcp[i].mux_output0) &&
                 (TIVX_VPAC_VISS_MUX0_VALUE12  != params.fcp[i].mux_output0) &&
-                (TIVX_VPAC_VISS_MUX0_NV12_P12 != params.fcp[i].mux_output0))
+                (TIVX_VPAC_VISS_MUX0_NV12_P12 != params.fcp[i].mux_output0)
+#if defined (VPAC3L)
+             && (TIVX_VPAC_VISS_MUX0_IR8 != params.fcp[i].mux_output0)
+             && (TIVX_VPAC_VISS_MUX0_IR12_P12 != params.fcp[i].mux_output0)
+#endif
+            )
             {
                 fcp_mux_status[i][0] = 1;
             }
@@ -468,7 +474,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             {
                 fcp_mux_status[i][1] = 1;
             }
+#if defined (VPAC3L)
+            if (7u < params.fcp[i].mux_output2)
+#else
             if (5u < params.fcp[i].mux_output2)
+#endif
             {
                 fcp_mux_status[i][2] = 1;
             }
@@ -531,6 +541,26 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 #endif
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_NV12_P12 for NV12_P12 output of output%d\n", fcp, i);
                 }
+#if defined(VPAC3L)
+                if (((vx_df_image)VX_DF_IMAGE_U8 == output_fmt[i]) &&
+                    ((0 != outport) || (TIVX_VPAC_VISS_MUX0_IR8 != params.fcp[fcp].mux_output0)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_IR8 for 8 bit IR output of output%d\n", fcp, i);
+                }
+                if (((vx_df_image)TIVX_DF_IMAGE_P12 == output_fmt[i]) &&
+                    ((0 != outport) || (TIVX_VPAC_VISS_MUX0_IR12_P12 != params.fcp[fcp].mux_output0)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_IR12_P12 for Packed 12 bit IR output of output%d\n", fcp, i);
+                }
+                if (((vx_df_image)VX_DF_IMAGE_U16 == output_fmt[i]) &&
+                    ((2 != outport) || (TIVX_VPAC_VISS_MUX2_IR12_U16 != params.fcp[fcp].mux_output0)))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_IR12_U16 for 12 bit IR output in 16 bit container of output%d\n", fcp, i);
+                }     
+#endif
                 if (((vx_df_image)VX_DF_IMAGE_NV12 == output_fmt[i]) &&
                     ((2 != outport) || (TIVX_VPAC_VISS_MUX2_NV12 != params.fcp[fcp].mux_output2)))
                 {
@@ -721,6 +751,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter fcp1_config should be in range [0-4]\n");
         }
+#if defined (VPAC3L)
+        if (1U < params.enable_ir_op)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter enable_ir_op should be either 0 or 1\n");
+        }
+        if (1U < params.enable_bayer_op)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter enable_bayer_op should be either 0 or 1\n");
+        }
+#endif
         if (1U < params.bypass_cac)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -741,11 +783,22 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_nsf4 should be either 0 or 1\n");
         }
+#if defined (VPAC3L)
+        if (1U < params.bypass_pcid)
+        {
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter bypass_pcid should be either 0 or 1\n");
+        }
+#endif
         if ((NULL != h3a_aew_af) &&
             (TIVX_VPAC_VISS_H3A_IN_RAW0 != params.h3a_in) &&
             (TIVX_VPAC_VISS_H3A_IN_RAW1 != params.h3a_in) &&
             (TIVX_VPAC_VISS_H3A_IN_RAW2 != params.h3a_in) &&
-            (TIVX_VPAC_VISS_H3A_IN_LSC != params.h3a_in))
+            (TIVX_VPAC_VISS_H3A_IN_LSC != params.h3a_in)
+#if defined (VPAC3L)
+         && (TIVX_VPAC_VISS_H3A_IN_PCID != params.h3a_in)
+#endif
+        )
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter h3a_in should be either:\n TIVX_VPAC_VISS_H3A_IN_RAW0 or TIVX_VPAC_VISS_H3A_IN_RAW1 or TIVX_VPAC_VISS_H3A_IN_RAW2 or TIVX_VPAC_VISS_H3A_IN_LSC\n");
@@ -784,7 +837,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             if ((TIVX_VPAC_VISS_H3A_IN_RAW0 != ae_awb_params.h3a_source_data) &&
                 (TIVX_VPAC_VISS_H3A_IN_RAW1 != ae_awb_params.h3a_source_data) &&
                 (TIVX_VPAC_VISS_H3A_IN_RAW2 != ae_awb_params.h3a_source_data) &&
-                (TIVX_VPAC_VISS_H3A_IN_LSC != ae_awb_params.h3a_source_data))
+                (TIVX_VPAC_VISS_H3A_IN_LSC != ae_awb_params.h3a_source_data)
+#if defined (VPAC3L)
+            && (TIVX_VPAC_VISS_H3A_IN_PCID != ae_awb_params.h3a_source_data)
+#endif
+                )
             {
                 status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "ae_awb parameter h3a_source_data should be either:\n TIVX_VPAC_VISS_H3A_IN_RAW0 or TIVX_VPAC_VISS_H3A_IN_RAW1 or TIVX_VPAC_VISS_H3A_IN_RAW2 or TIVX_VPAC_VISS_H3A_IN_LSC\n");
@@ -1079,6 +1136,13 @@ static void tivx_vpac_viss1_params_init(tivx_vpac_viss_params_t *prms)
 
     prms->bypass_cac = 1U;
     prms->bypass_dwb = 1U;
+
+#ifdef VPAC3L
+    prms->bypass_pcid = 1U;
+    prms->enable_ir_op = TIVX_VPAC_VISS_IR_DISABLE;
+    prms->enable_bayer_op = TIVX_VPAC_VISS_BAYER_ENABLE;
+#endif
+
 }
 
 void tivx_vpac_viss_params_init(tivx_vpac_viss_params_t *prms)
@@ -1130,3 +1194,5 @@ void tivx_h3a_aew_config_init(tivx_h3a_aew_config *prms)
         memset(prms, 0x0, sizeof(tivx_h3a_aew_config));
     }
 }
+
+#endif

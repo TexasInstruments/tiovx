@@ -53,10 +53,18 @@ typedef struct
     const char *tgt;
 } TestArg;
 
+#if defined(SOC_AM62A)
+#define TEST_PARAMS \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_A72_0", ARG, TIVX_TARGET_A72_0), \
+    CT_GENERATE_PARAMETERS("TIVX_TARGET_MCU1_0", ARG, TIVX_TARGET_MCU1_0), \
+
+#else
 #define TEST_PARAMS \
     CT_GENERATE_PARAMETERS("TIVX_TARGET_A72_0", ARG, TIVX_TARGET_A72_0), \
     CT_GENERATE_PARAMETERS("TIVX_TARGET_MCU2_0", ARG, TIVX_TARGET_MCU2_0), \
     CT_GENERATE_PARAMETERS("TIVX_TARGET_MCU2_1", ARG, TIVX_TARGET_MCU2_1), \
+
+#endif
 
 int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
 {
@@ -161,10 +169,17 @@ int32_t CreateGraph(TestObjContext *objCntxt, const char *tgt)
         }
         else
         {
+            #if defined(SOC_AM62A)
+            /* Set the node target to TIVX_TARGET_MCU1_0. */
+            vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
+                                       VX_TARGET_STRING,
+                                       TIVX_TARGET_MCU1_0);
+            #else
             /* Set the node target to TIVX_TARGET_MCU2_0. */
             vxStatus = vxSetNodeTarget(objCntxt->vxScalarSrcNode,
                                        VX_TARGET_STRING,
                                        TIVX_TARGET_MCU2_0);
+            #endif
 
             if (vxStatus != (vx_status)VX_SUCCESS)
             {

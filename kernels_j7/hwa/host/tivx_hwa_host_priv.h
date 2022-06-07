@@ -65,32 +65,57 @@
 
 #include <TI/tivx.h>
 
-vx_status tivxAddKernelVpacNfGeneric(vx_context context);
-vx_status tivxAddKernelVpacNfBilateral(vx_context context);
-vx_status tivxAddKernelDmpacSde(vx_context context);
+#ifdef BUILD_CAPTURE
+vx_status tivxAddKernelCapture(vx_context context);
+vx_status tivxRemoveKernelCapture(vx_context context);
+#endif
+
+#ifdef BUILD_CSITX
+vx_status tivxAddKernelCsitx(vx_context context);
+vx_status tivxRemoveKernelCsitx(vx_context context);
+#endif
+
+#ifdef BUILD_DISPLAY
+vx_status tivxAddKernelDisplay(vx_context context);
+vx_status tivxAddKernelDisplayM2M(vx_context context);
+vx_status tivxRemoveKernelDisplay(vx_context context);
+vx_status tivxRemoveKernelDisplayM2M(vx_context context);
+#endif
+
+#ifdef BUILD_VPAC_VISS
+vx_status tivxAddKernelVpacViss(vx_context context);
+vx_status tivxRemoveKernelVpacViss(vx_context context);
+#endif
+
+#ifdef BUILD_VPAC_LDC
 vx_status tivxAddKernelVpacLdc(vx_context context);
+vx_status tivxRemoveKernelVpacLdc(vx_context context);
+#endif
+
+#ifdef BUILD_VPAC_MSC
 vx_status tivxAddKernelVpacMscMultiScale(vx_context context);
 vx_status tivxAddKernelVpacMscPyramid(vx_context context);
-vx_status tivxAddKernelDmpacDof(vx_context context);
-vx_status tivxAddKernelDofVisualize(vx_context context);
-vx_status tivxAddKernelVpacViss(vx_context context);
-vx_status tivxAddKernelDisplay(vx_context context);
-vx_status tivxAddKernelCapture(vx_context context);
-vx_status tivxAddKernelCsitx(vx_context context);
-vx_status tivxAddKernelDisplayM2M(vx_context context);
-
-vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
-vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
-vx_status tivxRemoveKernelDmpacSde(vx_context context);
-vx_status tivxRemoveKernelVpacLdc(vx_context context);
 vx_status tivxRemoveKernelVpacMscMultiScale(vx_context context);
 vx_status tivxRemoveKernelVpacMscPyramid(vx_context context);
+#endif
+
+#ifdef BUILD_VPAC_NF
+vx_status tivxAddKernelVpacNfGeneric(vx_context context);
+vx_status tivxAddKernelVpacNfBilateral(vx_context context);
+vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
+vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
+#endif
+
+#ifdef BUILD_DMPAC_DOF
+vx_status tivxAddKernelDmpacDof(vx_context context);
+vx_status tivxAddKernelDofVisualize(vx_context context);
 vx_status tivxRemoveKernelDmpacDof(vx_context context);
 vx_status tivxRemoveKernelDofVisualize(vx_context context);
-vx_status tivxRemoveKernelVpacViss(vx_context context);
-vx_status tivxRemoveKernelDisplay(vx_context context);
-vx_status tivxRemoveKernelCapture(vx_context context);
-vx_status tivxRemoveKernelCsitx(vx_context context);
-vx_status tivxRemoveKernelDisplayM2M(vx_context context);
+#endif
+
+#ifdef BUILD_DMPAC_SDE
+vx_status tivxAddKernelDmpacSde(vx_context context);
+vx_status tivxRemoveKernelDmpacSde(vx_context context);
+#endif
 
 #endif /* TIVX_HWA_HOST_PRIV_H_ */

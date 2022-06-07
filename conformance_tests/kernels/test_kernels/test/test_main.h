@@ -64,10 +64,12 @@ TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
 TESTCASE(tivxSourceNode)
 TESTCASE(tivxTimestamp)
+#if !defined(SOC_AM62A)
 TESTCASE(tivxTestSinkNode)
+#endif
+TESTCASE(tivxCmdTimeout)
 TESTCASE(GraphStreaming)
 TESTCASE(tivxPyramidNode)
-TESTCASE(tivxCmdTimeout)
 #endif
 
 

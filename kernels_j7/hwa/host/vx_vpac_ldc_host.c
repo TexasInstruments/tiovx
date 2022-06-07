@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_VPAC_LDC
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_ldc.h"
@@ -818,3 +820,4 @@ void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms)
         prms->yc_mode = TIVX_VPAC_LDC_MODE_LUMA_ONLY;
     }
 }
+#endif

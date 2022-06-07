@@ -69,10 +69,17 @@ static void tivxHostInitLocal(void)
         tivxObjectInit();
         tivxRegisterOpenVXCoreKernels();
 
+        #if defined(SOC_AM62A)
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU1_0)
+        {
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU1_0);
+        }
+        #else
         if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU2_0)
         {
             tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MCU2_0);
         }
+        #endif
         else
         if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_A72_0)
         {

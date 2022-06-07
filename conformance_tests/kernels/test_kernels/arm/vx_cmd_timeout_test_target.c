@@ -301,6 +301,20 @@ void tivxAddTargetKernelCmdTimeoutTest(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_A72_0 )
+    {
+        strncpy(target_name, TIVX_TARGET_A72_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_AM62A)
+    else
+    if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0 )
+    {
+        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #else
+    else
     if ( self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0 )
     {
         strncpy(target_name, TIVX_TARGET_MCU2_0, TIVX_TARGET_MAX_NAME);
@@ -312,12 +326,7 @@ void tivxAddTargetKernelCmdTimeoutTest(void)
         strncpy(target_name, TIVX_TARGET_MCU2_1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
-    else
-    if ( self_cpu == (vx_enum)TIVX_CPU_ID_A72_0 )
-    {
-        strncpy(target_name, TIVX_TARGET_A72_0, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
+    #endif
     else
     {
         status = (vx_status)VX_FAILURE;

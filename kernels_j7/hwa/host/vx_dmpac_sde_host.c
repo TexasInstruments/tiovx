@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DMPAC_SDE
 
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
@@ -518,3 +519,5 @@ void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms)
         }
     }
 }
+
+#endif /* BUILD_DMPAC_SDE */

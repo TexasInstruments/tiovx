@@ -70,6 +70,8 @@
 
 #ifdef VPAC3
 #include <TI/j7_vpac_viss3.h>
+#elif defined (VPAC3L)
+#include <TI/j7_vpac_viss3l.h>
 #else
 #include <TI/j7_vpac_viss1.h>
 #endif
@@ -149,6 +151,10 @@ extern "C" {
 #define TIVX_VPAC_VISS_H3A_IN_RAW2     (2U)
 /*! \see tivx_vpac_viss_params_t::h3a_in and tivx_ae_awb_params_t::h3a_source_data and tivx_h3a_data_t::h3a_source_data */
 #define TIVX_VPAC_VISS_H3A_IN_LSC      (3U)
+#ifdef VPAC3L
+/*! \see tivx_vpac_viss_params_t::h3a_in and tivx_ae_awb_params_t::h3a_source_data and tivx_h3a_data_t::h3a_source_data */
+#define TIVX_VPAC_VISS_H3A_IN_PCID     (4U)
+#endif
 
 /*! \see tivx_vpac_viss_params_t::h3a_mode and tivx_h3a_data_t::aew_af_mode */
 #define TIVX_VPAC_VISS_H3A_MODE_AEWB   (0U)
@@ -179,6 +185,8 @@ typedef struct {
      *  | \ref TIVX_VPAC_VISS_H3A_IN_RAW1     | H3A Input is from RAW1           |
      *  | \ref TIVX_VPAC_VISS_H3A_IN_RAW2     | H3A Input is from RAW2           |
      *  | \ref TIVX_VPAC_VISS_H3A_IN_LSC      | H3A Input is from LSC            |
+     *  | \ref TIVX_VPAC_VISS_H3A_IN_PCID     | H3A Input is from PCID           |
+     *  \ref TIVX_VPAC_VISS_H3A_IN_PCID is applicable for only VPAC3L
      */
     uint32_t                    h3a_source_data;
     /*! Measured in micro seconds (us) */
@@ -253,6 +261,8 @@ typedef struct {
      *  | \ref TIVX_VPAC_VISS_H3A_IN_RAW1     | H3A Input is from RAW1           |
      *  | \ref TIVX_VPAC_VISS_H3A_IN_RAW2     | H3A Input is from RAW2           |
      *  | \ref TIVX_VPAC_VISS_H3A_IN_LSC      | H3A Input is from LSC            |
+     *  | \ref TIVX_VPAC_VISS_H3A_IN_PCID     | H3A Input is from PCID           |
+     *  \ref TIVX_VPAC_VISS_H3A_IN_PCID is applicable for only VPAC3L
      */
     uint32_t                    h3a_source_data;
     /*! If aew_af_mode == TIVX_VPAC_VISS_H3A_MODE_AEWB, this is the aew HW configuration used */

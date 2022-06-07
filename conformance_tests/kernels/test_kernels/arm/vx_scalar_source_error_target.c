@@ -139,6 +139,13 @@ void tivxAddTargetKernelScalarSourceError(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+    #if defined(SOC_AM62A)
+    if ( (self_cpu == TIVX_CPU_ID_MCU1_0))
+    {
+        strncpy(target_name, TIVX_TARGET_MCU1_0, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }    
+    #else
     if ( (self_cpu == TIVX_CPU_ID_MCU2_0) ||
           (self_cpu == TIVX_CPU_ID_MCU2_1))
     {
@@ -153,6 +160,7 @@ void tivxAddTargetKernelScalarSourceError(void)
             status = (vx_status)VX_SUCCESS;
         }
     }
+    #endif
     else
     {
         status = (vx_status)VX_FAILURE;

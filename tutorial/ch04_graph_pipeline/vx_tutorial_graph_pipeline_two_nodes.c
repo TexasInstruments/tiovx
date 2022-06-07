@@ -192,7 +192,7 @@ void vx_tutorial_graph_pipeline_two_nodes()
     /** \endcode */
 
     /**
-     * - Contruct the graph and set node targets such that each runs
+     * - Construct the graph and set node targets such that each runs
      *    on a different CPU target
      * \code
      */
@@ -200,7 +200,11 @@ void vx_tutorial_graph_pipeline_two_nodes()
     n1    = vxNotNode(graph, tmp, out_img[0]);
 
     vxSetNodeTarget(n0, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    #if defined(SOC_AM62A)
+    vxSetNodeTarget(n1, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    #else
     vxSetNodeTarget(n1, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    #endif
     /** \endcode */
 
     /**

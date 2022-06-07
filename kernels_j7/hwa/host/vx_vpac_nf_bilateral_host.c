@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_VPAC_NF
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_nf_bilateral.h"
@@ -442,3 +444,5 @@ void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas)
         }
     }
 }
+
+#endif

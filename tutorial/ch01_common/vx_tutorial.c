@@ -96,10 +96,17 @@ void vx_tutorial_run_all()
     vx_tutorial_image_run_all();
     vx_tutorial_graph_run_all();
     vx_tutorial_graph_pipeline_run_all();
+#if defined(SOC_AM62A)
+    if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU1_0)))
+    {
+        vx_tutorial_mcu_demo(vx_true_e);
+    }
+#else
     if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
     {
         vx_tutorial_mcu_demo(vx_true_e);
     }
+#endif
 #if defined(SOC_J784S4)
     if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_1)))
     {
@@ -138,6 +145,16 @@ void vx_tutorial_run_interactive()
 #endif
                 break;
             case '5':
+#if defined(SOC_AM62A)
+                if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU1_0)))
+                {
+                    vx_tutorial_mcu_demo(vx_true_e);
+                }
+                else
+                {
+                    printf("Demo is disabled as MCU1_0 is not enabled\n");
+                }
+#else
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU3_1)))
                 {
                     vx_tutorial_mcu_demo(vx_true_e);
@@ -146,6 +163,7 @@ void vx_tutorial_run_interactive()
                 {
                     printf("Demo is disabled as MCU3_0 or MCU3_1 is not enabled\n");
                 }
+#endif
                 break;
 #if defined(SOC_J784S4)
             case '6':

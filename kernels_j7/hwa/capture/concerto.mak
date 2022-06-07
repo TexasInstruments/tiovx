@@ -1,6 +1,7 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F))
 ifeq ($(BUILD_HWA_KERNELS),yes)
+ifeq ($(BUILD_CAPTURE), yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_capture
@@ -19,5 +20,6 @@ endif
 
 include $(FINALE)
 
+endif
 endif
 endif

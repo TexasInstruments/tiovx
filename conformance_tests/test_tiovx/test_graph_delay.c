@@ -55,6 +55,10 @@ TEST(tivxGraphDelay, testSimple)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -65,6 +69,7 @@ TEST(tivxGraphDelay, testSimple)
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
         VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -191,6 +196,9 @@ TEST(tivxGraphDelay, testTwoNodesTwoDSP)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -199,6 +207,7 @@ TEST(tivxGraphDelay, testTwoNodesTwoDSP)
     {
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -373,6 +382,10 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -383,6 +396,7 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
         VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
         VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     VX_CALL(vxRegisterAutoAging(graph_0, delay));
     VX_CALL(vxRegisterAutoAging(graph_1, delay));

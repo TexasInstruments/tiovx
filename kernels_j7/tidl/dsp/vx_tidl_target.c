@@ -76,7 +76,12 @@
 #ifndef x86_64
 #include "c7x.h"
 #include <ti/osal/HwiP.h>
-#if defined(SOC_J784S4)
+#if defined(SOC_AM62A)
+#include <ti/kernel/freertos/portable/TI_CGT/c7x/Cache.h>
+#endif
+
+#if defined(SOC_J784S4) || defined(SOC_AM62A)
+#define DISABLE_PREEMPTION
 #define DISABLE_INTERRUPTS_DURING_PROCESS
 #else
 /* #define DISABLE_INTERRUPTS_DURING_PROCESS */
@@ -164,8 +169,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess(tivx_target_kernel_instance k
 static vx_status VX_CALLBACK tivxKernelTIDLDelete(tivx_target_kernel_instance kernel,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 
-#ifndef SOC_J784S4
 /* TIDL App function callbacks */
+#if !defined(DISABLE_PREEMPTION)
 static int32_t TIDL_lockInterrupts();
 static void TIDL_unlockInterrupts(int32_t oldIntState);
 #endif
@@ -180,8 +185,7 @@ static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize);
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig);
 static int32_t tidl_AllocNetOutputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig);
 
-
-#ifndef SOC_J784S4
+#if !defined(DISABLE_PREEMPTION)
 /*
  * Following static lock/unlock functions passed as function pointers to TIDL to internally
  * disable and enable interrupts around critical section.
@@ -375,6 +379,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
             tidlObj->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
         }
 
+#if defined(SOC_AM62A)
+#ifndef x86_64
+        Cache_wbInvL1dAll();
+#endif
+#endif
+
         status = tivxAlgiVisionProcess
                  (
                     tidlObj->algHandle,
@@ -384,6 +394,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
                     (IVISION_OutArgs *)tidlObj->outArgs,
                     tidlObj->tidlParams.optimize_ivision_activation
                  );
+
+#if defined(SOC_AM62A)
+#ifndef x86_64
+        Cache_wbInvL1dAll();
+#endif
+#endif
 
         tivxCheckStatus(&status, tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         tivxCheckStatus(&status, tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
@@ -479,7 +495,11 @@ static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int3
    Has flows which uses UDMA. So intilizing here Specific to TIDL Init.
    This flow is controlled via flowCtrl in create Params
 */
+#if defined(SOC_AM62A)
+#include <ti/drv/udma/dmautils/udma_standalone/udma.h>
+#else
 #include <ti/drv/udma/udma.h>
+#endif
 static struct Udma_DrvObj  x86udmaDrvObj;
 static uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr, uint32_t chNum, void *appData);
 static void tidlX86Printf(const char *str);
@@ -502,7 +522,9 @@ static void * tidlX86UdmaInit( void)
         Udma_InitPrms initPrms;
         UdmaInitPrms_init(UDMA_INST_ID_MAIN_0, &initPrms);
         initPrms.printFxn = &tidlX86Printf;
+        #if !defined(SOC_AM62A)
         initPrms.skipGlobalEventReg = 1;
+        #endif
         initPrms.virtToPhyFxn = tidlVirtToPhyAddrConversion;
         Udma_init(&x86udmaDrvObj, &initPrms);
         firstCall = 0;
@@ -633,16 +655,15 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         if ((vx_status)VX_SUCCESS == status)
         {
             memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
+            tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
 
-            #if defined(SOC_J784S4)
+            #if defined(DISABLE_PREEMPTION)
             VX_PRINT(VX_ZONE_INFO, "Preemption is disabled\n");
             #else
             tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
             tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
             VX_PRINT(VX_ZONE_INFO, "Enabling preemption\n");
             #endif
-
-            tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
         }
 
         if ((vx_status)VX_SUCCESS == status)

@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DISPLAY
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -445,3 +446,5 @@ TEST_WITH_ARG(tivxHwaDisplayM2M, tivxHwaDisplayM2Mtest, Arg, PARAMETERS)
 
 TESTCASE_TESTS(tivxHwaDisplayM2M,
                tivxHwaDisplayM2Mtest)
+
+#endif /* BUILD_DISPLAY */

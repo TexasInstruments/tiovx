@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_VPAC_NF
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -759,3 +760,5 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testNegativeGraph, ArgNegative,
 }
 
 TESTCASE_TESTS(tivxHwaVpacNfBilateral, testNodeCreation, testGraphProcessing, testNegativeGraph)
+
+#endif /* BUILD_VPAC_NF */

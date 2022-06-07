@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_VPAC_NF
 
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
@@ -450,3 +451,5 @@ void tivx_vpac_nf_hts_bw_limit_params_init(tivx_vpac_nf_hts_bw_limit_params_t *p
         prms->token_cnt = 1u;
     }
 }
+
+#endif

@@ -120,6 +120,7 @@ static void tivxVpacVissDefaultMapFlexCCParams(tivxVpacVissObj *vissObj,
 static void tivxVpacVissDefaultMapEeParams(tivxVpacVissObj *vissObj,
     uint32_t fcp_index);
 static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj);
+static void tivxVpacVissDefaultMapPcidParams(tivxVpacVissObj *vissObj);
 
 /***************************************************
  * Function call heirarchy in this file:
@@ -133,7 +134,7 @@ tivxVpacVissSetDefaultParams
   - tivxVpacVissDefaultMapDpcLutParams
   - tivxVpacVissDefaultMapLscParams
   - tivxVpacVissDefaultMapWb2Params
-- tivxVpacVissDefaultCacParams
+- tivxVpacVissDefaultMapCacParams
 - tivxVpacVissDefaultMapNsf4Params
 - tivxVpacVissDefaultMapH3aParams
 - tivxVpacVissDefaultMapH3aLutParams
@@ -149,6 +150,7 @@ tivxVpacVissSetDefaultParams
     - tivxVpacVissDefaultMapHistParams(vissObj);
     - tivxVpacVissDefaultMapEeParams(vissObj);
 - tivxVpacVissDefaultMapBlc
+- tivxVpacVissDefaultMapPcidParams
 
 ****************************************************/
 
@@ -227,7 +229,7 @@ static int32_t yee_lut[] =
     #include "yee_lut.txt"
 };
 
-#ifdef VPAC3
+#if defined (VPAC3) || defined (VPAC3L) 
 static int32_t dwb_lut[] =
 {
     #include "dwb_lut.txt"
@@ -260,6 +262,7 @@ vx_status tivxVpacVissSetDefaultParams(tivxVpacVissObj *vissObj,
         tivxVpacVissDefaultMapGlbceParams(vissObj);
         tivxVpacVissDefaultMapFcpParams(vissObj);
         tivxVpacVissDefaultMapBlc(vissObj, ae_awb_res);
+        tivxVpacVissDefaultMapPcidParams(vissObj);
     }
     else
     {
@@ -346,7 +349,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
     Nsf4v_Config       *nsf4Cfg = NULL;
     Nsf4_LsccConfig    *lsccCfg = NULL;
 
-#ifdef VPAC3
+#if defined(VPAC3) || defined(VPAC3L)
     Nsf4_HistConfig    *rawHistCfg = NULL;
     Nsf4_DwbConfig     *dwbCfg = NULL;
 #endif
@@ -358,7 +361,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
         nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
         lsccCfg = &nsf4Cfg->lsccCfg;
 
-#ifdef VPAC3
+#if defined(VPAC3) || defined(VPAC3L)
         rawHistCfg = &nsf4Cfg->histCfg;
         dwbCfg     = &nsf4Cfg->dwbCfg;
 
@@ -468,7 +471,7 @@ static void tivxVpacVissDefaultMapNsf4Params(tivxVpacVissObj *vissObj,
 
 static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj)
 {
-#if defined(VPAC3)
+#if defined(VPAC3) || defined(VPAC3L) 
     Cac_Config  *cacCfg;
 
     if (NULL != vissObj)
@@ -489,6 +492,58 @@ static void tivxVpacVissDefaultMapCacParams(tivxVpacVissObj *vissObj)
     }
 #endif
 }
+
+static void tivxVpacVissDefaultMapPcidParams(tivxVpacVissObj *vissObj)
+{
+#if defined(VPAC3L)
+    Pcid_Cfg    *pcidCfg;
+
+    if (NULL != vissObj)
+    {
+        pcidCfg = &vissObj->vissCfg.pcidCfg;
+
+        pcidCfg->cfaFormat = 1U;
+
+        pcidCfg->opChCfg.irOutEn = FALSE;
+        pcidCfg->opChCfg.bayerOutEn = TRUE;
+        pcidCfg->opChCfg.bayerOutSel = PCID_BAYEROUTSEL_IR_SUB_BAYER;
+        pcidCfg->opChCfg.rbIntpAtIR = PCID_COLOR_B_AT_IR_PIX_R_AT_B_PIX;
+        pcidCfg->opChCfg.rbIRIntpMethod = PCID_COLOR_INTERPOLATE_HUE;
+        pcidCfg->opChCfg.irSubtractEn = TRUE;
+
+        pcidCfg->thRBIrCfg.t1 = 8192U;
+        pcidCfg->thRBIrCfg.t2 = 16320U;
+        pcidCfg->thRBIrCfg.t3 = 32768U;
+
+        pcidCfg->clrDiffRBIrCfg.gHFXferFactorIr = 128U;
+        pcidCfg->clrDiffRBIrCfg.gHFXferFactor = 128U;
+
+        pcidCfg->irSubCfg.irSubtractFiltEn = TRUE;
+        pcidCfg->irSubCfg.irRemapLutEn = FALSE;
+        pcidCfg->irSubCfg.pIRRemapLut = NULL;
+
+        pcidCfg->irSubCfg.cutOffTh = 64745U;
+        pcidCfg->irSubCfg.transitionRange = 5U;
+        pcidCfg->irSubCfg.transitionRangeInv = 51U;
+        pcidCfg->irSubCfg.irSubDistScaleLut[0U] = 256U;
+        pcidCfg->irSubCfg.irSubDistScaleLut[1U] = 256U;
+        pcidCfg->irSubCfg.irSubDistScaleLut[2U] = 256U;
+        pcidCfg->irSubCfg.irSubDistScaleLut[3U] = 256U;
+        pcidCfg->irSubCfg.irSubDistScaleLut[4U] = 256U;
+        pcidCfg->irSubCfg.irSubFactScale[0U] = 256U;
+        pcidCfg->irSubCfg.irSubFactScale[1U] = 256U;
+        pcidCfg->irSubCfg.irSubFactScale[2U] = 256U;
+        pcidCfg->irSubCfg.irSubFactScale[3U] = 256U;
+
+        vissObj->vissCfgRef.pcidCfg = pcidCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+#endif
+}
+
 
 static void tivxVpacVissDefaultMapHistParams(tivxVpacVissObj *vissObj,
     uint32_t fcp_index)
@@ -784,7 +839,7 @@ static void tivxVpacVissDefaultMapFlexCFAParams(tivxVpacVissObj *vissObj, uint32
     {
         cfaCfg = &vissObj->vissCfg.fcpCfg[fcp_index].cfaCfg;
 
-#ifdef VPAC3
+#if defined(VPAC3) || defined(VPAC3L)
         {
             Fcp_comDecomLutConfig *decomLutCfg =  &vissObj->vissCfg.fcpCfg[fcp_index].decomLutCfg;
             Fcp_comDecomLutConfig *comLutCfg   =  &vissObj->vissCfg.fcpCfg[fcp_index].comLutCfg;
@@ -1071,6 +1126,68 @@ static void tivxVpacVissDefaultMapDpcOtfParams(tivxVpacVissObj *vissObj)
     {
         dpcOtfCfg = &vissObj->vissCfg.dpcOtfCfg;
 
+#if defined (VPAC3L)
+        dpcOtfCfg->enable           = (uint32_t)FALSE;
+
+        dpcOtfCfg->threshold[0u]    = 100u;
+        dpcOtfCfg->threshold[1u]    = 100u;
+        dpcOtfCfg->threshold[2u]    = 200u;
+        dpcOtfCfg->threshold[3u]    = 300u;
+        dpcOtfCfg->threshold[4u]    = 500u;
+        dpcOtfCfg->threshold[5u]    = 800u;
+        dpcOtfCfg->threshold[6u]    = 1600u;
+        dpcOtfCfg->threshold[7u]    = 3200u;
+
+        dpcOtfCfg->slope[0u]        = 0u;
+        dpcOtfCfg->slope[1u]        = 58u;
+        dpcOtfCfg->slope[2u]        = 51u;
+        dpcOtfCfg->slope[3u]        = 51u;
+        dpcOtfCfg->slope[4u]        = 38u;
+        dpcOtfCfg->slope[5u]        = 51u;
+        dpcOtfCfg->slope[6u]        = 51u;
+        dpcOtfCfg->slope[7u]        = 0u;
+
+        dpcOtfCfg->cfa_mode         = RFE_CFA_CFG_MODE_4;
+        dpcOtfCfg->cfa_phase        = 2;
+
+        dpcOtfCfg->thrx[0u]         = 0u;
+        dpcOtfCfg->thrx[1u]         = 60u;
+        dpcOtfCfg->thrx[2u]         = 500u;
+        dpcOtfCfg->thrx[3u]         = 1000u;
+        dpcOtfCfg->thrx[4u]         = 2000u;
+        dpcOtfCfg->thrx[5u]         = 4000u;
+        dpcOtfCfg->thrx[6u]         = 8000u;
+        dpcOtfCfg->thrx[7u]         = 1600u;
+
+        dpcOtfCfg->lut2_threshold[0u]   = 50u;
+        dpcOtfCfg->lut2_threshold[1u]   = 50u;
+        dpcOtfCfg->lut2_threshold[2u]   = 100u;
+        dpcOtfCfg->lut2_threshold[3u]   = 150u;
+        dpcOtfCfg->lut2_threshold[4u]   = 250u;
+        dpcOtfCfg->lut2_threshold[5u]   = 400u;
+        dpcOtfCfg->lut2_threshold[6u]   = 800u;
+        dpcOtfCfg->lut2_threshold[7u]   = 1600u;  
+
+        dpcOtfCfg->lut2_slope[0u]    = 0u;
+        dpcOtfCfg->lut2_slope[1u]    = 29u;
+        dpcOtfCfg->lut2_slope[2u]    = 26u;
+        dpcOtfCfg->lut2_slope[3u]    = 26u;
+        dpcOtfCfg->lut2_slope[4u]    = 19u;
+        dpcOtfCfg->lut2_slope[5u]    = 26u;
+        dpcOtfCfg->lut2_slope[6u]    = 26u;
+        dpcOtfCfg->lut2_slope[7u]    = 0u;  
+
+        dpcOtfCfg->lut2_thrx[0u]    = 0u;
+        dpcOtfCfg->lut2_thrx[1u]    = 60u;
+        dpcOtfCfg->lut2_thrx[2u]    = 500u;
+        dpcOtfCfg->lut2_thrx[3u]    = 1000u;
+        dpcOtfCfg->lut2_thrx[4u]    = 2000u;
+        dpcOtfCfg->lut2_thrx[5u]    = 4000u;
+        dpcOtfCfg->lut2_thrx[6u]    = 8000u;
+        dpcOtfCfg->lut2_thrx[7u]    = 16000u;        
+
+        dpcOtfCfg->lut_map          = 8u; 
+#else
         dpcOtfCfg->enable           = (uint32_t)FALSE;
         dpcOtfCfg->threshold[0u]    = 200u;
         dpcOtfCfg->slope[0u]        = 0u;
@@ -1088,6 +1205,7 @@ static void tivxVpacVissDefaultMapDpcOtfParams(tivxVpacVissObj *vissObj)
         dpcOtfCfg->slope[6u]        = 50u;
         dpcOtfCfg->threshold[7u]    = 6400u;
         dpcOtfCfg->slope[7u]        = 50u;
+#endif
 
         vissObj->vissCfgRef.dpcOtf  = dpcOtfCfg;
 
@@ -1125,12 +1243,30 @@ static void tivxVpacVissDefaultMapLscParams(tivxVpacVissObj *vissObj)
     {
         lscCfg = &vissObj->vissCfg.lscCfg;
 
+#if defined (VPAC3L)
+        lscCfg->enable          = (uint32_t)FALSE;
+        lscCfg->gainFmt         = RFE_LSC_GAIN_FMT_U8Q7_1;
+        lscCfg->horzDsFactor    = RFE_LSC_DS_FACTOR_64;
+        lscCfg->vertDsFactor    = RFE_LSC_DS_FACTOR_64;
+        lscCfg->tableAddr       = grawfe_lsc_tbl;
+        lscCfg->numTblEntry     = 0x0u;
+        lscCfg->chn_mode        = RFE_LSC_CHNMODE_8;
+        lscCfg->lut_map[0]      = lscCfg->lut_map[8]    = 0;  
+        lscCfg->lut_map[1]      = lscCfg->lut_map[9]    = 1;  
+        lscCfg->lut_map[2]      = lscCfg->lut_map[10]   = 2;  
+        lscCfg->lut_map[3]      = lscCfg->lut_map[11]   = 3;   
+        lscCfg->lut_map[4]      = lscCfg->lut_map[12]   = 4;  
+        lscCfg->lut_map[5]      = lscCfg->lut_map[13]   = 5;  
+        lscCfg->lut_map[6]      = lscCfg->lut_map[14]   = 6;  
+        lscCfg->lut_map[7]      = lscCfg->lut_map[15]   = 7;  
+#else
         lscCfg->enable          = (uint32_t)FALSE;
         lscCfg->gainFmt         = RFE_LSC_GAIN_FMT_U8Q8;
         lscCfg->horzDsFactor    = RFE_LSC_DS_FACTOR_32;
         lscCfg->vertDsFactor    = RFE_LSC_DS_FACTOR_16;
         lscCfg->tableAddr       = grawfe_lsc_tbl;
         lscCfg->numTblEntry     = 0x0u;
+#endif
 
         vissObj->vissCfgRef.lscCfg = lscCfg;
 

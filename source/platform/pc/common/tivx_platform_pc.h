@@ -87,6 +87,8 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_TARGETS            (42u)
 #elif defined (SOC_J6)
 #define TIVX_PLATFORM_MAX_TARGETS            (11u)
+#elif defined (SOC_AM62A)
+#define TIVX_PLATFORM_MAX_TARGETS            (17u)
 #endif
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
@@ -319,6 +321,37 @@ extern "C" {
      * the host target thread in list above                         \
      */                                                             \
     {TIVX_TARGET_HOST, 38},                                  \
+}
+
+#elif defined (SOC_AM62A)
+
+/*! \brief Mapping of Target names with Target Ids
+ *   Used to initialize internal structure
+ *
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_TARGET_INFO                                                       \
+{                                                                              \
+    {TIVX_TARGET_DSP1, 0},                                    \
+    {TIVX_TARGET_DSP_C7_1, 1},                                \
+    {TIVX_TARGET_DSP_C7_1_PRI_2, 2},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_3, 3},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_4, 4},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_5, 5},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_6, 6},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_7, 7},                          \
+    {TIVX_TARGET_DSP_C7_1_PRI_8, 8},                          \
+    {TIVX_TARGET_IPU1_0, 9},                                  \
+    {TIVX_TARGET_MCU1_0, 10},                                  \
+    {TIVX_TARGET_A72_0, 11},                                  \
+    {TIVX_TARGET_VPAC_LDC1, 12},                              \
+    {TIVX_TARGET_VPAC_MSC1, 13},                              \
+    {TIVX_TARGET_VPAC_MSC2, 14},                              \
+    {TIVX_TARGET_VPAC_VISS1, 15},                             \
+    /* TIVX_TARGET_HOST should point to the number associated with  \
+     * the host target thread in list above                         \
+     */                                                             \
+    {TIVX_TARGET_HOST, 11},                                   \
 }
 
 #endif

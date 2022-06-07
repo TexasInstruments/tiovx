@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DISPLAY
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -430,3 +431,5 @@ TESTCASE_TESTS(tivxHwaDisplay,
     testBufferCopyMode,
     testZeroBufferCopyMode
     )
+
+#endif /* BUILD_DISPLAY */

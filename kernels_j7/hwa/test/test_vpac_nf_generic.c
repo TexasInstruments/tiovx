@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifdef BUILD_VPAC_NF
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -800,3 +801,5 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testNegativeGraph, ArgNegative,
 }
 
 TESTCASE_TESTS(tivxHwaVpacNfGeneric, testNodeCreation, testGraphProcessing, testNegativeGraph)
+
+#endif /* BUILD_VPAC_NF */

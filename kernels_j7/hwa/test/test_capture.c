@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_CAPTURE
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -1365,3 +1366,5 @@ TESTCASE_TESTS(tivxHwaCapture,
                testRawImageCaptureTimeout,
                testRawImageCaptureDisplay)
 
+
+#endif /* BUILD_CAPTURE */

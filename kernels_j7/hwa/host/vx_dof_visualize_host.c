@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_DMPAC_DOF
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_dof_visualize.h"
@@ -324,3 +326,5 @@ vx_status tivxRemoveKernelDofVisualize(vx_context context)
 
     return status;
 }
+
+#endif

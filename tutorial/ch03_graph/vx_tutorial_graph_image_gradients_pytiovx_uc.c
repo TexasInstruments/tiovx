@@ -465,7 +465,11 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->magnitude
           );
         vxSetReferenceName( (vx_reference)usecase->node_2, "node_2");
+        #if defined(SOC_AM62A)
+        vxSetNodeTarget(usecase->node_2, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        #else
         vxSetNodeTarget(usecase->node_2, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        #endif
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -488,7 +492,11 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->shift
           );
         vxSetReferenceName( (vx_reference)usecase->node_5, "node_5");
+        #if defined(SOC_AM62A)
+        vxSetNodeTarget(usecase->node_5, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        #else
         vxSetNodeTarget(usecase->node_5, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        #endif
     }
     if (status == (vx_status)VX_SUCCESS)
     {
@@ -500,7 +508,11 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutoria
             usecase->shift
           );
         vxSetReferenceName( (vx_reference)usecase->node_7, "node_7");
+        #if defined(SOC_AM62A)
+        vxSetNodeTarget(usecase->node_7, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP1);
+        #else
         vxSetNodeTarget(usecase->node_7, (vx_enum)VX_TARGET_STRING, TIVX_TARGET_DSP2);
+        #endif
     }
     if (status == (vx_status)VX_SUCCESS)
     {

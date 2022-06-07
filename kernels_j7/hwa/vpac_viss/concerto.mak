@@ -1,6 +1,7 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F))
 ifeq ($(BUILD_HWA_KERNELS),yes)
+ifeq ($(BUILD_VPAC_VISS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vpac_viss
@@ -33,6 +34,10 @@ ifeq ($(BUILD_VPAC3),yes)
 DEFS        += VPAC3
 endif
 
+ifeq ($(BUILD_VPAC3L),yes)
+DEFS        += VPAC3L
+endif
+
 ifeq ($(TARGET_PLATFORM),J721S2)
 DEFS        += SOC_J721S2
 endif
@@ -57,7 +62,12 @@ ifeq ($(HOST_COMPILER),GCC_LINUX)
 CFLAGS += -Wno-unused-result
 endif
 
+ifeq ($(SOC)$(TARGET_CPU),am62ax86_64)
+SKIPBUILD=1
+endif
+
 include $(FINALE)
 
+endif
 endif
 endif

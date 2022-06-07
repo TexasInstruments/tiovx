@@ -62,6 +62,14 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 };
 #endif
 
+#if defined (SOC_AM62A)
+static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
+    APP_IPC_CPU_C7x_1,
+    APP_IPC_CPU_MCU1_0, /* in am62a, TIOVX CPU IPU1-0 is mapped to vision_apps/pdk CPU mcu1-0 */
+    APP_IPC_CPU_MPU1_0
+};
+#endif
+
 /*! \brief Pointer to the IPC notify event handler.
  *         It can be registered using #tivxIpcRegisterHandler API
  * \ingroup group_tivx_ipc

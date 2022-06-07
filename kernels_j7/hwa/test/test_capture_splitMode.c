@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_CAPTURE
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -551,3 +552,5 @@ TEST_WITH_ARG(tivxHwaCaptureSplitMode, testCaptureSplitModeTest, Arg, PARAMETERS
 
 TESTCASE_TESTS(tivxHwaCaptureSplitMode,
                testCaptureSplitModeTest)
+
+#endif /* BUILD_CAPTURE */

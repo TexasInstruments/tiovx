@@ -358,7 +358,9 @@ static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
              * \code
              */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+            #ifndef SOC_AM62A
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            #endif
             /** \endcode */
         }
     }

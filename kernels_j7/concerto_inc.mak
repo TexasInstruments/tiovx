@@ -11,29 +11,41 @@ ifeq ($(BUILD_HWA_KERNELS),yes)
 
 STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa vx_vxu
 
+ifeq ($(BUILD_DMPAC_SDE), yes)
 STATIC_LIBS += vx_target_kernels_dmpac_sde
 STATIC_LIBS += sde_hw
+endif
 
+ifeq ($(BUILD_VPAC_LDC), yes)
 STATIC_LIBS += vx_target_kernels_vpac_ldc
 STATIC_LIBS += ldc
+endif
 
-ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
+ifeq ($(BUILD_DMPAC_DOF),yes)
     STATIC_LIBS += vx_target_kernels_dmpac_dof
     STATIC_LIBS += vx_kernels_hwa_tests
 endif
 
+ifeq ($(BUILD_VPAC_MSC),yes)
 STATIC_LIBS += vx_target_kernels_vpac_msc
 STATIC_LIBS += scalar
+endif
 
+ifeq ($(BUILD_VPAC_NF),yes)
 STATIC_LIBS += vx_target_kernels_vpac_nf
 STATIC_LIBS += bl_filter_lib
+endif
 
+ifeq ($(BUILD_VPAC_VISS),yes)
 STATIC_LIBS += vx_target_kernels_vpac_viss
 STATIC_LIBS += rawfe nsf4 flexcc h3a ee utils glbce
 SYS_SHARED_LIBS += glbce
+endif
 
 ifeq ($(BUILD_VPAC3),yes)
     STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3
+else ifeq ($(BUILD_VPAC3L), yes)
+    STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3 pcid
 else
     STATIC_LIBS += flexcfa
 endif

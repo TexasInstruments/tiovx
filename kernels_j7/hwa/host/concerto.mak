@@ -14,8 +14,44 @@ ifeq ($(BUILD_VPAC3),yes)
 DEFS        += VPAC3
 endif
 
-ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
-DEFS += BUILD_HWA_DMPAC_DOF
+ifeq ($(BUILD_VPAC3L),yes)
+DEFS        += VPAC3L
+endif
+
+ifeq ($(BUILD_DMPAC_DOF),yes)
+DEFS += BUILD_DMPAC_DOF
+endif
+
+ifeq ($(BUILD_DMPAC_SDE),yes)
+DEFS += BUILD_DMPAC_SDE
+endif
+
+ifeq ($(BUILD_CAPTURE),yes)
+DEFS += BUILD_CAPTURE
+endif
+
+ifeq ($(BUILD_CSITX),yes)
+DEFS += BUILD_CSITX
+endif
+
+ifeq ($(BUILD_DISPLAY),yes)
+DEFS += BUILD_DISPLAY
+endif
+
+ifeq ($(BUILD_VPAC_VISS),yes)
+DEFS += BUILD_VPAC_VISS
+endif
+
+ifeq ($(BUILD_VPAC_MSC),yes)
+DEFS += BUILD_VPAC_MSC
+endif
+
+ifeq ($(BUILD_VPAC_LDC),yes)
+DEFS += BUILD_VPAC_LDC
+endif
+
+ifeq ($(BUILD_DISPLAY),yes)
+DEFS += BUILD_VPAC_NF
 endif
 
 include $(FINALE)

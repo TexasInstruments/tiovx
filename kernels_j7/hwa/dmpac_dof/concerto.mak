@@ -1,6 +1,7 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F))
-ifeq ($(BUILD_HWA_KERNELS)$(BUILD_HWA_DMPAC_DOF),yesyes)
+ifeq ($(BUILD_HWA_KERNELS),yes)
+ifeq ($(BUILD_DMPAC_DOF),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_dmpac_dof
@@ -32,6 +33,7 @@ endif
 
 include $(FINALE)
 
+endif
 endif
 endif
 

@@ -794,8 +794,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));   
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -987,10 +992,17 @@ TEST_WITH_ARG(tivxGraphPipeline, testInputMultipleEnqueue, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n2    = vxNotNode(graph, d0[0], d3), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n3    = vxNotNode(graph, d3, d4[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -1192,8 +1204,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1[0]), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1[0], d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -1391,10 +1408,17 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n2    = vxOrNode(graph, d1, d2, d3), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n3    = vxAndNode(graph, d3, d4[0], d5[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -2279,8 +2303,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     VX_CALL(vxReplicateNode(graph, n0, replicate, 2));
     VX_CALL(vxReplicateNode(graph, n1, replicate, 2));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ node0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -2532,10 +2561,17 @@ TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n0_1  = vxNotNode(graph, img0_1[0], img1_1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1_1  = vxNotNode(graph, img1_1, img2_1[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n0_1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1_1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n0_1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1_1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ node0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -2952,9 +2988,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
         VX_CALL(vxReplicateNode(graph, node3, replicate, 4));
 
         /* Pipelining stuff below */
+        #if defined(SOC_AM62A)
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        #else
         VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
         VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
         VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+        #endif
 
         /* input @ node1 index 0, becomes graph parameter 0 */
         add_graph_parameter_by_node_index(graph, node1, 0);
@@ -3383,8 +3425,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -3639,8 +3686,13 @@ TEST(tivxGraphPipeline, testEventHandlingGraphVerify)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -3969,8 +4021,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -5151,8 +5208,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(nodes[1] = vxNotNode(graph_1, images[1], (vx_image)vxGetReferenceFromDelay(delay_1, 0)), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(nodes[2] = vxNotNode(graph_1, (vx_image)vxGetReferenceFromDelay(delay_1, 0), images[2]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     VX_CALL(vxRegisterAutoAging(graph_1, delay_1));
     VX_CALL(vxVerifyGraph(graph_1));
@@ -5198,8 +5260,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d2[0], (vx_image)vxGetReferenceFromDelay(delay, 0)), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n2    = vxNotNode(graph, (vx_image)vxGetReferenceFromDelay(delay, 0), d4[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input0 @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -5537,7 +5604,11 @@ TEST(tivxGraphPipeline, negativeTestPyramidInconsistentRefs)
 
     ASSERT_VX_OBJECT(n1 = tivxPyramidSourceNode(graph, pyr_1[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* input @ node index 0, becomes graph parameter 1 */
     add_graph_parameter_by_node_index(graph, n1, 0);
@@ -5704,10 +5775,17 @@ TEST(tivxGraphPipeline, testGraphPipelineDepthDetectionSerial)
     ASSERT_VX_OBJECT(n2    = vxOrNode(graph, d1, d2, d3), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n3    = vxAndNode(graph, d3, d4[0], d5[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -5898,12 +5976,21 @@ TEST(tivxGraphPipeline, testGraphPipelineDepthDetectionParallel)
     ASSERT_VX_OBJECT(n5    = vxNotNode(graph, d6, d7[0]), VX_TYPE_NODE);
     VX_CALL(vxSetReferenceName( (vx_reference)n5, "n5"));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n5, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n5, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -6083,11 +6170,19 @@ TEST(tivxGraphPipeline, testGraphPipelineDepthDetectionBranches)
     ASSERT_VX_OBJECT(n4    = vxAndNode(graph, d3, d4, d5[0]), VX_TYPE_NODE);
     VX_CALL(vxSetReferenceName( (vx_reference)n4, "n4"));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -6223,8 +6318,13 @@ TEST(tivxGraphPipeline, testGraphPipelineErrorDetection)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1[0]), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1[0], d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -6314,8 +6414,13 @@ TEST(tivxGraphPipeline, testBufferDepthDetection1)
     ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);
@@ -6413,9 +6518,15 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n2    = vxNotNode(graph, d1, d3[0]), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    #endif
 
     /* input @ n0 index 0, becomes graph parameter 0 */
     add_graph_parameter_by_node_index(graph, n0, 0);

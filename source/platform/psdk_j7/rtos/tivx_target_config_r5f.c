@@ -14,6 +14,8 @@
 #define TIVX_TARGET_MCU2_MAX            (24U)
 #elif defined(SOC_J784S4)
 #define TIVX_TARGET_MCU2_MAX            (34U)
+#elif defined(SOC_AM62A)
+#define TIVX_TARGET_MCU1_MAX            (5U)
 #endif
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
@@ -31,7 +33,11 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id);
  * \brief Target Stack
  *******************************************************************************
  */
+#ifdef SOC_AM62A
+static uint8_t gTarget_tskStack[TIVX_TARGET_MCU1_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
+#else
 static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
+#endif
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
     ;
@@ -78,6 +84,13 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id)
 
 void tivxPlatformCreateTargets(void)
 {
+    #ifdef SOC_AM62A
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU1_0, 0, "TIVX_CPU_0", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1, 1, "TIVX_VPAC_LDC1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1, 2, "TIVX_VPAC_MSC1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2, 3, "TIVX_VPAC_MSC2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 4, "TIVX_VPAC_VISS1", 13u);
+    #else
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0, 0, "TIVX_CPU_0", 4u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_NF, 1, "TIVX_VPAC_NF", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1, 2, "TIVX_VPAC_LDC1", 8u);
@@ -121,10 +134,18 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_0, 0, "TIVX_MCU4_0", 4u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_1, 1, "TIVX_MCU4_1", 4u);
     #endif
+    #endif
 }
 
 void tivxPlatformDeleteTargets(void)
 {
+    #ifdef SOC_AM62A
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU1_0);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2);
+    tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1);
+    #else
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_MCU2_0);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_NF);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1);
@@ -163,5 +184,6 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE10);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE11);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE12);
+    #endif
     #endif
 }

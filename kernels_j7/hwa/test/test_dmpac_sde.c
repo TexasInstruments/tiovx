@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DMPAC_SDE 
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -1040,3 +1041,5 @@ TEST(tivxHwaDmpacSde, testRealGraphProcessing)
 }
 
 TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing, testRealGraphProcessing, testNegativeGraphProcessing)
+
+#endif /* BUILD_DMPAC_SDE */

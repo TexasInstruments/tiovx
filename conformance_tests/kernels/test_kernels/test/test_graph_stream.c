@@ -176,8 +176,13 @@ TEST_WITH_ARG(tivxGraphStreaming, testScalar, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -239,8 +244,13 @@ TEST(tivxGraphStreaming, negativeTestSourceSinkNoTrigger)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, NULL));
 
@@ -282,8 +292,13 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink1, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -315,6 +330,8 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink1, Arg, STREAMING_PARAMETERS)
  * Error will be shown in a print statement if the scalar sink fails
  *
  */
+#if !defined(SOC_AM62A)
+
 TEST_WITH_ARG(tivxGraphStreaming, testSourceSink2, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -358,7 +375,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink2, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseGraph(&graph));
     tivxTestKernelsUnLoadKernels(context);
 }
-
+#endif
 /*
  *       n1          scalar            n2             scalar_out
  * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
@@ -389,8 +406,13 @@ TEST(tivxGraphStreaming, negativeTestStreamingState)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -450,8 +472,13 @@ TEST(tivxGraphStreaming, negativeTestStreamingError)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_ERROR, 0, NODE1_EVENT));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n2, VX_EVENT_NODE_ERROR, 0, NODE2_EVENT));
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -498,7 +525,11 @@ TEST(tivxGraphStreaming, testScalarCtrlCmd)
     ASSERT_VX_OBJECT(scalar[0] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* Negative test for sending control command before vxVerify (should fail) */
     status = tivxNodeSendCommand(n1, 0u, TIVX_SCALAR_SRC_NODE_INC_SCALAR,
@@ -561,8 +592,13 @@ TEST(tivxGraphStreaming, negativeTestScalar)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_NE_VX_STATUS(VX_SUCCESS, vxStartGraphStreaming(graph));
 
@@ -622,8 +658,13 @@ TEST(tivxGraphStreaming, negativeTestStreamingPipelining1)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -672,8 +713,13 @@ TEST(tivxGraphStreaming, negativeTestStreamingPipelining2)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -722,8 +768,13 @@ TEST(tivxGraphStreaming, negativeTestPipeliningStreamingNoTrigger)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 3));
 
@@ -753,6 +804,7 @@ TEST(tivxGraphStreaming, negativeTestPipeliningStreamingNoTrigger)
  * Both nodes of graph2 are on MCU2_1
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph1, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -844,7 +896,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph1, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseGraph(&graph1));
     tivxTestKernelsUnLoadKernels(context);
 }
-
+#endif
 /*
  * Graph1
  *       n1         scalar             n2             scalar_out
@@ -891,10 +943,17 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph2, Arg, STREAMING_PARAMETERS)
 
     ASSERT_VX_OBJECT(n4 = tivxScalarIntermediateNode(graph2, scalar_g2, scalar_g2_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph1, n1));
 
@@ -965,6 +1024,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph2, Arg, STREAMING_PARAMETERS)
  * Node1 of graph2 is on MCU2_0 while node2 of graph2 is on MCU2_1
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph3, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1056,6 +1116,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph3, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseGraph(&graph1));
     tivxTestKernelsUnLoadKernels(context);
 }
+#endif
 
 /*
  * Graph1
@@ -1071,6 +1132,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph3, Arg, STREAMING_PARAMETERS)
  * Both nodes of graph2 are on MCU2_1
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined1, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1161,7 +1223,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined1, Arg, STREAMING_PARAM
     VX_CALL(vxReleaseGraph(&graph1));
     tivxTestKernelsUnLoadKernels(context);
 }
-
+#endif
 /*
  * Graph1
  *       n1         scalar         n2
@@ -1207,10 +1269,17 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined2, Arg, STREAMING_PARAM
 
     ASSERT_VX_OBJECT(n4 = tivxScalarSinkNode(graph2, scalar_g2), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n3, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n4, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph1, n1));
 
@@ -1281,6 +1350,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined2, Arg, STREAMING_PARAM
  * Node1 of graph2 is on MCU2_0 while node2 of graph2 is on MCU2_1
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined3, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1371,7 +1441,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined3, Arg, STREAMING_PARAM
     VX_CALL(vxReleaseGraph(&graph1));
     tivxTestKernelsUnLoadKernels(context);
 }
-
+#endif
 /*
  * Graph1
  *       n1         scalar         n2
@@ -1386,6 +1456,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined3, Arg, STREAMING_PARAM
  * Node1 of graph2 is on MCU2_0 while node2 and node3 of graph2 are on MCU2_1
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined4, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1483,7 +1554,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined4, Arg, STREAMING_PARAM
     VX_CALL(vxReleaseGraph(&graph1));
     tivxTestKernelsUnLoadKernels(context);
 }
-
+#endif
 /*
  *       n1         scalar             n2            scalar
  * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
@@ -1513,8 +1584,13 @@ TEST_WITH_ARG(tivxGraphStreaming, testStreamStartStop, Arg, STREAMING_PARAMETERS
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
 
@@ -1602,8 +1678,13 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming1, Arg, STREAMING_PARAM
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSinkNode(graph, scalar), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -1649,6 +1730,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming1, Arg, STREAMING_PARAM
  * Error will be shown in a print statement if the scalar sink fails
  *
  */
+#if !defined(SOC_AM62A)
 TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming2, Arg, STREAMING_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -1713,7 +1795,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming2, Arg, STREAMING_PARAM
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
-
+#endif
 /*
  *       n0         scalar             n1            scalar         n2
  * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR -- SCALAR_SINK
@@ -1754,9 +1836,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming3, Pipeline_Arg, PARAME
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -1836,9 +1924,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming4, Pipeline_Arg, PARAME
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -1934,9 +2028,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSinkNode(graph, scalar_out), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU1_0));
+    #else
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+    #endif
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
@@ -2053,17 +2153,27 @@ TEST(tivxGraphStreaming, negativeTestVerifyGraph)
 TESTCASE_TESTS(tivxGraphStreaming,
                negativeTestSourceSinkNoTrigger,
                testSourceSink1,
+#if !defined(SOC_AM62A)
                testSourceSink2,
+#endif
                testStreamStartStop,
+#if !defined(SOC_AM62A)
                testMultiGraph1,
+#endif
                testMultiGraph2,
+#if !defined(SOC_AM62A)
                testMultiGraph3,
                testMultiGraphPipelined1,
+#endif
                testMultiGraphPipelined2,
+#if !defined(SOC_AM62A)
                testMultiGraphPipelined3,
                testMultiGraphPipelined4,
+#endif
                testPipeliningStreaming1,
+#if !defined(SOC_AM62A)
                testPipeliningStreaming2,
+#endif
                testPipeliningStreaming3,
                testPipeliningStreaming4,
                testPipeliningStreaming5,

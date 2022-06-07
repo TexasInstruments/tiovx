@@ -89,6 +89,10 @@ static vx_status tivxVpacVissSetNsf4Config(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef);
 static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
     tivxVpacVissConfigRef *vissCfgRef);
+#if defined(VPAC3L)
+static vx_status tivxVpacVissSetPcidConfig(tivxVpacVissObj *vissObj,
+    tivxVpacVissConfigRef *vissCfgRef);
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -120,12 +124,21 @@ vx_status tivxVpacVissSetConfigInDrv(tivxVpacVissObj *vissObj)
         status = tivxVpacVissSetFcpConfig(vissObj, &vissObj->vissCfgRef);
     }
 
+#if defined(VPAC3L)
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxVpacVissSetPcidConfig(vissObj, &vissObj->vissCfgRef);
+    }
+#endif
+
     return (status);
 }
 
 vx_status tivxVpacVissSetConfigBuffer(tivxVpacVissObj *vissObj)
 {
     vx_status status =      (vx_status) VX_SUCCESS;
+
+#ifndef SOC_AM62A
     int32_t fvid2_status =  FVID2_SOK;
 
     /* Initialize buffer pointer to NULL */
@@ -185,17 +198,21 @@ vx_status tivxVpacVissSetConfigBuffer(tivxVpacVissObj *vissObj)
         status = (vx_status) VX_SUCCESS;
     }
 
+#endif
+
     return (status);
 }
 
 void tivxVpacVissDeleteConfigBuffer(tivxVpacVissObj *vissObj)
 {
+#ifndef SOC_AM62A
     if (NULL != vissObj->configurationBuffer.bufferPtr)
     {
         tivxMemFree((void*) vissObj->configurationBuffer.bufferPtr,
                 vissObj->configurationBuffer.length,
                 (vx_enum) TIVX_MEM_EXTERNAL);
     }
+#endif
 }
 
 static vx_status tivxVpacVissSetRfeConfig(tivxVpacVissObj *vissObj,
@@ -725,5 +742,41 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
     return (status);
 }
 
+#if defined(VPAC3L)
+static vx_status tivxVpacVissSetPcidConfig(tivxVpacVissObj *vissObj,
+    tivxVpacVissConfigRef *vissCfgRef)
+{
+    vx_status           status = (vx_status)VX_SUCCESS;
+    int32_t             fvid2_status = FVID2_SOK;
+    Vhwa_M2mVissParams *vissDrvPrms = NULL;
+
+    vissDrvPrms = &vissObj->vissPrms;
+
+    if (((uint32_t)TRUE == vissDrvPrms->enablePcid) &&
+        (NULL != vissCfgRef->pcidCfg))
+    {
+        fvid2_status = Fvid2_control(vissObj->handle, IOCTL_PCID_SET_CONFIG,
+            (void *)vissCfgRef->pcidCfg, NULL);
+        if (FVID2_SOK != fvid2_status)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to set PCID Config !!!\n");
+        }
+
+        vissCfgRef->pcidCfg = NULL;
+    }
+
+    /* Convert FVID2 status to OpenVX Status */
+    if (FVID2_SOK != fvid2_status)
+    {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        status = (vx_status)VX_SUCCESS;
+    }
+
+    return (status);
+}
+#endif
 
 

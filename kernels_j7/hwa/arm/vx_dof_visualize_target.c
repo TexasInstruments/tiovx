@@ -60,7 +60,7 @@
  *
  */
 
-#ifdef BUILD_HWA_DMPAC_DOF
+#ifdef BUILD_DMPAC_DOF
 
 #include "TI/tivx.h"
 #include "VX/vx.h"

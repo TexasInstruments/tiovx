@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifdef BUILD_VPAC_MSC
 
 #include <VX/vx.h>
 #include <VX/vxu.h>
@@ -387,3 +388,5 @@ TESTCASE_TESTS(tivxHwaVpacMscHalfScaleGaussian,
         testNodeCreation,
         testGraphProcessing,
         testImmediateProcessing)
+
+#endif /* BUILD_VPAC_MSC */

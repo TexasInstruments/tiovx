@@ -296,10 +296,12 @@ vx_status tivxMemBufferMap(
     {
         if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
+            #if defined(SOC_AM62A)
+            appMemCacheInv(host_ptr, size);
+            #else
             #ifndef A72
-            appMemCacheInv(
-                host_ptr,
-                size);
+            appMemCacheInv(host_ptr, size);
+            #endif
             #endif
         }
     }
@@ -322,10 +324,12 @@ vx_status tivxMemBufferUnmap(
         if (((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type) &&
             (((vx_enum)VX_WRITE_ONLY == maptype) || ((vx_enum)VX_READ_AND_WRITE == maptype)))
         {
+            #if defined(SOC_AM62A)
+            appMemCacheWb(host_ptr, size);
+            #else
             #ifndef A72
-            appMemCacheWb(
-                host_ptr,
-                size);
+            appMemCacheWb(host_ptr, size);
+            #endif
             #endif
         }
     }

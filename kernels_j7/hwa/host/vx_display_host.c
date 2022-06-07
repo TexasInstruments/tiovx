@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_DISPLAY
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_display.h"
@@ -277,3 +279,5 @@ vx_status tivxRemoveKernelDisplay(vx_context context)
 
     return status;
 }
+
+#endif /* BUILD_DISPLAY */

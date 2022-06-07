@@ -71,19 +71,37 @@ static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 static uint32_t gIsHwaKernelsLoad = 0u;
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+#ifdef BUILD_VPAC_NF
     {&tivxAddKernelVpacNfGeneric, &tivxRemoveKernelVpacNfGeneric},
     {&tivxAddKernelVpacNfBilateral, &tivxRemoveKernelVpacNfBilateral},
+#endif
+#ifdef BUILD_DMPAC_SDE
     {&tivxAddKernelDmpacSde, &tivxRemoveKernelDmpacSde},
+#endif
+#ifdef BUILD_VPAC_LDC
     {&tivxAddKernelVpacLdc, &tivxRemoveKernelVpacLdc},
+#endif
+#ifdef BUILD_VPAC_MSC
     {&tivxAddKernelVpacMscMultiScale, &tivxRemoveKernelVpacMscMultiScale},
     {&tivxAddKernelVpacMscPyramid, &tivxRemoveKernelVpacMscPyramid},
+#endif
+#ifdef BUILD_DMPAC_DOF
     {&tivxAddKernelDmpacDof, &tivxRemoveKernelDmpacDof},
     {&tivxAddKernelDofVisualize, &tivxRemoveKernelDofVisualize},
+#endif
+#ifdef BUILD_VPAC_VISS
     {&tivxAddKernelVpacViss, &tivxRemoveKernelVpacViss},
+#endif
+#ifdef BUILD_DISPLAY
     {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
+    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M},
+#endif
+#ifdef BUILD_CAPTURE
     {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
-    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx},
-    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M}
+#endif
+#ifdef BUILD_CSITX
+    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx}
+#endif
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -121,22 +139,36 @@ void tivxHwaLoadKernels(vx_context context)
          * during platform init on the CPU that supports the target
          */
         /* This only works on PC emulation mode */
+        #if defined(SOC_AM62A)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+        #else
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
+        #endif
 
+        #ifdef BUILD_VPAC_NF
         tivxRegisterHwaTargetVpacNfKernels();
+        #endif
 
-
+        #ifdef BUILD_VPAC_LDC
         tivxRegisterHwaTargetVpacLdcKernels();
+        #endif
 
+        #ifdef BUILD_VPAC_MSC 
         tivxRegisterHwaTargetVpacMscKernels();
+        #endif
 
+        #ifdef BUILD_VPAC_VISS
         tivxRegisterHwaTargetVpacVissKernels();
+        #endif
 
+        #if !defined(SOC_AM62A)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
 
+        #ifdef BUILD_DMPAC_SDE
         tivxRegisterHwaTargetDmpacSdeKernels();
+        #endif
 
-        #ifdef BUILD_HWA_DMPAC_DOF
+        #ifdef BUILD_DMPAC_DOF
         tivxRegisterHwaTargetDmpacDofKernels();
         #endif
 
@@ -147,12 +179,12 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaTargetVpacMscKernels();
         tivxRegisterHwaTargetVpacVissKernels();
         #endif
+        #endif
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
 
         tivxRegisterHwaTargetArmKernels();
         #endif
-
     }
     gIsHwaKernelsLoad++;
 }
@@ -171,17 +203,36 @@ void tivxHwaUnLoadKernels(vx_context context)
 
             #ifdef x86_64
             /* This line only works on PC emulation mode */
+            #if defined(SOC_AM62A)
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+            #else
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
+            #endif
+
+            #ifdef BUILD_VPAC_NF
             tivxUnRegisterHwaTargetVpacNfKernels();
+            #endif
+
+            #ifdef BUILD_VPAC_LDC
             tivxUnRegisterHwaTargetVpacLdcKernels();
+            #endif
 
+            #ifdef BUILD_VPAC_MSC 
             tivxUnRegisterHwaTargetVpacMscKernels();
+            #endif
+
+            #ifdef BUILD_VPAC_VISS
             tivxUnRegisterHwaTargetVpacVissKernels();
+            #endif
 
+            #if !defined(SOC_AM62A)
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
+            
+            #ifdef BUILD_DMPAC_SDE
             tivxUnRegisterHwaTargetDmpacSdeKernels();
+            #endif
 
-            #ifdef BUILD_HWA_DMPAC_DOF
+            #ifdef BUILD_DMPAC_DOF
             tivxUnRegisterHwaTargetDmpacDofKernels();
             #endif
 
@@ -192,7 +243,10 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaTargetVpacMscKernels();
             tivxUnRegisterHwaTargetVpacVissKernels();
             #endif
+            #endif
+
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+
             tivxUnRegisterHwaTargetArmKernels();
             #endif
         }

@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_DISPLAY
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_display_m2m.h"
@@ -329,3 +331,4 @@ void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms)
     }
     prms->overlayId = 0U;
 }
+#endif /* BUILD_DISPLAY */

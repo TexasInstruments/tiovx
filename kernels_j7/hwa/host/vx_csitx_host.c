@@ -60,6 +60,8 @@
  *
  */
 
+#ifdef BUILD_CSITX
+
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_csitx.h"
@@ -169,7 +171,6 @@ static vx_status VX_CALLBACK tivxAddKernelCsitxValidate(vx_node node,
             {
                 VX_PRINT(VX_ZONE_ERROR, "query 'input' object array reference failed \n");
             }
-
             vxReleaseReference(&obj_arr_element);
         }
         else
@@ -325,6 +326,4 @@ void tivx_csitx_params_init(tivx_csitx_params_t *prms)
         }
     }
 }
-
-
-
+#endif /*BUILD_CSITX*/

@@ -178,6 +178,9 @@ TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph, accum_image_intermediate, alpha_scalar_final, accum_image_final), VX_TYPE_NODE);
 
+    #if defined(SOC_AM62A)
+    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    #else
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
     {
         VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
@@ -186,6 +189,7 @@ TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
     {
         VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     }
+    #endif
 
     VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 

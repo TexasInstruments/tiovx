@@ -271,12 +271,18 @@ static vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
     return status;
 }
 
+#undef PRINT_IVISION_MEMTAB_REQUESTS
+
 void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms)
 {
     vx_uint32 numMemRec;
     IALG_MemRec *memRec;
     IM_Fxns *algHandle = NULL;
     vx_status status = (vx_status)VX_SUCCESS;
+
+    #if defined(PRINT_IVISION_MEMTAB_REQUESTS)
+    tivx_set_debug_zone(VX_ZONE_INFO);
+    #endif
 
     VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
 
@@ -355,6 +361,10 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, const IALG_Params *pAlgPrms
     {
       VX_PRINT(VX_ZONE_INFO, "Created AlgiVision handle.\n");
     }
+
+    #if defined(PRINT_IVISION_MEMTAB_REQUESTS)
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+    #endif
 
     return algHandle;
 }

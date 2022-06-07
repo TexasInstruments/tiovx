@@ -419,7 +419,7 @@ vx_status tivxKernelsTargetUtilsAssignTargetNameDsp(char *target_name)
     }
     #endif
 
-    #if defined(SOC_J721S2)
+    #if defined(SOC_J721S2) || defined(SOC_AM62A)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_DSP1)
     {
         strncpy(target_name, TIVX_TARGET_DSP1,

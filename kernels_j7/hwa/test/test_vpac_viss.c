@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_VPAC_VISS
 
 
 #include <VX/vx.h>
@@ -2787,3 +2788,4 @@ TESTCASE_TESTS(tivxHwaVpacViss,
                testMux,
                testGraphProcessing,
                */)
+#endif /* BUILD_VPAC_VISS */

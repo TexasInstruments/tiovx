@@ -87,6 +87,12 @@ extern "C" {
 #define TIVX_VPAC_VISS_MUX0_VALUE12    (3U)
 /*! \see tivx_vpac_viss_fcp_params_t::mux_output0 */
 #define TIVX_VPAC_VISS_MUX0_NV12_P12   (4U)
+#ifdef VPAC3L
+/*! \see tivx_vpac_viss_fcp_params_t::mux_output0 */
+#define TIVX_VPAC_VISS_MUX0_IR8        (6U)
+/*! \see tivx_vpac_viss_fcp_params_t::mux_output0 */
+#define TIVX_VPAC_VISS_MUX0_IR12_P12   (7U)
+#endif
 
 /*! \see tivx_vpac_viss_fcp_params_t::mux_output1 */
 #define TIVX_VPAC_VISS_MUX1_UV12       (0U)
@@ -105,6 +111,10 @@ extern "C" {
 #define TIVX_VPAC_VISS_MUX2_NV12       (4U)
 /*! \see tivx_vpac_viss_fcp_params_t::mux_output2 */
 #define TIVX_VPAC_VISS_MUX2_YUV422     (5U)
+#ifdef VPAC3L
+/*! \see tivx_vpac_viss_fcp_params_t::mux_output2 */
+#define TIVX_VPAC_VISS_MUX2_IR12_U16   (6U)
+#endif
 
 /*! \see tivx_vpac_viss_fcp_params_t::mux_output3 */
 #define TIVX_VPAC_VISS_MUX3_UV8        (0U)

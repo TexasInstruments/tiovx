@@ -204,11 +204,15 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
     inst_start = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
+#ifdef SOC_AM62A
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0))
+#else
     if ( (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
 #if defined(SOC_J784S4)
         || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
 #endif
         )
+#endif
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -220,7 +224,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 
             if (0u == cnt)
             {
+                #ifdef SOC_AM62A
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                #else
                 if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                #endif
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
                         TIVX_TARGET_MAX_NAME);
@@ -235,7 +243,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
             }
             else
             {
+                #ifdef SOC_AM62A
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                #else
                 if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                #endif
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
                         TIVX_TARGET_MAX_NAME);
@@ -272,7 +284,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                     /* Initialize Instance Object */
                     if (0u == cnt)
                     {
+                        #ifdef SOC_AM62A
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                        #else
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        #endif
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
@@ -288,7 +304,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                     }
                     else
                     {
+                        #ifdef SOC_AM62A
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                        #else
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        #endif
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;
@@ -378,11 +398,15 @@ void tivxAddTargetKernelVpacMscScale(void)
     inst_start = TIVX_VPAC_MSC_SCALE_IMAGE_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
+#ifdef SOC_AM62A
+    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0))
+#else
     if ( (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
 #if defined(SOC_J784S4)
         || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
 #endif
         )
+#endif
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -394,7 +418,11 @@ void tivxAddTargetKernelVpacMscScale(void)
 
             if (0u == cnt)
             {
+                #ifdef SOC_AM62A
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                #else
                 if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                #endif
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
                         TIVX_TARGET_MAX_NAME);
@@ -409,7 +437,11 @@ void tivxAddTargetKernelVpacMscScale(void)
             }
             else
             {
+                #ifdef SOC_AM62A
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                #else
                 if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                #endif
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
                         TIVX_TARGET_MAX_NAME);
@@ -446,7 +478,11 @@ void tivxAddTargetKernelVpacMscScale(void)
                     /* Initialize Instance Object */
                     if (0u == cnt)
                     {
+                        #ifdef SOC_AM62A
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                        #else
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        #endif
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
@@ -462,7 +498,11 @@ void tivxAddTargetKernelVpacMscScale(void)
                     }
                     else
                     {
+                        #ifdef SOC_AM62A
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+                        #else
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        #endif
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;

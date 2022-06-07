@@ -93,6 +93,8 @@ TESTCASE(tivxReference)
 TESTCASE(tivxBmpRdWr)
 TESTCASE(tivxMem)
 TESTCASE(tivxMapImage)
+#if !defined(SOC_AM62A)
 TESTCASE(tivxNestedUserNode)
+#endif
 #endif
 

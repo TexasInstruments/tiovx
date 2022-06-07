@@ -168,7 +168,11 @@ void tivxAddTargetKernelVpacMscMultiScale(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+#ifdef SOC_AM62A
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+#else
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#endif
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
         vx_vpac_msc_multi_scale_target_kernel[0] = tivxAddTargetKernelByName(

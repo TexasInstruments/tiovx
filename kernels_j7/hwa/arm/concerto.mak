@@ -14,8 +14,8 @@ endif
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 
-ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
-DEFS += BUILD_HWA_DMPAC_DOF
+ifeq ($(BUILD_DMPAC_DOF),yes)
+DEFS += BUILD_DMPAC_DOF
 endif
 
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
@@ -39,8 +39,8 @@ CSOURCES    := vx_kernels_hwa_target.c vx_dof_visualize_target.c
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 
-ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
-DEFS += BUILD_HWA_DMPAC_DOF
+ifeq ($(BUILD_DMPAC_DOF),yes)
+DEFS += BUILD_DMPAC_DOF
 endif
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), C71 C7100 C7120))

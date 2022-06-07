@@ -1,6 +1,7 @@
 ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2))
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), R5F))
 ifeq ($(BUILD_HWA_KERNELS),yes)
+ifeq ($(BUILD_DISPLAY),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_display_m2m
@@ -19,6 +20,7 @@ endif
 
 include $(FINALE)
 
+endif
 endif
 endif
 endif

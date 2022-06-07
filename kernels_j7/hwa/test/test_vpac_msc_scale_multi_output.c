@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifdef BUILD_VPAC_MSC
 
 #include <VX/vx.h>
 #include <VX/vxu.h>
@@ -2114,3 +2115,5 @@ TESTCASE_TESTS(tivxHwaVpacMscScaleMultiOutput,
     testGraphProcessing_ThreeOutput,
     testGraphProcessing_FourOutput,
     testGraphProcessing_FiveOutput)
+
+#endif /* BUILD_VPAC_MSC */

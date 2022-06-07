@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_CSITX
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
@@ -1113,3 +1114,5 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
 
 TESTCASE_TESTS(tivxHwaCsitxCsirx,
                testCsitxCsirxloopback)
+
+#endif /* BULD_CSITX */

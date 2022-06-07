@@ -102,7 +102,7 @@ typedef struct
     Fcp_HistConfig                      histCfg;
     Fcp_EeConfig                        eeCfg;
 
-#ifdef VPAC3
+#if defined (VPAC3) || defined (VPAC3L)
     Fcp_comDecomLutConfig               comLutCfg;
     Fcp_comDecomLutConfig               decomLutCfg;
 #endif
@@ -144,8 +144,12 @@ typedef struct
     Glbce_PerceptConfig                 fwdPrcpCfg;
     Glbce_PerceptConfig                 revPrcpCfg;
 
-#ifdef VPAC3
+#if defined (VPAC3) || defined (VPAC3L)
     Cac_Config                          cacCfg;
+#endif
+
+#ifdef VPAC3L
+    Pcid_Cfg                            pcidCfg;
 #endif
 
     tivxVpacVissFcpConfig               fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
@@ -164,7 +168,7 @@ typedef struct
     Fcp_EeConfig                       *eeCfg;
     Fcp_HistConfig                     *histCfg;
 
-#ifdef VPAC3
+#if defined (VPAC3) || defined (VPAC3L)
     Fcp_comDecomLutConfig              *comLutCfg;
     Fcp_comDecomLutConfig              *decomLutCfg;
 #endif
@@ -203,8 +207,12 @@ typedef struct
 
     H3a_Config                         *h3aCfg;
 
-#ifdef VPAC3
+#if defined (VPAC3) || defined (VPAC3L)
     Cac_Config                         *cacCfg;
+#endif
+
+#ifdef VPAC3L
+    Pcid_Cfg                           *pcidCfg;
 #endif
 
     tivxVpacVissFcpConfigRef           fcpCfg[TIVX_VPAC_VISS_FCP_NUM_INSTANCES];
@@ -224,11 +232,14 @@ typedef struct
     uint32_t                           rawfe_pwl_vshort_lut[FLXD_LUT_SIZE];
     uint32_t                           lsc_lut[RFE_LSC_TBL_SIZE];
     int32_t                            ee_lut[FCP_EE_LUT_SIZE];
-#ifdef VPAC3
+#if defined(VPAC3) || defined(VPAC3L)
     int32_t                            cac_lut[CAC_LUT_SIZE];
     uint32_t                           raw_hist_lut[NSF4_HISTOGRAM_LUT_SIZE];
     uint32_t                           dcmpLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FCP_MAX_COLOR_COMP][FLXD_LUT_SIZE];
     uint32_t                           compLut[TIVX_VPAC_VISS_FCP_NUM_INSTANCES][FCP_MAX_COLOR_COMP][FLXD_LUT_SIZE];
+#endif
+#ifdef VPAC3L
+    Pcid_IRremapLut                    pcid_ir_remap_lut;
 #endif
 } tivxVpacVissDccTables;
 

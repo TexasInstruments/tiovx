@@ -142,7 +142,11 @@ void tivxAddTargetKernelVpacLdc(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+#ifdef SOC_AM62A
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+#else
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#endif
     {
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -757,7 +761,11 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
             memset(ldc_obj, 0x0, sizeof(tivxVpacLdcObj));
             instObj->ldc_obj[cnt].isAlloc = 1U;
 
+#ifdef SOC_AM62A
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU1_0)
+#else
             if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#endif
             {
                 instObj->ldc_obj[cnt].ldc_drv_inst_id = VHWA_M2M_LDC_DRV_INST_ID;
                 instObj->ldc_obj[cnt].hwa_perf_id     = APP_PERF_HWA_VPAC1_LDC;

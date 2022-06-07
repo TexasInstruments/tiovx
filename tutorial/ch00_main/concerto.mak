@@ -46,6 +46,10 @@ STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66
 
 STATIC_LIBS += vx_utils
 
+ifeq ($(SOC), am62a)
+SKIPBUILD=1
+endif
+
 include $(FINALE)
 
 endif

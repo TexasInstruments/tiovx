@@ -59,6 +59,7 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifdef BUILD_DMPAC_DOF
 
 #include "TI/tivx.h"
 #include "tivx_hwa_kernels.h"
@@ -996,3 +997,5 @@ void tivx_dmpac_dof_hts_bw_limit_params_init(
         memset(prms, 0x0, sizeof(tivx_dmpac_dof_hts_bw_limit_params_t));
     }
 }
+
+#endif /* BUILD_DMPAC_DOF */
