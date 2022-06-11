@@ -18,6 +18,10 @@
 #include <signal.h>
 #include <TI/tivx.h>
 
+#ifndef SOC_J6
+#include <utils/app_init/include/app_init.h>
+#endif
+
 int vx_conformance_test_main(int argc, char* argv[]);
 void TestModuleRegister();
 void TestModuleUnRegister();
@@ -33,10 +37,21 @@ int main(int argc, char* argv[])
     /* Register the signal handler. */
     signal(SIGINT, intSigHandler);
 
+#ifndef SOC_J6
+    appInit();
+#else
     tivxInit();
+#endif
+
     TestModuleRegister();
     status = vx_conformance_test_main(argc, argv);
     TestModuleUnRegister();
+
+#ifndef SOC_J6
+    appDeInit();
+#else
     tivxDeInit();
+#endif
+
     return status;
 }

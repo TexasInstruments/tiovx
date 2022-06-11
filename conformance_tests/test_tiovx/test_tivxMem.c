@@ -394,7 +394,6 @@ TEST(tivxMem, testTranslateAddrMalloc)
     uint32_t    testFail = 0;
     vx_enum     region;
     int32_t     status;
-    int32_t     expectedStatus;
 
     /* ALlocate a memory block using malloc(). */
     size   = 1024;
@@ -406,17 +405,10 @@ TEST(tivxMem, testTranslateAddrMalloc)
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* In PC environment, the memory translation functions always work. */
-#if defined(PLATFORM_PC)
-    expectedStatus = VX_SUCCESS;
-#else
-    expectedStatus = VX_FAILURE;
-#endif
-
     /* Check address translation. The translation should fail since the memory
      * has not been allocated using ether tivxMemAlloc() or ion_alloc().
      */
-    status = checkTranslation(ptr, size, expectedStatus);
+    status = checkTranslation(ptr, size, VX_FAILURE);
 
     if (status != TIVX_TEST_SUCCESS)
     {

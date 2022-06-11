@@ -69,6 +69,8 @@ STATIC_LIBS += ti_imaging_dcc
 
 LDIRS       += $(VISION_APPS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += app_utils_iss
+STATIC_LIBS += app_utils_mem
+STATIC_LIBS += app_utils_init
 
 PDK_LIBS =
 PDK_LIBS += dmautils.lib

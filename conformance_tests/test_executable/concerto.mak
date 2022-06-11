@@ -28,6 +28,8 @@ LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 # otherwise the linker will use the libraries located in $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 #LDIRS       +=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
 
+IDIRS       += $(VISION_APPS_PATH)
+
 STATIC_LIBS := vx_conformance_tests
 
 STATIC_LIBS += vx_tiovx_tests

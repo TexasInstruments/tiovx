@@ -60,10 +60,11 @@
 *
 */
 
-
-
-
 #include <vx_internal.h>
+
+#ifndef SOC_J6
+#include <utils/mem/include/app_mem.h>
+#endif // ifndef SOC_J6
 
 /*! \brief Default buffer allocation alignment
  * \ingroup group_tivx_mem
@@ -144,7 +145,11 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     }
     else
     {
+#ifdef SOC_J6
         ptr = malloc(size);
+#else
+        ptr = appMemAlloc(mem_heap_region, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
+#endif // SOC_J6
     }
 
     return (ptr);
@@ -163,7 +168,11 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     {
         if(ptr)
         {
+#ifdef SOC_J6
             free(ptr);
+#else
+            (void)appMemFree(mem_heap_region, ptr, size);
+#endif
         }
     }
 }
@@ -232,7 +241,11 @@ vx_status tivxMemBufferUnmap(
 
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
-    return (host_ptr);
+    uint64_t phys;
+
+    phys = appMemGetVirt2PhyBufPtr(host_ptr, mem_heap_region);
+
+    return phys;
 }
 
 void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
@@ -284,11 +297,27 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
         vxStatus = (vx_status)VX_FAILURE;
     }
 
+#ifdef SOC_J6
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         *fd      = (uint64_t)virtAddr;
         *phyAddr = (void *)virtAddr;
     }
+#else
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        uint32_t dmaBufFdOffset;
+
+        *fd = appMemGetDmaBufFd((void*)virtAddr, &dmaBufFdOffset);
+        *phyAddr = (void *)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)virtAddr,
+                                                            TIVX_MEM_EXTERNAL);
+
+        if ((*fd == (uint32_t)-1) || (*phyAddr == 0))
+        {
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+    }
+#endif
 
     return vxStatus;
 }
@@ -308,11 +337,29 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
         vxStatus = (vx_status)VX_FAILURE;
     }
 
+#ifdef SOC_J6
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         *virtAddr = (void*)(uintptr_t)dmaBufFd;
         *phyAddr  = (void*)(uintptr_t)dmaBufFd;
     }
+#else
+    if (vxStatus == (vx_status)VX_SUCCESS)
+    {
+        int32_t status;
+
+        status = appMemTranslateDmaBufFd(dmaBufFd,
+                                         size,
+                                         (uint64_t*)virtAddr,
+                                         (uint64_t*)phyAddr);
+
+        if (status < 0)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "appMemTranslateDmaBufFd() failed.\n");
+            vxStatus = (vx_status)VX_FAILURE;
+        }
+    }
+#endif
 
     return vxStatus;
 }
