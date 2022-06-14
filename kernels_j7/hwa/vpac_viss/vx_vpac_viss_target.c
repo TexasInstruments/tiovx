@@ -1326,6 +1326,10 @@ static void tivxVpacVissSetInputParams(tivxVpacVissObj *vissObj,
             {
                 fmt->ccsFormat = FVID2_CCSF_BITS16_PACKED;
             }
+            else if (msb == 9U)
+            {
+                fmt->ccsFormat = FVID2_CCSF_BITS16_PACKED;
+            }
             else
             {
                 /*MSB = 7 translates to FVID2_CCSF_BITS8_UNPACKED16*/
