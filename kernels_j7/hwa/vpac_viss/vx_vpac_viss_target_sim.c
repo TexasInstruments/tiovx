@@ -879,7 +879,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 pH3a_buf->aew_af_mode = vissPrms->h3a_aewb_af_mode;
                 pH3a_buf->h3a_source_data = vissPrms->h3a_in;
 
-                if(0 == vissPrms->h3a_aewb_af_mode)
+                if( (0 == vissPrms->h3a_aewb_af_mode) && (NULL != prms->scratch_aew_result))
                 {
                     /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
                      * in case third party 2A nodes which don't use DCC can easily see this information */
@@ -887,7 +887,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     pH3a_buf->size = prms->aew_buffer_size;
                     memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
                 }
-                else if(1 == vissPrms->h3a_aewb_af_mode)
+                else if( (1 == vissPrms->h3a_aewb_af_mode) && (NULL != prms->scratch_af_result) )
                 {
                     pH3a_buf->size = prms->af_buffer_size;
                     memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
@@ -1577,7 +1577,7 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
                 status = (vx_status)VX_ERROR_NO_MEMORY;
             }
 
-            if ((vx_status)VX_SUCCESS == status)
+            if (((vx_status)VX_SUCCESS == status) && (0U != prms->aew_buffer_size))
             {
                 prms->scratch_aew_result = tivxMemAlloc(prms->aew_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_aew_result)
@@ -1585,14 +1585,22 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
             }
+            else
+            {
+                prms->scratch_aew_result = NULL;
+            }
 
-            if ((vx_status)VX_SUCCESS == status)
+            if (((vx_status)VX_SUCCESS == status) && (0U != prms->af_buffer_size))
             {
                 prms->scratch_af_result = tivxMemAlloc(prms->af_buffer_size, (vx_enum)TIVX_MEM_EXTERNAL);
                 if (NULL == prms->scratch_af_result)
                 {
                     status = (vx_status)VX_ERROR_NO_MEMORY;
                 }
+            }
+            else
+            {
+                prms->scratch_af_result = NULL;
             }
         }
 
