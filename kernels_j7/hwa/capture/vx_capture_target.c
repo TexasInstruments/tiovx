@@ -1963,7 +1963,7 @@ void tivxAddTargetKernelCapture(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         for (i = 0; i < CAPTURE_NUM_TARGETS; i++)
         {

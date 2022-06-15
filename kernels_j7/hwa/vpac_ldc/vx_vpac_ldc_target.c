@@ -143,12 +143,26 @@ void tivxAddTargetKernelVpacLdc(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) ||
-        (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
-            TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_LDC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
+    if (status == (vx_status)VX_SUCCESS)
+    {
         vx_vpac_ldc_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_LDC_NAME,
                             target_name,
@@ -328,9 +342,22 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        app_perf_hwa_id_t hwa_id;
+
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_LDC,
+        if (VHWA_M2M_LDC_DRV_INST_ID == ldc_obj->ldc_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC1_LDC;
+        }
+        #if defined(SOC_J784S4)
+        else if (VHWA_M2M_VPAC_1_LDC_DRV_INST_ID_0 == ldc_obj->ldc_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC2_LDC;
+        }
+        #endif
+
+        appPerfStatsHwaUpdateLoad(hwa_id,
             (uint32_t)cur_time,
             ldc_obj->ldc_cfg.outputFrameWidth*ldc_obj->ldc_cfg.outputFrameHeight /* pixels processed */
             );
@@ -405,13 +432,14 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         Vhwa_M2mLdcCreateArgsInit(&ldc_obj->createArgs);
 
         status = tivxEventCreate(&ldc_obj->waitForProcessCmpl);
+
         if ((vx_status)VX_SUCCESS == status)
         {
             ldc_obj->cbPrms.cbFxn   = tivxVpacLdcFrameComplCb;
             ldc_obj->cbPrms.appData = ldc_obj;
 
             ldc_obj->handle = Fvid2_create(FVID2_VHWA_M2M_LDC_DRV_ID,
-                VHWA_M2M_LDC_DRV_INST_ID, (void *)&ldc_obj->createArgs,
+                ldc_obj->ldc_drv_inst_id, (void *)&ldc_obj->createArgs,
                 NULL, &ldc_obj->cbPrms);
 
             if (NULL == ldc_obj->handle)
@@ -728,6 +756,9 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
 {
     uint32_t        cnt;
     tivxVpacLdcObj *ldc_obj = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
 
     /* Lock instance mutex */
     tivxMutexLock(instObj->lock);
@@ -739,6 +770,17 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
             ldc_obj = &instObj->ldc_obj[cnt];
             memset(ldc_obj, 0x0, sizeof(tivxVpacLdcObj));
             instObj->ldc_obj[cnt].isAlloc = 1U;
+
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+            {
+                instObj->ldc_obj[cnt].ldc_drv_inst_id = VHWA_M2M_LDC_DRV_INST_ID;
+            }
+            #if defined(SOC_J784S4)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+            {
+                instObj->ldc_obj[cnt].ldc_drv_inst_id = VHWA_M2M_VPAC_1_LDC_DRV_INST_ID_0;
+            }
+            #endif
             break;
         }
     }

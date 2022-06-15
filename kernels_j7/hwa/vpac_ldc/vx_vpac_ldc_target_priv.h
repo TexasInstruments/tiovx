@@ -109,6 +109,9 @@ typedef struct
 
     uint32_t                            err_stat;
     uint32_t                            sensor_dcc_id;
+
+    /*! Instance ID of the LDC driver */
+    uint32_t                            ldc_drv_inst_id;
 } tivxVpacLdcObj;
 
 

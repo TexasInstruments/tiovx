@@ -104,6 +104,9 @@ typedef struct
     Fvid2_FrameList                     outFrmList;
 
     uint32_t                            err_stat;
+
+    /*! Instance ID of the NF driver */
+    uint32_t                            nf_drv_inst_id;
 } tivxVpacNfGenericObj;
 
 typedef struct
@@ -169,11 +172,26 @@ void tivxAddTargetKernelVpacNfGeneric(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_NF, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
+    if (status == (vx_status)VX_SUCCESS)
+    {
         vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
                     target_name,
@@ -205,11 +223,6 @@ void tivxAddTargetKernelVpacNfGeneric(void)
             VX_PRINT(VX_ZONE_ERROR,
                 "Failed to Add NF Generic TargetKernel\n");
         }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,
-            "Invalid CPU\n");
     }
 }
 
@@ -408,9 +421,22 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        app_perf_hwa_id_t hwa_id;
+
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_NF,
+        if (VHWA_M2M_NF_DRV_INST_ID == nf_generic_obj->nf_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC1_NF;
+        }
+        #if defined(SOC_J784S4)
+        else if (VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0 == nf_generic_obj->nf_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC2_NF;
+        }
+        #endif
+
+        appPerfStatsHwaUpdateLoad(hwa_id,
             (uint32_t)cur_time,
             dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
             );
@@ -478,13 +504,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         Vhwa_M2mNfCreatePrmsInit(&nf_generic_obj->createPrms);
 
         status = tivxEventCreate(&nf_generic_obj->waitForProcessCmpl);
+
         if ((vx_status)VX_SUCCESS == status)
         {
             nf_generic_obj->cbPrms.cbFxn   = tivxVpacNfGenericFrameComplCb;
             nf_generic_obj->cbPrms.appData = nf_generic_obj;
 
             nf_generic_obj->handle = Fvid2_create(FVID2_VHWA_M2M_NF_DRV_ID,
-                VHWA_M2M_NF_DRV_INST_ID, (void *)&nf_generic_obj->createPrms,
+                nf_generic_obj->nf_drv_inst_id, (void *)&nf_generic_obj->createPrms,
                 NULL, &nf_generic_obj->cbPrms);
 
             if (NULL == nf_generic_obj->handle)
@@ -497,7 +524,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             VX_PRINT(VX_ZONE_ERROR, "Failed to allocate Event\n");
         }
-
     }
 
     /* Register Error Callback */
@@ -755,6 +781,9 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
 {
     uint32_t        cnt;
     tivxVpacNfGenericObj *nf_generic_obj = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
 
     /* Lock instance mutex */
     tivxMutexLock(instObj->lock);
@@ -766,6 +795,17 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
             nf_generic_obj = &instObj->nfGenericObj[cnt];
             memset(nf_generic_obj, 0x0, sizeof(tivxVpacNfGenericObj));
             instObj->nfGenericObj[cnt].isAlloc = 1U;
+
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+            {
+                instObj->nfGenericObj[cnt].nf_drv_inst_id = VHWA_M2M_NF_DRV_INST_ID;
+            }
+            #if defined(SOC_J784S4)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+            {
+                instObj->nfGenericObj[cnt].nf_drv_inst_id = VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0;
+            }
+            #endif
             break;
         }
     }

@@ -105,12 +105,16 @@ typedef struct
     Fvid2_FrameList                     outFrmList;
 
     uint32_t                            err_stat;
+
+    /*! Instance ID of the NF driver */
+    uint32_t                            nf_drv_inst_id;
 } tivxVpacNfBilateralObj;
 
 typedef struct
 {
     tivx_mutex lock;
     tivxVpacNfBilateralObj nfBilateralObj[VHWA_M2M_NF_MAX_HANDLES];
+
 } tivxVpacNfBilateralInstObj;
 
 /* ========================================================================== */
@@ -177,11 +181,26 @@ void tivxAddTargetKernelVpacNfBilateral(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_NF, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
+    if (status == (vx_status)VX_SUCCESS)
+    {
         vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernelByName(
                     TIVX_KERNEL_VPAC_NF_BILATERAL_NAME,
                     target_name,
@@ -213,11 +232,6 @@ void tivxAddTargetKernelVpacNfBilateral(void)
             VX_PRINT(VX_ZONE_ERROR,
                 "Failed to Add NF Bilateral TargetKernel\n");
         }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,
-            "Invalid CPU\n");
     }
 }
 
@@ -339,9 +353,22 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        app_perf_hwa_id_t hwa_id;
+
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_NF,
+        if (VHWA_M2M_NF_DRV_INST_ID == nf_bilateral_obj->nf_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC1_NF;
+        }
+        #if defined(SOC_J784S4)
+        else if (VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0 == nf_bilateral_obj->nf_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC2_NF;
+        }
+        #endif
+
+        appPerfStatsHwaUpdateLoad(hwa_id,
             (uint32_t)cur_time,
             dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
             );
@@ -403,13 +430,14 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         Vhwa_M2mNfCreatePrmsInit(&nf_bilateral_obj->createPrms);
 
         status = tivxEventCreate(&nf_bilateral_obj->waitForProcessCmpl);
+
         if ((vx_status)VX_SUCCESS == status)
         {
             nf_bilateral_obj->cbPrms.cbFxn   = tivxVpacNfBilateralFrameComplCb;
             nf_bilateral_obj->cbPrms.appData = nf_bilateral_obj;
 
             nf_bilateral_obj->handle = Fvid2_create(FVID2_VHWA_M2M_NF_DRV_ID,
-                VHWA_M2M_NF_DRV_INST_ID, (void *)&nf_bilateral_obj->createPrms,
+                nf_bilateral_obj->nf_drv_inst_id, (void *)&nf_bilateral_obj->createPrms,
                 NULL, &nf_bilateral_obj->cbPrms);
 
             if (NULL == nf_bilateral_obj->handle)
@@ -649,6 +677,9 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
 {
     uint32_t        cnt;
     tivxVpacNfBilateralObj *nf_bilateral_obj = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
 
     /* Lock instance mutex */
     tivxMutexLock(instObj->lock);
@@ -660,6 +691,17 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
             nf_bilateral_obj = &instObj->nfBilateralObj[cnt];
             memset(nf_bilateral_obj, 0x0, sizeof(tivxVpacNfBilateralObj));
             instObj->nfBilateralObj[cnt].isAlloc = 1U;
+
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+            {
+                instObj->nfBilateralObj[cnt].nf_drv_inst_id = VHWA_M2M_NF_DRV_INST_ID;
+            }
+            #if defined(SOC_J784S4)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+            {
+                instObj->nfBilateralObj[cnt].nf_drv_inst_id = VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0;
+            }
+            #endif
             break;
         }
     }

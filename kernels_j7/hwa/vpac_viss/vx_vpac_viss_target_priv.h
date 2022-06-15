@@ -343,6 +343,8 @@ typedef struct
     Glbce_StatsInfo                     glbceStatInfo;
     /*! configuration buffer, if configThroughUDMA is true */
     Vhwa_M2mVissConfigAppBuff           configurationBuffer;
+    /*! Instance ID of the VISS driver */
+    uint32_t                            viss_drv_inst_id;
 } tivxVpacVissObj;
 
 typedef struct

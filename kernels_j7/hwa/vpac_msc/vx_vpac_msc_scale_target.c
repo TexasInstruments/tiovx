@@ -201,8 +201,11 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
     inst_start = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu) ||
-        ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu))
+    if ( (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#if defined(SOC_J784S4)
+        || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+#endif
+        )
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -214,13 +217,33 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 
             if (0u == cnt)
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
             else
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
 
             inst_obj->target_kernel = tivxAddTargetKernel(
@@ -246,12 +269,30 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                     /* Initialize Instance Object */
                     if (0u == cnt)
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 1U;
                     }
                     else
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 0U;
                     }
                 }
@@ -330,8 +371,11 @@ void tivxAddTargetKernelVpacMscScale(void)
     inst_start = TIVX_VPAC_MSC_SCALE_IMAGE_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) ||
-        (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if ( (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#if defined(SOC_J784S4)
+        || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+#endif
+        )
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -343,13 +387,33 @@ void tivxAddTargetKernelVpacMscScale(void)
 
             if (0u == cnt)
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
             else
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
 
             inst_obj->target_kernel = tivxAddTargetKernel(
@@ -375,12 +439,30 @@ void tivxAddTargetKernelVpacMscScale(void)
                     /* Initialize Instance Object */
                     if (0u == cnt)
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 1U;
                     }
                     else
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 0U;
                     }
                 }
@@ -830,6 +912,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
+        app_perf_hwa_id_t hwa_id;
+
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         inst_obj = msc_obj->inst_obj;
@@ -846,18 +930,27 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
 
         if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
         {
-            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC0,
-                (uint32_t)cur_time,
-                size /* pixels processed */
-                );
+            hwa_id = APP_PERF_HWA_VPAC1_MSC0;
+        }
+        else if (VPAC_MSC_INST_ID_1 == inst_obj->msc_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC1_MSC1;
+        }
+        #if defined(SOC_J784S4)
+        else if (VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0 == inst_obj->msc_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC2_MSC0;
         }
         else
         {
-            appPerfStatsHwaUpdateLoad(APP_PERF_HWA_MSC1,
-                (uint32_t)cur_time,
-                size /* pixels processed */
-                );
+            hwa_id = APP_PERF_HWA_VPAC2_MSC1;
         }
+        #endif
+
+        appPerfStatsHwaUpdateLoad(hwa_id,
+            (uint32_t)cur_time,
+            size /* pixels processed */
+            );
     }
 
     return (status);

@@ -154,11 +154,18 @@ void tivxAddTargetKernelVpacViss(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0) || (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1))
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_VISS1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
@@ -173,7 +180,7 @@ void tivxAddTargetKernelVpacViss(void)
 
         if ((vx_status)VX_SUCCESS != status)
         {
-        VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate lock \n");
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate lock \n");
         }
     }
 
@@ -467,7 +474,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             vissObj->cbPrms.appData = vissObj;
 
             vissObj->handle = Fvid2_create(FVID2_VHWA_M2M_VISS_DRV_ID,
-                VHWA_M2M_VISS_DRV_INST0, &vissObj->createArgs,
+                vissObj->viss_drv_inst_id, &vissObj->createArgs,
                 NULL, &vissObj->cbPrms);
 
             if (NULL == vissObj->handle)
@@ -475,10 +482,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 VX_PRINT(VX_ZONE_ERROR, "Failed to Open Driver\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to Create Mutex\n");
         }
     }
 
@@ -1048,7 +1051,20 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        appPerfStatsHwaUpdateLoad(APP_PERF_HWA_VISS,
+        app_perf_hwa_id_t hwa_id;
+
+        if (VHWA_M2M_VISS_DRV_INST0 == vissObj->viss_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC1_VISS;
+        }
+        #if defined(SOC_J784S4)
+        else if (VHWA_M2M_VPAC_1_VISS_DRV_INST_ID_0 == vissObj->viss_drv_inst_id)
+        {
+            hwa_id = APP_PERF_HWA_VPAC2_VISS;
+        }
+        #endif
+
+        appPerfStatsHwaUpdateLoad(hwa_id,
             (uint32_t)(cur_time-start_time),
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
             );
@@ -1134,6 +1150,9 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
 {
     uint32_t         cnt;
     tivxVpacVissObj *vissObj = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
 
     /* Lock instance mutex */
     tivxMutexLock(instObj->lock);
@@ -1145,6 +1164,17 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
             vissObj = &instObj->vissObj[cnt];
             memset(vissObj, 0x0, sizeof(tivxVpacVissObj));
             instObj->vissObj[cnt].isAlloc = 1U;
+
+            if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+            {
+                instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VISS_DRV_INST0;
+            }
+            #if defined(SOC_J784S4)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+            {
+                instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VPAC_1_VISS_DRV_INST_ID_0;
+            }
+            #endif
             break;
         }
     }
