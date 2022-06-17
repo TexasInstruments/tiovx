@@ -623,7 +623,7 @@ static void tivxVpacVissDccMapYeeParams(tivxVpacVissObj *vissObj,
             hwaCfg->yesEThr1 = (uint32_t)dccCfg->edge_sharpener_hpf_low_thresh;
             hwaCfg->yesEThr2 = (uint32_t)dccCfg->edge_sharpener_hpf_high_thresh;
             hwaCfg->yesGGain = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
-            hwaCfg->yesGOfset = (uint32_t)dccCfg->edge_sharpener_gradient_gain;
+            hwaCfg->yesGOfset = (uint32_t)dccCfg->edge_sharpener_gradient_offset;
 
             for (cnt = 0U; cnt < 9; cnt++)
             {
