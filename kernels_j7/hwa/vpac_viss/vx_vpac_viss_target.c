@@ -65,7 +65,6 @@
 /* ========================================================================== */
 #include <vx_vpac_viss_target_priv.h>
 #include "tivx_hwa_vpac_viss_priv.h"
-#include "utils/perf_stats/include/app_perf_stats.h"
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -1051,20 +1050,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        app_perf_hwa_id_t hwa_id;
-
-        if (VHWA_M2M_VISS_DRV_INST0 == vissObj->viss_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC1_VISS;
-        }
-        #if defined(SOC_J784S4)
-        else if (VHWA_M2M_VPAC_1_VISS_DRV_INST_ID_0 == vissObj->viss_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC2_VISS;
-        }
-        #endif
-
-        appPerfStatsHwaUpdateLoad(hwa_id,
+        appPerfStatsHwaUpdateLoad(vissObj->hwa_perf_id,
             (uint32_t)(cur_time-start_time),
             raw_img_desc->params.width*raw_img_desc->params.height /* pixels processed */
             );
@@ -1168,11 +1154,13 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
             if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
             {
                 instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VISS_DRV_INST0;
+                instObj->vissObj[cnt].hwa_perf_id      = APP_PERF_HWA_VPAC1_VISS;
             }
             #if defined(SOC_J784S4)
             else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
             {
                 instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VPAC_1_VISS_DRV_INST_ID_0;
+                instObj->vissObj[cnt].hwa_perf_id      = APP_PERF_HWA_VPAC2_VISS;
             }
             #endif
             break;

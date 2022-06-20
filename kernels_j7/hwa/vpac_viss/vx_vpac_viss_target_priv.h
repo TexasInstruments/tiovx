@@ -78,6 +78,7 @@
 /* Dependency on vision apps, as it uses UDMA utils
  * for GLBCE Ctx Save/Restore */
 #include <utils/udma/include/app_udma.h>
+#include "utils/perf_stats/include/app_perf_stats.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -345,6 +346,8 @@ typedef struct
     Vhwa_M2mVissConfigAppBuff           configurationBuffer;
     /*! Instance ID of the VISS driver */
     uint32_t                            viss_drv_inst_id;
+    /*! HWA Performance ID */
+    app_perf_hwa_id_t                   hwa_perf_id;
 } tivxVpacVissObj;
 
 typedef struct

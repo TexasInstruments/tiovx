@@ -184,6 +184,9 @@ struct tivxVpacMscPmdInstObj_t
 
     /*! Instance ID of the MSC driver */
     uint32_t                msc_drv_inst_id;
+
+    /*! HWA Performance ID */
+    app_perf_hwa_id_t       hwa_perf_id;
 } ;
 
 /* ========================================================================== */
@@ -336,11 +339,13 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
                         }
                         #if defined(SOC_J784S4)
                         else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC0;
                         }
                         #endif
                         inst_obj->alloc_sc_fwd_dir = 1U;
@@ -350,11 +355,13 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;
                         }
                         #if defined(SOC_J784S4)
                         else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC1;
                         }
                         #endif
                         inst_obj->alloc_sc_fwd_dir = 0U;
@@ -502,11 +509,13 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
                         }
                         #if defined(SOC_J784S4)
                         else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC0;
                         }
                         #endif
                         inst_obj->alloc_sc_fwd_dir = 1U;
@@ -516,11 +525,13 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                         if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
                         {
                             inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;
                         }
                         #if defined(SOC_J784S4)
                         else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
+                            inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC1;
                         }
                         #endif
                         inst_obj->alloc_sc_fwd_dir = 0U;
@@ -1036,8 +1047,6 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        app_perf_hwa_id_t hwa_id;
-
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
         inst_obj = msc_obj->inst_obj;
@@ -1052,26 +1061,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
             size = in_img_desc->imagepatch_addr[0].dim_x*in_img_desc->imagepatch_addr[0].dim_y;
         }
 
-        if (VPAC_MSC_INST_ID_0 == inst_obj->msc_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC1_MSC0;
-        }
-        else if (VPAC_MSC_INST_ID_1 == inst_obj->msc_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC1_MSC1;
-        }
-        #if defined(SOC_J784S4)
-        else if (VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0 == inst_obj->msc_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC2_MSC0;
-        }
-        else
-        {
-            hwa_id = APP_PERF_HWA_VPAC2_MSC1;
-        }
-        #endif
-
-        appPerfStatsHwaUpdateLoad(hwa_id,
+        appPerfStatsHwaUpdateLoad(inst_obj->hwa_perf_id,
             (uint32_t)cur_time,
             size /* pixels processed */
             );

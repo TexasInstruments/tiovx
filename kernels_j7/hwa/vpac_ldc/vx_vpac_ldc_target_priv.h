@@ -76,6 +76,8 @@
 
 #include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
 
+#include "utils/perf_stats/include/app_perf_stats.h"
+
 #define LDC_REMAP_LUT_DRV_EN (0)
 
 #ifdef __cplusplus
@@ -112,6 +114,8 @@ typedef struct
 
     /*! Instance ID of the LDC driver */
     uint32_t                            ldc_drv_inst_id;
+    /*! HWA Performance ID */
+    app_perf_hwa_id_t                   hwa_perf_id;
 } tivxVpacLdcObj;
 
 

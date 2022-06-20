@@ -107,6 +107,8 @@ typedef struct
 
     /*! Instance ID of the NF driver */
     uint32_t                            nf_drv_inst_id;
+    /*! HWA Performance ID */
+    app_perf_hwa_id_t                   hwa_perf_id;
 } tivxVpacNfGenericObj;
 
 typedef struct
@@ -421,22 +423,9 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        app_perf_hwa_id_t hwa_id;
-
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        if (VHWA_M2M_NF_DRV_INST_ID == nf_generic_obj->nf_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC1_NF;
-        }
-        #if defined(SOC_J784S4)
-        else if (VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0 == nf_generic_obj->nf_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC2_NF;
-        }
-        #endif
-
-        appPerfStatsHwaUpdateLoad(hwa_id,
+        appPerfStatsHwaUpdateLoad(nf_generic_obj->hwa_perf_id,
             (uint32_t)cur_time,
             dst->imagepatch_addr[0U].dim_x*dst->imagepatch_addr[0U].dim_y /* pixels processed */
             );
@@ -799,11 +788,13 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
             if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
             {
                 instObj->nfGenericObj[cnt].nf_drv_inst_id = VHWA_M2M_NF_DRV_INST_ID;
+                instObj->nfGenericObj[cnt].hwa_perf_id    = APP_PERF_HWA_VPAC1_NF;
             }
             #if defined(SOC_J784S4)
             else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
             {
                 instObj->nfGenericObj[cnt].nf_drv_inst_id = VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0;
+                instObj->nfGenericObj[cnt].hwa_perf_id    = APP_PERF_HWA_VPAC2_NF;
             }
             #endif
             break;

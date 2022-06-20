@@ -65,7 +65,6 @@
 /* ========================================================================== */
 
 #include <vx_vpac_ldc_target_priv.h>
-#include "utils/perf_stats/include/app_perf_stats.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -342,22 +341,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        app_perf_hwa_id_t hwa_id;
-
         cur_time = tivxPlatformGetTimeInUsecs() - cur_time;
 
-        if (VHWA_M2M_LDC_DRV_INST_ID == ldc_obj->ldc_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC1_LDC;
-        }
-        #if defined(SOC_J784S4)
-        else if (VHWA_M2M_VPAC_1_LDC_DRV_INST_ID_0 == ldc_obj->ldc_drv_inst_id)
-        {
-            hwa_id = APP_PERF_HWA_VPAC2_LDC;
-        }
-        #endif
-
-        appPerfStatsHwaUpdateLoad(hwa_id,
+        appPerfStatsHwaUpdateLoad(ldc_obj->hwa_perf_id,
             (uint32_t)cur_time,
             ldc_obj->ldc_cfg.outputFrameWidth*ldc_obj->ldc_cfg.outputFrameHeight /* pixels processed */
             );
@@ -774,11 +760,13 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
             if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
             {
                 instObj->ldc_obj[cnt].ldc_drv_inst_id = VHWA_M2M_LDC_DRV_INST_ID;
+                instObj->ldc_obj[cnt].hwa_perf_id     = APP_PERF_HWA_VPAC1_LDC;
             }
             #if defined(SOC_J784S4)
             else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
             {
                 instObj->ldc_obj[cnt].ldc_drv_inst_id = VHWA_M2M_VPAC_1_LDC_DRV_INST_ID_0;
+                instObj->ldc_obj[cnt].hwa_perf_id     = APP_PERF_HWA_VPAC2_LDC;
             }
             #endif
             break;
