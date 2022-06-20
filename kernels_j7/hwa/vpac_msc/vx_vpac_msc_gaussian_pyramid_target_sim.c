@@ -428,6 +428,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
 /* ToDo: this function is defined in multiple places */
 void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
+    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -435,9 +436,24 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
-            TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
 
+    if (status == (vx_status)VX_SUCCESS)
+    {
         vx_gaussian_pyramid_target_kernel = tivxAddTargetKernel(
             (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
             target_name,

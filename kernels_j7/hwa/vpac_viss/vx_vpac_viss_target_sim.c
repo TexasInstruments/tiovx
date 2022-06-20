@@ -142,6 +142,13 @@ void tivxAddTargetKernelVpacViss(void)
         strncpy(target_name, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_VISS1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");

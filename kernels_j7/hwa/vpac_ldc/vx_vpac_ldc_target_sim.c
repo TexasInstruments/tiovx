@@ -739,12 +739,31 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
 
 void tivxAddTargetKernelVpacLdc()
 {
+    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
 
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_LDC1, TIVX_TARGET_MAX_NAME);
+        status = (vx_status)VX_SUCCESS;
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+        status = (vx_status)VX_FAILURE;
+    }
+
+    if (status == (vx_status)VX_SUCCESS)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
             TIVX_TARGET_MAX_NAME);

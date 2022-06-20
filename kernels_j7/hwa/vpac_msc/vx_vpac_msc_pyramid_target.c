@@ -431,7 +431,11 @@ void tivxAddTargetKernelVpacMscPyramid(void)
     inst_start = TIVX_VPAC_MSC_PMD_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+    if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu)
+#if defined(SOC_J784S4)
+        || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+#endif
+        )
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscPmdInstObj[inst_start], 0x0,
@@ -443,13 +447,33 @@ void tivxAddTargetKernelVpacMscPyramid(void)
 
             if (0u == cnt)
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
             else
             {
-                strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
-                    TIVX_TARGET_MAX_NAME);
+                if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #if defined(SOC_J784S4)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                {
+                    strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
+                        TIVX_TARGET_MAX_NAME);
+                }
+                #endif
             }
 
             inst_obj->target_kernel = tivxAddTargetKernelByName(
@@ -475,12 +499,30 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                     /* Initialize Instance Object */
                     if (0u == cnt)
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_0;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 1U;
                     }
                     else
                     {
-                        inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+                        {
+                            inst_obj->msc_drv_inst_id = VPAC_MSC_INST_ID_1;
+                        }
+                        #if defined(SOC_J784S4)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
+                        {
+                            inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
+                        }
+                        #endif
                         inst_obj->alloc_sc_fwd_dir = 0U;
                     }
                 }
