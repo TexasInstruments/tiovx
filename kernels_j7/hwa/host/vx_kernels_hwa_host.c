@@ -120,25 +120,27 @@ void tivxHwaLoadKernels(vx_context context)
         /* for actual Si, target kernel registration will happen
          * during platform init on the CPU that supports the target
          */
-        /* These three lines only work on PC emulation mode ...
-         * this will need to be updated when moving to target */
+        /* This only works on PC emulation mode */
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
 
         tivxRegisterHwaTargetVpacNfKernels();
 
-        tivxRegisterHwaTargetDmpacSdeKernels();
 
         tivxRegisterHwaTargetVpacLdcKernels();
-
-        #ifdef BUILD_HWA_DMPAC_DOF
-        tivxRegisterHwaTargetDmpacDofKernels();
-        #endif
 
         tivxRegisterHwaTargetVpacMscKernels();
 
         tivxRegisterHwaTargetArmKernels();
 
         tivxRegisterHwaTargetVpacVissKernels();
+
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
+
+        tivxRegisterHwaTargetDmpacSdeKernels();
+
+        #ifdef BUILD_HWA_DMPAC_DOF
+        tivxRegisterHwaTargetDmpacDofKernels();
+        #endif
 
         #if defined(SOC_J784S4)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
@@ -168,20 +170,21 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaKernels();
 
             #ifdef x86_64
-            /* This line only work on PC emulation mode ...
-             * this will need to be updated when moving to target */
+            /* This line only works on PC emulation mode */
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
             tivxUnRegisterHwaTargetVpacNfKernels();
-            tivxUnRegisterHwaTargetDmpacSdeKernels();
             tivxUnRegisterHwaTargetVpacLdcKernels();
-
-            #ifdef BUILD_HWA_DMPAC_DOF
-            tivxUnRegisterHwaTargetDmpacDofKernels();
-            #endif
 
             tivxUnRegisterHwaTargetVpacMscKernels();
             tivxUnRegisterHwaTargetArmKernels();
             tivxUnRegisterHwaTargetVpacVissKernels();
+
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
+            tivxUnRegisterHwaTargetDmpacSdeKernels();
+
+            #ifdef BUILD_HWA_DMPAC_DOF
+            tivxUnRegisterHwaTargetDmpacDofKernels();
+            #endif
 
             #if defined(SOC_J784S4)
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
