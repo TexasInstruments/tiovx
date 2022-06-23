@@ -140,6 +140,14 @@ void tivxHwaLoadKernels(vx_context context)
 
         tivxRegisterHwaTargetVpacVissKernels();
 
+        #if defined(SOC_J784S4)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
+        tivxRegisterHwaTargetVpacNfKernels();
+        tivxRegisterHwaTargetVpacLdcKernels();
+        tivxRegisterHwaTargetVpacMscKernels();
+        tivxRegisterHwaTargetVpacVissKernels();
+        #endif
+
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
         #endif
 
@@ -154,17 +162,17 @@ void tivxHwaUnLoadKernels(vx_context context)
         gIsHwaKernelsLoad--;
         if ((0u == gIsHwaKernelsLoad) && (NULL != context))
         {
+            void tivxSetSelfCpuId(vx_enum cpu_id);
+
             vxUnloadKernels(context, TIVX_MODULE_NAME_HWA);
             tivxUnRegisterHwaKernels();
 
             #ifdef x86_64
             /* This line only work on PC emulation mode ...
              * this will need to be updated when moving to target */
-
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
             tivxUnRegisterHwaTargetVpacNfKernels();
-
             tivxUnRegisterHwaTargetDmpacSdeKernels();
-
             tivxUnRegisterHwaTargetVpacLdcKernels();
 
             #ifdef BUILD_HWA_DMPAC_DOF
@@ -172,11 +180,17 @@ void tivxHwaUnLoadKernels(vx_context context)
             #endif
 
             tivxUnRegisterHwaTargetVpacMscKernels();
-
             tivxUnRegisterHwaTargetArmKernels();
-
             tivxUnRegisterHwaTargetVpacVissKernels();
 
+            #if defined(SOC_J784S4)
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
+            tivxUnRegisterHwaTargetVpacNfKernels();
+            tivxUnRegisterHwaTargetVpacLdcKernels();
+            tivxUnRegisterHwaTargetVpacMscKernels();
+            tivxUnRegisterHwaTargetVpacVissKernels();
+            #endif
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
             #endif
         }
     }
