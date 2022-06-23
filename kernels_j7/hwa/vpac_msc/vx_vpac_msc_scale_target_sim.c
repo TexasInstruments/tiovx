@@ -70,7 +70,10 @@
 #include "vx_kernels_hwa_target.h"
 #include "scaler_core.h"
 
-static tivx_target_kernel vx_scale_target_kernel = NULL;
+/* Given that for J7AHP, there are multiple VPAC's, there needs to be separate
+ * target kernels in the PC emulation mode kernel file given how this is
+ * registered */
+static tivx_target_kernel vx_scale_target_kernel[4] = {NULL};
 
 typedef struct
 {
@@ -352,7 +355,6 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
 
 void tivxAddTargetKernelVpacMscScale(void)
 {
-    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -361,24 +363,17 @@ void tivxAddTargetKernelVpacMscScale(void)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
-    {
-        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #endif
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
-        status = (vx_status)VX_FAILURE;
-    }
+        vx_scale_target_kernel[0] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_SCALE_IMAGE,
+            target_name,
+            tivxKernelScaleProcess,
+            tivxKernelScaleCreate,
+            tivxKernelScaleDelete,
+            NULL,
+            NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        vx_scale_target_kernel = tivxAddTargetKernel(
+        strncpy(target_name, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME);
+        vx_scale_target_kernel[1] = tivxAddTargetKernel(
             (vx_enum)VX_KERNEL_SCALE_IMAGE,
             target_name,
             tivxKernelScaleProcess,
@@ -387,13 +382,61 @@ void tivxAddTargetKernelVpacMscScale(void)
             NULL,
             NULL);
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
+        vx_scale_target_kernel[2] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_SCALE_IMAGE,
+            target_name,
+            tivxKernelScaleProcess,
+            tivxKernelScaleCreate,
+            tivxKernelScaleDelete,
+            NULL,
+            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC2, TIVX_TARGET_MAX_NAME);
+        vx_scale_target_kernel[3] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_SCALE_IMAGE,
+            target_name,
+            tivxKernelScaleProcess,
+            tivxKernelScaleCreate,
+            tivxKernelScaleDelete,
+            NULL,
+            NULL);
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+    }
 }
 
 
 void tivxRemoveTargetKernelVpacMscScale(void)
 {
-    tivxRemoveTargetKernel(vx_scale_target_kernel);
-    vx_scale_target_kernel = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+    {
+        tivxRemoveTargetKernel(vx_scale_target_kernel[0]);
+        vx_scale_target_kernel[0] = NULL;
+
+        tivxRemoveTargetKernel(vx_scale_target_kernel[1]);
+        vx_scale_target_kernel[1] = NULL;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        tivxRemoveTargetKernel(vx_scale_target_kernel[2]);
+        vx_scale_target_kernel[2] = NULL;
+
+        tivxRemoveTargetKernel(vx_scale_target_kernel[3]);
+        vx_scale_target_kernel[3] = NULL;
+    }
+    #endif
 }
 
 static void tivxKernelScaleFreeMem(tivxScaleParams *prms)

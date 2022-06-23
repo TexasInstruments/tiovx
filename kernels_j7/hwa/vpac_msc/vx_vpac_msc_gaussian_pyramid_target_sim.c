@@ -71,7 +71,10 @@
 #include "vx_kernels_hwa_target.h"
 #include "scaler_core.h"
 
-static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
+/* Given that for J7AHP, there are multiple VPAC's, there needs to be separate
+ * target kernels in the PC emulation mode kernel file given how this is
+ * registered */
+static tivx_target_kernel vx_gaussian_pyramid_target_kernel[4] = {NULL};
 
 typedef struct
 {
@@ -437,12 +440,50 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
+        vx_gaussian_pyramid_target_kernel[0] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+            target_name,
+            tivxKernelGsnPmdProcess,
+            tivxKernelGsnPmdCreate,
+            tivxKernelGsnPmdDelete,
+            NULL,
+            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME);
+        vx_gaussian_pyramid_target_kernel[1] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+            target_name,
+            tivxKernelGsnPmdProcess,
+            tivxKernelGsnPmdCreate,
+            tivxKernelGsnPmdDelete,
+            NULL,
+            NULL);
+
         status = (vx_status)VX_SUCCESS;
     }
     #if defined(SOC_J784S4)
     else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
+        vx_gaussian_pyramid_target_kernel[2] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+            target_name,
+            tivxKernelGsnPmdProcess,
+            tivxKernelGsnPmdCreate,
+            tivxKernelGsnPmdDelete,
+            NULL,
+            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC2, TIVX_TARGET_MAX_NAME);
+        vx_gaussian_pyramid_target_kernel[3] = tivxAddTargetKernel(
+            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+            target_name,
+            tivxKernelGsnPmdProcess,
+            tivxKernelGsnPmdCreate,
+            tivxKernelGsnPmdDelete,
+            NULL,
+            NULL);
+
         status = (vx_status)VX_SUCCESS;
     }
     #endif
@@ -451,25 +492,33 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
         VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
         status = (vx_status)VX_FAILURE;
     }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        vx_gaussian_pyramid_target_kernel = tivxAddTargetKernel(
-            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
-            target_name,
-            tivxKernelGsnPmdProcess,
-            tivxKernelGsnPmdCreate,
-            tivxKernelGsnPmdDelete,
-            NULL,
-            NULL);
-    }
 }
 
 
 void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
 {
-    tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel);
-    vx_gaussian_pyramid_target_kernel = NULL;
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+    {
+        tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[0]);
+        vx_gaussian_pyramid_target_kernel[0] = NULL;
+
+        tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[1]);
+        vx_gaussian_pyramid_target_kernel[1] = NULL;
+    }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[2]);
+        vx_gaussian_pyramid_target_kernel[2] = NULL;
+
+        tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[3]);
+        vx_gaussian_pyramid_target_kernel[3] = NULL;
+    }
+    #endif
 }
 
 static void tivxKernelGsnPmdFreeMem(tivxGassPyrmdParams *prms)

@@ -71,7 +71,10 @@
 #include "stdio.h"
 #endif
 
-static tivx_target_kernel vx_vpac_ldc_target_kernel = NULL;
+/* Given that for J7AHP, there are multiple VPAC's, there needs to be separate
+ * target kernels in the PC emulation mode kernel file given how this is
+ * registered */
+static tivx_target_kernel vx_vpac_ldc_target_kernel[2] = {NULL};
 
 static vx_status VX_CALLBACK tivxVpacLdcProcess(
        tivx_target_kernel_instance kernel,
@@ -739,7 +742,6 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
 
 void tivxAddTargetKernelVpacLdc()
 {
-    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -748,27 +750,7 @@ void tivxAddTargetKernelVpacLdc()
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
-    {
-        strncpy(target_name, TIVX_TARGET_VPAC2_LDC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #endif
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
-        status = (vx_status)VX_FAILURE;
-    }
-
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
-            TIVX_TARGET_MAX_NAME);
-
-        vx_vpac_ldc_target_kernel = tivxAddTargetKernelByName(
+        vx_vpac_ldc_target_kernel[0] = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_LDC_NAME,
                             target_name,
                             tivxVpacLdcProcess,
@@ -777,17 +759,50 @@ void tivxAddTargetKernelVpacLdc()
                             tivxVpacLdcControl,
                             NULL);
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_LDC1, TIVX_TARGET_MAX_NAME);
+        vx_vpac_ldc_target_kernel[1] = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_LDC_NAME,
+                            target_name,
+                            tivxVpacLdcProcess,
+                            tivxVpacLdcCreate,
+                            tivxVpacLdcDelete,
+                            tivxVpacLdcControl,
+                            NULL);
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+    }
 }
 
 void tivxRemoveTargetKernelVpacLdc()
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    vx_enum self_cpu;
 
-    status = tivxRemoveTargetKernel(vx_vpac_ldc_target_kernel);
-    if (status == (vx_status)VX_SUCCESS)
+    self_cpu = tivxGetSelfCpuId();
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        vx_vpac_ldc_target_kernel = NULL;
+        status = tivxRemoveTargetKernel(vx_vpac_ldc_target_kernel[0]);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_vpac_ldc_target_kernel[0] = NULL;
+        }
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        status = tivxRemoveTargetKernel(vx_vpac_ldc_target_kernel[1]);
+        if (status == (vx_status)VX_SUCCESS)
+        {
+            vx_vpac_ldc_target_kernel[1] = NULL;
+        }
+    }
+    #endif
 }
 
 static void tivxVpacLdcFreeMem(tivxVpacLdcParams *prms)
