@@ -186,7 +186,12 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
 #if !defined(SOC_J6)
         if ((0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME)) ||
-            (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME)))
+            (0 == strncmp(node_target, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_MAX_NAME))
+#if defined (SOC_J784S4)
+            || (0 == strncmp(node_target, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME)) ||
+               (0 == strncmp(node_target, TIVX_TARGET_VPAC2_MSC2, TIVX_TARGET_MAX_NAME))
+#endif
+            )
         {
             if ((vx_bool)vx_false_e == is_virtual)
             {
@@ -389,6 +394,10 @@ vx_status tivxAddKernelScale(vx_context context)
 #if !defined(SOC_J6)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
+#if defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC2);
+#endif
 #endif
         }
         if (status == (vx_status)VX_SUCCESS)
