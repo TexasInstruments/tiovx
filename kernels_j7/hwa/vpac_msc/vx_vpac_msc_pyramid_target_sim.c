@@ -163,8 +163,17 @@ static void tivxVpacMscPmdSetLevelPhase(tivxVpacMscPmdParams *prms, tivx_obj_des
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-static tivx_target_kernel vx_vpac_msc_pyramid_target_kernel = NULL;
-static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
+#define NUM_MSC_TARGET_KERNEL_INSTANCES 4
+
+/* Given that for J7AHP, there are multiple VPAC's, there needs to be separate
+ * target kernels in the PC emulation mode kernel file given how this is
+ * registered */
+static tivx_target_kernel vx_vpac_msc_pyramid_target_kernel[NUM_MSC_TARGET_KERNEL_INSTANCES] = {NULL};
+
+/* Given that for J7AHP, there are multiple VPAC's, there needs to be separate
+ * target kernels in the PC emulation mode kernel file given how this is
+ * registered */
+static tivx_target_kernel vx_gaussian_pyramid_target_kernel[NUM_MSC_TARGET_KERNEL_INSTANCES] = {NULL};
 
 static uint32_t gmsc_32_phase_gaussian_filter[] =
 {
@@ -177,7 +186,6 @@ static uint32_t gmsc_32_phase_gaussian_filter[] =
 
 void tivxAddTargetKernelVpacMscPyramid(void)
 {
-    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -186,24 +194,20 @@ void tivxAddTargetKernelVpacMscPyramid(void)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
-    {
-        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #endif
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
-        status = (vx_status)VX_FAILURE;
-    }
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        vx_vpac_msc_pyramid_target_kernel  = tivxAddTargetKernelByName(
+        vx_vpac_msc_pyramid_target_kernel[0]  = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_MSC_PYRAMID_NAME,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_vpac_msc_pyramid_target_kernel[1]  = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_MSC_PYRAMID_NAME,
                             target_name,
                             tivxVpacMscPmdProcess,
@@ -212,20 +216,78 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                             tivxVpacMscPmdControl,
                             NULL);
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_vpac_msc_pyramid_target_kernel[2]  = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_MSC_PYRAMID_NAME,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_vpac_msc_pyramid_target_kernel[3]  = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_MSC_PYRAMID_NAME,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+    }
 }
 
 void tivxRemoveTargetKernelVpacMscPyramid()
 {
-    if (NULL != vx_vpac_msc_pyramid_target_kernel)
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        tivxRemoveTargetKernel(vx_vpac_msc_pyramid_target_kernel);
-        vx_vpac_msc_pyramid_target_kernel = NULL;
+        if (NULL != vx_vpac_msc_pyramid_target_kernel[0])
+        {
+            tivxRemoveTargetKernel(vx_vpac_msc_pyramid_target_kernel[0]);
+            vx_vpac_msc_pyramid_target_kernel[0] = NULL;
+        }
+        if (NULL != vx_vpac_msc_pyramid_target_kernel[1])
+        {
+            tivxRemoveTargetKernel(vx_vpac_msc_pyramid_target_kernel[1]);
+            vx_vpac_msc_pyramid_target_kernel[1] = NULL;
+        }
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        if (NULL != vx_vpac_msc_pyramid_target_kernel[2])
+        {
+            tivxRemoveTargetKernel(vx_vpac_msc_pyramid_target_kernel[2]);
+            vx_vpac_msc_pyramid_target_kernel[2] = NULL;
+        }
+        if (NULL != vx_vpac_msc_pyramid_target_kernel[3])
+        {
+            tivxRemoveTargetKernel(vx_vpac_msc_pyramid_target_kernel[3]);
+            vx_vpac_msc_pyramid_target_kernel[3] = NULL;
+        }
+    }
+    #endif
 }
 
 void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
-    vx_status status;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
 
@@ -234,24 +296,19 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
-    {
-        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
-        status = (vx_status)VX_SUCCESS;
-    }
-    #endif
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
-        status = (vx_status)VX_FAILURE;
-    }
+        vx_gaussian_pyramid_target_kernel[0] = tivxAddTargetKernel(
+                            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        vx_gaussian_pyramid_target_kernel = tivxAddTargetKernel(
+        strncpy(target_name, TIVX_TARGET_VPAC_MSC2,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_gaussian_pyramid_target_kernel[1] = tivxAddTargetKernel(
                             (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
                             target_name,
                             tivxVpacMscPmdProcess,
@@ -260,15 +317,74 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                             tivxVpacMscPmdControl,
                             NULL);
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_gaussian_pyramid_target_kernel[2] = tivxAddTargetKernel(
+                            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
+
+        strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
+            TIVX_TARGET_MAX_NAME);
+
+        vx_gaussian_pyramid_target_kernel[3] = tivxAddTargetKernel(
+                            (vx_enum)VX_KERNEL_GAUSSIAN_PYRAMID,
+                            target_name,
+                            tivxVpacMscPmdProcess,
+                            tivxVpacMscPmdCreate,
+                            tivxVpacMscPmdDelete,
+                            tivxVpacMscPmdControl,
+                            NULL);
+    }
+    #endif
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Invalid CPU ID\n");
+    }
 }
 
 void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
 {
-    if (NULL != vx_gaussian_pyramid_target_kernel)
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel);
-        vx_gaussian_pyramid_target_kernel = NULL;
+        if (NULL != vx_gaussian_pyramid_target_kernel[0])
+        {
+            tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[0]);
+            vx_gaussian_pyramid_target_kernel[0] = NULL;
+        }
+        if (NULL != vx_gaussian_pyramid_target_kernel[1])
+        {
+            tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[1]);
+            vx_gaussian_pyramid_target_kernel[1] = NULL;
+        }
     }
+    #if defined(SOC_J784S4)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    {
+        if (NULL != vx_gaussian_pyramid_target_kernel[2])
+        {
+            tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[2]);
+            vx_gaussian_pyramid_target_kernel[2] = NULL;
+        }
+        if (NULL != vx_gaussian_pyramid_target_kernel[3])
+        {
+            tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[3]);
+            vx_gaussian_pyramid_target_kernel[3] = NULL;
+        }
+    }
+    #endif
 }
 
 /* ========================================================================== */
@@ -712,12 +828,20 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_t
     tivx_obj_desc_image_t      *out_img_desc;
     tivxVpacMscPmdSubSetInfo   *ss_info;
     uint32_t                    max_ds_factor = TIVX_VPAC_MSC_MAX_DS_FACTOR;
-
+    vx_bool is_gaussian_pyramid_target_kernel = vx_false_e;
+    int i;
 
     /* For vxGaussianPyramid, the Khronos conformance tests for random input fail unless
      * max_ds_factor is set to 2
      */
-    if (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel))
+    for (i = 0u; i < NUM_MSC_TARGET_KERNEL_INSTANCES; i++)
+    {
+        if (vx_gaussian_pyramid_target_kernel[i] == tivxTargetKernelInstanceGetKernel(kernel))
+        {
+            is_gaussian_pyramid_target_kernel = vx_true_e;
+        }
+    }
+    if (vx_true_e == is_gaussian_pyramid_target_kernel)
     {
         max_ds_factor = 2;
     }
@@ -1095,11 +1219,20 @@ static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms)
 static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel)
 {
     int i;
+    vx_bool is_gaussian_pyramid_target_kernel = vx_false_e;
 
     /* Be default, 5-tap filter */
     prms->config.settings.cfg_Kernel[0].Sz_height = 5;
     prms->config.settings.cfg_Kernel[0].Tpad_sz = 2;
     prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
+
+    for (i = 0u; i < NUM_MSC_TARGET_KERNEL_INSTANCES; i++)
+    {
+        if (vx_gaussian_pyramid_target_kernel[i] == tivxTargetKernelInstanceGetKernel(kernel))
+        {
+            is_gaussian_pyramid_target_kernel = vx_true_e;
+        }
+    }
 
     for (i = 0u; i < prms->num_pmd_levels; i ++)
     {
@@ -1125,7 +1258,7 @@ static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_tar
          * In this case, a DMA would be more optimal
          */
         if ( (0U == i) &&
-             (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel)) )
+             (vx_true_e == is_gaussian_pyramid_target_kernel) )
         {
             prms->unitParams[0].sp_hs_coef_sel = 0;
             prms->unitParams[0].sp_vs_coef_sel = 0;
