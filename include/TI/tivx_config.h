@@ -327,7 +327,7 @@ extern "C" {
 /*! \brief Maximum targets a kernel can run on
  * \ingroup group_tivx_target_kernel_cfg
  */
-#define TIVX_MAX_TARGETS_PER_KERNEL     (8u)
+#define TIVX_MAX_TARGETS_PER_KERNEL     (32u)
 
 /*! \brief Maximum possible modules in system \
  * \ingroup group_vx_module_cfg
