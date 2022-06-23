@@ -48,7 +48,6 @@ typedef struct {
     int dummy;
 } ArgFixed;
 
-#ifndef PC
 #if defined(SOC_J784S4)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1)), \
@@ -59,10 +58,6 @@ typedef struct {
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2))
-#endif
-#else
-#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1))
 #endif
 
 #define ADD_DUMMY(testArgName, nextmacro, ...) \
