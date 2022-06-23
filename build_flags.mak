@@ -37,7 +37,7 @@ BUILD_QNX_A72?=no
 # Applied to target mode only
 BUILD_VLAB?=no
 
-# RTOS selection for R5F - SYSBIOS, FREERTOS, SAFERTOS
+# RTOS selection for R5F - FREERTOS, SAFERTOS
 RTOS?=FREERTOS
 
 # SOC selection - supported values: j721e, j721s2, j784s4
