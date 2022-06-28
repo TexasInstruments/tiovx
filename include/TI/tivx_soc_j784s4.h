@@ -641,46 +641,46 @@ extern "C" {
 typedef enum _tivx_cpu_id_e {
 
     /*! \brief CPU ID for C7_1 */
-    TIVX_CPU_ID_DSP_C7_1 = 0,
+    TIVX_CPU_ID_DSP_C7_2 = 0,
 
     /*! \brief CPU ID for C7_2 */
-    TIVX_CPU_ID_DSP_C7_2 = 1,
+    TIVX_CPU_ID_DSP_C7_1 = 1,
 
     /*! \brief CPU ID for DSP1 */
     TIVX_CPU_ID_DSP1 = TIVX_CPU_ID_DSP_C7_2,
 
-    /*! \brief CPU ID for C7_3 */
-    TIVX_CPU_ID_DSP_C7_3 = 2,
-
-    /*! \brief CPU ID for C7_4 */
-    TIVX_CPU_ID_DSP_C7_4 = 3,
-
     /*! \brief CPU ID for MCU2_0 */
-    TIVX_CPU_ID_MCU2_0 = 4,
+    TIVX_CPU_ID_MCU2_0 = 2,
 
     /*! \brief CPU ID for IPU1_0 */
     TIVX_CPU_ID_IPU1_0 = TIVX_CPU_ID_MCU2_0,
 
     /*! \brief CPU ID for MCU2_1 */
-    TIVX_CPU_ID_MCU2_1 = 5,
+    TIVX_CPU_ID_MCU2_1 = 3,
 
     /*! \brief CPU ID for IPU1_1 */
     TIVX_CPU_ID_IPU1_1 = TIVX_CPU_ID_MCU2_1,
 
     /*! \brief CPU ID for A72-0 */
-    TIVX_CPU_ID_A72_0 = 6,
+    TIVX_CPU_ID_A72_0 = 4,
 
     /*! \brief CPU ID for MCU3_0 */
-    TIVX_CPU_ID_MCU3_0 = 7,
+    TIVX_CPU_ID_MCU3_0 = 5,
 
     /*! \brief CPU ID for MCU3_1 */
-    TIVX_CPU_ID_MCU3_1 = 8,
+    TIVX_CPU_ID_MCU3_1 = 6,
 
     /*! \brief CPU ID for MCU4_0 */
-    TIVX_CPU_ID_MCU4_0 = 9,
+    TIVX_CPU_ID_MCU4_0 = 7,
 
     /*! \brief CPU ID for MCU4_1 */
-    TIVX_CPU_ID_MCU4_1 = 10,
+    TIVX_CPU_ID_MCU4_1 = 8,
+
+    /*! \brief CPU ID for C7_3 */
+    TIVX_CPU_ID_DSP_C7_3 = 9,
+
+    /*! \brief CPU ID for C7_4 */
+    TIVX_CPU_ID_DSP_C7_4 = 10,
 
     /*! \brief Max value of CPU ID  */
     TIVX_CPU_ID_MAX = 11,
