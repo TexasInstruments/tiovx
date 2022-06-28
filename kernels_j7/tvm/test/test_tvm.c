@@ -547,9 +547,11 @@ TEST(tivxTVM, testTVMPreempt)
             VX_CALL(vxQueryNode(node_large, VX_NODE_PERFORMANCE, &perf_2, sizeof(perf_2)));
 
             printf("first run large perf = %" PRIu64 "\n", perf_1.avg);
-            printf("small perf.avg = %" PRIu64 "\n", perf_small.avg);
+            printf("small perf.avg = %" PRIu64 ", min = %" PRIu64 ", max = %"
+                   PRIu64 "\n", perf_small.avg, perf_small.min, perf_small.max);
             printf("second run large perf = %" PRIu64 "\n", perf_2.sum - perf_1.avg);
-            ASSERT(perf_1.avg + perf_small.avg < perf_2.sum - perf_1.avg);
+            /* first large run time + small run time < second large run time */
+            ASSERT(perf_1.avg + perf_small.min < perf_2.sum - perf_1.avg);
 
             #ifdef DEBUG_TEST_TVM
             printf("Verifying output ...\n");

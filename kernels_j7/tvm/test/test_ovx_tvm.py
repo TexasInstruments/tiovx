@@ -71,14 +71,6 @@ cp artifacts_ovx_tvm_large_c7x_target/tempDir/c7x_deploy_mod.out \
         /opt/vision_apps/test_data/tivx/tvm_models/ovx_tvm_test_large.out
 Repo for generated TVM models in OpenVX unit test:
         ssh://git@bitbucket.itg.ti.com/processor-sdk-vision/test_data.git
-
-Small model is compiled with all c7x optimization on (SE, DMA, vectorization)
-Large model is compiled with SE, DMA and vectorization off currently, because
-    - c7x scheduling strategy has bugs in inserting dma pragmas on fused loops.
-      python/tvm/topi/c7x/injective.py: schedule_injective_from_existing(), return s immediately
-    - c7x_tvm_runtime.h SEConfig only modeled 4 dimensions for SE, while SE can support up to 6
-      in this particular example, avg_pool layer needs 5 dimensions
-      python/tvm/contrib/c7x.py: comment out (1, C7xSEPass())
 """
 
 import os
