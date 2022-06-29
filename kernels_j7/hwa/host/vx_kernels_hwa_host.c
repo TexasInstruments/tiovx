@@ -143,7 +143,7 @@ void tivxHwaLoadKernels(vx_context context)
         #endif
 
         #if defined(SOC_J784S4)
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
         tivxRegisterHwaTargetVpacNfKernels();
         tivxRegisterHwaTargetVpacLdcKernels();
         tivxRegisterHwaTargetVpacMscKernels();
@@ -187,7 +187,7 @@ void tivxHwaUnLoadKernels(vx_context context)
             #endif
 
             #if defined(SOC_J784S4)
-            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU4_0);
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
             tivxUnRegisterHwaTargetVpacNfKernels();
             tivxUnRegisterHwaTargetVpacLdcKernels();
             tivxUnRegisterHwaTargetVpacMscKernels();

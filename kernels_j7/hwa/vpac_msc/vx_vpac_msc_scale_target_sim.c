@@ -383,7 +383,7 @@ void tivxAddTargetKernelVpacMscScale(void)
             NULL);
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
         vx_scale_target_kernel[2] = tivxAddTargetKernel(
@@ -428,7 +428,7 @@ void tivxRemoveTargetKernelVpacMscScale(void)
         vx_scale_target_kernel[1] = NULL;
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         tivxRemoveTargetKernel(vx_scale_target_kernel[2]);
         vx_scale_target_kernel[2] = NULL;

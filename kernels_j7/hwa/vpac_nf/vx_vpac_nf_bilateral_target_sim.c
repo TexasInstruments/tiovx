@@ -408,7 +408,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
                             NULL);
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_NF, TIVX_TARGET_MAX_NAME);
         vx_vpac_nf_bilateral_target_kernel[1] = tivxAddTargetKernelByName(
@@ -443,7 +443,7 @@ void tivxRemoveTargetKernelVpacNfBilateral(void)
         }
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         status = tivxRemoveTargetKernel(vx_vpac_nf_bilateral_target_kernel[1]);
         if (status == (vx_status)VX_SUCCESS)

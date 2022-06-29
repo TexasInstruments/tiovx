@@ -189,7 +189,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
         status = (vx_status)VX_SUCCESS;
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_NF, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -687,7 +687,7 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
                 instObj->nfBilateralObj[cnt].hwa_perf_id    = APP_PERF_HWA_VPAC1_NF;
             }
             #if defined(SOC_J784S4)
-            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
             {
                 instObj->nfBilateralObj[cnt].nf_drv_inst_id = VHWA_M2M_VPAC_1_NF_DRV_INST_ID_0;
                 instObj->nfBilateralObj[cnt].hwa_perf_id    = APP_PERF_HWA_VPAC2_NF;

@@ -217,7 +217,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                             NULL);
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
             TIVX_TARGET_MAX_NAME);
@@ -270,7 +270,7 @@ void tivxRemoveTargetKernelVpacMscPyramid()
         }
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         if (NULL != vx_vpac_msc_pyramid_target_kernel[2])
         {
@@ -318,7 +318,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                             NULL);
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
             TIVX_TARGET_MAX_NAME);
@@ -371,7 +371,7 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
         }
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
     {
         if (NULL != vx_gaussian_pyramid_target_kernel[2])
         {
