@@ -14,7 +14,7 @@ TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_00_11/ti_dl
 endif
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_04
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_08
 
 TIARMCGT_LLVM_ROOT ?= $(PSDK_PATH)/ti-cgt-armllvm_1.3.0.LTS
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_2.1.1.LTS
