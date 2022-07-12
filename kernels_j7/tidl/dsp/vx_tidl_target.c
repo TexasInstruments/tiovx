@@ -875,7 +875,13 @@ void tivxAddTargetKernelTIDL()
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
+    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1)
+#if defined(SOC_J784S4)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_2)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_3)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_4)
+#endif
+        )
     {
         uint32_t i;
 
