@@ -698,32 +698,45 @@ typedef struct {
     uint32_t read_raw_padded;
     uint32_t trace_write_flag;
     char* target_string_1;
-    char* target_string_2;
 } Arg;
 
+typedef struct {
+    const char* testName;
+    const char* config;
+    const char* network;
+    uint32_t read_raw_padded;
+    uint32_t trace_write_flag;
+    char* target_string_1;
+    char* target_string_2;
+} ArgPriority;
+
 #if defined(SOC_J784S4)
-#define ADD_SET_TARGET1_PARAMETERS(testArgName, nextmacro, ...) \
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_2_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_2_PRI_1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_1))
 
-#define ADD_SET_TARGET2_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_2)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_2_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_2_PRI_2)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_2)), \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_2))
+#define ADD_SET_TARGET_PRIORITY_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, TIVX_TARGET_DSP_C7_1_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_2_PRI_1/TIVX_TARGET_DSP_C7_2_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_2_PRI_1, TIVX_TARGET_DSP_C7_2_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_1/TIVX_TARGET_DSP_C7_3_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_1, TIVX_TARGET_DSP_C7_3_PRI_2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_1/TIVX_TARGET_DSP_C7_4_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_1, TIVX_TARGET_DSP_C7_4_PRI_2))
 #else
-#define ADD_SET_TARGET1_PARAMETERS(testArgName, nextmacro, ...) \
+#define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1))
 
-#define ADD_SET_TARGET2_PARAMETERS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_2))
+#define ADD_SET_TARGET_PRIORITY_PARAMETERS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, TIVX_TARGET_DSP_C7_1_PRI_2))
 #endif
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET1_PARAMETERS, ADD_SET_TARGET2_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET1_PARAMETERS, ADD_SET_TARGET2_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
+
+#define PARAMETERS_PRIORITY \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
 
 static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
 {
@@ -905,7 +918,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, Arg, PARAMETERS)
+TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, ArgPriority, PARAMETERS_PRIORITY)
 {
     vx_context context = context_->vx_context_;
     vx_graph graph1 = 0, graph2 = 0;
