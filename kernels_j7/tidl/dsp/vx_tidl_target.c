@@ -623,10 +623,23 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
         if ((vx_status)VX_SUCCESS == status)
         {
-          memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
-          tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
-          tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
-          tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
+            memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
+
+            #if defined (SOC_J784S4)
+            vx_enum self_cpu;
+
+            self_cpu = tivxGetSelfCpuId();
+
+            if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
+            {
+            #endif
+                tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
+                tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
+                VX_PRINT(VX_ZONE_INFO, "Enabling preemption\n");
+            #if defined (SOC_J784S4)
+            }
+            #endif
+            tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
         }
 
         if ((vx_status)VX_SUCCESS == status)
