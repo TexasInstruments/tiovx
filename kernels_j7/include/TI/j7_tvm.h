@@ -97,6 +97,24 @@ typedef struct{
   uint32_t size_in_bytes;
 } tivxTVMTensorParams;
 
+/*! \brief Runtime info needed by TVM C runtime and TIDL */
+typedef struct{
+  /** Flag to indicate TVM RT debug level*/
+  vx_int32 tvm_rt_debug_level;
+  /** Flag to indicate TIDL debug trace log level*/
+  vx_int32 tidl_trace_log_level;
+  /** Flag to indicate TIDL debug trace write level*/
+  vx_int32 tidl_trace_write_level;
+  /** Maximum Tolerated delay for TIDL pre-emption in milliSecond */
+  vx_float32 max_preempt_delay;
+  /** tvm trace target pointer (set by OpenVX from TRACE user data object) */
+  vx_uint64 tvm_rt_trace_ptr;
+  /** tvm trace size (set by OpenVX from TRACE user data object) */
+  vx_int32  tvm_rt_trace_size;
+  /** Dump all output tensors for a specific tvm trace node */
+  vx_int32  tvm_rt_trace_node;
+} tvm_tidl_rt_info;
+
 /*!
  * \brief TVM params structure
  * \ingroup group_vision_function_tvm
@@ -128,12 +146,9 @@ typedef struct{
 
   /** Flag to enable optimization ivision alg activate, default is disabled */
   vx_uint32 optimize_ivision_activation;
-  /** Flag to indicate TVM RT debug level*/
-  vx_int32 tvm_rt_debug_level;
-  /** Flag to indicate TIDL debug trace log level*/
-  vx_int32 tidl_trace_log_level;
-  /** Flag to indicate TIDL debug trace write level*/
-  vx_int32 tidl_trace_write_level;
+
+  /** Runtime info needed by TVM C runtime and TIDL */
+  tvm_tidl_rt_info rt_info;
 
 } tivxTVMJ7Params;
 

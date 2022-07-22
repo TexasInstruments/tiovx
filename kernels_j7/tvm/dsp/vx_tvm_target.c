@@ -82,6 +82,7 @@
 #define TVM_MAX_TARGETS (8u)
 
 typedef int (*TVM_NOARG_FUNC)(void);
+typedef int (*TVM_CREATE_FUNC)(void* rt_info);
 typedef int (*TVM_PROCESS_FUNC)(int32_t num_inputs, int32_t num_outputs,
                                 uint32_t* input_names_offset, uint8_t* input_names,
                                 void *tensors[]);
@@ -93,7 +94,7 @@ typedef struct
   void               *dspload_handle;
   void               *tvm_runtime_handle;
   void               *tvm_tensors[TIVX_KERNEL_TVM_MAX_TOTAL_TENSORS];
-  TVM_NOARG_FUNC      tvm_main_create;
+  TVM_CREATE_FUNC     tvm_main_create;
   TVM_PROCESS_FUNC    tvm_main_process;
   TVM_NOARG_FUNC      tvm_main_delete;
 } tivxTVMObj;
@@ -124,15 +125,6 @@ static vx_status VX_CALLBACK tivxKernelTVMDelete(tivx_target_kernel_instance ker
 /* TVM App function callbacks */
 int32_t TVM_lockInterrupts(void);
 void    TVM_unlockInterrupts(int32_t oldIntState);
-
-/*! \brief tvm, tidl debug level */
-static int32_t tvm_rt_debug_level = 0;
-static int32_t tidl_trace_log_level = 0;
-static int32_t tidl_trace_write_level = 0;
-
-int32_t tvm_rt_get_debug_level(void)  { return tvm_rt_debug_level; }
-int32_t tidl_get_trace_log_level(void)  { return tidl_trace_log_level; }
-int32_t tidl_get_trace_write_level(void) { return tidl_trace_write_level; }
 
 
 /*
@@ -176,11 +168,13 @@ tivxKernelTVMCreate
   tivx_obj_desc_user_data_object_t *config;
   /* tvm c7x deployable module is a shared executable that needs dynamic loading */
   tivx_obj_desc_user_data_object_t *deploy_mod;
+  tivx_obj_desc_user_data_object_t *trace;
 
   tivxTVMObj *tvmObj = NULL;
 
   void *config_target_ptr = NULL;
   void *deploy_mod_target_ptr = NULL;
+  void *trace_target_ptr = NULL;
 
   uint32_t i;
 
@@ -212,8 +206,15 @@ tivxKernelTVMCreate
     /* IMPORTANT! deploy_mod is assumed to be available at index 1 */
     deploy_mod = (tivx_obj_desc_user_data_object_t *)obj_desc[
                                         TIVX_KERNEL_TVM_IN_DEPLOY_MOD_IDX];
+    /* IMPORTANT! trace is assumed to be available at index 2 */
+    trace = (tivx_obj_desc_user_data_object_t *)obj_desc[
+                                        TIVX_KERNEL_TVM_IN_TRACE_DATA_IDX];
     VX_PRINT(VX_ZONE_INFO, "config->mem_size = %d\n", config->mem_size);
     VX_PRINT(VX_ZONE_INFO, "deploy_mod->mem_size = %d\n", deploy_mod->mem_size);
+    if (trace != NULL)
+    {
+      VX_PRINT(VX_ZONE_INFO, "trace->mem_size = %d\n", trace->mem_size);
+    }
 
     tvmObj = tivxMemAlloc(sizeof(tivxTVMObj), (vx_enum)TIVX_MEM_EXTERNAL);
     if (NULL != tvmObj)
@@ -235,9 +236,6 @@ tivxKernelTVMCreate
       {
         memcpy(&tvmObj->tvmParams, config_target_ptr, sizeof(tivxTVMJ7Params));
         tivxCheckStatus(&status, tivxMemBufferUnmap(config_target_ptr, config->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-        tvm_rt_debug_level = tvmObj->tvmParams.tvm_rt_debug_level;
-        tidl_trace_log_level = tvmObj->tvmParams.tidl_trace_log_level;
-        tidl_trace_write_level = tvmObj->tvmParams.tidl_trace_write_level;
       }
     }
 
@@ -248,12 +246,12 @@ tivxKernelTVMCreate
       tivxCheckStatus(&status, tivxMemBufferMap(deploy_mod_target_ptr,
                                                 deploy_mod->mem_size,
                      (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
-      VX_PRINT(VX_ZONE_INFO, "Mapped deploy_mod_target_ptr = %p, loading...\n", deploy_mod_target_ptr);
+      VX_PRINT(VX_ZONE_INFO, "deploy_mod_target_ptr = %p, loading...\n", deploy_mod_target_ptr);
       if ((vx_status)VX_SUCCESS == status)
       {
         tvmObj->dspload_handle = dspload_load_program(deploy_mod_target_ptr,
                                                       deploy_mod->mem_size);
-        tvmObj->tvm_main_create  = (TVM_NOARG_FUNC) dspload_query_symbol(
+        tvmObj->tvm_main_create  = (TVM_CREATE_FUNC) dspload_query_symbol(
                                     tvmObj->dspload_handle, "tvm_main_create");
         tvmObj->tvm_main_process = (TVM_PROCESS_FUNC) dspload_query_symbol(
                                     tvmObj->dspload_handle, "tvm_main_process");
@@ -273,6 +271,22 @@ tivxKernelTVMCreate
       }
     }
 
+    /* Set up trace */
+    if ((vx_status)VX_SUCCESS == status && trace != NULL)
+    {
+      trace_target_ptr = tivxMemShared2TargetPtr(&trace->mem_ptr);
+      tivxCheckStatus(&status, tivxMemBufferMap(trace_target_ptr,
+                                                trace->mem_size,
+                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+      VX_PRINT(VX_ZONE_INFO, "trace_target_ptr = %p\n", trace_target_ptr);
+      if ((vx_status)VX_SUCCESS == status)
+      {
+        tvmObj->tvmParams.rt_info.tvm_rt_trace_ptr = (uint64_t)trace_target_ptr;
+        tvmObj->tvmParams.rt_info.tvm_rt_trace_size = trace->mem_size;
+        tivxCheckStatus(&status, tivxMemBufferUnmap(trace_target_ptr, trace->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
+      }
+    }
+
     /* Save tvmObj in target kernel */
     if ((vx_status)VX_SUCCESS == status)
     {
@@ -283,7 +297,7 @@ tivxKernelTVMCreate
   /* Call tvm_main create function */
   if ((vx_status)VX_SUCCESS == status)
   {
-    status = tvmObj->tvm_main_create();
+    status = tvmObj->tvm_main_create((void *) &tvmObj->tvmParams.rt_info);
   }
 
   /* Error handling: something wrong, clean up */
@@ -366,10 +380,21 @@ tivxKernelTVMProcess
   {
     tivx_obj_desc_tensor_t *inTensor;
     tivx_obj_desc_tensor_t *outTensor;
+    tivx_obj_desc_user_data_object_t *trace;
     void *in_tensor_target_ptr;
     void *out_tensor_target_ptr;
+    void *trace_target_ptr = NULL;
 
-    /* TODO trace init */
+    /* trace init */
+    trace = (tivx_obj_desc_user_data_object_t *)obj_desc[
+                                        TIVX_KERNEL_TVM_IN_TRACE_DATA_IDX];
+    if (trace != NULL && tvmObj->tvmParams.rt_info.tvm_rt_debug_level > 1)
+    {
+      trace_target_ptr = tivxMemShared2TargetPtr(&trace->mem_ptr);
+      tivxCheckStatus(&status, tivxMemBufferMap(trace_target_ptr,
+                                                trace->mem_size,
+                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+    }
 
     /* Idx 0 - config data,
        Idx 1 - deployable module,
@@ -402,8 +427,6 @@ tivxKernelTVMProcess
                              tvmObj->tvmParams.input_names,
                              tvmObj->tvm_tensors);
 
-    /* TODO trace write */
-
     for(id = 0; id < num_input_tensors; id++) {
       inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
       in_tensor_target_ptr  = tivxMemShared2TargetPtr(&inTensor->mem_ptr);
@@ -414,6 +437,14 @@ tivxKernelTVMProcess
       outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
       out_tensor_target_ptr = tivxMemShared2TargetPtr(&outTensor->mem_ptr);
       tivxCheckStatus(&status, tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+    }
+
+    /* trace write */
+    if (trace != NULL && tvmObj->tvmParams.rt_info.tvm_rt_debug_level > 1)
+    {
+      tivxCheckStatus(&status, tivxMemBufferUnmap(trace_target_ptr,
+                                                  trace->mem_size,
+                     (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
     }
   }
 

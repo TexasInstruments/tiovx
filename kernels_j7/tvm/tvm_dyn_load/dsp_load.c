@@ -132,10 +132,6 @@ static const char *dsp_syms_names[] = {
 "DmaUtilsAutoInc3d_trigger",
 "DmaUtilsAutoInc3d_wait",
 
-"tvm_rt_get_debug_level",
-"tidl_get_trace_log_level",
-"tidl_get_trace_write_level",
-
 "TVM_lockInterrupts",
 "TVM_unlockInterrupts",
 
@@ -185,9 +181,6 @@ dspload_get_dsp_syms_addrs(void)
   extern void DmaUtilsAutoInc3d_prepareTr(void);
   extern void DmaUtilsAutoInc3d_trigger(void);
   extern void DmaUtilsAutoInc3d_wait(void);
-  extern int32_t tvm_rt_get_debug_level(void);
-  extern int32_t tidl_get_trace_log_level(void);
-  extern int32_t tidl_get_trace_write_level(void);
   extern int32_t TVM_lockInterrupts(void);
   extern void    TVM_unlockInterrupts(void);
 
@@ -219,9 +212,6 @@ dspload_get_dsp_syms_addrs(void)
   dsp_syms_addrs[i++] = &DmaUtilsAutoInc3d_prepareTr;
   dsp_syms_addrs[i++] = &DmaUtilsAutoInc3d_trigger;
   dsp_syms_addrs[i++] = &DmaUtilsAutoInc3d_wait;
-  dsp_syms_addrs[i++] = &tvm_rt_get_debug_level;
-  dsp_syms_addrs[i++] = &tidl_get_trace_log_level;
-  dsp_syms_addrs[i++] = &tidl_get_trace_write_level;
   dsp_syms_addrs[i++] = &TVM_lockInterrupts;
   dsp_syms_addrs[i++] = &TVM_unlockInterrupts;
 

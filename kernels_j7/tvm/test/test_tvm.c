@@ -87,7 +87,7 @@
  * This is the size of trace buffer allocated in host memory and
  * shared with target.
  */
-#define TIVX_TVM_TRACE_DATA_SIZE  (128 * 1024 * 1024)
+#define TIVX_TVM_TRACE_DATA_SIZE  (2 * 1024 * 1024)
 
 #define TEST_TVM_OUT_TENSOR1_ELEMENTS (1*480*14*14)
 #define TEST_TVM_OUT_TENSOR2_ELEMENTS (1*480*1*1)
@@ -110,14 +110,16 @@ static vx_user_data_object createConfig(vx_context context,
                                         int32_t num_input_tensors,
                                         int32_t num_output_tensors,
                                         vx_size in_tensor_size_in_bytes,
-                                        vx_size out_tensor_size_in_bytes);
+                                        vx_size out_tensor_size_in_bytes,
+                                        int32_t tvm_rt_debug_level);
 static vx_user_data_object readDeployMod(vx_context context, char *mod_file);
 
 static vx_user_data_object createConfig(vx_context context,
                                         int32_t num_input_tensors,
                                         int32_t num_output_tensors,
                                         vx_size in_tensor_size_in_bytes,
-                                        vx_size out_tensor_size_in_bytes)
+                                        vx_size out_tensor_size_in_bytes,
+                                        int32_t tvm_rt_debug_level)
 {
     vx_status status;
     vx_user_data_object config;
@@ -149,9 +151,12 @@ static vx_user_data_object createConfig(vx_context context,
     tvmParams->tensors_params[0].size_in_bytes = in_tensor_size_in_bytes;
     tvmParams->tensors_params[1].size_in_bytes = out_tensor_size_in_bytes;
     tvmParams->optimize_ivision_activation = 1;
+    tvmParams->rt_info.max_preempt_delay = FLT_MAX;
+    tvmParams->rt_info.tvm_rt_debug_level = tvm_rt_debug_level;
+    tvmParams->rt_info.tvm_rt_trace_node = -1;
 
     #ifdef DEBUG_TEST_TVM_VERBOSE
-    tvmParams->tvm_rt_debug_level = 3;
+    tvmParams->rt_info.tvm_rt_debug_level = 4;
     #endif
 
     vxUnmapUserDataObject(config, map_id);
@@ -250,6 +255,8 @@ TEST(tivxTVM, testTVM)
     vx_user_data_object  config;
     vx_user_data_object  deploy_mod;
     vx_user_data_object  traceData = NULL;
+    void *trace_ptr = NULL;
+    int32_t trace_written_size = 0;
 
     vx_tensor input_tensors[1];
     vx_tensor output_tensors[1];
@@ -278,7 +285,7 @@ TEST(tivxTVM, testTVM)
 
         /* Create userdata object for TVMRT configuration parameters */
         config = createConfig(context, num_input_tensors, num_output_tensors,
-                              ends[0], ends[0]);
+                              ends[0], ends[0], 3 /*tvm_rt_debug_level*/);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)config));
         #ifdef DEBUG_TEST_TVM
         printf("Finished setting TVM config\n");
@@ -291,6 +298,12 @@ TEST(tivxTVM, testTVM)
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)deploy_mod));
         #ifdef DEBUG_TEST_TVM
         printf("Finished setting c7x deployable module\n");
+        #endif
+
+        /* Create trace data */
+        ASSERT_VX_OBJECT(traceData = vxCreateUserDataObject(context, "TVM_traceData", TIVX_TVM_TRACE_DATA_SIZE, NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        #ifdef DEBUG_TEST_TVM
+        printf("Finished setting c7x TVM trace\n");
         #endif
 
         /* Create vx_tensor objects for input/output tensors */
@@ -360,6 +373,16 @@ TEST(tivxTVM, testTVM)
                 }
                 tivxUnmapTensorPatch(output_tensors[0], map_id);
 
+                /* Checking trace */
+                ASSERT(VX_SUCCESS == vxMapUserDataObject(traceData, 0, TIVX_TVM_TRACE_DATA_SIZE, &map_id,
+                   (void **)&trace_ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+                memcpy(&trace_written_size, trace_ptr, sizeof(int32_t));
+                #ifdef DEBUG_TEST_TVM
+                printf("Trace written size: %d\n", trace_written_size);
+                #endif
+                ASSERT(trace_written_size > 0);
+                vxUnmapUserDataObject(traceData, map_id);
+
                 VX_CALL(vxReleaseNode(&node));
                 VX_CALL(vxReleaseGraph(&graph));
             }
@@ -374,6 +397,7 @@ TEST(tivxTVM, testTVM)
 
         VX_CALL(vxReleaseUserDataObject(&config));
         VX_CALL(vxReleaseUserDataObject(&deploy_mod));
+        VX_CALL(vxReleaseUserDataObject(&traceData));
         VX_CALL(vxReleaseTensor(&input_tensors[0]));
         VX_CALL(vxReleaseTensor(&output_tensors[0]));
 
@@ -440,10 +464,10 @@ TEST(tivxTVM, testTVMPreempt)
 
         /* Create userdata object for TVMRT configuration parameters */
         config = createConfig(context, num_input_tensors, num_output_tensors,
-                              ends[0], ends[0]);
+                              ends[0], ends[0], 0 /*tvm_rt_debug_level*/);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)config));
         config_large = createConfig(context, num_input_tensors, num_output_tensors,
-                              ends[0], ends_large[0]);
+                              ends[0], ends_large[0], 0 /*tvm_rt_debug_level*/);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)config_large));
         #ifdef DEBUG_TEST_TVM
         printf("Finished setting TVM config\n");
