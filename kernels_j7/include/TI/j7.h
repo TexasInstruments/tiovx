@@ -65,6 +65,6 @@
 
 #include <TI/tivx.h>
 
-//#warning TI/j7.h is deprecated and will be removed in PSDK 8.2 ... please remove its inclusion and just include TI/tivx.h
+#warning TI/j7.h is deprecated and will be removed in PSDK 8.5 ... please remove its inclusion and just include TI/tivx.h
 
 #endif
