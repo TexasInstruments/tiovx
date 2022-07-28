@@ -9,15 +9,20 @@ VXLIB_PATH ?= $(PSDK_PATH)/vxlib
 J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
 ifeq ($(SOC),j784s4)
 TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_01_01/ti_dl
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_08
 else
-TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_00_11/ti_dl
+TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_04_00_01/ti_dl
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_04_00_02
 endif
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_08
 
 TIARMCGT_LLVM_ROOT ?= $(PSDK_PATH)/ti-cgt-armllvm_1.3.0.LTS
+ifeq ($(SOC),j784s4)
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_2.1.1.LTS
+else
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_3.0.0A22186
+endif
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.7
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu
