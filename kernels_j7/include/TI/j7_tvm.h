@@ -150,6 +150,15 @@ typedef struct{
   /** Runtime info needed by TVM C runtime and TIDL */
   tvm_tidl_rt_info rt_info;
 
+  /* Begin workaround, to be removed once update TIDL is in SDK build */
+  /** Flag to indicate TVM RT debug level*/
+  vx_int32 tvm_rt_debug_level;
+  /** Flag to indicate TIDL debug trace log level*/
+  vx_int32 tidl_trace_log_level;
+  /** Flag to indicate TIDL debug trace write level*/
+  vx_int32 tidl_trace_write_level;
+  /* End workaround, to be removed once update TIDL is in SDK build */
+
 } tivxTVMJ7Params;
 
 #ifdef __cplusplus
