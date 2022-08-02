@@ -160,9 +160,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess(tivx_target_kernel_instance k
 static vx_status VX_CALLBACK tivxKernelTIDLDelete(tivx_target_kernel_instance kernel,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 
+#ifndef SOC_J784S4
 /* TIDL App function callbacks */
 static int32_t TIDL_lockInterrupts();
 static void TIDL_unlockInterrupts(int32_t oldIntState);
+#endif
+
 static int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr);
 static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size, void * tracePtr);
 
@@ -174,6 +177,7 @@ static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDe
 static int32_t tidl_AllocNetOutputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig);
 
 
+#ifndef SOC_J784S4
 /*
  * Following static lock/unlock functions passed as function pointers to TIDL to internally
  * disable and enable interrupts around critical section.
@@ -193,6 +197,7 @@ static void TIDL_unlockInterrupts(int32_t oldIntState)
     HwiP_restore(oldIntState);
 #endif
 }
+#endif
 
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig)
 {
@@ -625,20 +630,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         {
             memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
 
-            #if defined (SOC_J784S4)
-            vx_enum self_cpu;
-
-            self_cpu = tivxGetSelfCpuId();
-
-            if (self_cpu == TIVX_CPU_ID_DSP_C7_1)
-            {
+            #if defined(SOC_J784S4)
+            VX_PRINT(VX_ZONE_INFO, "Preemption is disabled\n");
+            #else
+            tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
+            tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
+            VX_PRINT(VX_ZONE_INFO, "Enabling preemption\n");
             #endif
-                tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
-                tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
-                VX_PRINT(VX_ZONE_INFO, "Enabling preemption\n");
-            #if defined (SOC_J784S4)
-            }
-            #endif
+
             tidlObj->createParams.tracePtr = (void *)&tidlObj->mgr;
         }
 
