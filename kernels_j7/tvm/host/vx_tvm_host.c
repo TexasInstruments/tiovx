@@ -288,6 +288,32 @@ vx_kernel tivxAddKernelTVM(vx_context context,
                 tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_6);
                 tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_7);
                 tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_1_PRI_8);
+                #if defined(SOC_J784S4)
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_2);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_3);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_4);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_5);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_6);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_7);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_2_PRI_8);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_2);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_3);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_4);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_5);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_6);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_7);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_3_PRI_8);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_2);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_3);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_4);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_5);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_6);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_7);
+                tivxAddKernelTarget(kernel, TIVX_TARGET_DSP_C7_4_PRI_8);
+                #endif
             }
 
             if ( status == (vx_status)VX_SUCCESS)

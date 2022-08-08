@@ -79,8 +79,6 @@
 
 /* #define TIVX_TVM_TARGET_DEBUG */
 
-#define TVM_MAX_TARGETS (8u)
-
 typedef int (*TVM_NOARG_FUNC)(void);
 typedef int (*TVM_CREATE_FUNC)(void* rt_info);
 typedef int (*TVM_PROCESS_FUNC)(int32_t num_inputs, int32_t num_outputs,
@@ -99,10 +97,7 @@ typedef struct
   TVM_NOARG_FUNC      tvm_main_delete;
 } tivxTVMObj;
 
-/*! \brief vx target kernel for tvm node */
-static tivx_target_kernel vx_tvm_target_kernel[TVM_MAX_TARGETS] = {NULL};
-
-static char target_name[TVM_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
+static char target_name[][TIVX_TARGET_MAX_NAME] =
 {
   TIVX_TARGET_DSP_C7_1_PRI_1,
   TIVX_TARGET_DSP_C7_1_PRI_2,
@@ -111,8 +106,39 @@ static char target_name[TVM_MAX_TARGETS][TIVX_TARGET_MAX_NAME] =
   TIVX_TARGET_DSP_C7_1_PRI_5,
   TIVX_TARGET_DSP_C7_1_PRI_6,
   TIVX_TARGET_DSP_C7_1_PRI_7,
-  TIVX_TARGET_DSP_C7_1_PRI_8
+  TIVX_TARGET_DSP_C7_1_PRI_8,
+#if defined(SOC_J784S4)
+  TIVX_TARGET_DSP_C7_2_PRI_1,
+  TIVX_TARGET_DSP_C7_2_PRI_2,
+  TIVX_TARGET_DSP_C7_2_PRI_3,
+  TIVX_TARGET_DSP_C7_2_PRI_4,
+  TIVX_TARGET_DSP_C7_2_PRI_5,
+  TIVX_TARGET_DSP_C7_2_PRI_6,
+  TIVX_TARGET_DSP_C7_2_PRI_7,
+  TIVX_TARGET_DSP_C7_2_PRI_8,
+  TIVX_TARGET_DSP_C7_3_PRI_1,
+  TIVX_TARGET_DSP_C7_3_PRI_2,
+  TIVX_TARGET_DSP_C7_3_PRI_3,
+  TIVX_TARGET_DSP_C7_3_PRI_4,
+  TIVX_TARGET_DSP_C7_3_PRI_5,
+  TIVX_TARGET_DSP_C7_3_PRI_6,
+  TIVX_TARGET_DSP_C7_3_PRI_7,
+  TIVX_TARGET_DSP_C7_3_PRI_8,
+  TIVX_TARGET_DSP_C7_4_PRI_1,
+  TIVX_TARGET_DSP_C7_4_PRI_2,
+  TIVX_TARGET_DSP_C7_4_PRI_3,
+  TIVX_TARGET_DSP_C7_4_PRI_4,
+  TIVX_TARGET_DSP_C7_4_PRI_5,
+  TIVX_TARGET_DSP_C7_4_PRI_6,
+  TIVX_TARGET_DSP_C7_4_PRI_7,
+  TIVX_TARGET_DSP_C7_4_PRI_8,
+#endif
 };
+
+#define TVM_MAX_TARGETS (sizeof(target_name)/sizeof(target_name[0]))
+
+/*! \brief vx target kernel for tvm node */
+static tivx_target_kernel vx_tvm_target_kernel[TVM_MAX_TARGETS] = {NULL};
 
 /* OpenVX Node callbacks */
 static vx_status VX_CALLBACK tivxKernelTVMCreate(tivx_target_kernel_instance kernel,
@@ -520,7 +546,13 @@ void tivxAddTargetKernelTVM(void)
 
   self_cpu = tivxGetSelfCpuId();
 
-  if ((self_cpu == TIVX_CPU_ID_DSP_C7_1))
+    if ((self_cpu == TIVX_CPU_ID_DSP_C7_1)
+#if defined(SOC_J784S4)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_2)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_3)
+        || (self_cpu == TIVX_CPU_ID_DSP_C7_4)
+#endif
+        )
   {
     uint32_t i;
 
