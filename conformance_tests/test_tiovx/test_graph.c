@@ -1697,6 +1697,13 @@ TEST(tivxGraph, testCreateImageFromROI)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxGraph, negativeTestProcessGraph)
+{
+    vx_graph graph = NULL;
+    vx_context context = context_->vx_context_;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxProcessGraph(graph));
+}
 
 TESTCASE_TESTS(tivxGraph,
         testParallelNodesDifferentTarget,
@@ -1708,5 +1715,6 @@ TESTCASE_TESTS(tivxGraph,
         testThreeParallelGraphs,
         testMaxParallelGraphs,
         testAlternatingNodes,
-        testCreateImageFromROI
+        testCreateImageFromROI,
+        negativeTestProcessGraph
 )
