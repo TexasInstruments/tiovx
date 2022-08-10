@@ -11,7 +11,7 @@ ifeq ($(SOC),j784s4)
 TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_02_01/ti_dl
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_11
 else
-TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_04_00_01/ti_dl
+TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_04_00_06/ti_dl
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_04_00_02
 endif
 IVISION_PATH ?= $(PSDK_PATH)/ivision
