@@ -270,7 +270,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 
     if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu)
 #if defined(SOC_J784S4)
-        || ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+        || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
 #endif
         )
     {
@@ -290,7 +290,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                         TIVX_TARGET_MAX_NAME);
                 }
                 #if defined(SOC_J784S4)
-                else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
                         TIVX_TARGET_MAX_NAME);
@@ -305,7 +305,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                         TIVX_TARGET_MAX_NAME);
                 }
                 #if defined(SOC_J784S4)
-                else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
                         TIVX_TARGET_MAX_NAME);
@@ -342,7 +342,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
                         }
                         #if defined(SOC_J784S4)
-                        else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC0;
@@ -358,7 +358,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;
                         }
                         #if defined(SOC_J784S4)
-                        else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC1;
@@ -440,7 +440,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
 
     if (((vx_enum)TIVX_CPU_ID_MCU2_0 == self_cpu)
 #if defined(SOC_J784S4)
-        || ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+        || ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
 #endif
         )
     {
@@ -460,7 +460,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                         TIVX_TARGET_MAX_NAME);
                 }
                 #if defined(SOC_J784S4)
-                else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC2_MSC1,
                         TIVX_TARGET_MAX_NAME);
@@ -475,7 +475,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                         TIVX_TARGET_MAX_NAME);
                 }
                 #if defined(SOC_J784S4)
-                else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                 {
                     strncpy(target_name, TIVX_TARGET_VPAC2_MSC2,
                         TIVX_TARGET_MAX_NAME);
@@ -512,7 +512,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC0;
                         }
                         #if defined(SOC_J784S4)
-                        else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_0;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC0;
@@ -528,7 +528,7 @@ void tivxAddTargetKernelVpacMscPyramid(void)
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC1_MSC1;
                         }
                         #if defined(SOC_J784S4)
-                        else if ((vx_enum)TIVX_CPU_ID_MCU2_1 == self_cpu)
+                        else if ((vx_enum)TIVX_CPU_ID_MCU4_0 == self_cpu)
                         {
                             inst_obj->msc_drv_inst_id = VHWA_M2M_VPAC_1_MSC_DRV_INST_ID_1;
                             inst_obj->hwa_perf_id     = APP_PERF_HWA_VPAC2_MSC1;

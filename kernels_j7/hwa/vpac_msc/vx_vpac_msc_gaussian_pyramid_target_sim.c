@@ -462,7 +462,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
         status = (vx_status)VX_SUCCESS;
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_MAX_NAME);
         vx_gaussian_pyramid_target_kernel[2] = tivxAddTargetKernel(
@@ -510,7 +510,7 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid(void)
         vx_gaussian_pyramid_target_kernel[1] = NULL;
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
     {
         tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel[2]);
         vx_gaussian_pyramid_target_kernel[2] = NULL;

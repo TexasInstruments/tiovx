@@ -159,7 +159,7 @@ void tivxAddTargetKernelVpacViss(void)
         status = (vx_status)VX_SUCCESS;
     }
     #if defined(SOC_J784S4)
-    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
+    else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
     {
         strncpy(target_name, TIVX_TARGET_VPAC2_VISS1, TIVX_TARGET_MAX_NAME);
         status = (vx_status)VX_SUCCESS;
@@ -1157,7 +1157,7 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
                 instObj->vissObj[cnt].hwa_perf_id      = APP_PERF_HWA_VPAC1_VISS;
             }
             #if defined(SOC_J784S4)
-            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_1)
+            else if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU4_0)
             {
                 instObj->vissObj[cnt].viss_drv_inst_id = VHWA_M2M_VPAC_1_VISS_DRV_INST_ID_0;
                 instObj->vissObj[cnt].hwa_perf_id      = APP_PERF_HWA_VPAC2_VISS;
