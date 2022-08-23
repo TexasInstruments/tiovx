@@ -151,6 +151,8 @@ void tivxHwaLoadKernels(vx_context context)
         #endif
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+
+        tivxRegisterHwaTargetArmKernels();
         #endif
 
     }
@@ -194,6 +196,7 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaTargetVpacVissKernels();
             #endif
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_DSP1);
+            tivxUnRegisterHwaTargetArmKernels();
             #endif
         }
     }
