@@ -130,8 +130,6 @@ void tivxHwaLoadKernels(vx_context context)
 
         tivxRegisterHwaTargetVpacMscKernels();
 
-        tivxRegisterHwaTargetArmKernels();
-
         tivxRegisterHwaTargetVpacVissKernels();
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
@@ -178,7 +176,6 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaTargetVpacLdcKernels();
 
             tivxUnRegisterHwaTargetVpacMscKernels();
-            tivxUnRegisterHwaTargetArmKernels();
             tivxUnRegisterHwaTargetVpacVissKernels();
 
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);

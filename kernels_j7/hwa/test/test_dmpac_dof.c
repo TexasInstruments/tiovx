@@ -556,7 +556,7 @@ TEST_WITH_ARG(tivxHwaDmpacDof, testGraphProcessing, Arg,
                             NULL,
                             flow_vector_out_img,
                             confidence_img), VX_TYPE_NODE);
-            VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_MCU2_0));
+            VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_DSP1));
         }
 
         VX_CALL(vxVerifyGraph(graph));
