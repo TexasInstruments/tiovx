@@ -1975,6 +1975,81 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST(tivxGraphStreaming, negativeTestEnableGraphStreaming)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_node node = NULL;
+    vx_kernel kernel = NULL;
+    vx_enum kernel_id = VX_KERNEL_SOBEL_3x3;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxEnableGraphStreaming(graph, node));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraphStreaming, negativeTestStartGraphStreaming)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_node node = NULL;
+    vx_kernel kernel = NULL;
+    vx_enum kernel_id = VX_KERNEL_SOBEL_3x3;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxStartGraphStreaming(graph));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxStartGraphStreaming(graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraphStreaming, negativeTestStopGraphStreaming)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_node node = NULL;
+    vx_kernel kernel = NULL;
+    vx_enum kernel_id = VX_KERNEL_SOBEL_3x3;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxStopGraphStreaming(graph));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxStartGraphStreaming(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxStopGraphStreaming(graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraphStreaming, negativeTestVerifyGraph)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxVerifyGraph(graph));
+}
+
 TESTCASE_TESTS(tivxGraphStreaming,
                negativeTestSourceSinkNoTrigger,
                testSourceSink1,
@@ -1999,5 +2074,10 @@ TESTCASE_TESTS(tivxGraphStreaming,
                negativeTestStreamingPipelining1,
                negativeTestStreamingPipelining2,
                negativeTestStreamingError,
-               negativeTestPipeliningStreamingNoTrigger)
+               negativeTestPipeliningStreamingNoTrigger
+               negativeTestEnableGraphStreaming,
+               negativeTestStartGraphStreaming,
+               negativeTestStopGraphStreaming,
+               negativeTestVerifyGraph
+)
 
