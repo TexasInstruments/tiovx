@@ -1699,10 +1699,126 @@ TEST(tivxGraph, testCreateImageFromROI)
 
 TEST(tivxGraph, negativeTestProcessGraph)
 {
-    vx_graph graph = NULL;
     vx_context context = context_->vx_context_;
 
+    vx_graph graph = NULL;
+
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxProcessGraph(graph));
+}
+
+TEST(tivxGraph, negativeTestScheduleGraph)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxScheduleGraph(graph));
+}
+
+TEST(tivxGraph, negativeTestWaitGraph)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxWaitGraph(graph));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxWaitGraph(graph));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraph, negativeTestGetGraphParameterByIndex)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_uint32 index = 1;
+
+    ASSERT_EQ_VX_STATUS(NULL, vxGetGraphParameterByIndex(graph, index));
+}
+
+TEST(tivxGraph, negativeTestSetGraphParameterByIndex)
+{
+    #define TIVX_GRAPH_MAX_PARAMS (16u) /* defined in TI/tivx_config.h */
+
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_uint32 index = TIVX_GRAPH_MAX_PARAMS + 1;
+    vx_reference value = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetGraphParameterByIndex(graph, index, value));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraph, negativeTestSetGraphAttribute)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_enum attribute = 0;
+    vx_uint32 vxTimeoutVal = 0;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphAttribute(graph, TIVX_GRAPH_TIMEOUT, &vxTimeoutVal, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetGraphAttribute(graph, attribute, &vxTimeoutVal, size));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraph, negativeTestQueryGraph)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_enum attribute = 0;
+    vx_uint32 vxGphAttr = 0;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryGraph(graph, attribute, &vxGphAttr, size));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_STATE, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMNODES, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_TIMEOUT, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_PIPELINE_DEPTH, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryGraph(graph, attribute, &vxGphAttr, size));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraph, negativeTestAddParameterToGraph)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_parameter param = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxAddParameterToGraph(graph, param));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddParameterToGraph(graph, param));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraph, negativeTestRegisterAutoAging)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_delay delay = NULL;
+    vx_scalar scalar = NULL;
+    vx_uint32 tmp_value = 0;
+    vx_size count = 2;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterAutoAging(graph, delay));
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_TYPE_DELAY);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxReleaseScalar(&scalar));
+    VX_CALL(vxReleaseDelay(&delay));
 }
 
 TESTCASE_TESTS(tivxGraph,
@@ -1716,5 +1832,14 @@ TESTCASE_TESTS(tivxGraph,
         testMaxParallelGraphs,
         testAlternatingNodes,
         testCreateImageFromROI,
-        negativeTestProcessGraph
+        negativeTestProcessGraph,
+        negativeTestScheduleGraph,
+        negativeTestWaitGraph,
+        negativeTestGetGraphParameterByIndex,
+        negativeTestSetGraphParameterByIndex,
+        negativeTestSetGraphAttribute,
+        negativeTestQueryGraph,
+        negativeTestAddParameterToGraph,
+        negativeTestRegisterAutoAging
 )
+
