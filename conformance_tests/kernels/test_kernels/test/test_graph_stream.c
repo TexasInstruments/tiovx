@@ -2074,7 +2074,7 @@ TESTCASE_TESTS(tivxGraphStreaming,
                negativeTestStreamingPipelining1,
                negativeTestStreamingPipelining2,
                negativeTestStreamingError,
-               negativeTestPipeliningStreamingNoTrigger
+               negativeTestPipeliningStreamingNoTrigger,
                negativeTestEnableGraphStreaming,
                negativeTestStartGraphStreaming,
                negativeTestStopGraphStreaming,
