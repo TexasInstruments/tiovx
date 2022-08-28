@@ -6475,6 +6475,59 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST(tivxGraphPipeline, negativeTestSetGraphScheduleConfig)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_enum graph_schedule_mode;
+    vx_uint32 graph_parameters_list_size;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_NORMAL;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO;
+    graph_parameters_list_size = 1;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraphPipeline, negativeTestGraphParameterCheckDoneRef)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_uint32 graph_parameter_index = 0;
+    vx_uint32 *num_refs = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterCheckDoneRef(graph, graph_parameter_index, num_refs));
+}
+
+TEST(tivxGraphPipeline, negativeTestGraphParameterDequeueDoneRef)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_uint32 graph_parameter_index = 0;
+    vx_image image;
+    vx_uint32 max_refs = 1;
+    vx_uint32 num_refs;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterDequeueDoneRef(graph, graph_parameter_index, (vx_reference *)&image, max_refs, &num_refs));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterDequeueDoneRef(graph, graph_parameter_index, (vx_reference *)&image, max_refs, &num_refs));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -6510,6 +6563,10 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testGraphPipelineErrorDetection,
     testBufferDepthDetection1,
     testBufferDepthDetection2
-    )
-
+/*
+    negativeTestSetGraphScheduleConfig,
+    negativeTestGraphParameterCheckDoneRef,
+    negativeTestGraphParameterDequeueDoneRef
+*/
+)
 
