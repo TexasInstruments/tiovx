@@ -493,7 +493,68 @@ TEST_WITH_ARG(tivxConvolve, testConvolveSupernode, Arg,
 #define testConvolveSupernode DISABLED_testConvolveSupernode
 #endif
 
-TESTCASE_TESTS(tivxConvolve, 
-               testGraphProcessing, 
-               negativeTestBorderMode,
-               testConvolveSupernode)
+TEST(tivxConvolve, negativeTestQueryConvolution)
+{
+    #define VX_CONVOLUTION_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_convolution cnvl = NULL;
+    vx_enum attribute = VX_CONVOLUTION_DEFAULT;
+    vx_size size = 0, columns = 5, rows = 5;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryConvolution(NULL, attribute, &size, sizeof(size)));
+    ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryConvolution(cnvl, VX_CONVOLUTION_SCALE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryConvolution(cnvl, VX_CONVOLUTION_COLUMNS, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryConvolution(cnvl, VX_CONVOLUTION_ROWS, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryConvolution(cnvl, VX_CONVOLUTION_SIZE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryConvolution(cnvl, attribute, &size, size));
+    VX_CALL(vxReleaseConvolution(&cnvl));
+}
+
+TEST(tivxConvolve, negativeTestSetConvolutionAttribute)
+{
+    #define VX_CONVOLUTION_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_convolution cnvl = NULL;
+    vx_enum attribute = VX_CONVOLUTION_DEFAULT;
+    vx_size size = 0, scale = 3, columns = 5, rows = 5;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetConvolutionAttribute(NULL, attribute, &size, sizeof(size)));
+    ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetConvolutionAttribute(cnvl, VX_CONVOLUTION_SCALE, &size, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetConvolutionAttribute(cnvl, VX_CONVOLUTION_SCALE, &scale, sizeof(vx_uint32)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetConvolutionAttribute(cnvl, VX_CONVOLUTION_SCALE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetConvolutionAttribute(cnvl, attribute, &size, size));
+    VX_CALL(vxReleaseConvolution(&cnvl));
+}
+
+TEST(tivxConvolve, negativeTestCopyConvolutionCoefficients)
+{
+    #define VX_CONVOLUTION_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_convolution cnvl = NULL;
+    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
+    vx_size size = 0, columns = 5, rows = 5;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxCopyConvolutionCoefficients(NULL, NULL, usage, user_mem_type));
+    ASSERT_VX_OBJECT(cnvl = vxCreateConvolution(context, columns, rows), VX_TYPE_CONVOLUTION);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyConvolutionCoefficients(cnvl, NULL, usage, user_mem_type));
+    VX_CALL(vxReleaseConvolution(&cnvl));
+}
+
+TESTCASE_TESTS(
+    tivxConvolve,
+    testGraphProcessing, 
+    negativeTestBorderMode,
+    testConvolveSupernode,
+    negativeTestQueryConvolution,
+    negativeTestSetConvolutionAttribute,
+    negativeTestCopyConvolutionCoefficients
+)
+

@@ -191,8 +191,138 @@ TEST(tivxArray, test_vxMapArrayRangeWrite)
     ASSERT(array == 0);
 }
 
+TEST(tivxArray, negativeTestQueryArray)
+{
+    #define VX_ARRAY_DEFAULT (VX_ARRAY_ITEMSIZE + 1)
+
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    vx_size num_items = 0, size = 0;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 2;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryArray(array, VX_ARRAY_ITEMTYPE, &num_items, size));
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryArray(array, VX_ARRAY_ITEMTYPE, &num_items, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryArray(array, VX_ARRAY_NUMITEMS, &num_items, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryArray(array, VX_ARRAY_CAPACITY, &num_items, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryArray(array, VX_ARRAY_ITEMSIZE, &num_items, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryArray(array, VX_ARRAY_DEFAULT, &num_items, size));
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxArray, negativeTestAddArrayItems)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    vx_size count = 2;
+    void *array_items = NULL;
+    vx_size stride = 1;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 1;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxAddArrayItems(array, count, array_items, stride));
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxAddArrayItems(array, count, array_items, stride));
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxArray, negativeTestTruncateArray)
+{
+    #define KA 2
+
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    vx_size new_num_items = KA + 1;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 1;
+    int i = 0;
+    vx_keypoint_t keypoint_array[KA];
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxTruncateArray(array, new_num_items));
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+    for (i = 0; i < KA; i++) {
+        memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
+    }
+    VX_CALL(vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxTruncateArray(array, new_num_items));
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxArray, negativeTestCopyArrayRange)
+{
+    #define KA 2
+
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    vx_size range_start = 0, range_end = 0, stride = 0;
+    void *array_items = NULL;
+    vx_enum usage, user_mem_type, item_type = VX_TYPE_KEYPOINT;
+    int i = 0;
+    vx_keypoint_t keypoint_array[KA];
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxCopyArrayRange(array, range_start, range_end, stride, array_items, usage, user_mem_type));
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+    for (i = 0; i < KA; i++) {
+        memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
+    }
+    VX_CALL(vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyArrayRange(array, range_start, range_end, stride, array_items, usage, user_mem_type));
+    VX_CALL(vxReleaseArray(&array));
+}
+
+TEST(tivxArray, negativeTestMapUnmapArrayRange)
+{
+    #define KA 2
+    #define TIVX_ARRAY_MAX_MAPS (16u) /* defined in TI/tivx_config.h */
+
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    vx_size range_start = 0, range_end = 0, stride = 0;
+    vx_map_id map_id = 0;
+    void *ptr = NULL;
+    vx_enum usage = VX_READ_ONLY, mem_type = VX_MEMORY_TYPE_HOST, item_type = VX_TYPE_KEYPOINT;
+    vx_uint32 flags = 0;
+    int i = 0;
+    vx_keypoint_t keypoint_array[KA];
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapArrayRange(array, range_start, range_end, &map_id, stride, &ptr, usage, mem_type, flags));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapArrayRange(array, map_id));
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+    for (i = 0; i < KA; i++) {
+        memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
+    }
+    VX_CALL(vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapArrayRange(array, range_start, range_end, &map_id, stride, &ptr, usage, mem_type, flags));
+    range_start = 1;
+    range_end = 2;
+    for (i = 0; i < TIVX_ARRAY_MAX_MAPS + 1; i++) {
+        stride = 0;
+        if (i == TIVX_ARRAY_MAX_MAPS) {
+            ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxMapArrayRange(array, range_start, range_end, &map_id, &stride, &ptr, usage, mem_type, flags));
+        } else {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapArrayRange(array, range_start, range_end, &map_id, &stride, &ptr, usage, mem_type, flags));
+        }
+    }
+    map_id = TIVX_ARRAY_MAX_MAPS;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnmapArrayRange(array, map_id));
+    VX_CALL(vxReleaseArray(&array));
+}
+
 TESTCASE_TESTS(
     tivxArray,
     test_vxCopyArrayRangeRead,
     test_vxCopyArrayRangeWrite,
-    test_vxMapArrayRangeWrite)
+    test_vxMapArrayRangeWrite,
+    negativeTestQueryArray,
+    negativeTestAddArrayItems,
+    negativeTestTruncateArray,
+    negativeTestCopyArrayRange,
+    negativeTestMapUnmapArrayRange
+)
+
