@@ -72,6 +72,12 @@
 #include "test_hwa_common.h"
 #include "tivx_utils_checksum.h"
 
+#define TEST_NUM_NODE_INSTANCE 2
+
+/* #define TEST_VISS_PERFORMANCE_LOGGING */
+
+/* #define TEST_VISS_CHECKSUM_LOGGING */
+
 #define APP_MAX_FILE_PATH           (512u)
 
 #define ADD_SIZE_64x48(testArgName, nextmacro, ...) \
@@ -191,9 +197,22 @@ typedef struct
 {
     const char* testName;
     CT_Image(*generator)(const char* fileName, int width, int height);
-    char* target_string;
+    char *target_string;
 
 } SetTarget_Arg;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1/TIVX_TARGET_VPAC2_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_VPAC2_VISS1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC2_VISS1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1/TIVX_TARGET_VPAC_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_VPAC_VISS1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_VISS1/TIVX_TARGET_VPAC2_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC2_VISS1, TIVX_TARGET_VPAC2_VISS1))
+#else
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1/NULL", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_VISS1/TIVX_TARGET_VPAC_VISS1", __VA_ARGS__, TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_VPAC_VISS1))
+#endif
 
 #if defined(SOC_J784S4)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
@@ -629,7 +648,7 @@ typedef struct {
     int results_2a;
     int bypass_glbce;
     int bypass_nsf4;
-    char* target_string;
+    char *target_string, *target_string_2;
 } ArgDcc;
 
 static uint32_t viss_checksums_luma_ref[60] = {
@@ -703,20 +722,19 @@ static uint32_t get_checksum(uint32_t *table, vx_int32 dcc, vx_int32 results_2a,
 #endif
 
 #define PARAMETERS_DCC \
-    CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ADD_SET_TARGET_PARAMETERS, ARG)
+    CT_GENERATE_PARAMETERS("cksm", ADD_DCC, ADD_2A, ADD_GLBCE, ADD_NSF4, ADD_SET_TARGET_PARAMETERS_MULTI_INST, ARG)
 
 TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DCC)
 {
     vx_context context = context_->vx_context_;
-    vx_user_data_object configuration = NULL;
-    vx_user_data_object ae_awb_result = NULL;
-    tivx_raw_image raw = NULL;
-    vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
-    vx_distribution histogram = NULL;
-    vx_user_data_object h3a_aew_af = NULL;
+    vx_user_data_object configuration[TEST_NUM_NODE_INSTANCE] = {NULL};
+    vx_user_data_object ae_awb_result[TEST_NUM_NODE_INSTANCE] = {NULL};
+    tivx_raw_image raw[TEST_NUM_NODE_INSTANCE] = {NULL};
+    vx_image y8_r8_c2[TEST_NUM_NODE_INSTANCE] = {NULL};
+    vx_user_data_object h3a_aew_af[TEST_NUM_NODE_INSTANCE] = {NULL};
     char file[MAXPATHLENGTH];
     /* Dcc objects */
-    vx_user_data_object dcc_param_viss = NULL;
+    vx_user_data_object dcc_param_viss[TEST_NUM_NODE_INSTANCE] = {NULL};
     const vx_char dcc_viss_user_data_object_name[] = "dcc_viss";
     vx_size dcc_buff_size = 1;
     vx_map_id dcc_viss_buf_map_id;
@@ -734,10 +752,18 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     tivx_ae_awb_params_t ae_awb_params;
 
     vx_graph graph = 0;
-    vx_node node = 0;
+    vx_node node[TEST_NUM_NODE_INSTANCE] = {NULL};
 
     tivx_raw_image_create_params_t raw_params;
 
+    if (NULL != arg_->target_string)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
+    }
+    if (NULL != arg_->target_string_2)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_2));
+    }
 
     if(4 == arg_->dcc)
     {
@@ -790,122 +816,134 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
     raw_params.format[0].msb = 11;
     raw_params.meta_height_before = 0;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
-
     {
-        vx_uint32 width, height, i;
+        vx_uint32 width, height, i, j;
 
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
-        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
-
-        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
-        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
-
-        // Note: image is non-zero but not validated
-        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
-
-        /* Create/Configure configuration input structure */
-        tivx_vpac_viss_params_init(&params);
-
-        params.sensor_dcc_id = sensor_dcc_id;
-        params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
-        params.fcp[0].mux_output0 = 0;
-        params.fcp[0].mux_output1 = 0;
-        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
-        params.fcp[0].mux_output3 = 0;
-        params.fcp[0].mux_output4 = 3;
-        params.h3a_in = TIVX_VPAC_VISS_H3A_IN_LSC;
-        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
-        params.bypass_glbce = arg_->bypass_glbce;
-        params.bypass_nsf4 = arg_->bypass_nsf4;
-
-        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        /* Create/Configure ae_awb_params input structure */
-        if(0 != arg_->results_2a)
-        {
-            tivx_ae_awb_params_init(&ae_awb_params);
-
-            if(2 == arg_->results_2a)
-            {
-                ae_awb_params.ae_valid = 1;
-                ae_awb_params.exposure_time = 16666;
-                ae_awb_params.analog_gain = 1030;
-                ae_awb_params.awb_valid = 1;
-                ae_awb_params.color_temperature = 3000;
-                for (i=0; i<4; i++)
-                {
-                    ae_awb_params.wb_gains[i] = 525;
-                    ae_awb_params.wb_offsets[i] = 2;
-                }
-            }
-
-            ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                                sizeof(tivx_ae_awb_params_t), &ae_awb_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        }
-
-        if(0 != arg_->dcc)
-        {
-            /* Creating DCC */
-            dcc_buff_size = appIssGetDCCSizeVISS(sensor_name, sensor_dcc_mode);
-
-            ASSERT_VX_OBJECT(dcc_param_viss = vxCreateUserDataObject( context, (const vx_char*)&dcc_viss_user_data_object_name,
-                dcc_buff_size, NULL),(enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-            VX_CALL(vxMapUserDataObject(
-                dcc_param_viss,
-                0,
-                dcc_buff_size,
-                &dcc_viss_buf_map_id,
-                (void **)&dcc_viss_buf,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST,
-                0
-            ));
-            memset(dcc_viss_buf, 0xAB, dcc_buff_size);
-
-            dcc_status = appIssGetDCCBuffVISS(sensor_name, sensor_dcc_mode, dcc_viss_buf, dcc_buff_size);
-            ASSERT(dcc_status == 0);
-
-            VX_CALL(vxUnmapUserDataObject(dcc_param_viss, dcc_viss_buf_map_id));
-            /* Done w/ DCC */
-
-            /* Creating H3A output */
-            ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t", sizeof(tivx_h3a_data_t), NULL),
-                (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-            if(NULL != h3a_aew_af)
-            {
-                VX_CALL(vxMapUserDataObject(h3a_aew_af,
-                    0,
-                    sizeof(tivx_h3a_data_t),
-                    &dcc_viss_buf_map_id,
-                    (void **)&dcc_viss_buf,
-                    (vx_enum)VX_WRITE_ONLY,
-                    (vx_enum)VX_MEMORY_TYPE_HOST,
-                    0
-                    ));
-
-                memset(dcc_viss_buf, 0, sizeof(tivx_h3a_data_t));
-
-                VX_CALL(vxUnmapUserDataObject(h3a_aew_af, dcc_viss_buf_map_id));
-            }
-
-        }
-
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, dcc_param_viss,
-                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                ASSERT_VX_OBJECT(raw[i] = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
+                VX_CALL(tivxQueryRawImage(raw[i], TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
+                VX_CALL(tivxQueryRawImage(raw[i], TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
 
-        ct_read_raw_image(raw, file_name, 2, downshift_bits);
+                // Note: image is non-zero but not validated
+                ASSERT_VX_OBJECT(y8_r8_c2[i] = vxCreateImage(context, width, height, VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
+
+                /* Create/Configure configuration input structure */
+                tivx_vpac_viss_params_init(&params);
+
+                params.sensor_dcc_id = sensor_dcc_id;
+                params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_OFF;
+                params.fcp[0].mux_output0 = 0;
+                params.fcp[0].mux_output1 = 0;
+                params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_NV12;
+                params.fcp[0].mux_output3 = 0;
+                params.fcp[0].mux_output4 = 3;
+                params.h3a_in = TIVX_VPAC_VISS_H3A_IN_LSC;
+                params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
+                params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
+                params.bypass_glbce = arg_->bypass_glbce;
+                params.bypass_nsf4 = arg_->bypass_nsf4;
+
+                ASSERT_VX_OBJECT(configuration[i] = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                                    sizeof(tivx_vpac_viss_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+                /* Create/Configure ae_awb_params input structure */
+                if(0 != arg_->results_2a)
+                {
+                    tivx_ae_awb_params_init(&ae_awb_params);
+
+                    if(2 == arg_->results_2a)
+                    {
+                        ae_awb_params.ae_valid = 1;
+                        ae_awb_params.exposure_time = 16666;
+                        ae_awb_params.analog_gain = 1030;
+                        ae_awb_params.awb_valid = 1;
+                        ae_awb_params.color_temperature = 3000;
+                        for (j=0; j<4; j++)
+                        {
+                            ae_awb_params.wb_gains[j] = 525;
+                            ae_awb_params.wb_offsets[j] = 2;
+                        }
+                    }
+
+                    ASSERT_VX_OBJECT(ae_awb_result[i] = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                                        sizeof(tivx_ae_awb_params_t), &ae_awb_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+                }
+
+                if(0 != arg_->dcc)
+                {
+                    /* Creating DCC */
+                    dcc_buff_size = appIssGetDCCSizeVISS(sensor_name, sensor_dcc_mode);
+
+                    ASSERT_VX_OBJECT(dcc_param_viss[i] = vxCreateUserDataObject( context, (const vx_char*)&dcc_viss_user_data_object_name,
+                        dcc_buff_size, NULL),(enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+                    VX_CALL(vxMapUserDataObject(
+                        dcc_param_viss[i],
+                        0,
+                        dcc_buff_size,
+                        &dcc_viss_buf_map_id,
+                        (void **)&dcc_viss_buf,
+                        VX_WRITE_ONLY,
+                        VX_MEMORY_TYPE_HOST,
+                        0
+                    ));
+                    memset(dcc_viss_buf, 0xAB, dcc_buff_size);
+
+                    dcc_status = appIssGetDCCBuffVISS(sensor_name, sensor_dcc_mode, dcc_viss_buf, dcc_buff_size);
+                    ASSERT(dcc_status == 0);
+
+                    VX_CALL(vxUnmapUserDataObject(dcc_param_viss[i], dcc_viss_buf_map_id));
+                    /* Done w/ DCC */
+
+                    /* Creating H3A output */
+                    ASSERT_VX_OBJECT(h3a_aew_af[i] = vxCreateUserDataObject(context, "tivx_h3a_data_t", sizeof(tivx_h3a_data_t), NULL),
+                        (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+                    if(NULL != h3a_aew_af[i])
+                    {
+                        VX_CALL(vxMapUserDataObject(h3a_aew_af[i],
+                            0,
+                            sizeof(tivx_h3a_data_t),
+                            &dcc_viss_buf_map_id,
+                            (void **)&dcc_viss_buf,
+                            (vx_enum)VX_WRITE_ONLY,
+                            (vx_enum)VX_MEMORY_TYPE_HOST,
+                            0
+                            ));
+
+                        memset(dcc_viss_buf, 0, sizeof(tivx_h3a_data_t));
+
+                        VX_CALL(vxUnmapUserDataObject(h3a_aew_af[i], dcc_viss_buf_map_id));
+                    }
+
+                }
+
+                ASSERT_VX_OBJECT(node[i] = tivxVpacVissNode(graph, configuration[i], ae_awb_result[i], dcc_param_viss[i],
+                                                        raw[i], NULL, NULL, y8_r8_c2[i], NULL, NULL,
+                                                        h3a_aew_af[i], NULL, NULL, NULL), VX_TYPE_NODE);
+
+                if (i==0)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string));
+                }
+                else if (i==1)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_2));
+                }
+
+                ct_read_raw_image(raw[i], file_name, 2, downshift_bits);
+            }
+        }
 
         VX_CALL(vxVerifyGraph(graph));
 
@@ -915,68 +953,150 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
             VX_CALL(vxProcessGraph(graph));
         }
 
-        snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), "output/viss_dcc_out.yuv");
-        //write_output_image_nv12_8bit(file, y8_r8_c2);
-
-        rect.start_x = 0;
-        rect.start_y = 0;
-        rect.end_x = width;
-        rect.end_y = height;
-
-        checksum_expected = get_checksum(viss_checksums_luma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
-        checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 0, rect);
-        //printf("0x%08x\n", checksum_actual);
-        ASSERT(checksum_expected == checksum_actual);
-
-        rect.end_x = width/2;
-        rect.end_y = height/2;
-        checksum_expected = get_checksum(viss_checksums_chroma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
-        checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2, 1, rect);
-        //printf("0x%08x\n", checksum_actual);
-        ASSERT(checksum_expected == checksum_actual);
-        //ASSERT(checksum_expected == checksum_expected);
-
-        if( (0 != arg_->dcc) && (NULL != h3a_aew_af))
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
         {
-            vx_size h3a_valid_size;
-            VX_CALL(vxQueryUserDataObject(h3a_aew_af, TIVX_USER_DATA_OBJECT_VALID_SIZE, &h3a_valid_size, sizeof(vx_size)));
-            ASSERT(h3a_valid_size > 64);
-            ASSERT(h3a_valid_size <= sizeof(tivx_h3a_data_t));
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                snprintf(file, MAXPATHLENGTH, "%s/%s%d%s", ct_get_test_file_path(), "output/viss_dcc_out_", i, ".yuv");
+                #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                write_output_image_nv12_8bit(file, y8_r8_c2[i]);
+                #endif
 
-            checksum_actual = tivx_utils_user_data_object_checksum(h3a_aew_af, 0, h3a_valid_size);
-            //printf("0x%08x\n", checksum_actual);
-            //printf("%d\n", h3a_valid_size);
-            ASSERT(viss_checksums_h3a_ref[arg_->dcc] == checksum_actual);
-            //ct_write_user_data_object(h3a_aew_af, "output/viss_dcc_h3a_out.bin");
+                rect.start_x = 0;
+                rect.start_y = 0;
+                rect.end_x = width;
+                rect.end_y = height;
+
+                checksum_expected = get_checksum(viss_checksums_luma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
+                checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2[i], 0, rect);
+                #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                printf("0x%08x\n", checksum_actual);
+                #endif
+                ASSERT(checksum_expected == checksum_actual);
+
+                rect.end_x = width/2;
+                rect.end_y = height/2;
+                checksum_expected = get_checksum(viss_checksums_chroma_ref, arg_->dcc, arg_->results_2a, arg_->bypass_glbce, arg_->bypass_nsf4);
+                checksum_actual = tivx_utils_simple_image_checksum(y8_r8_c2[i], 1, rect);
+                #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                printf("0x%08x\n", checksum_actual);
+                #endif
+                ASSERT(checksum_expected == checksum_actual);
+                #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                ASSERT(checksum_expected == checksum_expected);
+                #endif
+
+                if( (0 != arg_->dcc) && (NULL != h3a_aew_af[i]))
+                {
+                    tivx_h3a_data_t *h3a_out;
+                    vx_size h3a_valid_size;
+                    VX_CALL(vxQueryUserDataObject(h3a_aew_af[i], TIVX_USER_DATA_OBJECT_VALID_SIZE, &h3a_valid_size, sizeof(vx_size)));
+                    ASSERT(h3a_valid_size > 64);
+                    ASSERT(h3a_valid_size <= sizeof(tivx_h3a_data_t));
+
+                    VX_CALL(vxMapUserDataObject(h3a_aew_af[i],
+                        0,
+                        sizeof(tivx_h3a_data_t),
+                        &dcc_viss_buf_map_id,
+                        (void **)&dcc_viss_buf,
+                        (vx_enum)VX_WRITE_ONLY,
+                        (vx_enum)VX_MEMORY_TYPE_HOST,
+                        0
+                        ));
+
+                    /* TIOVX-1247: Setting the channel_id to 0 indiscriminately in order to re-use the same checksums */
+                    h3a_out = (tivx_h3a_data_t*)dcc_viss_buf;
+
+                    h3a_out->channel_id = 0;
+
+                    VX_CALL(vxUnmapUserDataObject(h3a_aew_af[i], dcc_viss_buf_map_id));
+
+                    checksum_actual = tivx_utils_user_data_object_checksum(h3a_aew_af[i], 0, h3a_valid_size);
+                    #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                    printf("0x%08x\n", checksum_actual);
+                    printf("%d\n", h3a_valid_size);
+                    #endif
+                    ASSERT(viss_checksums_h3a_ref[arg_->dcc] == checksum_actual);
+                    #if defined(TEST_VISS_CHECKSUM_LOGGING)
+                    ct_write_user_data_object(h3a_aew_af[i], "output/viss_dcc_h3a_out.bin");
+                    #endif
+                }
+            }
         }
 
-        VX_CALL(vxReleaseNode(&node));
+        if ((NULL != arg_->target_string) &&
+            (NULL != arg_->target_string_2) )
+        {
+            vx_perf_t perf_node[TEST_NUM_NODE_INSTANCE], perf_graph;
+
+            for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+            {
+                vxQueryNode(node[i], VX_NODE_PERFORMANCE, &perf_node[i], sizeof(perf_node[i]));
+            }
+            vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+            if (strncmp(arg_->target_string, arg_->target_string_2, TIVX_TARGET_MAX_NAME) == 0)
+            {
+                #if defined(TEST_VISS_PERFORMANCE_LOGGING)
+                printf("targets are same\n");
+                printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                #endif
+                ASSERT(perf_graph.avg >= (perf_node[0].avg + perf_node[1].avg));
+            }
+            else
+            {
+                #if defined(TEST_VISS_PERFORMANCE_LOGGING)
+                printf("targets are different\n");
+                printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                #endif
+                ASSERT(perf_graph.avg < (perf_node[0].avg + perf_node[1].avg));
+            }
+        }
+
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                VX_CALL(vxReleaseNode(&node[i]));
+                VX_CALL(vxReleaseImage(&y8_r8_c2[i]));
+                VX_CALL(tivxReleaseRawImage(&raw[i]));
+                VX_CALL(vxReleaseUserDataObject(&configuration[i]));
+                if(0 != arg_->results_2a)
+                {
+                    VX_CALL(vxReleaseUserDataObject(&ae_awb_result[i]));
+                }
+                if(0 != arg_->dcc)
+                {
+                    VX_CALL(vxReleaseUserDataObject(&h3a_aew_af[i]));
+                    VX_CALL(vxReleaseUserDataObject(&dcc_param_viss[i]));
+                }
+            }
+        }
+
         VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseImage(&y8_r8_c2));
-        VX_CALL(tivxReleaseRawImage(&raw));
-        VX_CALL(vxReleaseUserDataObject(&configuration));
-        if(0 != arg_->results_2a)
-        {
-            VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
-        }
-        if(0 != arg_->dcc)
-        {
-            VX_CALL(vxReleaseUserDataObject(&h3a_aew_af));
-            VX_CALL(vxReleaseUserDataObject(&dcc_param_viss));
-        }
 
-        ASSERT(node == 0);
         ASSERT(graph == 0);
-        ASSERT(h3a_aew_af == 0);
-        ASSERT(histogram == 0);
-        ASSERT(s8_b8_c4 == 0);
-        ASSERT(uv8_g8_c3 == 0);
-        ASSERT(y8_r8_c2 == 0);
-        ASSERT(uv12_c1 == 0);
-        ASSERT(y12 == 0);
-        ASSERT(raw == 0);
-        ASSERT(ae_awb_result == 0);
-        ASSERT(configuration == 0);
+
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                ASSERT(node[i] == 0);
+                ASSERT(h3a_aew_af[i] == 0);
+                ASSERT(y8_r8_c2[i] == 0);
+                ASSERT(raw[i] == 0);
+                ASSERT(ae_awb_result[i] == 0);
+                ASSERT(configuration[i] == 0);
+                ASSERT(dcc_param_viss[i] == 0);
+            }
+        }
 
         tivxHwaUnLoadKernels(context);
     }

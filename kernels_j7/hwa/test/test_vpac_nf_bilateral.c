@@ -68,6 +68,10 @@
 #include "tivx_utils_checksum.h"
 #include "test_hwa_common.h"
 
+#define TEST_NUM_NODE_INSTANCE 2
+
+/* #define TEST_NF_PERFORMANCE_LOGGING */
+
 TESTCASE(tivxHwaVpacNfBilateral, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct
@@ -77,6 +81,19 @@ typedef struct
     char* target_string;
 
 } SetTarget_Arg;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF/TIVX_TARGET_VPAC2_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF, TIVX_TARGET_VPAC2_NF)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_NF", __VA_ARGS__, TIVX_TARGET_VPAC2_NF, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF/TIVX_TARGET_VPAC_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF, TIVX_TARGET_VPAC_NF)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_NF/TIVX_TARGET_VPAC2_NF", __VA_ARGS__, TIVX_TARGET_VPAC2_NF, TIVX_TARGET_VPAC2_NF))
+#else
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF/NULL", __VA_ARGS__, TIVX_TARGET_VPAC_NF, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_NF/TIVX_TARGET_VPAC_NF", __VA_ARGS__, TIVX_TARGET_VPAC_NF, TIVX_TARGET_VPAC_NF))
+#endif
 
 #if defined(SOC_J784S4)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
@@ -172,7 +189,7 @@ typedef struct {
     vx_df_image dst_format;
     vx_border_t border;
     int width, height;
-    char* target_string;
+    char *target_string, *target_string_2;
 } Arg;
 
 typedef struct {
@@ -280,7 +297,7 @@ static uint32_t get_checksum(vx_int32 tables, vx_int32 shift)
 #endif
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("lena", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS, ARG, convolve_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("lena", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_SET_TARGET_PARAMETERS_MULTI_INST, ARG, convolve_read_image, "lena.bmp")
 
 #define ADD_NUMTABLES_NEGATIVE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/num_tables=1", __VA_ARGS__, 1))
@@ -316,14 +333,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 )
 {
     vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
+    vx_image src_image[TEST_NUM_NODE_INSTANCE] = {0}, dst_image[TEST_NUM_NODE_INSTANCE] = {0};
     tivx_vpac_nf_bilateral_params_t params;
     tivx_vpac_nf_bilateral_sigmas_t sigmas;
-    vx_user_data_object param_obj;
-    vx_user_data_object sigma_obj;
+    vx_user_data_object param_obj[TEST_NUM_NODE_INSTANCE] = {0};
+    vx_user_data_object sigma_obj[TEST_NUM_NODE_INSTANCE] = {0};
     vx_graph graph = 0;
-    vx_node node = 0;
-    int i;
+    vx_node node[TEST_NUM_NODE_INSTANCE] = {0};
+    int i, j;
     uint32_t checksum_expected;
     uint32_t checksum_actual;
     vx_rectangle_t rect;
@@ -331,7 +348,14 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     CT_Image src = NULL;
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
+    if (NULL != arg_->target_string)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
+    }
+    if (NULL != arg_->target_string_2)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_2));
+    }
 
     {
         rect.start_x = 0;
@@ -341,64 +365,124 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
         tivxHwaLoadKernels(context);
         CT_RegisterForGarbageCollection(context, ct_teardown_hwa_kernels, CT_GC_OBJECT);
 
-        ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
-        ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
-
-        tivx_vpac_nf_bilateral_params_init(&params);
-        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        tivx_vpac_nf_bilateral_sigmas_init(&sigmas);
-        ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        params.params.output_downshift = arg_->shift;
-
-        sigmas.num_sigmas = arg_->numTables;
-        for(i=0; i < arg_->numTables; i++)
-        {
-            sigmas.sigma_space[i] = arg_->sigma_s + (0.2*i);
-            sigmas.sigma_range[i] = arg_->sigma_r + (20*i);
-        }
-        if(sigmas.num_sigmas > 1)
-        {
-            params.adaptive_mode = 1;
-        }
-
-        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-        VX_CALL(vxCopyUserDataObject(sigma_obj, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &sigmas, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_obj, src_image, sigma_obj, dst_image), VX_TYPE_NODE);
+        ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                ASSERT_VX_OBJECT(src_image[i] = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
 
-        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+                ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+                tivx_vpac_nf_bilateral_params_init(&params);
+                ASSERT_VX_OBJECT(param_obj[i] = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
+                                                                    sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+                tivx_vpac_nf_bilateral_sigmas_init(&sigmas);
+                ASSERT_VX_OBJECT(sigma_obj[i] = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
+                                                                    sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+                params.params.output_downshift = arg_->shift;
+
+                sigmas.num_sigmas = arg_->numTables;
+                for(j=0; j < arg_->numTables; j++)
+                {
+                    sigmas.sigma_space[j] = arg_->sigma_s + (0.2*j);
+                    sigmas.sigma_range[j] = arg_->sigma_r + (20*j);
+                }
+                if(sigmas.num_sigmas > 1)
+                {
+                    params.adaptive_mode = 1;
+                }
+
+                VX_CALL(vxCopyUserDataObject(param_obj[i], 0, sizeof(tivx_vpac_nf_bilateral_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                VX_CALL(vxCopyUserDataObject(sigma_obj[i], 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &sigmas, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+                ASSERT_VX_OBJECT(node[i] = tivxVpacNfBilateralNode(graph, param_obj[i], src_image[i], sigma_obj[i], dst_image[i]), VX_TYPE_NODE);
+
+                if (i==0)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string));
+                }
+                else if (i==1)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_2));
+                }
+
+                VX_CALL(vxSetNodeAttribute(node[i], VX_NODE_BORDER, &border, sizeof(border)));
+            }
+        }
 
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
-        checksum_expected = get_checksum(arg_->numTables, arg_->shift);
-        checksum_actual = tivx_utils_simple_image_checksum(dst_image, 0, rect);
-        ASSERT(checksum_expected == checksum_actual);
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                checksum_expected = get_checksum(arg_->numTables, arg_->shift);
+                checksum_actual = tivx_utils_simple_image_checksum(dst_image[i], 0, rect);
+                ASSERT(checksum_expected == checksum_actual);
+            }
+        }
 
-        VX_CALL(vxReleaseNode(&node));
+        if ((NULL != arg_->target_string) &&
+            (NULL != arg_->target_string_2) )
+        {
+            vx_perf_t perf_node[TEST_NUM_NODE_INSTANCE], perf_graph;
+
+            for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+            {
+                vxQueryNode(node[i], VX_NODE_PERFORMANCE, &perf_node[i], sizeof(perf_node[i]));
+            }
+            vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+            if (strncmp(arg_->target_string, arg_->target_string_2, TIVX_TARGET_MAX_NAME) == 0)
+            {
+                #if defined(TEST_NF_PERFORMANCE_LOGGING)
+                printf("targets are same\n");
+                printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                #endif
+                ASSERT(perf_graph.avg >= (perf_node[0].avg + perf_node[1].avg));
+            }
+            else
+            {
+                #if defined(TEST_NF_PERFORMANCE_LOGGING)
+                printf("targets are different\n");
+                printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                #endif
+                ASSERT(perf_graph.avg < (perf_node[0].avg + perf_node[1].avg));
+            }
+        }
+
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                VX_CALL(vxReleaseNode(&node[i]));
+                VX_CALL(vxReleaseImage(&dst_image[i]));
+                VX_CALL(vxReleaseImage(&src_image[i]));
+                VX_CALL(vxReleaseUserDataObject(&param_obj[i]));
+                VX_CALL(vxReleaseUserDataObject(&sigma_obj[i]));
+                ASSERT(node[i] == 0);
+                ASSERT(dst_image[i] == 0);
+                ASSERT(src_image[i] == 0);
+                ASSERT(param_obj[i] == 0);
+                ASSERT(sigma_obj[i] == 0);
+            }
+        }
+
         VX_CALL(vxReleaseGraph(&graph));
-
-        ASSERT(node == 0);
         ASSERT(graph == 0);
-
-        VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseUserDataObject(&param_obj));
-        VX_CALL(vxReleaseUserDataObject(&sigma_obj));
-
-        ASSERT(dst_image == 0);
-        ASSERT(src_image == 0);
-        ASSERT(param_obj == 0);
-        ASSERT(sigma_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }

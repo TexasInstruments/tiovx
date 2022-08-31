@@ -24,6 +24,10 @@
 #include <math.h>
 #include "test_hwa_common.h"
 
+#define TEST_NUM_NODE_INSTANCE 2
+
+/* #define TEST_MSC_PERFORMANCE_LOGGING */
+
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
 #define CHECK_OUTPUT
 
@@ -34,6 +38,28 @@ typedef struct {
     char* target_string;
     int dummy;
 } ArgCreate;
+
+#if defined(SOC_J784S4)
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1/TIVX_TARGET_VPAC2_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_VPAC2_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1/TIVX_TARGET_VPAC2_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_VPAC2_MSC2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2/TIVX_TARGET_VPAC2_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_VPAC2_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2/TIVX_TARGET_VPAC2_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_VPAC2_MSC2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC2, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_VPAC_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_VPAC_MSC2)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC1/TIVX_TARGET_VPAC2_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_VPAC2_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC2_MSC2/TIVX_TARGET_VPAC2_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC2_MSC1, TIVX_TARGET_VPAC2_MSC2))
+#else
+#define ADD_SET_TARGET_PARAMETERS_MULTI_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1/NULL", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, NULL)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC1/TIVX_TARGET_VPAC_MSC1", __VA_ARGS__, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_VPAC_MSC1)), \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_VPAC_MSC2/TIVX_TARGET_VPAC_MSC2", __VA_ARGS__, TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_VPAC_MSC2))
+#endif
 
 #if defined(SOC_J784S4)
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
@@ -566,7 +592,7 @@ typedef struct {
     vx_border_t border;
     int width, height;
     vx_float32 scale;
-    char* target_string;
+    char *target_string, *target_string_2;
 } Arg;
 
 #define ADD_VX_SCALE(testArgName, nextmacro, ...) \
@@ -574,8 +600,8 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))*/
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_VX_SCALE, ADD_SET_TARGET_PARAMETERS, ARG, gaussian_pyramid_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ADD_SET_TARGET_PARAMETERS, ARG, gaussian_pyramid_read_image, "lena.bmp"), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_VX_SCALE, ADD_SET_TARGET_PARAMETERS_MULTI_INST, ARG, gaussian_pyramid_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ADD_SET_TARGET_PARAMETERS_MULTI_INST, ARG, gaussian_pyramid_read_image, "lena.bmp"), \
 
 TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
     PARAMETERS
@@ -584,16 +610,24 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
     vx_size levels;
 
     vx_context context = context_->vx_context_;
-    vx_image input_image = 0;
-    vx_pyramid pyr = 0;
+    vx_image input_image[TEST_NUM_NODE_INSTANCE] = {0};
+    vx_pyramid pyr[TEST_NUM_NODE_INSTANCE] = {0};
     vx_graph graph = 0;
-    vx_node node = 0;
+    vx_node node[TEST_NUM_NODE_INSTANCE] = {0};
+    uint32_t i;
 
     CT_Image input = NULL;
 
     vx_border_t border = arg_->border;
 
-    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
+    if (NULL != arg_->target_string)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string));
+    }
+    if (NULL != arg_->target_string_2)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_2));
+    }
 
     {
         tivxHwaLoadKernels(context);
@@ -602,37 +636,112 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
         ASSERT(arg_->scale < 1.0);
 
         ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
-        ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
-
-        levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
-
-        ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = vxGaussianPyramidNode(graph, input_image, pyr), VX_TYPE_NODE);
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                ASSERT_VX_OBJECT(input_image[i] = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
 
-        if (border.mode != VX_BORDER_UNDEFINED)
-            VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+                levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
 
-        ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
+                ASSERT_VX_OBJECT(pyr[i] = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+                ASSERT_VX_OBJECT(node[i] = vxGaussianPyramidNode(graph, input_image[i], pyr[i]), VX_TYPE_NODE);
+
+                if (border.mode != VX_BORDER_UNDEFINED)
+                    VX_CALL(vxSetNodeAttribute(node[i], VX_NODE_BORDER, &border, sizeof(border)));
+
+                if (i==0)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string));
+                }
+                else if (i==1)
+                {
+                    VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_2));
+                }
+            }
+        }
 
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
-        #ifdef CHECK_OUTPUT
-        CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, arg_->border));
-        #endif
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                #ifdef CHECK_OUTPUT
+                CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr[i], levels, arg_->scale, arg_->border));
+                #endif
+            }
+        }
 
-        VX_CALL(vxReleaseNode(&node));
+        /* Note: Only running if larger than a certain threshold so that
+         * framework overhead doesn't become a factor */
+        if (arg_->width > 256)
+        {
+            if ((NULL != arg_->target_string) &&
+                (NULL != arg_->target_string_2) )
+            {
+                vx_perf_t perf_node[TEST_NUM_NODE_INSTANCE], perf_graph;
+
+                for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+                {
+                    vxQueryNode(node[i], VX_NODE_PERFORMANCE, &perf_node[i], sizeof(perf_node[i]));
+                }
+                vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+                if (strncmp(arg_->target_string, arg_->target_string_2, TIVX_TARGET_MAX_NAME) == 0)
+                {
+                    #if defined(TEST_MSC_PERFORMANCE_LOGGING)
+                    printf("targets are same\n");
+                    printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                    printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                    printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                    #endif
+                    ASSERT(perf_graph.avg >= (perf_node[0].avg + perf_node[1].avg));
+                }
+                else
+                {
+                    #if defined(TEST_MSC_PERFORMANCE_LOGGING)
+                    printf("targets are different\n");
+                    printf("Graph performance = %4.6f ms\n", perf_graph.avg/1000000.0);
+                    printf("First node performance = %4.6f ms\n", perf_node[0].avg/1000000.0);
+                    printf("Second node performance = %4.6f ms\n", perf_node[1].avg/1000000.0);
+                    #endif
+                    ASSERT(perf_graph.avg < (perf_node[0].avg + perf_node[1].avg));
+                }
+            }
+        }
+
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                VX_CALL(vxReleaseNode(&node[i]));
+                ASSERT(node[i] == 0);
+            }
+        }
+
         VX_CALL(vxReleaseGraph(&graph));
-        ASSERT(node == 0);
         ASSERT(graph == 0);
 
-        VX_CALL(vxReleasePyramid(&pyr));
-        VX_CALL(vxReleaseImage(&input_image));
-        ASSERT(pyr == 0);
-        ASSERT(input_image == 0);
+        for (i = 0; i < TEST_NUM_NODE_INSTANCE; i++)
+        {
+            if ( ((i==0) && (NULL != arg_->target_string)) ||
+                 ((i==1) && (NULL != arg_->target_string_2)) )
+            {
+                VX_CALL(vxReleasePyramid(&pyr[i]));
+                VX_CALL(vxReleaseImage(&input_image[i]));
+                ASSERT(pyr[i] == 0);
+                ASSERT(input_image[i] == 0);
+            }
+        }
 
         tivxHwaUnLoadKernels(context);
     }
