@@ -41,7 +41,7 @@ BUILD_VLAB?=no
 RTOS?=FREERTOS
 
 # SOC selection - supported values: j721e, j721s2, j784s4
-SOC?=replace_me_soc_name
+export SOC?=replace_me_soc_name
 
 ifeq ($(SOC),j721e)
     TARGET_SOC=J7
