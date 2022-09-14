@@ -708,7 +708,15 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
         if (VHWA_M2M_VISS_EE_ON_LUMA12 == vissDrvPrms->edgeEnhancerMode)
         {
             vissCfgRef->fcpCfg[0].eeCfg->bypassY12 = FALSE;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassC12 = TRUE;
             vissCfgRef->fcpCfg[0].eeCfg->eeForY12OrY8 = 0u;
+
+            if ( (FVID2_DF_YUV422I_UYVY == vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_YUV422_12B_IDX].fmt.dataFormat) ||
+                 (FVID2_DF_YUV422I_YUYV == vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_YUV422_12B_IDX].fmt.dataFormat) )
+            {
+                vissCfgRef->fcpCfg[0].eeCfg->alignY12withChroma = TRUE;
+                vissCfgRef->fcpCfg[0].eeCfg->bypassC12 = FALSE;
+            }
         }
         else
         {
@@ -718,9 +726,17 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
         if (VHWA_M2M_VISS_EE_ON_LUMA8 == vissDrvPrms->edgeEnhancerMode)
         {
             vissCfgRef->fcpCfg[0].eeCfg->bypassY8 = FALSE;
+            vissCfgRef->fcpCfg[0].eeCfg->bypassC8 = TRUE;
             vissCfgRef->fcpCfg[0].eeCfg->eeForY12OrY8 = 1u;
             vissCfgRef->fcpCfg[0].eeCfg->leftShift = 2u;
             vissCfgRef->fcpCfg[0].eeCfg->rightShift = 2u;
+
+            if ( (FVID2_DF_YUV422I_UYVY == vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_YUV422_8B_IDX].fmt.dataFormat) ||
+                 (FVID2_DF_YUV422I_YUYV == vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_YUV422_8B_IDX].fmt.dataFormat) )
+            {
+                vissCfgRef->fcpCfg[0].eeCfg->alignY8withChroma = TRUE;
+                vissCfgRef->fcpCfg[0].eeCfg->bypassC8 = FALSE;
+            }
         }
         else
         {
