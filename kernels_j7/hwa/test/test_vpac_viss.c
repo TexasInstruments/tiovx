@@ -344,6 +344,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_640x480, ADD_EXP3, ADD_LINE_TRUE, ARG), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_2048x1024, ADD_EXP1, ARG)*/
 
+/* Test case for TIOVX-1236 */
 TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     PARAMETERS
 )
@@ -393,7 +394,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_YUYV), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
@@ -408,24 +409,24 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.fcp[0].ee_mode = TIVX_VPAC_VISS_EE_MODE_Y8;
-        params.fcp[0].mux_output0 = TIVX_VPAC_VISS_MUX0_Y12;
-        params.fcp[0].mux_output1 = TIVX_VPAC_VISS_MUX1_UV12;
-        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_Y8;
-        params.fcp[0].mux_output3 = TIVX_VPAC_VISS_MUX3_UV8;
-        params.fcp[0].mux_output4 = TIVX_VPAC_VISS_MUX4_SAT;
-        params.h3a_aewb_af_mode = TIVX_VPAC_VISS_H3A_MODE_AEWB;
-        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_420;
-        params.bypass_glbce = 0;
-        params.bypass_nsf4 = 0;
+        params.fcp[0].mux_output0 = 0;
+        params.fcp[0].mux_output1 = 0;
+        params.fcp[0].mux_output2 = TIVX_VPAC_VISS_MUX2_YUV422;
+        params.fcp[0].mux_output3 = 0;
+        params.fcp[0].mux_output4 = 3;
+        params.h3a_aewb_af_mode = 0;
+        params.fcp[0].chroma_mode = TIVX_VPAC_VISS_CHROMA_MODE_422;
+        params.bypass_glbce = 1;
+        params.bypass_nsf4 = 1;
 
         VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
-                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram, NULL, NULL), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, NULL, NULL,
+                                                raw, NULL, NULL, y8_r8_c2, NULL, NULL,
+                                                h3a_aew_af, NULL, NULL, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, arg_->target_string));
 
@@ -2780,6 +2781,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
+               testGraphProcessing,
                testGraphProcessingFile,
                testGraphProcessingRaw,
                testGraphProcessingFileDcc,
