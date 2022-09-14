@@ -109,13 +109,11 @@ extern "C" {
 
 /*! \brief Macro to specify default alignment to use for stride in Y-direction
  *
- *         Video codecs require 64 byte alignment
- *
- *         Remaining HWA nodes require 16 byte alignment
+ *         HWA nodes require 16 byte alignment
  *
  * \ingroup group_vx_utils
  */
-#define TIVX_DEFAULT_STRIDE_Y_ALIGN   (64U)
+#define TIVX_DEFAULT_STRIDE_Y_ALIGN   (16U)
 
 /*! \brief Used to determine if a type is a scalar.
  * \ingroup group_vx_utils
