@@ -21,6 +21,7 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_config.h>
 
 #include "test_engine/test.h"
 
@@ -278,7 +279,6 @@ TEST(tivxArray, negativeTestCopyArrayRange)
 TEST(tivxArray, negativeTestMapUnmapArrayRange)
 {
     #define KA 2
-    #define TIVX_ARRAY_MAX_MAPS (16u) /* defined in TI/tivx_config.h */
 
     vx_context context = context_->vx_context_;
 

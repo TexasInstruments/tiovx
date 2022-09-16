@@ -20,6 +20,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_config.h>
 
 TESTCASE(tivxGraph, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -1739,8 +1740,6 @@ TEST(tivxGraph, negativeTestGetGraphParameterByIndex)
 
 TEST(tivxGraph, negativeTestSetGraphParameterByIndex)
 {
-    #define TIVX_GRAPH_MAX_PARAMS (16u) /* defined in TI/tivx_config.h */
-
     vx_context context = context_->vx_context_;
 
     vx_graph graph = NULL;

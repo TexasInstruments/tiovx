@@ -21,6 +21,7 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_config.h>
 
 #include "test_engine/test.h"
 
@@ -36,8 +37,8 @@ TEST(tivxDelay, negativeTestCreateDelay)
     vx_size count = 0;
 
     EXPECT_VX_ERROR(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_ERROR_INVALID_REFERENCE);
-    count = 9;
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    count = TIVX_DELAY_MAX_OBJECT + 1;
     EXPECT_VX_ERROR(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_ERROR_NO_RESOURCES);
     VX_CALL(vxReleaseScalar(&scalar));
 }

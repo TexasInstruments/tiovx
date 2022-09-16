@@ -26,6 +26,7 @@
 #include <TI/tivx_capture.h>
 
 TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxGraphPipelineLdra,  CT_VXContext, ct_setup_vx_context, 0)
 
 #define LOG_RT_TRACE_ENABLE       (0u)
 
@@ -6475,7 +6476,7 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-TEST(tivxGraphPipeline, negativeTestSetGraphScheduleConfig)
+TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
     vx_context context = context_->vx_context_;
 
@@ -6500,7 +6501,7 @@ TEST(tivxGraphPipeline, negativeTestSetGraphScheduleConfig)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-TEST(tivxGraphPipeline, negativeTestGraphParameterCheckDoneRef)
+TEST(tivxGraphPipelineLdra, negativeTestGraphParameterCheckDoneRef)
 {
     vx_context context = context_->vx_context_;
 
@@ -6511,7 +6512,7 @@ TEST(tivxGraphPipeline, negativeTestGraphParameterCheckDoneRef)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGraphParameterCheckDoneRef(graph, graph_parameter_index, num_refs));
 }
 
-TEST(tivxGraphPipeline, negativeTestGraphParameterDequeueDoneRef)
+TEST(tivxGraphPipelineLdra, negativeTestGraphParameterDequeueDoneRef)
 {
     vx_context context = context_->vx_context_;
 
@@ -6563,10 +6564,12 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testGraphPipelineErrorDetection,
     testBufferDepthDetection1,
     testBufferDepthDetection2
-/*
+)
+
+TESTCASE_TESTS(
+    tivxGraphPipelineLdra,
     negativeTestSetGraphScheduleConfig,
     negativeTestGraphParameterCheckDoneRef,
     negativeTestGraphParameterDequeueDoneRef
-*/
 )
 
