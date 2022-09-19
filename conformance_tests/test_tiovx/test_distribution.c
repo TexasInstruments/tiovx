@@ -73,11 +73,11 @@ TEST(tivxDistribution, negativeTestMapDistribution)
 
     vx_distribution dist = NULL;
     vx_map_id mapid;
-    int32_t udata[256];
+    int32_t* udata = NULL;
     vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
     vx_bitfield bfield = 0;
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapDistribution(dist, &mapid, &udata, usage, user_mem_type, bfield));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapDistribution(dist, &mapid, (void*)&udata, usage, user_mem_type, bfield));
 }
 
 TEST(tivxDistribution, negativeTestUnmapDistribution)
@@ -85,7 +85,7 @@ TEST(tivxDistribution, negativeTestUnmapDistribution)
     vx_context context = context_->vx_context_;
 
     vx_distribution dist = NULL;
-    vx_map_id mapid;
+    vx_map_id mapid = 0;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapDistribution(dist, mapid));
 }

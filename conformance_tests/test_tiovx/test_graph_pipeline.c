@@ -6481,9 +6481,9 @@ TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
     vx_context context = context_->vx_context_;
 
     vx_graph graph = NULL;
-    vx_enum graph_schedule_mode;
-    vx_uint32 graph_parameters_list_size;
-    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_enum graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO;
+    vx_uint32 graph_parameters_list_size = 2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2] = {0};
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
 

@@ -1735,7 +1735,7 @@ TEST(tivxGraph, negativeTestGetGraphParameterByIndex)
     vx_graph graph = NULL;
     vx_uint32 index = 1;
 
-    ASSERT_EQ_VX_STATUS(NULL, vxGetGraphParameterByIndex(graph, index));
+    ASSERT(NULL==vxGetGraphParameterByIndex(graph, index));
 }
 
 TEST(tivxGraph, negativeTestSetGraphParameterByIndex)
