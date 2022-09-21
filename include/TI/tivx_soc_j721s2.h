@@ -284,6 +284,11 @@ extern "C" {
  */
 #define TIVX_TARGET_CSITX     "CSITX"
 
+/*! \brief Target name for CSITX2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CSITX2     "CSITX2"
+
 /*! \brief Target name for Display M2M Node Instance 1
  * \ingroup group_tivx_ext_targets
  */

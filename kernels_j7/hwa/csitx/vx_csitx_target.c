@@ -133,7 +133,17 @@ struct tivxCsitxParams_t
     /**< pending frame queue mem */
 };
 
-static tivx_target_kernel vx_csitx_target_kernel = NULL;
+static char target_name[][TIVX_TARGET_MAX_NAME] =
+{
+    TIVX_TARGET_CSITX,
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+    TIVX_TARGET_CSITX2,
+#endif
+};
+
+#define CSITX_NUM_TARGETS                             (sizeof(target_name)/sizeof(target_name[0]))
+
+static tivx_target_kernel vx_csitx_target_kernel[CSITX_NUM_TARGETS] = {NULL};
 
 static vx_status csitxDrvCallback(Fvid2_Handle handle, void *appData, void *reserved);
 static uint32_t tivxCsitxExtractOutCsiDataType(uint32_t format);
@@ -1224,23 +1234,24 @@ static vx_status VX_CALLBACK tivxCsitxControl(
 
 void tivxAddTargetKernelCsitx(void)
 {
-    char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
+    vx_uint32 i = 0;
 
     self_cpu = tivxGetSelfCpuId();
 
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
     {
-        strncpy(target_name, TIVX_TARGET_CSITX, TIVX_TARGET_MAX_NAME);
-
-        vx_csitx_target_kernel = tivxAddTargetKernelByName(
-                            TIVX_KERNEL_CSITX_NAME,
-                            target_name,
-                            tivxCsitxProcess,
-                            tivxCsitxCreate,
-                            tivxCsitxDelete,
-                            tivxCsitxControl,
-                            NULL);
+        for (i = 0; i < CSITX_NUM_TARGETS; i++)
+        {
+            vx_csitx_target_kernel[i] = tivxAddTargetKernelByName(
+                                TIVX_KERNEL_CSITX_NAME,
+                                target_name[i],
+                                tivxCsitxProcess,
+                                tivxCsitxCreate,
+                                tivxCsitxDelete,
+                                tivxCsitxControl,
+                                NULL);
+        }
     }
 }
 
@@ -1248,10 +1259,15 @@ void tivxRemoveTargetKernelCsitx(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    status = tivxRemoveTargetKernel(vx_csitx_target_kernel);
-    if ((vx_status)VX_SUCCESS == status)
+    vx_uint32 i = 0;
+
+    for (i = 0; i < CSITX_NUM_TARGETS; i++)
     {
-        vx_csitx_target_kernel = NULL;
+        status = tivxRemoveTargetKernel(vx_csitx_target_kernel[i]);
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            vx_csitx_target_kernel[i] = NULL;
+        }
     }
 }
 

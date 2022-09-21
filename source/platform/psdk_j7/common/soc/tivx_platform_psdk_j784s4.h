@@ -26,7 +26,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (77u)
+#define TIVX_PLATFORM_MAX_TARGETS            (78u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -254,6 +254,9 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for Display M2M4 */
     TIVX_TARGET_ID_DISPLAY_M2M4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 24u),
 
+    /*! \brief target ID for CSITX2 */
+    TIVX_TARGET_ID_CSITX2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_0, 25u),
+
     /*! \brief target ID for MCU2-1 */
     TIVX_TARGET_ID_MCU2_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU2_1, 0u),
 
@@ -289,7 +292,6 @@ typedef enum _tivx_target_id_e {
 
     /*! \brief target ID for VPAC2 VISS1 */
     TIVX_TARGET_ID_VPAC2_VISS1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU4_0, 5u),
-
 
     /*! \brief target ID for MCU4_1 */
     TIVX_TARGET_ID_MCU4_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_MCU4_1, 0u),
@@ -347,6 +349,7 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DISPLAY_M2M2, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2},                   \
     {TIVX_TARGET_DISPLAY_M2M3, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3},                   \
     {TIVX_TARGET_DISPLAY_M2M4, (vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4},                   \
+    {TIVX_TARGET_CSITX2, (vx_enum)TIVX_TARGET_ID_CSITX2},                               \
     {TIVX_TARGET_IPU1_1, (vx_enum)TIVX_TARGET_ID_IPU1_1},                               \
     {TIVX_TARGET_MCU2_1, (vx_enum)TIVX_TARGET_ID_MCU2_1},                               \
     {TIVX_TARGET_DMPAC_SDE, (vx_enum)TIVX_TARGET_ID_DMPAC_SDE},                         \

@@ -80,11 +80,11 @@ extern "C" {
  * \ingroup group_tivx_platform
  */
 #if defined (SOC_J784S4)
-#define TIVX_PLATFORM_MAX_TARGETS            (74u)
+#define TIVX_PLATFORM_MAX_TARGETS            (75u)
 #elif defined (SOC_J721E)
-#define TIVX_PLATFORM_MAX_TARGETS            (43u)
+#define TIVX_PLATFORM_MAX_TARGETS            (44u)
 #elif defined (SOC_J721S2)
-#define TIVX_PLATFORM_MAX_TARGETS            (42u)
+#define TIVX_PLATFORM_MAX_TARGETS            (43u)
 #elif defined (SOC_J6)
 #define TIVX_PLATFORM_MAX_TARGETS            (11u)
 #elif defined (SOC_AM62A)
@@ -173,6 +173,7 @@ extern "C" {
     {TIVX_TARGET_DISPLAY_M2M3, 39},                           \
     {TIVX_TARGET_DISPLAY_M2M4, 40},                           \
     {TIVX_TARGET_CSITX, 41},                                  \
+    {TIVX_TARGET_CSITX2, 42},                                  \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \
@@ -229,6 +230,7 @@ extern "C" {
     {TIVX_TARGET_DISPLAY_M2M3, 38},                          \
     {TIVX_TARGET_DISPLAY_M2M4, 39},                          \
     {TIVX_TARGET_CSITX, 40},                                 \
+    {TIVX_TARGET_CSITX2, 41},                                \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \
@@ -317,6 +319,7 @@ extern "C" {
     {TIVX_TARGET_DISPLAY_M2M3, 70},                          \
     {TIVX_TARGET_DISPLAY_M2M4, 71},                          \
     {TIVX_TARGET_CSITX, 72},                                 \
+    {TIVX_TARGET_CSITX2, 73},                                 \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \

@@ -262,6 +262,9 @@ vx_status tivxAddKernelCsitx(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_CSITX);
+            #if defined(SOC_J721S2) || defined(SOC_J784S4)
+            tivxAddKernelTarget(kernel, TIVX_TARGET_CSITX2);
+            #endif
         }
         if (status == (vx_status)VX_SUCCESS)
         {
