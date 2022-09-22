@@ -198,6 +198,9 @@ struct tivxCaptureParams_t
     uint8_t enableErrorFrameTimeout;
     /**< Flag indicating if error frame has been sent and can use error timeout
      *   Error timeout is only used if this error frame is sent */
+
+    /* Make frame list instance specific */
+    Fvid2_FrameList frmList;
 };
 
 static tivx_target_kernel vx_capture_target_kernel[CAPTURE_NUM_TARGETS] = {NULL};
@@ -324,12 +327,13 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     void *output_image_target_ptr;
     uint64_t captured_frame;
     uint32_t chId = 0U;
-    static Fvid2_FrameList frmList;
+    Fvid2_FrameList *frmList;
     Fvid2_Frame *fvid2Frame;
     uint32_t startChIdx, endChIdx, instIdx;
     tivxCaptureInstParams *instParams;
     uint16_t obj_desc_id;
 
+    frmList = &prms->frmList;
     tivxGetObjDescList(output_desc->obj_desc_id, (tivx_obj_desc_t **)prms->img_obj_desc,
                        prms->numCh);
 
@@ -340,7 +344,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     {
         instParams = &prms->instParams[instIdx];
         tivxCaptureGetChannelIndices(prms, instIdx, &startChIdx, &endChIdx);
-        frmList.numFrames = 0;
+        frmList->numFrames = 0;
 
         for (chId = startChIdx ; chId < endChIdx ; chId++)
         {
@@ -382,11 +386,11 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
                     uint32_t obj_desc_id_u32 = (uint32_t)obj_desc_id;
 
                     /* Put into frame list as it is for same driver instance */
-                    frmList.frames[frmList.numFrames]           = fvid2Frame;
-                    frmList.frames[frmList.numFrames]->chNum    = (chId - startChIdx);
-                    frmList.frames[frmList.numFrames]->addr[0U] = captured_frame;
-                    frmList.frames[frmList.numFrames]->appData  = (void *)obj_desc_id_u32;
-                    frmList.numFrames++;
+                    frmList->frames[frmList->numFrames]           = fvid2Frame;
+                    frmList->frames[frmList->numFrames]->chNum    = (chId - startChIdx);
+                    frmList->frames[frmList->numFrames]->addr[0U] = captured_frame;
+                    frmList->frames[frmList->numFrames]->appData  = (void *)obj_desc_id_u32;
+                    frmList->numFrames++;
                 }
                 else
                 {
@@ -400,9 +404,9 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
         }
 
         /* Only call Fvid2_queue if there are valid frames to enqueue */
-        if (frmList.numFrames > 0U)
+        if (frmList->numFrames > 0U)
         {
-            fvid2_status = Fvid2_queue(instParams->drvHandle, &frmList, 0);
+            fvid2_status = Fvid2_queue(instParams->drvHandle, frmList, 0);
             if (FVID2_SOK != fvid2_status)
             {
                 status = (vx_status)VX_FAILURE;
@@ -851,21 +855,24 @@ static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
     Fvid2_Frame *fvid2Frame;
     vx_uint32 frmIdx = 0U, chId = 0U;
     int32_t fvid2_status = FVID2_SOK;
-    static Fvid2_FrameList frmList;
+    Fvid2_FrameList *frmList;
 
+    frmList = &prms->frmList;
     for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
     {
         instParams = &prms->instParams[instIdx];
+
+        frmList->numFrames = 0;
         fvid2_status = Fvid2_dequeue(instParams->drvHandle,
-                                     &frmList,
+                                     frmList,
                                      0,
                                      FVID2_TIMEOUT_NONE);
 
         if(FVID2_SOK == fvid2_status)
         {
-            for(frmIdx=0; frmIdx < frmList.numFrames; frmIdx++)
+            for(frmIdx=0; frmIdx < frmList->numFrames; frmIdx++)
             {
-                fvid2Frame = frmList.frames[frmIdx];
+                fvid2Frame = frmList->frames[frmIdx];
                 chId = tivxCaptureGetNodeChannelNum(
                                     prms,
                                     instIdx,
@@ -1440,7 +1447,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
     vx_status status = (vx_status)VX_SUCCESS;
     int32_t fvid2_status = FVID2_SOK;
     tivxCaptureParams *prms = NULL;
-    static Fvid2_FrameList frmList;
+    Fvid2_FrameList *frmList;
     uint32_t size, chId, bufId, instIdx;
     tivxCaptureInstParams *instParams;
 
@@ -1468,6 +1475,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
 
         if ((vx_status)VX_SUCCESS == status)
         {
+            frmList = &prms->frmList;
             for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
             {
                 instParams = &prms->instParams[instIdx];
@@ -1486,12 +1494,12 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 /* Dequeue all the request from the driver */
                 if ((vx_status)VX_SUCCESS == status)
                 {
-                    Fvid2FrameList_init(&frmList);
+                    Fvid2FrameList_init(frmList);
                     do
                     {
                         fvid2_status = Fvid2_dequeue(
                             instParams->drvHandle,
-                            &frmList,
+                            frmList,
                             0,
                             FVID2_TIMEOUT_NONE);
                     } while (FVID2_SOK == fvid2_status);
