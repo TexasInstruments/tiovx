@@ -69,7 +69,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
         tskHndl = (void*)TaskP_create(
-                            tivxTaskDefHandle,
+                            &tivxTaskDefHandle,
                             &rtos_task_prms);
 
         if (NULL == tskHndl)
