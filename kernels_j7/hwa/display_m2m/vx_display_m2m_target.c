@@ -920,6 +920,10 @@ static vx_status tivxDisplayM2MDrvCfg(tivxDisplayM2MDrvObj *drvObj)
                                           IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS,
                                           &drvObj->mFlagCfg[loopCnt],
                                           NULL);
+            fvid2_status += Fvid2_control(drvObj->drvHandle,
+                                          IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF,
+                                          &drvObj->cscCfg[loopCnt],
+                                          NULL);
             if (FVID2_SOK != fvid2_status)
             {
                 VX_PRINT(VX_ZONE_ERROR, ": Display M2M DISP IOCTL Failed!!!\r\n");
