@@ -13,7 +13,7 @@
 #if defined(SOC_J721E) || defined(SOC_J721S2)
 #define TIVX_TARGET_MCU2_MAX            (24U)
 #elif defined(SOC_J784S4)
-#define TIVX_TARGET_MCU2_MAX            (34U)
+#define TIVX_TARGET_MCU2_MAX            (26U)
 #elif defined(SOC_AM62A)
 #define TIVX_TARGET_MCU1_MAX            (5U)
 #endif
@@ -96,43 +96,46 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_LDC1, 2, "TIVX_VPAC_LDC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC1, 3, "TIVX_VPAC_MSC1", 8u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_MSC2, 4, "TIVX_VPAC_MSC2", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_SDE, 5, "TIVX_SDE", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_DOF, 6, "TIVX_DOF", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 7, "TIVX_VPAC_VISS1", 13u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1, 8, "TIVX_CAPT1", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2, 9, "TIVX_CAPT2", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY1, 10, "TIVX_DISP1", 14u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY2, 11, "TIVX_DISP2", 14u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CSITX, 12, "TIVX_CSITX", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3, 13, "TIVX_CAPT3", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4, 14, "TIVX_CAPT4", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE5, 15, "TIVX_CAPT5", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6, 16, "TIVX_CAPT6", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7, 17, "TIVX_CAPT7", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8, 18, "TIVX_CAPT8", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M1, 19, "TIVX_DISP_M2M1", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2, 20, "TIVX_DISP_M2M2", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3, 21, "TIVX_DISP_M2M3", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4, 22, "TIVX_DISP_M2M4", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC_VISS1, 5, "TIVX_VPAC_VISS1", 13u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1, 6, "TIVX_CAPT1", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2, 7, "TIVX_CAPT2", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY1, 8, "TIVX_DISP1", 14u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY2, 9, "TIVX_DISP2", 14u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CSITX, 10, "TIVX_CSITX", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3, 11, "TIVX_CAPT3", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4, 12, "TIVX_CAPT4", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE5, 13, "TIVX_CAPT5", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE6, 14, "TIVX_CAPT6", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE7, 15, "TIVX_CAPT7", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE8, 16, "TIVX_CAPT8", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M1, 17, "TIVX_DISP_M2M1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M2, 18, "TIVX_DISP_M2M2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M3, 19, "TIVX_DISP_M2M3", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DISPLAY_M2M4, 20, "TIVX_DISP_M2M4", 8u);
+
+    #if defined(SOC_J784S4)
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE9, 21, "TIVX_CAPT9", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE10, 22, "TIVX_CAPT10", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE11, 23, "TIVX_CAPT11", 15u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE12, 24, "TIVX_CAPT12", 15u);
+    #endif
 
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU2_1, 0, "TIVX_CPU_1", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_SDE, 1, "TIVX_SDE", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_DMPAC_DOF, 2, "TIVX_DOF", 8u);
 
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_0, 0, "TIVX_MCU3_0", 4u);
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU3_1, 1, "TIVX_MCU3_1", 4u);
 
     #if defined(SOC_J784S4)
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_NF, 23, "TIVX_VPAC2_NF", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_LDC1, 24, "TIVX_VPAC2_LDC1", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC1, 25, "TIVX_VPAC2_MSC1", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC2, 26, "TIVX_VPAC2_MSC2", 8u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_VISS1, 27, "TIVX_VPAC2_VISS1", 13u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE9, 28, "TIVX_CAPT9", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE10, 29, "TIVX_CAPT10", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE11, 30, "TIVX_CAPT11", 15u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE12, 31, "TIVX_CAPT12", 15u);
-
     tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_0, 0, "TIVX_MCU4_0", 4u);
-    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_1, 1, "TIVX_MCU4_1", 4u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_NF, 1, "TIVX_VPAC2_NF", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_LDC1, 2, "TIVX_VPAC2_LDC1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC1, 3, "TIVX_VPAC2_MSC1", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_MSC2, 4, "TIVX_VPAC2_MSC2", 8u);
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_VPAC2_VISS1, 5, "TIVX_VPAC2_VISS1", 13u);
+
+    tivxPlatformCreateTargetId((vx_enum)TIVX_TARGET_ID_MCU4_1, 0, "TIVX_MCU4_1", 4u);
     #endif
     #endif
 }
