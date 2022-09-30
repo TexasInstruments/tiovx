@@ -46,7 +46,7 @@ ifeq ($(BUILD_VPAC3),yes)
     STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3
 else ifeq ($(BUILD_VPAC3L), yes)
     STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3 pcid
-else
+else ifeq ($(BUILD_VPAC1), yes)
     STATIC_LIBS += flexcfa
 endif
 

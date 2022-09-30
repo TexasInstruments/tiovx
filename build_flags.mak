@@ -45,24 +45,28 @@ export SOC?=replace_me_soc_name
 
 ifeq ($(SOC),j721e)
     TARGET_SOC=J7
+    BUILD_VPAC1=yes
     BUILD_VPAC3=no
     BUILD_VPAC3L=no
     C7X_TARGET=C71
     C7X_VERSION=C7100
 else ifeq ($(SOC),j721s2)
     TARGET_SOC=J721S2
+    BUILD_VPAC1=no
     BUILD_VPAC3=yes
     BUILD_VPAC3L=no
     C7X_TARGET=C7120
     C7X_VERSION=C7120
 else ifeq ($(SOC),j784s4)
     TARGET_SOC=J784S4
+    BUILD_VPAC1=no
     BUILD_VPAC3=yes
     BUILD_VPAC3L=no
     C7X_TARGET=C7120
     C7X_VERSION=C7120
 else ifeq ($(SOC),am62a)
     TARGET_SOC=AM62A
+    BUILD_VPAC1=no
     BUILD_VPAC3=no
     BUILD_VPAC3L=yes
     C7X_TARGET=C7504
