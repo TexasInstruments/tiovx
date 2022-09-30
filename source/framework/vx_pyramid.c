@@ -177,24 +177,50 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 {
     vx_image img = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) ==
-            (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
-        (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
-            num_levels))
+    if ((prmd == NULL) ||
+        (ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
+        )
     {
-        img = prmd->img[index];
-
-        /* Should increment the reference count,
-           To release this image, app should explicitely call ReleaseImage */
-        ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
-
-        /* setting is_array_element flag */
-        img->base.is_array_element = (vx_bool)vx_true_e;
+        vx_context context = ownGetContext();
+        if (ownIsValidContext(context) == (vx_bool)vx_true_e)
+        {
+            vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                "Invalid pyramid reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid pyramid reference\n");
+            img = (vx_image)ownGetErrorObject(
+                context, (vx_status)VX_ERROR_NO_RESOURCES);
+            VX_PRINT(VX_ZONE_ERROR, "Invalid pyramid reference\n");
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Invalid pyramid reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Context has not yet been created, returning NULL for vx_reference\n");
+        }
     }
     else
     {
-        img = (vx_image)ownGetErrorObject(prmd->base.context,
-            (vx_status)VX_ERROR_INVALID_PARAMETERS);
+        if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) ==
+                (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
+            (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
+                num_levels))
+        {
+            img = prmd->img[index];
+
+            /* Should increment the reference count,
+               To release this image, app should explicitely call ReleaseImage */
+            ownIncrementReference(&img->base, (vx_enum)VX_EXTERNAL);
+
+            /* setting is_array_element flag */
+            img->base.is_array_element = (vx_bool)vx_true_e;
+        }
+        else
+        {
+            vxAddLogEntry(&prmd->base.context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                "Invalid pyramid reference\n");
+            img = (vx_image)ownGetErrorObject(prmd->base.context,
+                (vx_status)VX_ERROR_INVALID_PARAMETERS);
+            VX_PRINT(VX_ZONE_ERROR, "Invalid pyramid reference\n");
+        }
     }
 
     return (img);

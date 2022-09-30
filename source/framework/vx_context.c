@@ -990,6 +990,19 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
     return context;
 }
 
+vx_context ownGetContext(void)
+{
+    vx_context context = NULL;
+
+    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+
+    context = g_context_handle;
+
+    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+
+    return context;
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 {
     vx_status status = (vx_status)VX_SUCCESS;

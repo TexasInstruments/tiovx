@@ -201,25 +201,51 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     vx_object_array objarr, vx_uint32 index)
 {
     vx_reference ref = NULL;
-    tivx_obj_desc_object_array_t *obj_desc =
-        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-    if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
-            (vx_bool)vx_true_e) && (obj_desc != NULL) &&
-        (index < obj_desc->num_items) &&
-        (objarr->base.is_virtual == (vx_bool)vx_false_e))
+    if ((objarr == NULL) ||
+        (ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+        )
     {
-        ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
-
-        if (NULL != ref)
+        vx_context context = ownGetContext();
+        if (ownIsValidContext(context) == (vx_bool)vx_true_e)
         {
-            ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
-            /* set is_array_element flag */
-            ref->is_array_element = (vx_bool)vx_true_e;
+            vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                "Invalid object array referenceCould not allocate objarr object descriptor\n");
+            VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+            ref = ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+            VX_PRINT(VX_ZONE_ERROR, "Invalid object array reference\n");
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "Object array item is invalid\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid object array reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Context has not yet been created, returning NULL for vx_reference\n");
+        }
+    }
+    else
+    {
+        tivx_obj_desc_object_array_t *obj_desc =
+            (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
+
+        if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
+                (vx_bool)vx_true_e) && (obj_desc != NULL) &&
+            (index < obj_desc->num_items) &&
+            (objarr->base.is_virtual == (vx_bool)vx_false_e))
+        {
+            ref = ownReferenceGetHandleFromObjDescId(obj_desc->obj_desc_id[index]);
+
+            if (NULL != ref)
+            {
+                ownIncrementReference(ref, (vx_enum)VX_EXTERNAL);
+                /* set is_array_element flag */
+                ref->is_array_element = (vx_bool)vx_true_e;
+            }
+            else
+            {
+                vxAddLogEntry(&objarr->base.context->base, (vx_status)VX_ERROR_NO_RESOURCES,
+                    "Object array item is invalid\n");
+                ref = ownGetErrorObject(objarr->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
+                VX_PRINT(VX_ZONE_ERROR, "Object array item is invalid\n");
+            }
         }
     }
 

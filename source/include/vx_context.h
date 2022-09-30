@@ -293,6 +293,17 @@ vx_status ownContextLock(vx_context context);
  */
 vx_status ownContextUnlock(vx_context context);
 
+/*! \brief Returns the vx_context object currently being used.
+ * \details This API returns the context being used.  If the context has not
+ *          yet been created using \ref vxCreateContext, then it returns NULL.
+ *          This API does not include reference counting like in the
+ *          \ref vxCreateContext.
+ *
+ * \return The <tt>\ref vx_context</tt> object being used.
+ *
+ *  * \ingroup group_vx_context
+ */
+vx_context ownGetContext(void);
 
 #ifdef __cplusplus
 }
