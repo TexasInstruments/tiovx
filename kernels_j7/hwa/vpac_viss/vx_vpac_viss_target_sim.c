@@ -1964,7 +1964,8 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
                 prms->out_0_16 = prms->fcp[k].out_y8_r8_c2_16;
                 prms->out_0_align = prms->fcp[k].out_y8_r8_c2_bit_align;
 
-                if (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2)  /* NV12 Format */
+                if ((TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2) ||    /* NV12 Format */
+                    (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->fcp[k].mux_output2) )   /* YUV422 Format */
                 {
                     prms->out_1_16 = prms->fcp[k].out_uv8_g8_c3_16; /* uv8 */
                 }
@@ -2007,7 +2008,8 @@ static vx_status tivxVpacVissConfigSimDataPath(tivxVpacVissParams *prms, tivx_vp
                 prms->out_2_16 = prms->fcp[k].out_y8_r8_c2_16;
                 prms->out_2_align = prms->fcp[k].out_y8_r8_c2_bit_align;
 
-                if (TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2)  /* NV12 Format */
+                if ((TIVX_VPAC_VISS_MUX2_NV12 == vissPrms->fcp[k].mux_output2) ||    /* NV12 Format */
+                    (TIVX_VPAC_VISS_MUX2_YUV422 == vissPrms->fcp[k].mux_output2) )   /* YUV422 Format */
                 {
                     prms->out_3_16 = prms->fcp[k].out_uv8_g8_c3_16; /* uv8 */
                 }
