@@ -2781,7 +2781,12 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
+/* Per comments in PC sim file, the EE modes are not
+   supported in PC emulation mode, thus disabling for
+   PC */
+#ifndef x86_64
                testGraphProcessing,
+#endif
                testGraphProcessingFile,
                testGraphProcessingRaw,
                testGraphProcessingFileDcc,
