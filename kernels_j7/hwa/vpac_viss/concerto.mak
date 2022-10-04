@@ -30,14 +30,6 @@ ifeq ($(TARGET_OS),SYSBIOS)
   IDIRS       += $(BIOS_PATH)/packages
 endif
 
-ifeq ($(TARGET_PLATFORM),J721S2)
-DEFS        += SOC_J721S2
-endif
-
-ifeq ($(TARGET_PLATFORM),J784S4)
-DEFS        += SOC_J784S4
-endif
-
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include
