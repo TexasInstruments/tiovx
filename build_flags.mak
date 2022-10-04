@@ -71,6 +71,7 @@ else ifeq ($(SOC),am62a)
     BUILD_VPAC3L=yes
     C7X_TARGET=C7504
     C7X_VERSION=C7504
+    BUILD_EMULATION_MODE=no
 else
     $(error SOC env variable should be set to one of (j721e, j721s2, j784s4, am62a))
 endif
