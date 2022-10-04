@@ -30,18 +30,6 @@ ifeq ($(TARGET_OS),SYSBIOS)
   IDIRS       += $(BIOS_PATH)/packages
 endif
 
-ifeq ($(BUILD_VPAC1),yes)
-DEFS += VPAC1
-endif
-
-ifeq ($(BUILD_VPAC3),yes)
-DEFS += VPAC3
-endif
-
-ifeq ($(BUILD_VPAC3L),yes)
-DEFS += VPAC3L
-endif
-
 ifeq ($(TARGET_PLATFORM),J721S2)
 DEFS        += SOC_J721S2
 endif

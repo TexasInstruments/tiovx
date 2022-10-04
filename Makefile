@@ -32,6 +32,8 @@ else ifeq ($(SOC),am62a)
     BUILD_DEFS += SOC_AM62A
 endif
 
+BUILD_DEFS += $(VPAC_VERSION)
+
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework

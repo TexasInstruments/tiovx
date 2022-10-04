@@ -42,11 +42,11 @@ STATIC_LIBS += rawfe nsf4 flexcc h3a ee utils glbce
 SYS_SHARED_LIBS += glbce
 endif
 
-ifeq ($(BUILD_VPAC3),yes)
+ifeq ($(VPAC_VERSION), VPAC3)
     STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3
-else ifeq ($(BUILD_VPAC3L), yes)
+else ifeq ($(VPAC_VERSION), VPAC3L)
     STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3 pcid
-else ifeq ($(BUILD_VPAC1), yes)
+else ifeq ($(VPAC_VERSION), VPAC1)
     STATIC_LIBS += flexcfa
 endif
 
