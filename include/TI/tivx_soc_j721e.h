@@ -67,6 +67,10 @@
 #define SOC_J721E
 #endif
 
+#ifndef VPAC1
+#define VPAC1
+#endif
+
 #include <TI/tivx.h>
 #include <TI/j7_kernels.h>
 #include <TI/j7_nodes.h>
