@@ -11,11 +11,11 @@
 #include <tivx_platform_psdk.h>
 
 #if defined(SOC_J721E) || defined(SOC_J721S2)
-#define TIVX_TARGET_MCU2_MAX            (24U)
+#define TIVX_TARGET_R5F_MAX            (24U)
 #elif defined(SOC_J784S4)
-#define TIVX_TARGET_MCU2_MAX            (26U)
+#define TIVX_TARGET_R5F_MAX            (26U)
 #elif defined(SOC_AM62A)
-#define TIVX_TARGET_MCU1_MAX            (5U)
+#define TIVX_TARGET_R5F_MAX            (5U)
 #endif
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
@@ -33,11 +33,7 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id);
  * \brief Target Stack
  *******************************************************************************
  */
-#ifdef SOC_AM62A
-static uint8_t gTarget_tskStack[TIVX_TARGET_MCU1_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
-#else
-static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
-#endif
+static uint8_t gTarget_tskStack[TIVX_TARGET_R5F_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(TIVX_TARGET_DEFAULT_STACK_ALIGNMENT)))
     ;
