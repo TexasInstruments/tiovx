@@ -60,19 +60,20 @@
  *
  */
 
-#if defined(J7) || defined(J721S2) || defined(J784S4) ||defined(PC)
+#if defined(J7) || defined(J721S2) || defined(J784S4) || defined(PC) || defined(AM62A)
 #if defined(BUILD_CT_TIOVX_HWA)
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaVpacLdc)
 TESTCASE(tivxHwaVpacMscGaussianPyramid)
 TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
 TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaVpacMscScaleMultiOutput)
 TESTCASE(tivxHwaVpacMscPyramid)
+TESTCASE(tivxHwaVpacViss)
+#ifndef AM62A
+TESTCASE(tivxHwaVpacNfGeneric)
+TESTCASE(tivxHwaVpacNfBilateral)
+TESTCASE(tivxHwaDmpacDof)
+TESTCASE(tivxHwaDmpacSde)
 #if defined(J7) || defined(J721S2) || defined(J784S4)
 #if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
 TESTCASE(tivxHwaDisplay)
@@ -90,6 +91,8 @@ TESTCASE(tivxHwaCaptureVissDisplay)
 TESTCASE(tivxHwaCaptureVpacDisplay)
 #endif
 #endif
+
+#endif // #ifndef AM62A
 
 #endif
 

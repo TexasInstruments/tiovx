@@ -483,6 +483,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     }
 }
 
+
 TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFile, SetTarget_Arg, SET_NODE_TARGET_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -2516,15 +2517,27 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
                 }
                 else if (2U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    params.fcp[0].mux_output2 = 8;
+                    #else
                     params.fcp[0].mux_output2 = 6;
+                    #endif
                 }
                 else if (3U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    params.fcp[0].mux_output2 = 8;
+                    #else
                     params.fcp[0].mux_output2 = 6;
+                    #endif
                 }
                 else
                 {
+                    #ifdef VPAC3L
+                    params.fcp[0].mux_output2 = 8;
+                    #else
                     params.fcp[0].mux_output2 = 6;
+                    #endif
                 }
                 break;
             }
@@ -2636,15 +2649,27 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
                 }
                 else if (2U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    params.h3a_in = 5;
+                    #else
                     params.h3a_in = 4;
+                    #endif
                 }
                 else if (3U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    params.h3a_in = 5;
+                    #else
                     params.h3a_in = 4;
+                    #endif
                 }
                 else
                 {
+                    #ifdef VPAC3L
+                    params.h3a_in = 5;
+                    #else
                     params.h3a_in = 4;
+                    #endif
                 }
                 break;
             }
@@ -2732,15 +2757,27 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
                 }
                 else if (2U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    ae_awb_params.h3a_source_data = 5;
+                    #else
                     ae_awb_params.h3a_source_data = 4;
+                    #endif
                 }
                 else if (3U == arg_->condition)
                 {
+                    #ifdef VPAC3L
+                    ae_awb_params.h3a_source_data = 5;
+                    #else
                     ae_awb_params.h3a_source_data = 4;
+                    #endif
                 }
                 else
                 {
+                    #ifdef VPAC3L
+                    ae_awb_params.h3a_source_data = 5;
+                    #else
                     ae_awb_params.h3a_source_data = 4;
+                    #endif
                 }
                 break;
             }
