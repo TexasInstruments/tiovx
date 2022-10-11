@@ -116,7 +116,11 @@ extern "C" {
  *
  *  \ingroup group_vision_function_csitx
  */
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+#define TIVX_CSITX_MAX_INST                               (2U)
+#else
 #define TIVX_CSITX_MAX_INST                               (1U)
+#endif
 
 /*! \brief Lane Band Speed: 80 Mbps to 100 Mbps
  *

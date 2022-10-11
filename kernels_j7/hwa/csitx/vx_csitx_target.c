@@ -139,7 +139,8 @@ static vx_status csitxDrvCallback(Fvid2_Handle handle, void *appData, void *rese
 static uint32_t tivxCsitxExtractOutCsiDataType(uint32_t format);
 static uint32_t tivxCsitxExtractCcsFormat(uint32_t format);
 static uint32_t tivxCsitxExtractDataFormat(uint32_t format);
-
+static uint32_t tivxCsitxGetDrvInstIndex(const tivxCsitxParams *prms,
+                                           uint32_t instId);
 static vx_status tivxCsitxEnqueueFrameToDriver(
        tivx_obj_desc_object_array_t *input_desc,
        tivxCsitxParams *prms);
@@ -400,6 +401,11 @@ static uint32_t tivxCsitxMapInstId(uint32_t instId)
         case 0:
             drvInstId = CSITX_INSTANCE_ID_0;
             break;
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+        case 1:
+            drvInstId = CSITX_INSTANCE_ID_1;
+            break;
+#endif
         default:
             /* do nothing */
             break;
@@ -453,7 +459,7 @@ static vx_status tivxCsitxSetCreateParams(
     /* Scan through all the channels provided in the Node instance and prepare CSITX DRV instance data/cfg */
     for (chIdx = 0U ; chIdx < params->numCh ; chIdx++)
     {
-        instId = params->chInstMap[chIdx];
+        instId = tivxCsitxGetDrvInstIndex(prms, params->chInstMap[chIdx]);
         prms->instParams[instId].chVcMap[prms->instParams[instId].numCh] = params->chVcNum[chIdx];
         prms->instParams[instId].numCh++;
     }
@@ -497,6 +503,7 @@ static vx_status tivxCsitxSetCreateParams(
         /* set module configuration parameters */
         createParams->instCfg.rxCompEnable = params->instCfg[instIdx].rxCompEnable;
         createParams->instCfg.rxv1p3MapEnable = params->instCfg[instIdx].rxv1p3MapEnable;
+        createParams->instCfg.dphyCfg.inst = params->instId[instIdx];
         createParams->instCfg.dphyCfg.laneBandSpeed = params->instCfg[instIdx].laneBandSpeed;
         createParams->instCfg.dphyCfg.laneSpeedMbps = params->instCfg[instIdx].laneSpeedMbps;
         createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
@@ -1299,4 +1306,20 @@ static uint32_t tivxCsitxGetNodeChannelNum(tivxCsitxParams *prms,
     return (chIdx);
 }
 
+static uint32_t tivxCsitxGetDrvInstIndex(const tivxCsitxParams *prms,
+                                           uint32_t instId)
+{
+    uint32_t instIdx, instVal;
 
+    instVal = tivxCsitxMapInstId(instId);
+    for (instIdx = 0U ; instIdx < prms->numOfInstUsed ; instIdx++)
+    {
+        if (prms->instParams[instIdx].instId == instVal)
+        {
+            /* Found out the index for required instance */
+            break;
+        }
+    }
+
+    return instIdx;
+}
