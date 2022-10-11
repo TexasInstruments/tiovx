@@ -1964,8 +1964,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
 
                             if(target_id == (vx_enum)TIVX_TARGET_ID_INVALID)
                             {
+                                vx_reference ref;
+
+                                ref = (vx_reference)node;
+
                                 /* use default and return error */
-                                VX_PRINT(VX_ZONE_ERROR, "Target ID is invalid\n");
+                                VX_PRINT(VX_ZONE_ERROR, "Target ID is invalid for node %s\n", ref->name);
                                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                             }
                             else
