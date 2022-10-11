@@ -174,7 +174,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&remap->base, (vx_enum)VX_TYPE_REMAP) == (vx_bool)vx_false_e)
-        &&
+        ||
         (remap->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "Reference is not valid\n");
