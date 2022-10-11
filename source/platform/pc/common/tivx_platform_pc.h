@@ -173,7 +173,6 @@ extern "C" {
     {TIVX_TARGET_DISPLAY_M2M3, 39},                           \
     {TIVX_TARGET_DISPLAY_M2M4, 40},                           \
     {TIVX_TARGET_CSITX, 41},                                  \
-    {TIVX_TARGET_CSITX2, 42},                                  \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \

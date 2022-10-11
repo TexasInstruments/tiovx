@@ -79,6 +79,7 @@
 
 #define NUM_CHANNELS        (4U)
 #define CSITX_INST_ID       (0U)
+#define CSITX2_INST_ID      (1U)
 #define CAPT_INST_ID        (0U)
 
 #define CSITX_LANE_BAND_SPEED       (TIVX_CSITX_LANE_BAND_SPEED_770_TO_870_MBPS)
@@ -91,6 +92,12 @@
 #define CAPTURE2_ENABLE        (0U)
 #define CAPTURE3_ENABLE        (0U)
 #define CAPTURE4_ENABLE        (0U)
+
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+#define CSITX2_ENABLE          (1U)
+#else
+#define CSITX2_ENABLE          (0U)
+#endif
 
 /* Default is RAW image */
 #define CAPTURE_FORMAT         (TIVX_TYPE_RAW_IMAGE)
@@ -122,7 +129,10 @@ static tivx_event  eventHandle_TxStart3;
 static tivx_event  eventHandle_RxFinished3;
 #endif
 #if (CSITX_ENABLE == 1U)
-static tivx_event  eventHandle_TxFinished;
+static tivx_event  eventHandle_TxFinished1;
+#endif
+#if (CSITX2_ENABLE == 1U)
+static tivx_event  eventHandle_TxFinished2;
 #endif
 
 static vx_context context;
@@ -137,6 +147,7 @@ typedef struct {
     uint32_t Width;
     uint32_t Height;
     uint32_t loopCount;
+    uint32_t csitx_inst;
 } Arg;
 
 #define ADD_WIDTH(testArgName, nextmacro, ...) \
@@ -146,9 +157,17 @@ typedef struct {
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
 
-#define PARAMETERS \
-    CT_GENERATE_PARAMETERS("CsitxCsirx", ADD_WIDTH, ADD_HEIGHT, ADD_LOOP_1000 ,ARG), \
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+#define ADD_CSITX_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/csitx_inst=0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/csitx_inst=1", __VA_ARGS__, 1))
+#else
+#define ADD_CSITX_INST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/csitx_inst=0", __VA_ARGS__, 0))
+#endif
 
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("CsitxCsirx", ADD_WIDTH, ADD_HEIGHT, ADD_LOOP_1000, ADD_CSITX_INST, ARG), \
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -730,7 +749,7 @@ static void VX_CALLBACK tivxTask_capture3(void *app_var)
 #endif
 
 #if (CSITX_ENABLE == 1U)
-static void VX_CALLBACK tivxTask_csitx(void *app_var)
+static void VX_CALLBACK tivxTask_csitx1(void *app_var)
 {
     vx_node csitx_node = 0;
 #if (CAPTURE_FORMAT == TIVX_TYPE_RAW_IMAGE)
@@ -872,7 +891,155 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
     VX_CALL(vxReleaseUserDataObject(&csitx_config));
 
     /*Signal the completion of csitx graph processing*/
-    tivxEventPost(eventHandle_TxFinished);
+    tivxEventPost(eventHandle_TxFinished1);
+
+}
+#endif
+
+#if (CSITX2_ENABLE == 1U)
+static void VX_CALLBACK tivxTask_csitx2(void *app_var)
+{
+    vx_node csitx_node = 0;
+#if (CAPTURE_FORMAT == TIVX_TYPE_RAW_IMAGE)
+    tivx_raw_image tx_frame_array_item=0;
+#endif
+    vx_object_array tx_frame = 0;
+    vx_user_data_object csitx_config;
+    tivx_csitx_params_t local_csitx_config;
+    uint32_t buf_id, loop_id, loopCnt;
+    vx_graph_parameter_queue_params_t csitx_graph_parameters_queue_params_list[1];
+    vx_map_id map_id;
+    vx_int32 i,j;
+    vx_imagepatch_addressing_t addr;
+    uint16_t *ptr = NULL;
+    uint16_t frmIdx;
+    uint32_t waitInMs = 5000U;
+
+    /* Pend sync event here,Wait for csirx graph to complete enqueue frames
+    so that Tx task can start graph processing  */
+#if (CAPTURE1_ENABLE == 1U)
+    tivxEventWait(eventHandle_TxStart, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+#endif
+#if (CAPTURE2_ENABLE == 1U)
+    tivxEventWait(eventHandle_TxStart1, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+#endif
+#if (CAPTURE3_ENABLE == 1U)
+    tivxEventWait(eventHandle_TxStart2, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+#endif
+#if (CAPTURE4_ENABLE == 1U)
+    tivxEventWait(eventHandle_TxStart3, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+#endif
+    /* Wait here for some time, this is needed for Capture/CSIRX nodes to get
+       created before CSITX node. This is needed for DPHY hand shake. */
+    tivxTaskWaitMsecs(waitInMs);
+    vx_graph csitx_graph = (vx_graph)app_var;
+
+    /* allocate Input and Output refs*/
+#if (CAPTURE_FORMAT == TIVX_TYPE_RAW_IMAGE)
+    ASSERT_VX_OBJECT(tx_frame = vxCreateObjectArray(context, (vx_reference)raw_image_exemplar, NUM_CHANNELS), VX_TYPE_OBJECT_ARRAY);
+#else
+    ASSERT_VX_OBJECT(tx_frame = vxCreateObjectArray(context, (vx_reference)csitx_image_exemplar, NUM_CHANNELS), VX_TYPE_OBJECT_ARRAY);
+#endif
+
+#if (CAPTURE_FORMAT == TIVX_TYPE_RAW_IMAGE)
+    /* this is currently supported for RAW formats only */
+    /* initialization of frames for each channel with unique pattern
+       it is (channel no. + x) */
+    printf("Initializing Transmit Buffers...\n");
+    for (frmIdx = 0U ; frmIdx < NUM_CHANNELS ; frmIdx++)
+    {
+        ASSERT_VX_OBJECT(tx_frame_array_item = (tivx_raw_image)vxGetObjectArrayItem(tx_frame , frmIdx), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
+        /* Initialize raw_image with running pattern using WRITE ONLY MAP */
+        VX_CALL(tivxMapRawImagePatch(tx_frame_array_item, &rect, 0U, &map_id, &addr, (void **)&ptr,
+                                        VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        ASSERT(ptr != NULL);
+        for (i = 0; i <height; i++)
+        {
+            for(j=0; j<width; j++)
+            {
+                ptr[((i*width)+j)] = (j + frmIdx);
+            }
+        }
+        /* Do cache operations on each buffer to avoid coherency issues */
+        appMemCacheWb(ptr, (width * height * sizeof(uint16_t)));
+        VX_CALL(tivxUnmapRawImagePatch(tx_frame_array_item, map_id));
+        VX_CALL(tivxReleaseRawImage(&tx_frame_array_item));
+    }
+    printf("Initializing Transmit Buffers Done.\n");
+
+#endif
+
+    /* CSITX Config initialization */
+    tivx_csitx_params_init(&local_csitx_config);
+    local_csitx_config.numInst                          = 1U;
+    local_csitx_config.numCh                            = NUM_CHANNELS;
+    local_csitx_config.instId[0U]                       = CSITX2_INST_ID;
+    local_csitx_config.instCfg[0U].rxCompEnable         = (uint32_t)vx_true_e;
+    local_csitx_config.instCfg[0U].rxv1p3MapEnable      = (uint32_t)vx_true_e;
+    local_csitx_config.instCfg[0U].laneBandSpeed        = CSITX_LANE_BAND_SPEED;
+    local_csitx_config.instCfg[0U].laneSpeedMbps        = CSITX_LANE_SPEED_MBPS;
+    local_csitx_config.instCfg[0U].numDataLanes         = 4U;
+    for (loopCnt = 0U ;
+        loopCnt < local_csitx_config.instCfg[0U].numDataLanes ;
+        loopCnt++)
+    {
+        local_csitx_config.instCfg[0U].lanePolarityCtrl[loopCnt] = 0u;
+    }
+    for (loopCnt = 0U; loopCnt < NUM_CHANNELS; loopCnt++)
+    {
+        local_csitx_config.chVcNum[loopCnt]   = loopCnt;
+        local_csitx_config.chInstMap[loopCnt] = CSITX2_INST_ID;
+    }
+
+    ASSERT_VX_OBJECT(csitx_config = vxCreateUserDataObject(context, "tivx_csitx_params_t", sizeof(tivx_csitx_params_t), &local_csitx_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    ASSERT_VX_OBJECT(csitx_node = tivxCsitxNode(csitx_graph, csitx_config, tx_frame), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(csitx_node, VX_TARGET_STRING, TIVX_TARGET_CSITX2));
+
+    /* input @ node index 0, becomes csitx_graph parameter 1 */
+    add_graph_parameter_by_node_index(csitx_graph, csitx_node, 1);
+
+    /* set csitx_graph schedule config such that csitx_graph parameter @ index 0 and 1 are enqueuable */
+    csitx_graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    csitx_graph_parameters_queue_params_list[0].refs_list_size = 1;
+    csitx_graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&tx_frame;
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+    * Graph gets scheduled automatically as refs are enqueued to it
+    */
+    vxSetGraphScheduleConfig(csitx_graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            1,
+            csitx_graph_parameters_queue_params_list
+            );
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(csitx_graph));
+
+    /* Now enqueue a buffer to trigger csitx_graph scheduling */
+    vxGraphParameterEnqueueReadyRef(csitx_graph, 0, (vx_reference*)&tx_frame, 1);
+
+    /* wait for csitx_graph instances to complete, schedule again */
+    /* loop_id limit is loop_count + no.of capture buffers - num.of pipeup capture buffers*/
+    for(loop_id=0; loop_id<(loop_cnt + num_buf - CAPTURE_MIN_PIPEUP_BUFS) ; loop_id++)
+    {
+        uint32_t num_refs;
+        vx_object_array transmitted_frames = NULL;
+
+        /* Get tramsnitted frame reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(csitx_graph, 0, (vx_reference*)&transmitted_frames, 1, &num_refs);
+        vxGraphParameterEnqueueReadyRef(csitx_graph, 0, (vx_reference*)&transmitted_frames, 1);
+
+    }
+    /* ensure all csitx_graph processing is complete */
+    vxWaitGraph(csitx_graph);
+
+    VX_CALL(vxReleaseNode(&csitx_node));
+    VX_CALL(vxReleaseObjectArray(&tx_frame));
+    VX_CALL(vxReleaseUserDataObject(&csitx_config));
+
+    /*Signal the completion of csitx graph processing*/
+    tivxEventPost(eventHandle_TxFinished2);
 
 }
 #endif
@@ -880,9 +1047,14 @@ static void VX_CALLBACK tivxTask_csitx(void *app_var)
 TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
 {
 #if (CSITX_ENABLE == 1U)
-    vx_graph csitx_graph = 0;
-    tivx_task taskHandle_csitx;
-    tivx_task_create_params_t taskParams_csitx;
+    vx_graph csitx_graph1 = 0;
+    tivx_task taskHandle_csitx1;
+    tivx_task_create_params_t taskParams_csitx1;
+#endif
+#if (CSITX2_ENABLE == 1U)
+    vx_graph csitx_graph2 = 0;
+    tivx_task taskHandle_csitx2;
+    tivx_task_create_params_t taskParams_csitx2;
 #endif
 #if (CAPTURE1_ENABLE == 1U)
     vx_graph csirx_graph = 0 ;
@@ -910,7 +1082,16 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
     context = context_->vx_context_;
 
 #if (CSITX_ENABLE == 1U)
-    ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CSITX));
+    if (0U == arg_->csitx_inst)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CSITX));
+    }
+#endif
+#if (CSITX2_ENABLE == 1U)
+    if (1U == arg_->csitx_inst)
+    {
+        ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CSITX2));
+    }
 #endif
 #if (CAPTURE1_ENABLE == 1U)
     ASSERT(vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1));
@@ -951,9 +1132,17 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
         ASSERT_VX_OBJECT(csirx_graph3 = vxCreateGraph(context), VX_TYPE_GRAPH);
 #endif
 #if (CSITX_ENABLE == 1U)
-        ASSERT_VX_OBJECT(csitx_graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+        if (0U == arg_->csitx_inst)
+        {
+            ASSERT_VX_OBJECT(csitx_graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+        }
 #endif
-
+#if (CSITX2_ENABLE == 1U)
+        if (1U == arg_->csitx_inst)
+        {
+            ASSERT_VX_OBJECT(csitx_graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+        }
+#endif
 
 #if (CAPTURE_FORMAT == TIVX_TYPE_RAW_IMAGE)
         params.width = width;
@@ -1029,22 +1218,50 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle_capture3, &taskParams_capture));
 #endif
 #if (CSITX_ENABLE == 1U)
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&eventHandle_TxFinished));
-        // Setting up task params for csitx_task
-        tivxTaskSetDefaultCreateParams(&taskParams_csitx);
-        taskParams_csitx.task_main = &tivxTask_csitx;
-        taskParams_csitx.app_var = csitx_graph;
-        taskParams_csitx.stack_ptr = NULL;
-        taskParams_csitx.stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
-        taskParams_csitx.core_affinity = TIVX_TASK_AFFINITY_ANY;
-        taskParams_csitx.priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
-        //Create Capture and Csitx Tasks
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle_csitx, &taskParams_csitx));
+        if (0U == arg_->csitx_inst)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&eventHandle_TxFinished1));
+            // Setting up task params for csitx_task
+            tivxTaskSetDefaultCreateParams(&taskParams_csitx1);
+            taskParams_csitx1.task_main = &tivxTask_csitx1;
+            taskParams_csitx1.app_var = csitx_graph1;
+            taskParams_csitx1.stack_ptr = NULL;
+            taskParams_csitx1.stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
+            taskParams_csitx1.core_affinity = TIVX_TASK_AFFINITY_ANY;
+            taskParams_csitx1.priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
+            //Create Capture and Csitx Tasks
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle_csitx1, &taskParams_csitx1));
+        }
+#endif
+#if (CSITX2_ENABLE == 1U)
+        if (1U == arg_->csitx_inst)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventCreate(&eventHandle_TxFinished2));
+            // Setting up task params for csitx_task
+            tivxTaskSetDefaultCreateParams(&taskParams_csitx2);
+            taskParams_csitx2.task_main = &tivxTask_csitx2;
+            taskParams_csitx2.app_var = csitx_graph2;
+            taskParams_csitx2.stack_ptr = NULL;
+            taskParams_csitx2.stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
+            taskParams_csitx2.core_affinity = TIVX_TASK_AFFINITY_ANY;
+            taskParams_csitx2.priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
+            //Create Capture and Csitx Tasks
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle_csitx2, &taskParams_csitx2));
+        }
 #endif
 
         //Wait for both Graph Processing to complete
 #if (CSITX_ENABLE == 1U)
-        tivxEventWait(eventHandle_TxFinished, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        if (0U == arg_->csitx_inst)
+        {
+            tivxEventWait(eventHandle_TxFinished1, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        }
+#endif
+#if (CSITX2_ENABLE == 1U)
+        if (1U == arg_->csitx_inst)
+        {
+            tivxEventWait(eventHandle_TxFinished2, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        }
 #endif
 #if (CAPTURE1_ENABLE == 1U)
         tivxEventWait(eventHandle_RxFinished, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
@@ -1067,7 +1284,16 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
 #endif
 
 #if (CSITX_ENABLE == 1U)
-        VX_CALL(vxReleaseGraph(&csitx_graph));
+        if (0U == arg_->csitx_inst)
+        {
+            VX_CALL(vxReleaseGraph(&csitx_graph1));
+        }
+#endif
+#if (CSITX2_ENABLE == 1U)
+        if (1U == arg_->csitx_inst)
+        {
+            VX_CALL(vxReleaseGraph(&csitx_graph2));
+        }
 #endif
 #if (CAPTURE1_ENABLE == 1U)
         VX_CALL(vxReleaseGraph(&csirx_graph));
@@ -1103,8 +1329,18 @@ TEST_WITH_ARG(tivxHwaCsitxCsirx, testCsitxCsirxloopback, Arg, PARAMETERS)
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle_capture3));
 #endif
 #if (CSITX_ENABLE == 1U)
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventDelete(&eventHandle_TxFinished));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle_csitx));
+        if (0U == arg_->csitx_inst)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventDelete(&eventHandle_TxFinished1));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle_csitx1));
+        }
+#endif
+#if (CSITX2_ENABLE == 1U)
+        if (1U == arg_->csitx_inst)
+        {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxEventDelete(&eventHandle_TxFinished2));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle_csitx2));
+        }
 #endif
         tivxHwaUnLoadKernels(context);
 
