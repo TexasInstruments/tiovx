@@ -74,6 +74,12 @@
 
 #define DEBUG_TEST_TIDL
 
+#if defined(SOC_J784S4)
+#define NUM_TIDL_TARGETS 4U
+#else
+#define NUM_TIDL_TARGETS 1U
+#endif
+
 /*
  * This is the size of trace buffer allocated in host memory and
  * shared with target.
@@ -708,6 +714,18 @@ typedef struct {
     uint32_t trace_write_flag;
     char* target_string_1;
     char* target_string_2;
+    char* target_string_3;
+    char* target_string_4;
+} ArgMulti;
+
+typedef struct {
+    const char* testName;
+    const char* config;
+    const char* network;
+    uint32_t read_raw_padded;
+    uint32_t trace_write_flag;
+    char* target_string_1;
+    char* target_string_2;
 } ArgPriority;
 
 #if defined(SOC_J784S4)
@@ -717,11 +735,17 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_3_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_3_PRI_1)), \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_4_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_4_PRI_1))
 
+#define ADD_SET_TARGET_PARAMETERS_MULTI(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/ALL_C7X_TARGETS", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, TIVX_TARGET_DSP_C7_2_PRI_1, TIVX_TARGET_DSP_C7_3_PRI_1, TIVX_TARGET_DSP_C7_4_PRI_1))
+
 #define ADD_SET_TARGET_PRIORITY_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, TIVX_TARGET_DSP_C7_1_PRI_2))
 #else
 #define ADD_SET_TARGET_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1))
+
+#define ADD_SET_TARGET_PARAMETERS_MULTI(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, NULL, NULL, NULL))
 
 #define ADD_SET_TARGET_PRIORITY_PARAMETERS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/TIVX_TARGET_DSP_C7_1_PRI_1/TIVX_TARGET_DSP_C7_1_PRI_2", __VA_ARGS__, TIVX_TARGET_DSP_C7_1_PRI_1, TIVX_TARGET_DSP_C7_1_PRI_2))
@@ -734,6 +758,11 @@ typedef struct {
 #define PARAMETERS_PRIORITY \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
+
+#define PARAMETERS_MULTI \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS_MULTI, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0)
+
+/* Note: when adding the tracebuffer test with the PARAMETERS_MULTI, there is insufficient memory for all 4 C7X's */
 
 static void ct_teardown_tidl_kernels(void/*vx_context*/ **context_)
 {
@@ -907,6 +936,218 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
         ASSERT(input_tensor[0]  == 0);
         ASSERT(output_tensor[0] == 0);
+
+        tivxTIDLUnLoadKernels(context);
+
+        vxRemoveKernel(kernel);
+    }
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+TEST_WITH_ARG(tivxTIDL, testMultiTIDL, ArgMulti, PARAMETERS_MULTI)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    vx_node node[NUM_TIDL_TARGETS] = {0};
+    vx_kernel kernel = 0;
+
+    vx_perf_t perf_node[NUM_TIDL_TARGETS] = {0};
+    vx_perf_t perf_graph;
+
+    vx_user_data_object  config[NUM_TIDL_TARGETS], sample_config;
+    vx_user_data_object  network[NUM_TIDL_TARGETS];
+    vx_user_data_object  createParams[NUM_TIDL_TARGETS];
+    vx_user_data_object  inArgs[NUM_TIDL_TARGETS];
+    vx_user_data_object  outArgs[NUM_TIDL_TARGETS];
+    vx_user_data_object  traceData[NUM_TIDL_TARGETS];
+
+    vx_tensor input_tensor[NUM_TIDL_TARGETS][1];
+    vx_tensor output_tensor[NUM_TIDL_TARGETS][1];
+
+    vx_int32    refid = 895, i;
+
+    vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
+    char filepath[MAXPATHLENGTH];
+    size_t sz;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_1));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_2));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_3));
+    ASSERT(vx_true_e == tivxIsTargetEnabled(arg_->target_string_4));
+
+    {
+        uint32_t num_input_tensors  = 0;
+        uint32_t num_output_tensors = 0;
+
+        tivxTIDLLoadKernels(context);
+        CT_RegisterForGarbageCollection(context, ct_teardown_tidl_kernels, CT_GC_OBJECT);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->config);
+        ASSERT(sz < MAXPATHLENGTH);
+
+        ASSERT_VX_OBJECT(sample_config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        kernel = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors);
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->config);
+            ASSERT(sz < MAXPATHLENGTH);
+
+            ASSERT_VX_OBJECT(config[i] = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s", ct_get_test_file_path(), arg_->network);
+            ASSERT(sz < MAXPATHLENGTH);
+
+            ASSERT_VX_OBJECT(network[i] = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            ASSERT_VX_OBJECT(createParams[i] = setCreateParams(context, arg_->read_raw_padded, arg_->trace_write_flag), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(inArgs[i] = setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            ASSERT_VX_OBJECT(outArgs[i] = setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+            ASSERT_VX_OBJECT(input_tensor[i][0] = createInputTensor(context, config[i]), (enum vx_type_e)VX_TYPE_TENSOR);
+
+            ASSERT_VX_OBJECT(output_tensor[i][0] = createOutputTensor(context, config[i]), (enum vx_type_e)VX_TYPE_TENSOR);
+
+            /* This is an optional parameter can be NULL as well. */
+            if(arg_->trace_write_flag == 1)
+            {
+                ASSERT_VX_OBJECT(traceData[i] = vxCreateUserDataObject(context, "TIDL_traceData", TIVX_TIDL_TRACE_DATA_SIZE, NULL ), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+            }
+            else
+            {
+                traceData[i] = NULL;
+            }
+
+            vx_reference params[] = {
+                    (vx_reference)config[i],
+                    (vx_reference)network[i],
+                    (vx_reference)createParams[i],
+                    (vx_reference)inArgs[i],
+                    (vx_reference)outArgs[i],
+                    (vx_reference)traceData[i]
+            };
+
+            ASSERT_VX_OBJECT(node[i] = tivxTIDLNode(graph, kernel, params, input_tensor[i], output_tensor[i]), VX_TYPE_NODE);
+
+            if (i == 0)
+            {
+                VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_1));
+            }
+            else if (i == 1)
+            {
+                VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_2));
+            }
+            else if (i == 2)
+            {
+                VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_3));
+            }
+            else if (i == 3)
+            {
+                VX_CALL(vxSetNodeTarget(node[i], VX_TARGET_STRING, arg_->target_string_4));
+            }
+
+            if(arg_->read_raw_padded)
+            {
+                sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.y");
+                ASSERT(sz < MAXPATHLENGTH);
+
+                #ifdef DEBUG_TEST_TIDL
+                printf("Reading input file %s ...\n", filepath);
+                #endif
+
+                VX_CALL(readInputRawPadded(context, config[i], &input_tensor[i][0], &filepath[0]));
+            }
+            else
+            {
+                sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/airshow_256x256.bmp");
+                ASSERT(sz < MAXPATHLENGTH);
+
+                #ifdef DEBUG_TEST_TIDL
+                printf("Reading input file %s ...\n", filepath);
+                #endif
+
+                VX_CALL(readInput(context, config[i], &input_tensor[i][0], &filepath[0]));
+            }
+        }
+
+        #ifdef DEBUG_TEST_TIDL
+        printf("Verifying graph ...\n");
+        #endif
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        #ifdef DEBUG_TEST_TIDL
+        printf("Running graph ...\n");
+        #endif
+        VX_CALL(vxProcessGraph(graph));
+        #ifdef DEBUG_TEST_TIDL
+        printf("Showing output ...\n");
+        #endif
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            VX_CALL(displayOutput(config[i], &output_tensor[i][0], refid));
+
+            if(arg_->trace_write_flag == 1)
+            {
+                sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/airshow_256x256.", ct_get_test_file_path());
+                ASSERT(sz < MAXPATHLENGTH);
+                VX_CALL(tivx_utils_tidl_trace_write(traceData[i], filepath));
+            }
+        }
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            VX_CALL(vxReleaseNode(&node[i]));
+        }
+        VX_CALL(vxReleaseGraph(&graph));
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            ASSERT(node[i] == 0);
+        }
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseUserDataObject(&sample_config));
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            VX_CALL(vxReleaseUserDataObject(&config[i]));
+            VX_CALL(vxReleaseUserDataObject(&network[i]));
+            VX_CALL(vxReleaseUserDataObject(&createParams[i]));
+            VX_CALL(vxReleaseUserDataObject(&inArgs[i]));
+            VX_CALL(vxReleaseUserDataObject(&outArgs[i]));
+
+            if(arg_->trace_write_flag == 1)
+            {
+               VX_CALL(vxReleaseUserDataObject(&traceData[i]));
+            }
+
+            VX_CALL(vxReleaseTensor(&input_tensor[i][0]));
+            VX_CALL(vxReleaseTensor(&output_tensor[i][0]));
+        }
+
+        for (i = 0; i < NUM_TIDL_TARGETS; i++)
+        {
+            ASSERT(config[i] == 0);
+            ASSERT(network[i] == 0);
+            ASSERT(createParams[i] == 0);
+            ASSERT(inArgs[i] == 0);
+            ASSERT(outArgs[i] == 0);
+
+            if(arg_->trace_write_flag == 1)
+            {
+                ASSERT(outArgs[i] == 0);
+            }
+
+            ASSERT(input_tensor[i][0]  == 0);
+            ASSERT(output_tensor[i][0] == 0);
+        }
 
         tivxTIDLUnLoadKernels(context);
 
@@ -1148,8 +1389,10 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, ArgPriority, PARAMETERS_PRIORITY)
 TESTCASE_TESTS(tivxTIDL,
     testTIDL,
     #if defined(SOC_J784S4)
+    testMultiTIDL,
     DISABLED_testTIDLPreempt
     #else
-    testTIDLPreempt
+    testTIDLPreempt,
+    DISABLED_testMultiTIDL
     #endif
     )
