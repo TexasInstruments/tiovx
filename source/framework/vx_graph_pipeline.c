@@ -177,22 +177,23 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 
                 for(i=0; (i<graph_parameters_list_size) && (status == (vx_status)VX_SUCCESS); i++)
                 {
-                    if((graph_parameters_queue_params_list[i].graph_parameter_index
-                        >= graph->num_params)
-                        ||
-                        (graph_parameters_queue_params_list[i].refs_list_size >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
-                        )
+                    if(graph_parameters_queue_params_list[i].refs_list!=NULL)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters\n");
-                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                    }
-                    else
-                    {
-                        graph->parameters[i].queue_enable = (vx_bool)vx_true_e;
-                        graph->parameters[i].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
-                        graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
-                        if(graph_parameters_queue_params_list[i].refs_list!=NULL)
+                        if((graph_parameters_queue_params_list[i].graph_parameter_index
+                            >= graph->num_params)
+                            ||
+                            (graph_parameters_queue_params_list[i].refs_list_size >= TIVX_OBJ_DESC_QUEUE_MAX_DEPTH)
+                            )
                         {
+                            VX_PRINT(VX_ZONE_ERROR, "Invalid parameters\n");
+                            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        }
+                        else
+                        {
+                            graph->parameters[i].queue_enable = (vx_bool)vx_true_e;
+                            graph->parameters[i].num_buf = graph_parameters_queue_params_list[i].refs_list_size;
+                            graph->parameters[i].type = graph_parameters_queue_params_list[i].refs_list[0]->type;
+
                             status = ownGraphPipelineValidateRefsList(graph_parameters_queue_params_list[i]);
 
                             if ((vx_status)VX_SUCCESS == status)
@@ -210,6 +211,12 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
                                     "Graph parameter refs list at index %d contains inconsistent meta data. Please ensure that all buffers in list contain the same meta data\n", i);
                             }
                         }
+                    }
+                    else
+                    {
+                        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "Invalid parameters: graph_parameters_queue_params_list at index %d is NULL\n", i);
+                        break;
                     }
                 }
             }
