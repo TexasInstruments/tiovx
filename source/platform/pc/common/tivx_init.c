@@ -146,6 +146,11 @@ void tivxInit(void)
         #endif
 
         #ifdef BUILD_CONFORMANCE_TEST
+
+        #if defined(SOC_AM62A)
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+        tivxRegisterTestKernelsTargetArmKernels();
+        #else
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
@@ -153,6 +158,7 @@ void tivxInit(void)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
         tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
+        #endif
 
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_A72_0);
         tivxRegisterTestKernelsTargetArmKernels();

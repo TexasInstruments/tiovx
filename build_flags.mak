@@ -63,7 +63,9 @@ else ifeq ($(SOC),am62a)
     VPAC_VERSION=VPAC3L
     C7X_TARGET=C7504
     C7X_VERSION=C7504
-    BUILD_EMULATION_MODE=no
+ifeq ($(BUILD_TARGET_MODE)$(BUILD_EMULATION_MODE),yesyes)
+    $(error For am62a, both target mode and emulation mode cannot be built at the same time!)
+endif
 else
     $(error SOC env variable should be set to one of (j721e, j721s2, j784s4, am62a))
 endif
