@@ -466,6 +466,18 @@ TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
     ct_free_mem(lut1_data);
 }
 
+TEST(tivxLUT, testCopyLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    int32_t user_data[256];
+
+    ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyLUT(lut, user_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
 #ifdef BUILD_BAM
 #define testLutSupernode testLutSupernode
 #else
@@ -474,4 +486,5 @@ TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
 
 TESTCASE_TESTS(tivxLUT,
                testGraphProcessing,
-               testLutSupernode)
+               testLutSupernode,
+               testCopyLUT)

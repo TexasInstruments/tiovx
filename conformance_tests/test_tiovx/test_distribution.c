@@ -26,6 +26,42 @@
 
 TESTCASE(tivxDistribution, CT_VXContext, ct_setup_vx_context, 0)
 
+TEST(tivxDistribution, testMapDistribution)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_distribution dist = NULL;
+    vx_map_id mapid;
+    int32_t* udata = NULL;
+    vx_enum usage = VX_WRITE_ONLY, user_mem_type = VX_MEMORY_TYPE_HOST;
+    vx_bitfield bfield = 0;
+
+    ASSERT_VX_OBJECT(dist = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapDistribution(dist, &mapid, (void*)&udata, usage, user_mem_type, bfield));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapDistribution(dist, mapid));
+
+    VX_CALL(vxReleaseDistribution(&dist));
+}
+
+TEST(tivxDistribution, testCopyDistribution)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_distribution dist = NULL;
+    int32_t udata[256];
+    vx_enum usage = VX_WRITE_ONLY, user_mem_type = VX_MEMORY_TYPE_HOST;
+    vx_size num_bins = 1;
+    vx_int32 offset = 1;
+    vx_uint32 range = 5;
+
+    ASSERT_VX_OBJECT(dist = vxCreateDistribution(context, num_bins, offset, range), VX_TYPE_DISTRIBUTION);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyDistribution(dist, udata, usage, user_mem_type));
+    VX_CALL(vxReleaseDistribution(&dist));
+}
+
+
 TEST(tivxDistribution, negativeTestQueryDistribution)
 {
     #define VX_DISTRIBUTION_DEFAULT 0
@@ -92,6 +128,8 @@ TEST(tivxDistribution, negativeTestUnmapDistribution)
 
 TESTCASE_TESTS(
     tivxDistribution,
+    testMapDistribution,
+    testCopyDistribution,
     negativeTestQueryDistribution,
     negativeTestCopyDistribution,
     negativeTestMapDistribution,
