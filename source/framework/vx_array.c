@@ -140,7 +140,7 @@ vx_array VX_API_CALL vxCreateArray(
             arr = (vx_array)ownCreateReference(context, (vx_enum)VX_TYPE_ARRAY,
                 (vx_enum)VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)arr) == (vx_status)(vx_status)VX_SUCCESS) &&
+            if ((vxGetStatus((vx_reference)arr) == (vx_status)VX_SUCCESS) &&
                 (arr->base.type == (vx_enum)VX_TYPE_ARRAY))
             {
                 /* assign refernce type specific callback's */
@@ -342,7 +342,7 @@ vx_status VX_API_CALL vxAddArrayItems(
         }
     }
 
-    if ((vx_status)(vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
         offset = (vx_size)obj_desc->num_items * (vx_size)obj_desc->item_size;
@@ -402,7 +402,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         }
     }
 
-    if ((vx_status)(vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         obj_desc->num_items = (uint32_t)new_num_items;
     }
@@ -479,7 +479,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         }
     }
 
-    if ((vx_status)(vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         /* Get the offset to the free memory */
         start_offset = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr +
@@ -583,7 +583,7 @@ vx_status VX_API_CALL vxMapArrayRange(
         }
     }
 
-    if ((vx_status)(vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         if (i < TIVX_ARRAY_MAX_MAPS)
         {
@@ -656,7 +656,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
         }
     }
 
-    if ((vx_status)(vx_status)VX_SUCCESS == status)
+    if ((vx_status)VX_SUCCESS == status)
     {
         tivxCheckStatus(&status, tivxMemBufferUnmap(arr->maps[map_id].map_addr,
             (uint32_t)arr->maps[map_id].map_size, arr->maps[map_id].mem_type,

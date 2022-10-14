@@ -270,20 +270,20 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference(&dist->base, (vx_enum)VX_TYPE_DISTRIBUTION) == (vx_bool)vx_false_e)
+        ||
+        (dist->base.obj_desc == NULL)
+        )
     {
-        obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
-    }
-
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
-    {
-        VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL or host ptr is NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "Invalid Distribution reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        if (NULL != ptr)
+        status = ownAllocDistributionBuffer(&dist->base);
+        if ((NULL != ptr) && ((vx_status)VX_SUCCESS == status))
         {
+            obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
             tivxCheckStatus(&status, tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
                 obj_desc->mem_size, (vx_enum)VX_MEMORY_TYPE_HOST,
                 (vx_enum)VX_READ_AND_WRITE));
