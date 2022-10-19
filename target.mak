@@ -51,9 +51,6 @@ else
               else ifeq ($(TARGET_OS),QNX)
                  SYSIDIRS += $(GCC_QNX_ARM_ROOT)/../usr/include
                  SYSLDIRS += $(GCC_QNX_ARM_ROOT)/../usr/lib
-              else
-                 SYSIDIRS += $(GCC_LINUX_ARM_ROOT)/include
-                 SYSLDIRS += $(GCC_LINUX_ARM_ROOT)/lib
               endif
         else
             SYSIDIRS += $(TIARMCGT_LLVM_ROOT)/include
