@@ -689,7 +689,7 @@ static uint32_t viss_checksums_chroma_ref[60] = {
 };
 
 static uint32_t viss_checksums_h3a_ref[5] = {
-    (uint32_t) 0x00000000, (uint32_t) 0xccff4f2d, (uint32_t) 0x2d7a8f71, (uint32_t) 0x7b0ba698, (uint32_t) 0x824ffb91
+    (uint32_t) 0x00000000, (uint32_t) 0xccf74f25, (uint32_t) 0x2d728f69, (uint32_t) 0x7b0ba698, (uint32_t) 0x824ffb91
 };
 
 
@@ -1006,9 +1006,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingFileDcc, ArgDcc, PARAMETERS_DC
                         0
                         ));
 
-                    /* TIOVX-1247: Setting the channel_id to 0 indiscriminately in order to re-use the same checksums */
+                    /* TIOVX-1247: Setting the cpu_id and channel_id to 0 indiscriminately in order to re-use the same checksums */
                     h3a_out = (tivx_h3a_data_t*)dcc_viss_buf;
 
+                    h3a_out->cpu_id = 0;
                     h3a_out->channel_id = 0;
 
                     VX_CALL(vxUnmapUserDataObject(h3a_aew_af[i], dcc_viss_buf_map_id));

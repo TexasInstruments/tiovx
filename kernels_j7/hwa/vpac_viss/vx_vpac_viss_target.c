@@ -65,6 +65,8 @@
 /* ========================================================================== */
 #include <vx_vpac_viss_target_priv.h>
 #include "tivx_hwa_vpac_viss_priv.h"
+#include <utils/ipc/include/app_ipc.h>
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -374,6 +376,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 VX_PRINT(VX_ZONE_WARNING,
                     "VISS H3A output is not generated due to DCC not being enabled\n");
             }
+
+            /* This is taking the app ipc cpu number, not the tivx mapped number, so it can
+             * be used by AWB node for direct usage without translation */
+            vissObj->cpu_id = appIpcGetSelfCpuId();
+
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -530,7 +537,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         else
         {
             vissDrvPrms->enablePcid = (uint32_t)FALSE;
-        }        
+        }
         #endif
         vissDrvPrms->edgeEnhancerMode = vissPrms->fcp[0].ee_mode;
 
@@ -777,7 +784,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 
             tivxVpacVissDeInitDcc(vissObj);
 
-#ifndef SOC_AM62A 
+#ifndef SOC_AM62A
             if (true == vissObj->configurationBuffer.configThroughUdmaFlag)
             {
                 tivxVpacVissDeleteConfigBuffer(vissObj);
@@ -1002,6 +1009,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             h3a_out->aew_af_mode = vissPrms->h3a_aewb_af_mode;
             h3a_out->h3a_source_data = vissPrms->h3a_in;
+            h3a_out->cpu_id = vissObj->cpu_id;
             h3a_out->channel_id = vissObj->channel_id;
             h3a_out->size = vissObj->h3a_output_size;
 
@@ -1259,13 +1267,13 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
                 if(TIVX_VPAC_VISS_IR_ENABLE == vissPrms->enable_ir_op)
                 {
                     outPrms->isIrOut = VHWA_VISS_IROUT_ENABLED;
-                } 
+                }
                 else
                 {
                     outPrms->isIrOut = VHWA_VISS_IROUT_DISABLED;
                 }
                 #endif
-                
+
                 outPrms->enable = TRUE;
                 outPrms->fmt.width = im_desc->width;
                 outPrms->fmt.height = im_desc->height;
@@ -1615,7 +1623,7 @@ static vx_status tivxVpacVissMapFormat(uint32_t *fmt, uint32_t *ccsFmt,
         {
             /* Map single plane storage format */
             status = tivxVpacVissMapStorageFormat(ccsFmt, vxFmt);
-            
+
             /* Only packed 8 and unpacked 16 IR supported in this case*/
             if (TIVX_KERNEL_VPAC_VISS_OUT0_IDX == out_id)
             {
@@ -1819,7 +1827,7 @@ static void vhwaVissFreeCtxMem(tivxVpacVissObj *vissObj)
 
 static void vhwaVissRestoreCtx(const tivxVpacVissObj *vissObj)
 {
-#ifndef SOC_AM62A 
+#ifndef SOC_AM62A
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_ENABLE
     #ifdef VHWA_VISS_CTX_SAVE_RESTORE_USE_DMA
     int32_t status;

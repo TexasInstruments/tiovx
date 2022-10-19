@@ -267,6 +267,10 @@ typedef struct {
     uint32_t                    h3a_source_data;
     /*! If aew_af_mode == TIVX_VPAC_VISS_H3A_MODE_AEWB, this is the aew HW configuration used */
     tivx_h3a_aew_config         aew_config;
+    /*! Identifier for cpu ID that the VISS node is running on.
+     *  Currently used only for notifying AEWB node which cpu to send the update to based on these results
+     *  when ae_awb_result from the graph is NULL. */
+    uint32_t                    cpu_id;
     /*! Identifier for camera channel ID.
      *  Currently used only for notifying AEWB node which channel to update based on these results
      *  when ae_awb_result from the graph is NULL. */
