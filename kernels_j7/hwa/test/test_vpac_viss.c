@@ -2938,9 +2938,13 @@ TEST_WITH_ARG(tivxHwaVpacViss, testNegativeGraph, ArgNegative,
 
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
+               #ifndef VPAC3L
                testGraphProcessing,
+               #endif
                testGraphProcessingFile,
+               #ifndef VPAC3L
                testGraphProcessingRaw,
+               #endif
                testGraphProcessingFileDcc,
                testNegativeGraph/*,
                testMuxNegative ,
