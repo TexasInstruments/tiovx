@@ -557,7 +557,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output0 must be set to TIVX_VPAC_VISS_MUX0_IR12_P12 for Packed 12 bit IR output of output%d\n", fcp, i);
                 }
                 if (((vx_df_image)VX_DF_IMAGE_U16 == output_fmt[i]) &&
-                    ((2 != outport) || (TIVX_VPAC_VISS_MUX2_IR12_U16 != params.fcp[fcp].mux_output0)) &&
+                    ((2 != outport) || (TIVX_VPAC_VISS_MUX2_IR12_U16 != params.fcp[fcp].mux_output2)) &&
                     (params.enable_ir_op == TIVX_VPAC_VISS_IR_ENABLE))
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
