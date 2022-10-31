@@ -172,9 +172,8 @@ TEST(tivxNode, negativeTestReplicateNode)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxReplicateNode(graph1, node, NULL, nop));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxReplicateNode(graph1, node, replicate, nop));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryNode(node, VX_NODE_PARAMETERS, &nop, sizeof(vx_uint32)));
-    /* the vx_parameter created inside vxReplicateNode is not released on VX_FAILURE
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxReplicateNode(graph1, node, replicate, nop));
-    */
+
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph2));

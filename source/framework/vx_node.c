@@ -1850,16 +1850,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                         }
                     }
                 }
+                vxReleaseReference(&ref);
+                vxReleaseParameter(&param);
             }
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Parameter %d is NULL!\n", p);
                 status = (vx_status)VX_FAILURE;
-            }
-            if(status == (vx_status)VX_SUCCESS)
-            {
-                vxReleaseReference(&ref);
-                vxReleaseParameter(&param);
             }
             if(status != (vx_status)VX_SUCCESS)
             {
