@@ -196,7 +196,7 @@ typedef struct _vx_meta_format
  *
  * \ingroup group_int_meta_format
  */
-vx_status vxReleaseMetaFormat(vx_meta_format *meta);
+vx_status ownReleaseMetaFormat(vx_meta_format *meta);
 
 /*! \brief Creates a metaformat object.
  *
@@ -207,7 +207,7 @@ vx_status vxReleaseMetaFormat(vx_meta_format *meta);
  *
  * \ingroup group_int_meta_format
  */
-vx_meta_format vxCreateMetaFormat(vx_context context);
+vx_meta_format ownCreateMetaFormat(vx_context context);
 
 /*!
  * \brief Check for equivalence between two meta format objects

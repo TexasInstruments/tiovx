@@ -807,7 +807,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     /* Create a meta format object. */
     if (status == (vx_status)VX_SUCCESS)
     {
-        mf1 = vxCreateMetaFormat(ref1->context);
+        mf1 = ownCreateMetaFormat(ref1->context);
 
         if (mf1 == NULL)
         {
@@ -819,7 +819,7 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     /* Create a meta format object. */
     if (status == (vx_status)VX_SUCCESS)
     {
-        mf2 = vxCreateMetaFormat(ref2->context);
+        mf2 = ownCreateMetaFormat(ref2->context);
 
         if (mf2 == NULL)
         {
@@ -862,12 +862,12 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
     /* Release the meta objects. */
     if (mf1 != NULL)
     {
-        vxReleaseMetaFormat(&mf1);
+        ownReleaseMetaFormat(&mf1);
     }
 
     if (mf2 != NULL)
     {
-        vxReleaseMetaFormat(&mf2);
+        ownReleaseMetaFormat(&mf2);
     }
 
     return boolStatus;

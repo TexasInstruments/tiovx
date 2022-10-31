@@ -1868,7 +1868,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
     for (i = 0; (i < TIVX_KERNEL_MAX_PARAMS) && ((vx_status)VX_SUCCESS == status); i ++)
     {
-        meta[i] = vxCreateMetaFormat(graph->base.context);
+        meta[i] = ownCreateMetaFormat(graph->base.context);
 
         /* This should not fail at all */
         if (vxGetStatus((vx_reference)meta[i]) != (vx_status)VX_SUCCESS)
@@ -2125,7 +2125,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     {
         if (NULL != meta[i])
         {
-            vxReleaseMetaFormat(&meta[i]);
+            ownReleaseMetaFormat(&meta[i]);
         }
     }
 

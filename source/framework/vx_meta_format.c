@@ -85,7 +85,7 @@ static vx_bool ownIsMetaFormatThresholdEqual(
 static vx_bool ownIsMetaFormatUserDataObjectEqual(
     vx_meta_format meta1, vx_meta_format meta2);
 
-vx_meta_format vxCreateMetaFormat(vx_context context)
+vx_meta_format ownCreateMetaFormat(vx_context context)
 {
     vx_meta_format meta = NULL;
 
@@ -106,7 +106,7 @@ vx_meta_format vxCreateMetaFormat(vx_context context)
     return (meta);
 }
 
-vx_status vxReleaseMetaFormat(vx_meta_format *meta)
+vx_status ownReleaseMetaFormat(vx_meta_format *meta)
 {
     return (ownReleaseReferenceInt(
         (vx_reference*)meta, (vx_enum)VX_TYPE_META_FORMAT, (vx_enum)VX_EXTERNAL, NULL));

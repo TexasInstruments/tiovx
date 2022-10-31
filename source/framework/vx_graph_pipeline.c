@@ -79,7 +79,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 
     if (NULL != graph_parameters_queue_param.refs_list[0])
     {
-        meta_base = vxCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
+        meta_base = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[0]->context);
         status = vxSetMetaFormatFromReference(meta_base, graph_parameters_queue_param.refs_list[0]);
     }
 
@@ -89,7 +89,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         {
             if (NULL != graph_parameters_queue_param.refs_list[i])
             {
-                meta = vxCreateMetaFormat(graph_parameters_queue_param.refs_list[i]->context);
+                meta = ownCreateMetaFormat(graph_parameters_queue_param.refs_list[i]->context);
 
                 if (NULL != meta)
                 {
@@ -120,7 +120,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 
                 if (ownIsValidSpecificReference(&meta->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
-                    vxReleaseMetaFormat(&meta);
+                    ownReleaseMetaFormat(&meta);
                 }
             }
             else
@@ -133,7 +133,7 @@ static vx_status ownGraphPipelineValidateRefsList(
 
     if (ownIsValidSpecificReference(&meta_base->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
-        vxReleaseMetaFormat(&meta_base);
+        ownReleaseMetaFormat(&meta_base);
     }
 
     return status;
