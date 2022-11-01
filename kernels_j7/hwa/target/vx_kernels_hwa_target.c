@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2022 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,49 +60,26 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
-#include "tivx_kernels_host_utils.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
+void tivxAddTargetKernelObjArraySplit(void);
+void tivxRemoveTargetKernelObjArraySplit(void);
 
 
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaKernels(void);
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelObjArraySplit, &tivxRemoveTargetKernelObjArraySplit},
+};
 
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaKernels(void);
-/*!
- * \brief Function to register HWA Kernels on the a72 Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaTargetA72Kernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the a72 Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaTargetA72Kernels(void);
-
-
-#ifdef __cplusplus
+void tivxRegisterHwaTargetA72Kernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
-#endif
 
-#endif /* VX_HWA_KERNELS_H_ */
-
+void tivxUnRegisterHwaTargetA72Kernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

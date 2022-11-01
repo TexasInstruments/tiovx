@@ -62,6 +62,7 @@
 
 #if defined(J7) || defined(J721S2) || defined(J784S4) || defined(PC) || defined(AM62A)
 #if defined(BUILD_CT_TIOVX_HWA)
+TESTCASE(tivxObjArraySplit)
 TESTCASE(tivxHwaVpacLdc)
 TESTCASE(tivxHwaVpacMscGaussianPyramid)
 TESTCASE(tivxHwaVpacMscHalfScaleGaussian)

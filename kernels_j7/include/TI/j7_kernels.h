@@ -95,6 +95,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
 
+/*! \brief Object Array Split Kernel Name
+ *  \ingroup group_vision_function_hwa
+ */
+#define TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME       "com.ti.hwa.obj_array_split"
+
 /*! \brief tidl kernel name
  *  \ingroup group_vision_function_tidl
  */
