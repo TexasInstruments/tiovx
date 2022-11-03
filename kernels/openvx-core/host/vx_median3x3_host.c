@@ -241,28 +241,19 @@ vx_status tivxAddKernelMedian3X3(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.median_3x3",
+                (vx_enum)VX_KERNEL_MEDIAN_3x3,
+                NULL,
+                TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS,
+                tivxAddKernelMedian3X3Validate,
+                tivxAddKernelMedian3X3Initialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.median_3x3",
-                    (vx_enum)VX_KERNEL_MEDIAN_3x3,
-                    NULL,
-                    TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS,
-                    tivxAddKernelMedian3X3Validate,
-                    tivxAddKernelMedian3X3Initialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

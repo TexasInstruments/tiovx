@@ -290,28 +290,19 @@ vx_status tivxAddKernelWarpAffine(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.warp_affine",
+                (vx_enum)VX_KERNEL_WARP_AFFINE,
+                NULL,
+                TIVX_KERNEL_WARP_AFFINE_MAX_PARAMS,
+                tivxAddKernelWarpAffineValidate,
+                tivxAddKernelWarpAffineInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.warp_affine",
-                    (vx_enum)VX_KERNEL_WARP_AFFINE,
-                    NULL,
-                    TIVX_KERNEL_WARP_AFFINE_MAX_PARAMS,
-                    tivxAddKernelWarpAffineValidate,
-                    tivxAddKernelWarpAffineInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

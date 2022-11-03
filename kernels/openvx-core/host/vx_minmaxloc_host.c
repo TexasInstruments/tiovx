@@ -370,28 +370,19 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.minmaxloc",
+                (vx_enum)VX_KERNEL_MINMAXLOC,
+                NULL,
+                TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS,
+                tivxAddKernelMinMaxLocValidate,
+                tivxAddKernelMinMaxLocInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.minmaxloc",
-                    (vx_enum)VX_KERNEL_MINMAXLOC,
-                    NULL,
-                    TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS,
-                    tivxAddKernelMinMaxLocValidate,
-                    tivxAddKernelMinMaxLocInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

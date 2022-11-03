@@ -356,28 +356,19 @@ vx_status tivxAddKernelMultiply(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.multiply",
+                (vx_enum)VX_KERNEL_MULTIPLY,
+                NULL,
+                TIVX_KERNEL_MULTIPLY_MAX_PARAMS,
+                tivxAddKernelMultiplyValidate,
+                tivxAddKernelMultiplyInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.multiply",
-                    (vx_enum)VX_KERNEL_MULTIPLY,
-                    NULL,
-                    TIVX_KERNEL_MULTIPLY_MAX_PARAMS,
-                    tivxAddKernelMultiplyValidate,
-                    tivxAddKernelMultiplyInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

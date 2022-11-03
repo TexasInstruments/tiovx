@@ -333,28 +333,19 @@ vx_status tivxAddKernelScale(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.scale_image",
+                (vx_enum)VX_KERNEL_SCALE_IMAGE,
+                NULL,
+                TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS,
+                tivxAddKernelScaleValidate,
+                tivxAddKernelScaleInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.scale_image",
-                    (vx_enum)VX_KERNEL_SCALE_IMAGE,
-                    NULL,
-                    TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS,
-                    tivxAddKernelScaleValidate,
-                    tivxAddKernelScaleInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

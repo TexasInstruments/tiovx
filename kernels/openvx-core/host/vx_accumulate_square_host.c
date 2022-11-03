@@ -257,28 +257,19 @@ vx_status tivxAddKernelAccumulateSquare(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.accumulate_square",
+                (vx_enum)VX_KERNEL_ACCUMULATE_SQUARE,
+                NULL,
+                TIVX_KERNEL_ACCUMULATE_SQUARE_MAX_PARAMS,
+                tivxAddKernelAccumulateSquareValidate,
+                tivxAddKernelAccumulateSquareInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.accumulate_square",
-                    (vx_enum)VX_KERNEL_ACCUMULATE_SQUARE,
-                    NULL,
-                    TIVX_KERNEL_ACCUMULATE_SQUARE_MAX_PARAMS,
-                    tivxAddKernelAccumulateSquareValidate,
-                    tivxAddKernelAccumulateSquareInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

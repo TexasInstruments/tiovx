@@ -241,28 +241,19 @@ vx_status tivxAddKernelBox3X3(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.box_3x3",
+                (vx_enum)VX_KERNEL_BOX_3x3,
+                NULL,
+                TIVX_KERNEL_BOX3X3_MAX_PARAMS,
+                tivxAddKernelBox3X3Validate,
+                tivxAddKernelBox3X3Initialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.box_3x3",
-                    (vx_enum)VX_KERNEL_BOX_3x3,
-                    NULL,
-                    TIVX_KERNEL_BOX3X3_MAX_PARAMS,
-                    tivxAddKernelBox3X3Validate,
-                    tivxAddKernelBox3X3Initialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

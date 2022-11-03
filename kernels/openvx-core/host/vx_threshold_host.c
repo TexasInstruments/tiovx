@@ -232,28 +232,19 @@ vx_status tivxAddKernelThreshold(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.threshold",
+                (vx_enum)VX_KERNEL_THRESHOLD,
+                NULL,
+                TIVX_KERNEL_THRESHOLD_MAX_PARAMS,
+                tivxAddKernelThresholdValidate,
+                tivxAddKernelThresholdInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.threshold",
-                    (vx_enum)VX_KERNEL_THRESHOLD,
-                    NULL,
-                    TIVX_KERNEL_THRESHOLD_MAX_PARAMS,
-                    tivxAddKernelThresholdValidate,
-                    tivxAddKernelThresholdInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

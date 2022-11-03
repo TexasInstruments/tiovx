@@ -310,28 +310,19 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if((vx_status)VX_SUCCESS != status)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.channel_extract",
+                (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
+                NULL,
+                TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS,
+                tivxAddKernelChannelExtractValidate,
+                tivxAddKernelChannelExtractInitialize,
+                NULL);
 
-    if ((vx_status)VX_SUCCESS == status)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.channel_extract",
-                    (vx_enum)VX_KERNEL_CHANNEL_EXTRACT,
-                    NULL,
-                    TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS,
-                    tivxAddKernelChannelExtractValidate,
-                    tivxAddKernelChannelExtractInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if ((vx_status)VX_SUCCESS == status)
     {
         index = 0;

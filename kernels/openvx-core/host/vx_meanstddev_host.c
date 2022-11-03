@@ -200,28 +200,19 @@ vx_status tivxAddKernelMeanStdDev(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.mean_stddev",
+                (vx_enum)VX_KERNEL_MEAN_STDDEV,
+                NULL,
+                TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS,
+                tivxAddKernelMeanStdDevValidate,
+                tivxAddKernelMeanStdDevInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.mean_stddev",
-                    (vx_enum)VX_KERNEL_MEAN_STDDEV,
-                    NULL,
-                    TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS,
-                    tivxAddKernelMeanStdDevValidate,
-                    tivxAddKernelMeanStdDevInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;

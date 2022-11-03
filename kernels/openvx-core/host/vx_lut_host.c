@@ -261,28 +261,19 @@ vx_status tivxAddKernelLut(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    vx_enum kernel_id;
 
-    status = vxAllocateUserKernelId(context, &kernel_id);
-    if(status != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
-    }
+    kernel = vxAddUserKernel(
+                context,
+                "org.khronos.openvx.table_lookup",
+                (vx_enum)VX_KERNEL_TABLE_LOOKUP,
+                NULL,
+                TIVX_KERNEL_LUT_MAX_PARAMS,
+                tivxAddKernelLutValidate,
+                tivxAddKernelLutInitialize,
+                NULL);
 
-    if (status == (vx_status)VX_SUCCESS)
-    {
-        kernel = vxAddUserKernel(
-                    context,
-                    "org.khronos.openvx.table_lookup",
-                    (vx_enum)VX_KERNEL_TABLE_LOOKUP,
-                    NULL,
-                    TIVX_KERNEL_LUT_MAX_PARAMS,
-                    tivxAddKernelLutValidate,
-                    tivxAddKernelLutInitialize,
-                    NULL);
+    status = vxGetStatus((vx_reference)kernel);
 
-        status = vxGetStatus((vx_reference)kernel);
-    }
     if (status == (vx_status)VX_SUCCESS)
     {
         index = 0;
