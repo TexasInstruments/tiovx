@@ -22,6 +22,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
+#include <TI/tivx_config.h>
 
 #include "test_engine/test.h"
 
@@ -106,6 +107,7 @@ TEST(tivxImage, negativeTestCreateImageFromROI)
     EXPECT_VX_ERROR(imgroi = vxCreateImageFromROI(img, &rect1), VX_ERROR_INVALID_PARAMETERS);
     EXPECT_VX_ERROR(imgroi = vxCreateImageFromROI(img, &rect2), VX_ERROR_INVALID_PARAMETERS);
     EXPECT_VX_ERROR(imgroi = vxCreateImageFromROI(img, &rect3), VX_ERROR_INVALID_PARAMETERS);
+    ASSERT(NULL == vxCreateImageFromROI((vx_image)(context), &rect3));
     VX_CALL(vxReleaseImage(&img));
 }
 
@@ -115,7 +117,7 @@ TEST(tivxImage, negativeTestCreateVirtualImage)
 
     vx_image img = NULL;
 
-    img = vxCreateVirtualImage(NULL, 0, 0, VX_DF_IMAGE_RGB);
+    ASSERT(NULL == (img = vxCreateVirtualImage(NULL, 0, 0, VX_DF_IMAGE_RGB)));
 }
 
 TEST(tivxImage, negativeTestCreateUniformImage)
@@ -138,8 +140,8 @@ TEST(tivxImage, negativeTestReleaseImage)
     vx_image img = NULL;
     vx_status status;
 
-    status = vxReleaseImage(NULL);
-    status = vxReleaseImage(&img);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReleaseImage(NULL));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReleaseImage(&img));
 }
 
 TEST(tivxImage, negativeTestFormatImagePatchAddress1d)
@@ -152,20 +154,206 @@ TEST(tivxImage, negativeTestFormatImagePatchAddress1d)
 
     paddr.dim_x = 1;
     paddr.dim_y = 1;
-    p = vxFormatImagePatchAddress1d(NULL, 0, &paddr);
+    ASSERT(NULL == (p = vxFormatImagePatchAddress1d(NULL, 0, &paddr)));
 }
 
 TEST(tivxImage, negativeTestFormatImagePatchAddress2d)
 {
     vx_context context = context_->vx_context_;
 
-    vx_uint8 *p = NULL;
+    vx_uint8 *p = NULL, d = 0;
     void *vp = {0};
     vx_imagepatch_addressing_t paddr;
 
     paddr.dim_x = 1;
     paddr.dim_y = 1;
-    p = vxFormatImagePatchAddress2d(NULL, 0, 0, &paddr);
+    ASSERT(NULL == (p = vxFormatImagePatchAddress2d(NULL, 0, 0, &paddr)));
+    ASSERT(NULL == (p = vxFormatImagePatchAddress2d((void *)(&d), 1, 0, &paddr)));
+}
+
+TEST(tivxImage, negativeTestGetValidRegionImage)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_rectangle_t rect;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetValidRegionImage(img, NULL));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxGetValidRegionImage(img, NULL));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestSetImageValidRectangle)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_rectangle_t rect1 = {2, 2, 1, 1};
+    vx_rectangle_t rect2 = {2, 2, 17, 17};
+    vx_rectangle_t rect3 = {1, 2, 2, 1};
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetImageValidRectangle(img, NULL));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageValidRectangle(img, NULL));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageValidRectangle(img, &rect1));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageValidRectangle(img, &rect2));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageValidRectangle(img, &rect3));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestComputeImagePatchSize)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_rectangle_t rect1 = {1, 1, 2, 2};
+    vx_rectangle_t rect2 = {1, 1, 2, 17};
+    vx_rectangle_t rect3 = {1, 1, 17, 2};
+    vx_rectangle_t rect4 = {1, 2, 2, 1};
+    vx_rectangle_t rect5 = {2, 1, 1, 2};
+    vx_uint32 plane_index = 2;
+    vx_size size = 0;
+
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, &rect1, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, &rect2, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, &rect3, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, &rect4, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, &rect5, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(img, NULL, plane_index)));
+    ASSERT(0 == (size = vxComputeImagePatchSize(NULL, NULL, plane_index)));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestQueryImage)
+{
+    #define VX_IMAGE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_enum attribute = VX_IMAGE_DEFAULT;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryImage(img, attribute, &size, size));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_FORMAT, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_WIDTH, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_HEIGHT, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_PLANES, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_SPACE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_RANGE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_SIZE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryImage(img, VX_IMAGE_MEMORY_TYPE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryImage(img, attribute, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(img, VX_IMAGE_SIZE, &size, sizeof(vx_size)));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestSetImageAttribute)
+{
+    #define VX_IMAGE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_enum attribute = VX_IMAGE_DEFAULT;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetImageAttribute(img, attribute, &size, size));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetImageAttribute(img, VX_IMAGE_SPACE, &size, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(img, attribute, &size, size));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestCopyImagePatch)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_rectangle_t rect = {1, 1, 2, 2};
+    vx_uint32 plane_index = 0;
+    vx_imagepatch_addressing_t user_addr;
+    vx_uint8 user_ptr[256];
+    vx_enum usage = VX_READ_ONLY, mem_type = VX_MEMORY_TYPE_HOST;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyImagePatch(img, NULL, plane_index, NULL, NULL, VX_READ_AND_WRITE, mem_type));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    user_addr.stride_x = 0;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyImagePatch(img, &rect, plane_index, &user_addr, user_ptr, usage, mem_type));
+    user_addr.stride_x = 2;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyImagePatch(img, &rect, plane_index, &user_addr, user_ptr, usage, mem_type));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyImagePatch(img, &rect, plane_index, &user_addr, user_ptr, VX_WRITE_ONLY, mem_type));
+    VX_CALL(vxReleaseImage(&img));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, TIVX_DF_IMAGE_P12), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyImagePatch(img, &rect, plane_index, &user_addr, user_ptr, VX_WRITE_ONLY, mem_type));
+    VX_CALL(vxReleaseImage(&img));
+}
+
+TEST(tivxImage, negativeTestMapImagePatch)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_rectangle_t rect = {1, 1, 2, 2};
+    vx_uint32 plane_index = 0;
+    vx_map_id map_id = 0;
+    vx_imagepatch_addressing_t user_addr;
+    vx_uint8 user_ptr[256];
+    vx_enum usage = VX_READ_ONLY, mem_type = VX_MEMORY_TYPE_HOST;
+    vx_uint32 flags = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapImagePatch(img, &rect, plane_index, NULL, NULL, NULL, usage, mem_type, flags));
+}
+
+TEST(tivxImage, negativeTestUnmapImagePatch)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL;
+    vx_graph graph = NULL;
+    vx_map_id map_id = TIVX_IMAGE_MAX_MAPS;
+    uint8_t map_addr = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapImagePatch(img, map_id));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnmapImagePatch(img, map_id));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxUnmapImagePatch(img, 0));
+    VX_CALL(vxReleaseImage(&img));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(img = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_OPTIMIZED_AWAY, vxUnmapImagePatch(img, 0));
+    VX_CALL(vxReleaseImage(&img));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxImage, negativeTestSwapImageHandle)
+{
+    #define VX_PLANE_MAX 4
+
+    vx_context context = context_->vx_context_;
+
+    vx_image img = NULL, imgcnl = NULL;
+    void *new_ptrs[VX_PLANE_MAX] = {0, 0, 0, 0};
+    void *prev_ptrs[VX_PLANE_MAX] = {0, 0, 0, 0};
+    vx_uint8 ndata[256];
+    vx_uint8 pdata[256];
+    vx_size num_planes = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSwapImageHandle(img, NULL, NULL, num_planes));
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSwapImageHandle(img, NULL, NULL, num_planes));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSwapImageHandle(img, new_ptrs, NULL, 1));
+    VX_CALL(vxReleaseImage(&img));
+    new_ptrs[0] = new_ptrs[1] = new_ptrs[2] = ndata;
+    prev_ptrs[0] = prev_ptrs[1] = prev_ptrs[2] = pdata;
+    ASSERT_VX_OBJECT(img = vxCreateImage(context, 2, 2, VX_DF_IMAGE_IYUV), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(imgcnl = vxCreateImageFromChannel(img, VX_CHANNEL_U), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSwapImageHandle(img, new_ptrs, prev_ptrs, 3));
+    VX_CALL(vxReleaseImage(&imgcnl));
+    VX_CALL(vxReleaseImage(&img));
 }
 
 TESTCASE_TESTS(
@@ -178,6 +366,15 @@ TESTCASE_TESTS(
     negativeTestCreateUniformImage,
     negativeTestReleaseImage,
     negativeTestFormatImagePatchAddress1d,
-    negativeTestFormatImagePatchAddress2d
+    negativeTestFormatImagePatchAddress2d,
+    negativeTestGetValidRegionImage,
+    negativeTestSetImageValidRectangle,
+    negativeTestComputeImagePatchSize,
+    negativeTestQueryImage,
+    negativeTestSetImageAttribute,
+    negativeTestCopyImagePatch,
+    negativeTestMapImagePatch,
+    negativeTestUnmapImagePatch,
+    negativeTestSwapImageHandle
 )
 

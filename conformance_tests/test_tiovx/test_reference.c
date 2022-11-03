@@ -126,11 +126,75 @@ TEST(tivxReference, testIsReferenceMetaFormatEqualFail2)
     VX_CALL(vxReleaseUserDataObject(&user_data_object));
 }
 
-TESTCASE_TESTS(tivxReference,
-        testQueryTimestamp,
-        testSetTimestamp,
-        testQueryInvalidFlag,
-        testIsReferenceMetaFormatEqualPass,
-        testIsReferenceMetaFormatEqualFail1,
-        testIsReferenceMetaFormatEqualFail2
+TEST(tivxReference, negativeTestQueryReference)
+{
+    #define VX_REFERENCE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_reference ref = NULL;
+    vx_enum attribute = VX_REFERENCE_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ref = (vx_reference)(graph);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, VX_REFERENCE_COUNT, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, VX_REFERENCE_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, VX_REFERENCE_NAME, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, TIVX_REFERENCE_TIMESTAMP, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryReference(ref, TIVX_REFERENCE_INVALID, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryReference(ref, attribute, &udata, size));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxReference, negativeTestSetReferenceName)
+{
+    vx_context context = context_->vx_context_;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetReferenceName(NULL, NULL));
+}
+
+TEST(tivxReference, negativeTestReleaseReference)
+{
+    vx_context context = context_->vx_context_;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxReleaseReference(NULL));
+}
+
+TEST(tivxReference, negativeTestRetainReference)
+{
+    vx_context context = context_->vx_context_;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxRetainReference(NULL));
+}
+
+TEST(tivxReference, negativeTestHint)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_reference ref = NULL;
+    vx_enum hint = 0;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxHint(ref, hint, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxHint((vx_reference)(context), hint, &udata, size));
+}
+
+TESTCASE_TESTS(
+    tivxReference,
+    testQueryTimestamp,
+    testSetTimestamp,
+    testQueryInvalidFlag,
+    testIsReferenceMetaFormatEqualPass,
+    testIsReferenceMetaFormatEqualFail1,
+    testIsReferenceMetaFormatEqualFail2,
+    negativeTestQueryReference,
+    negativeTestSetReferenceName,
+    negativeTestReleaseReference,
+    negativeTestRetainReference,
+    negativeTestHint
 )
+

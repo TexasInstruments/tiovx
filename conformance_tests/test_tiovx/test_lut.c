@@ -478,13 +478,107 @@ TEST(tivxLUT, testCopyLUT)
     VX_CALL(vxReleaseLUT(&lut));
 }
 
+TEST(tivxLUT, negativeTestCreateLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_enum data_type = VX_TYPE_INVALID;
+    vx_size count = 0;
+
+    ASSERT(NULL == (lut = vxCreateLUT(NULL, data_type, count)));
+    ASSERT(NULL == (lut = vxCreateLUT(context, data_type, count)));
+    ASSERT(NULL == (lut = vxCreateLUT(context, VX_TYPE_INT8, 257)));
+    ASSERT(NULL == (lut = vxCreateLUT(context, VX_TYPE_INT16, 65537)));
+}
+
+TEST(tivxLUT, negativeTestQueryLUT)
+{
+    #define VX_LUT_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_enum attribute = VX_LUT_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryLUT(lut, attribute, &udata, size));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_INT8, 256)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryLUT(lut, VX_LUT_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryLUT(lut, VX_LUT_COUNT, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryLUT(lut, VX_LUT_SIZE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryLUT(lut, attribute, &udata, size));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_INT32, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_INT64, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_FLOAT32, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_FLOAT64, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryLUT(lut, VX_LUT_OFFSET, &udata, sizeof(vx_uint32)));
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
+TEST(tivxLUT, negativeTestCopyLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_uint8 udata[256];
+    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxCopyLUT(lut, udata, usage, user_mem_type));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_FLOAT64, 1)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyLUT(lut, NULL, usage, user_mem_type));
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
+TEST(tivxLUT, negativeTestMapLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_map_id map_id = 0;
+    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
+    vx_bitfield flags = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapLUT(lut, &map_id, NULL, usage, user_mem_type, flags));
+    ASSERT(NULL != (lut = vxCreateLUT(context, VX_TYPE_FLOAT64, 1)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapLUT(lut, &map_id, NULL, usage, user_mem_type, flags));
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
+TEST(tivxLUT, negativeTestUnmapLUT)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_lut lut = NULL;
+    vx_map_id map_id = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapLUT(lut, map_id));
+}
+
 #ifdef BUILD_BAM
 #define testLutSupernode testLutSupernode
 #else
 #define testLutSupernode DISABLED_testLutSupernode
 #endif
 
-TESTCASE_TESTS(tivxLUT,
-               testGraphProcessing,
-               testLutSupernode,
-               testCopyLUT)
+TESTCASE_TESTS(
+    tivxLUT,
+    testGraphProcessing,
+    testLutSupernode,
+    negativeTestCreateLUT,
+    negativeTestQueryLUT,
+    negativeTestCopyLUT,
+    negativeTestMapLUT,
+    negativeTestUnmapLUT,
+    testCopyLUT
+)
+

@@ -320,4 +320,6 @@ TEST_WITH_ARG(ObjectArray, test_vxCreateObjectArray, Obj_Array_Arg, PARAMETERS)
 
 TESTCASE_TESTS(
     ObjectArray,
-    test_vxCreateObjectArray)
+    test_vxCreateObjectArray
+)
+

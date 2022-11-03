@@ -6589,11 +6589,16 @@ TEST(tivxGraphPipeline, testBufferDepthDetection2)
 
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
 {
+    #define VX_GRAPH_SCHEDULE_MODE_DEFAULT 0
+
     vx_context context = context_->vx_context_;
 
-    vx_graph graph = NULL;
-    vx_enum graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO;
-    vx_uint32 graph_parameters_list_size = 2;
+    vx_graph graph = NULL, graph1 = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
+    vx_parameter param = NULL;
+    vx_enum graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_NORMAL;
+    vx_uint32 graph_parameters_list_size = 0;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2] = {0};
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
@@ -6606,9 +6611,28 @@ TEST(tivxGraphPipelineLdra, negativeTestSetGraphScheduleConfig)
     graph_parameters_list_size = 1;
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
 
+    graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_DEFAULT;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
     VX_CALL(vxVerifyGraph(graph));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetGraphScheduleConfig(graph, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
 
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph1, kernel), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(param = vxGetParameterByIndex(node, 0), VX_TYPE_PARAMETER);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddParameterToGraph(graph1, param));
+    graph_schedule_mode = VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph1, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = 0;
+    graph_parameters_queue_params_list[0].refs_list = NULL;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetGraphScheduleConfig(graph1, graph_schedule_mode, graph_parameters_list_size, graph_parameters_queue_params_list));
+
+    VX_CALL(vxReleaseParameter(&param));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph1));
     VX_CALL(vxReleaseGraph(&graph));
 }
 

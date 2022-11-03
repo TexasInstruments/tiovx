@@ -18,6 +18,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_obj_desc.h>
 #include <string.h>
 
 #include "shared_functions.h"
@@ -422,9 +423,111 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
 
 }
 
-TESTCASE_TESTS(tivxTensor,
-        testCreateTensor,
-        testQueryTensor,
-        testCopyTensor,
-        testMapTensor
-        )
+TEST(tivxTensor, negativeTestCreateTensor)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_size nod = 0, dims = 0;
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+
+    ASSERT(NULL == (tensor = vxCreateTensor(NULL, nod, &dims, dt, fpp)));
+}
+
+TEST(tivxTensor, negativeTestQueryTensor)
+{
+    #define VX_TENSOR_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS, dims[TIVX_CONTEXT_MAX_TENSOR_DIMS], size = 0;
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+    vx_enum attribute = VX_TENSOR_DEFAULT;
+    vx_uint32 udata = 0;
+
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, VX_TENSOR_NUMBER_OF_DIMS, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, VX_TENSOR_DIMS, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, VX_TENSOR_DATA_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, VX_TENSOR_FIXED_POINT_POSITION, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR, &udata, sizeof(vx_int8)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryTensor(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, sizeof(vx_uint8)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryTensor(tensor, attribute, &udata, size));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
+TEST(tivxTensor, negativeTestSetTensorAttribute)
+{
+    #define VX_TENSOR_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS, dims[TIVX_CONTEXT_MAX_TENSOR_DIMS], size = 0;
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+    vx_enum attribute = VX_TENSOR_DEFAULT;
+    vx_uint32 udata = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetTensorAttribute(tensor, attribute, &udata, size));
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetTensorAttribute(tensor, VX_TENSOR_FIXED_POINT_POSITION, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetTensorAttribute(tensor, TIVX_TENSOR_SCALING_DIVISOR, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetTensorAttribute(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetTensorAttribute(tensor, attribute, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetTensorAttribute(tensor, VX_TENSOR_FIXED_POINT_POSITION, &udata, sizeof(vx_int8)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetTensorAttribute(tensor, TIVX_TENSOR_SCALING_DIVISOR, &udata, sizeof(vx_uint8)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetTensorAttribute(tensor, TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION, &udata, sizeof(vx_uint8)));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
+TEST(tivxTensor, negativeTestCopyTensor)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size view_start[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size view_end[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size user_stride[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
+    vx_int8 fpp = 0;
+    vx_uint32 udata = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxCopyTensorPatch(tensor, nod, view_start, view_end, user_stride, &udata, usage, user_memory_type));
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, nod, NULL, NULL, NULL, NULL, usage, VX_MEMORY_TYPE_NONE));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, nod, view_start, NULL, NULL, &udata, usage, VX_MEMORY_TYPE_NONE));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, nod, view_start, view_end, NULL, &udata, usage, VX_MEMORY_TYPE_NONE));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, 0, view_start, view_end, user_stride, &udata, VX_WRITE_ONLY, user_memory_type));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, 5, view_start, view_end, user_stride, &udata, VX_WRITE_ONLY, user_memory_type));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, nod, view_start, view_end, user_stride, &udata, VX_WRITE_ONLY, user_memory_type));
+    VX_CALL(vxReleaseTensor(&tensor));
+
+    view_start[0] = view_start[1] = view_start[2] = view_start[3] = 1;
+    view_end[0] = view_end[1] = view_end[2] = view_end[3] = 2;
+    dims[0] = dims[1] = dims[2] = dims[3] = 3;
+
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxCopyTensorPatch(tensor, nod, view_start, view_end, user_stride, &udata, VX_WRITE_ONLY, user_memory_type));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
+TESTCASE_TESTS(
+    tivxTensor,
+    testCreateTensor,
+    testQueryTensor,
+    testCopyTensor,
+    testMapTensor,
+    negativeTestCreateTensor,
+    negativeTestQueryTensor,
+    negativeTestSetTensorAttribute,
+    negativeTestCopyTensor
+)
+

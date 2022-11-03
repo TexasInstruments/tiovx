@@ -548,6 +548,20 @@ TEST(tivxConvolve, negativeTestCopyConvolutionCoefficients)
     VX_CALL(vxReleaseConvolution(&cnvl));
 }
 
+TEST(tivxConvolve, negativeTestCreateConvolution)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_size size = 0, columns = 5, rows = 5;
+
+    ASSERT(NULL == vxCreateConvolution(NULL, columns, rows));
+    ASSERT(NULL == vxCreateConvolution(context, 524553, 524553));
+    ASSERT(NULL == vxCreateConvolution(context, 2, 2));
+    ASSERT(NULL == vxCreateConvolution(context, 1, 2));
+    ASSERT(NULL == vxCreateConvolution(context, 3, 2));
+    ASSERT(NULL == vxCreateConvolution(context, 3, 1));
+}
+
 TESTCASE_TESTS(
     tivxConvolve,
     testGraphProcessing, 
@@ -555,6 +569,7 @@ TESTCASE_TESTS(
     testConvolveSupernode,
     negativeTestQueryConvolution,
     negativeTestSetConvolutionAttribute,
-    negativeTestCopyConvolutionCoefficients
+    negativeTestCopyConvolutionCoefficients,
+    negativeTestCreateConvolution
 )
 

@@ -108,12 +108,19 @@ TEST(tivxDistribution, negativeTestMapDistribution)
     vx_context context = context_->vx_context_;
 
     vx_distribution dist = NULL;
-    vx_map_id mapid;
-    int32_t* udata = NULL;
-    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
+    vx_map_id mapid = 0;
+    int32_t *udata = NULL, pdata = 0;
+    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_HOST;
     vx_bitfield bfield = 0;
+    vx_size num_bins = 1;
+    vx_int32 offset = 1;
+    vx_uint32 range = 5;
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapDistribution(dist, &mapid, (void*)&udata, usage, user_mem_type, bfield));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxMapDistribution(dist, &mapid, (void *)&udata, usage, user_mem_type, bfield));
+    ASSERT_VX_OBJECT(dist = vxCreateDistribution(context, num_bins, offset, range), VX_TYPE_DISTRIBUTION);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyDistribution(dist, &pdata, VX_WRITE_ONLY, user_mem_type));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapDistribution(dist, &mapid, NULL, usage, user_mem_type, bfield));
+    VX_CALL(vxReleaseDistribution(&dist));
 }
 
 TEST(tivxDistribution, negativeTestUnmapDistribution)
@@ -126,6 +133,20 @@ TEST(tivxDistribution, negativeTestUnmapDistribution)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxUnmapDistribution(dist, mapid));
 }
 
+TEST(tivxDistribution, negativeTestCreateDistribution)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_distribution dist = NULL;
+    vx_size num_bins = 0;
+    vx_int32 offset = 0;
+    vx_uint32 range = 0;
+
+    ASSERT(NULL == vxCreateDistribution(NULL, num_bins, offset, range));
+    ASSERT(NULL == vxCreateDistribution(context, num_bins, offset, 1));
+    ASSERT(NULL == vxCreateDistribution(context, 1, offset, range));
+}
+
 TESTCASE_TESTS(
     tivxDistribution,
     testMapDistribution,
@@ -133,6 +154,7 @@ TESTCASE_TESTS(
     negativeTestQueryDistribution,
     negativeTestCopyDistribution,
     negativeTestMapDistribution,
-    negativeTestUnmapDistribution
+    negativeTestUnmapDistribution,
+    negativeTestCreateDistribution
 )
 

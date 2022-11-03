@@ -513,7 +513,78 @@ TEST_WITH_ARG(tivxRemap, negativeTestBorderMode, Arg,
     ASSERT(input_image2 == 0);
 }
 
-TESTCASE_TESTS(tivxRemap,
-        testGraphProcessing,
-        negativeTestBorderMode
+TEST(tivxRemap, negativeTestCreateRemap)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_remap remap = NULL;
+    vx_uint32 src_width = 0, src_height = 0, dst_width = 0, dst_height = 0;
+
+    ASSERT(NULL == (remap = vxCreateRemap(NULL, src_width, src_height, dst_width, dst_height)));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width+1, src_height, dst_width, dst_height+1)));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width+1, src_height+1, dst_width, dst_height+1)));
+}
+
+TEST(tivxRemap, negativeTestQueryRemap)
+{
+    #define VX_REMAP_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_remap remap = NULL;
+    vx_uint32 src_width = 1, src_height = 1, dst_width = 1, dst_height = 1;
+    vx_enum attribute = VX_REMAP_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryRemap(remap, VX_REMAP_SOURCE_WIDTH, &udata, size));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryRemap(remap, VX_REMAP_SOURCE_WIDTH, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryRemap(remap, VX_REMAP_SOURCE_HEIGHT, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryRemap(remap, VX_REMAP_DESTINATION_WIDTH, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryRemap(remap, VX_REMAP_DESTINATION_HEIGHT, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryRemap(remap, attribute, &udata, size));
+    VX_CALL(vxReleaseRemap(&remap));
+}
+
+TEST(tivxRemap, negativeTestSetRemapPoint)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_remap remap = NULL;
+    vx_uint32 src_width = 1, src_height = 1, dst_width = 1, dst_height = 1;
+    vx_float32 fsrc_width = src_width, fsrc_height = src_height;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetRemapPoint(remap, dst_width, dst_height, fsrc_width, fsrc_height));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, dst_height, src_width, src_height));
+    VX_CALL(vxReleaseRemap(&remap));
+}
+
+TEST(tivxRemap, negativeTestGetRemapPoint)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_remap remap = NULL;
+    vx_uint32 src_width = 1, src_height = 1, dst_width = 1, dst_height = 1;
+    vx_float32 fsrc_width = 0, fsrc_height = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
+    ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, dst_height, fsrc_width, fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
+    VX_CALL(vxReleaseRemap(&remap));
+}
+
+TESTCASE_TESTS(
+    tivxRemap,
+    testGraphProcessing,
+    negativeTestBorderMode,
+    negativeTestCreateRemap,
+    negativeTestQueryRemap,
+    negativeTestSetRemapPoint,
+    negativeTestGetRemapPoint
 )
+

@@ -54,6 +54,7 @@ TEST(tivxDelay, negativeTestGetReferenceFromDelay)
     vx_int32 index = 1;
     vx_reference reference;
 
+    ASSERT(NULL == vxGetReferenceFromDelay(delay, index));
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_TYPE_DELAY);
     EXPECT_VX_ERROR(reference = vxGetReferenceFromDelay(delay, index), VX_ERROR_INVALID_PARAMETERS);

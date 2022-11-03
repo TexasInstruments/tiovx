@@ -262,7 +262,7 @@ TEST(tivxArray, negativeTestCopyArrayRange)
     vx_array array = NULL;
     vx_size range_start = 0, range_end = 0, stride = 0;
     void *array_items = NULL;
-    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_HOST, item_type = VX_TYPE_KEYPOINT;
+    vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE, item_type = VX_TYPE_KEYPOINT;
     int i = 0;
     vx_keypoint_t keypoint_array[KA];
 
@@ -298,9 +298,10 @@ TEST(tivxArray, negativeTestMapUnmapArrayRange)
         memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
     }
     VX_CALL(vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapArrayRange(array, range_start, range_end, &map_id, &stride, &ptr, usage, mem_type, flags));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxMapArrayRange(array, range_start, range_end, &map_id, NULL, &ptr, usage, mem_type, flags));
     range_start = 1;
     range_end = 2;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapArrayRange(array, range_start, range_end, &map_id, &stride, NULL, usage, mem_type, flags));
     for (i = 0; i < TIVX_ARRAY_MAX_MAPS + 1; i++) {
         stride = 0;
         if (i == TIVX_ARRAY_MAX_MAPS) {
@@ -314,6 +315,27 @@ TEST(tivxArray, negativeTestMapUnmapArrayRange)
     VX_CALL(vxReleaseArray(&array));
 }
 
+TEST(tivxArray, negativeTestCreateArray)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 0;
+
+    ASSERT(NULL == vxCreateArray(NULL, item_type, capacity));
+    ASSERT(NULL == vxCreateArray(context, item_type, capacity));
+}
+
+TEST(tivxArray, negativeTestCreateVirtualArray)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 0;
+
+    ASSERT(NULL == vxCreateVirtualArray((vx_graph)(context), item_type, capacity));
+}
+
 TESTCASE_TESTS(
     tivxArray,
     test_vxCopyArrayRangeRead,
@@ -323,6 +345,8 @@ TESTCASE_TESTS(
     negativeTestAddArrayItems,
     negativeTestTruncateArray,
     negativeTestCopyArrayRange,
-    negativeTestMapUnmapArrayRange
+    negativeTestMapUnmapArrayRange,
+    negativeTestCreateArray,
+    negativeTestCreateVirtualArray
 )
 

@@ -396,6 +396,83 @@ TEST_WITH_ARG(tivxThreshold, testThresholdSupernode, format_arg,
 #define testThresholdSupernode DISABLED_testThresholdSupernode
 #endif
 
-TESTCASE_TESTS(tivxThreshold, 
-               testOnRandom,
-               testThresholdSupernode)
+TEST(tivxThreshold, negativeTestCreateThreshold)
+{
+    #define VX_THRESHOLD_TYPE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_threshold thresh = NULL;
+    vx_enum thr_type = VX_THRESHOLD_TYPE_DEFAULT, data_type = VX_TYPE_INT64;
+
+    ASSERT(NULL == (thresh = vxCreateThreshold(NULL, thr_type, data_type)));
+    ASSERT(NULL == (thresh = vxCreateThreshold(context, thr_type, data_type)));
+    thr_type = VX_THRESHOLD_TYPE_BINARY;
+    ASSERT(NULL == (thresh = vxCreateThreshold(context, thr_type, data_type)));
+}
+
+TEST(tivxThreshold, negativeTestQueryThreshold)
+{
+    #define VX_THRESHOLD_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_threshold thresh = NULL;
+    vx_enum attribute = VX_THRESHOLD_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+    vx_enum thr_type = VX_THRESHOLD_TYPE_BINARY, data_type = VX_TYPE_UINT32;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxQueryThreshold(thresh, attribute, &udata, size));
+    ASSERT_VX_OBJECT(thresh = vxCreateThreshold(context, thr_type, data_type), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_THRESHOLD_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_THRESHOLD_LOWER, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_THRESHOLD_UPPER, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_TRUE_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_FALSE_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryThreshold(thresh, VX_THRESHOLD_DATA_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryThreshold(thresh, attribute, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryThreshold(thresh, VX_THRESHOLD_TRUE_VALUE, &udata, sizeof(vx_int32)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryThreshold(thresh, VX_THRESHOLD_FALSE_VALUE, &udata, sizeof(vx_int32)));
+    VX_CALL(vxReleaseThreshold(&thresh));
+}
+
+TEST(tivxThreshold, negativeTestSetThresholdAttribute)
+{
+    #define VX_THRESHOLD_DEFAULT 0
+    #define VX_THRESHOLD_TYPE_DEFAULT 0
+
+    vx_context context = context_->vx_context_;
+
+    vx_threshold thresh = NULL;
+    vx_enum attribute = VX_THRESHOLD_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+    vx_enum thr_type = VX_THRESHOLD_TYPE_BINARY, data_type = VX_TYPE_UINT32;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetThresholdAttribute(thresh, attribute, &udata, size));
+    ASSERT_VX_OBJECT(thresh = vxCreateThreshold(context, thr_type, data_type), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_LOWER, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_UPPER, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TRUE_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_FALSE_VALUE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetThresholdAttribute(thresh, attribute, &udata, size));
+    udata = VX_THRESHOLD_TYPE_DEFAULT;
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, sizeof(vx_enum)));
+    udata = VX_THRESHOLD_TYPE_RANGE;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, sizeof(vx_enum)));
+    VX_CALL(vxReleaseThreshold(&thresh));
+}
+
+TESTCASE_TESTS(
+    tivxThreshold,
+    testOnRandom,
+    testThresholdSupernode,
+    negativeTestCreateThreshold,
+    negativeTestQueryThreshold,
+    negativeTestSetThresholdAttribute
+)
+

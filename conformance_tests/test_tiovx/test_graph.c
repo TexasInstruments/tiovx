@@ -1734,8 +1734,15 @@ TEST(tivxGraph, negativeTestScheduleGraph)
     vx_context context = context_->vx_context_;
 
     vx_graph graph = NULL;
+    vx_enum gsm = VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO;
+    vx_uint32 gpls = 0;
+    vx_graph_parameter_queue_params_t gp_qparams[2];
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxScheduleGraph(graph));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphScheduleConfig(graph, gsm, gpls, gp_qparams));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxScheduleGraph(graph));
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(tivxGraph, negativeTestWaitGraph)
@@ -1755,9 +1762,12 @@ TEST(tivxGraph, negativeTestGetGraphParameterByIndex)
     vx_context context = context_->vx_context_;
 
     vx_graph graph = NULL;
-    vx_uint32 index = 1;
+    vx_uint32 index = TIVX_GRAPH_MAX_PARAMS;
 
-    ASSERT(NULL==vxGetGraphParameterByIndex(graph, index));
+    ASSERT(NULL == vxGetGraphParameterByIndex(graph, index));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT(NULL == vxGetGraphParameterByIndex(graph, index));
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 TEST(tivxGraph, negativeTestSetGraphParameterByIndex)
@@ -1768,6 +1778,7 @@ TEST(tivxGraph, negativeTestSetGraphParameterByIndex)
     vx_uint32 index = TIVX_GRAPH_MAX_PARAMS + 1;
     vx_reference value = 0;
 
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetGraphParameterByIndex(graph, index, value));
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetGraphParameterByIndex(graph, index, value));
     VX_CALL(vxReleaseGraph(&graph));
@@ -1804,6 +1815,7 @@ TEST(tivxGraph, negativeTestQueryGraph)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_STATE, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMNODES, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, size));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &vxGphAttr, sizeof(vx_uint32)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_TIMEOUT, &vxGphAttr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryGraph(graph, TIVX_GRAPH_PIPELINE_DEPTH, &vxGphAttr, size));
@@ -1815,12 +1827,39 @@ TEST(tivxGraph, negativeTestAddParameterToGraph)
 {
     vx_context context = context_->vx_context_;
 
-    vx_graph graph = NULL;
+    vx_graph graph = NULL, graph1 = NULL;
+    vx_kernel kernel = NULL;
+    vx_node node = NULL;
     vx_parameter param = NULL;
+    vx_uint32 i = 0;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxAddParameterToGraph(graph, param));
+
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddParameterToGraph(graph, param));
+    for (i = 0; i < TIVX_GRAPH_MAX_PARAMS + 1; i++) {
+        if (i == TIVX_GRAPH_MAX_PARAMS) {
+            ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAddParameterToGraph(graph, param));
+        } else {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddParameterToGraph(graph, param));
+        }
+    }
+
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph1, kernel), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(param = vxGetParameterByIndex(node, 0), VX_TYPE_PARAMETER);
+    for (i = 0; i < TIVX_GRAPH_MAX_PARAMS + 1; i++) {
+        if (i == TIVX_GRAPH_MAX_PARAMS) {
+            ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAddParameterToGraph(graph1, param));
+        } else {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAddParameterToGraph(graph1, param));
+        }
+    }
+
+    VX_CALL(vxReleaseParameter(&param));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
+    VX_CALL(vxReleaseGraph(&graph1));
     VX_CALL(vxReleaseGraph(&graph));
 }
 
@@ -1842,6 +1881,24 @@ TEST(tivxGraph, negativeTestRegisterAutoAging)
     VX_CALL(vxReleaseDelay(&delay));
 }
 
+TEST(tivxGraph, negativeTestCreateGraph)
+{
+    vx_context context = NULL;
+
+    ASSERT(NULL == vxCreateGraph(context));
+}
+
+TEST(tivxGraph, negativeTestIsGraphVerified)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_bool verified = vx_false_e;
+
+    verified = vxIsGraphVerified(graph);
+    ASSERT(verified == vx_false_e);
+}
+
 TESTCASE_TESTS(tivxGraph,
         testParallelNodesDifferentTarget,
         testParallelNodesSameTarget,
@@ -1861,6 +1918,8 @@ TESTCASE_TESTS(tivxGraph,
         negativeTestSetGraphAttribute,
         negativeTestQueryGraph,
         negativeTestAddParameterToGraph,
-        negativeTestRegisterAutoAging
+        negativeTestRegisterAutoAging,
+        negativeTestCreateGraph,
+        negativeTestIsGraphVerified
 )
 

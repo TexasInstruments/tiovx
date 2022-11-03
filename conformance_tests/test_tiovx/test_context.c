@@ -21,6 +21,7 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx_config.h>
 #include <TI/tivx_tensor.h>
 
 #include "test_engine/test.h"
@@ -50,8 +51,10 @@ TEST(tivxContext, negativeTestQueryContext)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_MODULES, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_REFERENCES, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_IMPLEMENTATION, ptr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_IMPLEMENTATION, ptr, (VX_MAX_IMPLEMENTATION_NAME + 1)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_EXTENSIONS_SIZE, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_EXTENSIONS, ptr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_EXTENSIONS, ptr, 3));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_CONVOLUTION_MAX_DIMENSION, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_MAX_TENSOR_DIMS, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_NONLINEAR_MAX_DIMENSION, ptr, size));
@@ -102,6 +105,7 @@ TEST(tivxContext, negativeTestRegisterUserStruct)
     vx_enum item_type = VX_TYPE_INVALID;
 
     item_type = vxRegisterUserStruct(NULL, size);
+    ASSERT(item_type == VX_TYPE_INVALID);
 }
 
 TEST(tivxContext, negativeTestSetImmediateModeTarget)
@@ -125,7 +129,7 @@ TEST(tivxContext, negativeTestGetKernelByName)
     vx_kernel user_kernel;
     vx_char kernel_name[10];
 
-    user_kernel = vxGetKernelByName(NULL, kernel_name);
+    ASSERT(NULL == (user_kernel = vxGetKernelByName(NULL, kernel_name)));
 }
 
 TEST(tivxContext, negativeTestGetKernelByEnum)
@@ -137,8 +141,25 @@ TEST(tivxContext, negativeTestGetKernelByEnum)
     vx_kernel user_kernel;
     vx_enum kernelenum = VX_KERNEL_DEFAULT;
 
-    user_kernel = vxGetKernelByEnum(NULL, kernelenum);
-    user_kernel = vxGetKernelByEnum(context, kernelenum);
+    ASSERT(NULL == (user_kernel = vxGetKernelByEnum(NULL, kernelenum)));
+    ASSERT(NULL == (user_kernel = vxGetKernelByEnum(context, kernelenum)));
+}
+
+TEST(tivxContext, negativeTestAllocateUserKernelId)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_enum keID = 0;
+    vx_uint32 i = 0;
+    vx_status status = VX_SUCCESS;
+
+    for (i = 0; i < TIVX_MAX_KERNEL_ID; i++) {
+        if (i >= 4055) {
+            ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAllocateUserKernelId(context, &keID));
+        } else {
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelId(context, &keID));
+        }
+    }
 }
 
 TESTCASE_TESTS(
@@ -150,6 +171,7 @@ TESTCASE_TESTS(
     negativeTestRegisterUserStruct,
     negativeTestSetImmediateModeTarget,
     negativeTestGetKernelByName,
-    negativeTestGetKernelByEnum
+    negativeTestGetKernelByEnum,
+    negativeTestAllocateUserKernelId
 )
 
