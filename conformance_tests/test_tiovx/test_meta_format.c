@@ -26,17 +26,24 @@
 
 TESTCASE(tivxMetaFormat, CT_VXContext, ct_setup_vx_context, 0)
 
+static vx_status VX_CALLBACK own_set_image_valid_rect(
+    vx_node node,
+    vx_uint32 index,
+    const vx_rectangle_t* const input_valid[],
+    vx_rectangle_t* const output_valid[])
+{
+    return VX_SUCCESS;
+}
+
 TEST(tivxMetaFormat, negativeTestSetMetaFormatAttribute)
 {
     vx_context context = context_->vx_context_;
 
     vx_meta_format meta = NULL;
     vx_enum attribute = VX_VALID_RECT_CALLBACK;
-    vx_size size = 0;
+    vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
 
-    /* with "meta = NULL", this function crashes
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetMetaFormatAttribute(meta, attribute, NULL, size));
-    */
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetMetaFormatAttribute(meta, attribute, &callback, sizeof(callback)));
 }
 
 TEST(tivxMetaFormat, negativeTestSetMetaFormatFromReference)

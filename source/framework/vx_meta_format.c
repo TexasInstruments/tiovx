@@ -117,7 +117,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&meta->base, (vx_enum)VX_TYPE_META_FORMAT) ==
+    if ( ownIsValidSpecificReference((vx_reference)meta, (vx_enum)VX_TYPE_META_FORMAT) ==
             (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid meta format reference\n");
