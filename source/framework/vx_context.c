@@ -290,6 +290,7 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
             uint32_t dynamic_user_kernel_idx = kernel->enumeration - VX_KERNEL_BASE(VX_ID_USER, 0U);
 
             context->is_dynamic_user_kernel_id_used[dynamic_user_kernel_idx] = (vx_bool)vx_false_e;
+            context->num_dynamic_user_kernel_id--;
         }
     }
 
@@ -914,6 +915,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                 context->is_dynamic_user_library_id_used[idx] = (vx_bool)vx_false_e;
             }
             context->num_unique_kernels = 0;
+            context->num_dynamic_user_kernel_id = 0;
             context->log_enabled = (vx_bool)vx_false_e;
             context->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseContext;
@@ -1298,6 +1300,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_CONTEXT_NUM_USER_KERNEL_ID:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = context->num_dynamic_user_kernel_id;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query context number of user kernel ID's failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
@@ -1459,6 +1472,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
                 *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER, 0U) + (vx_enum)(idx);
                 status = (vx_status)VX_SUCCESS;
                 context->is_dynamic_user_kernel_id_used[idx] = (vx_bool)vx_true_e;
+                context->num_dynamic_user_kernel_id++;
                 break;
             }
         }

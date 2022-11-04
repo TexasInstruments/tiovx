@@ -102,6 +102,8 @@ typedef struct _vx_context {
     vx_enum             imm_border_policy;
     /*! \brief Flag indicating whether corresponding dynamic_user_kernel_id is being used */
     vx_bool             is_dynamic_user_kernel_id_used[TIVX_MAX_KERNEL_ID];
+    /*! \brief Number of dynamic_user_kernel_id's being used */
+    vx_uint32           num_dynamic_user_kernel_id;
     /*! \brief Flag indicating whether corresponding dynamic_user_library_id is being used */
     vx_bool             is_dynamic_user_library_id_used[TIVX_MAX_LIBRARY_ID];
     /*! \brief The immediate mode enumeration */

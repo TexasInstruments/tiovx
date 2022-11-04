@@ -21,6 +21,7 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <TI/tivx.h>
 #include <TI/tivx_config.h>
 #include <TI/tivx_tensor.h>
 
@@ -153,13 +154,16 @@ TEST(tivxContext, negativeTestAllocateUserKernelId)
     vx_uint32 i = 0;
     vx_status status = VX_SUCCESS;
 
+    vx_uint32 num_user_kernel_id = 0;
+
+    VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &num_user_kernel_id, sizeof(num_user_kernel_id)));
+
     for (i = 0; i < TIVX_MAX_KERNEL_ID; i++) {
-        if (i >= 4055) {
-            ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAllocateUserKernelId(context, &keID));
-        } else {
-            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelId(context, &keID));
-        }
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelId(context, &keID));
+        VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &num_user_kernel_id, sizeof(num_user_kernel_id)));
+        ASSERT(num_user_kernel_id==(i+1));
     }
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAllocateUserKernelId(context, &keID));
 }
 
 TESTCASE_TESTS(

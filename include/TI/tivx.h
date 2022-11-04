@@ -216,7 +216,14 @@ typedef enum _tivx_attribute_extensions_e {
      * Use a <tt>\ref vx_uint32</tt> parameter.
      * By default, this value is set to 1.
      */
-    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x8
+    TIVX_GRAPH_PIPELINE_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x8,
+
+    /*! \brief Query the context number of user kernel ID's.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * By default, this value is set to 0.
+     */
+    TIVX_CONTEXT_NUM_USER_KERNEL_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x9
 
 } tivx_attribute_extensions_e;
 
