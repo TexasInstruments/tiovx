@@ -63,7 +63,7 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         rtos_task_prms.priority  = (int8_t)params->priority;
         rtos_task_prms.arg0      = (void*)(task);
         rtos_task_prms.arg1      = (void*)(task);
-        rtos_task_prms.name      = (uint8_t*)&task->task_name[0];
+        rtos_task_prms.name      = (const char*)&task->task_name[0];
 
         strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
         task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
