@@ -149,6 +149,24 @@ TEST(tivxUserDataObject, negativeTestUnmapUserDataObject)
     VX_CALL(vxReleaseUserDataObject(&udobj));
 }
 
+TEST(tivxUserDataObject, negativeTestSetUserDataObjectAttribute)
+{
+    #define TIVX_USER_DATA_OBJECT_DEFAULT 0
+    vx_context context = context_->vx_context_;
+
+    vx_user_data_object udobj = NULL;
+    vx_enum attribute = TIVX_USER_DATA_OBJECT_DEFAULT;
+    vx_uint32 udata = 0;
+    vx_size size = 0;
+    vx_char tname[] = {'t', 'i', 'o', 'v', 'x'};
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetUserDataObjectAttribute(udobj, attribute, &udata, size));
+    ASSERT_VX_OBJECT(udobj = vxCreateUserDataObject(context, tname, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxSetUserDataObjectAttribute(udobj, TIVX_USER_DATA_OBJECT_VALID_SIZE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, tivxSetUserDataObjectAttribute(udobj, attribute, &udata, size));
+    VX_CALL(vxReleaseUserDataObject(&udobj));
+}
+
 TESTCASE_TESTS(
     tivxUserDataObject,
     testValidSize,
@@ -156,6 +174,7 @@ TESTCASE_TESTS(
     negativeTestQueryUserDataObject,
     negativeTestCopyUserDataObject,
     negativeTestMapUserDataObject,
-    negativeTestUnmapUserDataObject
+    negativeTestUnmapUserDataObject,
+    negativeTestSetUserDataObjectAttribute
 )
 

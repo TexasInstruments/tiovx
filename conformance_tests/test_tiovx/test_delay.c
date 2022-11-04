@@ -36,6 +36,7 @@ TEST(tivxDelay, negativeTestCreateDelay)
     vx_uint32 tmp_value = 0;
     vx_size count = 0;
 
+    ASSERT(NULL == vxCreateDelay(NULL, (vx_reference)(scalar), count));
     EXPECT_VX_ERROR(delay = vxCreateDelay(context, (vx_reference)(scalar), count), VX_ERROR_INVALID_REFERENCE);
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
     count = TIVX_DELAY_MAX_OBJECT + 1;

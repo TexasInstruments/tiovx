@@ -519,6 +519,57 @@ TEST(tivxTensor, negativeTestCopyTensor)
     VX_CALL(vxReleaseTensor(&tensor));
 }
 
+TEST(tivxTensor, negativeTestMapTensorPatch)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_map_id map_id = 0;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8, usage = VX_READ_ONLY, user_memory_type = VX_MEMORY_TYPE_HOST;
+    vx_int8 fpp = 0;
+    vx_size view_start[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size view_end[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size stride[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_uint8 *ptr = NULL;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxMapTensorPatch(tensor, nod, view_start, view_end, &map_id, stride, (void *)(&ptr), usage, user_memory_type));
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxMapTensorPatch(tensor, nod, view_start, view_end, NULL, stride, NULL, usage, user_memory_type));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxMapTensorPatch(tensor, nod, view_start, NULL, &map_id, stride, (void *)(&ptr), usage, user_memory_type));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxMapTensorPatch(tensor, nod, NULL, view_end, &map_id, stride, (void *)(&ptr), usage, user_memory_type));
+    VX_CALL(vxReleaseTensor(&tensor));
+
+    view_start[0] = view_start[1] = view_start[2] = view_start[3] = 1;
+    view_end[0] = view_end[1] = view_end[2] = view_end[3] = 2;
+    dims[0] = dims[1] = dims[2] = dims[3] = 3;
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    while (map_id < (TIVX_TENSOR_MAX_MAPS - 1)) {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(tensor, nod, view_start, view_end, &map_id, stride, (void *)(&ptr), usage, user_memory_type));
+    }
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxMapTensorPatch(tensor, nod, view_start, view_end, &map_id, stride, (void *)(&ptr), usage, user_memory_type));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
+TEST(tivxTensor, negativeTestUnmapTensorPatch)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_tensor tensor = NULL;
+    vx_map_id map_id = TIVX_TENSOR_MAX_MAPS;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_enum dt = VX_TYPE_UINT8;
+    vx_int8 fpp = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxUnmapTensorPatch(tensor, map_id));
+    ASSERT_VX_OBJECT(tensor = vxCreateTensor(context, nod, dims, dt, fpp), (enum vx_type_e)(VX_TYPE_TENSOR));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxUnmapTensorPatch(tensor, map_id));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxUnmapTensorPatch(tensor, 0));
+    VX_CALL(vxReleaseTensor(&tensor));
+}
+
 TESTCASE_TESTS(
     tivxTensor,
     testCreateTensor,
@@ -528,6 +579,8 @@ TESTCASE_TESTS(
     negativeTestCreateTensor,
     negativeTestQueryTensor,
     negativeTestSetTensorAttribute,
-    negativeTestCopyTensor
+    negativeTestCopyTensor,
+    negativeTestMapTensorPatch,
+    negativeTestUnmapTensorPatch
 )
 

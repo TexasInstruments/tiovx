@@ -68,6 +68,9 @@ TEST(tivxImage, negativeTestCreateImageFromHandle)
     EXPECT_VX_ERROR(img = vxCreateImageFromHandle(context, VX_DF_IMAGE_RGB, ipa, mptrs, VX_MEMORY_TYPE_HOST), VX_ERROR_INVALID_PARAMETERS);
     ipa[0].stride_x = -1;
     EXPECT_VX_ERROR(img = vxCreateImageFromHandle(context, VX_DF_IMAGE_RGB, ipa, mptrs, VX_MEMORY_TYPE_HOST), VX_ERROR_INVALID_PARAMETERS);
+    ipa[0].stride_x = ipa[0].stride_y = 1;
+    ASSERT_VX_OBJECT(img = vxCreateImageFromHandle(context, VX_DF_IMAGE_RGB, ipa, mptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+    VX_CALL(vxReleaseImage(&img));
 }
 
 TEST(tivxImage, negativeTestCreateImageFromChannel)
@@ -79,6 +82,7 @@ TEST(tivxImage, negativeTestCreateImageFromChannel)
     vx_df_image format = VX_DF_IMAGE_RGB;
     vx_enum channel = VX_CHANNEL_0;
 
+    ASSERT(NULL == vxCreateImageFromChannel(img, channel));
     ASSERT_VX_OBJECT(img = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
     EXPECT_VX_ERROR(imgcnl = vxCreateImageFromChannel(img, VX_CHANNEL_Y), VX_ERROR_INVALID_PARAMETERS);
     EXPECT_VX_ERROR(imgcnl = vxCreateImageFromChannel(img, VX_CHANNEL_U), VX_ERROR_INVALID_PARAMETERS);
@@ -129,6 +133,7 @@ TEST(tivxImage, negativeTestCreateUniformImage)
     vx_pixel_value_t pvalue;
 
     EXPECT_VX_ERROR(img = vxCreateUniformImage(context, 0, 0, format, NULL), VX_ERROR_INVALID_PARAMETERS);
+    EXPECT_VX_ERROR(img = vxCreateUniformImage(context, 0, 0, format, &pvalue), VX_ERROR_INVALID_PARAMETERS);
     ASSERT_VX_OBJECT(img = vxCreateUniformImage(context, 1, 1, format, &pvalue), VX_TYPE_IMAGE);
     VX_CALL(vxReleaseImage(&img));
 }

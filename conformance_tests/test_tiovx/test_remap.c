@@ -558,7 +558,9 @@ TEST(tivxRemap, negativeTestSetRemapPoint)
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetRemapPoint(remap, dst_width, dst_height, fsrc_width, fsrc_height));
     ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, dst_height, src_width, src_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, dst_height, fsrc_width, fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, 0, dst_height, fsrc_width, fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, 0, fsrc_width, fsrc_height));
     VX_CALL(vxReleaseRemap(&remap));
 }
 
@@ -573,8 +575,10 @@ TEST(tivxRemap, negativeTestGetRemapPoint)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
     ASSERT(NULL != (remap = vxCreateRemap(context, src_width, src_height, dst_width, dst_height)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxSetRemapPoint(remap, dst_width, dst_height, fsrc_width, fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetRemapPoint(remap, 0, 0, fsrc_width, fsrc_height));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxGetRemapPoint(remap, dst_width, dst_height, &fsrc_width, &fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxGetRemapPoint(remap, 0, dst_height, &fsrc_width, &fsrc_height));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_VALUE, vxGetRemapPoint(remap, dst_width, 0, &fsrc_width, &fsrc_height));
     VX_CALL(vxReleaseRemap(&remap));
 }
 

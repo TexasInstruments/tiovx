@@ -56,8 +56,11 @@ TEST(tivxEventQueue, negativeTestWaitEvent)
 
     vx_event_t event;
     vx_bool dnb = 0;
+    vx_uint32 appvalue = 0;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxWaitEvent(NULL, &event, dnb));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserEvent(context, appvalue, NULL));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, NULL, dnb));
 }
 
 TESTCASE_TESTS(

@@ -449,21 +449,22 @@ TEST(tivxThreshold, negativeTestSetThresholdAttribute)
     vx_enum attribute = VX_THRESHOLD_DEFAULT;
     vx_uint32 udata = 0;
     vx_size size = 0;
-    vx_enum thr_type = VX_THRESHOLD_TYPE_BINARY, data_type = VX_TYPE_UINT32;
+    vx_enum thr_type = VX_THRESHOLD_TYPE_DEFAULT, data_type = VX_TYPE_UINT32;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetThresholdAttribute(thresh, attribute, &udata, size));
-    ASSERT_VX_OBJECT(thresh = vxCreateThreshold(context, thr_type, data_type), VX_TYPE_THRESHOLD);
+    ASSERT_VX_OBJECT(thresh = vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, data_type), VX_TYPE_THRESHOLD);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_VALUE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_LOWER, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_THRESHOLD_UPPER, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TRUE_VALUE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_FALSE_VALUE, &udata, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &thr_type, sizeof(vx_enum)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetThresholdAttribute(thresh, attribute, &udata, size));
-    udata = VX_THRESHOLD_TYPE_DEFAULT;
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, sizeof(vx_enum)));
-    udata = VX_THRESHOLD_TYPE_RANGE;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &udata, sizeof(vx_enum)));
+    thr_type = VX_THRESHOLD_TYPE_BINARY;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &thr_type, sizeof(vx_enum)));
+    thr_type = VX_THRESHOLD_TYPE_RANGE;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(thresh, VX_THRESHOLD_TYPE, &thr_type, sizeof(vx_enum)));
     VX_CALL(vxReleaseThreshold(&thresh));
 }
 
