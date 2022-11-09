@@ -45,10 +45,10 @@
 
 #define STREAMING_EVENT (0x00000001U)
 
-static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var);
-static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var);
+static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var);
+static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var);
 
-static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
+static void VX_CALLBACK ownStreamingNoPipeliningTask(void *app_var)
 {
     vx_graph graph = (vx_graph)app_var;
     vx_event_t event;
@@ -145,7 +145,7 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
     tivxEventPost(graph->delete_done);
 }
 
-static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
+static void VX_CALLBACK ownStreamingPipeliningTask(void *app_var)
 {
     vx_graph graph = (vx_graph)app_var;
     vx_event_t event;
@@ -439,7 +439,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
                     if ((vx_status)VX_SUCCESS == status)
                     {
-                        streamingTaskParams.task_main = &tivxStreamingPipeliningTask;
+                        streamingTaskParams.task_main = &ownStreamingPipeliningTask;
                     }
                     else
                     {
@@ -449,7 +449,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                 }
                 else
                 {
-                    streamingTaskParams.task_main = &tivxStreamingNoPipeliningTask;
+                    streamingTaskParams.task_main = &ownStreamingNoPipeliningTask;
                 }
 
                 if ((vx_status)VX_SUCCESS == status)

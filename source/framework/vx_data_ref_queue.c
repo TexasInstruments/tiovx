@@ -62,7 +62,7 @@
 
 #include <vx_internal.h>
 
-static vx_status tivxDataRefQueueDestruct(vx_reference ref);
+static vx_status ownDataRefQueueDestruct(vx_reference ref);
 
 vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
 {
@@ -271,7 +271,7 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
     return status;
 }
 
-static vx_status tivxDataRefQueueDestruct(vx_reference ref)
+static vx_status ownDataRefQueueDestruct(vx_reference ref)
 {
     uint32_t i;
 
@@ -322,7 +322,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
         {
             uint32_t pipe_id;
 
-            ref->base.destructor_callback = &tivxDataRefQueueDestruct;
+            ref->base.destructor_callback = &ownDataRefQueueDestruct;
             ref->base.mem_alloc_callback = NULL;
             ref->base.release_callback =
                 (tivx_reference_release_callback_f)&tivxDataRefQueueRelease;

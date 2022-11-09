@@ -66,34 +66,34 @@
 
 static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
-static tivx_target tivxTargetAllocHandle(vx_enum target_id);
-static void tivxTargetFreeHandle(tivx_target *target_handle);
-static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
-static tivx_target tivxTargetGetHandle(vx_enum target_id);
-static void tivxTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
-static vx_bool tivxTargetNodeDescCanNodeExecute(const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescTriggerNextNodes(const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
-static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
-static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc);
-static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
-static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
-static vx_status tivxTargetNodeDescNodeControl(
+static tivx_target ownTargetAllocHandle(vx_enum target_id);
+static void ownTargetFreeHandle(tivx_target *target_handle);
+static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
+static tivx_target ownTargetGetHandle(vx_enum target_id);
+static void ownTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
+static vx_bool ownTargetNodeDescCanNodeExecute(const tivx_obj_desc_node_t *node_obj_desc);
+static void ownTargetNodeDescTriggerNextNodes(const tivx_obj_desc_node_t *node_obj_desc);
+static void ownTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc);
+static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
+static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
+static vx_status ownTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
-static void tivxTargetSetGraphStateAbandon(
+static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
+static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
+static void ownTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
-static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static void VX_CALLBACK tivxTargetTaskMain(void *app_var);
-static vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id);
-static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
+static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
+static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
+static void VX_CALLBACK ownTargetTaskMain(void *app_var);
+static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc);
+static void ownTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id);
+static vx_status ownTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc);
 
-static tivx_target tivxTargetAllocHandle(vx_enum target_id)
+static tivx_target ownTargetAllocHandle(vx_enum target_id)
 {
     uint16_t target_inst = TIVX_GET_TARGET_INST(target_id);
     tivx_target tmp_target = NULL, target = NULL;
@@ -126,7 +126,7 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
     return target;
 }
 
-static void tivxTargetFreeHandle(tivx_target *target_handle)
+static void ownTargetFreeHandle(tivx_target *target_handle)
 {
     if((NULL != target_handle) && (*target_handle!=NULL))
     {
@@ -137,7 +137,7 @@ static void tivxTargetFreeHandle(tivx_target *target_handle)
     }
 }
 
-static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout)
+static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout)
 {
     vx_status status;
     uintptr_t value = (vx_enum)TIVX_OBJ_DESC_INVALID;
@@ -155,7 +155,7 @@ static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc
     return status;
 }
 
-static tivx_target tivxTargetGetHandle(vx_enum target_id)
+static tivx_target ownTargetGetHandle(vx_enum target_id)
 {
     uint16_t target_inst = TIVX_GET_TARGET_INST(target_id);
     tivx_target tmp_target = NULL, target = NULL;
@@ -180,7 +180,7 @@ static tivx_target tivxTargetGetHandle(vx_enum target_id)
     return target;
 }
 
-static void tivxTargetNodeDescSendComplete(
+static void ownTargetNodeDescSendComplete(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
     uint16_t cmd_obj_desc_id;
@@ -215,7 +215,7 @@ static void tivxTargetNodeDescSendComplete(
     }
 }
 
-static vx_bool tivxTargetNodeDescCanNodeExecute(
+static vx_bool ownTargetNodeDescCanNodeExecute(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_obj_desc_node_t *prev_node_obj_desc;
@@ -241,7 +241,7 @@ static vx_bool tivxTargetNodeDescCanNodeExecute(
     return can_execute;
 }
 
-static void tivxTargetNodeDescTriggerNextNodes(
+static void ownTargetNodeDescTriggerNextNodes(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_bool can_execute;
@@ -257,7 +257,7 @@ static void tivxTargetNodeDescTriggerNextNodes(
 
         if( tivxObjDescIsValidType( (tivx_obj_desc_t*)next_node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
         {
-            can_execute = tivxTargetNodeDescCanNodeExecute(next_node_obj_desc);
+            can_execute = ownTargetNodeDescCanNodeExecute(next_node_obj_desc);
 
             if(can_execute == (vx_bool)vx_true_e)
             {
@@ -267,7 +267,7 @@ static void tivxTargetNodeDescTriggerNextNodes(
     }
 }
 
-static void tivxTargetNodeDescNodeExecuteTargetKernel(
+static void ownTargetNodeDescNodeExecuteTargetKernel(
     tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
     tivx_target_kernel_instance target_kernel_instance;
@@ -515,7 +515,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
 }
 
-static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
+static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
     vx_reference prm_ref[TIVX_KERNEL_MAX_PARAMS];
     uint32_t i;
@@ -527,7 +527,7 @@ static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_o
     node_obj_desc->exe_status = (uint32_t)ownNodeUserKernelExecute((vx_node)(uintptr_t)node_obj_desc->base.host_ref, prm_ref);
 }
 
-static vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
+static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_obj_desc_node_t *prev_node_obj_desc;
     vx_bool is_prev_node_blocked = (vx_bool)vx_false_e;
@@ -562,7 +562,7 @@ static vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *nod
 }
 
 
-static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id)
+static void ownTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id)
 {
     /* check if any node is blocked on this node to get unblocked and complete execution
      * This will be a node from next pipeline instance
@@ -573,7 +573,7 @@ static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_de
     tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
 }
 
-static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc)
+static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc)
 {
     uint64_t beg_time, end_time;
     uint16_t blocked_node_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
@@ -585,7 +585,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
         /* check if same node in previous pipeline instance is blocked, if yes then
          * dont acquire parameters for this node
          */
-        if(tivxTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==(vx_bool)vx_false_e)
+        if(ownTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==(vx_bool)vx_false_e)
         {
             vx_bool is_node_blocked;
             tivx_target_kernel_instance target_kernel_instance;
@@ -632,11 +632,11 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
                     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
                     {
-                        tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
+                        ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
                     }
                     else
                     {
-                        tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
+                        ownTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
                     }
                 }
 
@@ -665,11 +665,11 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
                 {
-                    tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
+                    ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
                 }
                 else
                 {
-                    tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
+                    ownTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
                 }
 
                 end_time = tivxPlatformGetTimeInUsecs();
@@ -694,10 +694,10 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                     &node_obj_desc->exe_time_end_l
                 );
 
-                tivxTargetNodeDescNodeMarkComplete(node_obj_desc, &blocked_node_id);
+                ownTargetNodeDescNodeMarkComplete(node_obj_desc, &blocked_node_id);
                 tivxTargetNodeDescReleaseAllParameters(node_obj_desc, prm_obj_desc_id);
-                tivxTargetNodeDescSendComplete(node_obj_desc);
-                tivxTargetNodeDescTriggerNextNodes(node_obj_desc);
+                ownTargetNodeDescSendComplete(node_obj_desc);
+                ownTargetNodeDescTriggerNextNodes(node_obj_desc);
 
                 if((vx_enum)blocked_node_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                 {
@@ -728,7 +728,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
     }
 }
 
-static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc)
+static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -883,7 +883,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     return status;
 }
 
-static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc)
+static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
     vx_status status = (vx_status)VX_SUCCESS;
@@ -937,7 +937,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
     return status;
 }
 
-static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
+static vx_status ownTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_desc,
     uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -968,7 +968,7 @@ static vx_status tivxTargetNodeSendCommand(const tivx_obj_desc_cmd_t *cmd_obj_de
     return (status);
 }
 
-static vx_status tivxTargetNodeDescNodeControl(
+static vx_status ownTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc)
 {
@@ -985,7 +985,7 @@ static vx_status tivxTargetNodeDescNodeControl(
         {
             for (cnt = 0; cnt < loop_max; cnt ++)
             {
-                status = tivxTargetNodeSendCommand(cmd_obj_desc, cnt,
+                status = ownTargetNodeSendCommand(cmd_obj_desc, cnt,
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
                 {
@@ -999,7 +999,7 @@ static vx_status tivxTargetNodeDescNodeControl(
             /* Replicated node idx must be less than total replicated nodes. */
             if (cmd_obj_desc->replicated_node_idx < (int32_t)loop_max)
             {
-                status = tivxTargetNodeSendCommand(cmd_obj_desc,
+                status = ownTargetNodeSendCommand(cmd_obj_desc,
                     (uint32_t)cmd_obj_desc->replicated_node_idx,
                     node_obj_desc);
                 if ((vx_status)VX_SUCCESS != status)
@@ -1017,7 +1017,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     else
     {
         /* For non-replicated node, ignore node-id field */
-        status = tivxTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
+        status = ownTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "SendCommand Failed\n");
@@ -1027,7 +1027,7 @@ static vx_status tivxTargetNodeDescNodeControl(
     return status;
 }
 
-static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
+static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK) != 0)
     {
@@ -1037,7 +1037,7 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
+static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_action action;
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
@@ -1079,7 +1079,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
     return (action);
 }
 
-static void tivxTargetSetGraphStateAbandon(
+static void ownTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
@@ -1087,7 +1087,7 @@ static void tivxTargetSetGraphStateAbandon(
     ownSetGraphState(node->graph, node_obj_desc->pipeline_id, (vx_enum)VX_GRAPH_STATE_ABANDONED);
 }
 
-static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
+static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
 {
     if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_SEND_ACK) != 0)
     {
@@ -1099,7 +1099,7 @@ static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_statu
     }
 }
 
-static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
+static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
@@ -1122,17 +1122,17 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                     {
                         if((vx_enum)cmd_obj_desc->cmd_id == (vx_enum)TIVX_CMD_NODE_CREATE)
                         {
-                            status = tivxTargetNodeDescNodeCreate(node_obj_desc);
+                            status = ownTargetNodeDescNodeCreate(node_obj_desc);
                         }
                         else
                         if((vx_enum)cmd_obj_desc->cmd_id == (vx_enum)TIVX_CMD_NODE_DELETE)
                         {
-                            status = tivxTargetNodeDescNodeDelete(node_obj_desc);
+                            status = ownTargetNodeDescNodeDelete(node_obj_desc);
                         }
                         else
                         if((vx_enum)cmd_obj_desc->cmd_id == (vx_enum)TIVX_CMD_NODE_CONTROL)
                         {
-                            status = tivxTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
+                            status = ownTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
                         }
                         else
                         {
@@ -1145,12 +1145,12 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                     VX_PRINT(VX_ZONE_ERROR, "object descriptor type is invalid\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
-                tivxTargetCmdDescSendAck(cmd_obj_desc, status);
+                ownTargetCmdDescSendAck(cmd_obj_desc, status);
             }
             else
             {
                 /* this is ACK for a previously sent command */
-                tivxTargetCmdDescHandleAck(cmd_obj_desc);
+                ownTargetCmdDescHandleAck(cmd_obj_desc);
             }
             break;
 
@@ -1164,11 +1164,11 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
                 tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
 
-                action = tivxTargetCmdDescHandleUserCallback(node_obj_desc, timestamp);
+                action = ownTargetCmdDescHandleUserCallback(node_obj_desc, timestamp);
 
                 if (action == (vx_enum)VX_ACTION_ABANDON)
                 {
-                    tivxTargetSetGraphStateAbandon(node_obj_desc);
+                    ownTargetSetGraphStateAbandon(node_obj_desc);
                 }
             }
             /* No ack for user callback command */
@@ -1197,7 +1197,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
 }
 
-static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
+static void VX_CALLBACK ownTargetTaskMain(void *app_var)
 {
     tivx_target target = (tivx_target)app_var;
     tivx_obj_desc_t *obj_desc;
@@ -1209,7 +1209,7 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
 
     while(target->targetExitRequest == (vx_bool)vx_false_e)
     {
-        status = tivxTargetDequeueObjDesc(target,
+        status = ownTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         if(    (status != (vx_status)VX_SUCCESS)
@@ -1236,13 +1236,13 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
                     case (vx_enum)TIVX_OBJ_DESC_CMD:
                         if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_CMD) != 0)
                         {
-                            tivxTargetCmdDescHandler((tivx_obj_desc_cmd_t*)obj_desc);
+                            ownTargetCmdDescHandler((tivx_obj_desc_cmd_t*)obj_desc);
                         }
                         break;
                     case (vx_enum)TIVX_OBJ_DESC_NODE:
                         if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_NODE) != 0)
                         {
-                            tivxTargetNodeDescNodeExecute(target, (tivx_obj_desc_node_t*)obj_desc);
+                            ownTargetNodeDescNodeExecute(target, (tivx_obj_desc_node_t*)obj_desc);
                         }
                         break;
                     default:
@@ -1263,7 +1263,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_target target;
 
-    target = tivxTargetAllocHandle(target_id);
+    target = ownTargetAllocHandle(target_id);
 
     if(target == NULL)
     {
@@ -1279,7 +1279,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
         target->task_params.stack_size = params->task_stack_size;
         target->task_params.core_affinity = params->task_core_affinity;
         target->task_params.priority = params->task_priority;
-        target->task_params.task_main = &tivxTargetTaskMain;
+        target->task_params.task_main = &ownTargetTaskMain;
         target->task_params.app_var = target;
         strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
         target->task_params.task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
@@ -1305,7 +1305,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
 
         if (status != (vx_status)VX_SUCCESS)
         {
-            tivxTargetFreeHandle(&target);
+            ownTargetFreeHandle(&target);
         }
     }
     return status;
@@ -1316,7 +1316,7 @@ vx_status tivxTargetDelete(vx_enum target_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_target target;
 
-    target = tivxTargetGetHandle(target_id);
+    target = ownTargetGetHandle(target_id);
 
     /* delete task */
 
@@ -1357,7 +1357,7 @@ void tivxTargetTriggerNode(uint16_t node_obj_desc_id)
 vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-    tivx_target target = tivxTargetGetHandle(target_id);
+    tivx_target target = ownTargetGetHandle(target_id);
 
     if(target!=NULL)
     {

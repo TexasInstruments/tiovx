@@ -69,28 +69,28 @@
 
 #include <vx_internal.h>
 
-static void tivxTargetNodeDescAcquireParameter(
+static void ownTargetNodeDescAcquireParameter(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
                     uint16_t *prm_obj_desc_id, /* extracted parameter ref */
                     vx_bool *is_node_blocked);
-static void tivxTargetObjDescSendRefConsumed(
+static void ownTargetObjDescSendRefConsumed(
     const tivx_obj_desc_data_ref_q_t *obj_desc);
-static void tivxTargetNodeDescAcquireParameterForPipeup(
+static void ownTargetNodeDescAcquireParameterForPipeup(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc,
                     uint16_t *prm_obj_desc_id);
-static void tivxTargetNodeDescReleaseParameterInDelay(
+static void ownTargetNodeDescReleaseParameterInDelay(
                         tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc,
                         tivx_obj_desc_queue_blocked_nodes_t *blocked_nodes);
-static void tivxTargetNodeDescReleaseParameter(
+static void ownTargetNodeDescReleaseParameter(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc,
                     uint16_t ref_obj_desc_id,
                     vx_bool is_prm_input,
                     vx_bool *is_prm_released);
 
-static void tivxTargetObjDescSendRefConsumed(
+static void ownTargetObjDescSendRefConsumed(
     const tivx_obj_desc_data_ref_q_t *obj_desc)
 {
     uint16_t cmd_obj_desc_id;
@@ -124,7 +124,7 @@ static void tivxTargetObjDescSendRefConsumed(
     }
 }
 
-static void tivxTargetNodeDescAcquireParameter(
+static void ownTargetNodeDescAcquireParameter(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
                     uint16_t *prm_obj_desc_id, /* extracted parameter ref */
@@ -210,7 +210,7 @@ static void tivxTargetNodeDescAcquireParameter(
     tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
-static void tivxTargetNodeDescAcquireParameterForPipeup(
+static void ownTargetNodeDescAcquireParameterForPipeup(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
                     uint16_t *prm_obj_desc_id /* extracted parameter ref */
@@ -281,7 +281,7 @@ static void tivxTargetNodeDescAcquireParameterForPipeup(
     tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
-static void tivxTargetNodeDescReleaseParameterInDelay(
+static void ownTargetNodeDescReleaseParameterInDelay(
                         tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc,
                         tivx_obj_desc_queue_blocked_nodes_t *blocked_nodes)
 {
@@ -336,7 +336,7 @@ static void tivxTargetNodeDescReleaseParameterInDelay(
     }
 }
 
-static void tivxTargetNodeDescReleaseParameter(
+static void ownTargetNodeDescReleaseParameter(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
                     uint16_t ref_obj_desc_id, /* parameter ref to release */
@@ -451,7 +451,7 @@ static void tivxTargetNodeDescReleaseParameter(
              */
             if(0 != tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
             {
-                tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
+                ownTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
             }
 
             VX_PRINT(VX_ZONE_INFO,"Parameter released (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
@@ -527,7 +527,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
             if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
-                tivxTargetNodeDescAcquireParameter(
+                ownTargetNodeDescAcquireParameter(
                     node_obj_desc,
                     data_ref_q_obj_desc, /* data ref q obj desc */
                     &prm_obj_desc_id[prm_id], /* extracted parameter ref */
@@ -576,7 +576,7 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
 
             if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
-                tivxTargetNodeDescAcquireParameterForPipeup(
+                ownTargetNodeDescAcquireParameterForPipeup(
                     node_obj_desc,
                     data_ref_q_obj_desc, /* data ref q obj desc */
                     &prm_obj_desc_id[prm_id] /* extracted parameter ref */
@@ -616,7 +616,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
                 is_prm_released = (vx_bool)vx_false_e;
 
-                tivxTargetNodeDescReleaseParameter(
+                ownTargetNodeDescReleaseParameter(
                     node_obj_desc,
                     data_ref_q_obj_desc, /* data ref q obj desc */
                     prm_obj_desc_id[prm_id], /* parameter ref to release */
@@ -626,7 +626,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
 
                 if(0 != is_prm_released)
                 {
-                    tivxTargetObjDescSendRefConsumed(data_ref_q_obj_desc);
+                    ownTargetObjDescSendRefConsumed(data_ref_q_obj_desc);
                 }
             }
         }

@@ -64,7 +64,7 @@
 
 #include <vx_internal.h>
 
-static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
+static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              vx_enum kernel_id,
                              const char *kernel_name,
                              const char *target_name,
@@ -98,7 +98,7 @@ void tivxTargetKernelDeInit(void)
     tivxMutexDelete(&g_target_kernel_lock);
 }
 
-static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
+static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              vx_enum kernel_id,
                              const char *kernel_name,
                              const char *target_name,
@@ -176,7 +176,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              tivx_target_kernel_control_f control_func,
                              void *priv_arg)
 {
-    return tivxAddTargetKernelInternal(
+    return ownAddTargetKernelInternal(
                 (vx_int32)TIVX_TARGET_KERNEL_ID_NOT_USED,
                 kernel_name, target_name, process_func, create_func, delete_func, control_func, priv_arg);
 }
@@ -190,7 +190,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_control_f control_func,
                              void *priv_arg)
 {
-    return tivxAddTargetKernelInternal(
+    return ownAddTargetKernelInternal(
                 kernel_id,
                 NULL, target_name, process_func, create_func, delete_func, control_func, priv_arg);
 }

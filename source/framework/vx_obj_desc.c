@@ -64,16 +64,16 @@
 
 #include <vx_internal.h>
 
-static inline uint32_t tivxIpcPayloadMake(
+static inline uint32_t ownIpcPayloadMake(
     vx_enum dst_target_id, uint16_t obj_desc_id);
-static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload);
-static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload);
-static void tivxObjDescIpcHandler(uint32_t payload);
+static inline uint16_t ownIpcPayloadGetObjDescId(uint32_t payload);
+static inline vx_enum ownIpcPayloadGetTargetId(uint32_t payload);
+static void ownObjDescIpcHandler(uint32_t payload);
 
 static tivx_obj_desc_table_info_t g_obj_desc_table;
 
 
-static inline uint32_t tivxIpcPayloadMake(
+static inline uint32_t ownIpcPayloadMake(
     vx_enum dst_target_id, uint16_t obj_desc_id)
 {
 
@@ -89,7 +89,7 @@ static inline uint32_t tivxIpcPayloadMake(
             );
 }
 
-static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
+static inline uint16_t ownIpcPayloadGetObjDescId(uint32_t payload)
 {
     return (uint16_t)
          (
@@ -97,21 +97,21 @@ static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
          );
 }
 
-static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload)
+static inline vx_enum ownIpcPayloadGetTargetId(uint32_t payload)
 {
     vx_uint32 returnVal = (payload >> (uint32_t)TIVX_TARGET_ID_SHIFT) & (uint32_t)TIVX_TARGET_ID_MASK;
     return (vx_enum)returnVal;
 }
 
-static void tivxObjDescIpcHandler(uint32_t payload)
+static void ownObjDescIpcHandler(uint32_t payload)
 {
     vx_enum dst_target_id;
     uint16_t obj_desc_id;
     vx_status status;
 
-    obj_desc_id = tivxIpcPayloadGetObjDescId(payload);
+    obj_desc_id = ownIpcPayloadGetObjDescId(payload);
 
-    dst_target_id = tivxIpcPayloadGetTargetId(payload);
+    dst_target_id = ownIpcPayloadGetTargetId(payload);
 
     /* now this is local target hence call target API directly */
     status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
@@ -125,7 +125,7 @@ static void tivxObjDescIpcHandler(uint32_t payload)
 void tivxObjDescInit(void)
 {
     tivxPlatformGetObjDescTableInfo(&g_obj_desc_table);
-    tivxIpcRegisterHandler(tivxObjDescIpcHandler);
+    tivxIpcRegisterHandler(ownObjDescIpcHandler);
 }
 
 tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
@@ -251,7 +251,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     }
     else
     {
-        ipc_payload = tivxIpcPayloadMake((int32_t)dst_target_id, obj_desc_id);
+        ipc_payload = ownIpcPayloadMake((int32_t)dst_target_id, obj_desc_id);
 
         obj_desc = tivxObjDescGet(obj_desc_id);
 

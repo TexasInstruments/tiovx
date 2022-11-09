@@ -61,9 +61,9 @@
 */
 #include <vx_internal.h>
 
-static void tivxObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc);
+static void ownObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc);
 
-static void tivxObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc)
+static void ownObjDescQueueReset(tivx_obj_desc_queue_t *obj_desc)
 {
     tivx_obj_desc_queue_blocked_nodes_t *blocked_nodes;
 
@@ -89,7 +89,7 @@ vx_status tivxObjDescQueueCreate(uint16_t *obj_desc_id)
     {
         *obj_desc_id = obj_desc->base.obj_desc_id;
 
-        tivxObjDescQueueReset(obj_desc);
+        ownObjDescQueueReset(obj_desc);
 
         status = (vx_status)VX_SUCCESS;
     }

@@ -109,11 +109,11 @@ typedef struct {
 
 static tivx_log_rt_obj_t g_tivx_log_rt_obj;
 
-static void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name);
-static vx_bool tivxLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class);
-static vx_bool tivxLogRtTraceFindEventName(char *event_name);
-static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable);
-static void tivxLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type);
+static void ownLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name);
+static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class);
+static vx_bool ownLogRtTraceFindEventName(char *event_name);
+static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable);
+static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type);
 
 
 void tivxLogRtInit()
@@ -160,7 +160,7 @@ void tivxLogRtResetShm(void *shm_base, uint32_t shm_size)
     }
 }
 
-static vx_bool tivxLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
+static vx_bool ownLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     vx_bool is_found = vx_false_e;
@@ -183,7 +183,7 @@ static vx_bool tivxLogRtTraceFindEventId(uint64_t event_id, uint16_t event_class
     return is_found;
 }
 
-static vx_bool tivxLogRtTraceFindEventName(char *event_name)
+static vx_bool ownLogRtTraceFindEventName(char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     vx_bool is_found = vx_false_e;
@@ -206,7 +206,7 @@ static vx_bool tivxLogRtTraceFindEventName(char *event_name)
     return is_found;
 }
 
-static void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
+static void ownLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class, char *event_name)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
 
@@ -215,14 +215,14 @@ static void tivxLogRtTraceAddEventClass(uint64_t event_id, uint16_t event_class,
         uint32_t i;
         vx_bool do_add_event = vx_true_e;
 
-        if(tivxLogRtTraceFindEventId(event_id, event_class)==vx_true_e)
+        if(ownLogRtTraceFindEventId(event_id, event_class)==vx_true_e)
         {
             VX_PRINT(VX_ZONE_WARNING,"Log RT event %ld of event class %d already exists, not adding again\n", event_id, (uint32_t)event_class);
             do_add_event = vx_false_e;
         }
         if(do_add_event)
         {
-            if(tivxLogRtTraceFindEventName(event_name)==vx_true_e)
+            if(ownLogRtTraceFindEventName(event_name)==vx_true_e)
             {
                 VX_PRINT(VX_ZONE_WARNING,"Log RT event name %s of event %ld of event class %d already exists, not adding again."
                     "Recommend to use a unique event name.\n",
@@ -272,7 +272,7 @@ void tivxLogRtTraceRemoveEventClass(uint64_t event_id, uint16_t event_class, cha
 
 #if defined(LINUX) || defined(QNX)
 
-static vx_status tivxLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size)
+static vx_status ownLogRtFileWrite(int fd, uint8_t *buf, uint32_t bytes_to_write, uint8_t *tmp_buf, uint32_t tmp_buf_size)
 {
     uint32_t write_size;
     ssize_t ret_size;
@@ -354,7 +354,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                     buf_1 = (uint8_t*)obj->index;
                     bytes_to_write_1 = TIVX_LOG_RT_INDEX_MAX*sizeof(tivx_log_rt_index_t);
 
-                    status = tivxLogRtFileWrite(fd,
+                    status = ownLogRtFileWrite(fd,
                         buf_1, bytes_to_write_1,
                         tmp_buf, tmp_buf_size);
 
@@ -397,13 +397,13 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
                 {
                     if(status == VX_SUCCESS)
                     {
-                        status = tivxLogRtFileWrite(fd,
+                        status = ownLogRtFileWrite(fd,
                             buf_1, bytes_to_write_1,
                             tmp_buf, tmp_buf_size);
 
                         if(status == VX_SUCCESS)
                         {
-                            tivxLogRtFileWrite(fd,
+                            ownLogRtFileWrite(fd,
                                 buf_2, bytes_to_write_2,
                                 tmp_buf, tmp_buf_size);
                         }
@@ -441,7 +441,7 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 }
 #endif
 
-static void tivxLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type)
+static void ownLogRtTraceLogEvent(uint64_t timestamp, uint64_t event_id, uint32_t event_value, uint16_t event_class, uint16_t event_type)
 {
     tivx_log_rt_obj_t *obj = &g_tivx_log_rt_obj;
     tivx_log_rt_entry_t *entry;
@@ -478,9 +478,9 @@ void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, ch
     char name[TIVX_LOG_RT_EVENT_NAME_MAX];
     snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
 
-    if(vx_false_e == tivxLogRtTraceFindEventName(name))
+    if(vx_false_e == ownLogRtTraceFindEventName(name))
     {
-        tivxLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
+        ownLogRtTraceAddEventClass((uintptr_t)node+event_index, TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, name);
     }
 }
 
@@ -493,7 +493,7 @@ void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, ui
 {
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
@@ -503,7 +503,7 @@ void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint
 {
     if(tivxFlagIsBitSet(kernel->node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             kernel->node_obj_desc->base.host_ref+event_index, 0,
             TIVX_LOG_RT_EVENT_CLASS_KERNEL_INSTANCE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
@@ -514,7 +514,7 @@ void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_o
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp,
+        ownLogRtTraceLogEvent(timestamp,
             node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_START);
     }
@@ -524,7 +524,7 @@ void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp,
+        ownLogRtTraceLogEvent(timestamp,
             node_obj_desc->base.host_ref, node_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_NODE, TIVX_LOG_RT_EVENT_TYPE_END);
     }
@@ -534,7 +534,7 @@ void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *grap
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp,
+        ownLogRtTraceLogEvent(timestamp,
             graph_obj_desc->base.obj_desc_id, graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_START);
     }
@@ -544,7 +544,7 @@ void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(timestamp,
+        ownLogRtTraceLogEvent(timestamp,
             graph_obj_desc->base.obj_desc_id,
             graph_obj_desc->pipeline_id,
             TIVX_LOG_RT_EVENT_CLASS_GRAPH, TIVX_LOG_RT_EVENT_TYPE_END);
@@ -555,7 +555,7 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_START);
     }
@@ -565,13 +565,13 @@ void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_d
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE) != 0)
     {
-        tivxLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
+        ownLogRtTraceLogEvent(tivxPlatformGetTimeInUsecs(),
             target->target_id, 0,
             TIVX_LOG_RT_EVENT_CLASS_TARGET, TIVX_LOG_RT_EVENT_TYPE_END);
     }
 }
 
-static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
+static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 {
     uint32_t node_id, pipe_id, target_id;
     #define TIVX_LOG_RT_TRACE_MAX_TARGETS_IN_GRAPH  (64u)
@@ -597,7 +597,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
             {
                 if(is_enable)
                 {
-                    tivxLogRtTraceAddEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
+                    ownLogRtTraceAddEventClass((uintptr_t)node, TIVX_LOG_RT_EVENT_CLASS_NODE, node->base.name);
                 }
                 else
                 {
@@ -648,7 +648,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
         if(is_enable)
         {
-            tivxLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
+            ownLogRtTraceAddEventClass(graph->obj_desc[0]->base.obj_desc_id, TIVX_LOG_RT_EVENT_CLASS_GRAPH, graph->base.name);
         }
         else
         {
@@ -684,7 +684,7 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
             if(is_enable)
             {
-                tivxLogRtTraceAddEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
+                ownLogRtTraceAddEventClass(targets[target_id], TIVX_LOG_RT_EVENT_CLASS_TARGET, target_name);
             }
             else
             {
@@ -703,10 +703,10 @@ static vx_status tivxLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
 
 vx_status tivxLogRtTraceEnable(vx_graph graph)
 {
-    return tivxLogRtTraceSetup(graph, vx_true_e);
+    return ownLogRtTraceSetup(graph, vx_true_e);
 }
 
 vx_status tivxLogRtTraceDisable(vx_graph graph)
 {
-    return tivxLogRtTraceSetup(graph, vx_false_e);
+    return ownLogRtTraceSetup(graph, vx_false_e);
 }

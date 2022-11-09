@@ -92,12 +92,12 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
 static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
             uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links, uint32_t pipeline_depth);
 static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, const char *prefix);
-static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
+static void ownExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                     tivx_data_ref_queue data_ref_q, uint32_t graph_parameter_index );
-static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
-static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
-static vx_status tivxExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
-static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status ownExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
+static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix);
 
 static void getNodeColor(vx_node node, char *node_color_name)
 {
@@ -505,7 +505,7 @@ static void exportDataRefQueue(FILE *fp, tivx_data_ref_queue ref, uint32_t num_b
     }
 }
 
-static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
+static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -673,7 +673,7 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, const char *output
     return status;
 }
 
-static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
+static void ownExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                     tivx_data_ref_queue data_ref_q, uint32_t graph_parameter_index )
 {
     uint32_t pipe_id;
@@ -769,7 +769,7 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
     }
 }
 
-static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
+static vx_status ownExportGraphDataRefQueuesToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -794,7 +794,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *o
                 {
                     exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf,
                         (vx_bool)vx_true_e, (vx_bool)vx_false_e, graph->parameters[i].data_ref_queue->pipeline_depth);
-                    tivxExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
+                    ownExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
                 }
             }
         }
@@ -804,7 +804,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *o
             {
                 exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf,
                     (vx_bool)vx_false_e, (vx_bool)vx_false_e, graph->data_ref_q_list[i].data_ref_queue->pipeline_depth);
-                tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
+                ownExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
                     graph->num_params+i);
             }
         }
@@ -814,7 +814,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *o
             {
                 exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1,
                     (vx_bool)vx_false_e, (vx_bool)vx_false_e, graph->delay_data_ref_q_list[i].data_ref_queue->pipeline_depth);
-                tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
+                ownExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
                     graph->num_params+graph->num_data_ref_q+i);
             }
         }
@@ -834,7 +834,7 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, const char *o
     return status;
 }
 
-static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
+static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -1008,7 +1008,7 @@ static vx_status tivxExportGraphFirstPipelineToDot(vx_graph graph, const char *o
     return status;
 }
 
-static vx_status tivxExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
+static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_file_path, const char *output_file_prefix)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     char filename[TIVX_EXPORT_MAX_FILENAME];
@@ -1370,18 +1370,18 @@ vx_status tivxExportGraphToDot(vx_graph graph, const char *output_file_path, con
         && (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
         && (graph->verified == (vx_bool)vx_true_e))
     {
-        status = tivxExportGraphTopLevelToDot(graph, output_file_path, output_file_prefix);
+        status = ownExportGraphTopLevelToDot(graph, output_file_path, output_file_prefix);
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = tivxExportGraphPipelineToDot(graph, output_file_path, output_file_prefix);
+            status = ownExportGraphPipelineToDot(graph, output_file_path, output_file_prefix);
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = tivxExportGraphDataRefQueuesToDot(graph, output_file_path, output_file_prefix);
+            status = ownExportGraphDataRefQueuesToDot(graph, output_file_path, output_file_prefix);
         }
         if(status==(vx_status)VX_SUCCESS)
         {
-            status = tivxExportGraphFirstPipelineToDot(graph, output_file_path, output_file_prefix);
+            status = ownExportGraphFirstPipelineToDot(graph, output_file_path, output_file_prefix);
         }
         if(status!=(vx_status)VX_SUCCESS)
         {
