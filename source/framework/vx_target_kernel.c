@@ -198,13 +198,14 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     tivx_target_kernel target_kernel)
 {
-    vx_status status = (vx_status)VX_SUCCESS;
+    vx_status status = (vx_status)VX_FAILURE;
+    vx_status mutex_status = (vx_status)VX_FAILURE;
     uint32_t i;
 
     if (NULL != target_kernel)
     {
-        status = tivxMutexLock(g_target_kernel_lock);
-        if ((vx_status)VX_SUCCESS == status)
+        mutex_status = tivxMutexLock(g_target_kernel_lock);
+        if ((vx_status)VX_SUCCESS == mutex_status)
         {
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
@@ -222,6 +223,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
 
                     tivxLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
 
+                    status = (vx_status)VX_SUCCESS;
                     break;
                 }
             }
