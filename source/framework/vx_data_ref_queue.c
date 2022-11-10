@@ -266,6 +266,7 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
     }
     else
     {
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
     }
     return status;
