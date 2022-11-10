@@ -149,7 +149,7 @@ vx_array VX_API_CALL vxCreateArray(
                 arr->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseArray;
 
-                arr->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
+                arr->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
                 if(arr->base.obj_desc==NULL)
                 {
@@ -196,7 +196,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             arr->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseArray;
 
-            arr->base.obj_desc = (tivx_obj_desc_t*)tivxObjDescAlloc(
+            arr->base.obj_desc = (tivx_obj_desc_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
             if(arr->base.obj_desc==NULL)
             {
@@ -607,7 +607,7 @@ vx_status VX_API_CALL vxMapArrayRange(
 
                 *map_id = i;
 
-                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", (uint16_t)i+1U);
+                ownLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", (uint16_t)i+1U);
             }
         }
         else
@@ -730,7 +730,7 @@ static vx_status ownDestructArray(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

@@ -64,7 +64,7 @@
 
 #include <vx_internal.h>
 
-vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
+vx_status ownEventQueueCreate(tivx_event_queue_t *event_q)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -105,7 +105,7 @@ vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q)
     return status;
 }
 
-void tivxEventQueueDelete(tivx_event_queue_t *event_q)
+void ownEventQueueDelete(tivx_event_queue_t *event_q)
 {
     event_q->enable = (vx_bool)vx_false_e;
 
@@ -113,12 +113,12 @@ void tivxEventQueueDelete(tivx_event_queue_t *event_q)
     tivxQueueDelete(&event_q->ready_queue);
 }
 
-void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
+void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
 {
     event_q->enable = enable;
 }
 
-vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
+vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
         vx_enum event_id, uint64_t timestamp, uint32_t app_value, uintptr_t param1, uintptr_t param2, uintptr_t param3)
 {
     vx_status status = (vx_status)VX_FAILURE;
@@ -145,7 +145,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                tivxLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)index+1U);
+                ownLogSetResourceUsedValue("TIVX_EVENT_QUEUE_MAX_SIZE", (vx_uint16)index+1U);
             }
         }
         if(status != (vx_status)VX_SUCCESS)
@@ -167,7 +167,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxEnableEvents(vx_context context)
     }
     else
     {
-        tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_true_e);
+        ownEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_true_e);
         status = (vx_status)VX_SUCCESS;
     }
     return status;
@@ -184,7 +184,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context)
     }
     else
     {
-        tivxEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_false_e);
+        ownEventQueueEnableEvents(&context->event_queue, (vx_bool)vx_false_e);
         status = (vx_status)VX_SUCCESS;
     }
     return status;
@@ -203,7 +203,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
     {
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxEventQueueAddEvent(
+        status = ownEventQueueAddEvent(
                 &context->event_queue,
                 (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
@@ -311,12 +311,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
 {
     vx_status status = (vx_status)VX_ERROR_NOT_SUPPORTED;
 
-    status = tivxRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value);
+    status = ownRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value);
 
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
+VX_API_ENTRY vx_status VX_API_CALL ownRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
                 vx_uint32 param, vx_uint32 app_value)
 {

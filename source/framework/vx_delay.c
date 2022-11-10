@@ -92,7 +92,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
             prm = &delay->prm_pool[i];
             prm->next = NULL;
             prm->index = 0;
-            tivxLogSetResourceUsedValue("TIVX_DELAY_MAX_PRM_OBJECT", (uint16_t)i+1U);
+            ownLogSetResourceUsedValue("TIVX_DELAY_MAX_PRM_OBJECT", (uint16_t)i+1U);
             break;
         }
     }
@@ -389,7 +389,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     }
                     if(status == (vx_status)VX_SUCCESS)
                     {
-                        tivxLogSetResourceUsedValue("TIVX_DELAY_MAX_OBJECT", (uint16_t)count);
+                        ownLogSetResourceUsedValue("TIVX_DELAY_MAX_OBJECT", (uint16_t)count);
                     }
                     if ( (status == (vx_status)VX_SUCCESS) && (exemplar->type == (vx_enum)VX_TYPE_OBJECT_ARRAY) )
                     {

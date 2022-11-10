@@ -112,12 +112,12 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         if (((vx_status)VX_SUCCESS == status) &&
             (scale == VX_SCALE_PYRAMID_ORB))
         {
-            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
+            ownLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
         }
 
         if ((vx_status)VX_SUCCESS == status)
         {
-            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
+            ownLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
         }
 
         if ((vx_status)VX_SUCCESS == status)
@@ -134,7 +134,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 prmd->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleasePyramid;
 
-                obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
                 if(obj_desc==NULL)
                 {
@@ -258,7 +258,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             prmd->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleasePyramid;
 
-            obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+            obj_desc = (tivx_obj_desc_pyramid_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
             if(obj_desc==NULL)
             {
@@ -289,10 +289,10 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 
                 if (scale == VX_SCALE_PYRAMID_ORB)
                 {
-                    tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
+                    ownLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", (uint16_t)levels);
                 }
 
-                tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
+                ownLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", (uint16_t)levels);
             }
         }
     }
@@ -487,7 +487,7 @@ static vx_status ownDestructPyramid(vx_reference ref)
     {
         if(prmd->base.obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

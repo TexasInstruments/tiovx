@@ -324,7 +324,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value
 
     uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-    status = tivxEventQueueAddEvent(
+    status = ownEventQueueAddEvent(
                 &graph->event_queue,
                 (vx_enum)VX_EVENT_USER,
                 timestamp, app_value,
@@ -417,11 +417,11 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
             streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
-            status = tivxEventQueueCreate(&graph->event_queue);
+            status = ownEventQueueCreate(&graph->event_queue);
 
             if ((vx_status)VX_SUCCESS == status)
             {
-                tivxEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
+                ownEventQueueEnableEvents(&graph->event_queue, (vx_bool)vx_true_e);
 
                 if (graph->pipeline_depth > 1U)
                 {
@@ -429,7 +429,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     if ( ((vx_enum)VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
                          ((vx_bool)vx_true_e == graph->trigger_node_set) )
                     {
-                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
+                        status = ownRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
                     }
                     else
                     {
@@ -530,7 +530,7 @@ void ownGraphFreeStreaming(vx_graph graph)
 
         tivxTaskDelete(&graph->streaming_task_handle);
 
-        tivxEventQueueDelete(&graph->event_queue);
+        ownEventQueueDelete(&graph->event_queue);
 
         tivxEventDelete(&graph->stop_done);
 

@@ -285,6 +285,6 @@ void tivxMemDeInit(void)
     ret_val = CMEM_exit();
     if (ret_val < 0)
     {
-        tivxPlatformPrintf(" tivxMemDeInit: CMEM_exit Failed \n");
+        ownPlatformPrintf(" tivxMemDeInit: CMEM_exit Failed \n");
     }
 }

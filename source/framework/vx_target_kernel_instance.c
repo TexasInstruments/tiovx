@@ -67,7 +67,7 @@
 static tivx_target_kernel_instance_t g_target_kernel_instance_table[TIVX_TARGET_KERNEL_INSTANCE_MAX];
 static tivx_mutex g_target_kernel_instance_lock;
 
-vx_status tivxTargetKernelInstanceInit(void)
+vx_status ownTargetKernelInstanceInit(void)
 {
     uint16_t i;
     vx_status status;
@@ -86,12 +86,12 @@ vx_status tivxTargetKernelInstanceInit(void)
     return status;
 }
 
-void tivxTargetKernelInstanceDeInit(void)
+void ownTargetKernelInstanceDeInit(void)
 {
     tivxMutexDelete(&g_target_kernel_instance_lock);
 }
 
-tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
+tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
     uint16_t i;
     tivx_target_kernel_instance kernel_instance = NULL, tmp_kernel_instance = NULL;
@@ -99,7 +99,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
     vx_status status;
     volatile char kernel_name_print[VX_MAX_KERNEL_NAME];
 
-    kernel = tivxTargetKernelGet(kernel_id, kernel_name, target_id);
+    kernel = ownTargetKernelGet(kernel_id, kernel_name, target_id);
 
     if( kernel_name != NULL )
     {
@@ -147,7 +147,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
 
                     kernel_instance = tmp_kernel_instance;
 
-                    tivxLogResourceAlloc("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
+                    ownLogResourceAlloc("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
 
                     break;
                 }
@@ -165,7 +165,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vol
     return kernel_instance;
 }
 
-vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel_instance)
+vx_status ownTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel_instance)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
@@ -174,7 +174,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
         (*target_kernel_instance)->kernel_id = (vx_enum)TIVX_TARGET_KERNEL_ID_INVALID;
         *target_kernel_instance = NULL;
 
-        tivxLogResourceFree("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
+        ownLogResourceFree("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
 
         status = (vx_status)VX_SUCCESS;
     }
@@ -186,7 +186,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
     return status;
 }
 
-uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance)
+uint32_t ownTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance)
 {
     uint32_t index = TIVX_TARGET_KERNEL_INSTANCE_MAX;
 
@@ -212,7 +212,7 @@ tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance
     return kernel;
 }
 
-tivx_target_kernel_instance tivxTargetKernelInstanceGet(uint16_t target_kernel_index, vx_enum kernel_id)
+tivx_target_kernel_instance ownTargetKernelInstanceGet(uint16_t target_kernel_index, vx_enum kernel_id)
 {
     tivx_target_kernel_instance target_kernel_instance = NULL, tmp_target_kernel_instance = NULL;
 

@@ -150,7 +150,7 @@ enum tivx_queue_type_e {
  *
  * \ingroup group_tivx_event_queue
  */
-vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q);
+vx_status ownEventQueueCreate(tivx_event_queue_t *event_q);
 
 
 /*!
@@ -160,7 +160,7 @@ vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q);
  *
  * \ingroup group_tivx_event_queue
  */
-void tivxEventQueueDelete(tivx_event_queue_t *event_q);
+void ownEventQueueDelete(tivx_event_queue_t *event_q);
 
 /*!
  * \brief Add event to event queue
@@ -169,7 +169,7 @@ void tivxEventQueueDelete(tivx_event_queue_t *event_q);
  *
  * \ingroup group_tivx_event_queue
  */
-vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
+vx_status ownEventQueueAddEvent(tivx_event_queue_t *event_q,
         vx_enum event_id, uint64_t timestamp, uint32_t app_value, uintptr_t param1, uintptr_t param2, uintptr_t param3);
 
 
@@ -178,7 +178,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
  *
  * \ingroup group_tivx_event_queue
  */
-void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
+void ownEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
 
 /*!
  * \brief Generic wait event queue API
@@ -193,7 +193,7 @@ vx_status vxWaitEventQueue(
  *
  * \ingroup group_tivx_event_queue
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
+VX_API_ENTRY vx_status VX_API_CALL ownRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
                 vx_uint32 param, vx_uint32 app_value);
 

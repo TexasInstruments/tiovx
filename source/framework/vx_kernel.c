@@ -342,7 +342,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                 kern->signature.directions[index] = dir;
                 kern->signature.types[index] = data_type;
                 kern->signature.states[index] = state;
-                tivxLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", (uint16_t)kern->signature.num_parameters);
+                ownLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", (uint16_t)kern->signature.num_parameters);
                 status = (vx_status)VX_SUCCESS;
             }
         }
@@ -516,7 +516,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
                 );
             kernel->target_name[kernel->num_targets][TIVX_TARGET_MAX_NAME-1U] = '\0';
             kernel->num_targets++;
-            tivxLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", (uint16_t)kernel->num_targets);
+            ownLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", (uint16_t)kernel->num_targets);
         }
         else
         {
@@ -566,7 +566,7 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
             /* valid target associated with kernel,
                take 0th index as default for this node
              */
-            target_id = tivxPlatformGetTargetId(kernel->target_name[0]);
+            target_id = ownPlatformGetTargetId(kernel->target_name[0]);
         }
     }
     return target_id;
@@ -593,7 +593,7 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
                 if (0 == strncmp(kernel->target_name[i], target_string,
                         TIVX_TARGET_MAX_NAME))
                 {
-                    target_id = tivxPlatformGetTargetId(target_string);
+                    target_id = ownPlatformGetTargetId(target_string);
                     break;
                 }
             }

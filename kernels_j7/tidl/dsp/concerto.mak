@@ -11,7 +11,6 @@ IDIRS       += $(IVISION_PATH)
 IDIRS       += $(TIDL_PATH)/inc
 IDIRS       += $(TIDL_PATH)/custom
 IDIRS       += $(VXLIB_PATH)/packages
-IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(PDK_PATH)/packages
 
 ifeq ($(TARGET_OS),SYSBIOS)

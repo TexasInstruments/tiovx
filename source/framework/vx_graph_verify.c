@@ -139,7 +139,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
             graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
-        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
+        ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
         status = (vx_status)VX_SUCCESS;
     }
     else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
@@ -859,7 +859,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 {
                     graph->head_nodes[graph->num_head_nodes] = node;
                     graph->num_head_nodes++;
-                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", (uint16_t)graph->num_head_nodes);
+                    ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", (uint16_t)graph->num_head_nodes);
                 }
             }
             if((num_out==0U) && (status == (vx_status)VX_SUCCESS))
@@ -875,7 +875,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 {
                     graph->leaf_nodes[graph->num_leaf_nodes] = node;
                     graph->num_leaf_nodes++;
-                    tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", (uint16_t)graph->num_leaf_nodes);
+                    ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", (uint16_t)graph->num_leaf_nodes);
                 }
             }
         }
@@ -1118,7 +1118,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
-                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+                status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
             else
             {
@@ -1144,7 +1144,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
-                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+                status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
             else
             {
@@ -1166,7 +1166,7 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             {
                 ref_obj_desc_id = ref->obj_desc->obj_desc_id;
 
-                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+                status = ownObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
             }
             else
             {
@@ -1269,7 +1269,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                tivxDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
+                ownDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
             }
         }
     }
@@ -1744,7 +1744,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             if(status==(vx_status)VX_SUCCESS)
             {
                 graph->num_data_ref_q++;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", (uint16_t)graph->num_data_ref_q);
+                ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", (uint16_t)graph->num_data_ref_q);
             }
         }
         else

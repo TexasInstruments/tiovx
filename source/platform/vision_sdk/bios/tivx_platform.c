@@ -18,17 +18,17 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
     return BspOsal_getCurTimeInUsec();
 }
 
-void tivxPlatformPrintf(const char *format)
+void ownPlatformPrintf(const char *format)
 {
     printf(format);
 }
 
-void tivxPlatformActivate()
+void ownPlatformActivate()
 {
     System_openvxActivate();
 }
 
-void tivxPlatformDeactivate()
+void ownPlatformDeactivate()
 {
     System_openvxDeactivate();
 }

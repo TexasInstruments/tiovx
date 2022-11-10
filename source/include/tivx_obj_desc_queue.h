@@ -84,14 +84,14 @@ extern "C" {
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueCreate(uint16_t *obj_desc_id);
+vx_status ownObjDescQueueCreate(uint16_t *obj_desc_id);
 
 /*!
  * \brief Release a object descriptor queue
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueRelease(uint16_t *obj_desc_id);
+vx_status ownObjDescQueueRelease(uint16_t *obj_desc_id);
 
 
 /*!
@@ -99,28 +99,28 @@ vx_status tivxObjDescQueueRelease(uint16_t *obj_desc_id);
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id);
+vx_status ownObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id);
 
 /*!
  * \brief Get number of elements in a object descriptor queue
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueGetCount(uint16_t obj_desc_q_id, uint32_t *count);
+vx_status ownObjDescQueueGetCount(uint16_t obj_desc_q_id, uint32_t *count);
 
 /*!
  * \brief Dequeue a obj_desc_id from a object descriptor queue
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id);
+vx_status ownObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id);
 
 /*!
  * \brief Add 'node_id' to a list of blocked nodes associated with this object descriptor ID
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_id);
+vx_status ownObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_id);
 
 /*!
  * \brief Extract nodes blocked on this object descritor queue ID
@@ -130,7 +130,7 @@ vx_status tivxObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_i
  *
  * \ingroup tivx_obj_desc_queue
  */
-vx_status tivxObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
+vx_status ownObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
             tivx_obj_desc_queue_blocked_nodes_t *out_blocked_nodes);
 
 #ifdef __cplusplus

@@ -84,35 +84,35 @@ extern "C" {
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceInit(void);
+void ownLogResourceInit(void);
 
 /*!
  * \brief De-Initialize max value structs
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceDeInit(void);
+void ownLogResourceDeInit(void);
 
 /*!
  * \brief Allocate new resource
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceAlloc(const char *resource_name, uint16_t num_allocs);
+void ownLogResourceAlloc(const char *resource_name, uint16_t num_allocs);
 
 /*!
  * \brief Free resource
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogResourceFree(const char *resource_name, uint16_t num_frees);
+void ownLogResourceFree(const char *resource_name, uint16_t num_frees);
 
 /*!
  * \brief Set max value of resource
  *
  * \ingroup group_tivx_log_resource
  */
-void tivxLogSetResourceUsedValue(const char *resource_name, uint16_t value);
+void ownLogSetResourceUsedValue(const char *resource_name, uint16_t value);
 
 
 #ifdef __cplusplus

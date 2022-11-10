@@ -126,7 +126,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
                 g_module_table[idx].name[TIVX_MODULE_MAX_NAME-1U] = '\0';
                 g_module_table[idx].publish = publish;
                 g_module_table[idx].unpublish = unpublish;
-                tivxLogResourceAlloc("TIVX_MODULE_MAX", 1);
+                ownLogResourceAlloc("TIVX_MODULE_MAX", 1);
                 status = (vx_status)VX_SUCCESS;
                 break;
             }

@@ -49,7 +49,7 @@ static vx_status ownDestructRemap(vx_reference ref)
                 tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -131,7 +131,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 remap->base.mem_alloc_callback = &ownAllocRemapBuffer;
                 remap->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseRemap;
 
-                obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
+                obj_desc = (tivx_obj_desc_remap_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
                 if(obj_desc==NULL)
                 {
                     vxReleaseRemap(&remap);

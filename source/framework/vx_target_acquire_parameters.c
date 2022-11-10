@@ -101,9 +101,9 @@ static void ownTargetObjDescSendRefConsumed(
 
         if((vx_enum)cmd_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID)
         {
-            tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)tivxObjDescGet(cmd_obj_desc_id);
+            tivx_obj_desc_cmd_t *cmd_obj_desc = (tivx_obj_desc_cmd_t *)ownObjDescGet(cmd_obj_desc_id);
 
-            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD))
+            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD))
             {
                 uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
@@ -118,7 +118,7 @@ static void ownTargetObjDescSendRefConsumed(
                 /* users wants a notification of data reference consumed
                  * so send command to host
                  */
-                tivxObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
+                ownObjDescSend( cmd_obj_desc->dst_target_id, cmd_obj_desc_id);
             }
         }
     }
@@ -134,7 +134,7 @@ static void ownTargetNodeDescAcquireParameter(
 
     *prm_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     flags = data_ref_q_obj_desc->flags;
 
@@ -144,7 +144,7 @@ static void ownTargetNodeDescAcquireParameter(
 
         obj_desc_q_id = data_ref_q_obj_desc->acquire_q_obj_desc_id;
 
-        tivxObjDescQueueDequeue(
+        ownObjDescQueueDequeue(
             obj_desc_q_id,
             &ref_obj_desc_id
             );
@@ -152,7 +152,7 @@ static void ownTargetNodeDescAcquireParameter(
         if((vx_enum)ref_obj_desc_id==(vx_enum)TIVX_OBJ_DESC_INVALID) /* did not get a ref */
         {
             /* add node to list of blocked nodes */
-            tivxObjDescQueueAddBlockedNode(
+            ownObjDescQueueAddBlockedNode(
                 obj_desc_q_id,
                 node_obj_desc->base.obj_desc_id
                 );
@@ -178,7 +178,7 @@ static void ownTargetNodeDescAcquireParameter(
             data_ref_q_obj_desc->in_node_done_cnt = 0;
             data_ref_q_obj_desc->flags = flags;
 
-            obj_desc = tivxObjDescGet(ref_obj_desc_id);
+            obj_desc = ownObjDescGet(ref_obj_desc_id);
             if(obj_desc != NULL)
             {
                 obj_desc->in_node_done_cnt = 0;
@@ -207,7 +207,7 @@ static void ownTargetNodeDescAcquireParameter(
         *prm_obj_desc_id = data_ref_q_obj_desc->ref_obj_desc_id;
     }
 
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
 static void ownTargetNodeDescAcquireParameterForPipeup(
@@ -220,7 +220,7 @@ static void ownTargetNodeDescAcquireParameterForPipeup(
 
     *prm_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     flags = data_ref_q_obj_desc->flags;
 
@@ -230,7 +230,7 @@ static void ownTargetNodeDescAcquireParameterForPipeup(
 
         obj_desc_q_id = data_ref_q_obj_desc->acquire_q_obj_desc_id;
 
-        tivxObjDescQueueDequeue(
+        ownObjDescQueueDequeue(
             obj_desc_q_id,
             &ref_obj_desc_id
             );
@@ -249,7 +249,7 @@ static void ownTargetNodeDescAcquireParameterForPipeup(
             tivx_obj_desc_t *obj_desc;
 
             /* dont set acquired flag, since this is pipe up phase, just extract the data obj desc */
-            obj_desc = tivxObjDescGet(ref_obj_desc_id);
+            obj_desc = ownObjDescGet(ref_obj_desc_id);
             if(obj_desc != NULL)
             {
                 obj_desc->in_node_done_cnt = 0;
@@ -278,7 +278,7 @@ static void ownTargetNodeDescAcquireParameterForPipeup(
         *prm_obj_desc_id = data_ref_q_obj_desc->ref_obj_desc_id;
     }
 
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
 static void ownTargetNodeDescReleaseParameterInDelay(
@@ -295,7 +295,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
 
     for(i=0; i<(delay_slots-1U); i++)
     {
-        next_data_ref_q = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(cur_data_ref_q->next_obj_desc_id_in_delay);
+        next_data_ref_q = (tivx_obj_desc_data_ref_q_t*)ownObjDescGet(cur_data_ref_q->next_obj_desc_id_in_delay);
 
         if(next_data_ref_q!=NULL)
         {
@@ -304,7 +304,7 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                 /* acquire a ref and release it immediately to rotate the ref at this slot */
                 obj_desc_q_id = next_data_ref_q->acquire_q_obj_desc_id;
 
-                tivxObjDescQueueDequeue(
+                ownObjDescQueueDequeue(
                     obj_desc_q_id,
                     &ref_obj_desc_id
                     );
@@ -313,14 +313,14 @@ static void ownTargetNodeDescReleaseParameterInDelay(
                 {
                     obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
 
-                    tivxObjDescQueueEnqueue(
+                    ownObjDescQueueEnqueue(
                         obj_desc_q_id,
                         ref_obj_desc_id
                         );
                     /* check if anyone was blocked on this buffer being available
                      * if yes then get the node IDs and trigger them
                      */
-                    tivxObjDescQueueExtractBlockedNodes(
+                    ownObjDescQueueExtractBlockedNodes(
                         obj_desc_q_id,
                         blocked_nodes
                         );
@@ -356,9 +356,9 @@ static void ownTargetNodeDescReleaseParameter(
     blocked_nodes.node_id[0] = 0;
     do_release_ref = (vx_bool)vx_false_e;
     do_release_ref_to_queue = (vx_bool)vx_false_e;
-    obj_desc = tivxObjDescGet(ref_obj_desc_id);
+    obj_desc = ownObjDescGet(ref_obj_desc_id);
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     flags = data_ref_q_obj_desc->flags;
 
@@ -382,7 +382,7 @@ static void ownTargetNodeDescReleaseParameter(
              * in_node_done_cnt of the obj_desc, we need to also query the parent_obj_desc to see if this obj desc
              * has also been released and check this against the check the data_ref_q_obj_desc->num_in_nodes. */
             {
-                parent_obj_desc = tivxObjDescGet(obj_desc->scope_obj_desc_id);
+                parent_obj_desc = ownObjDescGet(obj_desc->scope_obj_desc_id);
 
                 if(parent_obj_desc!=NULL)
                 {
@@ -429,14 +429,14 @@ static void ownTargetNodeDescReleaseParameter(
              */
             obj_desc_q_id = data_ref_q_obj_desc->release_q_obj_desc_id;
 
-            tivxObjDescQueueEnqueue(
+            ownObjDescQueueEnqueue(
                 obj_desc_q_id,
                 ref_obj_desc_id
                 );
             /* check if anyone was blocked on this buffer being available
              * if yes then get the node IDs and trigger them
              */
-            tivxObjDescQueueExtractBlockedNodes(
+            ownObjDescQueueExtractBlockedNodes(
                 obj_desc_q_id,
                 &blocked_nodes
                 );
@@ -491,7 +491,7 @@ static void ownTargetNodeDescReleaseParameter(
                        );
         }
     }
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     for(node_id=0; node_id<blocked_nodes.num_nodes; node_id++)
     {
@@ -499,11 +499,11 @@ static void ownTargetNodeDescReleaseParameter(
                                  blocked_nodes.node_id[node_id]
                            );
 
-        tivxTargetTriggerNode(blocked_nodes.node_id[node_id]);
+        ownTargetTriggerNode(blocked_nodes.node_id[node_id]);
     }
 }
 
-void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
+void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked)
 {
     uint32_t prm_id;
@@ -523,9 +523,9 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
         {
             tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc;
 
-            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
+            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)ownObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 ownTargetNodeDescAcquireParameter(
                     node_obj_desc,
@@ -554,7 +554,7 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
     }
 }
 
-void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
+void ownTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
             uint16_t prm_obj_desc_id[])
 {
     uint32_t prm_id;
@@ -572,9 +572,9 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
         {
             tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc;
 
-            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
+            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)ownObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 ownTargetNodeDescAcquireParameterForPipeup(
                     node_obj_desc,
@@ -590,7 +590,7 @@ void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_
     }
 }
 
-void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
+void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
     uint32_t is_prm_input_flag, is_prm_data_ref_q_flag, prm_id;
     vx_bool is_prm_released, is_prm_input;
@@ -608,9 +608,9 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
         {
             tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc;
 
-            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
+            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)ownObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
 
-            if(0 != tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
                 is_prm_input = tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id));
 

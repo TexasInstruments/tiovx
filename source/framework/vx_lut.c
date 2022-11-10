@@ -90,7 +90,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseLUT;
 
-                obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_lut_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_LUT, (vx_reference)lut);
                 if(obj_desc==NULL)
                 {
@@ -405,7 +405,7 @@ static vx_status ownDestructLut(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

@@ -28,7 +28,7 @@ uint8_t gTarget_dspTskStack[TIVX_TARGET_DEFAULT_DSP_STACK_SIZE];
 #pragma DATA_SECTION(gTarget_eveTskStack, ".bss:taskStackSection:tiovx")
 uint8_t gTarget_eveTskStack[TIVX_TARGET_DEFAULT_EVE_STACK_SIZE];
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_target_create_params_t target_create_prms;
@@ -79,7 +79,7 @@ void tivxPlatformCreateTargets(void)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxTargetCreate(target_id, &target_create_prms);
+        status = ownTargetCreate(target_id, &target_create_prms);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
@@ -87,7 +87,7 @@ void tivxPlatformCreateTargets(void)
     }
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_enum self_cpu, target_id;
@@ -122,7 +122,7 @@ void tivxPlatformDeleteTargets(void)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxTargetDelete(target_id);
+        status = ownTargetDelete(target_id);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");

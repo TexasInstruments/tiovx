@@ -160,7 +160,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueRelease(tivx_data_ref_queue *ref);
+vx_status ownDataRefQueueRelease(tivx_data_ref_queue *ref);
 
 
 /*!
@@ -168,7 +168,7 @@ vx_status tivxDataRefQueueRelease(tivx_data_ref_queue *ref);
  *
  * \ingroup group_tivx_data_ref_queue
  */
-uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id);
+uint16_t ownDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id);
 
 /*!
  * \brief Enqueue 'ref' into 'READY' queue
@@ -179,7 +179,7 @@ uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref);
+vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref);
 
 /*!
  * \brief Dequeue 'ref' from 'DONE' queue
@@ -190,7 +190,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref);
+vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref);
 
 
 /*!
@@ -202,7 +202,7 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout);
+vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout);
 
 
 /*!
@@ -210,21 +210,21 @@ vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
+vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
 
 /*!
  * \brief Return number of elements in 'READY' queue
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
+vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
 
 /*!
  * \brief Send 'ref consumed event' if event send is enabled
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp);
+vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp);
 
 
 /*!
@@ -232,7 +232,7 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
  *
  * \ingroup group_tivx_data_ref_queue
  */
-vx_status tivxDataRefQueueLinkDelayDataRefQueues(
+vx_status ownDataRefQueueLinkDelayDataRefQueues(
             tivx_data_ref_queue delay_data_ref_q_list[],
             vx_bool auto_age_delay_slot[],
             uint32_t delay_slots);

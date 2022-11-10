@@ -77,7 +77,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
 static tivx_target_kernel_t g_target_kernel_table[TIVX_TARGET_KERNEL_MAX];
 static tivx_mutex g_target_kernel_lock;
 
-vx_status tivxTargetKernelInit(void)
+vx_status ownTargetKernelInit(void)
 {
     uint32_t i;
     vx_status status;
@@ -93,7 +93,7 @@ vx_status tivxTargetKernelInit(void)
     return status;
 }
 
-void tivxTargetKernelDeInit(void)
+void ownTargetKernelDeInit(void)
 {
     tivxMutexDelete(&g_target_kernel_lock);
 }
@@ -134,7 +134,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                         VX_PRINT(VX_ZONE_INFO, "registered kernel %s on target %s\n", kernel_name, target_name);
                     }
                     g_target_kernel_table[i].target_id =
-                        tivxPlatformGetTargetId(target_name);
+                        ownPlatformGetTargetId(target_name);
                     g_target_kernel_table[i].process_func = process_func;
                     g_target_kernel_table[i].create_func = create_func;
                     g_target_kernel_table[i].delete_func = delete_func;
@@ -144,7 +144,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
 
                     knl = &g_target_kernel_table[i];
 
-                    tivxLogResourceAlloc("TIVX_TARGET_KERNEL_MAX", 1);
+                    ownLogResourceAlloc("TIVX_TARGET_KERNEL_MAX", 1);
                     resource_added = (vx_bool)vx_true_e;
 
                     break;
@@ -221,7 +221,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                     g_target_kernel_table[i].delete_func = NULL;
                     g_target_kernel_table[i].control_func = NULL;
 
-                    tivxLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
+                    ownLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
 
                     status = (vx_status)VX_SUCCESS;
                     break;
@@ -235,7 +235,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     return (status);
 }
 
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
+tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
     uint32_t i;
     tivx_target_kernel knl = NULL;
@@ -268,7 +268,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
                     )
                 {
                     /* copy kernel_id into tmp_knl->kernel_id since it will used
-                     * later during tivxTargetKernelInstanceGet as a additional check
+                     * later during ownTargetKernelInstanceGet as a additional check
                      * to make the correct target kernel instance is being referenced
                      */
                     tmp_knl->kernel_id = kernel_id;
@@ -292,7 +292,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_
     return (knl);
 }
 
-vx_status tivxTargetKernelCreate(
+vx_status ownTargetKernelCreate(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
@@ -324,7 +324,7 @@ vx_status tivxTargetKernelCreate(
     return (status);
 }
 
-vx_status tivxTargetKernelDelete(
+vx_status ownTargetKernelDelete(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
@@ -356,7 +356,7 @@ vx_status tivxTargetKernelDelete(
     return (status);
 }
 
-vx_status tivxTargetKernelExecute(
+vx_status ownTargetKernelExecute(
     tivx_target_kernel_instance target_kernel_instance,
     tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
@@ -372,11 +372,11 @@ vx_status tivxTargetKernelExecute(
         {
             VX_PRINT(VX_ZONE_INFO, "Executing process callback for kernel [%s]\n", knl->kernel_name);
 
-            tivxPlatformActivate();
+            ownPlatformActivate();
             status = knl->process_func(
                 target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
-            tivxPlatformDeactivate();
+            ownPlatformDeactivate();
 
             VX_PRINT(VX_ZONE_INFO, "Done executing process callback for kernel [%s]\n", knl->kernel_name);
 
@@ -396,7 +396,7 @@ vx_status tivxTargetKernelExecute(
     return (status);
 }
 
-vx_status tivxTargetKernelControl(
+vx_status ownTargetKernelControl(
     tivx_target_kernel_instance target_kernel_instance,
     uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {

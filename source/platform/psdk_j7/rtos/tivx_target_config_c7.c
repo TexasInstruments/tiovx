@@ -37,11 +37,11 @@ static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char
     vx_status status;
     tivx_target_create_params_t target_create_prms;
 
-    if(tivxTargetGetCpuId(target_id) == tivxGetSelfCpuId() )
+    if(ownTargetGetCpuId(target_id) == tivxGetSelfCpuId() )
     {
         char target_name[TIVX_TARGET_MAX_NAME];
 
-        tivxTargetSetDefaultCreateParams(&target_create_prms);
+        ownTargetSetDefaultCreateParams(&target_create_prms);
 
         target_create_prms.task_stack_ptr = gTarget_tskStack[i];
         target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
@@ -50,12 +50,12 @@ static void tivxPlatformCreateTargetId(vx_enum target_id, uint32_t i, const char
         strncpy(target_create_prms.task_name, name,TIVX_TARGET_MAX_TASK_NAME);
         target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1U] = (char)0;
 
-        status = tivxTargetCreate(target_id, &target_create_prms);
+        status = ownTargetCreate(target_id, &target_create_prms);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
         }
-        tivxPlatformGetTargetName(target_id, target_name);
+        ownPlatformGetTargetName(target_id, target_name);
         VX_PRINT(VX_ZONE_INIT, "Added target %s \n", target_name);
     }
 }
@@ -64,14 +64,14 @@ static void tivxPlatformDeleteTargetId(vx_enum target_id)
 {
     vx_status status;
 
-    status = tivxTargetDelete(target_id);
+    status = ownTargetDelete(target_id);
     if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }
 }
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
     /*
      * Note: All CPU tasks should be at a lower priority than APP_IPC_RPMESSAGE_RX_TASK_PRI, otherwise
@@ -118,7 +118,7 @@ void tivxPlatformCreateTargets(void)
     #endif
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1);
     tivxPlatformDeleteTargetId((vx_enum)TIVX_TARGET_ID_DSP_C7_1_PRI_2);

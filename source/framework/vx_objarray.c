@@ -94,7 +94,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
-                objarr->base.obj_desc = tivxObjDescAlloc(
+                objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
@@ -114,7 +114,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = (uint32_t)count;
 
-                    tivxLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
+                    ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
 
@@ -163,7 +163,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
-                objarr->base.obj_desc = tivxObjDescAlloc(
+                objarr->base.obj_desc = ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_OBJARRAY, (vx_reference)objarr);
                 if(objarr->base.obj_desc==NULL)
                 {
@@ -183,7 +183,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = (uint32_t)count;
 
-                    tivxLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
+                    ownLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", (uint16_t)obj_desc->num_items);
 
                     ownInitObjArrayFromObject(context, objarr, exemplar);
 
@@ -408,7 +408,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
 
             ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
-            tivxObjDescFree(&objarr->base.obj_desc);
+            ownObjDescFree(&objarr->base.obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

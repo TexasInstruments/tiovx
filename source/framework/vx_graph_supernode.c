@@ -385,7 +385,7 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
             }
         }
         obj_desc->num_edges = (uint16_t)cnt;
-        tivxLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_EDGES", (uint16_t)cnt);
+        ownLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_EDGES", (uint16_t)cnt);
     }
 
     return status;

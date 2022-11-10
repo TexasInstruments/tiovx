@@ -53,7 +53,7 @@ void *tivxPlatformGetDmaObj(void)
    return appUdmaGetObj();
 }
 
-vx_status tivxPlatformInit(void)
+vx_status ownPlatformInit(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     int32_t i = 0;
@@ -84,23 +84,23 @@ vx_status tivxPlatformInit(void)
 
             if ((vx_status)VX_SUCCESS != status)
             {
-                tivxPlatformDeInit();
+                ownPlatformDeInit();
                 break;
             }
         }
-        tivxIpcInit();
-        tivxLogRtInit();
+        ownIpcInit();
+        ownLogRtInit();
     }
 
     return (status);
 }
 
 
-void tivxPlatformDeInit(void)
+void ownPlatformDeInit(void)
 {
     int32_t i;
 
-    tivxIpcDeInit();
+    ownIpcDeInit();
 
     for (i = 0; i < (vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
@@ -111,7 +111,7 @@ void tivxPlatformDeInit(void)
     }
 }
 
-void tivxPlatformSystemLock(vx_enum lock_id)
+void ownPlatformSystemLock(vx_enum lock_id)
 {
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
@@ -141,13 +141,13 @@ void tivxPlatformSystemLock(vx_enum lock_id)
     }
 }
 
-void tivxPlatformSystemUnlock(vx_enum lock_id)
+void ownPlatformSystemUnlock(vx_enum lock_id)
 {
     if ((vx_enum)lock_id < (vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
         if(lock_id==(vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
         {
-            /* release the lock taken during tivxPlatformSystemLock */
+            /* release the lock taken during ownPlatformSystemLock */
             appIpcHwLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
         }
         else if ((vx_enum)TIVX_PLATFORM_LOCK_LOG_RT==lock_id)
@@ -168,7 +168,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
     }
 }
 
-vx_enum tivxPlatformGetTargetId(const char *target_name)
+vx_enum ownPlatformGetTargetId(const char *target_name)
 {
     uint32_t i;
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
@@ -190,7 +190,7 @@ vx_enum tivxPlatformGetTargetId(const char *target_name)
     return (target_id);
 }
 
-vx_bool tivxPlatformTargetMatch(
+vx_bool ownPlatformTargetMatch(
     const char *kernel_target_name, const char *target_string)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -230,7 +230,7 @@ void tivxPlatformResetObjDescTableInfo(void)
     }
 }
 
-void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
+void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
     if (NULL != table_info)
     {
@@ -260,7 +260,7 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
     }
 }
 
-void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
+void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
 {
     uint32_t i;
 
@@ -279,7 +279,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
     }
 }
 
-void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
+void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 {
     if(shm_base)
     {
@@ -293,11 +293,11 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     {
         appIpcGetTiovxLogRtSharedMemInfo(shm_base, shm_size);
         /* Needs to be called once by someone, size RTOS boots first, we call it in RTOS side */
-        tivxLogRtResetShm(*shm_base, *shm_size);
+        ownLogRtResetShm(*shm_base, *shm_size);
     }
 }
 
-void tivxPlatformTaskInit()
+void ownPlatformTaskInit()
 {
     appUtilsTaskInit();
 }

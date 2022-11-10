@@ -98,7 +98,7 @@ static tivx_platform_info_t g_tivx_platform_info =
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
 
-vx_status tivxPlatformInit(void)
+vx_status ownPlatformInit(void)
 {
     vx_status status;
     uint32_t i = 0;
@@ -109,13 +109,13 @@ vx_status tivxPlatformInit(void)
 
         if ((vx_status)(vx_status)VX_SUCCESS != status)
         {
-            tivxPlatformDeInit();
+            ownPlatformDeInit();
             break;
         }
     }
 
-    tivxIpcInit();
-    tivxLogRtInit();
+    ownIpcInit();
+    ownLogRtInit();
 
     tivxPlatformGetTimeInUsecs();
 
@@ -123,11 +123,11 @@ vx_status tivxPlatformInit(void)
 }
 
 
-void tivxPlatformDeInit(void)
+void ownPlatformDeInit(void)
 {
     uint32_t i;
 
-    tivxIpcDeInit();
+    ownIpcDeInit();
 
     for (i = 0; i < (uint32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX; i ++)
     {
@@ -138,7 +138,7 @@ void tivxPlatformDeInit(void)
     }
 }
 
-void tivxPlatformSystemLock(vx_enum lock_id)
+void ownPlatformSystemLock(vx_enum lock_id)
 {
     if ((int32_t)lock_id < (int32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
@@ -146,7 +146,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
     }
 }
 
-void tivxPlatformSystemUnlock(vx_enum lock_id)
+void ownPlatformSystemUnlock(vx_enum lock_id)
 {
     if ((int32_t)lock_id < (int32_t)(vx_enum)TIVX_PLATFORM_LOCK_MAX)
     {
@@ -155,7 +155,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
     }
 }
 
-vx_enum tivxPlatformGetTargetId(const char *target_name)
+vx_enum ownPlatformGetTargetId(const char *target_name)
 {
     uint32_t i;
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
@@ -177,7 +177,7 @@ vx_enum tivxPlatformGetTargetId(const char *target_name)
     return (target_id);
 }
 
-void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
+void ownPlatformGetTargetName(vx_enum target_id, char *target_name)
 {
     uint32_t i;
 
@@ -196,7 +196,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
     }
 }
 
-vx_bool tivxPlatformTargetMatch(
+vx_bool ownPlatformTargetMatch(
     const char *kernel_target_name, const char *target_string)
 {
     vx_bool status = (vx_bool)vx_false_e;
@@ -224,7 +224,7 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
-void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
+void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
     if (NULL != table_info)
     {
@@ -246,7 +246,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
     }
 }
 
-void tivxPlatformPrintf(const char *format)
+void ownPlatformPrintf(const char *format)
 {
     char buf[4*1024];
     uint64_t cur_time = tivxPlatformGetTimeInUsecs();
@@ -258,11 +258,11 @@ void tivxPlatformPrintf(const char *format)
     printf(buf);
 }
 
-void tivxPlatformActivate()
+void ownPlatformActivate()
 {
 }
 
-void tivxPlatformDeactivate()
+void ownPlatformDeactivate()
 {
 }
 
@@ -271,7 +271,7 @@ void *tivxPlatformGetDmaObj()
   return NULL;
 }
 
-void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
+void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
 {
     if(shm_base)
     {
@@ -283,6 +283,6 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size)
     }
 }
 
-void tivxPlatformTaskInit()
+void ownPlatformTaskInit()
 {
 }

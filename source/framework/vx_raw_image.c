@@ -139,7 +139,7 @@ static void ownLinkParentSubimage(tivx_raw_image parent, tivx_raw_image subimage
         if (parent->subimages[p] == NULL)
         {
             parent->subimages[p] = subimage;
-            tivxLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_SUBIMAGES", p+1);
+            ownLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_SUBIMAGES", p+1);
             break;
         }
     }
@@ -197,7 +197,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
                     }
                 }
             }
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
         if (NULL != raw_image->parent)
         {
@@ -473,7 +473,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
                 raw_image->base.mem_alloc_callback = &ownAllocRawImageBuffer;
                 raw_image->base.release_callback = (tivx_reference_release_callback_f)&tivxReleaseRawImage;
 
-                obj_desc = (tivx_obj_desc_raw_image_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE, (vx_reference)raw_image);
+                obj_desc = (tivx_obj_desc_raw_image_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_RAW_IMAGE, (vx_reference)raw_image);
 
                 if(obj_desc == NULL)
                 {
@@ -1237,7 +1237,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
                 map_size = (vx_uint32)temp_map_size0;
                 tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size, mem_type, usage));
 
-                tivxLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
+                ownLogSetResourceUsedValue("TIVX_RAW_IMAGE_MAX_MAPS", (uint16_t)map_idx+1U);
             }
             else
             {

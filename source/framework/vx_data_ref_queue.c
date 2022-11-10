@@ -64,7 +64,7 @@
 
 static vx_status ownDataRefQueueDestruct(vx_reference ref);
 
-vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
+vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_reference ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -88,19 +88,19 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
                             queue_obj_desc_id, ref_obj_desc_id
                        );
 
-        tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        status = tivxObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
+        status = ownObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
         if(status==(vx_status)VX_SUCCESS)
         {
             blocked_nodes.num_nodes = 0;
 
             /* if any node is blocked on ref enqueued to this queue, then get the list of blocked nodes */
-            tivxObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
+            ownObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
                 &blocked_nodes);
         }
 
-        tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
         if(status==(vx_status)VX_SUCCESS)
         {
@@ -113,7 +113,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
                                  blocked_nodes.node_id[node_id]
                            );
 
-                tivxTargetTriggerNode(blocked_nodes.node_id[node_id]);
+                ownTargetTriggerNode(blocked_nodes.node_id[node_id]);
             }
         }
     }
@@ -121,7 +121,7 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
     return status;
 }
 
-vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref)
+vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_reference *ref)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -138,11 +138,11 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
         /* get queue object descriptor */
         queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;
 
-        tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        status = tivxObjDescQueueDequeue(queue_obj_desc_id, &ref_obj_desc_id);
+        status = ownObjDescQueueDequeue(queue_obj_desc_id, &ref_obj_desc_id);
 
-        tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
         if((status == (vx_status)VX_SUCCESS) && ((vx_enum)ref_obj_desc_id != (vx_enum)TIVX_OBJ_DESC_INVALID))
         {
@@ -166,7 +166,7 @@ vx_status tivxDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refe
     return status;
 }
 
-vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout)
+vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -184,7 +184,7 @@ vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 
     return status;
 }
 
-vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
+vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -201,16 +201,16 @@ vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_u
         /* get queue object descriptor */
         queue_obj_desc_id = data_ref_q->done_q_obj_desc_id;
 
-        tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        status = tivxObjDescQueueGetCount(queue_obj_desc_id, count);
+        status = ownObjDescQueueGetCount(queue_obj_desc_id, count);
 
-        tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
     }
     return status;
 }
 
-vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
+vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -227,16 +227,16 @@ vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_
         /* get queue object descriptor */
         queue_obj_desc_id = data_ref_q->ready_q_obj_desc_id;
 
-        tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
-        status = tivxObjDescQueueGetCount(queue_obj_desc_id, count);
+        status = ownObjDescQueueGetCount(queue_obj_desc_id, count);
 
-        tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+        ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
     }
     return status;
 }
 
-uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id)
+uint16_t ownDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id)
 {
     uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 
@@ -247,7 +247,7 @@ uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline
     return obj_desc_id;
 }
 
-vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp)
+vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
@@ -259,7 +259,7 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
         }
         if(ref->is_enable_send_ref_consumed_event != 0)
         {
-            tivxEventQueueAddEvent(&ref->base.context->event_queue,
+            ownEventQueueAddEvent(&ref->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
         }
@@ -289,20 +289,20 @@ static vx_status ownDataRefQueueDestruct(vx_reference ref)
         {
             if(data_ref_q->obj_desc[i] != NULL)
             {
-                tivxObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
+                ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc[i]);
             }
             if(data_ref_q->obj_desc_cmd[i] != NULL)
             {
-                tivxObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
+                ownObjDescFree((tivx_obj_desc_t**)&data_ref_q->obj_desc_cmd[i]);
             }
         }
         if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
-            tivxObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
+            ownObjDescQueueRelease(&data_ref_q->acquire_q_obj_desc_id);
         }
         if((vx_enum)data_ref_q->release_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
-            tivxObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
+            ownObjDescQueueRelease(&data_ref_q->release_q_obj_desc_id);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -326,7 +326,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
             ref->base.destructor_callback = &ownDataRefQueueDestruct;
             ref->base.mem_alloc_callback = NULL;
             ref->base.release_callback =
-                (tivx_reference_release_callback_f)&tivxDataRefQueueRelease;
+                (tivx_reference_release_callback_f)&ownDataRefQueueRelease;
 
             ref->pipeline_depth = prms->pipeline_depth;
 
@@ -348,7 +348,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
 
             for(pipe_id=0; pipe_id<ref->pipeline_depth; pipe_id++)
             {
-                ref->obj_desc[pipe_id] = (tivx_obj_desc_data_ref_q_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_DATA_REF_Q, (vx_reference)ref);
+                ref->obj_desc[pipe_id] = (tivx_obj_desc_data_ref_q_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_DATA_REF_Q, (vx_reference)ref);
                 if(ref->obj_desc[pipe_id]==NULL)
                 {
                     status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -358,7 +358,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                     /* if user queueing is enabled, need to send response back to host */
                     if(prms->enable_user_queueing != 0)
                     {
-                        ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
+                        ref->obj_desc_cmd[pipe_id] = (tivx_obj_desc_cmd_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
                         if(ref->obj_desc_cmd[pipe_id]==NULL)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
@@ -375,13 +375,13 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = tivxObjDescQueueCreate(&ref->acquire_q_obj_desc_id);
+                status = ownObjDescQueueCreate(&ref->acquire_q_obj_desc_id);
             }
             if(status==(vx_status)VX_SUCCESS)
             {
                 if(prms->enable_user_queueing != 0)
                 {
-                    status = tivxObjDescQueueCreate(&ref->release_q_obj_desc_id);
+                    status = ownObjDescQueueCreate(&ref->release_q_obj_desc_id);
                 }
             }
             if(status==(vx_status)VX_SUCCESS)
@@ -433,7 +433,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
                         obj_desc_cmd->flags = 0;
 
                         /* this command is sent by the target node to HOST hence dst_target_id is HOST */
-                        obj_desc_cmd->dst_target_id = (vx_uint32)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+                        obj_desc_cmd->dst_target_id = (vx_uint32)ownPlatformGetTargetId(TIVX_TARGET_HOST);
 
                         /* source is node target which is not known at this moment, however
                          * since ACK is not required for this command, this can be set to INVALID
@@ -466,12 +466,12 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, const tivx_data_ref_q
     return ref;
 }
 
-vx_status tivxDataRefQueueRelease(tivx_data_ref_queue *ref)
+vx_status ownDataRefQueueRelease(tivx_data_ref_queue *ref)
 {
     return ownReleaseReferenceInt((vx_reference *)ref, (vx_enum)TIVX_TYPE_DATA_REF_Q, (vx_enum)VX_INTERNAL, NULL);
 }
 
-vx_status tivxDataRefQueueLinkDelayDataRefQueues(
+vx_status ownDataRefQueueLinkDelayDataRefQueues(
             tivx_data_ref_queue delay_data_ref_q_list[],
             vx_bool auto_age_delay_slot[],
             uint32_t delay_slots)

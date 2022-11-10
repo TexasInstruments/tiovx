@@ -256,7 +256,7 @@ typedef struct _tivx_target_create_params
  *
  * \ingroup group_tivx_target
  */
-vx_enum tivxTargetGetCpuId(vx_enum target_id);
+vx_enum ownTargetGetCpuId(vx_enum target_id);
 
 /*!
  * \brief Queue object descriptor to a given target
@@ -270,20 +270,20 @@ vx_enum tivxTargetGetCpuId(vx_enum target_id);
  *
  * \ingroup group_tivx_target
  */
-vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id);
+vx_status ownTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id);
 
 /*! \brief Trigger execution of a node obj desc
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetTriggerNode(uint16_t node_obj_desc_id);
+void ownTargetTriggerNode(uint16_t node_obj_desc_id);
 
 
 /*! \brief Acquire parameters for node execution
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
+void ownTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked);
 
 
@@ -291,14 +291,14 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
+void ownTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
             uint16_t prm_obj_desc_id[]);
 
 /*! \brief Release parameters that were previously acquired
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
 
 /*!
  * \brief Used to set default target create parameters in parameter structure
@@ -307,7 +307,7 @@ void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc,
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params);
+void ownTargetSetDefaultCreateParams(tivx_target_create_params_t *params);
 
 /*!
  * \brief Create a target object and associate with given target ID
@@ -320,7 +320,7 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params);
  *
  * \ingroup group_tivx_target
  */
-vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t *params);
+vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *params);
 
 
 /*!
@@ -332,7 +332,7 @@ vx_status tivxTargetCreate(vx_enum target_id, const tivx_target_create_params_t 
  *
  * \ingroup group_tivx_target
  */
-vx_status tivxTargetDelete(vx_enum target_id);
+vx_status ownTargetDelete(vx_enum target_id);
 
 /*!
  * \brief Init global state of target module
@@ -341,7 +341,7 @@ vx_status tivxTargetDelete(vx_enum target_id);
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetInit(void);
+void ownTargetInit(void);
 
 /*!
  * \brief De-Init global state of target module
@@ -350,7 +350,7 @@ void tivxTargetInit(void);
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetDeInit(void);
+void ownTargetDeInit(void);
 
 
 /*!
@@ -358,7 +358,7 @@ void tivxTargetDeInit(void);
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetSetTimestamp(
+void ownTargetSetTimestamp(
     const tivx_obj_desc_node_t *node_obj_desc, tivx_obj_desc_t *obj_desc[]);
 
 #ifdef __cplusplus

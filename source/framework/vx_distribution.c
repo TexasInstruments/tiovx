@@ -55,7 +55,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 dist->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseDistribution;
 
-                obj_desc = (tivx_obj_desc_distribution_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_distribution_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
                 if(obj_desc==NULL)
                 {
@@ -382,7 +382,7 @@ static vx_status ownDestructDistribution(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

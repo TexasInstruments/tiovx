@@ -139,7 +139,7 @@ static vx_status ownDestructSuperNode(vx_reference ref)
 
         if(obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -162,7 +162,7 @@ static void ownInitSuperNode(tivx_super_node super_node, vx_node nodes[], uint32
 
     obj_desc->num_nodes = (uint16_t)num_nodes;
 
-    tivxLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_NODES", (uint16_t)num_nodes);
+    ownLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_NODES", (uint16_t)num_nodes);
 }
 
 VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
@@ -187,7 +187,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
                 super_node->base.mem_alloc_callback = NULL;
                 super_node->base.release_callback = (tivx_reference_release_callback_f)&tivxReleaseSuperNode;
 
-                obj_desc = (tivx_obj_desc_super_node_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SUPER_NODE, (vx_reference)super_node);
+                obj_desc = (tivx_obj_desc_super_node_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SUPER_NODE, (vx_reference)super_node);
 
                 if(obj_desc == NULL)
                 {
@@ -272,7 +272,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQuerySuperNode(tivx_super_node super_node
             case (vx_enum)TIVX_SUPER_NODE_TARGET_STRING:
                 if ((ptr != NULL) && (size >= TIVX_TARGET_MAX_NAME))
                 {
-                    tivxPlatformGetTargetName((int32_t)super_node->node->obj_desc[0]->target_id, ptr);
+                    ownPlatformGetTargetName((int32_t)super_node->node->obj_desc[0]->target_id, ptr);
                 }
                 else
                 {

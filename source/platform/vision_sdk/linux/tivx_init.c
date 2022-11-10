@@ -24,20 +24,20 @@ void tivxInit(void)
         tivx_set_debug_zone(VX_ZONE_WARNING);
 
         /* Initialize resource logging */
-        tivxLogResourceInit();
+        ownLogResourceInit();
 
         /* Initialize platform */
-        tivxPlatformInit();
+        ownPlatformInit();
 
         /* Initialize Target */
-        tivxTargetInit();
+        ownTargetInit();
 
         /* Initialize Host */
         tivxHostInit();
 
-        tivxObjDescInit();
+        ownObjDescInit();
 
-        tivxPlatformCreateTargets();
+        ownPlatformCreateTargets();
 
         g_init_status = 1U;
     }
@@ -47,19 +47,19 @@ void tivxDeInit(void)
 {
     if (1U == g_init_status)
     {
-        tivxPlatformDeleteTargets();
+        ownPlatformDeleteTargets();
 
         /* DeInitialize Host */
         tivxHostDeInit();
 
         /* DeInitialize Target */
-        tivxTargetDeInit();
+        ownTargetDeInit();
 
         /* DeInitialize platform */
-        tivxPlatformDeInit();
+        ownPlatformDeInit();
 
         /* DeInitialize resource logging */
-        tivxLogResourceDeInit();
+        ownLogResourceDeInit();
 
         g_init_status = 0U;
     }

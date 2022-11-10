@@ -274,7 +274,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = tivxDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
+                status = ownDataRefQueueEnqueueReadyRef(data_ref_q, refs[ref_id]);
                 if(status!=(vx_status)VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
@@ -366,7 +366,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
             do
             {
                 ref = NULL;
-                status = tivxDataRefQueueDequeueDoneRef(data_ref_q, &ref);
+                status = ownDataRefQueueDequeueDoneRef(data_ref_q, &ref);
                 if((status == (vx_status)VX_SUCCESS) && (ref != NULL))
                 {
                     /* reference is dequeued break from do - while loop with success */
@@ -375,7 +375,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph
                 else
                 {
                     /* wait for "ref available for dequeue" event */
-                    status = tivxDataRefQueueWaitDoneRef(data_ref_q,
+                    status = ownDataRefQueueWaitDoneRef(data_ref_q,
                             graph->timeout_val);
                     if(status!=(vx_status)VX_SUCCESS)
                     {
@@ -459,7 +459,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
     else
     {
         *num_refs = 0;
-        status = tivxDataRefQueueGetDoneQueueCount(data_ref_q, num_refs);
+        status = ownDataRefQueueGetDoneQueueCount(data_ref_q, num_refs);
     }
     return status;
 }
@@ -551,7 +551,7 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
     {
         for(i=0; i<graph->pipeline_depth; i++)
         {
-            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
+            graph->obj_desc[i] = (tivx_obj_desc_graph_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
             if(graph->obj_desc[i]==NULL)
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to alloc obj desc\n");
@@ -588,7 +588,7 @@ void ownGraphFreeObjDesc(vx_graph graph)
     {
         if(graph->obj_desc[i]!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&graph->obj_desc[i]);
+            ownObjDescFree((tivx_obj_desc_t**)&graph->obj_desc[i]);
             graph->obj_desc[i] = NULL;
         }
     }
@@ -666,7 +666,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                &graph_obj_desc->exe_time_end_l
               );
 
-            tivxLogRtTraceGraphExeEnd(end_time, graph_obj_desc);
+            ownLogRtTraceGraphExeEnd(end_time, graph_obj_desc);
 
             ownUpdateGraphPerf(graph, graph_obj_desc->pipeline_id);
 
@@ -755,7 +755,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
                 &graph_obj_desc->exe_time_beg_l
             );
 
-            tivxLogRtTraceGraphExeStart(beg_time, graph_obj_desc);
+            ownLogRtTraceGraphExeStart(beg_time, graph_obj_desc);
 
             ownGraphClearState(graph, graph_obj_desc->pipeline_id);
 
@@ -869,7 +869,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             {
                 graph->pipeline_depth = pipeline_depth;
                 graph->is_pipeline_depth_set = (vx_bool)vx_true_e;
-                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", (uint16_t)graph->pipeline_depth+1U);
+                ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", (uint16_t)graph->pipeline_depth+1U);
             }
             else
             {
@@ -904,7 +904,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph)
                 {
                     count = 0;
 
-                    tivxDataRefQueueGetReadyQueueCount(
+                    ownDataRefQueueGetReadyQueueCount(
                             graph->parameters[i].data_ref_queue, &count);
 
                     if(count<min_count)

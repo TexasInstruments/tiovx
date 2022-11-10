@@ -1590,7 +1590,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 {
                     if(prms->error_obj_desc[chId][bufId]!=NULL)
                     {
-                        status = tivxObjDescFree((tivx_obj_desc_t**)&prms->error_obj_desc[chId][bufId]);
+                        status = ownObjDescFree((tivx_obj_desc_t**)&prms->error_obj_desc[chId][bufId]);
                     }
 
                     if ((vx_status)VX_SUCCESS != status)
@@ -1734,7 +1734,7 @@ static vx_status tivxCaptureAllocErrorDesc(tivxCaptureParams *prms,
         for (bufId = 0U; bufId < TIVX_CAPTURE_MAX_NUM_BUFS; bufId++)
         {
             /* Passing a NULL pointer as "ref" then overwriting it the next line w/ the 64 bit value */
-            prms->error_obj_desc[chId][bufId] = tivxObjDescAlloc((vx_enum)obj_desc->type, ref);
+            prms->error_obj_desc[chId][bufId] = ownObjDescAlloc((vx_enum)obj_desc->type, ref);
 
             /* Since vx_reference is a 32 bit address, this needs to use the 64 bit value of the host_ref */
             prms->error_obj_desc[chId][bufId]->host_ref = ref64;

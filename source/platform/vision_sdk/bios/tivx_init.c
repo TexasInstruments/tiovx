@@ -35,13 +35,13 @@ void tivxInit(void)
         tivx_clr_debug_zone(VX_ZONE_INFO);
 
         /* Initialize resource logging */
-        tivxLogResourceInit();
+        ownLogResourceInit();
 
         /* Initialize platform */
-        tivxPlatformInit();
+        ownPlatformInit();
 
         /* Initialize Target */
-        tivxTargetInit();
+        ownTargetInit();
 
     #if defined (C66)
         tivxRegisterOpenVXCoreTargetKernels();
@@ -68,9 +68,9 @@ void tivxInit(void)
     #endif
     #endif
 
-        tivxObjDescInit();
+        ownObjDescInit();
 
-        tivxPlatformCreateTargets();
+        ownPlatformCreateTargets();
 
         g_init_status = 1U;
 
@@ -82,7 +82,7 @@ void tivxDeInit(void)
 {
     if (1U == g_init_status)
     {
-        tivxPlatformDeleteTargets();
+        ownPlatformDeleteTargets();
 
     #ifdef BUILD_CONFORMANCE_TEST
     #if defined (C66)
@@ -111,13 +111,13 @@ void tivxDeInit(void)
     #endif
 
         /* DeInitialize Target */
-        tivxTargetDeInit();
+        ownTargetDeInit();
 
         /* DeInitialize platform */
-        tivxPlatformDeInit();
+        ownPlatformDeInit();
 
         /* DeInitialize resource logging */
-        tivxLogResourceDeInit();
+        ownLogResourceDeInit();
 
         g_init_status = 0U;
 

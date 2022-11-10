@@ -330,6 +330,13 @@ void tivxLogRtTraceKernelInstanceExeStart(tivx_target_kernel_instance kernel, ui
  */
 void tivxLogRtTraceKernelInstanceExeEnd(tivx_target_kernel_instance kernel, uint16_t event_index);
 
+/*!
+ * \brief Utility function to obtain DMA handle
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+void *tivxPlatformGetDmaObj(void);
+
 #ifdef __cplusplus
 }
 #endif

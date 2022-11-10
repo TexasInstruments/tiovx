@@ -135,7 +135,7 @@ typedef struct _tivx_target_kernel {
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelExecute(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+vx_status ownTargetKernelExecute(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*!
  * \brief Create kernel on the target
@@ -144,7 +144,7 @@ vx_status tivxTargetKernelExecute(tivx_target_kernel_instance target_kernel_inst
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelCreate(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+vx_status ownTargetKernelCreate(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*!
  * \brief Delete kernel on the target
@@ -153,7 +153,7 @@ vx_status tivxTargetKernelCreate(tivx_target_kernel_instance target_kernel_insta
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelDelete(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+vx_status ownTargetKernelDelete(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*!
  * \brief Control kernel on the target
@@ -163,7 +163,7 @@ vx_status tivxTargetKernelDelete(tivx_target_kernel_instance target_kernel_insta
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelControl(
+vx_status ownTargetKernelControl(
     tivx_target_kernel_instance target_kernel_instance,
     uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
@@ -172,21 +172,21 @@ vx_status tivxTargetKernelControl(
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id);
+tivx_target_kernel ownTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id);
 
 /*!
  * \brief Init target kernel module
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelInit(void);
+vx_status ownTargetKernelInit(void);
 
 /*!
  * \brief DeInit target kernel module
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-void tivxTargetKernelDeInit(void);
+void ownTargetKernelDeInit(void);
 
 
 #ifdef __cplusplus

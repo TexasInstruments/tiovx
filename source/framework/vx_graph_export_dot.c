@@ -107,7 +107,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
 
     if(node->obj_desc[0] != NULL)
     {
-        tivxPlatformGetTargetName((int32_t)node->obj_desc[0]->target_id, target_name);
+        ownPlatformGetTargetName((int32_t)node->obj_desc[0]->target_id, target_name);
     }
     else
     {
@@ -276,7 +276,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
 
         if(graph->nodes[node_id]->obj_desc[0] != NULL)
         {
-            tivxPlatformGetTargetName((int32_t)graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
+            ownPlatformGetTargetName((int32_t)graph->nodes[node_id]->obj_desc[0]->target_id, target_name);
             for (target_id = 0; target_id < num_targets; target_id++)
             {
                 if(strcmp(target_name, target_name_list[target_id]) == 0)
@@ -464,7 +464,7 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
                         tivx_obj_desc_data_ref_q_t *next_obj_desc;
 
                         next_obj_desc = (tivx_obj_desc_data_ref_q_t *)
-                                            tivxObjDescGet(ref->obj_desc[pipe_id]->next_obj_desc_id_in_delay);
+                                            ownObjDescGet(ref->obj_desc[pipe_id]->next_obj_desc_id_in_delay);
 
                         if(next_obj_desc != NULL)
                         {
@@ -733,7 +733,7 @@ static void ownExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
         if((vx_enum)data_ref_q->acquire_q_obj_desc_id!=(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_queue_t *obj_desc_queue
-                = (tivx_obj_desc_queue_t *)tivxObjDescGet(data_ref_q->acquire_q_obj_desc_id);
+                = (tivx_obj_desc_queue_t *)ownObjDescGet(data_ref_q->acquire_q_obj_desc_id);
 
             if((obj_desc_queue != NULL) && (obj_desc_queue->count > 0U))
             {

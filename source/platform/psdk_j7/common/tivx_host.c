@@ -66,7 +66,7 @@ static void tivxHostInitLocal(void)
          * then some other TIOVX process running in background would lose its state and things will go wrong
          */
         /* tivxPlatformResetObjDescTableInfo(); */
-        tivxObjectInit();
+        ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
 
         #if defined(SOC_AM62A)
@@ -105,7 +105,7 @@ static void tivxHostDeInitLocal(void)
         if (0U == gInitCount)
         {
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
-            tivxObjectDeInit();
+            ownObjectDeInit();
             tivxUnRegisterOpenVXCoreKernels();
         }
     }

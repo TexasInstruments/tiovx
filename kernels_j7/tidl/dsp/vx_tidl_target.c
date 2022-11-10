@@ -60,18 +60,15 @@
 *
 */
 
-
 #include <stdio.h>
 #include <TI/tivx.h>
 #include <TI/j7_tidl.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_alg_ivision_if.h>
-#include "tivx_platform.h"
 #include "itidl_ti.h"
 #include "tivx_tidl_trace.h"
 #include "tivx_kernels_target_utils.h"
 #include "tidl_custom.h"
-
 
 #ifndef x86_64
 #include "c7x.h"

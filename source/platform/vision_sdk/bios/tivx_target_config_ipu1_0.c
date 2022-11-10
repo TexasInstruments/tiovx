@@ -22,7 +22,7 @@
 uint8_t gHost_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE];
 
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -32,18 +32,18 @@ void tivxPlatformCreateTargets(void)
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = 8U;
 
-    status = tivxTargetCreate(TIVX_TARGET_ID_IPU1_0, &target_create_prms);
+    status = ownTargetCreate(TIVX_TARGET_ID_IPU1_0, &target_create_prms);
     if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
     }
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
     vx_status status;
 
-    status = tivxTargetDelete(TIVX_TARGET_ID_IPU1_0);
+    status = ownTargetDelete(TIVX_TARGET_ID_IPU1_0);
     if ((vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");

@@ -466,7 +466,7 @@ typedef struct {
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref);
+tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
 
 /*!
  * \brief Free a previously allocated object descriptor
@@ -475,7 +475,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref);
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc);
+vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc);
 
 
 /*!
@@ -491,7 +491,7 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc);
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id);
+vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id);
 
 /*!
  * \brief Get obj descriptor corresponding to the object descriptor ID
@@ -502,28 +502,28 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id);
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id);
+tivx_obj_desc_t *ownObjDescGet(uint16_t obj_desc_id);
 
 /*!
  * \brief Checks if object desc pointer is valid and it is of required type
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
+vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
 
 /*!
  * \brief Init object descriptor module
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-void tivxObjDescInit(void);
+void ownObjDescInit(void);
 
 /*!
  * \brief Function to get the descriptor object from the given reference
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-uint16_t tivxReferenceGetObjDescId(vx_reference ref);
+uint16_t ownReferenceGetObjDescId(vx_reference ref);
 
 #ifdef __cplusplus
 }

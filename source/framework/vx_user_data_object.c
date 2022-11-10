@@ -133,7 +133,7 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -207,7 +207,7 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                 user_data_object->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseUserDataObject;
 
-                user_data_object->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
+                user_data_object->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_USER_DATA_OBJECT, (vx_reference)user_data_object);
                 if(user_data_object->base.obj_desc==NULL)
                 {
@@ -534,7 +534,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
 
             *map_id = i;
 
-            tivxLogSetResourceUsedValue("TIVX_USER_DATA_OBJECT_MAX_MAPS", (uint16_t)i+1U);
+            ownLogSetResourceUsedValue("TIVX_USER_DATA_OBJECT_MAX_MAPS", (uint16_t)i+1U);
         }
         else
         {

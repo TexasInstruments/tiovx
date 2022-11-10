@@ -19,7 +19,7 @@ void tivxHostInit(void)
 {
     if (0U == g_init_status)
     {
-        tivxObjectInit();
+        ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
         g_init_status = 1U;
@@ -32,7 +32,7 @@ void tivxHostDeInit(void)
     if (1U == g_init_status)
     {
         VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
-        tivxObjectDeInit();
+        ownObjectDeInit();
         g_init_status = 0U;
         tivxUnRegisterOpenVXCoreKernels();
     }

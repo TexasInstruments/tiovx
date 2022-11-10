@@ -80,7 +80,7 @@ static uint8_t *ownAllocObject(
     uint32_t size, char *resource_name);
 
 
-vx_status tivxObjectInit(void)
+vx_status ownObjectInit(void)
 {
     vx_status status;
 
@@ -141,7 +141,7 @@ vx_status tivxObjectInit(void)
     return (status);
 }
 
-vx_status tivxObjectDeInit(void)
+vx_status ownObjectDeInit(void)
 {
     vx_status status;
     uint32_t error_index;
@@ -290,7 +290,7 @@ vx_status tivxObjectDeInit(void)
 
 
 
-vx_reference tivxObjectAlloc(vx_enum type)
+vx_reference ownObjectAlloc(vx_enum type)
 {
     vx_status status;
     vx_reference ref = NULL;
@@ -458,7 +458,7 @@ vx_reference tivxObjectAlloc(vx_enum type)
     return (ref);
 }
 
-vx_status tivxObjectFree(vx_reference ref)
+vx_status ownObjectFree(vx_reference ref)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
@@ -754,7 +754,7 @@ static uint8_t *ownAllocObject(
         {
             obj_ptr = obj_start_ptr;
             inUse[i] = (vx_bool)vx_true_e;
-            tivxLogResourceAlloc(resource_name, 1);
+            ownLogResourceAlloc(resource_name, 1);
             break;
         }
         obj_start_ptr += size;
@@ -781,7 +781,7 @@ static vx_status ownFreeObject(
         {
             inUse[i] = (vx_bool)vx_false_e;
             status = (vx_status)VX_SUCCESS;
-            tivxLogResourceFree(resource_name, 1);
+            ownLogResourceFree(resource_name, 1);
             break;
         }
         obj_start_ptr += size;

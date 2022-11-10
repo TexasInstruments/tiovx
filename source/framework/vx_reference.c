@@ -299,7 +299,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 }
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
 
-                tivxObjectFree(ref);
+                ownObjectFree(ref);
             }
         }
         *pref = NULL;
@@ -312,7 +312,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 
 vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftype, vx_reference scope)
 {
-    vx_reference ref = (vx_reference)tivxObjectAlloc(type);
+    vx_reference ref = (vx_reference)ownObjectAlloc(type);
     vx_status status = (vx_status)VX_SUCCESS;
 
     if (ref != NULL)
@@ -330,7 +330,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 
         if(status!=(vx_status)VX_SUCCESS)
         {
-            tivxObjectFree(ref);
+            ownObjectFree(ref);
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             VX_PRINT(VX_ZONE_ERROR, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
@@ -498,7 +498,7 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
 
 uint64_t ownReferenceGetHostRefFromObjDescId(uint16_t obj_desc_id)
 {
-    tivx_obj_desc_t *obj_desc = tivxObjDescGet(obj_desc_id);
+    tivx_obj_desc_t *obj_desc = ownObjDescGet(obj_desc_id);
     uint64_t ref = 0;
 
     if(obj_desc!=NULL)
@@ -511,7 +511,7 @@ uint64_t ownReferenceGetHostRefFromObjDescId(uint16_t obj_desc_id)
 
 vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
 {
-    tivx_obj_desc_t *obj_desc = tivxObjDescGet(obj_desc_id);
+    tivx_obj_desc_t *obj_desc = ownObjDescGet(obj_desc_id);
     vx_reference ref = NULL;
 
     if(obj_desc!=NULL)

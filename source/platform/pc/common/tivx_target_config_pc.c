@@ -68,7 +68,7 @@
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      ((2U * 1024U) * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
 
-static void tivxTargetCreateTargetId(vx_enum target_id)
+static void ownTargetCreateTargetId(vx_enum target_id)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -78,38 +78,38 @@ static void tivxTargetCreateTargetId(vx_enum target_id)
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY;
 
-    status = tivxTargetCreate(target_id, &target_create_prms);
+    status = ownTargetCreate(target_id, &target_create_prms);
     if ((vx_status)(vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
     }
 }
 
-static void tivxTargetDeleteTargetId(vx_enum target_id)
+static void ownTargetDeleteTargetId(vx_enum target_id)
 {
     vx_status status;
 
-    status = tivxTargetDelete(target_id);
+    status = ownTargetDelete(target_id);
     if ((vx_status)(vx_status)VX_SUCCESS != status)
     {
         VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }
 }
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
     uint32_t i;
     for (i=0; i<TIVX_PLATFORM_MAX_TARGETS; i++)
     {
-        tivxTargetCreateTargetId(i);
+        ownTargetCreateTargetId(i);
     }
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
     uint32_t i;
     for (i=0; i<TIVX_PLATFORM_MAX_TARGETS; i++)
     {
-        tivxTargetDeleteTargetId(i);
+        ownTargetDeleteTargetId(i);
     }
 }

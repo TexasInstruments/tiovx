@@ -43,7 +43,7 @@ static vx_status ownDestructScalar(vx_reference ref)
     {
         if(scalar->base.obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&scalar->base.obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -230,7 +230,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 scalar->base.destructor_callback = &ownDestructScalar;
                 scalar->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseScalar;
 
-                obj_desc = (tivx_obj_desc_scalar_t*)tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
+                obj_desc = (tivx_obj_desc_scalar_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
                 if(obj_desc==NULL)
                 {
                     vxReleaseScalar(&scalar);

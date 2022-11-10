@@ -85,7 +85,7 @@ extern "C" {
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtInit();
+void ownLogRtInit();
 
 /*!
  * \brief Reset shared memory used for logging
@@ -94,49 +94,49 @@ void tivxLogRtInit();
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtResetShm(void *shm_base, uint32_t shm_size);
+void ownLogRtResetShm(void *shm_base, uint32_t shm_size);
 
 /*!
  * \brief Log trace on node execute start
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
+void ownLogRtTraceNodeExeStart(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
 
 /*!
  * \brief Log trace on node execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
+void ownLogRtTraceNodeExeEnd(uint64_t timestamp, tivx_obj_desc_node_t *node_obj_desc);
 
 /*!
  * \brief Log trace on graph execute start
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
+void ownLogRtTraceGraphExeStart(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
 
 /*!
  * \brief Log trace on graph execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
+void ownLogRtTraceGraphExeEnd(uint64_t timestamp, tivx_obj_desc_graph_t *graph_obj_desc);
 
 /*!
  * \brief Log trace on target execute start
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc);
+void ownLogRtTraceTargetExeStart(tivx_target target, const tivx_obj_desc_t *obj_desc);
 
 /*!
  * \brief Log trace on target execute end
  *
  * \ingroup group_tivx_log_rt_trace
  */
-void tivxLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc);
+void ownLogRtTraceTargetExeEnd(tivx_target target, const tivx_obj_desc_t *obj_desc);
 
 #ifdef __cplusplus
 }

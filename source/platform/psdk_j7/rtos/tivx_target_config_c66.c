@@ -31,7 +31,7 @@ __attribute__ ((aligned(8192)))
     ;
 
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_target_create_params_t target_create_prms;
@@ -39,7 +39,7 @@ void tivxPlatformCreateTargets(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    tivxTargetSetDefaultCreateParams(&target_create_prms);
+    ownTargetSetDefaultCreateParams(&target_create_prms);
 
     target_create_prms.task_stack_ptr = gTarget_tskStack;
     target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
@@ -64,7 +64,7 @@ void tivxPlatformCreateTargets(void)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxTargetCreate(target_id, &target_create_prms);
+        status = ownTargetCreate(target_id, &target_create_prms);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
@@ -72,7 +72,7 @@ void tivxPlatformCreateTargets(void)
     }
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     vx_enum self_cpu, target_id;
@@ -95,7 +95,7 @@ void tivxPlatformDeleteTargets(void)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        status = tivxTargetDelete(target_id);
+        status = ownTargetDelete(target_id);
         if ((vx_status)VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");

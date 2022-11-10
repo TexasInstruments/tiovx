@@ -142,7 +142,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
         for (i = 0; i < TIVX_MAX_CTRL_CMD_OBJECTS; i++)
         {
             context->obj_desc_cmd[i] = (tivx_obj_desc_cmd_t*)
-                tivxObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
+                ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_CMD, NULL);
 
             if (context->obj_desc_cmd[i] != NULL)
             {
@@ -172,7 +172,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
             {
                 if (context->obj_desc_cmd[i] != NULL)
                 {
-                    tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+                    ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
                 }
 
                 if (context->cmd_ack_event[i] != NULL)
@@ -217,7 +217,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     {
         if (context->obj_desc_cmd[i] != NULL)
         {
-            status1 = tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
+            status1 = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
 
             if (status1 != (vx_status)VX_SUCCESS)
             {
@@ -364,7 +364,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                 context->num_references++;
                 is_success = (vx_bool)vx_true_e;
 
-                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_REFERENCES", 1);
+                ownLogResourceAlloc("TIVX_CONTEXT_MAX_REFERENCES", 1);
 
                 switch(ref->type)
                 {
@@ -462,7 +462,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
                 context->reftable[ref_idx] = NULL;
                 context->num_references--;
                 is_success = (vx_bool)vx_true_e;
-                tivxLogResourceFree("TIVX_CONTEXT_MAX_REFERENCES", 1);
+                ownLogResourceFree("TIVX_CONTEXT_MAX_REFERENCES", 1);
                 break;
             }
         }
@@ -512,7 +512,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 context->kerneltable[idx] = kernel;
                 context->num_unique_kernels++;
                 ownIncrementReference(&kernel->base, (vx_enum)VX_INTERNAL);
-                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
+                ownLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
                 break;
             }
         }
@@ -561,7 +561,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                 {
                     context->kerneltable[idx] = NULL;
                     context->num_unique_kernels--;
-                    tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
+                    ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                 }
                 else
                 {
@@ -666,7 +666,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
             obj_desc_cmd->cmd_id = (vx_enum)TIVX_CMD_NODE_CONTROL;
             obj_desc_cmd->dst_target_id = target_id;
             obj_desc_cmd->src_target_id =
-                (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+                (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
             obj_desc_cmd->num_obj_desc = 1u;
             obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
             obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
@@ -681,7 +681,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
             }
 
-            status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+            status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
             if (status == (vx_status)VX_SUCCESS)
             {
@@ -792,7 +792,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
             obj_desc_cmd->cmd_id = cmd;
             obj_desc_cmd->dst_target_id = target_id;
-            obj_desc_cmd->src_target_id = (uint32_t)tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+            obj_desc_cmd->src_target_id = (uint32_t)ownPlatformGetTargetId(TIVX_TARGET_HOST);
             obj_desc_cmd->num_obj_desc = num_obj_desc;
             obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
             obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)cmd_ack_event;
@@ -802,7 +802,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                 obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
             }
 
-            status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+            status = ownObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
 
             if (status == (vx_status)VX_SUCCESS)
             {
@@ -879,7 +879,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     {
         if (g_context_handle == NULL)
@@ -927,7 +927,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             }
             if(status==(vx_status)VX_SUCCESS)
             {
-                status = tivxEventQueueCreate(&context->event_queue);
+                status = ownEventQueueCreate(&context->event_queue);
             }
             if(status==(vx_status)VX_SUCCESS)
             {
@@ -987,7 +987,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
         }
     }
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     return context;
 }
@@ -996,11 +996,11 @@ vx_context ownGetContext(void)
 {
     vx_context context = NULL;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     context = g_context_handle;
 
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     return context;
 }
@@ -1025,7 +1025,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         *c = 0;
     }
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
     if (ownIsValidContext(context) == (vx_bool)vx_true_e)
     {
         if (ownDecrementReference(&context->base, (vx_enum)VX_EXTERNAL) == 0U)
@@ -1097,7 +1097,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 
             ownContextDeleteCmdObj(context);
 
-            tivxEventQueueDelete(&context->event_queue);
+            ownEventQueueDelete(&context->event_queue);
 
             /*! \internal wipe away the context memory first */
             /* Normally destroy sem is part of release reference, but can't for context */
@@ -1116,7 +1116,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
         VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_CONTEXT);
 
     return status;
 }
@@ -1440,7 +1440,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
                 context->user_structs[i].type = (vx_enum)VX_TYPE_USER_STRUCT_START + (int32_t)i;
                 context->user_structs[i].size = size;
                 type = context->user_structs[i].type;
-                tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (uint16_t)i+1U);
+                ownLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (uint16_t)i+1U);
                 break;
             }
         }

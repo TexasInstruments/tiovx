@@ -265,21 +265,21 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
 
 #define TIVX_RESOURCE_STATS_TABLE_SIZE (sizeof(g_tivx_resource_stats_table)/sizeof(g_tivx_resource_stats_table[0]))
 
-void tivxLogResourceInit(void)
+void ownLogResourceInit(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexCreate(&g_tivx_log_resource_lock);
 #endif
 }
 
-void tivxLogResourceDeInit(void)
+void ownLogResourceDeInit(void)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexDelete(&g_tivx_log_resource_lock);
 #endif
 }
 
-void tivxLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
+void ownLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int32_t i;
@@ -300,7 +300,7 @@ void tivxLogResourceAlloc(const char *resource_name, uint16_t num_allocs)
 #endif
 }
 
-void tivxLogResourceFree(const char *resource_name, uint16_t num_frees)
+void ownLogResourceFree(const char *resource_name, uint16_t num_frees)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int32_t i;
@@ -317,7 +317,7 @@ void tivxLogResourceFree(const char *resource_name, uint16_t num_frees)
 #endif
 }
 
-void tivxLogSetResourceUsedValue(const char *resource_name, uint16_t value)
+void ownLogSetResourceUsedValue(const char *resource_name, uint16_t value)
 {
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int32_t i;

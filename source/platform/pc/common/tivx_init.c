@@ -105,13 +105,13 @@ void tivxInit(void)
         tivx_set_debug_zone(VX_ZONE_WARNING);
 
         /* Initialize resource logging */
-        tivxLogResourceInit();
+        ownLogResourceInit();
 
         /* Initialize platform */
-        tivxPlatformInit();
+        ownPlatformInit();
 
         /* Initialize Target */
-        tivxTargetInit();
+        ownTargetInit();
 
         /* trick target kernel used in DSP emulation mode to think
          * they are being invoked from a DSP
@@ -177,9 +177,9 @@ void tivxInit(void)
 
         tivxHostInit();
 
-        tivxObjDescInit();
+        ownObjDescInit();
 
-        tivxPlatformCreateTargets();
+        ownPlatformCreateTargets();
 
         VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
     }
@@ -199,7 +199,7 @@ void tivxDeInit(void)
 
         if (0U == g_init_status)
         {
-            tivxPlatformDeleteTargets();
+            ownPlatformDeleteTargets();
 
             #ifdef BUILD_CONFORMANCE_TEST
             tivxUnRegisterCaptureTargetArmKernels();
@@ -221,13 +221,13 @@ void tivxDeInit(void)
             tivxHostDeInit();
 
             /* DeInitialize Target */
-            tivxTargetDeInit();
+            ownTargetDeInit();
 
             /* DeInitialize platform */
-            tivxPlatformDeInit();
+            ownPlatformDeInit();
 
             /* DeInitialize resource logging */
-            tivxLogResourceDeInit();
+            ownLogResourceDeInit();
         }
     }
     else

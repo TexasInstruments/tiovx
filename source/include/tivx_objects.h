@@ -204,24 +204,24 @@ typedef struct _tivx_object_t
  * \return ref The reference.
  * \ingroup group_tivx_obj
  */
-vx_reference tivxObjectAlloc(vx_enum reftype);
+vx_reference ownObjectAlloc(vx_enum reftype);
 
 /*! \brief Free memory for a reference
  * \param [in] ref The reference.
  * \return VX_SUCCESS on success
  * \ingroup group_tivx_obj
  */
-vx_status tivxObjectFree(vx_reference ref);
+vx_status ownObjectFree(vx_reference ref);
 
 /*! \brief Initialize object module
  * \ingroup group_tivx_obj
  */
-vx_status tivxObjectInit(void);
+vx_status ownObjectInit(void);
 
 /*! \brief De-Initialize object module
  * \ingroup group_tivx_obj
  */
-vx_status tivxObjectDeInit(void);
+vx_status ownObjectDeInit(void);
 
 #ifdef __cplusplus
 }

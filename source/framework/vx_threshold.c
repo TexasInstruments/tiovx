@@ -65,7 +65,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 thresh->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseThreshold;
 
-                obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_threshold_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_THRESHOLD, (vx_reference)thresh);
                 if(obj_desc==NULL)
                 {
@@ -316,7 +316,7 @@ static vx_status ownDestructThreshold(vx_reference ref)
     {
         if(ref->obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

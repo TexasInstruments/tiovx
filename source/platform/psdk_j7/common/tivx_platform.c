@@ -18,17 +18,17 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
     return appLogGetTimeInUsec();
 }
 
-void tivxPlatformPrintf(const char *format)
+void ownPlatformPrintf(const char *format)
 {
     appLogPrintf(format);
 }
 
-void tivxPlatformActivate(void)
+void ownPlatformActivate(void)
 {
 
 }
 
-void tivxPlatformDeactivate(void)
+void ownPlatformDeactivate(void)
 {
 
 }

@@ -128,7 +128,7 @@ void tivx_print(vx_enum zone, const char *format, ...)
         snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
         size = (uint32_t)strlen(string);
         vsnprintf(&string[size], sizeof(string)-size, format, ap);
-        tivxPlatformPrintf(string);
+        ownPlatformPrintf(string);
         va_end(ap);
     }
 }

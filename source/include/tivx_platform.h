@@ -113,7 +113,7 @@ typedef enum {
  *
  * \ingroup group_tivx_platform
  */
-vx_enum tivxPlatformGetTargetId(const char *target_name);
+vx_enum ownPlatformGetTargetId(const char *target_name);
 
 /*!
  * \brief Convert a specific target ID to a target name
@@ -123,7 +123,7 @@ vx_enum tivxPlatformGetTargetId(const char *target_name);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformGetTargetName(vx_enum target_id, char *target_name);
+void ownPlatformGetTargetName(vx_enum target_id, char *target_name);
 
 /*!
  * \brief Match a user specified target_string with kernel suported target name
@@ -135,7 +135,7 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name);
  *
  * \ingroup group_tivx_platform
  */
-vx_bool tivxPlatformTargetMatch(const char *kernel_target_name, const char *target_string);
+vx_bool ownPlatformTargetMatch(const char *kernel_target_name, const char *target_string);
 
 
 /*!
@@ -146,7 +146,7 @@ vx_bool tivxPlatformTargetMatch(const char *kernel_target_name, const char *targ
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info);
+void ownPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info);
 
 /*!
  * \brief Return shared memory info which holds the run-time logger buffer
@@ -156,7 +156,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size);
+void ownPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size);
 
 /*!
  * \brief Take a system level lock
@@ -166,35 +166,35 @@ void tivxPlatformGetLogRtShmInfo(void **shm_base, uint32_t *shm_size);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformSystemLock(vx_enum lock_id);
+void ownPlatformSystemLock(vx_enum lock_id);
 
 /*!
  * \brief Release system level lock
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformSystemUnlock(vx_enum lock_id);
+void ownPlatformSystemUnlock(vx_enum lock_id);
 
 /*!
  * \brief Init Platform module
  *
  * \ingroup group_tivx_platform
  */
-vx_status tivxPlatformInit(void);
+vx_status ownPlatformInit(void);
 
 /*!
  * \brief DeInit Platform module
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeInit(void);
+void ownPlatformDeInit(void);
 
 /*!
  * \brief Print given string
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformPrintf(const char *format);
+void ownPlatformPrintf(const char *format);
 
 /*!
  * \brief Function to set the target configuration
@@ -204,14 +204,14 @@ void tivxPlatformPrintf(const char *format);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformCreateTargets(void);
+void ownPlatformCreateTargets(void);
 
 /*!
  * \brief Function to destroy created targets
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeleteTargets(void);
+void ownPlatformDeleteTargets(void);
 
 /*!
  * \brief Utility function to enable Platform specific things
@@ -219,7 +219,7 @@ void tivxPlatformDeleteTargets(void);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformActivate(void);
+void ownPlatformActivate(void);
 
 /*!
  * \brief Utility function to disable Platform specific things
@@ -227,22 +227,14 @@ void tivxPlatformActivate(void);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeactivate(void);
-
-/*!
- * \brief Utility function to get Platform specific things
- *        Used to obtain DMA handle
- *
- * \ingroup group_tivx_platform
- */
-void *tivxPlatformGetDmaObj(void);
+void ownPlatformDeactivate(void);
 
 /*!
  * \brief Utility function to call OS-specific task init functions
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformTaskInit(void);
+void ownPlatformTaskInit(void);
 
 #ifdef __cplusplus
 }

@@ -48,14 +48,14 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if((graph->parameters[i].queue_enable != (vx_bool)vx_false_e) && (graph->parameters[i].data_ref_queue != NULL))
             {
-                tivxDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
+                ownDataRefQueueRelease(&graph->parameters[i].data_ref_queue);
             }
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
             if(graph->data_ref_q_list[i].data_ref_queue != NULL)
             {
-                tivxDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
+                ownDataRefQueueRelease(&graph->data_ref_q_list[i].data_ref_queue);
             }
             if(graph->data_ref_q_list[i].num_buf > 1U)
             {
@@ -86,7 +86,7 @@ static vx_status ownDestructGraph(vx_reference ref)
         {
             if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
             {
-                tivxDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
+                ownDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
             }
         }
 
@@ -224,7 +224,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
             graph->nodes[graph->num_nodes] = node;
             graph->num_nodes++;
             ownGraphSetReverify(graph);
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_NODES", (uint16_t)graph->num_nodes);
+            ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_NODES", (uint16_t)graph->num_nodes);
         }
         else
         {
@@ -255,7 +255,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
             graph->supernodes[graph->num_supernodes] = super_node;
             graph->num_supernodes++;
             ownGraphSetReverify(graph);
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_SUPER_NODES", (uint16_t)graph->num_supernodes);
+            ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_SUPER_NODES", (uint16_t)graph->num_supernodes);
         }
         else
         {
@@ -592,7 +592,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].num_buf = 0;
             graph->parameters[graph->num_params].type = (vx_enum)VX_TYPE_PARAMETER;
             graph->num_params++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
+            ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
             status = (vx_status)VX_SUCCESS;
         }
         else
@@ -612,7 +612,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = 0;
             graph->parameters[graph->num_params].queue_enable = (vx_bool)vx_false_e;
             graph->num_params++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
+            ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", (uint16_t)graph->num_params);
             status = (vx_status)VX_SUCCESS;
         }
         else
@@ -709,7 +709,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                     {
                         is_full = (vx_bool)vx_false_e;
                         graph->delays[i] = delay;
-                        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DELAYS", (uint16_t)i+1U);
+                        ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DELAYS", (uint16_t)i+1U);
                         break;
                     }
                 }
@@ -920,7 +920,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 
             timestamp = tivxPlatformGetTimeInUsecs()*1000U; /* in nano-secs */
 
-            tivxEventQueueAddEvent(&graph->base.context->event_queue,
+            ownEventQueueAddEvent(&graph->base.context->event_queue,
                         (vx_enum)VX_EVENT_GRAPH_COMPLETED, timestamp, graph->graph_completed_app_value,
                         (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
         }

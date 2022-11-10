@@ -114,26 +114,26 @@ static void ownObjDescIpcHandler(uint32_t payload)
     dst_target_id = ownIpcPayloadGetTargetId(payload);
 
     /* now this is local target hence call target API directly */
-    status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
+    status = ownTargetQueueObjDesc(dst_target_id, obj_desc_id);
 
     if(status != (vx_status)VX_SUCCESS)
     {
-        VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
+        VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
     }
 }
 
-void tivxObjDescInit(void)
+void ownObjDescInit(void)
 {
-    tivxPlatformGetObjDescTableInfo(&g_obj_desc_table);
-    tivxIpcRegisterHandler(ownObjDescIpcHandler);
+    ownPlatformGetObjDescTableInfo(&g_obj_desc_table);
+    ownIpcRegisterHandler(ownObjDescIpcHandler);
 }
 
-tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
+tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
 {
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
     uint32_t i, idx, cpu_id;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     idx = g_obj_desc_table.last_alloc_index;
 
@@ -154,7 +154,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
             for(cpu_id = 0; cpu_id<TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU; cpu_id++)
             {
-                tmp_obj_desc->host_port_id[cpu_id] = tivxIpcGetHostPortId(cpu_id);
+                tmp_obj_desc->host_port_id[cpu_id] = ownIpcGetHostPortId(cpu_id);
             }
             tmp_obj_desc->host_cpu_id  = (uint32_t)tivxGetSelfCpuId();
             tmp_obj_desc->timestamp = 0;
@@ -169,16 +169,16 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
         idx = (idx+1U)%g_obj_desc_table.num_entries;
     }
 
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return obj_desc;
 }
 
-vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
+vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
-    tivxPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    ownPlatformSystemLock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     if((NULL != obj_desc) && (NULL != *obj_desc))
     {
@@ -197,12 +197,12 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
         }
     }
 
-    tivxPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
+    ownPlatformSystemUnlock((vx_enum)TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return status;
 }
 
-tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id)
+tivx_obj_desc_t *ownObjDescGet(uint16_t obj_desc_id)
 {
     tivx_obj_desc_t *obj_desc = NULL;
 
@@ -214,7 +214,7 @@ tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id)
     return obj_desc;
 }
 
-vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
+vx_bool ownObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type)
 {
     vx_bool is_valid = (vx_bool)vx_false_e;
 
@@ -228,39 +228,39 @@ vx_bool tivxObjDescIsValidType(const tivx_obj_desc_t *obj_desc, tivx_obj_desc_ty
     return is_valid;
 }
 
-vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
+vx_status ownObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 {
     vx_enum cpu_id, self_cpu_id;
     uint32_t ipc_payload;
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_t *obj_desc;
 
-    cpu_id = tivxTargetGetCpuId((int32_t)dst_target_id);
+    cpu_id = ownTargetGetCpuId((int32_t)dst_target_id);
 
     self_cpu_id = tivxGetSelfCpuId();
 
     if(cpu_id == self_cpu_id)
     {
         /* target is on same CPU queue obj_desc using target APIs */
-        status = tivxTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
+        status = ownTargetQueueObjDesc((int32_t)dst_target_id, obj_desc_id);
 
         if(status != (vx_status)VX_SUCCESS)
         {
-            VX_PRINT(VX_ZONE_ERROR,"tivxTargetQueueObjDesc failed\n");
+            VX_PRINT(VX_ZONE_ERROR,"ownTargetQueueObjDesc failed\n");
         }
     }
     else
     {
         ipc_payload = ownIpcPayloadMake((int32_t)dst_target_id, obj_desc_id);
 
-        obj_desc = tivxObjDescGet(obj_desc_id);
+        obj_desc = ownObjDescGet(obj_desc_id);
 
         if (NULL != obj_desc)
         {
             if(self_cpu_id < TIVX_OBJ_DESC_MAX_HOST_PORT_ID_CPU)
             {
                 /* target is on remote CPU, send using IPC */
-                status = tivxIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
+                status = ownIpcSendMsg(cpu_id, ipc_payload, obj_desc->host_cpu_id, obj_desc->host_port_id[self_cpu_id]);
             }
             else
             {
@@ -269,20 +269,20 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
             if(status != (vx_status)VX_SUCCESS)
             {
-                VX_PRINT(VX_ZONE_ERROR,"tivxIpcSendMsg failed\n");
+                VX_PRINT(VX_ZONE_ERROR,"ownIpcSendMsg failed\n");
             }
         }
         else
         {
             status = (vx_status)VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR,"tivxObjDescGet failed\n");
+            VX_PRINT(VX_ZONE_ERROR,"ownObjDescGet failed\n");
         }
     }
 
     return status;
 }
 
-uint16_t tivxReferenceGetObjDescId(vx_reference ref)
+uint16_t ownReferenceGetObjDescId(vx_reference ref)
 {
     uint16_t obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
 

@@ -82,7 +82,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                 matrix->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
-                obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
                 if(obj_desc==NULL)
                 {
@@ -179,7 +179,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             matrix->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
-            obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
+            obj_desc = (tivx_obj_desc_matrix_t*)ownObjDescAlloc(
                 (vx_enum)TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
             if(obj_desc==NULL)
             {
@@ -558,7 +558,7 @@ static vx_status ownDestructMatrix(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;

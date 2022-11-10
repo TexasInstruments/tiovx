@@ -10,10 +10,10 @@
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
 
-void tivxPlatformCreateTargets(void)
+void ownPlatformCreateTargets(void)
 {
 }
 
-void tivxPlatformDeleteTargets(void)
+void ownPlatformDeleteTargets(void)
 {
 }

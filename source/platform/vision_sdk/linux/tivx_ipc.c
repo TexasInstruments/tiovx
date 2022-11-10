@@ -40,7 +40,7 @@ static uint32_t g_ipc_cpu_id_map[(vx_enum)TIVX_CPU_ID_MAX] = {
 };
 
 /*! \brief Pointer to the IPC notify event handler.
- *         It can be registered using #tivxIpcRegisterHandler API
+ *         It can be registered using #ownIpcRegisterHandler API
  * \ingroup group_tivx_ipc
  */
 static tivx_ipc_handler_f g_ipc_handler = NULL;
@@ -57,12 +57,12 @@ static void tivxIpcHandler(uint32_t payload)
     }
 }
 
-void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
+void ownIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 {
     g_ipc_handler = notifyCb;
 }
 
-vx_status tivxIpcSendMsg(
+vx_status ownIpcSendMsg(
     vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id)
 {
     /* convert OpenVX CPU ID to VSDK CPU ID */
@@ -117,13 +117,13 @@ vx_enum tivxGetSelfCpuId(void)
     return (cpu_id);
 }
 
-void tivxIpcInit(void)
+void ownIpcInit(void)
 {
     /* Register IPC Handler */
     System_registerOpenVxNotifyCb(tivxIpcHandler);
 }
 
-void tivxIpcDeInit(void)
+void ownIpcDeInit(void)
 {
     /* Un-Register IPC Handler */
     System_registerOpenVxNotifyCb(NULL);
@@ -140,10 +140,10 @@ vx_bool tivxIsTargetEnabled(char target_name[])
     if (NULL != target_name)
     {
         /* Get the targetId */
-        target_id = tivxPlatformGetTargetId(target_name);
+        target_id = ownPlatformGetTargetId(target_name);
         if (target_id != TIVX_TARGET_ID_INVALID)
         {
-            cpu_id = tivxTargetGetCpuId(target_id);
+            cpu_id = ownTargetGetCpuId(target_id);
             if( cpu_id < (vx_enum)TIVX_CPU_ID_MAX)
             {
                 vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];

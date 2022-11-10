@@ -65,18 +65,18 @@
 #include <vx_internal.h>
 
 /*! \brief Pointer to the IPC notify event handler.
- *         It can be registered using #tivxIpcRegisterHandler API
+ *         It can be registered using #ownIpcRegisterHandler API
  * \ingroup group_tivx_ipc
  */
 static tivx_ipc_handler_f g_ipc_handler = NULL;
 static vx_enum g_cpu_id = (vx_enum)TIVX_CPU_ID_DSP1;
 
-void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
+void ownIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 {
     g_ipc_handler = notifyCb;
 }
 
-vx_status tivxIpcSendMsg(
+vx_status ownIpcSendMsg(
     vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
@@ -99,7 +99,7 @@ void tivxSetSelfCpuId(vx_enum cpu_id)
     g_cpu_id = cpu_id;
 }
 
-uint16_t tivxIpcGetHostPortId(uint16_t cpu_id)
+uint16_t ownIpcGetHostPortId(uint16_t cpu_id)
 {
     /* NOT used */
     return 0;
@@ -110,11 +110,11 @@ vx_enum tivxGetSelfCpuId(void)
     return (g_cpu_id);
 }
 
-void tivxIpcInit(void)
+void ownIpcInit(void)
 {
 }
 
-void tivxIpcDeInit(void)
+void ownIpcDeInit(void)
 {
 }
 

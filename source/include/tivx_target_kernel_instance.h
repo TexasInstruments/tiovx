@@ -132,28 +132,28 @@ typedef struct _tivx_target_kernel_instance {
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-tivx_target_kernel_instance tivxTargetKernelInstanceGet(uint16_t target_kernel_index, vx_enum kernel_id);
+tivx_target_kernel_instance ownTargetKernelInstanceGet(uint16_t target_kernel_index, vx_enum kernel_id);
 
 /*!
  * \brief Create a target kernel instance for given kernel_id
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id);
+tivx_target_kernel_instance ownTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id);
 
 /*!
  * \brief Free previously allocate target kernel instance
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel_instance);
+vx_status ownTargetKernelInstanceFree(tivx_target_kernel_instance *target_kernel_instance);
 
 /*!
  * \brief Get fast index key for a given target kernel instance
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance);
+uint32_t ownTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance);
 
 
 
@@ -162,14 +162,14 @@ uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_ker
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-vx_status tivxTargetKernelInstanceInit(void);
+vx_status ownTargetKernelInstanceInit(void);
 
 /*!
  * \brief De-Init Target Kernel Instance Module
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-void tivxTargetKernelInstanceDeInit(void);
+void ownTargetKernelInstanceDeInit(void);
 
 #ifdef __cplusplus
 }

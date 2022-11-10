@@ -73,7 +73,7 @@ void tivxHostInit(void)
 {
     if (0U == g_init_status)
     {
-        tivxObjectInit();
+        ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         g_init_status = 1U;
     }
@@ -83,7 +83,7 @@ void tivxHostDeInit(void)
 {
     if (1U == g_init_status)
     {
-        tivxObjectDeInit();
+        ownObjectDeInit();
         tivxUnRegisterOpenVXCoreKernels();
         g_init_status = 0U;
     }

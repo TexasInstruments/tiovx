@@ -87,35 +87,35 @@ typedef void (*tivx_ipc_handler_f)(uint32_t payload);
  *
  * \ingroup group_tivx_ipc
  */
-vx_status tivxIpcSendMsg(vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id);
+vx_status ownIpcSendMsg(vx_enum cpu_id, uint32_t payload, uint32_t host_cpu_id, uint32_t host_port_id);
 
 /*!
  * \brief Register callback to call when IPC message is received
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcRegisterHandler(tivx_ipc_handler_f ipc_handler_func);
+void ownIpcRegisterHandler(tivx_ipc_handler_f ipc_handler_func);
 
 /*!
  * \brief Init IPC module
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcInit(void);
+void ownIpcInit(void);
 
 /*!
  * \brief Return CPU Port ID of the CPU on which this API is called
  *
  * \ingroup group_tivx_ipc
  */
-uint16_t tivxIpcGetHostPortId(uint16_t cpu_id);
+uint16_t ownIpcGetHostPortId(uint16_t cpu_id);
 
 /*!
  * \brief DeInit IPC module
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcDeInit(void);
+void ownIpcDeInit(void);
 
 #ifdef __cplusplus
 }

@@ -77,13 +77,13 @@ static void tivxInitLocal(void)
         tivx_clr_debug_zone((int32_t)VX_ZONE_INFO);
 
         /* Initialize resource logging */
-        tivxLogResourceInit();
+        ownLogResourceInit();
 
         /* Initialize platform */
-        tivxPlatformInit();
+        ownPlatformInit();
 
         /* Initialize Target */
-        tivxTargetInit();
+        ownTargetInit();
 
         /* Initialize Host */
     #if defined (SOC_J721E)
@@ -138,9 +138,9 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-        tivxObjDescInit();
+        ownObjDescInit();
 
-        tivxPlatformCreateTargets();
+        ownPlatformCreateTargets();
 
         VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
     }
@@ -156,7 +156,7 @@ static void tivxDeInitLocal(void)
 
         if (0U == gInitCount)
         {
-            tivxPlatformDeleteTargets();
+            ownPlatformDeleteTargets();
 
             /* DeInitialize Host */
         #if defined (SOC_J721E)
@@ -212,13 +212,13 @@ static void tivxDeInitLocal(void)
         #endif
 
             /* DeInitialize Target */
-            tivxTargetDeInit();
+            ownTargetDeInit();
 
             /* DeInitialize platform */
-            tivxPlatformDeInit();
+            ownPlatformDeInit();
 
             /* DeInitialize resource logging */
-            tivxLogResourceDeInit();
+            ownLogResourceDeInit();
 
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
         }

@@ -122,7 +122,7 @@ static vx_status ownDestructTensor(vx_reference ref)
                     &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+            ownObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return (vx_status)VX_SUCCESS;
@@ -278,7 +278,7 @@ VX_API_ENTRY vx_tensor VX_API_CALL vxCreateTensor(
                 tensor->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseTensor;
 
-                tensor->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
+                tensor->base.obj_desc = (tivx_obj_desc_t *)ownObjDescAlloc(
                     (vx_enum)TIVX_OBJ_DESC_TENSOR, (vx_reference)tensor);
                 if(tensor->base.obj_desc==NULL)
                 {
@@ -692,7 +692,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 tivxCheckStatus(&status, tivxMemBufferMap(map_addr, map_size,
                     memory_type, usage));
 
-                tivxLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", (vx_uint16)map_idx+1U);
+                ownLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", (vx_uint16)map_idx+1U);
             }
             else
             {
