@@ -176,13 +176,6 @@ void tivxPlatformSystemLock(vx_enum lock_id);
 void tivxPlatformSystemUnlock(vx_enum lock_id);
 
 /*!
- * \brief Get the time in micro seconds
- *
- * \ingroup group_tivx_platform
- */
-uint64_t tivxPlatformGetTimeInUsecs(void);
-
-/*!
  * \brief Init Platform module
  *
  * \ingroup group_tivx_platform
