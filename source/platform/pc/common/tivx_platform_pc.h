@@ -88,7 +88,7 @@ extern "C" {
 #elif defined (SOC_J6)
 #define TIVX_PLATFORM_MAX_TARGETS            (11u)
 #elif defined (SOC_AM62A)
-#define TIVX_PLATFORM_MAX_TARGETS            (17u)
+#define TIVX_PLATFORM_MAX_TARGETS            (20u)
 #endif
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
@@ -346,10 +346,13 @@ extern "C" {
     {TIVX_TARGET_IPU1_0, 9},                                  \
     {TIVX_TARGET_MCU1_0, 10},                                  \
     {TIVX_TARGET_A72_0, 11},                                  \
-    {TIVX_TARGET_VPAC_LDC1, 12},                              \
-    {TIVX_TARGET_VPAC_MSC1, 13},                              \
-    {TIVX_TARGET_VPAC_MSC2, 14},                              \
-    {TIVX_TARGET_VPAC_VISS1, 15},                             \
+    {TIVX_TARGET_A72_1, 12},                                  \
+    {TIVX_TARGET_A72_2, 13},                                  \
+    {TIVX_TARGET_A72_3, 14},                                  \
+    {TIVX_TARGET_VPAC_LDC1, 15},                              \
+    {TIVX_TARGET_VPAC_MSC1, 16},                              \
+    {TIVX_TARGET_VPAC_MSC2, 17},                              \
+    {TIVX_TARGET_VPAC_VISS1, 18},                             \
     /* TIVX_TARGET_HOST should point to the number associated with  \
      * the host target thread in list above                         \
      */                                                             \

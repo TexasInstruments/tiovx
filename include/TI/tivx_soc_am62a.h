@@ -87,10 +87,25 @@ extern "C" {
  * \brief Interface to am62a soc TI extension APIs
  */
 
-/*! \brief Target name for A53_0
+/*! \brief Target name for A72_0
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_A72_0      "A53-0"
+#define TIVX_TARGET_A72_0      "A72-0"
+
+/*! \brief Target name for A72_1
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_1      "A72-1"
+
+/*! \brief Target name for A72_2
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_2      "A72-2"
+
+/*! \brief Target name for A72_3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_A72_3      "A72-3"
 
 /*! \brief Target name for DSP_C7_1
  *         This target task is first in priority.

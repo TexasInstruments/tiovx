@@ -21,8 +21,6 @@
 #include <VX/vxu.h>
 #include <TI/tivx.h>
 
-#if !defined(SOC_AM62A)
-
 #define TIVX_KERNEL_CONFORMANCE_TEST_NESTED_USER_NAME "com.ti.test.own_nested_user"
 
 static enum vx_type_e type = VX_TYPE_IMAGE;
@@ -239,4 +237,3 @@ TEST(tivxNestedUserNode, testNestedUserKernel)
 TESTCASE_TESTS(tivxNestedUserNode,
         testNestedUserKernel
         )
-#endif
