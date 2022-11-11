@@ -85,7 +85,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if(ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+            if(ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 kernel_info[num_kernel_info].enumeration = kernel->enumeration;
                 strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME-1U);
@@ -280,7 +280,7 @@ static vx_status ownDeallocateUserKernelId(vx_context context, vx_kernel kernel)
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
 
     if ( (ownIsValidContext(context) == (vx_bool)vx_true_e) &&
-         (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
+         (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
         status = (vx_status)VX_SUCCESS;
 
@@ -495,7 +495,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
+    else if (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -540,7 +540,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
-    else if (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
+    else if (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Kernel reference is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -610,7 +610,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         {
             kernel = context->kerneltable[idx];
             if((NULL != kernel) &&
-                (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) ==
+                (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
                     (vx_bool)vx_true_e)
                 &&
                 ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
@@ -1564,7 +1564,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
+            if( (NULL != kernel) && (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
                 )
@@ -1603,7 +1603,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
         {
             kernel = context->kerneltable[idx];
             if((NULL != kernel) &&
-               (ownIsValidSpecificReference( &kernel->base, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
+               (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
                 &&
                 ( kernel->enumeration == kernelenum )
                 )

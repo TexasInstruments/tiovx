@@ -264,7 +264,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
     vx_status status = (vx_status)VX_SUCCESS;
     vx_scalar pscalar = (vx_scalar)scalar;
 
-    if (ownIsValidSpecificReference(&pscalar->base,(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
+    if (ownIsValidSpecificReference((vx_reference)pscalar,(vx_enum)VX_TYPE_SCALAR) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((vx_bool)vx_false_e == ownIsValidSpecificReference(&scalar->base, (vx_enum)VX_TYPE_SCALAR))
+    if ((vx_bool)vx_false_e == ownIsValidSpecificReference((vx_reference)scalar, (vx_enum)VX_TYPE_SCALAR))
     {
         VX_PRINT(VX_ZONE_ERROR, "invalid reference\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;

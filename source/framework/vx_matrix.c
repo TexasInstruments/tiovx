@@ -329,7 +329,7 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)matrix, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )
@@ -435,7 +435,7 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&matrix->base, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)matrix, (vx_enum)VX_TYPE_MATRIX) == (vx_bool)vx_false_e)
         ||
         (matrix->base.obj_desc == NULL)
         )

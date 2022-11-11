@@ -95,7 +95,7 @@ vx_status VX_API_CALL vxQueryThreshold(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thresh->base, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)thresh, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )
@@ -203,7 +203,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thresh->base, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)thresh, (vx_enum)VX_TYPE_THRESHOLD) == (vx_bool)vx_false_e)
         ||
         (thresh->base.obj_desc == NULL)
         )

@@ -84,7 +84,7 @@ static vx_bool ownIsValidCreateParams(vx_graph graph, vx_node nodes[], uint32_t 
 
         for(i=0; (i < num_nodes) && (is_valid == (vx_bool)vx_true_e); i++)
         {
-            if ((ownIsValidSpecificReference(&nodes[i]->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e))
+            if ((ownIsValidSpecificReference((vx_reference)nodes[i], (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e))
             {
                 is_valid = (vx_bool)vx_false_e;
                 VX_PRINT(VX_ZONE_ERROR, "node[%d] is not a valid node\n", i);
@@ -112,7 +112,7 @@ static vx_bool ownIsValidSuperNode(tivx_super_node super_node)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e) &&
+    if ((ownIsValidSpecificReference((vx_reference)super_node, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e) &&
         (super_node->base.obj_desc != NULL)
        )
     {
@@ -174,7 +174,7 @@ VX_API_ENTRY tivx_super_node VX_API_CALL tivxCreateSuperNode(vx_graph graph,
 
     vx_context context = vxGetContext((vx_reference)graph);
 
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (ownIsValidCreateParams(graph, nodes, num_nodes) == (vx_bool)vx_true_e)
         {
@@ -343,7 +343,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTarget(tivx_super_node super_
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     uint32_t i, num_nodes;
 
-    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)super_node, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
     {
         tivx_obj_desc_super_node_t *obj_desc = NULL;
 
@@ -375,7 +375,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetSuperNodeTileSize(tivx_super_node supe
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     tivx_obj_desc_node_t *node_obj_desc;
 
-    if (ownIsValidSpecificReference(&super_node->base, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)super_node, TIVX_TYPE_SUPER_NODE) == (vx_bool)vx_true_e)
     {
         /* In TI implementation, tivxSetSuperNodeTileSize() cannot be called after a graph is verified
          *

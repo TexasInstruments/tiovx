@@ -580,7 +580,7 @@ static vx_status ownLogRtTraceSetup(vx_graph graph, vx_bool is_enable)
     char target_name[TIVX_TARGET_MAX_NAME];
 
     if (   (NULL != graph)
-        && (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
         && (graph->verified == (vx_bool)vx_true_e))
     {
         ownPlatformSystemLock(TIVX_PLATFORM_LOCK_LOG_RT_INDEX);

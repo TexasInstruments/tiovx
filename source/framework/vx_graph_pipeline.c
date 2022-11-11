@@ -118,7 +118,7 @@ static vx_status ownGraphPipelineValidateRefsList(
                     break;
                 }
 
-                if (ownIsValidSpecificReference(&meta->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+                if (ownIsValidSpecificReference((vx_reference)meta, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
                 {
                     ownReleaseMetaFormat(&meta);
                 }
@@ -131,7 +131,7 @@ static vx_status ownGraphPipelineValidateRefsList(
         }
     }
 
-    if (ownIsValidSpecificReference(&meta_base->base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)meta_base, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e)
     {
         ownReleaseMetaFormat(&meta_base);
     }
@@ -148,7 +148,7 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -856,7 +856,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {

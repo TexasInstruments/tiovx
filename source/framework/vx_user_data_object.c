@@ -277,7 +277,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
             || (user_data_object->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryUserDataObject failed\n");
@@ -338,7 +338,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetUserDataObjectAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e)
             || (user_data_object->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxSetUserDataObjectAttribute failed\n");
@@ -378,7 +378,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint8 *start_ptr;
 
-    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {
@@ -466,7 +466,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
     tivx_obj_desc_user_data_object_t *obj_desc = NULL;
     vx_uint32 i;
 
-    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {
@@ -551,7 +551,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapUserDataObject(vx_user_data_object use
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&user_data_object->base, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)user_data_object, VX_TYPE_USER_DATA_OBJECT) == (vx_bool)vx_false_e) ||
         (user_data_object->base.obj_desc == NULL)
         )
     {

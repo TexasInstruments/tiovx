@@ -142,7 +142,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
     vx_object_array objarr = NULL;
     vx_context context;
 
-    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
                 (vx_bool)vx_true_e) &&
         (NULL != exemplar))
     {
@@ -203,7 +203,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     vx_reference ref = NULL;
 
     if ((objarr == NULL) ||
-        (ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+        (ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         )
     {
         vx_context context = ownGetContext();
@@ -226,7 +226,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         tivx_obj_desc_object_array_t *obj_desc =
             (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
-        if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
+        if ((ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) ==
                 (vx_bool)vx_true_e) && (obj_desc != NULL) &&
             (index < obj_desc->num_items) &&
             (objarr->base.is_virtual == (vx_bool)vx_false_e))
@@ -257,7 +257,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&objarr->base, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
         ||
         (objarr->base.obj_desc == NULL)
         )

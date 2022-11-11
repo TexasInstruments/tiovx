@@ -39,7 +39,7 @@ static vx_status ownDestructParameter(vx_reference ref)
     {
         if (param->node != NULL)
         {
-            if (ownIsValidSpecificReference(&param->node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+            if (ownIsValidSpecificReference((vx_reference)param->node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
             {
                 vx_node node = (vx_node)param->node;
                 ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
@@ -47,7 +47,7 @@ static vx_status ownDestructParameter(vx_reference ref)
         }
         if (param->kernel != NULL)
         {
-            if (ownIsValidSpecificReference(&param->kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+            if (ownIsValidSpecificReference((vx_reference)param->kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
             {
                 vx_kernel kernel = (vx_kernel)param->kernel;
                 ownReleaseReferenceInt((vx_reference *)&kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
@@ -112,7 +112,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 {
     vx_parameter parameter = NULL;
 
-    if (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < kernel->signature.num_parameters))
         {
@@ -141,7 +141,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uint32 index)
 {
     vx_parameter param = NULL;
-    if (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         if (node->kernel == NULL)
         {
@@ -188,7 +188,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
     vx_enum type = 0;
     vx_enum data_type = 0;
 
-    if (ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e)
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR, "Supplied node was not actually a node\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
@@ -330,7 +330,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByReference(vx_parameter parame
 VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference(&parameter->base, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)parameter, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {

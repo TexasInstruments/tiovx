@@ -178,7 +178,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     vx_image img = NULL;
 
     if ((prmd == NULL) ||
-        (ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
+        (ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
         )
     {
         vx_context context = ownGetContext();
@@ -199,7 +199,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     }
     else
     {
-        if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) ==
+        if ((ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) ==
                 (vx_bool)vx_true_e) && (prmd->base.obj_desc != NULL) &&
             (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
                 num_levels))
@@ -236,7 +236,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     /* levels can not be 0 even in virtual prmd */
-    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
+    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
         (levels > 0U) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
         ( ((scale == VX_SCALE_PYRAMID_ORB) && (levels <= TIVX_PYRAMID_MAX_LEVELS_ORB)) ||
@@ -310,7 +310,7 @@ vx_status ownInitVirtualPyramid(
     vx_status status = (vx_status)VX_FAILURE;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
         &&
         (prmd->base.obj_desc != NULL))
     {
@@ -337,7 +337,7 @@ vx_status VX_API_CALL vxQueryPyramid(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&prmd->base, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
             || (prmd->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");

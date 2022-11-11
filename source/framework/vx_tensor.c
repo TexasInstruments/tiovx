@@ -316,7 +316,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
             || (tensor->base.obj_desc == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,"vxQueryTensor failed\n");
@@ -417,7 +417,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e)
         ||
         (tensor->base.obj_desc == NULL)
         )
@@ -481,7 +481,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
     tivx_obj_desc_tensor_t *obj_desc = NULL;
     vx_size i = 0;
 
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {
@@ -604,7 +604,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {
@@ -715,7 +715,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((ownIsValidSpecificReference(&tensor->base, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
+    if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
         )
     {

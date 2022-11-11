@@ -103,7 +103,7 @@ static vx_bool ownIsValidImage(vx_image image)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&image->base, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e) &&
+    if ((ownIsValidSpecificReference((vx_reference)image, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e) &&
         (image->base.obj_desc != NULL) &&
         (ownIsSupportedFourcc(((tivx_obj_desc_image_t*)image->base.obj_desc)->
             format) == (vx_bool)vx_true_e)
@@ -2249,7 +2249,7 @@ vx_status ownInitVirtualImage(
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if ((ownIsValidSpecificReference(&img->base, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
+    if ((ownIsValidSpecificReference((vx_reference)img, (vx_enum)VX_TYPE_IMAGE) == (vx_bool)vx_true_e)
         &&
         (img->base.obj_desc != NULL))
     {

@@ -125,7 +125,7 @@ vx_status VX_API_CALL vxQueryLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -220,7 +220,7 @@ vx_status VX_API_CALL vxCopyLUT(
     vx_uint32 size;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -294,7 +294,7 @@ vx_status VX_API_CALL vxMapLUT(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )
@@ -324,7 +324,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&lut->base, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
+    if ((ownIsValidSpecificReference((vx_reference)lut, (vx_enum)VX_TYPE_LUT) == (vx_bool)vx_false_e)
         ||
         (lut->base.obj_desc == NULL)
         )

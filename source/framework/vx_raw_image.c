@@ -87,7 +87,7 @@ static vx_bool ownIsValidRawImage(tivx_raw_image image)
 {
     vx_bool is_valid;
 
-    if ((ownIsValidSpecificReference(&image->base, TIVX_TYPE_RAW_IMAGE) == (vx_bool)vx_true_e) &&
+    if ((ownIsValidSpecificReference((vx_reference)image, TIVX_TYPE_RAW_IMAGE) == (vx_bool)vx_true_e) &&
         (image->base.obj_desc != NULL)
        )
     {

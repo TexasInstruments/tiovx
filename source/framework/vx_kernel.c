@@ -52,7 +52,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&((*kernel)->base), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)((*kernel)), (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e) )
     {
         ownReleaseReferenceInt((vx_reference *)kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_EXTERNAL, NULL);
     }
@@ -68,7 +68,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kern) &&
-        (ownIsValidSpecificReference(&kern->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kern, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_kernel kernel = kern;
         switch (attribute)
@@ -157,7 +157,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         switch (attribute)
         {
@@ -230,7 +230,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) ==
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
             (vx_bool)vx_true_e))
     {
         if((kernel->lock_kernel_remove == (vx_bool)vx_true_e)
@@ -309,7 +309,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
     vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_kernel kern = kernel;
         if (index < kern->signature.num_parameters)
@@ -452,7 +452,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         vx_uint32 p = 0;
 
@@ -506,7 +506,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
 {
     vx_status status = (vx_status)VX_SUCCESS;
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         if(kernel->num_targets < TIVX_MAX_TARGETS_PER_KERNEL)
         {
@@ -538,7 +538,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         kernel->num_sink_bufs = num_sink_bufs;
     }
@@ -555,7 +555,7 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
+        (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e))
     {
         if(kernel->num_targets==0U)
         {
@@ -578,7 +578,7 @@ vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
 
     if ((NULL != kernel) &&
-          (ownIsValidSpecificReference(&kernel->base, (vx_enum)VX_TYPE_KERNEL) ==
+          (ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) ==
                 (vx_bool)vx_true_e) &&
           (NULL != target_string))
     {

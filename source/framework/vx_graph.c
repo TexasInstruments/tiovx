@@ -130,7 +130,7 @@ static vx_status ownResetGraphPerf(vx_graph graph)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -154,7 +154,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph, uint32_t pipeline_id)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) ==
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) ==
             (vx_bool)vx_true_e) &&
             (pipeline_id < graph->pipeline_depth))
     {
@@ -194,7 +194,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
     int32_t free_index = -(int32_t)1;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if(graph->num_nodes < TIVX_GRAPH_MAX_NODES)
         {
@@ -214,7 +214,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if( (index < (int32_t)TIVX_GRAPH_MAX_NODES) && (index == (int32_t)graph->num_nodes) )
         {
@@ -247,7 +247,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
     vx_status status = (vx_status)VX_SUCCESS;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if( (graph->num_supernodes < TIVX_GRAPH_MAX_SUPER_NODES) )
         {
@@ -279,7 +279,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     uint32_t i;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         /* remove node from head nodes and leaf nodes if found */
         for(i=0; i < graph->num_head_nodes; i++)
@@ -430,7 +430,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         switch (attribute)
         {
@@ -578,8 +578,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseGraph(vx_graph *g)
 VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_parameter param)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-        (ownIsValidSpecificReference(&param->base, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
+    if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+        (ownIsValidSpecificReference((vx_reference)param, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_true_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -602,8 +602,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             status = (vx_status)VX_ERROR_NO_RESOURCES;
         }
     }
-    else if ((ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
-              (ownIsValidSpecificReference(&param->base, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
+    else if ((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) &&
+              (ownIsValidSpecificReference((vx_reference)param, (vx_enum)VX_TYPE_PARAMETER) == (vx_bool)vx_false_e))
     {
         if(graph->num_params < TIVX_GRAPH_MAX_PARAMS)
         {
@@ -632,7 +632,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx_uint32 index, vx_reference value)
 {
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -652,7 +652,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
 VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph, vx_uint32 index)
 {
     vx_parameter parameter = NULL;
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if ((index < TIVX_GRAPH_MAX_PARAMS) && (index < graph->num_params))
         {
@@ -670,7 +670,7 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetGraphParameterByIndex(vx_graph graph,
 VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph)
 {
     vx_bool verified = (vx_bool)vx_false_e;
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         verified = graph->verified;
     }
@@ -931,7 +931,7 @@ vx_status ownGraphRegisterCompletionEvent(vx_graph graph, vx_uint32 app_value)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -957,7 +957,7 @@ vx_status ownGraphRegisterParameterConsumedEvent(vx_graph graph, uint32_t graph_
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+    if (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
     {
         if (graph->verified == (vx_bool)vx_true_e)
         {
@@ -1009,7 +1009,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
     vx_node node = NULL;
 
     if ((NULL != graph) &&
-        (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
+        (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e) )
     {
         if(vxIsGraphVerified(graph) != 0)
         {
@@ -1017,7 +1017,7 @@ vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
             {
                 node = graph->nodes[index];
 
-                if(ownIsValidSpecificReference(&node->base, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
+                if(ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
                 {
                     /* valid node return it */
                 }

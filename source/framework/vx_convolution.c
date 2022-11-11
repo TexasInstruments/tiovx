@@ -101,7 +101,7 @@ vx_status VX_API_CALL vxQueryConvolution(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference((vx_reference)cnvl, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -187,7 +187,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference((vx_reference)cnvl, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
@@ -243,7 +243,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     vx_uint32 size;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (0 != ownIsValidSpecificReference(&cnvl->base, (vx_enum)VX_TYPE_CONVOLUTION))
+    if (0 != ownIsValidSpecificReference((vx_reference)cnvl, (vx_enum)VX_TYPE_CONVOLUTION))
     {
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }

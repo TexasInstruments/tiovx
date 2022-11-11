@@ -1367,7 +1367,7 @@ vx_status tivxExportGraphToDot(vx_graph graph, const char *output_file_path, con
     if (   (NULL != graph)
         && (output_file_path!=NULL)
         && (output_file_prefix!=NULL)
-        && (ownIsValidSpecificReference(&graph->base, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
+        && (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
         && (graph->verified == (vx_bool)vx_true_e))
     {
         status = ownExportGraphTopLevelToDot(graph, output_file_path, output_file_prefix);
