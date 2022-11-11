@@ -22,7 +22,6 @@
  */
 
 #include <TI/tivx_obj_desc.h>
-#include <vx_internal.h>
 #include <tivx_utils_ipc_ref_xfer.h>
 #include "test_tiovx.h"
 
@@ -141,6 +140,18 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateImage() failed.\n");
         }
+        else
+        {
+            vx_imagepatch_addressing_t addr;
+            vx_uint8 *pdata = 0;
+            vx_rectangle_t rect = {0, 0, 64, 48};
+            vx_map_id map_id;
+
+            vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                        VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+
+            vxUnmapImagePatch(image, map_id);
+        }
 
         ref = (vx_reference)image;
     }
@@ -161,6 +172,18 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateTensor() failed.\n");
         }
+        else
+        {
+            vx_size start_map0[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 0 };
+            vx_size end_map0[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 100, 100, 100, 100 };
+            vx_size strides_map8[TIVX_CONTEXT_MAX_TENSOR_DIMS]= { 0 };
+            vx_map_id id8;
+            vx_uint8 *ptr8 = NULL;
+
+            tivxMapTensorPatch(tensor, aux, start_map0, end_map0, &id8, strides_map8, (void **)&ptr8, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST);
+
+            tivxUnmapTensorPatch(tensor, id8);
+        }
 
         ref = (vx_reference)tensor;
     }
@@ -174,18 +197,33 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateUserDataObject() failed.\n");
         }
+        else
+        {
+            void *p = NULL;
+            vx_map_id map_id;
+            vx_int32 i;
+
+            vxMapUserDataObject(obj, 0, aux, &map_id, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+            vxUnmapUserDataObject(obj, map_id);
+        }
 
         ref = (vx_reference)obj;
     }
     else if (type == (vx_enum)VX_TYPE_ARRAY)
     {
         vx_array    array;
+        vx_coordinates3d_t localArrayInit[1] = {{1, 1, 1}};
 
         array = vxCreateArray(context, VX_TYPE_COORDINATES3D, aux);
 
         if (array == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateArray() failed.\n");
+        }
+        else
+        {
+            vxAddArrayItems(array, 1, &localArrayInit[0], sizeof(vx_coordinates3d_t));
         }
 
         ref = (vx_reference)array;
@@ -200,6 +238,16 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateConvolution() failed.\n");
         }
+        else
+        {
+            vx_int16 gx[3][3] = {
+                { 3, 0, -3},
+                { 10, 0,-10},
+                { 3, 0, -3},
+            };
+
+            vxCopyConvolutionCoefficients(conv, gx, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        }
 
         ref = (vx_reference)conv;
     }
@@ -213,6 +261,18 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateMatrix() failed.\n");
         }
+        else
+        {
+            uint32_t i;
+            vx_uint8* data = ct_alloc_mem(1);
+
+            for (i = 0; i < 1; i++)
+            {
+                data[i] = 1;
+            }
+
+            vxCopyMatrix(matrix, data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        }
 
         ref = (vx_reference)matrix;
     }
@@ -225,6 +285,15 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         if (dist == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreateDistribution() failed.\n");
+        }
+        else
+        {
+            vx_map_id map1;
+            int32_t* hptr1 = NULL;
+
+            vxMapDistribution(dist, &map1, (void*)&hptr1, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+            vxUnmapDistribution(dist, map1);
         }
 
         ref = (vx_reference)dist;
@@ -249,6 +318,28 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
 
         rawImage = tivxCreateRawImage(context, &params);
 
+        if (rawImage == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxCreateRawImage() failed.\n");
+        }
+        else
+        {
+            vx_map_id map_id;
+            vx_rectangle_t rect;
+            vx_imagepatch_addressing_t addr;
+            uint16_t *ptr = NULL;
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x   = 1;
+            rect.end_y   = 1;
+
+            tivxMapRawImagePatch(rawImage, &rect, 0, &map_id, &addr, (void **)&ptr,
+                                        VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER);
+
+            tivxUnmapRawImagePatch(rawImage, map_id);
+        }
+
         ref = (vx_reference)rawImage;
     }
     else if (type == (vx_enum)VX_TYPE_PYRAMID)
@@ -264,6 +355,28 @@ static vx_reference testTivxMemAllocObject(vx_context context, vx_enum type, uin
         if (pyramid == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid() failed.\n");
+        }
+        else
+        {
+            uint32_t i;
+            vx_image image;
+
+            for (i = 0; i < TIVX_TEST_MAX_PYRAMID_LEVELS; i++)
+            {
+                vx_imagepatch_addressing_t addr;
+                vx_uint8 *pdata = 0;
+                vx_rectangle_t rect = {0, 0, 64, 48};
+                vx_map_id map_id;
+
+                image = vxGetPyramidLevel(pyramid, i);
+
+                vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                            VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+
+                vxUnmapImagePatch(image, map_id);
+
+                vxReleaseImage(&image);
+            }
         }
 
         ref = (vx_reference)pyramid;
@@ -455,17 +568,6 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExport, TestArg, TEST_PARAMS)
         }
     }
 
-    /* Allocate memory for obj[0]. This is not a public API. It is used here
-     * as a convenient mechanism for forcing internal handle allocation.
-     */
-    vxStatus = ownReferenceAllocMem(ref[0]);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
     /* Export the handles from obj[0]. */
     maxNumAddr = TIVX_TEST_MAX_NUM_ADDR;
     vxStatus = tivxReferenceExportHandle(ref[0],
@@ -634,17 +736,6 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcNullObj, TestArg, TEST_PARAMS
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
-    /* Allocate memory for obj[0]. This is not a public API. It is used here
-     * as a convenient mechanism for forcing internal handle allocation.
-     */
-    vxStatus = ownReferenceAllocMem(ref[0]);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
     /* Create the IPC message with the object export. */
     vxStatus = tivx_utils_export_ref_for_ipc_xfer(ref[0], &ipcMsg);
 
@@ -777,17 +868,6 @@ TEST_WITH_ARG(tivxMem, testReferenceImportExportIpcValidObj, TestArg, TEST_PARAM
             VX_PRINT(VX_ZONE_ERROR, "testTivxMemAllocObject() failed.\n");
             TIVX_TEST_FAIL_CLEANUP(testFail);
         }
-    }
-
-    /* Allocate memory for obj[0]. This is not a public API. It is used here
-     * as a convenient mechanism for forcing internal handle allocation.
-     */
-    vxStatus = ownReferenceAllocMem(ref[0]);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
     /* Create the IPC message with the object export. */
@@ -959,17 +1039,6 @@ TEST(tivxMem, testReferenceImportNeg)
     if (vxStatus != (vx_status)VX_FAILURE)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxReferenceImportHandle() failed.\n");
-        TIVX_TEST_FAIL_CLEANUP(testFail);
-    }
-
-    /* Allocate memory for obj. This is not a public API. It is used here
-     * as a convenient mechanism for forcing internal handle allocation.
-     */
-    vxStatus = ownReferenceAllocMem(ref);
-
-    if (vxStatus != (vx_status)VX_SUCCESS)
-    {
-        VX_PRINT(VX_ZONE_ERROR, "ownReferenceAllocMem() failed.\n");
         TIVX_TEST_FAIL_CLEANUP(testFail);
     }
 
