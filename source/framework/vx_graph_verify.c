@@ -1193,7 +1193,7 @@ static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
 
     if (ref != NULL)
     {
-        if((ref->delay != NULL) && (ownIsValidSpecificReference((vx_reference)ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
+        if((ownIsValidSpecificReference((vx_reference)ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
         {
             uint32_t delay_slot_index;
             vx_delay delay = (vx_delay)ref->delay;
@@ -1647,7 +1647,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
     if((ownNodeGetParameterDir(node, index) != (vx_enum)VX_OUTPUT) /* input parameter */
         || (param_ref == NULL) /* no reference specified at node,index */
         || ((ownGraphGetNumInNodes(graph, node, index) == 0U) && /* leaf parameter and not a delay */
-             !((param_ref->delay != NULL) && (ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e)))
+             !(ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
         )
     {
         skip_add_data_ref_q = (vx_bool)vx_true_e;
@@ -1878,7 +1878,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         }
     }
 
-    if((graph) && (ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)) &&
+    if((ownIsValidSpecificReference((vx_reference)graph, (vx_enum)VX_TYPE_GRAPH)) &&
         ((vx_status)VX_SUCCESS == status))
     {
         ownReferenceLock(&graph->base);

@@ -202,9 +202,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
 {
     vx_reference ref = NULL;
 
-    if ((objarr == NULL) ||
-        (ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
-        )
+    if (ownIsValidSpecificReference((vx_reference)objarr, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_false_e)
     {
         vx_context context = ownGetContext();
         if (ownIsValidContext(context) == (vx_bool)vx_true_e)

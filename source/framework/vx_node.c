@@ -193,7 +193,7 @@ static vx_status ownRemoveNodeInt(const vx_node *n)
 
     vx_status status =  (vx_status)VX_ERROR_INVALID_REFERENCE;
 
-    if ((NULL != node) && (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
     {
         if (node->graph != NULL)
         {
@@ -261,8 +261,7 @@ vx_status tivxNodeSendCommandTimed(vx_node node, uint32_t replicated_node_idx,
     uint32_t cnt;
     uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
 
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
     {
         if(NULL == node->kernel)
         {
@@ -638,7 +637,7 @@ vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) && (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
     {
         if((NULL != node->kernel) && (node->is_kernel_created == (vx_bool)vx_true_e))
         {
@@ -736,8 +735,7 @@ vx_status ownResetNodePerf(vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         node->perf.tmp = 0;
         node->perf.beg = 0;
@@ -760,8 +758,7 @@ vx_status ownUpdateNodePerf(vx_node node, uint32_t pipeline_id)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         tivx_uint32_to_uint64(
                 &node->perf.beg,
@@ -800,8 +797,7 @@ vx_status ownSetNodeImmTarget(vx_node node)
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         vx_context context = node->base.context;
 
@@ -822,8 +818,7 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset)
 {
    vx_status status = (vx_status)VX_SUCCESS;
 
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
     {
         node->valid_rect_reset = is_reset;
     }
@@ -1631,7 +1626,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
     }
 
     vx_status status =  (vx_status)VX_ERROR_INVALID_REFERENCE;
-    if ((NULL != node) && (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e))
+    if (ownIsValidSpecificReference((vx_reference)node, (vx_enum)VX_TYPE_NODE) != (vx_bool)vx_false_e)
     {
         status = ownRemoveNodeInt(n);
         if(status == (vx_status)VX_SUCCESS) {

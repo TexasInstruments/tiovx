@@ -37,21 +37,15 @@ static vx_status ownDestructParameter(vx_reference ref)
 
     if(param != NULL)
     {
-        if (param->node != NULL)
+        if (ownIsValidSpecificReference((vx_reference)param->node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
         {
-            if (ownIsValidSpecificReference((vx_reference)param->node, (vx_enum)VX_TYPE_NODE) == (vx_bool)vx_true_e)
-            {
-                vx_node node = (vx_node)param->node;
-                ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
-            }
+            vx_node node = (vx_node)param->node;
+            ownReleaseReferenceInt((vx_reference *)&node, (vx_enum)VX_TYPE_NODE, (vx_enum)VX_INTERNAL, NULL);
         }
-        if (param->kernel != NULL)
+        if (ownIsValidSpecificReference((vx_reference)param->kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
         {
-            if (ownIsValidSpecificReference((vx_reference)param->kernel, (vx_enum)VX_TYPE_KERNEL) == (vx_bool)vx_true_e)
-            {
-                vx_kernel kernel = (vx_kernel)param->kernel;
-                ownReleaseReferenceInt((vx_reference *)&kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
-            }
+            vx_kernel kernel = (vx_kernel)param->kernel;
+            ownReleaseReferenceInt((vx_reference *)&kernel, (vx_enum)VX_TYPE_KERNEL, (vx_enum)VX_INTERNAL, NULL);
         }
     }
     return (vx_status)VX_SUCCESS;

@@ -30,8 +30,8 @@
 
 #include <vx_internal.h>
 
-#define tivxIsValidDelay(d) ((NULL != d) && (ownIsValidSpecificReference((vx_reference)(d), (vx_enum)VX_TYPE_DELAY) == (vx_bool)vx_true_e))
-#define tivxIsValidGraph(g) ((NULL != g) && (ownIsValidSpecificReference((vx_reference)(g), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e))
+#define tivxIsValidDelay(d) (ownIsValidSpecificReference((vx_reference)(d), (vx_enum)VX_TYPE_DELAY) == (vx_bool)vx_true_e)
+#define tivxIsValidGraph(g) (ownIsValidSpecificReference((vx_reference)(g), (vx_enum)VX_TYPE_GRAPH) == (vx_bool)vx_true_e)
 
 static vx_bool ownIsValidObject(vx_enum type);
 static void ownResetDelayPrmPool(vx_delay delay);

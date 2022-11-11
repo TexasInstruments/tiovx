@@ -177,9 +177,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
 {
     vx_image img = NULL;
 
-    if ((prmd == NULL) ||
-        (ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
-        )
+    if (ownIsValidSpecificReference((vx_reference)prmd, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_false_e)
     {
         vx_context context = ownGetContext();
         if (ownIsValidContext(context) == (vx_bool)vx_true_e)

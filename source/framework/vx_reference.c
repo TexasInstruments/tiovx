@@ -262,8 +262,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
         ref = NULL;
     }
 
-    if ((NULL != ref) &&
-        (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e))
+    if (ownIsValidSpecificReference(ref, type) == (vx_bool)vx_true_e)
     {
         if (ownDecrementReference(ref, reftype) == 0U)
         {
