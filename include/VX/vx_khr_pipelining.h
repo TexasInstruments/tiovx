@@ -71,15 +71,15 @@ enum vx_graph_schedule_mode_type_e {
 
     /*! \brief Schedule graph in non-queueing mode
      */
-    VX_GRAPH_SCHEDULE_MODE_NORMAL = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x0U,
+    VX_GRAPH_SCHEDULE_MODE_NORMAL = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x0,
 
     /*! \brief Schedule graph in queueing mode with auto scheduling
      */
-    VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x1U,
+    VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x1,
 
     /*! \brief Schedule graph in queueing mode with manual scheduling
      */
-    VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x2U,
+    VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE) + 0x2,
 };
 
 /*! \brief The graph attributes added by this extension.
@@ -338,7 +338,7 @@ enum vx_event_type_e {
      * \note Graph execution could still be "in progress" for rest of the graph that does not use
      * this data reference.
      */
-    VX_EVENT_GRAPH_PARAMETER_CONSUMED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x0U,
+    VX_EVENT_GRAPH_PARAMETER_CONSUMED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x0,
 
     /*! \brief Graph completion event
      *
@@ -346,19 +346,19 @@ enum vx_event_type_e {
      * Graph completion event is generated for both successful execution of a graph
      * or abandoned execution of a graph.
      */
-    VX_EVENT_GRAPH_COMPLETED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x1U,
+    VX_EVENT_GRAPH_COMPLETED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x1,
 
     /*! \brief Node completion event
      *
      * This event is generated every time a node within a graph completes execution.
      */
-    VX_EVENT_NODE_COMPLETED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x2U,
+    VX_EVENT_NODE_COMPLETED = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x2,
 
     /*! \brief Node error event
      *
      * This event is generated every time a node returns error within a graph.
      */
-    VX_EVENT_NODE_ERROR = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x3U,
+    VX_EVENT_NODE_ERROR = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x3,
 
     /*! \brief User defined event
      *
@@ -369,7 +369,7 @@ enum vx_event_type_e {
      * \note Since the application initiates user events and not the framework, the application
      * does NOT register user events using \ref vxRegisterEvent.
      */
-    VX_EVENT_USER = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x4U
+    VX_EVENT_USER = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_EVENT_TYPE) + 0x4
 };
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_GRAPH_PARAMETER_CONSUMED
