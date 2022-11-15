@@ -6664,6 +6664,42 @@ TEST(tivxGraphPipelineLdra, negativeTestGraphParameterDequeueDoneRef)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+TEST(tivxGraphPipelineLdra, negativeTestGraphParameterEnqueueReadyRef)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_reference ref = NULL;
+    vx_uint32 gpi = 0, num_refs = 0, flags = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxGraphParameterEnqueueReadyRef(graph, gpi, &ref, num_refs, flags));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxGraphParameterEnqueueReadyRef(graph, gpi, &ref, 1, flags));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST(tivxGraphPipelineLdra, negativeTestSetGraphPipelineDepth)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_image input = NULL, accum = NULL;
+    vx_node node = NULL;
+    vx_uint32 pipeline_depth = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetGraphPipelineDepth(graph, pipeline_depth));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum = vxCreateImage(context, 128, 128, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node = vxAccumulateImageNode(graph, input, accum), VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, tivxSetGraphPipelineDepth(graph, pipeline_depth));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseImage(&accum));
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -6705,6 +6741,8 @@ TESTCASE_TESTS(
     tivxGraphPipelineLdra,
     negativeTestSetGraphScheduleConfig,
     negativeTestGraphParameterCheckDoneRef,
-    negativeTestGraphParameterDequeueDoneRef
+    negativeTestGraphParameterDequeueDoneRef,
+    negativeTestGraphParameterEnqueueReadyRef,
+    negativeTestSetGraphPipelineDepth
 )
 

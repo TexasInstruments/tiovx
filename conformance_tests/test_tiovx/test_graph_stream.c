@@ -18,7 +18,8 @@
  * Copyright (c) 2022 Texas Instruments Incorporated
  */
 
-#include <VX/vx_khr_pipelining.h>
+#include <TI/tivx.h>
+#include <TI/tivx_config.h>
 
 #include "test_engine/test.h"
 
@@ -47,8 +48,33 @@ TEST(tivxStreamGraph, negativeTestEnableGraphStreaming)
     VX_CALL(vxReleaseGraph(&graph1));
 }
 
+TEST(tivxStreamGraph, negativeTestGraphGetNode)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph = NULL;
+    vx_image input = NULL, accum = NULL;
+    vx_node node = NULL;
+    uint32_t index = 0;
+
+    ASSERT(NULL == tivxGraphGetNode(graph, index));
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT(NULL == tivxGraphGetNode(graph, index));
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum = vxCreateImage(context, 128, 128, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node = vxAccumulateImageNode(graph, input, accum), VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT(NULL != tivxGraphGetNode(graph, index));
+    ASSERT(NULL == tivxGraphGetNode(graph, TIVX_GRAPH_MAX_NODES));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseImage(&accum));
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(
     tivxStreamGraph,
-    negativeTestEnableGraphStreaming
+    negativeTestEnableGraphStreaming,
+    negativeTestGraphGetNode
 )
 

@@ -22,6 +22,8 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <VX/vx_khr_pipelining.h>
+#include <TI/tivx_queue.h>
+#include <TI/tivx_config.h>
 
 #include "test_engine/test.h"
 

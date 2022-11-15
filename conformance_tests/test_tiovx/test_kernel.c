@@ -19,6 +19,7 @@
  */
 
 #include <TI/tivx.h>
+#include <TI/tivx_config.h>
 #include <VX/vx_khr_pipelining.h>
 
 #include "test_engine/test.h"
@@ -142,6 +143,33 @@ TEST(tivxKernel, negativeTestFinalizeKernel)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxFinalizeKernel(kern));
 }
 
+TEST(tivxKernel, negativeTestAddKernelTarget)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_kernel kern = NULL;
+    char tname[] = {'t', 'i', 'o', 'v', 'x'};
+    uint8_t i = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxAddKernelTarget(kern, tname));
+    ASSERT_VX_OBJECT(kern = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    for (i=0; i<TIVX_MAX_TARGETS_PER_KERNEL-1; i++) {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxAddKernelTarget(kern, tname));
+    }
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxAddKernelTarget(kern, tname));
+    VX_CALL(vxReleaseKernel(&kern));
+}
+
+TEST(tivxKernel, negativeTestSetKernelSinkDepth)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_kernel kern = NULL;
+    uint32_t nsb = 0;
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetKernelSinkDepth(kern, nsb));
+}
+
 TESTCASE_TESTS(
     tivxKernel,
     negativeTestReleaseKernel,
@@ -150,6 +178,8 @@ TESTCASE_TESTS(
     negativeTestRemoveKernel,
     negativeTestAddParameterToKernel,
     negativeTestAddUserKernel,
-    negativeTestFinalizeKernel
+    negativeTestFinalizeKernel,
+    negativeTestAddKernelTarget,
+    negativeTestSetKernelSinkDepth
 )
 
