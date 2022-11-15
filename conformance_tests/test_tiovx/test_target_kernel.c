@@ -51,17 +51,22 @@ TEST(tivxTgKnl, negativeTestAddTargetKernelInternal)
     tivx_target_kernel_control_f control_func = NULL;
     vx_uint32 priv_arg = 0;
     int32_t i = 0;
+    vx_uint32 num_target_kernels;
 
     ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, NULL, NULL, NULL, NULL, NULL, (void *)(&priv_arg))));
     ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, tname, NULL, c_function, NULL, NULL, (void *)(&priv_arg))));
 
-    for (i=0; i<TIVX_TARGET_KERNEL_MAX; i++) {
+    VX_CALL(tivxQueryNumTargetKernel(&num_target_kernels));
+
+    for (i=num_target_kernels; i<TIVX_TARGET_KERNEL_MAX; i++) {
         kernel_id = (vx_enum)(i);
-        ttk = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg));
-        if (ttk == NULL) {
-            break;
-        }
+        ASSERT(NULL != (ttk = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
     }
+
+    kernel_id = TIVX_TARGET_KERNEL_MAX;
+
+    /* Trying to allocate TIVX_TARGET_KERNEL_MAX+1 */
+    ASSERT(NULL == (ttk = tivxAddTargetKernel(kernel_id, tname, p_function, c_function, NULL, NULL, (void *)(&priv_arg))));
 }
 
 TEST(tivxTgKnl, negativeTestRemoveTargetKernel)

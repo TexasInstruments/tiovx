@@ -75,6 +75,7 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                              void *priv_arg);
 
 static tivx_target_kernel_t g_target_kernel_table[TIVX_TARGET_KERNEL_MAX];
+static vx_uint32 g_num_target_kernel;
 static tivx_mutex g_target_kernel_lock;
 
 vx_status ownTargetKernelInit(void)
@@ -87,6 +88,8 @@ vx_status ownTargetKernelInit(void)
         g_target_kernel_table[i].kernel_id = (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
         g_target_kernel_table[i].target_id = (vx_int32)TIVX_TARGET_KERNEL_ID_INVALID;
     }
+
+    g_num_target_kernel = 0U;
 
     status = tivxMutexCreate(&g_target_kernel_lock);
 
@@ -143,6 +146,8 @@ static tivx_target_kernel VX_API_CALL ownAddTargetKernelInternal(
                     g_target_kernel_table[i].num_pipeup_bufs = 1;
 
                     knl = &g_target_kernel_table[i];
+
+                    g_num_target_kernel++;
 
                     ownLogResourceAlloc("TIVX_TARGET_KERNEL_MAX", 1);
                     resource_added = (vx_bool)vx_true_e;
@@ -222,6 +227,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                     g_target_kernel_table[i].control_func = NULL;
 
                     ownLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
+
+                    g_num_target_kernel--;
 
                     status = (vx_status)VX_SUCCESS;
                     break;
@@ -426,6 +433,23 @@ vx_status ownTargetKernelControl(
     }
 
     return (status);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxQueryNumTargetKernel(vx_uint32 *ptr)
+{
+    vx_status status = (vx_status)VX_SUCCESS;
+
+    if (VX_CHECK_PARAM(ptr, sizeof(vx_uint32), vx_uint32, 0x3U))
+    {
+        *(vx_uint32 *)ptr = g_num_target_kernel;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"query number of target kernels failed\n");
+        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return status;
 }
 
 #if defined(BUILD_BAM)

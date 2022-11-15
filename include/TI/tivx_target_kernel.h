@@ -179,6 +179,16 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     tivx_target_kernel target_kernel);
 
+/*! \brief Queries the framework to determine the number of target kernels
+ *         on the target from which it is called
+ *
+ * \param [out] ptr The location at which to store the resulting value.
+ *
+ * \ingroup group_tivx_target_kernel
+ *
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxQueryNumTargetKernel(vx_uint32 *ptr);
+
 /*!
  * \brief Associate a kernel function context or handle with a target kernel instance
  *
