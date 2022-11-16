@@ -924,9 +924,18 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                     status = ownContextCreateCmdObj(context);
                     if(status == (vx_status)VX_SUCCESS)
                     {
+                        vx_bool ret;
                         ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
-                        ownCreateConstErrors(context);
-                        g_context_handle = context;
+                        ret = ownCreateConstErrors(context);
+                        if ((vx_bool)vx_false_e==ret)
+                        {
+                            status = (vx_status)VX_ERROR_NO_RESOURCES;
+                            VX_PRINT(VX_ZONE_ERROR,"error object not created\n");
+                        }
+                        else
+                        {
+                            g_context_handle = context;
+                        }
                     }
                 }
                 if(status!=(vx_status)VX_SUCCESS)
