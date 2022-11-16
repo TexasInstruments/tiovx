@@ -149,11 +149,19 @@ TEST(tivxKernel, negativeTestAddKernelTarget)
 
     vx_kernel kern = NULL;
     char tname[] = {'t', 'i', 'o', 'v', 'x'};
-    uint8_t i = 0;
+    uint8_t i = 0, num_remaining_targets;
+
+    /* Note: this kernel is registered on 2 DSP's for J721E
+     * All other platforms have only 1 DSP target */
+    #if defined(SOC_J721E)
+    num_remaining_targets = TIVX_MAX_TARGETS_PER_KERNEL-2;
+    #else
+    num_remaining_targets = TIVX_MAX_TARGETS_PER_KERNEL-1;
+    #endif
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxAddKernelTarget(kern, tname));
     ASSERT_VX_OBJECT(kern = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
-    for (i=0; i<TIVX_MAX_TARGETS_PER_KERNEL-1; i++) {
+    for (i=0; i<num_remaining_targets; i++) {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxAddKernelTarget(kern, tname));
     }
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxAddKernelTarget(kern, tname));
