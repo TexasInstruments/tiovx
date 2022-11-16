@@ -7,15 +7,12 @@ CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/source/platform
 
 VXLIB_PATH ?= $(PSDK_PATH)/vxlib
 J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
-ifeq ($(SOC),j784s4)
-TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_02_02_01/ti_dl
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_03_00_11
-else ifeq ($(SOC),am62a)
+ifeq ($(SOC),am62a)
 TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_04_01_07/ti_dl
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_04_00_06
 else
-TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_04_00_16/ti_dl
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_04_00_06
+TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_05_00_09/ti_dl
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_05_00_04
 endif
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
