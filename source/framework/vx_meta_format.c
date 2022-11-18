@@ -112,19 +112,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
 
-    if(attribute != (vx_enum)VX_VALID_RECT_CALLBACK)
+    if ((vx_status)VX_SUCCESS == status)
     {
-        if (VX_TYPE(attribute) != (vx_uint32)meta->type)
+        if(attribute != (vx_enum)VX_VALID_RECT_CALLBACK)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Invalid meta format type\n");
-            status = (vx_status)VX_ERROR_INVALID_TYPE;
+            if (VX_TYPE(attribute) != (vx_uint32)meta->type)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Invalid meta format type\n");
+                status = (vx_status)VX_ERROR_INVALID_TYPE;
+            }
         }
     }
 
-    if( NULL == ptr)
+    if ((vx_status)VX_SUCCESS == status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "ptr is NULL\n");
-        status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        if( NULL == ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ptr is NULL\n");
+            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     if ((vx_status)VX_SUCCESS == status)
