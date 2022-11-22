@@ -400,7 +400,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
     }
 
-#if !defined (VPAC3) && !defined (VPAC3L) 
+#if !defined (VPAC3) && !defined (VPAC3L)
     if ((vx_status)VX_SUCCESS == status)
     {
         if (NULL != histogram1)
@@ -562,7 +562,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
                 {
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                     VX_PRINT(VX_ZONE_ERROR, "fcp[%d].mux_output2 must be set to TIVX_VPAC_VISS_MUX2_IR12_U16 for 12 bit IR output in 16 bit container of output%d\n", fcp, i);
-                }     
+                }
 #endif
                 if (((vx_df_image)VX_DF_IMAGE_NV12 == output_fmt[i]) &&
                     ((2 != outport) || (TIVX_VPAC_VISS_MUX2_NV12 != params.fcp[fcp].mux_output2)))
@@ -699,10 +699,15 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         output_height[1] = output1_h;
         output_height[3] = output3_h;
 
-        memset(expected_height, raw_h, sizeof(expected_height));
-
         for(i=0; i < TIVX_VPAC_VISS_FCP_NUM_INSTANCES; i++)
         {
+            uint32_t j;
+
+            for (j=0;j<4;j++)
+            {
+                expected_height[i][j] = raw_h;
+            }
+
             if((TIVX_VPAC_VISS_MUX1_UV12 == params.fcp[i].mux_output1) &&
                (TIVX_VPAC_VISS_CHROMA_MODE_420 == params.fcp[i].chroma_mode))
             {
