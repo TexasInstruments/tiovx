@@ -213,6 +213,17 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
             vx_enum *state);
 
 /*!
+ * \brief Get a kernel target id with a target kernel instance
+ *
+ *        Typically used by nodes having multi priority implementation
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelTargetId(
+            tivx_target_kernel_instance target_kernel_instance,
+            uint32_t *targetId);
+
+/*!
  * \brief Get the border mode for the target kernel instance
  *
  *        Used by the kernel implemention to get border mode

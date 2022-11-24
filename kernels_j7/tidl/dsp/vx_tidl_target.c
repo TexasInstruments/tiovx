@@ -659,6 +659,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             #else
             tidlObj->createParams.pFxnLock = TIDL_lockInterrupts;
             tidlObj->createParams.pFxnUnLock = TIDL_unlockInterrupts;
+            status = tivxGetTargetKernelTargetId(kernel, &tidlObj->createParams.targetPriority);
             VX_PRINT(VX_ZONE_INFO, "Enabling preemption\n");
             #endif
         }

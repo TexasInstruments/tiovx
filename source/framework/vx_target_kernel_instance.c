@@ -268,6 +268,25 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
     return status;
 }
 
+VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelTargetId(
+            tivx_target_kernel_instance target_kernel_instance,
+            uint32_t *targetId)
+{
+    vx_status status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+
+    if(NULL != target_kernel_instance)
+    {
+        *targetId = target_kernel_instance->node_obj_desc->target_id;
+
+        status = (vx_status)VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "target kernel instance is NULL\n");
+    }
+    return status;
+}
+
 VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
             tivx_target_kernel_instance target_kernel_instance,
             void **kernel_context,
