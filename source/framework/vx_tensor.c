@@ -603,6 +603,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 {
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
+    vx_size view_start_map[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
+    vx_size view_end_map[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0};
 
     if ((ownIsValidSpecificReference((vx_reference)tensor, (vx_enum)VX_TYPE_TENSOR) == (vx_bool)vx_false_e) ||
         (tensor->base.obj_desc == NULL)
@@ -614,17 +616,46 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
     if(status == (vx_status)VX_SUCCESS)
     {
-        if (ptr == NULL)
+        uint32_t i;
+        obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
+
+        if (NULL == ptr)
         {
             VX_PRINT(VX_ZONE_ERROR, "User pointer is null\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
-        if ((view_start == NULL) || (view_end == NULL))
+        if (NULL == view_start)
         {
-            VX_PRINT(VX_ZONE_ERROR, "View pointer is null\n");
-            status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+            for (i = 0; i < number_of_dims; i++)
+            {
+                view_start_map[i] = 0;
+            }
         }
-        if (map_id == NULL)
+        else
+        {
+            for (i = 0; i < number_of_dims; i++)
+            {
+                view_start_map[i] = view_start[i];
+            }
+        }
+        if (NULL == view_end)
+        {
+            for (i = 0; i < number_of_dims; i++)
+            {
+                if (NULL != obj_desc)
+                {
+                    view_end_map[i] = obj_desc->dimensions[i];
+                }
+            }
+        }
+        else
+        {
+            for (i = 0; i < number_of_dims; i++)
+            {
+                view_end_map[i] = view_end[i];
+            }
+        }
+        if (NULL == map_id)
         {
             VX_PRINT(VX_ZONE_ERROR, "Map ID is null\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -633,9 +664,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
     if(status == (vx_status)VX_SUCCESS)
     {
-        obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
-
-        status =  ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dims);
+        status =  ownTensorCheckSizes(obj_desc->dimensions, view_start_map, view_end_map, number_of_dims);
     }
 
     if ((vx_status)VX_SUCCESS == status)
@@ -658,7 +687,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
             host_addr = map_addr;
 
-            offset = ownComputePatchOffset(number_of_dims, view_start, obj_desc->stride);
+            offset = ownComputePatchOffset(number_of_dims, view_start_map, obj_desc->stride);
 
             map_addr = &map_addr[offset];
 
