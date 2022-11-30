@@ -540,6 +540,11 @@ static uint32_t tivxCaptureMapInstId(uint32_t instId)
         case 1:
             drvInstId = CSIRX_INSTANCE_ID_1;
             break;
+#if defined(SOC_J784S4)
+        case 2:
+            drvInstId = CSIRX_INSTANCE_ID_2;
+            break;
+#endif
         default:
             /* do nothing */
             break;

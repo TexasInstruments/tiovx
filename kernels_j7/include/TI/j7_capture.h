@@ -125,7 +125,11 @@ extern "C" {
  *
  *  \ingroup group_vision_function_capture
  */
+#if defined(SOC_J784S4)
+#define TIVX_CAPTURE_MAX_INST                               (3U)
+#else
 #define TIVX_CAPTURE_MAX_INST                               (2U)
+#endif
 
 /*! \brief Maximum number of streams supported in a capture module.
  *
