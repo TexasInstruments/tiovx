@@ -145,7 +145,22 @@ typedef enum _tivx_mem_heap_region_e
      *  as well as applications.  Must be reset and allocated
      *  each time it is used.
      */
-    TIVX_MEM_EXTERNAL_SCRATCH
+    TIVX_MEM_EXTERNAL_SCRATCH,
+
+    /*! \brief External persistent non cachable memory
+     *
+     *  Typically large in size and can be used by kernels.
+     *  as well as applications.  Must be reset and allocated
+     *  each time it is used.
+     */
+    TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE,
+    /*! \brief External scratch non cachable memory
+     *
+     *  Typically large in size and can be used by kernels.
+     *  as well as applications.  Must be reset and allocated
+     *  each time it is used.
+     */
+    TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE
 
 } tivx_mem_heap_region_e;
 

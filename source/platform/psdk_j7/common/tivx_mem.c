@@ -54,6 +54,13 @@ vx_status tivxMemBufferAlloc(
             case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+                break;
+            
             /* Waiver here: leaving in so that if someone adds a new type it gets flagged */
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -109,6 +116,12 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
         case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+            break; 
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = (vx_status)VX_FAILURE;
@@ -146,6 +159,12 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
         case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+            break; 
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = (vx_status)VX_FAILURE;
@@ -199,6 +218,12 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 break;
             case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -263,6 +288,12 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
             case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+                break;
+            case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+                heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+                break; 
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = (vx_status)VX_FAILURE;
@@ -365,6 +396,12 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
         case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+            break; 
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = (vx_status)VX_FAILURE;

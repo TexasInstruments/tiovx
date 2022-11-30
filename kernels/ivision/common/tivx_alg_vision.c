@@ -103,6 +103,16 @@ static vx_int32 tivxAlgiVisionGetHeapId(vx_uint32 space, vx_uint32 attrs, vx_uin
                *heap_id = (vx_enum)TIVX_MEM_EXTERNAL;
             }
             break;
+        case (vx_uint32)IALG_EXTERNAL_NON_CACHEABLE:
+            if((vx_enum)attrs==(vx_enum)IALG_SCRATCH)
+            {
+               *heap_id = (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE;  
+            }
+            else
+            {
+               *heap_id = (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE;
+            }
+            break;
         case (vx_uint32)IALG_DARAM0:
         case (vx_uint32)IALG_DARAM1:
         case (vx_uint32)IALG_SARAM0:
