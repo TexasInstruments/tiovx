@@ -664,6 +664,7 @@ static vx_status tivxCaptureSetCreateParams(
             createParams->instCfg.enableCsiv2p0Support = params->instCfg[instIdx].enableCsiv2p0Support;
             createParams->instCfg.enableErrbypass      = (uint32_t)FALSE;
             createParams->instCfg.numPixelsStrm0       = params->instCfg[instIdx].numPixels;
+            createParams->instCfg.enableStrm[CSIRX_CAPT_STREAM_ID] = 1U;
             createParams->instCfg.numDataLanes = params->instCfg[instIdx].numDataLanes;
             for (loopCnt = 0U ;
                  loopCnt < createParams->instCfg.numDataLanes ;
