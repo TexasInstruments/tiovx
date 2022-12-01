@@ -43,6 +43,9 @@ RTOS?=FREERTOS
 # SOC selection - supported values: j721e, j721s2, j784s4, am62a
 export SOC?=replace_me_soc_name
 
+# Concerto Banner Suppression of build log to reduce the build log verboseness
+export NO_BANNER=1
+
 ifeq ($(SOC),j721e)
     TARGET_SOC=J7
     VPAC_VERSION=VPAC1
