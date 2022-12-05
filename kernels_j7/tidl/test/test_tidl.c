@@ -1390,7 +1390,7 @@ TESTCASE_TESTS(tivxTIDL,
     testTIDL,
     #if defined(SOC_J784S4)
     testMultiTIDL,
-    DISABLED_testTIDLPreempt
+    testTIDLPreempt
     #else
     testTIDLPreempt,
     DISABLED_testMultiTIDL

@@ -77,7 +77,7 @@
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Cache.h>
 #endif
 
-#if defined(SOC_J784S4) || defined(SOC_AM62A)
+#if defined(SOC_AM62A)
 #define DISABLE_PREEMPTION
 #define DISABLE_INTERRUPTS_DURING_PROCESS
 #else
