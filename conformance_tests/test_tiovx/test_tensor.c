@@ -315,7 +315,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
 
     VX_CALL(vxCopyTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start, dims, stridesf32, dataf32, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-    VX_CALL(tivxMapTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start_map0, end_map0, &id8, strides_map8, (void **)&ptr8, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    VX_CALL(tivxMapTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, NULL, NULL, &id8, strides_map8, (void **)&ptr8, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
     VX_CALL(tivxMapTensorPatch(tensor_uint16, TENSOR_DIMS_NUM, start_map0, end_map0, &id16, strides_map16, (void **)&ptr16, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
     VX_CALL(tivxMapTensorPatch(tensor_uint32, TENSOR_DIMS_NUM, start_map0, end_map0, &id32, strides_map32, (void **)&ptr32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
     VX_CALL(tivxMapTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start_map0, end_map0, &idf32, strides_mapf32, (void **)&ptrf32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
