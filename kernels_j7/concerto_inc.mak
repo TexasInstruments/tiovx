@@ -8,6 +8,7 @@ ifeq ($(TARGET_CPU),x86_64)
 STATIC_LIBS += vx_vxu
 
 ifeq ($(BUILD_HWA_KERNELS),yes)
+ifneq ($(SOC),am62a)
 
 STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa vx_vxu
 
@@ -52,6 +53,7 @@ endif
 
 STATIC_LIBS += vx_target_kernels_j7_arm vx_hwa_target_kernels
 
+endif #ifneq ($(SOC),am62a)
 endif #ifeq ($(BUILD_HWA_KERNELS),yes)
 
 STATIC_LIBS += vx_utils
@@ -96,7 +98,9 @@ MMA_LIBS += mmalib_cn_x86_64
 MMA_LIBS += mmalib_x86_64
 MMA_LIBS += common_x86_64
 
+ifneq ($(SOC),am62a)
 ADDITIONAL_STATIC_LIBS += $(PDK_LIBS)
+endif
 
 STATIC_LIBS += $(MMA_LIBS)
 
