@@ -13,6 +13,8 @@ CSOURCES    += DLOAD_SYM/symtab.c
 CSOURCES    += C70_DLOAD_DYN/c70_dynamic.c
 CSOURCES    += C70_DLOAD_REL/c70_reloc.c
 
+CPPSOURCES  += cpp_symbols.cpp
+
 IDIRS       += $(SDIR)/DLOAD
 IDIRS       += $(SDIR)/DLOAD_API
 IDIRS       += $(SDIR)/C70_DLOAD_DYN

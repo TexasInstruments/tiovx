@@ -134,6 +134,7 @@ static const char *dsp_syms_names[] = {
 
 "TVM_lockInterrupts",
 "TVM_unlockInterrupts",
+"TVM_cacheWbInv",
 
 };
 static void *dsp_syms_addrs[sizeof(dsp_syms_names)/sizeof(char*)];
@@ -183,6 +184,7 @@ dspload_get_dsp_syms_addrs(void)
   extern void DmaUtilsAutoInc3d_wait(void);
   extern int32_t TVM_lockInterrupts(void);
   extern void    TVM_unlockInterrupts(void);
+  extern void    TVM_cacheWbInv(void);
 
   int i = 0;
   dsp_syms_addrs[i++] = &TIDL_VISION_FXNS;
@@ -214,6 +216,7 @@ dspload_get_dsp_syms_addrs(void)
   dsp_syms_addrs[i++] = &DmaUtilsAutoInc3d_wait;
   dsp_syms_addrs[i++] = &TVM_lockInterrupts;
   dsp_syms_addrs[i++] = &TVM_unlockInterrupts;
+  dsp_syms_addrs[i++] = &TVM_cacheWbInv;
 
   return dsp_syms_addrs;
 }
