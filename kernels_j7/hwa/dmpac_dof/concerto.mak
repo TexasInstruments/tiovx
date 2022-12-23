@@ -13,8 +13,13 @@ ifeq ($(TARGET_CPU),R5F)
     IDIRS       += $(J7_C_MODELS_PATH)/include
   else
     CSOURCES    += vx_dmpac_dof_target.c
+    ifeq ($(RTOS_SDK), mcu_plus_sdk)
+    IDIRS       += $(MCU_PLUS_SDK_PATH)/source
+    IDIRS       += $(MCU_PLUS_SDK_PATH)/source/drivers
+    else
     IDIRS       += $(PDK_PATH)/packages
     IDIRS       += $(PDK_PATH)/packages/ti/drv
+    endif
     IDIRS       += $(VISION_APPS_PATH)/
     ifeq ($(TARGET_OS),SYSBIOS)
       IDIRS       += $(XDCTOOLS_PATH)/packages

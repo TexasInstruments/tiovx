@@ -8,9 +8,13 @@ IDIRS       += $(TIOVX_PATH)/kernels/ivision/include
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(PDK_PATH)/packages
-IDIRS       += $(PDK_PATH)/packages/ti/osal
-
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+	IDIRS       += $(MCU_PLUS_SDK_PATH)/source
+	IDIRS       += $(MCU_PLUS_SDK_PATH)/source/kernel/dpl
+else
+	IDIRS       += $(PDK_PATH)/packages
+	IDIRS       += $(PDK_PATH)/packages/ti/osal
+endif
 ifeq ($(TARGET_OS),SYSBIOS)
 	IDIRS       += $(XDCTOOLS_PATH)/packages
 	IDIRS       += $(BIOS_PATH)/packages

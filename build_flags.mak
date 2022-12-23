@@ -43,6 +43,13 @@ RTOS?=FREERTOS
 # SOC selection - supported values: j721e, j721s2, j784s4, am62a
 export SOC?=replace_me_soc_name
 
+# Default RTOS SDK
+ifeq ($(SOC),am62a)
+RTOS_SDK ?= mcu_plus_sdk
+else
+RTOS_SDK ?= pdk
+endif
+
 # Concerto Banner Suppression of build log to reduce the build log verboseness
 export NO_BANNER=1
 
@@ -70,6 +77,10 @@ else ifeq ($(SOC),j784s4)
 else ifeq ($(SOC),am62a)
     TARGET_SOC=AM62A
     SOC_DEF=SOC_AM62A
+    ifeq ($(RTOS_SDK),mcu_plus_sdk)
+        SOC_DEF += MCU_PLUS_SDK
+        SOC_DEF += SOC_AM62AX
+    endif
     VPAC_VERSION=VPAC3L
     C7X_TARGET=C7504
     C7X_VERSION=C7504

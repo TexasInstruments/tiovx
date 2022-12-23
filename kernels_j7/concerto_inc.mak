@@ -72,11 +72,14 @@ LDIRS+=$(CGT7X_ROOT)/host_emulation
 LDIRS+=$(MMALIB_PATH)/lib/$(C7X_VERSION)/$(TARGET_BUILD)
 LDIRS+=$(TIDL_PATH)/lib/$(SOC)/PC/algo/$(TARGET_BUILD)
 
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+LDIRS+= $(MCU_PLUS_SDK_PATH)/source/drivers/dmautils/lib/
+else
 LDIRS+= $(PDK_PATH)/packages/ti/drv/udma/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
 LDIRS+= $(PDK_PATH)/packages/ti/csl/lib/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
 LDIRS+= $(PDK_PATH)/packages/ti/drv/sciclient/lib/$(SOC)_hostemu/c7x-hostemu/$(TARGET_BUILD)
 LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
-
+endif
 
 LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += ti_imaging_dcc
@@ -87,8 +90,13 @@ STATIC_LIBS += app_utils_mem
 STATIC_LIBS += app_utils_init
 
 PDK_LIBS =
-PDK_LIBS += dmautils.lib
-PDK_LIBS += ti.csl.lib
+
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+	PDK_LIBS += dmautils.am62ax.c75x.ti-c7x-hostemu.$(TARGET_BUILD).lib
+else
+	PDK_LIBS += dmautils.lib
+	PDK_LIBS += ti.csl.lib
+endif
 
 ifneq ($(SOC),am62a)
 PDK_LIBS += udma.lib

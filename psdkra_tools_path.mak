@@ -20,6 +20,7 @@ GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux
 BIOS_PATH ?= $(PSDK_PATH)/bios_6_83_02_07
 XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_61_04_40_core
 PDK_PATH ?= $(PSDK_PATH)/pdk
+MCU_PLUS_SDK_PATH ?= $(PSDK_PATH)/mcu_plus_sdk
 PDK_QNX_PATH ?= $(PSDK_PATH)/psdkqa/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
 MATHLIB_PATH     ?= $(PSDK_PATH)/mathlib_c66x_3_1_2_1

@@ -10,8 +10,13 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+IDIRS       += $(MCU_PLUS_SDK_PATH)/source
+IDIRS       += $(MCU_PLUS_SDK_PATH)/source/drivers
+else
 IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(PDK_PATH)/packages/ti/drv
+endif
 
 ifeq ($(TARGET_OS),SYSBIOS)
 IDIRS       += $(XDCTOOLS_PATH)/packages

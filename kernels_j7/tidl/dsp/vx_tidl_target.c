@@ -74,7 +74,11 @@
 #include "c7x.h"
 #include <HwiP.h>
 #if defined(SOC_AM62A)
+#if !defined(MCU_PLUS_SDK)
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Cache.h>
+#else
+#include <kernel/nortos/dpl/c75/CacheP_c75.h>
+#endif
 #endif
 
 #if defined(SOC_AM62A)
@@ -378,7 +382,11 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
 #if defined(SOC_AM62A)
 #ifndef x86_64
+#if !defined(MCU_PLUS_SDK)
         Cache_wbInvL1dAll();
+#else
+        CacheP_wbInvAll(CacheP_TYPE_L1D);
+#endif
 #endif
 #endif
 
@@ -394,7 +402,11 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
 #if defined(SOC_AM62A)
 #ifndef x86_64
+#if !defined(MCU_PLUS_SDK)
         Cache_wbInvL1dAll();
+#else
+        CacheP_wbInvAll(CacheP_TYPE_L1D);
+#endif
 #endif
 #endif
 
@@ -493,7 +505,7 @@ static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int3
    This flow is controlled via flowCtrl in create Params
 */
 #if defined(SOC_AM62A)
-#include <udma/dmautils/udma_standalone/udma.h>
+#include <dmautils/udma_standalone/udma.h>
 #else
 #include <udma/udma.h>
 #endif

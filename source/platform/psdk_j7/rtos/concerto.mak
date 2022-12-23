@@ -21,8 +21,13 @@ CSOURCES    := 	tivx_event.c \
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
-IDIRS       += $(PDK_PATH)/packages
-IDIRS       += $(PDK_PATH)/packages/ti/osal
+ifeq ($(RTOS_SDK), mcu_plus_sdk)
+    IDIRS       += $(MCU_PLUS_SDK_PATH)/source
+    IDIRS       += $(MCU_PLUS_SDK_PATH)/source/kernel/dpl
+else 
+    IDIRS       += $(PDK_PATH)/packages
+    IDIRS       += $(PDK_PATH)/packages/ti/osal
+endif
 IDIRS       += $(VISION_APPS_PATH)
 
 ifeq ($(TARGET_OS),SYSBIOS)
