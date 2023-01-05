@@ -1247,6 +1247,12 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
     mux_val[4U] = vissPrms->fcp[0].mux_output4;
     vissDrvPrms = &vissObj->vissPrms;
 
+    /* Disable all Outputs first */
+    for (out_cnt = 0u; out_cnt < TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT; out_cnt ++)
+    {
+        vissDrvPrms->outPrms[out_cnt].enable = FALSE;
+    }
+
     out_start = TIVX_KERNEL_VPAC_VISS_OUT0_IDX;
     for (out_cnt = 0u; out_cnt < TIVX_KERNEL_VPAC_VISS_MAX_IMAGE_OUTPUT; out_cnt ++)
     {
