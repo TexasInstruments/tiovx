@@ -22,16 +22,7 @@ ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 BUILD_DEFS += BUILD_CONFORMANCE_TEST
 endif
 
-ifeq ($(SOC),j721e)
-    BUILD_DEFS += SOC_J721E
-else ifeq ($(SOC),j721s2)
-    BUILD_DEFS += SOC_J721S2
-else ifeq ($(SOC),j784s4)
-    BUILD_DEFS += SOC_J784S4
-else ifeq ($(SOC),am62a)
-    BUILD_DEFS += SOC_AM62A
-endif
-
+BUILD_DEFS += $(SOC_DEF)
 BUILD_DEFS += $(VPAC_VERSION)
 
 DIRECTORIES :=
