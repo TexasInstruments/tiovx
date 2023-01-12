@@ -694,9 +694,16 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 }
                 break;
             case (vx_enum)TIVX_RAW_IMAGE_FORMAT:
-                if ((size <= (sizeof(tivx_raw_image_format_t)*(vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES)) && (((vx_size)ptr & 0x3U) == 0U))
+                if ((NULL != ptr) &&
+                    (size >= sizeof(tivx_raw_image_format_t)) &&
+                    (((vx_size)ptr & 0x3U) == 0U))
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
+
+                    if(num_dims > (vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES)
+                    {
+                        num_dims = (vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES;
+                    }
 
                     tivx_obj_desc_memcpy(ptr, &obj_desc->params.format, (uint32_t)sizeof(tivx_raw_image_format_t)*(uint32_t)num_dims);
                 }
@@ -725,6 +732,26 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "query raw image meta height after failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING:
+                if ((NULL != ptr) &&
+                    (size >= sizeof(vx_imagepatch_addressing_t)) &&
+                    (((vx_size)ptr & 0x3U) == 0U))
+                {
+                    vx_size num_dims = size / sizeof(vx_imagepatch_addressing_t);
+
+                    if(num_dims > (vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES)
+                    {
+                        num_dims = (vx_size)TIVX_RAW_IMAGE_MAX_EXPOSURES;
+                    }
+
+                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)sizeof(vx_imagepatch_addressing_t)*num_dims);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query raw image imagepatch addressing failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

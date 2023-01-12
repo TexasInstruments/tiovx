@@ -361,6 +361,29 @@ TEST(tivxImage, negativeTestSwapImageHandle)
     VX_CALL(vxReleaseImage(&img));
 }
 
+TEST(tivxImage, testQueryImage)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image image = NULL;
+    vx_imagepatch_addressing_t image_addr;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, TIVX_IMAGE_IMAGEPATCH_ADDRESSING,  &image_addr,  sizeof(image_addr)));
+
+    ASSERT_EQ_INT(640, image_addr.dim_x);
+    ASSERT_EQ_INT(480, image_addr.dim_y);
+    ASSERT_EQ_INT(1, image_addr.stride_x);
+    ASSERT_EQ_INT(640, image_addr.stride_y);
+    ASSERT_EQ_INT(1024, image_addr.scale_x);
+    ASSERT_EQ_INT(1024, image_addr.scale_y);
+    ASSERT_EQ_INT(1, image_addr.step_x);
+    ASSERT_EQ_INT(1, image_addr.step_y);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+
 TESTCASE_TESTS(
     tivxImage,
     negativeTestCreateImage,
@@ -380,6 +403,7 @@ TESTCASE_TESTS(
     negativeTestCopyImagePatch,
     negativeTestMapImagePatch,
     negativeTestUnmapImagePatch,
-    negativeTestSwapImageHandle
+    negativeTestSwapImageHandle,
+    testQueryImage
 )
 

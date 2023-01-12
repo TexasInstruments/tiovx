@@ -149,7 +149,9 @@ enum tivx_raw_image_attribute_e {
     /*! \brief Queries an image for its meta height at top of readout. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
     TIVX_RAW_IMAGE_META_HEIGHT_BEFORE = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x5,
     /*! \brief Queries an image for its meta height at bottom of readout. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    TIVX_RAW_IMAGE_META_HEIGHT_AFTER = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x6
+    TIVX_RAW_IMAGE_META_HEIGHT_AFTER = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x6,
+    /*! \brief Queries an image for its addressing structure. Read-only. Use a <tt>\ref vx_imagepatch_addressing_t[TIVX_RAW_IMAGE_MAX_EXPOSURES]</tt> parameter. */
+    TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, TIVX_TYPE_RAW_IMAGE) + 0x7
 };
 
 /*! \brief The raw image buffer access enum.

@@ -102,6 +102,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
         vx_bool line_interleaved = vx_false_e;
         vx_uint32 meta_height_before = 5, meta_height_after = 0;
         tivx_raw_image_format_t format[3];
+        vx_imagepatch_addressing_t image_addr[3];
 
         vx_enum actual_item_type = VX_TYPE_INVALID;
         vx_size actual_capacity = 0;
@@ -110,6 +111,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
         vx_bool actual_line_interleaved = vx_true_e;
         vx_uint32 actual_meta_height_before = 0, actual_meta_height_after = 0;
         tivx_raw_image_format_t actual_format[3];
+        vx_imagepatch_addressing_t actual_image_addr[3];
 
         format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
         format[0].msb = 12;
@@ -117,6 +119,33 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
         format[1].msb = 7;
         format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
         format[2].msb = 11;
+
+        image_addr[0].dim_x = 128;
+        image_addr[0].dim_y = 128;
+        image_addr[0].stride_x = 2;
+        image_addr[0].stride_y = 256;
+        image_addr[0].scale_x = 1024;
+        image_addr[0].scale_y = 1024;
+        image_addr[0].step_x = 1;
+        image_addr[0].step_y = 1;
+
+        image_addr[1].dim_x = 128;
+        image_addr[1].dim_y = 128;
+        image_addr[1].stride_x = 1;
+        image_addr[1].stride_y = 128;
+        image_addr[1].scale_x = 1024;
+        image_addr[1].scale_y = 1024;
+        image_addr[1].step_x = 1;
+        image_addr[1].step_y = 1;
+
+        image_addr[2].dim_x = 128;
+        image_addr[2].dim_y = 128;
+        image_addr[2].stride_x = 0;
+        image_addr[2].stride_y = 192;
+        image_addr[2].scale_x = 1024;
+        image_addr[2].scale_y = 1024;
+        image_addr[2].step_x = 1;
+        image_addr[2].step_y = 1;
 
         switch (type)
         {
@@ -141,6 +170,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
             VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_FORMAT, &actual_format, sizeof(actual_format)));
             VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &actual_meta_height_before, sizeof(vx_uint32)));
             VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &actual_meta_height_after, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING, &actual_image_addr, sizeof(actual_image_addr)));
 
             if (src_width == actual_src_width &&
                 src_height == actual_src_height &&
@@ -148,7 +178,8 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
                 line_interleaved == actual_line_interleaved &&
                 meta_height_before == actual_meta_height_before &&
                 meta_height_after == actual_meta_height_after &&
-                memcmp(format, actual_format, sizeof(format)) == 0
+                memcmp(format, actual_format, sizeof(format)) == 0 &&
+                memcmp(image_addr, actual_image_addr, sizeof(image_addr)) == 0
                 )
             {
                 VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
@@ -186,6 +217,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_bool line_interleaved = vx_false_e;
     vx_uint32 meta_height_before = 5, meta_height_after = 0;
     tivx_raw_image_format_t format[3];
+    vx_imagepatch_addressing_t image_addr[3];
 
     vx_enum actual_item_type = VX_TYPE_INVALID;
     vx_size actual_capacity = 0;
@@ -194,6 +226,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     vx_bool actual_line_interleaved = vx_true_e;
     vx_uint32 actual_meta_height_before = 0, actual_meta_height_after = 0;
     tivx_raw_image_format_t actual_format[3];
+    vx_imagepatch_addressing_t actual_image_addr[3];
 
     format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
     format[0].msb = 12;
@@ -201,6 +234,33 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
     format[1].msb = 7;
     format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
     format[2].msb = 11;
+
+    image_addr[0].dim_x = 128;
+    image_addr[0].dim_y = 128;
+    image_addr[0].stride_x = 2;
+    image_addr[0].stride_y = 256;
+    image_addr[0].scale_x = 1024;
+    image_addr[0].scale_y = 1024;
+    image_addr[0].step_x = 1;
+    image_addr[0].step_y = 1;
+
+    image_addr[1].dim_x = 128;
+    image_addr[1].dim_y = 128;
+    image_addr[1].stride_x = 1;
+    image_addr[1].stride_y = 128;
+    image_addr[1].scale_x = 1024;
+    image_addr[1].scale_y = 1024;
+    image_addr[1].step_x = 1;
+    image_addr[1].step_y = 1;
+
+    image_addr[2].dim_x = 128;
+    image_addr[2].dim_y = 128;
+    image_addr[2].stride_x = 0;
+    image_addr[2].stride_y = 192;
+    image_addr[2].scale_x = 1024;
+    image_addr[2].scale_y = 1024;
+    image_addr[2].step_x = 1;
+    image_addr[2].step_y = 1;
 
     switch (type)
     {
@@ -227,6 +287,7 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
         VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_FORMAT, &actual_format, sizeof(actual_format)));
         VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &actual_meta_height_before, sizeof(vx_uint32)));
         VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &actual_meta_height_after, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_IMAGEPATCH_ADDRESSING, &actual_image_addr, sizeof(actual_image_addr)));
 
         if (src_width == actual_src_width &&
             src_height == actual_src_height &&
@@ -234,7 +295,8 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             line_interleaved == actual_line_interleaved &&
             meta_height_before == actual_meta_height_before &&
             meta_height_after == actual_meta_height_after &&
-            memcmp(format, actual_format, sizeof(format)) == 0
+            memcmp(format, actual_format, sizeof(format)) == 0 &&
+            memcmp(image_addr, actual_image_addr, sizeof(image_addr)) == 0
             )
         {
             VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_WIDTH, &src_width, sizeof(vx_uint32)));

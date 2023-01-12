@@ -1621,6 +1621,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_IMAGE_IMAGEPATCH_ADDRESSING:
+                if ((NULL != ptr) &&
+                    (size >= sizeof(vx_imagepatch_addressing_t)) &&
+                    (((vx_size)ptr & 0x3U) == 0U))
+                {
+                    vx_size num_dims = size / sizeof(vx_imagepatch_addressing_t);
+
+                    if(num_dims > (vx_size)TIVX_IMAGE_MAX_PLANES)
+                    {
+                        num_dims = (vx_size)TIVX_IMAGE_MAX_PLANES;
+                    }
+
+                    tivx_obj_desc_memcpy(ptr, &obj_desc->imagepatch_addr[0], (uint32_t)sizeof(vx_imagepatch_addressing_t)*num_dims);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "query image imagepatch addressing failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
