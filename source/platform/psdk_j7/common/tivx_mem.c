@@ -327,7 +327,7 @@ vx_status tivxMemBufferMap(
     {
         if ((vx_enum)TIVX_MEMORY_TYPE_DMA != mem_type)
         {
-            #if defined(SOC_AM62A) || defined(SOC_J784S4)
+            #if defined(SOC_AM62A) || (defined(SOC_J784S4) && !(defined(A72)))
             appMemCacheInv(host_ptr, size);
             #else
             #ifndef A72
