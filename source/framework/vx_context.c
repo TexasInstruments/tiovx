@@ -635,8 +635,6 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        ownContextLock(context);
-
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
         if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
@@ -728,8 +726,6 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 }
             }
         }
-
-        ownContextUnlock(context);
     }
     else
     {
@@ -761,8 +757,6 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         tivx_event cmd_ack_event;
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
-
-        ownContextLock(context);
 
         status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
@@ -848,8 +842,6 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                 }
             }
         }
-
-        ownContextUnlock(context);
     }
     else
     {
