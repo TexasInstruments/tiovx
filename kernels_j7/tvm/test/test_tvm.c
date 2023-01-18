@@ -92,6 +92,14 @@
 #define TEST_TVM_OUT_TENSOR1_ELEMENTS (1*480*14*14)
 #define TEST_TVM_OUT_TENSOR2_ELEMENTS (1*480*1*1)
 
+#if defined(SOC_AM62A)
+#define TVM_SMALL_TEST "%s/tivx/tvm_models/am62a/ovx_tvm_test_small.out"
+#define TVM_LARGE_TEST "%s/tivx/tvm_models/am62a/ovx_tvm_test_large.out"
+#else
+#define TVM_SMALL_TEST "%s/tivx/tvm_models/j7/ovx_tvm_test_small.out"
+#define TVM_LARGE_TEST "%s/tivx/tvm_models/j7/ovx_tvm_test_large.out"
+#endif
+
 
 TESTCASE(tivxTVM, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -318,7 +326,7 @@ TEST(tivxTVM, testTVM)
         #endif
 
         /* Create userdata object for c7x depolyable module */
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tvm_models/ovx_tvm_test_small.out", ct_get_test_file_path());
+        sz = snprintf(filepath, MAXPATHLENGTH, TVM_SMALL_TEST, ct_get_test_file_path());
         ASSERT(sz < MAXPATHLENGTH);
         deploy_mod = readDeployMod(context, filepath);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)deploy_mod));
@@ -500,11 +508,11 @@ TEST(tivxTVM, testTVMPreempt)
         #endif
 
         /* Create userdata object for c7x depolyable module */
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tvm_models/ovx_tvm_test_small.out", ct_get_test_file_path());
+        sz = snprintf(filepath, MAXPATHLENGTH, TVM_SMALL_TEST, ct_get_test_file_path());
         ASSERT(sz < MAXPATHLENGTH);
         deploy_mod = readDeployMod(context, filepath);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)deploy_mod));
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tvm_models/ovx_tvm_test_large.out", ct_get_test_file_path());
+        sz = snprintf(filepath, MAXPATHLENGTH, TVM_LARGE_TEST, ct_get_test_file_path());
         ASSERT(sz < MAXPATHLENGTH);
         deploy_mod_large = readDeployMod(context, filepath);
         ASSERT(VX_SUCCESS == vxGetStatus((vx_reference)deploy_mod_large));

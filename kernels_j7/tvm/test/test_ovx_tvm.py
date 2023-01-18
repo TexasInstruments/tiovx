@@ -62,7 +62,7 @@
 TIDL_TOOLS_PATH=$PSDKR_PATH/tidl_j7_xx_yy_zz_ww/tidl_tools \
 ARM64_GCC_PATH=$PSDKR_PATH/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu \
 CGT7X_ROOT=$PSDKR_PATH/ti-cgt-c7000_x.y.z.www / \
-python3 ./test_ovx_tvm.py
+python3 ./test_ovx_tvm.py --platform [J7, J721S2, J784S4, AM62A]
 
 For EVM testing:
 cp artifacts_ovx_tvm_c7x_target/tempDir/c7x_deploy_mod.out \
@@ -84,6 +84,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--target', action='store_true',
                     default=True,
                     help='generate code for target device (ARM core) (Default)')
+parser.add_argument('--platform', action='store',
+                      default="J7",
+                      help='Compile model for which platform (J7, J721S2, J784S4, AM62A)')
 parser.add_argument('--host', action='store_false',
                     dest="target",
                     help='generate code for host emulation (e.g. x86_64 core)')
@@ -157,7 +160,7 @@ def model_compile(model_name, mod_orig, params, model_input_list, max_num_subgra
         print(f"{__file__}: Skip compilation because: {ex}")
         return 0
 
-    tidl_platform = "J7"   # or "AM57"
+    tidl_platform = args.platform   # or "AM57"
     tidl_version = "8.1"   # corresponding Processor SDK version
     tidl_artifacts_folder = "./artifacts_" + model_name +  ("_target" if args.target else "_host")
     os.makedirs(tidl_artifacts_folder, exist_ok = True)
