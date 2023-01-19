@@ -95,17 +95,8 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-    #if defined (C71) || defined (C7120)
-        tivxRegisterOpenVXCoreTargetKernels();
-        #ifdef BUILD_TUTORIAL
-        tivxRegisterTutorialTargetKernels();
-        #endif
-    #endif
-    #endif
-
-    #if defined (SOC_AM62A)
-    #if defined (C7504)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
+    #if defined (C71) || defined (C7120) || defined (C7504)
         tivxRegisterOpenVXCoreTargetKernels();
         #ifdef BUILD_TUTORIAL
         tivxRegisterTutorialTargetKernels();
@@ -125,14 +116,8 @@ static void tivxInitLocal(void)
     #endif
     #endif
 
-    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-    #if defined (C71) || defined (C7120)
-        tivxRegisterTestKernelsTargetDspKernels();
-    #endif
-    #endif
-
-    #if defined (SOC_AM62A)
-    #if defined (C7504)
+    #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
+    #if defined (C71) || defined (C7120) || defined (C7504)
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
@@ -168,17 +153,8 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2) || defined (SOC_J784S4)
-        #if defined (C71) || defined (C7120)
-            tivxUnRegisterOpenVXCoreTargetKernels();
-            #ifdef BUILD_TUTORIAL
-            tivxUnRegisterTutorialTargetKernels();
-            #endif
-        #endif
-        #endif
-
-        #if defined (SOC_AM62A)
-        #if defined (C7504)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
+        #if defined (C71) || defined (C7120) || defined (C7504)
             tivxUnRegisterOpenVXCoreTargetKernels();
             #ifdef BUILD_TUTORIAL
             tivxUnRegisterTutorialTargetKernels();
@@ -198,14 +174,8 @@ static void tivxDeInitLocal(void)
         #endif
         #endif
 
-        #if defined (SOC_J721S2) || defined (SOC_J784S4)
-        #if defined (C71) || defined (C7120)
-            tivxUnRegisterTestKernelsTargetDspKernels();
-        #endif
-        #endif
-
-        #if defined (SOC_AM62A)
-        #if defined (C7504)
+        #if defined (SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62A)
+        #if defined (C71) || defined (C7120) || defined (C7504)
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
         #endif
