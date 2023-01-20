@@ -198,14 +198,17 @@ static vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec
     }
 /* Free the records that ahs SCRATCH attribute and that are in L2 so their space can be re-used for another iVision algorithm */
 #ifndef HOST_EMULATION
-    for (memRecId = 0u; memRecId < numMemRec; memRecId++)
+    if(status==(vx_status)VX_SUCCESS)
     {
-        status = tivxAlgiVisionGetHeapId((vx_uint32)memRec[memRecId].space, (vx_uint32)memRec[memRecId].attrs, &heap_id);
-        if(status==(vx_status)VX_SUCCESS)
+        for (memRecId = 0u; memRecId < numMemRec; memRecId++)
         {
-            if (((vx_enum)heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
+            status = tivxAlgiVisionGetHeapId((vx_uint32)memRec[memRecId].space, (vx_uint32)memRec[memRecId].attrs, &heap_id);
+            if(status==(vx_status)VX_SUCCESS)
             {
-                tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
+                if (((vx_enum)heap_id== (vx_enum)TIVX_MEM_INTERNAL_L2) && (memRec[memRecId].attrs== IALG_SCRATCH))
+                {
+                    tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, (vx_int32)heap_id);
+                }
             }
         }
     }
