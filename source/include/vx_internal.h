@@ -145,7 +145,7 @@ enum tivx_type_e {
 /*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils
  */
-#define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0U))
+#define VX_CHECK_PARAM(ptr, size, type, align) ((NULL != ptr) && (size == sizeof(type)) && (((vx_size)ptr & align) == 0U))
 
 static inline void tivx_uint32_to_uint64(volatile uint64_t *val, uint32_t h, uint32_t l);
 static inline void tivx_uint64_to_uint32(uint64_t val, volatile uint32_t *h, volatile uint32_t *l);
