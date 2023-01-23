@@ -71,8 +71,7 @@
 #include <ch02_image/vx_tutorial_image.h>
 #include <ch03_graph/vx_tutorial_graph.h>
 #include <ch04_graph_pipeline/vx_tutorial_graph_pipeline.h>
-#include <ch05_tidl/vx_tutorial_tidl.h>
-#include <ch06_test_mcu/vx_tutorial_mcu_demo.h>
+#include <ch05_test_mcu/vx_tutorial_mcu_demo.h>
 
 char vx_tutorial_get_char();
 

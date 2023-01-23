@@ -43,11 +43,7 @@ IDIRS       += $(XDIAS_PATH)/packages
 IDIRS       += $(EVE_SW_PATH)/common
 
 CH05_SOURCES := \
-	ch05_tidl/vx_tutorial_tidl.c \
-	ch05_tidl/imagenet_class_labels.c \
-
-CH06_SOURCES := \
-	ch06_test_mcu/vx_tutorial_mcu_demo.c \
+	ch05_test_mcu/vx_tutorial_mcu_demo.c \
 
 ifeq ($(TARGET_PLATFORM),PC)
 CFLAGS += -DHOST_EMULATION
@@ -58,14 +54,9 @@ CSOURCES    := \
 	$(CH02_SOURCES) \
 	$(CH03_SOURCES) \
 	$(CH04_SOURCES) \
-	$(CH06_SOURCES) \
+	$(CH05_SOURCES) \
 
-
-ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
-CSOURCES += $(CH05_SOURCES)
-else
 DEFS += _DISABLE_TIDL
-endif
 
 include $(FINALE)
 
