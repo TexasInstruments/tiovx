@@ -252,7 +252,7 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
 
     vx_rectangle_t rect;
     vx_rectangle_t out_rect;
-    vx_uint32 scale;
+    vx_float32 scale_w, scale_h;
 
     if ( (num_params != TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX])
@@ -300,25 +300,37 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        if (dst_w > src_w)
+        if ((dst_w > src_w) || (dst_h > src_h))
         {
-            scale = dst_w / src_w;
             tivxCheckStatus(&status, vxGetValidRegionImage(src, &rect));
-
             out_rect.start_x = rect.start_x;
             out_rect.start_y = rect.start_y;
-
-            if (1U == (dst_w - src_w))
+            out_rect.end_x   = rect.end_x + 1U;
+            out_rect.end_y   = rect.end_y + 1U;
+            if (dst_w > src_w)
             {
-                out_rect.end_x = rect.end_x + 1U;
-                out_rect.end_y = rect.end_y + 1U;
+                scale_w = (vx_float32) dst_w / (vx_float32) src_w;
+                if (1U == (dst_w - src_w))
+                {
+                    out_rect.end_x = rect.end_x + 1U;
+                }
+                else
+                {
+                    out_rect.end_x = rect.end_x * scale_w;
+                }
             }
-            else
+            if (dst_h > src_h)
             {
-                out_rect.end_x = rect.end_x * scale;
-                out_rect.end_y = rect.end_y * scale;
+                scale_h = (vx_float32) dst_h / (vx_float32) src_h;
+                if (1U == (dst_h - src_h))
+                {
+                    out_rect.end_y = rect.end_y + 1U;
+                }
+                else
+                {
+                    out_rect.end_y = rect.end_y * scale_h;
+                }
             }
-
             tivxCheckStatus(&status, vxSetImageValidRectangle(dst, &out_rect));
         }
     }

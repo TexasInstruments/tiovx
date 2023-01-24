@@ -330,6 +330,12 @@ void tivx_dst_size_generator_1_2(int width, int height, int* dst_width, int* dst
     *dst_height = height * 2;
 }
 
+void tivx_dst_size_generator_1_1_5(int width, int height, int* dst_width, int* dst_height)
+{
+    *dst_width = width * 1.5;
+    *dst_height = height * 1.5;
+}
+
 void tivx_dst_size_generator_1_3(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width * 3;
@@ -390,6 +396,7 @@ void tivx_dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_wid
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 2, ADD_SIZE_18x18, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 2, ADD_SIZE_644x258, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 2, ADD_SIZE_1600x1200, ADD_VX_BORDERS, ARG, 0), \
+    SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_read_image, "lena.bmp", 1_1_5, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), \
 
 TEST_WITH_ARG(tivxScale, testGraphProcessing, Arg,
     PARAMETERS
@@ -462,8 +469,13 @@ TEST_WITH_ARG(tivxScale, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+#define PARAMETERS_SEQUENTIAL \
+    SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 2, ADD_SIZE_18x18, ADD_VX_BORDERS, ARG, 0), \
+    SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 2, ADD_SIZE_644x258, ADD_VX_BORDERS, ARG, 0), \
+    SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 2, ADD_SIZE_1600x1200, ADD_VX_BORDERS, ARG, 0), \
+
 TEST_WITH_ARG(tivxScale, testSequentialNodes, Arg,
-    PARAMETERS
+    PARAMETERS_SEQUENTIAL
 )
 {
     vx_context context = context_->vx_context_;
