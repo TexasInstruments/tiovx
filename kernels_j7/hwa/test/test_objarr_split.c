@@ -33,8 +33,8 @@
 #define OUTPUT2_NUM_ITEMS 3
 #define OUTPUT3_NUM_ITEMS 3
 
-#define TEST_IMAGE_WIDTH  1920U
-#define TEST_IMAGE_HEIGHT 1080U
+#define TEST_IMAGE_WIDTH  1280U
+#define TEST_IMAGE_HEIGHT 720U
 
 static void fillSequence(CT_Image dst, uint32_t seq_init)
 {
@@ -410,7 +410,7 @@ TEST(tivxObjArraySplit, negativeTestGraph)
 
     tivxHwaLoadKernels(context);
 
-    ASSERT_VX_OBJECT(exemplar = vxCreateImage(context, 1920, 1080, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(exemplar = vxCreateImage(context, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(in = vxCreateObjectArray(context, (vx_reference)exemplar, input_num_items), VX_TYPE_OBJECT_ARRAY);
