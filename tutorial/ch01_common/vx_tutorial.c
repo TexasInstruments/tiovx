@@ -72,12 +72,9 @@ static char menu[] = {
     "\n 1: Image"
     "\n 2: Graph"
     "\n 3: Graph Pipeline"
-#ifndef _DISABLE_TIDL
-    "\n 4: TI-DL"
-#endif
-    "\n 5: MCU3_0/MCU3_1 demo"
+    "\n 4: MCU3_0/MCU3_1 demo"
 #if defined(SOC_J784S4)
-    "\n 6: MCU4_0/MCU4_1 demo"
+    "\n 5: MCU4_0/MCU4_1 demo"
 #endif
     "\n a: Run All"
     "\n"
@@ -138,13 +135,6 @@ void vx_tutorial_run_interactive()
                 vx_tutorial_graph_pipeline_run_interactive();
                 break;
             case '4':
-#ifdef _DISABLE_TIDL
-                printf("tidl tutorial disabled for TDA4; please reference TIDL apps in vision_apps\n");
-#else
-                vx_tutorial_tidl();
-#endif
-                break;
-            case '5':
 #if defined(SOC_AM62A)
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU1_0)))
                 {
@@ -166,7 +156,7 @@ void vx_tutorial_run_interactive()
 #endif
                 break;
 #if defined(SOC_J784S4)
-            case '6':
+            case '5':
                 if((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_0)) || (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_MCU4_1)))
                 {
                     vx_tutorial_mcu_demo(vx_false_e);
