@@ -340,7 +340,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 }
                 break;
             case (vx_enum)VX_TENSOR_DIMS:
-                if ((size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) && (((vx_size)ptr & 0x3U) == 0U))
+                if ((NULL != ptr) &&
+                    (size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) &&
+                    (((vx_size)ptr & 0x3U) == 0U))
                 {
                     int32_t i;
                     vx_size *p = ptr;
@@ -398,6 +400,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case (vx_enum)TIVX_TENSOR_STRIDES:
+                if ((NULL != ptr) &&
+                    (size >= ((sizeof(vx_size)*obj_desc->number_of_dimensions))) &&
+                    (((vx_size)ptr & 0x3U) == 0U))
+                {
+                    int32_t i;
+                    vx_size *p = ptr;
+
+                    /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
+                    for(i=0; i<(int32_t)obj_desc->number_of_dimensions; i++)
+                    {
+                        p[i] = obj_desc->stride[i];
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_STRIDES failed\n");
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

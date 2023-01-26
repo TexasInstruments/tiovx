@@ -229,7 +229,13 @@ typedef enum _tivx_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use a <tt>\ref vx_imagepatch_addressing_t[TIVX_IMAGE_MAX_PLANES]</tt> parameter.
      */
-    TIVX_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xa
+    TIVX_IMAGE_IMAGEPATCH_ADDRESSING = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xa,
+
+    /*! \brief Query the strides from a vx_tensor object.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref array of vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
+     */
+    TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xb
 
 } tivx_attribute_extensions_e;
 

@@ -75,7 +75,7 @@ TEST_WITH_ARG(tivxTensor, testCreateTensor, Arg,
     ASSERT_VX_OBJECT(tensor_int64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT64, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     EXPECT_VX_ERROR(tensor_float64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT64, 0), VX_ERROR_INVALID_TYPE);
-    
+
     ct_free_mem(dims);
 
     VX_CALL(vxReleaseTensor(&tensor_float32));
@@ -103,10 +103,19 @@ TEST_WITH_ARG(tivxTensor, testQueryTensor, Arg,
 
     vx_size *dims = (vx_size*)ct_alloc_mem((max_dims+1) * sizeof(vx_size));
     vx_size *dims_ref = (vx_size*)ct_alloc_mem((max_dims) * sizeof(vx_size));
+    vx_size *strides = (vx_size*)ct_alloc_mem((max_dims) * sizeof(vx_size));
+    vx_size *strides_ref = (vx_size*)ct_alloc_mem((max_dims) * sizeof(vx_size));
     vx_size i;
     for(i = 0; i < TENSOR_DIMS_NUM; i++)
     {
         dims[i] = TENSOR_DIMS_LENGTH;
+    }
+
+    strides[0] = 1;
+
+    for(i = 1; i < TENSOR_DIMS_NUM; i++)
+    {
+        strides[i] = strides[i - 1U] * dims[i - 1U];
     }
 
     EXPECT_VX_ERROR(tensor_uint8 = vxCreateTensor(context, max_dims+1, dims, VX_TYPE_UINT8, 0), VX_ERROR_INVALID_DIMENSION);
@@ -136,6 +145,13 @@ TEST_WITH_ARG(tivxTensor, testQueryTensor, Arg,
     for(i = 0; i < TENSOR_DIMS_NUM; i++)
     {
         ASSERT(dims_ref[i] == dims[i]);
+    }
+
+    VX_CALL(vxQueryTensor(tensor_uint8, TIVX_TENSOR_STRIDES, strides_ref, max_dims * sizeof(vx_size)));
+
+    for(i = 0; i < TENSOR_DIMS_NUM; i++)
+    {
+        ASSERT(strides_ref[i] == strides[i]);
     }
 
     VX_CALL(vxReleaseTensor(&tensor_uint8));
@@ -174,7 +190,7 @@ TEST_WITH_ARG(tivxTensor, testCopyTensor, Arg,
     const vx_size bytes16 = dims[TENSOR_DIMS_NUM - 1] * strides16[TENSOR_DIMS_NUM - 1];
     const vx_size bytes32 = dims[TENSOR_DIMS_NUM - 1] * strides32[TENSOR_DIMS_NUM - 1];
     const vx_size bytesf32 = dims[TENSOR_DIMS_NUM - 1] * stridesf32[TENSOR_DIMS_NUM - 1];
-    
+
     vx_uint8  * data8 = ct_alloc_mem(bytes8);
     vx_uint16 * data16 = ct_alloc_mem(bytes16);
     vx_uint32 * data32 = ct_alloc_mem(bytes32);
@@ -193,7 +209,7 @@ TEST_WITH_ARG(tivxTensor, testCopyTensor, Arg,
     ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
-    
+
     ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     VX_CALL(vxCopyTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start, dims, strides8, data8, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
@@ -250,7 +266,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
     vx_size strides16[TENSOR_DIMS_NUM]= { 0 };
     vx_size strides32[TENSOR_DIMS_NUM]= { 0 };
     vx_size stridesf32[TENSOR_DIMS_NUM]= { 0 };
-    
+
     vx_size strides_map8[TENSOR_DIMS_NUM]= { 0 };
     vx_size strides_map16[TENSOR_DIMS_NUM]= { 0 };
     vx_size strides_map32[TENSOR_DIMS_NUM]= { 0 };
@@ -260,14 +276,14 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
     vx_size start_map5[TENSOR_DIMS_NUM]= { 5, 6, 7, 8 };
     vx_size end_map0[TENSOR_DIMS_NUM]= { TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH };
     vx_size end_map5[TENSOR_DIMS_NUM]= { TENSOR_DIMS_LENGTH-5, TENSOR_DIMS_LENGTH-4, TENSOR_DIMS_LENGTH-3, TENSOR_DIMS_LENGTH-2  };
-    
+
     vx_map_id id8, id16, id32, idf32;
-    
+
     vx_uint8 *ptr8 = NULL;
     vx_uint16 *ptr16 = NULL;
     vx_uint32 *ptr32 = NULL;
     vx_float32 *ptrf32 = NULL;
-    
+
     vx_size *dims = (vx_size*)ct_alloc_mem(TENSOR_DIMS_NUM * sizeof(vx_size));
     uint32_t i, j;
 
@@ -388,7 +404,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
     VX_CALL(tivxUnmapTensorPatch(tensor_uint16, id16));
     VX_CALL(tivxUnmapTensorPatch(tensor_uint32, id32));
     VX_CALL(tivxUnmapTensorPatch(tensor_float32, idf32));
-    
+
     memset(data8, 0, bytes8);
     memset(data16, 0, bytes16);
     memset(data32, 0, bytes32);
@@ -399,7 +415,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
     VX_CALL(vxCopyTensorPatch(tensor_uint16, TENSOR_DIMS_NUM, start, dims, strides16, data16, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     VX_CALL(vxCopyTensorPatch(tensor_uint32, TENSOR_DIMS_NUM, start, dims, strides32, data32, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-    
+
     VX_CALL(vxCopyTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start, dims, stridesf32, dataf32, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     for(i = 0; i < bytes8; i++)
@@ -410,12 +426,12 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         ASSERT(data32[i] == (i+1)*1.0f);
     }
 
-    ct_free_mem(dataf32);    
+    ct_free_mem(dataf32);
     ct_free_mem(data32);
-    ct_free_mem(data16);    
+    ct_free_mem(data16);
     ct_free_mem(data8);
     ct_free_mem(dims);
-        
+
     VX_CALL(vxReleaseTensor(&tensor_float32));
     VX_CALL(vxReleaseTensor(&tensor_uint32));
     VX_CALL(vxReleaseTensor(&tensor_uint16));

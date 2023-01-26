@@ -130,7 +130,7 @@ enum vx_tensor_attribute_e
  * \param [in] context The reference to the implementation context.
  * \param [in] number_of_dims The number of dimensions.
  * \param [in] dims Dimensions sizes in elements.
- * \param [in] data_type The <tt>\ref vx_type_e</tt> that represents the data type of the tensor data elements. 
+ * \param [in] data_type The <tt>\ref vx_type_e</tt> that represents the data type of the tensor data elements.
  * \param [in] fixed_point_position Specifies the fixed point position when the input element type is integer. if 0, calculations are performed in integer math.
  * \return A tensor data reference. Any possible errors preventing a
  * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
