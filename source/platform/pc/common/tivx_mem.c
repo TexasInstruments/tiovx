@@ -66,6 +66,18 @@
 #include <utils/mem/include/app_mem.h>
 #endif // ifndef SOC_J6
 
+/*! \brief Default buffer allocation padding
+ * \ingroup group_tivx_mem
+ * \details HOST_EMULATION will use linux allocations, and the same buffer will be used on simulated
+ * DSP.  Some of the optimized DSP functions may do a vector read of multiple bytes of the
+ * input (sometimes more than it needs) for optimal fetch.  This has a potential of out of
+ * bounds reads which will segfault on HOST_EMULATION (this is not an issue on TARGET mode
+ * of operation where DSP is running in an RTOS and is allowed to read past the buffer within
+ * the memory carveout).  Therefore, this HOST_EMULATION_ALLOC_PAD variable can prevent
+ * HOST_EMULATION segfaults in this situation */
+#define HOST_EMULATION_ALLOC_PAD (8U)
+
+
 /*! \brief Default buffer allocation alignment
  * \ingroup group_tivx_mem
  */
@@ -101,10 +113,11 @@ vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t alloc_size = size+HOST_EMULATION_ALLOC_PAD;
 
     mem_ptr->mem_heap_region = mem_heap_region;
 
-    mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(size, (vx_enum)TIVX_MEM_EXTERNAL);
+    mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
 
     mem_ptr->shared_ptr = mem_ptr->host_ptr;
 
@@ -180,10 +193,11 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
     vx_status status = (vx_status)VX_SUCCESS;
+    uint32_t alloc_size = size+HOST_EMULATION_ALLOC_PAD;
 
     if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
     {
-        tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, size, (vx_enum)TIVX_MEM_EXTERNAL);
+        tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     return (status);
