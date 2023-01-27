@@ -313,6 +313,7 @@ static vx_status tivxKernelColorConvert(
             status = (vx_status)VXLIB_colorConvert_IYUVtoNV12_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src[0],
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2], &vxlib_src[2],
                 (uint8_t *)dst_addr[0], &vxlib_dst[0], (uint8_t *)dst_addr[1], &vxlib_dst[1]);
+            tivxEnableL1DandL2CacheWb();
         }
         else if (((vx_df_image)VX_DF_IMAGE_IYUV == src_desc->format) && ((vx_df_image)VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
@@ -320,6 +321,7 @@ static vx_status tivxKernelColorConvert(
                 (uint8_t *)src_addr[1], &vxlib_src[1], (uint8_t *)src_addr[2], &vxlib_src[2],
                 (uint8_t *)dst_addr[0],  &vxlib_dst[0], (uint8_t *)dst_addr[1],  &vxlib_dst[1],
                 (uint8_t *)dst_addr[2], &vxlib_dst[2]);
+            tivxEnableL1DandL2CacheWb();
         }
         else
         {
