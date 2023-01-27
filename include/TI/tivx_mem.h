@@ -405,6 +405,16 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
  */
 vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, void **phyAddr);
 
+/**
+ * \brief For J784S4, the C7X cache coherency model is different than other Jacinto SoC's.
+ *        While other SoC's C7X cache was coherent, the J784S4 C7X requires cache operations
+ *        to be performed on the buffers when using them within the OpenVX shared region.
+ *        This API allows the entire L1D and L2 cache to be written back for J784S4.
+ *
+ * \ingroup group_tivx_mem
+ */
+void tivxEnableL1DandL2CacheWb(void);
+
 #ifdef __cplusplus
 }
 #endif

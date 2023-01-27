@@ -511,3 +511,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
     return vxStatus;
 }
 
+void tivxEnableL1DandL2CacheWb()
+{
+    appMemEnableL1DandL2CacheWb();
+}
