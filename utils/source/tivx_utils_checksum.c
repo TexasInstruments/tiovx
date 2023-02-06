@@ -88,7 +88,14 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_r
             (vx_enum)VX_NOGAP_X
             );
 
-        stride_xby2 = (image_addr.stride_x == 0) ? 3U : ((uint32_t)image_addr.stride_x/(uint32_t)image_addr.step_x*2U);
+        stride_xby2 = (image_addr.stride_x == 0) ? 3U : (((uint32_t)image_addr.stride_x*2U)/(uint32_t)image_addr.step_x);
+
+        VX_PRINT(VX_ZONE_INFO, "plane_id = %d \n", plane_id);
+        VX_PRINT(VX_ZONE_INFO, "stride_xby2 = %d \n", stride_xby2);
+        VX_PRINT(VX_ZONE_INFO, "image_addr.dim_x = %d \n", image_addr.dim_x);
+        VX_PRINT(VX_ZONE_INFO, "image_addr.dim_y = %d \n", image_addr.dim_y);
+        VX_PRINT(VX_ZONE_INFO, "image_addr.stride_x = %d \n", image_addr.stride_x);
+        VX_PRINT(VX_ZONE_INFO, "image_addr.stride_y = %d \n", image_addr.stride_y);
 
         if ((vx_status)VX_SUCCESS == status)
         {
@@ -108,8 +115,16 @@ uint32_t tivx_utils_simple_image_checksum(vx_image image, uint8_t plane_id, vx_r
                 }
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch failed \n");
+        }
 
         vxUnmapImagePatch(image, map_id);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Null Image pointer \n");
     }
 
     return sum;
