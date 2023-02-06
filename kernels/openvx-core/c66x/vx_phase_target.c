@@ -151,6 +151,8 @@ static vx_status VX_CALLBACK tivxKernelPhaseProcess(
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_READ_ONLY));
         tivxCheckStatus(&status, tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
             (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
+
+        tivxEnableL1DandL2CacheWb();
     }
 
     return (status);
