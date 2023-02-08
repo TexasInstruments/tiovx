@@ -58,7 +58,7 @@ endif #ifeq ($(BUILD_HWA_KERNELS),yes)
 
 STATIC_LIBS += vx_utils
 STATIC_LIBS += vx_tiovx_tidl_tests
-STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom
+STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom tidl_avx_kernels
 STATIC_LIBS += $(C7X_VERSION)-host-emulation
 
 # Uncomment below to link to TIDL/MMALIB in host emulation mode instead of natural C mode on PC
