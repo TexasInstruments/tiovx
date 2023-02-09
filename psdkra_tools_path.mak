@@ -13,7 +13,11 @@ IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
 
 TIARMCGT_LLVM_ROOT ?= $(PSDK_PATH)/ti-cgt-armllvm_1.3.0.LTS
+ifeq ($(SOC),am62a)
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_3.1.0B2
+else
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_3.0.0.STS
+endif
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.7
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu
