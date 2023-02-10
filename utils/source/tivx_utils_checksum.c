@@ -206,22 +206,20 @@ uint32_t tivx_utils_tensor_checksum(vx_tensor tensor_object, vx_size number_of_d
 
             for(dim3 = 0; dim3 < dim3_count; dim3++)
             {
-                offset += (user_stride[3] * dim3);
                 for(dim2 = 0; dim2 < dim2_count; dim2++)
                 {
-                    offset += (user_stride[2] * dim2);
                     for(dim1 = 0; dim1 < dim1_count; dim1++)
                     {
-                        offset += (user_stride[1] * dim1);
+                        offset += (user_stride[1]);
                         num_bytes = dim0_count * user_stride[0];
                         for (dim0 = 0; dim0 < (num_bytes/4); dim0++)
                         {
-                            sum += data_ptr[offset + dim0];
+                            sum += *((uint32_t*)((uint8_t*)data_ptr+offset) + dim0);
                         }
                         if (0 != (num_bytes % 4))
                         {
                             uint32_t bitshift = (4U - ((uint32_t)num_bytes % 4U)) * 8U;
-                            sum += (data_ptr[offset + dim0] << bitshift) >> bitshift;
+                            sum += ( (*((uint32_t*)((uint8_t*)data_ptr+offset) + dim0)) << bitshift) >> bitshift;
                         }
                     }
                 }
