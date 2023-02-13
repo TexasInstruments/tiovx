@@ -103,14 +103,14 @@ static vx_status ownContextCreateCmdObj(vx_context context)
     status = tivxQueueCreate(&context->free_queue,
                              TIVX_MAX_CTRL_CMD_OBJECTS,
                              context->free_queue_memory,
-                             0); /* non-blocking */
+                             TIVX_QUEUE_FLAG_BLOCK_ON_GET); /* blocking */
 
     if (status == (vx_status)VX_SUCCESS)
     {
         status = tivxQueueCreate(&context->pend_queue,
                                  TIVX_MAX_CTRL_CMD_OBJECTS,
                                  context->pend_queue_memory,
-                                 0); /* non-blocking */
+                                 TIVX_QUEUE_FLAG_BLOCK_ON_GET); /* blocking */
 
         if (status!=(vx_status)VX_SUCCESS)
         {
@@ -635,7 +635,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {
@@ -758,7 +758,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         uintptr_t   obj_id;
         uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000U;
 
-        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
+        status = tivxQueueGet(&context->free_queue, &obj_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         if ((status == (vx_status)VX_SUCCESS) && (obj_id < TIVX_MAX_CTRL_CMD_OBJECTS))
         {

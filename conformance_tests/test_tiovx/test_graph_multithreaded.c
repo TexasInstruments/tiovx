@@ -1179,10 +1179,71 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
+
+static void VX_CALLBACK tivxTask(void *app_var)
+{
+    vx_context context = (vx_context)app_var;
+    vx_graph graph;
+    vx_node node;
+    vx_image input_image_not = 0, output_image_not = 0;
+    vx_int32 i;
+
+    while(taskFinished1 == 0)
+    {
+        ASSERT_VX_OBJECT(input_image_not = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(output_image_not = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+        ASSERT_VX_OBJECT(node = vxNotNode(graph, input_image_not, output_image_not), VX_TYPE_NODE);
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+        VX_CALL(vxReleaseImage(&output_image_not));
+        VX_CALL(vxReleaseImage(&input_image_not));
+        VX_CALL(vxReleaseGraph(&graph));
+    }
+}
+
+#define NUM_THREADS_IN_TEST (8)
+
+/* Test for TIOVX-1303: multi-threading while doing verification for more
+ * than 4 threads */
+TEST(tivxGraphMultiThreaded, test8ParallelThreads)
+{
+    vx_context context = context_->vx_context_;
+    tivx_task_create_params_t taskParams;
+    tivx_task taskHandle[NUM_THREADS_IN_TEST];
+    int i;
+
+    taskFinished1 = 0;
+
+    tivxTaskSetDefaultCreateParams(&taskParams);
+    taskParams.task_main = &tivxTask;
+    taskParams.app_var = context;
+    taskParams.stack_ptr = NULL;
+    taskParams.stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
+    taskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
+    taskParams.priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY1;
+
+    for(i=0; i<NUM_THREADS_IN_TEST; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle[i], &taskParams));
+    }
+    tivxTaskWaitMsecs(5000);
+    taskFinished1 = 1;
+    tivxTaskWaitMsecs(1000);
+
+    for(i=0; i<NUM_THREADS_IN_TEST; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle[i]));
+    }
+}
+
+
 TESTCASE_TESTS(tivxGraphMultiThreaded,
         testParallelGraphsSameTarget,
         testParallelGraphsDifferentTarget,
         testParallelGraphsMultipleNodes,
         testThreeParallelGraphs,
-        testAlternatingNodes
+        testAlternatingNodes,
+        test8ParallelThreads
 )
