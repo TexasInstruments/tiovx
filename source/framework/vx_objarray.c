@@ -90,7 +90,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -159,7 +159,6 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -195,11 +194,12 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         vx_context context = ownGetContext();
         if (ownIsValidContext(context) == (vx_bool)vx_true_e)
         {
+            vx_reference ref = (vx_reference)objarr;
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
-                "Invalid object array referenceCould not allocate objarr object descriptor\n");
-            VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+                "Provided reference was not an object array, returning an error reference\n");
             ref = ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
-            VX_PRINT(VX_ZONE_ERROR, "Invalid object array reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Provided reference was not an object array, returning an error reference\n");
+            VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
         }
         else
         {
