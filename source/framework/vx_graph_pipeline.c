@@ -554,8 +554,10 @@ vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph)
             graph->obj_desc[i] = (tivx_obj_desc_graph_t*)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_GRAPH, (vx_reference)graph);
             if(graph->obj_desc[i]==NULL)
             {
-                VX_PRINT(VX_ZONE_ERROR, "Unable to alloc obj desc\n");
+                VX_PRINT(VX_ZONE_ERROR, "Unable to alloc graph obj desc\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
+                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                 break;
             }
         }

@@ -340,6 +340,8 @@ vx_status ownNodeKernelInitKernelName(vx_node node)
     {
         VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed, unable to alloc obj desc for kernel_name\n");
         status=(vx_status)VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
     }
     return status;
 }
@@ -1055,6 +1057,9 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node, uint32_t pipeline_id)
             else
             {
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
+                VX_PRINT(VX_ZONE_ERROR, "Could not allocate object descriptor for user callback\n");
+                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
             }
         }
     }
@@ -1243,6 +1248,9 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
 
                         vxAddLogEntry(&graph->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
                         node = (vx_node)ownGetErrorObject(graph->base.context, (vx_status)VX_ERROR_NO_RESOURCES);
+                        VX_PRINT(VX_ZONE_ERROR, "Could not allocate node object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                     }
                     else
                     {
@@ -2216,6 +2224,8 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "Unable to allocate obj desc for node\n");
+                VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                 status = (vx_status)VX_ERROR_NO_RESOURCES;
             }
         }

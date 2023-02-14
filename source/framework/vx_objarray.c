@@ -91,6 +91,8 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
                     VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
                 }
@@ -113,6 +115,8 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                         vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                             "Could not allocate objarr object descriptor\n");
                         VX_PRINT(VX_ZONE_ERROR, "Could not allocate objarr object descriptor\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                        VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                         objarr = (vx_object_array)ownGetErrorObject(
                             context, (vx_status)VX_ERROR_NO_RESOURCES);
                     }
@@ -161,6 +165,9 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                         "Could not allocate objarr object descriptor\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate object array object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                 }
                 else
                 {
@@ -194,12 +201,10 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         vx_context context = ownGetContext();
         if (ownIsValidContext(context) == (vx_bool)vx_true_e)
         {
-            vx_reference ref = (vx_reference)objarr;
             vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES,
                 "Provided reference was not an object array, returning an error reference\n");
             ref = ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
             VX_PRINT(VX_ZONE_ERROR, "Provided reference was not an object array, returning an error reference\n");
-            VX_PRINT(VX_ZONE_ERROR, "Unsupported type [%d].\n", ref->type);
         }
         else
         {

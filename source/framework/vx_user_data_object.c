@@ -217,6 +217,9 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                         "Could not allocate user data object descriptor\n");
                     user_data_object = (vx_user_data_object)ownGetErrorObject(
                         context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate user data object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                 }
                 else
                 {

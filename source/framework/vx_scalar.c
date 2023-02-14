@@ -225,6 +225,9 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
 
                     vxAddLogEntry(&context->base, (vx_status)VX_ERROR_NO_RESOURCES, "Could not allocate scalar object descriptor\n");
                     scalar = (vx_scalar)ownGetErrorObject(context, (vx_status)VX_ERROR_NO_RESOURCES);
+                    VX_PRINT(VX_ZONE_ERROR, "Could not allocate scalar object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Exceeded max object descriptors available. Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Increase TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST value in source/platform/psdk_j7/common/soc/tivx_platform_psdk_<soc>.h\n");
                 }
                 else
                 {
