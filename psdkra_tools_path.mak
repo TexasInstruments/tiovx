@@ -7,13 +7,13 @@ CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/source/platform
 
 VXLIB_PATH ?= $(PSDK_PATH)/vxlib
 J7_C_MODELS_PATH ?= $(PSDK_PATH)/j7_c_models
-TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_06_00_02/ti_dl
-MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_06_00_00
+TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_06_00_03/ti_dl
+MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_06_01_00
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
 
 TIARMCGT_LLVM_ROOT ?= $(PSDK_PATH)/ti-cgt-armllvm_1.3.0.LTS
-CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_3.1.0B2
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_3.1.0.LTS
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.7
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-9.2-2019.12-x86_64-aarch64-none-linux-gnu
