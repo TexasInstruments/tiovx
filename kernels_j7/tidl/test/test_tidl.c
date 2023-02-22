@@ -755,9 +755,15 @@ typedef struct {
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
 
+#ifdef SOC_AM62A
+/* Enabling layer level traces results into insufficicient memory in DDR shared buffer hence disabling layer level traces*/
+#define PARAMETERS_PRIORITY \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0),
+#else
 #define PARAMETERS_PRIORITY \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0), \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PRIORITY_PARAMETERS, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 1)
+#endif
 
 #define PARAMETERS_MULTI \
     CT_GENERATE_PARAMETERS("mobilenetv1", ADD_SET_TARGET_PARAMETERS_MULTI, ARG, "tidl_io_mobilenet_v1_1.bin", "tidl_net_mobilenet_v1.bin", 0, 0)
