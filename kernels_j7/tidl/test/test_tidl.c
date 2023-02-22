@@ -1333,7 +1333,12 @@ TEST_WITH_ARG(tivxTIDL, testTIDLPreempt, ArgPriority, PARAMETERS_PRIORITY)
             printf("perf1.avg = %" PRIu64 "\n", perf1.avg);
             printf("perf2.avg = %" PRIu64 "\n", perf2.avg);
 
-            ASSERT(perf1.avg > (perf2.avg*2));
+            /*The intention of this test [TIOVX-1137] is to ensure that preemption has happened, rather than imposing a time constraint/deadline
+            * Ideally, node 1 takes "2T + context switch" cycles and node 2 takes "T" cycles. However since only a single frame is being run from each
+            * node (for the same network), when node 1 gets control back, cache has already been warmed up and it's possible for it to
+            * run marginally faster. The condition for this has been modified to use a factor of 1.5x to account for this fact, and is  
+            * sufficient for [TIOVX-1137] (as it shows that N1 was running slower & got preempted by N2) */
+            ASSERT(perf1.avg > ((perf2.avg*3)/2));
 #endif
        }
 
