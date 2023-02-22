@@ -401,7 +401,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
             break;
         case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
             heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
-            break; 
+            break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = (vx_status)VX_FAILURE;
@@ -425,8 +425,43 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    /* Currently it is same as shared pointer for rtos */
-    return (shared_ptr);
+    uint32_t heap_id;
+    vx_status status = (vx_status)VX_SUCCESS;
+    uint64_t phys = 0;
+
+    switch (mem_heap_region)
+    {
+        case (vx_enum)TIVX_MEM_EXTERNAL:
+            heap_id = APP_MEM_HEAP_DDR;
+            break;
+        case (vx_enum)TIVX_MEM_INTERNAL_L3:
+            heap_id = APP_MEM_HEAP_L3;
+            break;
+        case (vx_enum)TIVX_MEM_INTERNAL_L2:
+            heap_id = APP_MEM_HEAP_L2;
+            break;
+        case (vx_enum)TIVX_MEM_INTERNAL_L1:
+            heap_id = APP_MEM_HEAP_L1;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH:
+            heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE;
+            break;
+        case (vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE:
+            heap_id = APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH;
+            break; 
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
+            status = (vx_status)VX_FAILURE;
+            break;
+    }
+    if(status == (vx_status)VX_SUCCESS)
+    {
+        phys = appMemShared2PhysPtr(shared_ptr, heap_id);
+    }
+    return phys;
 }
 
 vx_status tivxMemResetScratchHeap(vx_enum mem_heap_region)
