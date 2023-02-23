@@ -170,7 +170,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS           (128u)
+#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS           (256u)
 
 /*!
  * \brief Max number raw image objects supported
