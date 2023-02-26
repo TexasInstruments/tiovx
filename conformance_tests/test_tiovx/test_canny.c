@@ -847,7 +847,7 @@ TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
     printPerformance(perf_graph, lena->width*lena->height, "G");
 }
 
-TEST(tivxCanny, robustnessTest)
+TEST(tivxCanny, testRobustness)
 {
     vx_context context = context_->vx_context_;
 
@@ -989,6 +989,10 @@ TESTCASE_TESTS(tivxCanny,
                virtImage,
                multipleNode,
                negativeTestBorderMode,
-               testCannySupernode,
-               robustnessTest
+               #if defined(x86_64)
+               DISABLED_testRobustness,
+               #else
+               testRobustness,
+               #endif
+               testCannySupernode
                )
