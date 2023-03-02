@@ -489,11 +489,17 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
     vx_status status;
     tivx_obj_desc_graph_t *obj_desc = NULL;
     uintptr_t pipeline_id;
+    vx_bool is_q_empty;
 
-    status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
-    if((status == (vx_status)VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
+    is_q_empty = tivxQueueIsEmpty(&graph->free_q);
+
+    if( (vx_bool)vx_false_e == is_q_empty )
     {
-        obj_desc = graph->obj_desc[pipeline_id];
+        status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
+        if((status == (vx_status)VX_SUCCESS) && (pipeline_id < graph->pipeline_depth))
+        {
+            obj_desc = graph->obj_desc[pipeline_id];
+        }
     }
     return obj_desc;
 }
@@ -940,7 +946,7 @@ vx_status ownGraphValidatePipelineParameters(vx_graph graph)
             node_idx = graph->parameters[param_idx].index;
             node     = graph->parameters[param_idx].node;
 
-            /* Value of 0 is the default.  If the value is set 
+            /* Value of 0 is the default.  If the value is set
              * to 0, then the buffers have not been set.  Therefore,
              * if both are nonzero, then there is an error, so flagging */
             if ( (0U != graph->parameters[param_idx].num_buf) &&
