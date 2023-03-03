@@ -361,7 +361,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
                     for(i=0; i<count; i++)
                     {
-                        ref = ownCreateReferenceFromExemplar(context, exemplar);
+                        ref = tivxCreateReferenceFromExemplar(context, exemplar);
 
                         status = vxGetStatus(ref);
 
@@ -371,7 +371,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         }
                         else
                         {
-                            VX_PRINT(VX_ZONE_ERROR,"ownCreateReferenceFromExemplar Failed\n");
+                            VX_PRINT(VX_ZONE_ERROR,"tivxCreateReferenceFromExemplar Failed\n");
                             break;
                         }
                     }

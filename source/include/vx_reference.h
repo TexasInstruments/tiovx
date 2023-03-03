@@ -255,13 +255,6 @@ vx_size ownSizeOfEnumType(vx_enum item_type);
 void ownReferenceSetScope(vx_reference ref, vx_reference scope);
 
 
-/*! \brief Create reference from a exemplar object
- * \ingroup group_vx_reference
- */
-vx_reference ownCreateReferenceFromExemplar(
-    vx_context context, vx_reference exemplar);
-
-
 /*! \brief Return reference given a obj desc ID
  *         This API must only be called on the host
  *         Use the \ref ownReferenceGetHostRefFromObjDescId

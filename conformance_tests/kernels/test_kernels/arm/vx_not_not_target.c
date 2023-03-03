@@ -216,19 +216,9 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
 
             if(status == VX_SUCCESS)
             {
-                vx_uint32 width, height;
-                vx_df_image format;
-
                 for(i=0; i<2; i++)
                 {
-                    tivxCheckStatus(&status, vxQueryImage(prms->image[i], (vx_enum)VX_IMAGE_WIDTH, &width, sizeof(width)));
-                    tivxCheckStatus(&status, vxQueryImage(prms->image[i], (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(height)));
-                    tivxCheckStatus(&status, vxQueryImage(prms->image[i], (vx_enum)VX_IMAGE_FORMAT, &format, sizeof(format)));
-
-                    if ((vx_status)VX_SUCCESS == status)
-                    {
-                        prms->image[i] = vxCreateImage(context, width, height, format);
-                    }
+                    prms->image[i] = (vx_image)tivxCreateReferenceFromExemplar(context, (vx_reference)prms->image[i]);
                 }
             }
 

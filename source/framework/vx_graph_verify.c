@@ -1702,7 +1702,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                 for(buf_id=1; buf_id<num_buf; buf_id++)
                 {
                     vx_reference ref;
-                    ref = ownCreateReferenceFromExemplar(graph->base.context, exemplar);
+                    ref = tivxCreateReferenceFromExemplar(graph->base.context, exemplar);
                     if(ref==NULL)
                     {
                         status = (vx_status)VX_ERROR_NO_RESOURCES;

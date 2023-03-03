@@ -310,7 +310,7 @@ static vx_status ownInitObjArrayFromObject(
     num_items = obj_desc->num_items;
     for (i = 0; i < num_items; i ++)
     {
-        ref = ownCreateReferenceFromExemplar(context, exemplar);
+        ref = tivxCreateReferenceFromExemplar(context, exemplar);
 
         status = vxGetStatus(ref);
 
@@ -320,7 +320,7 @@ static vx_status ownInitObjArrayFromObject(
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR,"ownCreateReferenceFromExemplar Failed\n");
+            VX_PRINT(VX_ZONE_ERROR,"tivxCreateReferenceFromExemplar Failed\n");
             break;
         }
     }

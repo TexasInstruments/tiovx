@@ -96,7 +96,7 @@ static vx_reference ownCreateRawImageFromExemplar(
     vx_context context, tivx_raw_image exemplar);
 
 
-vx_reference ownCreateReferenceFromExemplar(
+vx_reference tivxCreateReferenceFromExemplar(
     vx_context context, vx_reference exemplar)
 {
     vx_reference ref = NULL;

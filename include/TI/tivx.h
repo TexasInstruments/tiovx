@@ -898,6 +898,20 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32_t size[], uint32_t max_entries, uint32_t *num_entries);
 
+
+/*! \brief Create reference from a exemplar object
+ * \details This API is used to create a new reference using the same meta information
+ *          as an already created reference object.
+ *
+ * \param [in] context The reference to the implementation context.
+ * \param [in] exemplar The exemplar object.
+ * \ingroup group_tivx_ext_host
+ * \return <tt>\ref vx_reference</tt>. Any possible errors
+ * preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ */
+VX_API_ENTRY vx_reference VX_API_CALL tivxCreateReferenceFromExemplar(vx_context context, vx_reference exemplar);
+
+
 #ifdef __cplusplus
 }
 #endif
