@@ -149,6 +149,7 @@ void tivxInit(void)
 
         #if defined(SOC_AM62A)
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU1_0);
+        tivxRegisterCaptureTargetArmKernels();
         tivxRegisterTestKernelsTargetArmKernels();
         #else
         tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_0);

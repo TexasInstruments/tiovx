@@ -88,19 +88,20 @@ STATIC_LIBS += app_utils_init
 
 PDK_LIBS =
 PDK_LIBS += dmautils.lib
+PDK_LIBS += ti.csl.lib
+
+ifneq ($(SOC),am62a)
 PDK_LIBS += udma.lib
 PDK_LIBS += sciclient.lib
-PDK_LIBS += ti.csl.lib
 PDK_LIBS += ti.osal.lib
+endif
 
 MMA_LIBS =
 MMA_LIBS += mmalib_cn_x86_64
 MMA_LIBS += mmalib_x86_64
 MMA_LIBS += common_x86_64
 
-ifneq ($(SOC),am62a)
 ADDITIONAL_STATIC_LIBS += $(PDK_LIBS)
-endif
 
 STATIC_LIBS += $(MMA_LIBS)
 
