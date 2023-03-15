@@ -30,9 +30,9 @@ BUILD_CT_TIOVX_HWA_DISPLAY_TESTS=no
 PROFILE?=all
 
 # Applied to target mode only
-BUILD_LINUX_A72?=yes
+BUILD_LINUX_MPU?=yes
 # Applied to target mode only - by default kept as no so that all users don't have to change
-BUILD_QNX_A72?=no
+BUILD_QNX_MPU?=no
 
 # Applied to target mode only
 BUILD_VLAB?=no
