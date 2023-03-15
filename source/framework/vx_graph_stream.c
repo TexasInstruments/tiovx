@@ -18,7 +18,7 @@
 
 #include <vx_internal.h>
 
-#define TIVX_STREAMING_STACK_SIZE      (32U * 1024U)
+#define TIVX_STREAMING_STACK_SIZE      (128U * 1024U)
 #define TIVX_STREAMING_TASK_PRIORITY   (8u)
 
 /* Streaming states */

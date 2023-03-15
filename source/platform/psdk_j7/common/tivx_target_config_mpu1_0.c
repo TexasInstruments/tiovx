@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk.h>
 
-#define TIVX_TARGET_DEFAULT_STACK_SIZE  (64U*1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE  (128U*1024U)
 
 static void ownTargetCreateTargetId(vx_enum target_id, const char *name);
 static void ownTargetDeleteTargetId(vx_enum target_id);
