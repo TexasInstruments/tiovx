@@ -1,4 +1,4 @@
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53))
 
 ifeq ($(BUILD_IVISION_KERNELS),yes)
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)

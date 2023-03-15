@@ -1,4 +1,4 @@
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), A72))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), A72 A53))
 
 include $(PRELUDE)
 TARGET      := vx_kernels_tvm

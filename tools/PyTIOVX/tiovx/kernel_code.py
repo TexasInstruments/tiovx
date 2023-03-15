@@ -2122,7 +2122,7 @@ class KernelExportCode :
             print("Creating " + self.module_host_concerto_filename)
             self.module_host_concerto_code = CodeGenerate(self.module_host_concerto_filename, header=False)
             self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))")
+            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 A53 R5F))")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("include $(PRELUDE)")
             self.module_host_concerto_code.write_line("TARGET      := vx_kernels_" + self.module)

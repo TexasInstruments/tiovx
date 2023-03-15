@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 R5F))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 A53 R5F))
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 ifeq ($(BUILD_HWA_KERNELS),yes)
 

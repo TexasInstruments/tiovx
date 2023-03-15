@@ -66,10 +66,10 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         endif
         TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:debug:CGT7X
         ifeq ($(BUILD_LINUX_A72),yes)
-            TARGET_COMBOS += $(TARGET_SOC):LINUX:A72:1:debug:GCC_LINUX_ARM
+            TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:debug:GCC_LINUX_ARM
         endif
         ifeq ($(BUILD_QNX_A72),yes)
-            TARGET_COMBOS += $(TARGET_SOC):QNX:A72:1:debug:GCC_QNX_ARM
+            TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:debug:GCC_QNX_ARM
         endif
     endif
 
@@ -80,10 +80,10 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         endif
         TARGET_COMBOS += $(TARGET_SOC):$(RTOS):$(C7X_TARGET):1:release:CGT7X
         ifeq ($(BUILD_LINUX_A72),yes)
-            TARGET_COMBOS += $(TARGET_SOC):LINUX:A72:1:release:GCC_LINUX_ARM
+            TARGET_COMBOS += $(TARGET_SOC):LINUX:$(MPU_CPU):1:release:GCC_LINUX_ARM
         endif
         ifeq ($(BUILD_QNX_A72),yes)
-            TARGET_COMBOS += $(TARGET_SOC):QNX:A72:1:release:GCC_QNX_ARM
+            TARGET_COMBOS += $(TARGET_SOC):QNX:$(MPU_CPU):1:release:GCC_QNX_ARM
         endif
     endif
 endif
