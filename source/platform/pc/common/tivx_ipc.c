@@ -118,7 +118,7 @@ void ownIpcDeInit(void)
 {
 }
 
-vx_bool tivxIsTargetEnabled(char target_name[])
+vx_bool tivxIsTargetEnabled(const char target_name[])
 {
     return ((vx_bool)vx_true_e);
 }

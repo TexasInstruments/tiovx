@@ -525,7 +525,7 @@ vx_reference tivxGetReferenceParent(vx_reference child_ref);
  *
  * \ingroup group_tivx_ext_host
  */
-vx_bool tivxIsTargetEnabled(char target_name[]);
+vx_bool tivxIsTargetEnabled(const char target_name[]);
 
 /*!
  * \brief Get the time in micro seconds

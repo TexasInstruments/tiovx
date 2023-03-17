@@ -192,7 +192,7 @@ void ownIpcDeInit(void)
     appIpcRegisterNotifyHandler(NULL);
 }
 
-vx_bool tivxIsTargetEnabled(char target_name[])
+vx_bool tivxIsTargetEnabled(const char target_name[])
 {
     vx_bool isEnabled = (vx_bool)vx_false_e;
     vx_enum target_id = (vx_enum)TIVX_TARGET_ID_INVALID;
