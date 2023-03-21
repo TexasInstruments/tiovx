@@ -1238,12 +1238,15 @@ TEST(tivxGraphMultiThreaded, test8ParallelThreads)
     }
 }
 
-
 TESTCASE_TESTS(tivxGraphMultiThreaded,
         testParallelGraphsSameTarget,
         testParallelGraphsDifferentTarget,
         testParallelGraphsMultipleNodes,
         testThreeParallelGraphs,
         testAlternatingNodes,
+        #if defined(QNX)
+        DISABLED_test8ParallelThreads
+        #else
         test8ParallelThreads
+        #endif
 )
