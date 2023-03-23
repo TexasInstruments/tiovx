@@ -49,24 +49,16 @@ static void ownTargetDeleteTargetId(vx_enum target_id)
 
 void ownPlatformCreateTargets(void)
 {
-    #if defined(SOC_AM62A)
-    ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_A72_0, "TIVX_CPU0");
-    #else
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_A72_0, "TIVX_CPU0");
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_A72_1, "TIVX_CPU1");
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_A72_2, "TIVX_CPU2");
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_A72_3, "TIVX_CPU3");
-    #endif
 }
 
 void ownPlatformDeleteTargets(void)
 {
-    #if defined(SOC_AM62A)
-    ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_A72_0);
-    #else
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_A72_0);
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_A72_1);
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_A72_2);
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_A72_3);
-    #endif
 }
