@@ -569,6 +569,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     {
         status = tivxMemResetScratchHeap((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH);
     }
+    #if defined(SOC_J784S4) || defined(SOC_AM62A)
+    if ((vx_status)VX_SUCCESS == status)
+    {
+        status = tivxMemResetScratchHeap((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE);
+    }
+    #endif
     if ((vx_status)VX_SUCCESS == status)
     {
         /* IMPORTANT! Config data is assumed to be available at index 0 */
