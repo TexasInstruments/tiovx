@@ -2,11 +2,11 @@
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 A53))
 
 include $(PRELUDE)
-TARGET      := vx_hwa_target_kernels
+TARGET      := vx_target_kernels_openvx_ext
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(CUSTOM_KERNEL_PATH)/include
-IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
+IDIRS       := $(HOST_ROOT)/kernels/include
+IDIRS       += $(HOST_ROOT)/kernels/openvx-ext/include
 IDIRS       += $(VXLIB_PATH)/packages
 
 include $(FINALE)

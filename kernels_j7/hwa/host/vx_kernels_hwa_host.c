@@ -102,7 +102,6 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
 #ifdef BUILD_CSITX
     {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx},
 #endif
-    {&tivxAddKernelObjArraySplit, &tivxRemoveKernelObjArraySplit}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -135,11 +134,6 @@ void tivxHwaLoadKernels(vx_context context)
         vxLoadKernels(context, TIVX_MODULE_NAME_HWA);
 
         #ifdef x86_64
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
-        #endif
-        tivxRegisterHwaTargetA72Kernels();
-
-        #ifdef x86_64
         /* for PC register target kernels here */
         /* for actual Si, target kernel registration will happen
          * during platform init on the CPU that supports the target
@@ -159,7 +153,7 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaTargetVpacLdcKernels();
         #endif
 
-        #ifdef BUILD_VPAC_MSC 
+        #ifdef BUILD_VPAC_MSC
         tivxRegisterHwaTargetVpacMscKernels();
         #endif
 
@@ -198,8 +192,7 @@ void tivxHwaLoadKernels(vx_context context)
 void tivxHwaUnLoadKernels(vx_context context)
 {
     if (gIsHwaKernelsLoad > 0)
-    {        tivxUnRegisterHwaTargetA72Kernels();
-
+    {
         gIsHwaKernelsLoad--;
         if ((0u == gIsHwaKernelsLoad) && (NULL != context))
         {
@@ -207,11 +200,6 @@ void tivxHwaUnLoadKernels(vx_context context)
 
             vxUnloadKernels(context, TIVX_MODULE_NAME_HWA);
             tivxUnRegisterHwaKernels();
-
-            #ifdef x86_64
-            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
-            #endif
-            tivxUnRegisterHwaTargetA72Kernels();
 
             #ifdef x86_64
             /* This line only works on PC emulation mode */
@@ -229,7 +217,7 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaTargetVpacLdcKernels();
             #endif
 
-            #ifdef BUILD_VPAC_MSC 
+            #ifdef BUILD_VPAC_MSC
             tivxUnRegisterHwaTargetVpacMscKernels();
             #endif
 
@@ -239,7 +227,7 @@ void tivxHwaUnLoadKernels(vx_context context)
 
             #if !defined(SOC_AM62A)
             tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MCU2_1);
-            
+
             #ifdef BUILD_DMPAC_SDE
             tivxUnRegisterHwaTargetDmpacSdeKernels();
             #endif

@@ -90,38 +90,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             flow_vector_rgb,
                                       vx_image             confidence_image);
 
-
-/*! \brief [Graph] Creates a Object Array Split Node.  The input object array elements are split amongst all provided
- *                 outputs.  The first 2 outputs are required, but up to 4 outputs can be provided.  The number of
- *                 input elements must equal the sum of all elements across the provided outputs.  Once split, the
- *                 out0 will have the first N elements of the input object array, with N being the number of elements
- *                 within out0.  The remaining elements of input will be distributed across the remaining provided
- *                 outputs in the same manner.
- * \param [in] graph The reference to the graph.
- * \param [in]  in    Input object array.  The channels of this object array will be split amongst the provided outputs
- *                    according to the sizes of the output object arrays
- * \param [out] out0  First output object array.  After processing, this will contain the first N elements of the input,
- *                    with N being the number of elements of out0.
- * \param [out] out1  Second output object array.  After processing, this will contain the next N elements of the input
- *                    after the number of elements of out0, with N being the number of elements of out1.
- * \param [out] out2 (optional) Third output object array.  After processing, this will contain the next N elements of
- *                    the input after the sum of the elements of out0 and out1, with N being the number of elements of
- *                    out2.
- * \param [out] out3 (optional) Fourth output object array.  After processing, this will contain the next N elements of
- *                    the input after the sum of the elements of out0, out1 and out2, with N being the number of
- *                    elements of out3.
- * \see <tt>TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME</tt>
- * \ingroup group_vision_function_obj_array_split
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxObjArraySplitNode(vx_graph graph,
-                                      vx_object_array      in,
-                                      vx_object_array      out0,
-                                      vx_object_array      out1,
-                                      vx_object_array      out2,
-                                      vx_object_array      out3);
-
 #ifdef __cplusplus
 }
 #endif

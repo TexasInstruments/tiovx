@@ -62,7 +62,7 @@
 
 #include "TI/tivx.h"
 #include "VX/vx.h"
-#include "tivx_hwa_kernels.h"
+#include "tivx_openvx_ext_kernels.h"
 #include "tivx_kernel_obj_array_split.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"

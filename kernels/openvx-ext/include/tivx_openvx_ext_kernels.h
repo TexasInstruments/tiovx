@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2023 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -62,33 +62,54 @@
 
 
 
-#include <vx_internal.h>
 
-void tivxRegisterOpenVXCoreKernels(void);
-void tivxUnRegisterOpenVXCoreKernels(void);
+#ifndef VX_EXT_KERNEL_H_
+#define VX_EXT_KERNEL_H_
+
+#include <tivx_kernels_host_utils.h>
+#include <TI/tivx_debug.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!
+ * \file
+ * \brief Core Interface file the OpenVX kernels
+ */
+
+
+/*!
+ * \brief Function to register core OpenVx Kernels on the Host
+ *
+ * \ingroup group_tivx_int_common_kernel
+ */
 void tivxRegisterOpenVXExtKernels(void);
+
+/*!
+ * \brief Function to un-register core OpenVx Kernels on the Host
+ *
+ * \ingroup group_tivx_int_common_kernel
+ */
 void tivxUnRegisterOpenVXExtKernels(void);
 
-static uint8_t g_init_status = 0U;
+/*!
+ * \brief Function to register OpenVx Kernels on the Target
+ *
+ * \ingroup group_tivx_int_common_kernel
+ */
+void tivxRegisterExtTargetMPUKernels(void);
 
-void tivxHostInit(void)
-{
-    if (0U == g_init_status)
-    {
-        ownObjectInit();
-        tivxRegisterOpenVXCoreKernels();
-        tivxRegisterOpenVXExtKernels();
-        g_init_status = 1U;
-    }
-}
+/*!
+ * \brief Function to register OpenVx Kernels on the Target
+ *
+ * \ingroup group_tivx_int_common_kernel
+ */
+void tivxUnRegisterExtTargetMPUKernels(void);
 
-void tivxHostDeInit(void)
-{
-    if (1U == g_init_status)
-    {
-        ownObjectDeInit();
-        tivxUnRegisterOpenVXExtKernels();
-        tivxUnRegisterOpenVXCoreKernels();
-        g_init_status = 0U;
-    }
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif

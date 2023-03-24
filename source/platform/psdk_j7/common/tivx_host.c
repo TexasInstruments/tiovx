@@ -12,6 +12,8 @@
 
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
+void tivxRegisterOpenVXExtKernels(void);
+void tivxUnRegisterOpenVXExtKernels(void);
 void tivxPlatformResetObjDescTableInfo(void);
 
 static uint8_t gInitCount = 0U;
@@ -68,6 +70,7 @@ static void tivxHostInitLocal(void)
         /* tivxPlatformResetObjDescTableInfo(); */
         ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
+        tivxRegisterOpenVXExtKernels();
 
         #if defined(SOC_AM62A)
         if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MCU1_0)
@@ -106,6 +109,7 @@ static void tivxHostDeInitLocal(void)
         {
             VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
             ownObjectDeInit();
+            tivxUnRegisterOpenVXExtKernels();
             tivxUnRegisterOpenVXCoreKernels();
         }
     }

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022 Texas Instruments Incorporated
+ * Copyright (c) 2017-2023 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,26 +60,12 @@
  *
  */
 
+#ifndef TIVX_EXT_HOST_PRIV_H_
+#define TIVX_EXT_HOST_PRIV_H_
+
 #include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelObjArraySplit(void);
-void tivxRemoveTargetKernelObjArraySplit(void);
+vx_status tivxAddKernelObjArraySplit(vx_context context);
+vx_status tivxRemoveKernelObjArraySplit(vx_context context);
 
-
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelObjArraySplit, &tivxRemoveTargetKernelObjArraySplit},
-};
-
-void tivxRegisterHwaTargetA72Kernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
-
-void tivxUnRegisterHwaTargetA72Kernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
-
+#endif /* TIVX_EXT_HOST_PRIV_H_ */

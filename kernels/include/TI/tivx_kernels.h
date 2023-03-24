@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2023 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -77,9 +77,20 @@ extern "C" {
 #define TIVX_MODULE_NAME_OPENVX_CORE    "openvx-core"
 
 /*! \brief Name for TI OpenVX kernel module
+ * \ingroup group_tivx_int_common_kernel
+ */
+#define TIVX_MODULE_NAME_OPENVX_EXT    "openvx-ext"
+
+/*! \brief Name for TI OpenVX kernel module
  * \ingroup group_tivx_ext_ivision_kernel
  */
 #define TIVX_MODULE_NAME_IVISION    "ivision"
+
+
+/*! \brief Object Array Split Kernel Name
+ *  \ingroup group_vision_function_ext
+ */
+#define TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME       "com.ti.ext.obj_array_split"
 
 /*!
  * \file

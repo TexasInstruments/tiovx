@@ -356,24 +356,3 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
     return node;
 }
 #endif
-
-VX_API_ENTRY vx_node VX_API_CALL tivxObjArraySplitNode(vx_graph graph,
-                                      vx_object_array      in,
-                                      vx_object_array      out0,
-                                      vx_object_array      out1,
-                                      vx_object_array      out2,
-                                      vx_object_array      out3)
-{
-    vx_reference prms[] = {
-            (vx_reference)in,
-            (vx_reference)out0,
-            (vx_reference)out1,
-            (vx_reference)out2,
-            (vx_reference)out3
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}

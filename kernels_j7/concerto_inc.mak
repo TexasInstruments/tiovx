@@ -51,7 +51,7 @@ else ifeq ($(VPAC_VERSION), VPAC1)
     STATIC_LIBS += flexcfa
 endif
 
-STATIC_LIBS += vx_target_kernels_j7_arm vx_hwa_target_kernels
+STATIC_LIBS += vx_target_kernels_j7_arm
 
 endif #ifneq ($(SOC),am62a)
 endif #ifeq ($(BUILD_HWA_KERNELS),yes)

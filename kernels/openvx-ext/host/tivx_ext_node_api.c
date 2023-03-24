@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,42 +60,25 @@
  *
  */
 
-#if defined(J7) || defined(J721S2) || defined(J784S4) || defined(PC) || defined(AM62A)
-#if defined(BUILD_CT_TIOVX_HWA)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
-TESTCASE(tivxHwaVpacViss)
-#ifndef AM62A
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-#if defined(J7) || defined(J721S2) || defined(J784S4)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaDisplayM2M)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-TESTCASE(tivxHwaCaptureSplitMode)
-#endif
-#if defined(BUILD_CSITX)
-TESTCASE(tivxHwaCsitxCsirx)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-#endif
+#include <TI/tivx.h>
 
-#endif // #ifndef AM62A
-
-#endif
-
-#endif
+VX_API_ENTRY vx_node VX_API_CALL tivxObjArraySplitNode(vx_graph graph,
+                                      vx_object_array      in,
+                                      vx_object_array      out0,
+                                      vx_object_array      out1,
+                                      vx_object_array      out2,
+                                      vx_object_array      out3)
+{
+    vx_reference prms[] = {
+            (vx_reference)in,
+            (vx_reference)out0,
+            (vx_reference)out1,
+            (vx_reference)out2,
+            (vx_reference)out3
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_OBJ_ARRAY_SPLIT_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}

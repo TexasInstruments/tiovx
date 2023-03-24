@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,42 +60,26 @@
  *
  */
 
-#if defined(J7) || defined(J721S2) || defined(J784S4) || defined(PC) || defined(AM62A)
-#if defined(BUILD_CT_TIOVX_HWA)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
-TESTCASE(tivxHwaVpacViss)
-#ifndef AM62A
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-#if defined(J7) || defined(J721S2) || defined(J784S4)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaDisplayM2M)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-TESTCASE(tivxHwaCaptureSplitMode)
-#endif
-#if defined(BUILD_CSITX)
-TESTCASE(tivxHwaCsitxCsirx)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-#endif
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+//#include "tivx_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
-#endif // #ifndef AM62A
+void tivxAddTargetKernelObjArraySplit(void);
+void tivxRemoveTargetKernelObjArraySplit(void);
 
-#endif
 
-#endif
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelObjArraySplit, &tivxRemoveTargetKernelObjArraySplit},
+};
+
+void tivxRegisterExtTargetMPUKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+
+void tivxUnRegisterExtTargetMPUKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+

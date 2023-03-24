@@ -19,6 +19,7 @@ STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc vx_framework
 
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
+STATIC_LIBS += vx_kernels_openvx_ext vx_target_kernels_openvx_ext
 
 
 include $(HOST_ROOT)/kernels/concerto_inc.mak

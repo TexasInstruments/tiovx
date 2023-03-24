@@ -60,42 +60,76 @@
  *
  */
 
-#if defined(J7) || defined(J721S2) || defined(J784S4) || defined(PC) || defined(AM62A)
-#if defined(BUILD_CT_TIOVX_HWA)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaVpacMscScaleMultiOutput)
-TESTCASE(tivxHwaVpacMscPyramid)
-TESTCASE(tivxHwaVpacViss)
-#ifndef AM62A
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-#if defined(J7) || defined(J721S2) || defined(J784S4)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaDisplayM2M)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-TESTCASE(tivxHwaCaptureSplitMode)
-#endif
-#if defined(BUILD_CSITX)
-TESTCASE(tivxHwaCsitxCsirx)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-#endif
+#include <TI/tivx.h>
+#include "tivx_openvx_ext_kernels.h"
+#include "tivx_kernels_host_utils.h"
+#include "tivx_ext_host_priv.h"
 
-#endif // #ifndef AM62A
+static vx_status VX_CALLBACK publishKernels(vx_context context);
+static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
-#endif
+static uint32_t gIsExtKernelsLoad = 0u;
 
-#endif
+static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+    {&tivxAddKernelObjArraySplit, &tivxRemoveKernelObjArraySplit}
+};
+
+static vx_status VX_CALLBACK publishKernels(vx_context context)
+{
+    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+}
+
+static vx_status VX_CALLBACK unPublishKernels(vx_context context)
+{
+    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+}
+
+void tivxRegisterOpenVXExtKernels(void)
+{
+    tivxRegisterModule(TIVX_MODULE_NAME_OPENVX_EXT, publishKernels, unPublishKernels);
+}
+
+void tivxUnRegisterOpenVXExtKernels(void)
+{
+    tivxUnRegisterModule(TIVX_MODULE_NAME_OPENVX_EXT);
+}
+
+void tivxExtLoadKernels(vx_context context)
+{
+    if ((0U == gIsExtKernelsLoad) && (NULL != context))
+    {
+        void tivxSetSelfCpuId(vx_enum cpu_id);
+
+        tivxRegisterOpenVXExtKernels();
+        vxLoadKernels(context, TIVX_MODULE_NAME_OPENVX_EXT);
+
+        #ifdef x86_64
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+        #endif
+        tivxRegisterExtTargetMPUKernels();
+    }
+    gIsExtKernelsLoad++;
+}
+
+void tivxExtUnLoadKernels(vx_context context)
+{
+    if (gIsExtKernelsLoad > 0)
+    {
+        tivxUnRegisterExtTargetMPUKernels();
+
+        gIsExtKernelsLoad--;
+        if ((0u == gIsExtKernelsLoad) && (NULL != context))
+        {
+            void tivxSetSelfCpuId(vx_enum cpu_id);
+
+            vxUnloadKernels(context, TIVX_MODULE_NAME_OPENVX_EXT);
+            tivxUnRegisterOpenVXExtKernels();
+
+            #ifdef x86_64
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
+            #endif
+            tivxUnRegisterExtTargetMPUKernels();
+        }
+    }
+}
+
