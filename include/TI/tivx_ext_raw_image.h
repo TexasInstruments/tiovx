@@ -298,18 +298,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
  *                                 layout information that the application must consult to access the pixel data
  *                                 at address (*user_ptr). The layout of the mapped memory follows a row-major order:
  *                                 stride_x>0, stride_y>0 and stride_y >= stride_x * dim_x.
- *                                 If the image object being accessed was created via
- *                                 <tt>\ref tivxCreateRawImageFromHandle</tt>, then the returned memory layout will be
- *                                 the identical to that of the addressing structure provided when
- *                                 <tt>\ref tivxCreateRawImageFromHandle</tt> was called.
  *                                 When buffer_select is not TIVX_RAW_IMAGE_PIXEL_BUFFER, only dim_x is valid (number of bytes).
  * \param [out] user_ptr           The address of a pointer that the function sets to the
  *                                 address where the requested data can be accessed. This returned (*ptr) address
  *                                 is only valid between the call to this function and the corresponding call to
  *                                 <tt>\ref tivxUnmapRawImagePatch</tt>.
- *                                 If image was created via <tt>\ref tivxCreateRawImageFromHandle</tt> then the returned
- *                                 address (*ptr) will be the address of the patch in the original pixel buffer
- *                                 provided when image was created.
  * \param [in] usage               This declares the access mode for the image patch, using
  *                                 the <tt>\ref vx_accessor_e</tt> enumeration.
  *                                 \arg VX_READ_ONLY: after the function call, the content of the memory location
