@@ -472,7 +472,7 @@ vx_status tivxMemResetScratchHeap(vx_enum mem_heap_region)
     {
         status = appMemResetScratchHeap(APP_MEM_HEAP_DDR_SCRATCH);
     }
-    if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE == mem_heap_region)
+    else if ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE == mem_heap_region)
     {
         status = appMemResetScratchHeap(APP_MEM_HEAP_DDR_NON_CACHE_SCRATCH);
     }
