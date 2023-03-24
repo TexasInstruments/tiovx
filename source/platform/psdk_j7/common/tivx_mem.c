@@ -419,7 +419,7 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
 #ifdef TARGET_HLOS
     return (void*)(uintptr_t)(shared_ptr->host_ptr);
 #else
-    return (void*)(uintptr_t)(shared_ptr->shared_ptr);
+    return (void*)(uintptr_t)(appMemShared2TargetPtr(shared_ptr->shared_ptr));
 #endif
 }
 
