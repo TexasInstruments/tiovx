@@ -72,7 +72,7 @@
 
 #ifndef x86_64
 #include "c7x.h"
-#include <ti/osal/HwiP.h>
+#include <HwiP.h>
 #if defined(SOC_AM62A)
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Cache.h>
 #endif
@@ -493,9 +493,9 @@ static int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int3
    This flow is controlled via flowCtrl in create Params
 */
 #if defined(SOC_AM62A)
-#include <ti/drv/udma/dmautils/udma_standalone/udma.h>
+#include <udma/dmautils/udma_standalone/udma.h>
 #else
-#include <ti/drv/udma/udma.h>
+#include <udma/udma.h>
 #endif
 static struct Udma_DrvObj  x86udmaDrvObj;
 static uint64_t tidlVirtToPhyAddrConversion(const void *virtAddr, uint32_t chNum, void *appData);

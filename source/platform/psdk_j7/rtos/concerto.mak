@@ -22,6 +22,7 @@ IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(PDK_PATH)/packages/ti/osal
 IDIRS       += $(VISION_APPS_PATH)
 
 ifeq ($(TARGET_OS),SYSBIOS)

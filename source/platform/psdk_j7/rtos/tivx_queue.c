@@ -10,7 +10,7 @@
 
 #include <vx_internal.h>
 
-#include <ti/osal/HwiP.h>
+#include <HwiP.h>
 
 vx_status tivxQueueCreate(
     tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory,

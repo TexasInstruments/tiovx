@@ -23,6 +23,7 @@ else
 endif
 
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(PDK_PATH)/packages/ti/drv
 IDIRS       += $(VISION_APPS_PATH)/
 
 ifeq ($(TARGET_OS),SYSBIOS)

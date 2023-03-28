@@ -5,11 +5,11 @@ TARGET      := vx_target_kernels_tvm
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(TIOVX_PATH)/kernels/ivision/include
-#IDIRS       += $(CUSTOM_KERNEL_PATH)/tvm/include
 IDIRS       += $(IVISION_PATH)
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(PDK_PATH)/packages/ti/osal
 
 ifeq ($(TARGET_OS),SYSBIOS)
 	IDIRS       += $(XDCTOOLS_PATH)/packages

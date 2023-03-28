@@ -12,6 +12,8 @@ IDIRS       += $(TIDL_PATH)/inc
 IDIRS       += $(TIDL_PATH)/custom
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(PDK_PATH)/packages/ti/drv
+IDIRS       += $(PDK_PATH)/packages/ti/osal
 
 ifeq ($(TARGET_OS),SYSBIOS)
 	IDIRS       += $(XDCTOOLS_PATH)/packages

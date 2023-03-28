@@ -74,7 +74,7 @@
 #include "TI/tivx_mutex.h"
 #include "idcc.h"
 
-#include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
+#include "vhwa/include/vhwa_m2mLdc.h"
 
 #include "utils/perf_stats/include/app_perf_stats.h"
 

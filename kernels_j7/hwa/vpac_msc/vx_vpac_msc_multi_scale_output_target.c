@@ -74,7 +74,7 @@
 #include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
-#include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
+#include "vhwa/include/vhwa_m2mMsc.h"
 
 #include "utils/perf_stats/include/app_perf_stats.h"
 

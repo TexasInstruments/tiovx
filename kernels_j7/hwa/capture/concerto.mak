@@ -11,6 +11,7 @@ IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(PDK_PATH)/packages
+IDIRS       += $(PDK_PATH)/packages/ti/drv
 IDIRS       += $(TIOVX_PATH)/source/include
 
 ifeq ($(TARGET_OS),SYSBIOS)

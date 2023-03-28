@@ -73,7 +73,7 @@
 #include "TI/tivx_mutex.h"
 #include "idcc.h"
 
-#include "ti/drv/vhwa/include/vhwa_m2mViss.h"
+#include "vhwa/include/vhwa_m2mViss.h"
 
 /* Dependency on vision apps, as it uses UDMA utils
  * for GLBCE Ctx Save/Restore */

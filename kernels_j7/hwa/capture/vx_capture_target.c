@@ -71,8 +71,8 @@
 #include "tivx_hwa_capture_priv.h"
 
 #include <TI/tivx_queue.h>
-#include <ti/drv/fvid2/fvid2.h>
-#include <ti/drv/csirx/csirx.h>
+#include <fvid2/fvid2.h>
+#include <csirx/csirx.h>
 #include <tivx_obj_desc_priv.h>
 #include <vx_reference.h>
 #include <vx_internal.h>

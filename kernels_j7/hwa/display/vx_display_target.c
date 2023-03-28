@@ -69,7 +69,7 @@
 #include "tivx_kernels_target_utils.h"
 #include "tivx_hwa_display_priv.h"
 #include <TI/tivx_queue.h>
-#include <ti/drv/dss/dss.h>
+#include <dss/dss.h>
 #include <utils/rtos/include/app_rtos.h>
 
 #define DISPLAY_MAX_VALID_PLANES                      2U

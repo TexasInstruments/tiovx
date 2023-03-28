@@ -73,7 +73,7 @@
 
 #ifndef x86_64
 #include "c7x.h"
-#include <ti/osal/HwiP.h>
+#include <HwiP.h>
 /* #define DISABLE_INTERRUPTS_DURING_PROCESS */
 #endif
 

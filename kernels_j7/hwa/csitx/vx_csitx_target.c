@@ -70,8 +70,8 @@
 #include "tivx_hwa_csitx_priv.h"
 
 #include <TI/tivx_queue.h>
-#include <ti/drv/fvid2/fvid2.h>
-#include <ti/drv/csitx/csitx.h>
+#include <fvid2/fvid2.h>
+#include <csitx/csitx.h>
 
 
 #define CSITX_INST_ID_INVALID                         (0xFFFFU)
