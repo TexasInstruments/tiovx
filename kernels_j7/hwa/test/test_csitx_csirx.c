@@ -70,7 +70,6 @@
 #include <TI/tivx_event.h>
 #include "math.h"
 #include <limits.h>
-#include <utils/mem/include/app_mem.h>
 #include "test_tiovx/test_tiovx.h"
 #include "test_hwa_common.h"
 
@@ -812,8 +811,6 @@ static void VX_CALLBACK tivxTask_csitx1(void *app_var)
                 ptr[((i*width)+j)] = (j + frmIdx);
             }
         }
-        /* Do cache operations on each buffer to avoid coherency issues */
-        appMemCacheWb(ptr, (width * height * sizeof(uint16_t)));
         VX_CALL(tivxUnmapRawImagePatch(tx_frame_array_item, map_id));
         VX_CALL(tivxReleaseRawImage(&tx_frame_array_item));
     }
@@ -960,8 +957,6 @@ static void VX_CALLBACK tivxTask_csitx2(void *app_var)
                 ptr[((i*width)+j)] = (j + frmIdx);
             }
         }
-        /* Do cache operations on each buffer to avoid coherency issues */
-        appMemCacheWb(ptr, (width * height * sizeof(uint16_t)));
         VX_CALL(tivxUnmapRawImagePatch(tx_frame_array_item, map_id));
         VX_CALL(tivxReleaseRawImage(&tx_frame_array_item));
     }

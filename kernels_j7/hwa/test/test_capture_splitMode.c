@@ -70,7 +70,6 @@
 #include <TI/tivx_event.h>
 #include "math.h"
 #include <limits.h>
-#include <utils/mem/include/app_mem.h>
 #include "test_tiovx/test_tiovx.h"
 #include "test_hwa_common.h"
 
