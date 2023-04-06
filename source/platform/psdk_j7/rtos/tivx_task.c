@@ -9,8 +9,7 @@
 
 #include <vx_internal.h>
 
-#include <ti/osal/TaskP.h>
-#include <utils/perf_stats/include/app_perf_stats.h>
+#include <utils/rtos/include/app_rtos.h>
 
 static void tivxTaskDefHandle(void* arg0, void* arg1);
 
@@ -42,8 +41,8 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *params)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    TaskP_Handle tskHndl;
-    TaskP_Params rtos_task_prms;
+    app_rtos_task_handle_t tskHndl;
+    app_rtos_task_params_t rtos_task_prms;
 
     if ((NULL != task) && (NULL != params))
     {
@@ -55,8 +54,8 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         task->task_func            = params->task_main;
         task->app_var              = params->app_var;
 
-        /* Filling TaskP_Params structure as defined in TaskP.h */
-        TaskP_Params_init(&rtos_task_prms);
+        /* Filling app_rtos_task_params_t structure */
+        appRtosTaskParamsInit(&rtos_task_prms);
 
         rtos_task_prms.stacksize = params->stack_size;
         rtos_task_prms.stack     = params->stack_ptr;
@@ -64,13 +63,13 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         rtos_task_prms.arg0      = (void*)(task);
         rtos_task_prms.arg1      = (void*)(task);
         rtos_task_prms.name      = (const char*)&task->task_name[0];
+        rtos_task_prms.taskfxn   = &tivxTaskDefHandle;
+
 
         strncpy(task->task_name, params->task_name, TIVX_MAX_TASK_NAME);
         task->task_name[TIVX_MAX_TASK_NAME-1U] = (char)0;
 
-        tskHndl = (void*)TaskP_create(
-                            &tivxTaskDefHandle,
-                            &rtos_task_prms);
+        tskHndl = (void*)appRtosTaskCreate(&rtos_task_prms);
 
         if (NULL == tskHndl)
         {
@@ -79,7 +78,6 @@ vx_status tivxTaskCreate(tivx_task *task, const tivx_task_create_params_t *param
         }
         else
         {
-            appPerfStatsRegisterTask(tskHndl, task->task_name);
             task->tsk_handle = (void *)tskHndl;
         }
     }
@@ -98,7 +96,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
-        TaskP_delete((TaskP_Handle*)&task->tsk_handle);
+        appRtosTaskDelete((app_rtos_task_handle_t*)&task->tsk_handle);
     }
     else
     {
@@ -111,6 +109,6 @@ vx_status tivxTaskDelete(tivx_task *task)
 
 void tivxTaskWaitMsecs(uint32_t msec)
 {
-    TaskP_sleepInMsecs(msec);
+    appRtosTaskSleepInMsecs(msec);
 }
 

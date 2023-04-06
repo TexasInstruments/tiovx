@@ -70,6 +70,7 @@
 #include "tivx_hwa_display_priv.h"
 #include <TI/tivx_queue.h>
 #include <ti/drv/dss/dss.h>
+#include <utils/rtos/include/app_rtos.h>
 
 #define DISPLAY_MAX_VALID_PLANES                      2U
 #define DISPLAY_MAX_COPY_BUFFERS                      2U
@@ -98,7 +99,7 @@ typedef struct
     /**< Buffer addresses for copied frame */
     uint32_t firstFrameDisplay;
     /**< Option to tell whether display is processing first frame */
-    SemaphoreP_Handle waitSem;
+    app_rtos_semaphore_handle_t waitSem;
     /**< Semaphore for ISR */
     Dss_DispCreateParams createParams;
     /**< Create time parameters */
@@ -408,7 +409,7 @@ static void tivxDisplayFreeChromaBuff(tivxDisplayParams *dispPrms)
 static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData)
 {
     tivxDisplayParams *displayParams = (tivxDisplayParams *)(appData);
-    SemaphoreP_post(displayParams->waitSem);
+    appRtosSemaphorePost(displayParams->waitSem);
     return (vx_status)VX_SUCCESS;
 }
 
@@ -468,7 +469,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
     tivx_display_params_t *params;
     void *display_config_target_ptr;
     uint32_t drvId;
-    SemaphoreP_Params semParams;
+    app_rtos_semaphore_params_t semParams;
 
     if((num_params != TIVX_KERNEL_DISPLAY_MAX_PARAMS) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
@@ -523,9 +524,10 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             displayParams->firstFrameDisplay = TRUE;
             displayParams->cbParams.cbFxn = (Fvid2_CbFxn) (&tivxDisplayCallback);
             displayParams->cbParams.appData = displayParams;
-            SemaphoreP_Params_init(&semParams);
-            semParams.mode = SemaphoreP_Mode_BINARY;
-            displayParams->waitSem = SemaphoreP_create(0U, &semParams);
+            appRtosSemaphoreParamsInit(&semParams);
+            semParams.mode = APP_RTOS_SEMAPHORE_MODE_BINARY;
+            semParams.initValue = 0U;
+            displayParams->waitSem = appRtosSemaphoreCreate(semParams);
             if(NULL == displayParams->waitSem)
             {
                 status = (vx_status)VX_FAILURE;
@@ -747,7 +749,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         /* Delete the wait semaphore */
         if(((vx_status)VX_SUCCESS == status) && (NULL != displayParams->waitSem))
         {
-            SemaphoreP_delete(displayParams->waitSem);
+            appRtosSemaphoreDelete(&displayParams->waitSem);
             displayParams->waitSem = NULL;
         }
 
@@ -1033,7 +1035,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             {
                 do
                 {
-                    SemaphoreP_pend(displayParams->waitSem, SemaphoreP_WAIT_FOREVER);
+                    appRtosSemaphorePend(displayParams->waitSem, APP_RTOS_SEMAPHORE_WAIT_FOREVER);
                     fvid2_status = Fvid2_dequeue(displayParams->drvHandle,
                                         &frmList,
                                         0U,
@@ -1143,7 +1145,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             {
                 do
                 {
-                    SemaphoreP_pend(displayParams->waitSem, SemaphoreP_WAIT_FOREVER);
+                    appRtosSemaphorePend(displayParams->waitSem, APP_RTOS_SEMAPHORE_WAIT_FOREVER);
                     fvid2_status = Fvid2_dequeue(displayParams->drvHandle,
                                            &frmList,
                                            0U,

@@ -1,7 +1,7 @@
 /*
  *******************************************************************************
  *
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2023 Texas Instruments Incorporated - http://www.ti.com/
  * ALL RIGHTS RESERVED
  *
  *******************************************************************************
@@ -10,22 +10,23 @@
 
 #include <vx_internal.h>
 
-#include <ti/osal/SemaphoreP.h>
+#include <utils/rtos/include/app_rtos.h>
 
 vx_status tivxEventCreate(tivx_event *event)
 {
     vx_status status = (vx_status)VX_FAILURE;
-    SemaphoreP_Handle handle;
-    SemaphoreP_Params semParams;
+    app_rtos_semaphore_handle_t handle;
+    app_rtos_semaphore_params_t semParams;
 
     if (NULL != event)
     {
         /* Default parameter initialization */
-        SemaphoreP_Params_init(&semParams);
+        appRtosSemaphoreParamsInit(&semParams);
 
-        semParams.mode = SemaphoreP_Mode_BINARY;
+        semParams.mode = APP_RTOS_SEMAPHORE_MODE_BINARY;
+        semParams.initValue = 0U;
 
-        handle = SemaphoreP_create(0U, &semParams);
+        handle = appRtosSemaphoreCreate(semParams);
 
         if (NULL == handle)
         {
@@ -45,12 +46,12 @@ vx_status tivxEventCreate(tivx_event *event)
 vx_status tivxEventDelete(tivx_event *event)
 {
     vx_status status = (vx_status)VX_FAILURE;
-    SemaphoreP_Handle handle;
+    app_rtos_semaphore_handle_t handle;
 
     if ((NULL != event) && (*event != NULL))
     {
-        handle = (SemaphoreP_Handle)*event;
-        SemaphoreP_delete(handle);
+        handle = (app_rtos_semaphore_handle_t)*event;
+        appRtosSemaphoreDelete(&handle);
         *event = NULL;
         status = (vx_status)VX_SUCCESS;
     }
@@ -62,7 +63,7 @@ vx_status tivxEventPost(tivx_event event)
 {
     if (NULL != event)
     {
-        SemaphoreP_post((SemaphoreP_Handle)event);
+        appRtosSemaphorePost((app_rtos_semaphore_handle_t)event);
     }
 
     return ((vx_status)VX_SUCCESS);
@@ -71,30 +72,34 @@ vx_status tivxEventPost(tivx_event event)
 vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    SemaphoreP_Status retVal;
+    app_rtos_status_t retVal;
     uint32_t bsp_timeout;
 
     if (NULL != event)
     {
         if (TIVX_EVENT_TIMEOUT_WAIT_FOREVER == timeout)
         {
-            bsp_timeout = SemaphoreP_WAIT_FOREVER;
+            bsp_timeout = APP_RTOS_SEMAPHORE_WAIT_FOREVER;
         }
         else if (TIVX_EVENT_TIMEOUT_NO_WAIT == timeout)
         {
-            bsp_timeout = SemaphoreP_NO_WAIT;
+            bsp_timeout = APP_RTOS_SEMAPHORE_NO_WAIT;
         }
         else
         {
             bsp_timeout = timeout;
         }
 
-        retVal = SemaphoreP_pend((SemaphoreP_Handle)event, bsp_timeout);
+        retVal = appRtosSemaphorePend((app_rtos_semaphore_handle_t)event, bsp_timeout);
 
-        if (SemaphoreP_OK != retVal)
+        if (APP_RTOS_STATUS_TIMEOUT == retVal)
         {
-            /* making info since on a valid timeout, it will continously print errors instead */
-            VX_PRINT(VX_ZONE_INFO, "Semaphore wait returned an error\n");
+            VX_PRINT(VX_ZONE_INFO, "Semaphore wait timed out\n");
+            status = (app_rtos_status_t)TIVX_ERROR_EVENT_TIMEOUT;
+        }
+        else if (APP_RTOS_STATUS_FAILURE == retVal)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Semaphore wait returned an error\n");
             status = (vx_status)VX_FAILURE;
         }
     }
@@ -113,7 +118,7 @@ vx_status tivxEventClear(tivx_event event)
 
     if (NULL != event)
     {
-        status = SemaphoreP_reset((SemaphoreP_Handle)event);
+        appRtosSemaphoreReset((app_rtos_semaphore_handle_t)event);
     }
     else
     {
