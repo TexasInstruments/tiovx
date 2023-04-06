@@ -271,13 +271,13 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
                                 NULL);
             if (NULL != inst_obj->target_kernel)
             {
-                /* Allocate lock semaphore */
+                /* Allocate lock mutex */
                 status = tivxMutexCreate(&inst_obj->lock);
                 if ((vx_status)VX_SUCCESS != status)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
-                    VX_PRINT(VX_ZONE_ERROR, "Failed to create Semaphore\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Failed to create mutex\n");
                 }
                 else
                 {
@@ -995,8 +995,8 @@ static tivxVpacMscHsgObj *tivxVpacMscScaleAllocObject(tivxVpacMscScaleInstObj *i
     uint32_t        cnt;
     tivxVpacMscHsgObj *msc_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -1009,8 +1009,8 @@ static tivxVpacMscHsgObj *tivxVpacMscScaleAllocObject(tivxVpacMscScaleInstObj *i
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (msc_obj);
 }
@@ -1020,8 +1020,8 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -1032,8 +1032,8 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
