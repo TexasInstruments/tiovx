@@ -328,8 +328,6 @@ TEST_WITH_ARG(tivxTimestamp, testTimestampPropagation, Arg, STREAMING_PARAMETERS
             sizeof(tivx_scalar_intermediate_control_t), NULL);
 
         refs[0] = (vx_reference)replicate_query;
-        tivxNodeSendCommand(n1, 0,
-            TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY, refs, 1u);
 
         vxMapUserDataObject(
                 (vx_user_data_object)refs[0],
@@ -342,6 +340,8 @@ TEST_WITH_ARG(tivxTimestamp, testTimestampPropagation, Arg, STREAMING_PARAMETERS
                 0
             );
 
+        tivxNodeSendCommand(n1, 0,
+            TIVX_SCALAR_INTERMEDIATE_REPLICATE_QUERY, refs, 1u);
         replicate_struct = (tivx_scalar_intermediate_control_t*)data_ptr;
 
         ASSERT(replicate_struct->is_target_kernel_replicated==(vx_bool)vx_true_e);
