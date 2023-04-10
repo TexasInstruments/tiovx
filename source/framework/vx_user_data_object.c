@@ -100,6 +100,7 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
                 {
                     obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
                         obj_desc->mem_ptr.host_ptr, (vx_enum)TIVX_MEM_EXTERNAL);
+                    memset((vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr, 0, obj_desc->mem_size);
                 }
             }
         }
@@ -231,27 +232,6 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                         if (NULL != ptr)
                         {
                             status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, (vx_enum)VX_WRITE_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
-                        }
-                        else
-                        {
-                            status = ownAllocUserDataObjectBuffer(&user_data_object->base);
-
-                            if (status == (vx_status)VX_SUCCESS)
-                            {
-                                vx_uint8 *start_ptr;
-                                tivx_obj_desc_user_data_object_t *obj_desc = NULL;
-
-                                obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
-                                start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
-
-                                tivxCheckStatus(&status, tivxMemBufferMap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-
-                                memset(start_ptr, 0, size);
-
-                                tivxCheckStatus(&status, tivxMemBufferUnmap(start_ptr, (uint32_t)size,
-                                    (vx_enum)VX_MEMORY_TYPE_HOST, (vx_enum)VX_WRITE_ONLY));
-                            }
                         }
                     }
 
