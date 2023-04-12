@@ -193,6 +193,26 @@ extern "C" {
  */
 #define TIVX_TARGET_IPU1_0      "MCU1-0"
 
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE1     "CAPTURE1"
+
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE2     "CAPTURE2"
+
+/*! \brief Target name for Capture Node Instance 3
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE3     "CAPTURE3"
+
+/*! \brief Target name for Capture Node Instance 4
+ * \ingroup group_tivx_ext_targets
+ */
+#define TIVX_TARGET_CAPTURE4     "CAPTURE4"
+
 /*! \brief Target name for VPAC LDC1
  * \ingroup group_tivx_ext_targets
  */

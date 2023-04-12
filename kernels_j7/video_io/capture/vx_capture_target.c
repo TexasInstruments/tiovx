@@ -94,6 +94,7 @@ static char target_name[][TIVX_TARGET_MAX_NAME] =
     TIVX_TARGET_CAPTURE2,
     TIVX_TARGET_CAPTURE3,
     TIVX_TARGET_CAPTURE4,
+#if !defined(SOC_AM62A)
     TIVX_TARGET_CAPTURE5,
     TIVX_TARGET_CAPTURE6,
     TIVX_TARGET_CAPTURE7,
@@ -103,6 +104,7 @@ static char target_name[][TIVX_TARGET_MAX_NAME] =
     TIVX_TARGET_CAPTURE10,
     TIVX_TARGET_CAPTURE11,
     TIVX_TARGET_CAPTURE12,
+#endif
 #endif
 };
 
@@ -383,7 +385,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
                 if (NULL != fvid2Frame)
                 {
-                    uint32_t obj_desc_id_u32 = (uint32_t)obj_desc_id;
+                    uintptr_t obj_desc_id_u32 = (uintptr_t)obj_desc_id;
 
                     /* Put into frame list as it is for same driver instance */
                     frmList->frames[frmList->numFrames]           = fvid2Frame;
@@ -537,6 +539,7 @@ static uint32_t tivxCaptureMapInstId(uint32_t instId)
         case 0:
             drvInstId = CSIRX_INSTANCE_ID_0;
             break;
+#if !defined(SOC_AM62A)
         case 1:
             drvInstId = CSIRX_INSTANCE_ID_1;
             break;
@@ -544,6 +547,7 @@ static uint32_t tivxCaptureMapInstId(uint32_t instId)
         case 2:
             drvInstId = CSIRX_INSTANCE_ID_2;
             break;
+#endif
 #endif
         default:
             /* do nothing */
@@ -884,7 +888,7 @@ static vx_status tivxCaptureDequeueFrameFromDriver(tivxCaptureParams *prms)
                                     instIdx,
                                     fvid2Frame->chNum);
 
-                tmp_obj_desc_id = (uint32_t)fvid2Frame->appData;
+                tmp_obj_desc_id = (uintptr_t)fvid2Frame->appData;
                 tmp_timestamp = fvid2Frame->timeStamp64;
 
                 tivx_uint64_to_uint32(
@@ -943,7 +947,7 @@ static void tivxCaptureGetObjDesc(tivxCaptureParams *prms,
 
         if (NULL!=recv_obj_desc_id[chId])
         {
-            tmp_desc_id_32 = (uint32_t)recv_obj_desc_id[chId];
+            tmp_desc_id_32 = (uintptr_t)recv_obj_desc_id[chId];
         }
         else
         {
@@ -1377,7 +1381,7 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
 
                     createParams = &instParams->createPrms;
 
-                    tivxMemFree((void*)(uint32_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
+                    tivxMemFree((void*)(uintptr_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
             }
 
@@ -1529,7 +1533,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
 
                     createParams = &instParams->createPrms;
 
-                    tivxMemFree((void*)(uint32_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
+                    tivxMemFree((void*)(uintptr_t)createParams->frameDropBuf, createParams->frameDropBufLen, (vx_enum)TIVX_MEM_EXTERNAL);
                 }
 
                 /* Disable Error Events */
@@ -1977,7 +1981,11 @@ void tivxAddTargetKernelCapture(void)
 
     self_cpu = tivxGetSelfCpuId();
 
+#if !defined(SOC_AM62A)
     if (self_cpu == (vx_enum)TIVX_CPU_ID_MCU2_0)
+#else
+    if(self_cpu == (vx_enum)TIVX_CPU_ID_MPU_0)
+#endif
     {
         for (i = 0; i < CAPTURE_NUM_TARGETS; i++)
         {

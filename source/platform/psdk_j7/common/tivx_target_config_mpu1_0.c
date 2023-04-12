@@ -49,6 +49,12 @@ static void ownTargetDeleteTargetId(vx_enum target_id)
 
 void ownPlatformCreateTargets(void)
 {
+    #if defined(SOC_AM62A) && defined(QNX)
+    ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1, "TIVX_CAPT1");
+    ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2, "TIVX_CAPT2");
+    ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3, "TIVX_CAPT3");
+    ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4, "TIVX_CAPT4");
+    #endif
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_0, "TIVX_CPU0");
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_1, "TIVX_CPU1");
     ownTargetCreateTargetId((vx_enum)TIVX_TARGET_ID_MPU_2, "TIVX_CPU2");
@@ -57,6 +63,12 @@ void ownPlatformCreateTargets(void)
 
 void ownPlatformDeleteTargets(void)
 {
+    #if defined(SOC_AM62A) && defined(QNX)
+    ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE1);
+    ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE2);
+    ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE3);
+    ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_CAPTURE4);
+    #endif
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_0);
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_1);
     ownTargetDeleteTargetId((vx_enum)TIVX_TARGET_ID_MPU_2);

@@ -86,7 +86,7 @@ extern "C" {
 #elif defined (SOC_J721S2)
 #define TIVX_PLATFORM_MAX_TARGETS            (43u)
 #elif defined (SOC_AM62A)
-#define TIVX_PLATFORM_MAX_TARGETS            (20u)
+#define TIVX_PLATFORM_MAX_TARGETS            (24u)
 #endif
 
 /*! \brief Maximum number obj descriptors that are present in shared memory

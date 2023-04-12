@@ -1004,7 +1004,9 @@ TEST_WITH_ARG(tivxVideoIOCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout
 
         sample_image = (vx_image) vxGetObjectArrayItem(capture_frames[0], 0);
 
+#ifdef BUILD_DISPLAY
         ASSERT_VX_OBJECT(displayNode = tivxDisplayNode(graph, display_param_obj, sample_image), VX_TYPE_NODE);
+#endif
 
         VX_CALL(vxReleaseImage(&sample_image));
         /* Create User Data object for channel switching */
@@ -1037,7 +1039,9 @@ TEST_WITH_ARG(tivxVideoIOCapture, testRawImageCaptureDisplay, Arg_CaptureTimeout
                 );
 
         VX_CALL(vxSetNodeTarget(captureNode, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
+#ifdef BUILD_DISPLAY
         VX_CALL(vxSetNodeTarget(displayNode, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
+#endif
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     }
 

@@ -119,14 +119,19 @@ extern "C" {
  *
  *  \ingroup group_vision_function_capture
  */
+#if defined(SOC_AM62A)
+#define TIVX_CAPTURE_MAX_CH                                 (4U)
+#else
 #define TIVX_CAPTURE_MAX_CH                                 (16U)
-
+#endif
 /*! \brief Maximum number of instances supported in the capture node.
  *
  *  \ingroup group_vision_function_capture
  */
 #if defined(SOC_J784S4)
 #define TIVX_CAPTURE_MAX_INST                               (3U)
+#elif defined(SOC_AM62A)
+#define TIVX_CAPTURE_MAX_INST                               (1U)
 #else
 #define TIVX_CAPTURE_MAX_INST                               (2U)
 #endif
@@ -135,7 +140,11 @@ extern "C" {
  *
  *  \ingroup group_vision_function_capture
  */
+#if defined(SOC_AM62A)
+#define TIVX_CAPTURE_MAX_STRM                               (1U)
+#else
 #define TIVX_CAPTURE_MAX_STRM                               (4U)
+#endif
 
 /*! \brief Lane Band Speed:  80 Mbps to 100 Mbps
  *

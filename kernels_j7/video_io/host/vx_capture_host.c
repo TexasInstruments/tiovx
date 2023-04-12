@@ -271,6 +271,7 @@ vx_status tivxAddKernelCapture(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE2);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE3);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE4);
+            # if !defined(SOC_AM62A)
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE5);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE6);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE7);
@@ -280,6 +281,7 @@ vx_status tivxAddKernelCapture(vx_context context)
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE10);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE11);
             tivxAddKernelTarget(kernel, TIVX_TARGET_CAPTURE12);
+            #endif
             #endif
         }
         if (status == (vx_status)VX_SUCCESS)
