@@ -277,25 +277,44 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_viss_params_t \n");
         }
-        else
+        if ((vx_status)VX_SUCCESS == status)
         {
-            vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
-        }
-
-        if (NULL != ae_awb_result)
-        {
-            if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
-                (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
+            status = vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+            if ((vx_status)VX_SUCCESS != status)
             {
-                status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
-            }
-            else
-            {
-                vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+                VX_PRINT(VX_ZONE_ERROR, "'configuration' user data object has not been populated by application\n");
             }
         }
 
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if (NULL != ae_awb_result)
+            {
+                if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
+                    (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
+                {
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
+                }
+            }
+        }
+
+        if ((vx_status)VX_SUCCESS == status)
+        {
+            if (NULL != ae_awb_result)
+            {
+                status = vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, (vx_enum)VX_READ_ONLY, (vx_enum)VX_MEMORY_TYPE_HOST);
+                if ((vx_status)VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' user data object has not been populated by application\n");
+                }
+            }
+        }
+
+    }
+
+    if ((vx_status)VX_SUCCESS == status)
+    {
         if (NULL != output0)
         {
             if( ((vx_df_image)VX_DF_IMAGE_U16 != output0_fmt) &&
