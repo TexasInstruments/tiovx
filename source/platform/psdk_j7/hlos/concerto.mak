@@ -24,7 +24,7 @@ CSOURCES    := \
 
 IDIRS       += $(TIOVX_PATH)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
-IDIRS       += $(VISION_APPS_PATH)
+IDIRS       += $(APP_UTILS_PATH)
 
 DEFS += TARGET_HLOS
 

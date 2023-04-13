@@ -27,7 +27,7 @@ else
   IDIRS       += $(PDK_PATH)/packages
   IDIRS       += $(PDK_PATH)/packages/ti/drv
 endif
-IDIRS       += $(VISION_APPS_PATH)/
+IDIRS       += $(APP_UTILS_PATH)/
 ifeq ($(TARGET_OS),SYSBIOS)
   IDIRS       += $(XDCTOOLS_PATH)/packages
   IDIRS       += $(BIOS_PATH)/packages

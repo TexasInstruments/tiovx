@@ -10,7 +10,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(TIOVX_PATH)/conformance_tests
 IDIRS       += $(TIOVX_PATH)/conformance_tests/test_tiovx
 IDIRS       += $(TIOVX_PATH)/utils/include
-IDIRS       += $(VISION_APPS_PATH)/
+IDIRS       += $(APP_UTILS_PATH)/
 IDIRS       += $(IMAGING_PATH)/
 
 ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM GCC_QNX_ARM))
