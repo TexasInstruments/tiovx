@@ -31,11 +31,6 @@ else
 endif
 IDIRS       += $(APP_UTILS_PATH)/
 
-ifeq ($(TARGET_OS),SYSBIOS)
-  IDIRS       += $(XDCTOOLS_PATH)/packages
-  IDIRS       += $(BIOS_PATH)/packages
-endif
-
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(IMAGING_PATH)/algos/dcc/include

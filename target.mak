@@ -45,10 +45,7 @@ else
                  SYSLDIRS += $(GCC_ROOT)/lib
               endif
         else ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53))
-              ifeq ($(TARGET_OS),SYSBIOS)
-                 SYSIDIRS += $(GCC_SYSBIOS_ARM_ROOT)/include
-                 SYSLDIRS += $(GCC_SYSBIOS_ARM_ROOT)/lib
-              else ifeq ($(TARGET_OS),QNX)
+              ifeq ($(TARGET_OS),QNX)
                  SYSIDIRS += $(GCC_QNX_ARM_ROOT)/../usr/include
                  SYSLDIRS += $(GCC_QNX_ARM_ROOT)/../usr/lib
               endif

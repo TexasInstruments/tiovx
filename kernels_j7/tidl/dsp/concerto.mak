@@ -22,11 +22,6 @@ else
   IDIRS       += $(PDK_PATH)/packages/ti/osal
 endif
 
-ifeq ($(TARGET_OS),SYSBIOS)
-	IDIRS       += $(XDCTOOLS_PATH)/packages
-	IDIRS       += $(BIOS_PATH)/packages
-endif
-
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION -D_TMS320C6X
 

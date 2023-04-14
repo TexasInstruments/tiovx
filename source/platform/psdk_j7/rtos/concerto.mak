@@ -1,7 +1,7 @@
 
 ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2 J784S4 AM62A))
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53 R5F C66 C71 C7120 C7504))
-ifeq ($(TARGET_OS), $(filter $(TARGET_OS), SYSBIOS FREERTOS SAFERTOS))
+ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS))
 
 include $(PRELUDE)
 TARGET      := vx_platform_psdk_j7_rtos
@@ -24,16 +24,11 @@ IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
     IDIRS       += $(MCU_PLUS_SDK_PATH)/source
     IDIRS       += $(MCU_PLUS_SDK_PATH)/source/kernel/dpl
-else 
+else
     IDIRS       += $(PDK_PATH)/packages
     IDIRS       += $(PDK_PATH)/packages/ti/osal
 endif
 IDIRS       += $(APP_UTILS_PATH)
-
-ifeq ($(TARGET_OS),SYSBIOS)
-IDIRS       += $(XDCTOOLS_PATH)/packages
-IDIRS       += $(BIOS_PATH)/packages
-endif
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

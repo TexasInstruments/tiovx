@@ -13,10 +13,6 @@ else
 	IDIRS       += $(PDK_PATH)/packages
 	IDIRS       += $(PDK_PATH)/packages/ti/osal
 endif
-ifeq ($(TARGET_OS),SYSBIOS)
-	IDIRS       += $(XDCTOOLS_PATH)/packages
-	IDIRS       += $(BIOS_PATH)/packages
-endif
 
 include $(FINALE)
 

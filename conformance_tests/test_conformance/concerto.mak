@@ -39,7 +39,7 @@ CFLAGS += --diag_suppress=112
 CFLAGS += --diag_suppress=552
 endif
 
-ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM GCC_QNX_ARM))
+ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security

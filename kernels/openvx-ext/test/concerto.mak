@@ -11,7 +11,7 @@ IDIRS       += $(TIOVX_PATH)/conformance_tests/test_tiovx
 IDIRS       += $(TIOVX_PATH)/utils/include
 IDIRS       += $(APP_UTILS_PATH)/
 
-ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM GCC_QNX_ARM))
+ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_LINUX_ARM GCC_QNX_ARM))
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security

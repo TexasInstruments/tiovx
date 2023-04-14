@@ -20,10 +20,6 @@ ifeq ($(TARGET_CPU),R5F)
       IDIRS       += $(PDK_PATH)/packages/ti/drv
     endif
     IDIRS       += $(APP_UTILS_PATH)/
-    ifeq ($(TARGET_OS),SYSBIOS)
-      IDIRS       += $(XDCTOOLS_PATH)/packages
-      IDIRS       += $(BIOS_PATH)/packages
-    endif
   endif
 else
   CSOURCES    := vx_vpac_nf_generic_target_sim.c vx_vpac_nf_bilateral_target_sim.c

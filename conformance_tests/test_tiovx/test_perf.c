@@ -75,7 +75,7 @@ TESTCASE(tiovxSupernodePerformance2, CT_VXContext, ct_setup_vx_context, 0)
 
 static void ctSetTileSize(vx_node node)
 {
-#if !defined(SYSBIOS) && !defined(FREERTOS) && !defined(SAFERTOS)
+#if !defined(FREERTOS) && !defined(SAFERTOS)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxSetNodeTileSize(node,
         (getenv("TIOVX_BLOCK_WIDTH") == NULL) ? DEFAULT_BLOCK_WIDTH : (vx_uint32)atoi(getenv("TIOVX_BLOCK_WIDTH")),
         (getenv("TIOVX_BLOCK_HEIGHT") == NULL) ? DEFAULT_BLOCK_HEIGHT : (vx_uint32)atoi(getenv("TIOVX_BLOCK_HEIGHT"))));
