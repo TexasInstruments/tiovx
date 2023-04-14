@@ -65,6 +65,7 @@
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
+#include <TI/tivx_tensor.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,6 +161,46 @@ typedef struct{
   /* End workaround, to be removed once update TIDL is in SDK build */
 
 } tivxTVMJ7Params;
+
+/*! \brief [Graph] Creates a TVM Node.
+ * \param [in] graph Reference to vx_graph.
+ * \param [in] kernel Reference to vx_kernel.
+ * \param [in,out] appParams is an array of 2 parameters:
+ *             - config vx_user_data_object type corresponding to the configuration (named string: tivxTVMJ7Params)
+ *             - deploy_mod vx_user_data_object type corresponding to the TVM deployable module (named string: tivxTVMJ7DeployMod)
+ * \param [in] input_tensors Array of input tensors
+ *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
+ *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
+ * \param [out] output_tensors Array of output tensors
+ *
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_tvm
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxTVMNode(vx_graph  graph,
+                                             vx_kernel kernel,
+                                             vx_reference appParams[],
+                                             vx_tensor input_tensors[],
+                                             vx_tensor output_tensors[]);
+
+/*!
+ * \brief Used for the Application to create the tvm kernel from the context.
+ * \ingroup group_vision_function_tvm
+ *
+ * \param [in]  context             OpenVX context which must be created using \ref vxCreateContext
+ * \param [in]  num_input_tensors   Number of input vx_tensor objects to be created
+ * \param [in]  num_output_tensors  Number of output vx_tensor objects to be created
+ *
+ * \returns Handle to vx_kernel object if successful, NULL otherwise
+ *
+ * \note The caller of this function should check status of the return vx_kernel handle
+ *       and if found to be NULL must handle or propagate error appropriately.
+ *
+ */
+
+vx_kernel tivxAddKernelTVM(vx_context context,
+                           uint32_t num_input_tensors,
+                           uint32_t num_output_tensors);
 
 #ifdef __cplusplus
 }

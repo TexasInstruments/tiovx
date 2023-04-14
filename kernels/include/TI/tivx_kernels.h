@@ -98,32 +98,6 @@ enum tivx_library_e {
    TIVX_LIBRARY_EXTENSION_BASE = 0,
 };
 
-/*!
- * \brief Used for the Application to create the tidl kernel from the context.
- * \ingroup group_vision_function_tidl
- *
- * \param [in]  context             OpenVX context which must be created using \ref vxCreateContext
- * \param [in]  num_input_tensors   Number of input vx_tensor objects to be created
- * \param [in]  num_output_tensors  Number of output vx_tensor objects to be created
- *
- * \returns Handle to vx_kernel object if successful, NULL otherwise
- *
- * \note The caller of this function should check status of the return vx_kernel handle
- *       and if found to be NULL must handle or propagate error appropriately.
- *
- */
-vx_kernel tivxAddKernelTIDL(vx_context context,
-                            uint32_t num_input_tensors,
-                            uint32_t num_output_tensors);
-
-/*!
- * \brief Used for the Application to create the tvm kernel from the context.
- * \ingroup group_vision_function_tvm
- */
-vx_kernel tivxAddKernelTVM(vx_context context,
-                           uint32_t num_input_tensors,
-                           uint32_t num_output_tensors);
-
 #ifdef __cplusplus
 }
 #endif

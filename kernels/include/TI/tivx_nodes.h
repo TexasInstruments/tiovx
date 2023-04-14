@@ -66,66 +66,10 @@
 #define TIVX_NODES_H_
 
 #include <VX/vx.h>
-#include <TI/tivx_tensor.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/*! \brief [Graph] Creates a TIDL Node.
- * \param [in] graph Reference to vx_graph.
- * \param [in] kernel Reference to vx_kernel.
- * \param [in,out] appParams is an array of 5 parameters:
- *             - config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
- *             - network vx_user_data_object type corresponding to the network (named string: TIDL_network)
- *             - createParams: vx_user_data_object type corresponding to the structure TIDL_CreateParams.
- *                             This structure contains create-time parameters and are used only one time to initialize
- *                             the node.
- *                             Currently members quantHistoryParam1, quantHistoryParam2, quantMargin need to be initialized by
- *                             the application.
- *             - inArgs: vx_user_data_object type corresponding to the structure TIDL_InArgs. Used to pass input parameters
- *                       that goes in effect during the node's process call when graph is executed. These parameters
- *                       can be updated before each frame execution of a graph. Currently the list of parameters is empty.
- *                       So inArgs is just a placeholder for future extension.
- *             - outArgs: vx_user_data_object type corresponding to the structure TIDL_outArgs. Used to collect output parameters
- *                       that are returned by the node's process call when graph is executed. These parameters
- *                       are refreshed after each frame execution of a graph. Currently the list of parameters is empty.
- *                       So outArgs is just a placeholder for future extension.
- * \param [in] input_tensors Array of input tensors
- *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
- *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
- * \param [out] output_tensors Array of output tensors
- *
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- * \ingroup group_vision_function_tidl
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
-                                              vx_kernel kernel,
-                                              vx_reference appParams[],
-                                              vx_tensor input_tensors[],
-                                              vx_tensor output_tensors[]);
-
-/*! \brief [Graph] Creates a TVM Node.
- * \param [in] graph Reference to vx_graph.
- * \param [in] kernel Reference to vx_kernel.
- * \param [in,out] appParams is an array of 2 parameters:
- *             - config vx_user_data_object type corresponding to the configuration (named string: tivxTVMJ7Params)
- *             - deploy_mod vx_user_data_object type corresponding to the TVM deployable module (named string: tivxTVMJ7DeployMod)
- * \param [in] input_tensors Array of input tensors
- *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
- *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
- * \param [out] output_tensors Array of output tensors
- *
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- * \ingroup group_vision_function_tvm
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxTVMNode(vx_graph  graph,
-                                             vx_kernel kernel,
-                                             vx_reference appParams[],
-                                             vx_tensor input_tensors[],
-                                             vx_tensor output_tensors[]);
 
 /*! \brief [Graph] Creates a Object Array Split Node.  The input object array elements are split amongst all provided
  *                 outputs.  The first 2 outputs are required, but up to 4 outputs can be provided.  The number of

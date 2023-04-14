@@ -65,6 +65,7 @@
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
+#include <TI/tivx_tensor.h>
 #include "itidl_ti.h"
 
 #ifdef __cplusplus
@@ -126,6 +127,59 @@ static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams)
 
   memset(&tidlParams->ioBufDesc, 0, sizeof(sTIDL_IOBufDesc_t));
 }
+
+/*! \brief [Graph] Creates a TIDL Node.
+ * \param [in] graph Reference to vx_graph.
+ * \param [in] kernel Reference to vx_kernel.
+ * \param [in,out] appParams is an array of 5 parameters:
+ *             - config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
+ *             - network vx_user_data_object type corresponding to the network (named string: TIDL_network)
+ *             - createParams: vx_user_data_object type corresponding to the structure TIDL_CreateParams.
+ *                             This structure contains create-time parameters and are used only one time to initialize
+ *                             the node.
+ *                             Currently members quantHistoryParam1, quantHistoryParam2, quantMargin need to be initialized by
+ *                             the application.
+ *             - inArgs: vx_user_data_object type corresponding to the structure TIDL_InArgs. Used to pass input parameters
+ *                       that goes in effect during the node's process call when graph is executed. These parameters
+ *                       can be updated before each frame execution of a graph. Currently the list of parameters is empty.
+ *                       So inArgs is just a placeholder for future extension.
+ *             - outArgs: vx_user_data_object type corresponding to the structure TIDL_outArgs. Used to collect output parameters
+ *                       that are returned by the node's process call when graph is executed. These parameters
+ *                       are refreshed after each frame execution of a graph. Currently the list of parameters is empty.
+ *                       So outArgs is just a placeholder for future extension.
+ * \param [in] input_tensors Array of input tensors
+ *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
+ *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
+ * \param [out] output_tensors Array of output tensors
+ *
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ * \ingroup group_vision_function_tidl
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
+                                              vx_kernel kernel,
+                                              vx_reference appParams[],
+                                              vx_tensor input_tensors[],
+                                              vx_tensor output_tensors[]);
+
+/*!
+ * \brief Used for the Application to create the tidl kernel from the context.
+ * \ingroup group_vision_function_tidl
+ *
+ * \param [in]  context             OpenVX context which must be created using \ref vxCreateContext
+ * \param [in]  num_input_tensors   Number of input vx_tensor objects to be created
+ * \param [in]  num_output_tensors  Number of output vx_tensor objects to be created
+ *
+ * \returns Handle to vx_kernel object if successful, NULL otherwise
+ *
+ * \note The caller of this function should check status of the return vx_kernel handle
+ *       and if found to be NULL must handle or propagate error appropriately.
+ *
+ */
+vx_kernel tivxAddKernelTIDL(vx_context context,
+                            uint32_t num_input_tensors,
+                            uint32_t num_output_tensors);
+
 
 #ifdef __cplusplus
 }
