@@ -209,13 +209,13 @@ typedef enum _tivx_cpu_id_e {
 
 /*! \brief CPU ID for supported CPUs
  *
- *         Below list is added as tivx tests are using A72 mapped to A15
+ *         Below list is added as tivx tests are using MPU mapped to A15
  *
  * \ingroup group_tivx_ext_host
  */
 
-/*! \brief CPU ID for A72_x */
-#define TIVX_CPU_ID_A72_0         TIVX_CPU_ID_A15_0
+/*! \brief CPU ID for MPU_x */
+#define TIVX_CPU_ID_MPU_0         TIVX_CPU_ID_A15_0
 
 
 #ifdef __cplusplus

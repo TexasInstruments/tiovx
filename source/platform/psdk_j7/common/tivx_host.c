@@ -81,9 +81,9 @@ static void tivxHostInitLocal(void)
         }
         #endif
         else
-        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_A72_0)
+        if(tivxGetSelfCpuId()==(vx_enum)TIVX_CPU_ID_MPU_0)
         {
-            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A72_0);
+            tivxPlatformSetHostTargetId(TIVX_TARGET_ID_MPU_0);
         }
         else
         {

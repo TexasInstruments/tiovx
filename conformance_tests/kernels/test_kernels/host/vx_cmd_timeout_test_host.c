@@ -244,7 +244,7 @@ vx_status tivxAddKernelCmdTimeoutTest(vx_context context)
         if (status == (vx_status)VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_A72_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_MPU_0);
             #if defined(SOC_AM62A)
             tivxAddKernelTarget(kernel, TIVX_TARGET_MCU1_0);
             #else

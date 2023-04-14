@@ -135,7 +135,7 @@ void tivxHwaLoadKernels(vx_context context)
         vxLoadKernels(context, TIVX_MODULE_NAME_HWA);
 
         #ifdef x86_64
-        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_A72_0);
+        tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
         #endif
         tivxRegisterHwaTargetA72Kernels();
 
@@ -209,7 +209,7 @@ void tivxHwaUnLoadKernels(vx_context context)
             tivxUnRegisterHwaKernels();
 
             #ifdef x86_64
-            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_A72_0);
+            tivxSetSelfCpuId((vx_enum)TIVX_CPU_ID_MPU_0);
             #endif
             tivxUnRegisterHwaTargetA72Kernels();
 

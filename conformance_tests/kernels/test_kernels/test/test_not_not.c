@@ -112,7 +112,7 @@ TEST_WITH_ARG(tivxTestKernelsNotNot, testNested, size_arg, NOT_SIZE_ARGS)
     ASSERT_VX_OBJECT(dst   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(node  = tivxNotNotNode(graph, src, dst), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_A72_1));
+    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_MPU_1));
 
     // run graph
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
@@ -188,7 +188,7 @@ TEST_WITH_ARG(tivxTestKernelsNotNot, testNestedPipelined, size_arg, NOT_SIZE_ARG
     // build one-node graph
     ASSERT_VX_OBJECT(node  = tivxNotNotNode(graph, src[0], dst[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_A72_1));
+    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_MPU_1));
 
 
     /* input @ node index 0, becomes graph parameter 0 */

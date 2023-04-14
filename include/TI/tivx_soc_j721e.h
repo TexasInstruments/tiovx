@@ -94,25 +94,25 @@ extern "C" {
  * \brief Interface to j721e soc TI extension APIs
  */
 
-/*! \brief Target name for A72_0
+/*! \brief Target name for MPU_0
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_A72_0      "A72-0"
+#define TIVX_TARGET_MPU_0      "MPU-0"
 
-/*! \brief Target name for A72_1
+/*! \brief Target name for MPU_1
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_A72_1      "A72-1"
+#define TIVX_TARGET_MPU_1      "MPU-1"
 
-/*! \brief Target name for A72_2
+/*! \brief Target name for MPU_2
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_A72_2      "A72-2"
+#define TIVX_TARGET_MPU_2      "MPU-2"
 
-/*! \brief Target name for A72_3
+/*! \brief Target name for MPU_3
  * \ingroup group_tivx_ext_targets
  */
-#define TIVX_TARGET_A72_3      "A72-3"
+#define TIVX_TARGET_MPU_3      "MPU-3"
 
 /*! \brief Name for DSP target class, instance 1
  *
@@ -388,8 +388,8 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for IPU1_1 */
     TIVX_CPU_ID_IPU1_1 = TIVX_CPU_ID_MCU2_1,
 
-    /*! \brief CPU ID for A72-0 */
-    TIVX_CPU_ID_A72_0 = 5,
+    /*! \brief CPU ID for MPU-0 */
+    TIVX_CPU_ID_MPU_0 = 5,
 
     /*! \brief CPU ID for MCU3_0 */
     TIVX_CPU_ID_MCU3_0 = 6,

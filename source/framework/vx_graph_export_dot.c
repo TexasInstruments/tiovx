@@ -171,7 +171,7 @@ static void getNodeColor(vx_node node, char *node_color_name)
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "MediumOrchid");
         }
         else
-        if(strncmp(target_name, "A72-0", TIVX_TARGET_MAX_NAME) == 0)
+        if(strncmp(target_name, "MPU-0", TIVX_TARGET_MAX_NAME) == 0)
         {
             snprintf(node_color_name, TIVX_EXPORT_MAX_NODE_COLOR_NAME, "lightblue");
         }

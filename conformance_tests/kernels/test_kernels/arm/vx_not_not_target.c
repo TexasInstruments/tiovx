@@ -305,9 +305,9 @@ void tivxAddTargetKernelNotNot_arm(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
 
-    if (tivxGetSelfCpuId() == TIVX_CPU_ID_A72_0)
+    if (tivxGetSelfCpuId() == TIVX_CPU_ID_MPU_0)
     {
-        strncpy(target_name, TIVX_TARGET_A72_1, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_MPU_1, TIVX_TARGET_MAX_NAME);
 
         vx_not_not_target_kernel[0] = tivxAddTargetKernelByName(
                             TIVX_KERNEL_NOT_NOT_NAME,
@@ -318,7 +318,7 @@ void tivxAddTargetKernelNotNot_arm(void)
                             NULL,
                             NULL);
 
-        strncpy(target_name, TIVX_TARGET_A72_2, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_MPU_2, TIVX_TARGET_MAX_NAME);
 
         vx_not_not_target_kernel[1] = tivxAddTargetKernelByName(
                             TIVX_KERNEL_NOT_NOT_NAME,
@@ -329,7 +329,7 @@ void tivxAddTargetKernelNotNot_arm(void)
                             NULL,
                             NULL);
 
-        strncpy(target_name, TIVX_TARGET_A72_3, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_MPU_3, TIVX_TARGET_MAX_NAME);
 
         vx_not_not_target_kernel[2] = tivxAddTargetKernelByName(
                             TIVX_KERNEL_NOT_NOT_NAME,

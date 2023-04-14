@@ -92,7 +92,7 @@ extern "C" {
 
 /*! \brief CPU ID bit mask
  *  \details This is CPU from the perspective of different OS.  For example
- *  if there are dual core A72 running 1 instance of HLOS, then this counts
+ *  if there are dual core MPU running 1 instance of HLOS, then this counts
  *  as 1 CPU.
  *  Set assuming max 16 CPUs
  * \ingroup group_tivx_target

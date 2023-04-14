@@ -138,10 +138,10 @@ static void own_register_kernel(vx_context context, vx_kernel *kernel)
         own_Initialize,
         own_Deinitialize), VX_TYPE_KERNEL);
 
-    tivxAddKernelTarget(local_kernel, TIVX_TARGET_A72_0);
-    tivxAddKernelTarget(local_kernel, TIVX_TARGET_A72_1);
-    tivxAddKernelTarget(local_kernel, TIVX_TARGET_A72_2);
-    tivxAddKernelTarget(local_kernel, TIVX_TARGET_A72_3);
+    tivxAddKernelTarget(local_kernel, TIVX_TARGET_MPU_0);
+    tivxAddKernelTarget(local_kernel, TIVX_TARGET_MPU_1);
+    tivxAddKernelTarget(local_kernel, TIVX_TARGET_MPU_2);
+    tivxAddKernelTarget(local_kernel, TIVX_TARGET_MPU_3);
 
     VX_CALL(vxAddParameterToKernel(local_kernel, OWN_PARAM_INPUT, VX_INPUT, type, VX_PARAMETER_STATE_REQUIRED));
     VX_CALL(vxAddParameterToKernel(local_kernel, OWN_PARAM_OUTPUT, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
@@ -205,8 +205,8 @@ TEST(tivxNestedUserNode, testNestedUserKernel)
     VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)src));
     VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)dst));
 
-    /* This must be different than TIVX_TARGET_A72_0, which is the HOST thread */
-    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_A72_1));
+    /* This must be different than TIVX_TARGET_MPU_0, which is the HOST thread */
+    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_MPU_1));
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));

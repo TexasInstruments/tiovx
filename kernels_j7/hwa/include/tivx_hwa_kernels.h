@@ -87,13 +87,13 @@ void tivxRegisterHwaKernels(void);
  */
 void tivxUnRegisterHwaKernels(void);
 /*!
- * \brief Function to register HWA Kernels on the a72 Target
+ * \brief Function to register HWA Kernels on the mpu Target
  * \ingroup group_tivx_ext
  */
 void tivxRegisterHwaTargetA72Kernels(void);
 
 /*!
- * \brief Function to un-register HWA Kernels on the a72 Target
+ * \brief Function to un-register HWA Kernels on the mpu Target
  * \ingroup group_tivx_ext
  */
 void tivxUnRegisterHwaTargetA72Kernels(void);

@@ -92,6 +92,6 @@ class Core(Enum):
     DMPAC_DOF = "dmpac_dof"
     ## Target is a C7X DSP
     C7X = "c7x"
-    ## Target is an A72
-    A72 = "a72"
+    ## Target is an MPU
+    MPU = "mpu"
     ## Above are J7 cores

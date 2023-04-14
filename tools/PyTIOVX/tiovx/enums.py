@@ -391,7 +391,7 @@ class Cpu(Enum) :
     MCU2_1   = 10
     IPU2     = 11
     DSP_C7_1 = 12
-    A72_0    = 13
+    MPU_0    = 13
 
     def get_vx_enum_name(type) :
         if type.name == "IPU2" :
@@ -453,8 +453,8 @@ class Target(Enum) :
     VPAC_VISS1   = 19
     ## TIOVX equivalent = TIVX_TARGET_DSP_C7_1
     DSP_C7_1     = 24
-    ## TIOVX equivalent = TIVX_TARGET_A72_0
-    A72_0        = 25
+    ## TIOVX equivalent = TIVX_TARGET_MPU_0
+    MPU_0        = 25
     ## Above are J7 targets
     ## Used internally by the tool
     DEFAULT = DSP1
@@ -501,8 +501,8 @@ class Target(Enum) :
             return "vpac_viss"
         if target == Target.DSP_C7_1 :
             return "c7x"
-        if target == Target.A72_0 :
-            return "a72"
+        if target == Target.MPU_0 :
+            return "mpu"
         return None
 
     def is_j6_target(target) :
@@ -568,8 +568,8 @@ class Target(Enum) :
             return Cpu.MCU2_0
         if target == Target.DSP_C7_1 :
             return Cpu.DSP_C7_1
-        if target == Target.A72_0 :
-            return Cpu.A72_0
+        if target == Target.MPU_0 :
+            return Cpu.MPU_0
         return Cpu.INVALID
 
 ## Conversion Policy (OpenVX equivalent = \ref vx_convert_policy_e)

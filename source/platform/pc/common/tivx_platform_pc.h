@@ -147,10 +147,10 @@ extern "C" {
     {TIVX_TARGET_MCU2_1, 13},                                 \
     {TIVX_TARGET_MCU3_0, 14},                                 \
     {TIVX_TARGET_MCU3_1, 15},                                 \
-    {TIVX_TARGET_A72_0, 16},                                  \
-    {TIVX_TARGET_A72_1, 17},                                  \
-    {TIVX_TARGET_A72_2, 18},                                  \
-    {TIVX_TARGET_A72_3, 19},                                  \
+    {TIVX_TARGET_MPU_0, 16},                                  \
+    {TIVX_TARGET_MPU_1, 17},                                  \
+    {TIVX_TARGET_MPU_2, 18},                                  \
+    {TIVX_TARGET_MPU_3, 19},                                  \
     {TIVX_TARGET_VPAC_NF, 20},                                \
     {TIVX_TARGET_VPAC_LDC1, 21},                              \
     {TIVX_TARGET_VPAC_MSC1, 22},                              \
@@ -203,10 +203,10 @@ extern "C" {
     {TIVX_TARGET_MCU2_1, 12},                                \
     {TIVX_TARGET_MCU3_0, 13},                                \
     {TIVX_TARGET_MCU3_1, 14},                                \
-    {TIVX_TARGET_A72_0, 15},                                 \
-    {TIVX_TARGET_A72_1, 16},                                 \
-    {TIVX_TARGET_A72_2, 17},                                 \
-    {TIVX_TARGET_A72_3, 18},                                 \
+    {TIVX_TARGET_MPU_0, 15},                                 \
+    {TIVX_TARGET_MPU_1, 16},                                 \
+    {TIVX_TARGET_MPU_2, 17},                                 \
+    {TIVX_TARGET_MPU_3, 18},                                 \
     {TIVX_TARGET_VPAC_NF, 19},                               \
     {TIVX_TARGET_VPAC_LDC1, 20},                             \
     {TIVX_TARGET_VPAC_MSC1, 21},                             \
@@ -283,10 +283,10 @@ extern "C" {
     {TIVX_TARGET_MCU3_1, 35},                                 \
     {TIVX_TARGET_MCU4_0, 36},                                 \
     {TIVX_TARGET_MCU4_1, 37},                                 \
-    {TIVX_TARGET_A72_0, 38},                                  \
-    {TIVX_TARGET_A72_1, 39},                                  \
-    {TIVX_TARGET_A72_2, 40},                                  \
-    {TIVX_TARGET_A72_3, 41},                                  \
+    {TIVX_TARGET_MPU_0, 38},                                  \
+    {TIVX_TARGET_MPU_1, 39},                                  \
+    {TIVX_TARGET_MPU_2, 40},                                  \
+    {TIVX_TARGET_MPU_3, 41},                                  \
     {TIVX_TARGET_VPAC_NF, 42},                                \
     {TIVX_TARGET_VPAC_LDC1, 43},                              \
     {TIVX_TARGET_VPAC_MSC1, 44},                              \
@@ -345,10 +345,10 @@ extern "C" {
     {TIVX_TARGET_DSP_C7_1_PRI_8, 8},                          \
     {TIVX_TARGET_IPU1_0, 9},                                  \
     {TIVX_TARGET_MCU1_0, 10},                                  \
-    {TIVX_TARGET_A72_0, 11},                                  \
-    {TIVX_TARGET_A72_1, 12},                                  \
-    {TIVX_TARGET_A72_2, 13},                                  \
-    {TIVX_TARGET_A72_3, 14},                                  \
+    {TIVX_TARGET_MPU_0, 11},                                  \
+    {TIVX_TARGET_MPU_1, 12},                                  \
+    {TIVX_TARGET_MPU_2, 13},                                  \
+    {TIVX_TARGET_MPU_3, 14},                                  \
     {TIVX_TARGET_VPAC_LDC1, 15},                              \
     {TIVX_TARGET_VPAC_MSC1, 16},                              \
     {TIVX_TARGET_VPAC_MSC2, 17},                              \
