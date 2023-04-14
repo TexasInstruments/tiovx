@@ -90,11 +90,6 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME_TVM    "tvm"
 
-/*! \brief dof_visualize kernel name
- *  \ingroup group_vision_function_dmpac_dof
- */
-#define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
-
 /*! \brief tidl kernel name
  *  \ingroup group_vision_function_tidl
  */

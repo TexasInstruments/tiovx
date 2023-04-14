@@ -73,7 +73,6 @@
 
 #include <TI/tivx.h>
 #include <TI/j7_kernels.h>
-#include <TI/j7_nodes.h>
 #include <TI/j7_vpac_ldc.h>
 #include <TI/j7_vpac_msc.h>
 #include <TI/j7_vpac_viss.h>
