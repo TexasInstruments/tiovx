@@ -131,11 +131,7 @@ extern "C" {
 /*! \brief Shift for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
-#if defined(SOC_J6)
-#define TIVX_OBJ_DESC_ID_SHIFT           (8u)
-#else
 #define TIVX_OBJ_DESC_ID_SHIFT           (12u)
-#endif
 
 /*! \brief Mask for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv

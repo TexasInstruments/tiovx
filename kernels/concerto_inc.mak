@@ -10,11 +10,3 @@ endif
 ifneq ($(CUSTOM_APPLICATION_PATH),)
 include $(CUSTOM_APPLICATION_PATH)/concerto_inc.mak
 endif
-
-ifeq ($(BUILD_IVISION_KERNELS),yes)
-STATIC_LIBS += vx_tiovx_ivision_tests vx_kernels_ivision
-endif
-
-ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
-STATIC_LIBS += vx_tiovx_tidl_tests dmautils_$(TARGET_CPU)
-endif

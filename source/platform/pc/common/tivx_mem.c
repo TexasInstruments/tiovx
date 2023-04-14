@@ -62,9 +62,9 @@
 
 #include <vx_internal.h>
 
-#ifndef SOC_J6
+#ifndef DISABLE_APP_UTILS_DEP
 #include <utils/mem/include/app_mem.h>
-#endif // ifndef SOC_J6
+#endif // ifndef DISABLE_APP_UTILS_DEP
 
 /*! \brief Default buffer allocation padding
  * \ingroup group_tivx_mem
@@ -158,11 +158,11 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     }
     else
     {
-#ifdef SOC_J6
+#ifdef DISABLE_APP_UTILS_DEP
         ptr = malloc(size);
 #else
         ptr = appMemAlloc(mem_heap_region, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
-#endif // SOC_J6
+#endif // DISABLE_APP_UTILS_DEP
     }
 
     return (ptr);
@@ -181,7 +181,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     {
         if(ptr)
         {
-#ifdef SOC_J6
+#ifdef DISABLE_APP_UTILS_DEP
             free(ptr);
 #else
             (void)appMemFree(mem_heap_region, ptr, size);
@@ -267,7 +267,7 @@ void* tivxMemShared2TargetPtr(const tivx_shared_mem_ptr_t *shared_ptr)
     return (void*)(uintptr_t)(shared_ptr->shared_ptr);
 }
 
-#ifdef SOC_J6
+#ifdef DISABLE_APP_UTILS_DEP
 void* Utils_memPhysToVirt(uint64_t phys_ptr)
 {
     return (void*)(uintptr_t)(phys_ptr);
@@ -311,7 +311,7 @@ vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **ph
         vxStatus = (vx_status)VX_FAILURE;
     }
 
-#ifdef SOC_J6
+#ifdef DISABLE_APP_UTILS_DEP
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         *fd      = (uint64_t)virtAddr;
@@ -351,7 +351,7 @@ vx_status tivxMemTranslateFd(uint64_t dmaBufFd, uint32_t size, void **virtAddr, 
         vxStatus = (vx_status)VX_FAILURE;
     }
 
-#ifdef SOC_J6
+#ifdef DISABLE_APP_UTILS_DEP
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
         *virtAddr = (void*)(uintptr_t)dmaBufFd;

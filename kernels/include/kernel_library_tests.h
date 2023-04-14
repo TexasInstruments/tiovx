@@ -74,7 +74,3 @@
 #include "custom_app_kernel_library_tests.h"
 #endif
 
-#ifdef BUILD_IVISION_KERNELS
-#include "ivision/test/test_main.h"
-#endif
-

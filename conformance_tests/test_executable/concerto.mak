@@ -43,11 +43,6 @@ STATIC_LIBS += vx_platform_pc vx_framework
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 STATIC_LIBS += vx_kernels_openvx_ext vx_target_kernels_openvx_ext
 
-# TDA2x/3x TI-DL host emulation only works in 32-bits version
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86))
-STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl tidl_algo_X86
-endif
-
 STATIC_LIBS += vx_target_kernels_ivision_common
 
 include $(HOST_ROOT)/kernels/concerto_inc.mak

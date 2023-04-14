@@ -63,11 +63,6 @@
 #ifndef TIVX_TEST_PLATFORM_H_
 #define TIVX_TEST_PLATFORM_H_
 
-#if defined(SOC_J6)
-#define TIVX_CPU_ID_MPU_0   TIVX_CPU_ID_A15_0
-#define TIVX_TARGET_MPU_0   TIVX_TARGET_A15_0
-#endif /* defined(SOC_J6) */
-
 #endif /* TIVX_TEST_PLATFORM_H_ */
 
 

@@ -81,12 +81,6 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME_OPENVX_EXT    "openvx-ext"
 
-/*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext_ivision_kernel
- */
-#define TIVX_MODULE_NAME_IVISION    "ivision"
-
-
 /*! \brief Object Array Split Kernel Name
  *  \ingroup group_vision_function_ext
  */
@@ -100,25 +94,8 @@ extern "C" {
 
 /*! \brief The list of available libraries in tivx */
 enum tivx_library_e {
-    /*! \brief The set of kernels supported in ivision. */
-   TIVX_LIBRARY_IVISION_BASE = 0,
     /*! \brief TI Extension kernels. */
-   TIVX_LIBRARY_EXTENSION_BASE = 1,
-};
-
-/*!
- * \brief The list of kernels supported in ivision.
- *
- * \ingroup group_tivx_ext_ivision_kernel
- */
-enum tivx_kernel_ivision_e {
-    /*! \brief The Harris Corners Kernel.
-     * \see group_vision_function_harris
-     */
-    TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x0,
-    TIVX_KERNEL_IVISION_RGB_IR= VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x1,
-    /* insert new kernels here */
-    TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
+   TIVX_LIBRARY_EXTENSION_BASE = 0,
 };
 
 /*!

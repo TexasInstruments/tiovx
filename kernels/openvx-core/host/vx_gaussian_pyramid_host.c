@@ -380,13 +380,11 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
         {
             /* add supported target's */
             tivxKernelsHostUtilsAddKernelTargetDsp(kernel);
-#if !defined(SOC_J6)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_MSC2);
 #if defined(SOC_J784S4)
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC2_MSC2);
-#endif
 #endif
         }
         if (status == (vx_status)VX_SUCCESS)

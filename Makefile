@@ -6,9 +6,6 @@ include $(TIOVX_PATH)/build_flags.mak
 
 # Project specific build defs (don't change across different combos):
 BUILD_DEFS :=
-ifeq ($(BUILD_IVISION_KERNELS),yes)
-BUILD_DEFS += BUILD_IVISION_KERNELS
-endif
 ifneq ($(CUSTOM_KERNEL_PATH),)
 BUILD_DEFS += CUSTOM_KERNEL_PATH
 endif

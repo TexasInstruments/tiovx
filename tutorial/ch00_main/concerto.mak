@@ -33,11 +33,6 @@ endif
 
 STATIC_LIBS += vx_kernels_host_utils vx_kernels_target_utils
 
-# TDA2x/3x TI-DL host emulation only works in 32-bits version
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86))
-STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl tidl_algo_X86 vx_target_kernels_ivision_common dmautils_$(TARGET_CPU)
-endif
-
 STATIC_LIBS += vx_framework vx_platform_pc
 ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU) vxlib_bamplugin_$(TARGET_CPU)

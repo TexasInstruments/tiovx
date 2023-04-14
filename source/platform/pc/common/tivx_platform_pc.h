@@ -85,8 +85,6 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_TARGETS            (44u)
 #elif defined (SOC_J721S2)
 #define TIVX_PLATFORM_MAX_TARGETS            (43u)
-#elif defined (SOC_J6)
-#define TIVX_PLATFORM_MAX_TARGETS            (11u)
 #elif defined (SOC_AM62A)
 #define TIVX_PLATFORM_MAX_TARGETS            (20u)
 #endif
@@ -97,32 +95,7 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (1024U)
 
 
-#if defined(SOC_J6)
-
-/*! \brief Mapping of Target names with Target Ids
- *   Used to initialize internal structure
- *
- * \ingroup group_tivx_platform
- */
-#define TIVX_TARGET_INFO                                     \
-{                                                            \
-    {TIVX_TARGET_DSP1,   0},                                 \
-    {TIVX_TARGET_DSP2,   1},                                 \
-    {TIVX_TARGET_EVE1,   2},                                 \
-    {TIVX_TARGET_EVE2,   3},                                 \
-    {TIVX_TARGET_EVE3,   4},                                 \
-    {TIVX_TARGET_EVE4,   5},                                 \
-    {TIVX_TARGET_IPU1_0, 6},                                 \
-    {TIVX_TARGET_IPU1_1, 7},                                 \
-    {TIVX_TARGET_IPU2,   8},                                 \
-    {TIVX_TARGET_A15_0,  9},                                 \
-    /* TIVX_TARGET_HOST should point to the number associated with  \
-     * the host target thread in list above                         \
-     */                                                             \
-    {TIVX_TARGET_HOST,  9},                                 \
-}
-
-#elif defined (SOC_J721E)
+#if defined (SOC_J721E)
 
 /*! \brief Mapping of Target names with Target Ids
  *   Used to initialize internal structure

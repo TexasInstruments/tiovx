@@ -18,7 +18,7 @@
 #include <signal.h>
 #include <TI/tivx.h>
 
-#ifndef SOC_J6
+#ifndef DISABLE_APP_UTILS_DEP
 #include <utils/app_init/include/app_init.h>
 #endif
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     /* Register the signal handler. */
     signal(SIGINT, intSigHandler);
 
-#ifndef SOC_J6
+#ifndef DISABLE_APP_UTILS_DEP
     appInit();
 #else
     tivxInit();
@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
     status = vx_conformance_test_main(argc, argv);
     TestModuleUnRegister();
 
-#ifndef SOC_J6
+#ifndef DISABLE_APP_UTILS_DEP
     appDeInit();
 #else
     tivxDeInit();
