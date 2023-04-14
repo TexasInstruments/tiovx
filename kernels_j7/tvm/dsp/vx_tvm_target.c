@@ -65,7 +65,6 @@
 #include <TI/tivx.h>
 #include <TI/j7_tvm.h>
 #include <TI/tivx_target_kernel.h>
-#include <tivx_alg_ivision_if.h>
 #include "tivx_platform.h"
 #include "tivx_kernels_target_utils.h"
 #include "../tvm_dyn_load/dsp_load.h"

@@ -4,8 +4,6 @@ include $(PRELUDE)
 TARGET      := vx_target_kernels_tvm
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(TIOVX_PATH)/kernels/ivision/include
-IDIRS       += $(IVISION_PATH)
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TIOVX_PATH)/source/include
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
