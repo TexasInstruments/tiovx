@@ -154,11 +154,12 @@ TEST(tivxContext, negativeTestAllocateUserKernelId)
     vx_uint32 i = 0;
     vx_status status = VX_SUCCESS;
 
+    vx_uint32 init_num_user_kernel_id = 0;
     vx_uint32 num_user_kernel_id = 0;
 
-    VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &num_user_kernel_id, sizeof(num_user_kernel_id)));
+    VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &init_num_user_kernel_id, sizeof(init_num_user_kernel_id)));
 
-    for (i = 0; i < TIVX_MAX_KERNEL_ID; i++) {
+    for (i = init_num_user_kernel_id; i < TIVX_MAX_KERNEL_ID; i++) {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelId(context, &keID));
         VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &num_user_kernel_id, sizeof(num_user_kernel_id)));
         ASSERT(num_user_kernel_id==(i+1));
