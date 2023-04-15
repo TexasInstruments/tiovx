@@ -319,16 +319,16 @@ typedef struct
  *********************************/
 
 /*!
- * \brief Function to register HWA Kernels on the csitx Target
+ * \brief Function to register Video IO Kernels on the csitx Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHwaTargetCsitxKernels(void);
+void tivxRegisterVideoIOTargetCsitxKernels(void);
 
 /*!
- * \brief Function to un-register HWA Kernels on the csitx Target
+ * \brief Function to un-register Video IO Kernels on the csitx Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHwaTargetCsitxKernels(void);
+void tivxUnRegisterVideoIOTargetCsitxKernels(void);
 
 
 

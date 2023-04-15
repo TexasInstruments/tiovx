@@ -65,23 +65,6 @@
 
 #include <TI/tivx.h>
 
-#ifdef BUILD_CAPTURE
-vx_status tivxAddKernelCapture(vx_context context);
-vx_status tivxRemoveKernelCapture(vx_context context);
-#endif
-
-#ifdef BUILD_CSITX
-vx_status tivxAddKernelCsitx(vx_context context);
-vx_status tivxRemoveKernelCsitx(vx_context context);
-#endif
-
-#ifdef BUILD_DISPLAY
-vx_status tivxAddKernelDisplay(vx_context context);
-vx_status tivxAddKernelDisplayM2M(vx_context context);
-vx_status tivxRemoveKernelDisplay(vx_context context);
-vx_status tivxRemoveKernelDisplayM2M(vx_context context);
-#endif
-
 #ifdef BUILD_VPAC_VISS
 vx_status tivxAddKernelVpacViss(vx_context context);
 vx_status tivxRemoveKernelVpacViss(vx_context context);

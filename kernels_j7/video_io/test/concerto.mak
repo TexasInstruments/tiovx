@@ -1,10 +1,10 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 A53 R5F))
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
-ifeq ($(BUILD_HWA_KERNELS),yes)
+ifeq ($(BUILD_VIDEO_IO_KERNELS),yes)
 
 include $(PRELUDE)
-TARGET      := vx_kernels_hwa_tests
+TARGET      := vx_kernels_video_io_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(TIOVX_PATH)/conformance_tests
@@ -26,33 +26,16 @@ CFLAGS += --diag_suppress=112
 CFLAGS += --diag_suppress=552
 endif
 
-
-ifeq ($(BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS),yes)
-CFLAGS      += -DBUILD_CT_TIOVX_HWA_NEGATIVE_TESTS
+ifeq ($(BUILD_CAPTURE),yes)
+DEFS += BUILD_CAPTURE
 endif
 
-ifeq ($(BUILD_DMPAC_DOF),yes)
-DEFS += BUILD_DMPAC_DOF
+ifeq ($(BUILD_CSITX),yes)
+DEFS += BUILD_CSITX
 endif
 
-ifeq ($(BUILD_DMPAC_SDE),yes)
-DEFS += BUILD_DMPAC_SDE
-endif
-
-ifeq ($(BUILD_VPAC_VISS),yes)
-DEFS += BUILD_VPAC_VISS
-endif
-
-ifeq ($(BUILD_VPAC_MSC),yes)
-DEFS += BUILD_VPAC_MSC
-endif
-
-ifeq ($(BUILD_VPAC_LDC),yes)
-DEFS += BUILD_VPAC_LDC
-endif
-
-ifeq ($(BUILD_VPAC_NF),yes)
-DEFS += BUILD_VPAC_NF
+ifeq ($(BUILD_DISPLAY),yes)
+DEFS += BUILD_DISPLAY
 endif
 
 include $(FINALE)

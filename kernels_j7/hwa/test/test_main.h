@@ -74,26 +74,6 @@ TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
-#if defined(J7) || defined(J721S2) || defined(J784S4)
-#if defined(BUILD_CT_TIOVX_HWA_DISPLAY_TESTS)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaDisplayM2M)
-#endif
-#if defined(BUILD_CT_TIOVX_HWA_CAPTURE_TESTS)
-TESTCASE(tivxHwaCapture)
-TESTCASE(tivxHwaCaptureSplitMode)
-#endif
-#if defined(BUILD_CSITX)
-TESTCASE(tivxHwaCsitxCsirx)
-#endif
-/* Note: the following are implemented as applications in vision apps */
-#if 0
-TESTCASE(tivxHwaCaptureDisplay)
-TESTCASE(tivxHwaCaptureVissDisplay)
-TESTCASE(tivxHwaCaptureVpacDisplay)
-#endif
-#endif
-
 #endif // #ifndef AM62A
 
 #endif

@@ -78,7 +78,7 @@ extern "C" {
 /*! \brief Display M2M kernel name
  *  \ingroup group_vision_function_display_m2m
  */
-#define TIVX_KERNEL_DISPLAY_M2M_NAME          "com.ti.hwa.displaym2m"
+#define TIVX_KERNEL_DISPLAY_M2M_NAME          "com.ti.displaym2m"
 
 /*********************************
  *      Display M2M Control Commands
@@ -152,16 +152,16 @@ typedef struct
  *********************************/
 
 /*!
- * \brief Function to register HWA Kernels on the display_m2m Target
+ * \brief Function to register video io Kernels on the display_m2m Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHwaTargetDisplayM2MKernels(void);
+void tivxRegisterVideoIOTargetDisplayM2MKernels(void);
 
 /*!
- * \brief Function to un-register HWA Kernels on the display_m2m Target
+ * \brief Function to un-register video io Kernels on the display_m2m Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHwaTargetDisplayM2MKernels(void);
+void tivxUnRegisterVideoIOTargetDisplayM2MKernels(void);
 
 /*! \brief [Graph] Creates a DISPLAY_M2M Node.
  * This node can be used to do color space conversion like YUV422 to YUV420 OR

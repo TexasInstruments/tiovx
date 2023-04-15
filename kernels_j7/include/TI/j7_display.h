@@ -78,7 +78,7 @@ extern "C" {
 /*! \brief Display Kernel Name
  *  \ingroup group_vision_function_display
  */
-#define TIVX_KERNEL_DISPLAY_NAME       "com.ti.hwa.display"
+#define TIVX_KERNEL_DISPLAY_NAME       "com.ti.display"
 
 
 
@@ -192,16 +192,16 @@ typedef struct
  *********************************/
 
 /*!
- * \brief Function to register HWA Kernels on the display Target
+ * \brief Function to register Video IO Kernels on the display Target
  * \ingroup group_vision_function_display
  */
-void tivxRegisterHwaTargetDisplayKernels(void);
+void tivxRegisterVideoIOTargetDisplayKernels(void);
 
 /*!
- * \brief Function to un-register HWA Kernels on the display Target
+ * \brief Function to un-register Video IO Kernels on the display Target
  * \ingroup group_vision_function_display
  */
-void tivxUnRegisterHwaTargetDisplayKernels(void);
+void tivxUnRegisterVideoIOTargetDisplayKernels(void);
 
 
 /*! \brief [Graph] Creates a DSS Display Node.

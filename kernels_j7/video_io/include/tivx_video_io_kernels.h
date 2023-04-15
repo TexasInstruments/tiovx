@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2023 Texas Instruments Incorporated
+ * Copyright (c) 2017 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,11 +60,10 @@
  *
  */
 
-#ifndef DL_KERNELS_H
-#define DL_KERNELS_H
+#ifndef VX_VIDEO_IO_KERNELS_H_
+#define VX_VIDEO_IO_KERNELS_H_
 
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+#include "tivx_kernels_host_utils.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,90 +71,26 @@ extern "C" {
 
 /*!
  * \file
- * \brief The list of supported kernels in this kernel extension.
+ * \brief Interface file for the VIDEO_IO kernels
  */
-
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
-
-/*! \brief Name for OpenVX Extension kernel module: tvm
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TVM    "tvm"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! \brief tvm kernel name
- *  \ingroup group_vision_function_tvm
- */
-#define TIVX_KERNEL_TVM_NAME          "com.ti.tvm"
-
-/*! End of group_vision_function_tidl */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tvm kernels into the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tvm kernels from the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMUnLoadKernels(vx_context context);
-
 
 
 /*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
+ * \brief Function to register VIDEO_IO Kernels on the Host
+ * \ingroup group_tivx_ext
  */
-void tivxRegisterTIDLTargetKernels(void);
+void tivxRegisterVideoIOKernels(void);
 
 /*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
+ * \brief Function to un-register VIDEO_IO Kernels on the Host
+ * \ingroup group_tivx_ext
  */
-void tivxUnRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxRegisterTVMTargetKernels(void);
-
-/*!
- * \brief Function to un-register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxUnRegisterTVMTargetKernels(void);
+void tivxUnRegisterVideoIOKernels(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DL_KERNELS_H */
+#endif /* VX_VIDEO_IO_KERNELS_H_ */
 
 

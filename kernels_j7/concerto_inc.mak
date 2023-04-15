@@ -7,6 +7,10 @@ ifeq ($(TARGET_CPU),x86_64)
 
 STATIC_LIBS += vx_vxu
 
+ifeq ($(BUILD_VIDEO_IO_KERNELS),yes)
+STATIC_LIBS += vx_kernels_video_io_tests vx_kernels_video_io
+endif
+
 ifeq ($(BUILD_HWA_KERNELS),yes)
 ifneq ($(SOC),am62a)
 

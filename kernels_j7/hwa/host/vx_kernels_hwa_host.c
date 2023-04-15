@@ -92,16 +92,6 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
 #ifdef BUILD_VPAC_VISS
     {&tivxAddKernelVpacViss, &tivxRemoveKernelVpacViss},
 #endif
-#ifdef BUILD_DISPLAY
-    {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
-    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M},
-#endif
-#ifdef BUILD_CAPTURE
-    {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
-#endif
-#ifdef BUILD_CSITX
-    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx},
-#endif
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)

@@ -395,17 +395,17 @@ typedef struct
  *********************************/
 
 /*!
- * \brief Function to register HWA Kernels on the capture Target
+ * \brief Function to register Video IO Kernels on the capture Target
  * \ingroup group_vision_function_capture
  */
-void tivxRegisterHwaTargetCaptureKernels(void);
+void tivxRegisterVideoIOTargetCaptureKernels(void);
 
 
 /*!
- * \brief Function to un-register HWA Kernels on the capture Target
+ * \brief Function to un-register Video IO Kernels on the capture Target
  * \ingroup group_vision_function_capture
  */
-void tivxUnRegisterHwaTargetCaptureKernels(void);
+void tivxUnRegisterVideoIOTargetCaptureKernels(void);
 
 
 /*! \brief [Graph] Creates a camera capture node.

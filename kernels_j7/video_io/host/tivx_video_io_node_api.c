@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2023 Texas Instruments Incorporated
+ * Copyright (c) 2017-2023 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,102 +60,73 @@
  *
  */
 
-#ifndef DL_KERNELS_H
-#define DL_KERNELS_H
+#include <TI/tivx.h>
 
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+#ifdef BUILD_DISPLAY
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
+                                            vx_graph graph,
+                                            vx_user_data_object configuration,
+                                            vx_image image)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)image
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DISPLAY_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
- */
-
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
-
-/*! \brief Name for OpenVX Extension kernel module: tvm
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TVM    "tvm"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! \brief tvm kernel name
- *  \ingroup group_vision_function_tvm
- */
-#define TIVX_KERNEL_TVM_NAME          "com.ti.tvm"
-
-/*! End of group_vision_function_tidl */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tvm kernels into the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tvm kernels from the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMUnLoadKernels(vx_context context);
-
-
-
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxUnRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxRegisterTVMTargetKernels(void);
-
-/*!
- * \brief Function to un-register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxUnRegisterTVMTargetKernels(void);
-
-#ifdef __cplusplus
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayM2MNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_image             input,
+                                      vx_image             output)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DISPLAY_M2M_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
 }
 #endif
 
-#endif /* DL_KERNELS_H */
+#ifdef BUILD_CAPTURE
+VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
+                                      vx_user_data_object  input,
+                                      vx_object_array      output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CAPTURE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+#endif
 
-
+#ifdef BUILD_CSITX
+VX_API_ENTRY vx_node VX_API_CALL tivxCsitxNode(vx_graph graph,
+                                      vx_user_data_object  configuration,
+                                      vx_object_array             input)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CSITX_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+#endif

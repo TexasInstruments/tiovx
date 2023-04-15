@@ -60,102 +60,74 @@
  *
  */
 
-#ifndef DL_KERNELS_H
-#define DL_KERNELS_H
+#include <TI/tivx.h>
+#include "tivx_video_io_kernels.h"
+#include "tivx_kernels_host_utils.h"
+#include "tivx_video_io_host_priv.h"
 
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+static vx_status VX_CALLBACK publishKernels(vx_context context);
+static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
-#ifdef __cplusplus
-extern "C" {
+static uint32_t gIsVideoIOKernelsLoad = 0u;
+
+static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+#ifdef BUILD_DISPLAY
+    {&tivxAddKernelDisplay, &tivxRemoveKernelDisplay},
+    {&tivxAddKernelDisplayM2M, &tivxRemoveKernelDisplayM2M},
 #endif
+#ifdef BUILD_CAPTURE
+    {&tivxAddKernelCapture, &tivxRemoveKernelCapture},
+#endif
+#ifdef BUILD_CSITX
+    {&tivxAddKernelCsitx, &tivxRemoveKernelCsitx},
+#endif
+};
 
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
- */
-
-/*! \brief Name for OpenVX Extension kernel module: tidl
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TIDL    "tidl"
-
-/*! \brief Name for OpenVX Extension kernel module: tvm
- * \ingroup group_tivx_ext_top
- */
-#define TIVX_MODULE_NAME_TVM    "tvm"
-
-/*! \brief tidl kernel name
- *  \ingroup group_vision_function_tidl
- */
-#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
-
-/*! \brief tvm kernel name
- *  \ingroup group_vision_function_tvm
- */
-#define TIVX_KERNEL_TVM_NAME          "com.ti.tvm"
-
-/*! End of group_vision_function_tidl */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the tidl kernels into the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tidl kernels from the context.
- * \ingroup group_vision_function_tidl
- */
-void tivxTIDLUnLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to load the tvm kernels into the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMLoadKernels(vx_context context);
-
-/*!
- * \brief Used for the Application to unload the tvm kernels from the context.
- * \ingroup group_vision_function_tvm
- */
-void tivxTVMUnLoadKernels(vx_context context);
-
-
-
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_vision_function_tidl
- */
-void tivxUnRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxRegisterTVMTargetKernels(void);
-
-/*!
- * \brief Function to un-register TVM Kernels on the TVM Target
- * \ingroup group_vision_function_tvm
- */
-void tivxUnRegisterTVMTargetKernels(void);
-
-#ifdef __cplusplus
+static vx_status VX_CALLBACK publishKernels(vx_context context)
+{
+    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
 }
-#endif
 
-#endif /* DL_KERNELS_H */
+static vx_status VX_CALLBACK unPublishKernels(vx_context context)
+{
+    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+}
 
+void tivxRegisterVideoIOKernels(void)
+{
+    tivxRegisterModule(TIVX_MODULE_NAME_VIDEO_IO, publishKernels, unPublishKernels);
+}
 
+void tivxUnRegisterVideoIOKernels(void)
+{
+    tivxUnRegisterModule(TIVX_MODULE_NAME_VIDEO_IO);
+}
+
+void tivxVideoIOLoadKernels(vx_context context)
+{
+    if ((0U == gIsVideoIOKernelsLoad) && (NULL != context))
+    {
+        void tivxSetSelfCpuId(vx_enum cpu_id);
+
+        tivxRegisterVideoIOKernels();
+        vxLoadKernels(context, TIVX_MODULE_NAME_VIDEO_IO);
+
+    }
+    gIsVideoIOKernelsLoad++;
+}
+
+void tivxVideoIOUnLoadKernels(vx_context context)
+{
+    if (gIsVideoIOKernelsLoad > 0)
+    {
+        gIsVideoIOKernelsLoad--;
+        if ((0u == gIsVideoIOKernelsLoad) && (NULL != context))
+        {
+            void tivxSetSelfCpuId(vx_enum cpu_id);
+
+            vxUnloadKernels(context, TIVX_MODULE_NAME_VIDEO_IO);
+            tivxUnRegisterVideoIOKernels();
+
+        }
+    }
+}

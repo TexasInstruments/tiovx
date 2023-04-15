@@ -91,6 +91,6 @@ void tivxUnRegisterKernels(void);
 }
 #endif
 
-#endif /* VX_HWA_KERNELS_H_ */
+#endif /* VX_TIDL_KERNELS_H_ */
 
 
