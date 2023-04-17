@@ -26,7 +26,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context);
 
 static const vx_char g_context_implmentation_name[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
-static const vx_char g_context_default_load_module[][TIVX_MODULE_MAX_NAME] = {TIVX_MODULE_NAME_OPENVX_CORE, TIVX_MODULE_NAME_OPENVX_EXT};
+static const vx_char g_context_default_load_module[][TIVX_MODULE_MAX_NAME] = {TIVX_MODULE_NAME_OPENVX_CORE};
 
 static const vx_char g_context_extensions[] = " ";
 

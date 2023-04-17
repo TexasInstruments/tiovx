@@ -98,6 +98,28 @@ enum tivx_library_e {
    TIVX_LIBRARY_EXTENSION_BASE = 0,
 };
 
+/*********************************
+ *      Function Prototypes
+ *********************************/
+
+/*!
+ * \brief Used for the Application to load the OpenVX Extension kernels into the context.
+ *
+ * This includes object array split kernel
+ *
+ * \ingroup group_vision_function_ext
+ */
+void tivxExtLoadKernels(vx_context context);
+
+/*!
+ * \brief Used for the Application to unload the OpenVX Extension kernels from the context.
+ *
+ * This includes Cobject array split kernel
+ *
+ * \ingroup group_vision_function_ext
+ */
+void tivxExtUnLoadKernels(vx_context context);
+
 #ifdef __cplusplus
 }
 #endif
