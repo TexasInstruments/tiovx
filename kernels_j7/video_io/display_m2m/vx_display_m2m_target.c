@@ -62,7 +62,7 @@
 
 #include <stdio.h>
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/video_io_display_m2m.h"
 #include "TI/tivx_event.h"
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernel_display_m2m.h"

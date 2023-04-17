@@ -61,7 +61,7 @@
  */
 
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/video_io_display.h"
 #include "TI/tivx_event.h"
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernel_display.h"

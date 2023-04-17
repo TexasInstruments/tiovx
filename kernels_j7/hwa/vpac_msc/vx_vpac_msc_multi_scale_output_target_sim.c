@@ -65,7 +65,7 @@
 /* ========================================================================== */
 
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/hwa_vpac_msc.h"
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_scale.h>
 #include "TI/tivx_target_kernel.h"

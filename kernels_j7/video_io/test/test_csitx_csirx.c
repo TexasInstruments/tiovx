@@ -63,6 +63,8 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
+#include <TI/video_io_kernels.h>
+#include <TI/video_io_csitx.h>
 #include "test_engine/test.h"
 #include <TI/tivx_config.h>
 #include <string.h>

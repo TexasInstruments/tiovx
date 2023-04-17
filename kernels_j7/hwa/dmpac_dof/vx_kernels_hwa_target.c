@@ -61,9 +61,6 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include <TI/hwa_dmpac_dof.h>
-#include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 #include "tivx_hwa_dmpac_dof_priv.h"
 

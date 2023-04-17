@@ -63,6 +63,7 @@
 
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
+#include <TI/dl_kernels.h>
 #include <TI/j7_tvm.h>
 #include "tivx_kernels_host_utils.h"
 #include <stdio.h>

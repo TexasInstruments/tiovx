@@ -61,6 +61,13 @@
  */
 
 #include <TI/tivx.h>
+#include <TI/hwa_kernels.h>
+#include <TI/hwa_vpac_ldc.h>
+#include <TI/hwa_vpac_msc.h>
+#include <TI/hwa_vpac_viss.h>
+#include <TI/hwa_vpac_nf.h>
+#include <TI/hwa_dmpac_dof.h>
+#include <TI/hwa_dmpac_sde.h>
 
 #ifdef BUILD_VPAC_NF
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,

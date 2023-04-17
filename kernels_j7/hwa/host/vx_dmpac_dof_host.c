@@ -62,6 +62,7 @@
 #ifdef BUILD_DMPAC_DOF
 
 #include "TI/tivx.h"
+#include "TI/hwa_dmpac_dof.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_dmpac_dof.h"
 #include "TI/tivx_target_kernel.h"

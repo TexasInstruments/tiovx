@@ -64,7 +64,7 @@
 #define VX_VPAC_VISS_TARGET_FVID2_PRIV_H_
 
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/hwa_vpac_viss.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_viss.h"
 #include "TI/tivx_target_kernel.h"

@@ -19,6 +19,8 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
+#include <TI/hwa_kernels.h>
+#include <TI/hwa_vpac_msc.h>
 #include "test_engine/test.h"
 #include <string.h>
 

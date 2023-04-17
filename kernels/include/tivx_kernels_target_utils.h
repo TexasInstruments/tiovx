@@ -65,6 +65,7 @@
 
 #include <ti/vxlib/src/common/VXLIB_bufParams.h>
 #include <tivx_kernels_common_utils.h>
+#include <TI/tivx_obj_desc.h>
 
 #ifdef __cplusplus
 extern "C" {

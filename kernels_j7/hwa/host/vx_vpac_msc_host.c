@@ -67,6 +67,7 @@
 #ifdef BUILD_VPAC_MSC
 
 #include "TI/tivx.h"
+#include "TI/hwa_vpac_msc.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"

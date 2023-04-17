@@ -62,7 +62,7 @@
 
 #include <stdio.h>
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/video_io_capture.h"
 #include "TI/tivx_event.h"
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernel_capture.h"

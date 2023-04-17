@@ -61,6 +61,7 @@
 */
 
 #include <TI/tivx.h>
+#include <TI/dl_kernels.h>
 #include <TI/j7_tidl.h>
 
 static uint32_t gIsTIDLKernelsLoad = 0u;

@@ -61,6 +61,11 @@
  */
 
 #include <TI/tivx.h>
+#include <TI/video_io_kernels.h>
+#include <TI/video_io_display.h>
+#include <TI/video_io_display_m2m.h>
+#include <TI/video_io_capture.h>
+#include <TI/video_io_csitx.h>
 
 #ifdef BUILD_DISPLAY
 VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(

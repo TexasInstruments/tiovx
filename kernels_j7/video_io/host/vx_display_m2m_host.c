@@ -63,6 +63,7 @@
 #ifdef BUILD_DISPLAY
 
 #include "TI/tivx.h"
+#include "TI/video_io_display_m2m.h"
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernel_display_m2m.h"
 #include "TI/tivx_target_kernel.h"

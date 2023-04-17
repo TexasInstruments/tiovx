@@ -63,6 +63,8 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
+#include <TI/hwa_kernels.h>
+#include <TI/hwa_dmpac_dof.h>
 #include <string.h>
 #include "test_engine/test.h"
 #include "test_tiovx/utils/test_utils_file_bmp_rd_wr.h"

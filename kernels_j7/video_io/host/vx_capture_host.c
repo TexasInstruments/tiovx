@@ -63,6 +63,7 @@
 #ifdef BUILD_CAPTURE
 
 #include "TI/tivx.h"
+#include "TI/video_io_capture.h"
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernel_capture.h"
 #include "TI/tivx_target_kernel.h"

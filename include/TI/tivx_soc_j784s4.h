@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2022-2022 Texas Instruments Incorporated
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -70,21 +70,6 @@
 #ifndef VPAC3
 #define VPAC3
 #endif
-
-#include <TI/tivx.h>
-#include <TI/hwa_kernels.h>
-#include <TI/video_io_kernels.h>
-#include <TI/dl_kernels.h>
-#include <TI/hwa_vpac_ldc.h>
-#include <TI/hwa_vpac_msc.h>
-#include <TI/hwa_vpac_viss.h>
-#include <TI/hwa_vpac_nf.h>
-#include <TI/hwa_dmpac_dof.h>
-#include <TI/hwa_dmpac_sde.h>
-#include <TI/video_io_capture.h>
-#include <TI/video_io_csitx.h>
-#include <TI/video_io_display.h>
-#include <TI/video_io_display_m2m.h>
 
 #ifdef __cplusplus
 extern "C" {

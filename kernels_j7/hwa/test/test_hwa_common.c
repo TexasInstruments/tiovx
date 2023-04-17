@@ -61,6 +61,7 @@
  */
 
 #include "test_hwa_common.h"
+#include <TI/hwa_kernels.h>
 
 void ct_teardown_hwa_kernels(void/*vx_context*/ **context_)
 {

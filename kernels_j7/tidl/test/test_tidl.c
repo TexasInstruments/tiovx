@@ -62,6 +62,7 @@
 
 
 #include <TI/tivx.h>
+#include <TI/dl_kernels.h>
 #include <TI/j7_tidl.h>
 #include <TI/tivx_mem.h>
 #include "test_engine/test.h"

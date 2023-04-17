@@ -61,7 +61,7 @@
  */
 
 #include "TI/tivx.h"
-#include "VX/vx.h"
+#include "TI/hwa_vpac_nf.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_nf_bilateral.h"
 #include "TI/tivx_target_kernel.h"

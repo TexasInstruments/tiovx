@@ -71,13 +71,6 @@
 #define VPAC3L
 #endif
 
-#include <TI/tivx.h>
-#include <TI/hwa_kernels.h>
-#include <TI/dl_kernels.h>
-#include <TI/hwa_vpac_ldc.h>
-#include <TI/hwa_vpac_msc.h>
-#include <TI/hwa_vpac_viss.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif

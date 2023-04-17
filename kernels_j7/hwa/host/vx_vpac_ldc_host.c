@@ -63,6 +63,7 @@
 #ifdef BUILD_VPAC_LDC
 
 #include "TI/tivx.h"
+#include "TI/hwa_vpac_ldc.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_ldc.h"
 #include "TI/tivx_target_kernel.h"

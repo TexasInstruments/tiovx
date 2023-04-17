@@ -61,6 +61,7 @@
  */
 
 #include "test_video_io_common.h"
+#include <TI/video_io_kernels.h>
 
 void ct_teardown_video_io_kernels(void/*vx_context*/ **context_)
 {

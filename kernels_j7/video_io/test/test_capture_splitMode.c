@@ -63,6 +63,8 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
+#include <TI/video_io_kernels.h>
+#include <TI/video_io_capture.h>
 #include "test_engine/test.h"
 #include <TI/tivx_config.h>
 #include <string.h>
@@ -279,7 +281,7 @@ static void VX_CALLBACK tivxTask_capture(void *app_var)
             sensorCfgDone = 1U;
         }
 #endif
-        
+
         vxGraphParameterEnqueueReadyRef(csirx_graph, 0, (vx_reference*)&captured_frames, 1);
 
     }
@@ -313,9 +315,9 @@ static void VX_CALLBACK tivxTask_capture1(void *app_var)
     vx_graph csirx_graph = (vx_graph)app_var;
 
     ASSERT(num_buf > 0);
-    
+
     tivxEventWait(eventHandle_SensorCfgDone, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-    
+
     /* allocate Input and Output refs, multiple refs created to allow pipelining of csirx_graph */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {

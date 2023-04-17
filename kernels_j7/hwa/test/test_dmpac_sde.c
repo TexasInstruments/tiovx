@@ -59,10 +59,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifdef BUILD_DMPAC_SDE 
+#ifdef BUILD_DMPAC_SDE
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
+#include <TI/hwa_kernels.h>
+#include <TI/hwa_dmpac_sde.h>
 #include "test_engine/test.h"
 #include <string.h>
 #include "tivx_utils_file_rd_wr.h"

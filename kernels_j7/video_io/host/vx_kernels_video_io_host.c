@@ -61,6 +61,11 @@
  */
 
 #include <TI/tivx.h>
+#include <TI/video_io_kernels.h>
+#include <TI/video_io_display.h>
+#include <TI/video_io_display_m2m.h>
+#include <TI/video_io_capture.h>
+#include <TI/video_io_csitx.h>
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernels_host_utils.h"
 #include "tivx_video_io_host_priv.h"

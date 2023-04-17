@@ -62,6 +62,7 @@
 #ifdef BUILD_DMPAC_SDE
 
 #include "TI/tivx.h"
+#include "TI/hwa_dmpac_sde.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_dmpac_sde.h"
 #include "TI/tivx_target_kernel.h"

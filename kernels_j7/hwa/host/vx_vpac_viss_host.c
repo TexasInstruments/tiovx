@@ -62,6 +62,7 @@
 #ifdef BUILD_VPAC_VISS
 
 #include "TI/tivx.h"
+#include "TI/hwa_vpac_viss.h"
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernel_vpac_viss.h"
 #include "TI/tivx_target_kernel.h"

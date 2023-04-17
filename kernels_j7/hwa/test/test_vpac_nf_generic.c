@@ -18,6 +18,8 @@
 
 #include <VX/vx.h>
 #include <TI/tivx.h>
+#include <TI/hwa_kernels.h>
+#include <TI/hwa_vpac_nf.h>
 #include "test_engine/test.h"
 #include <string.h>
 #include "tivx_utils_checksum.h"
