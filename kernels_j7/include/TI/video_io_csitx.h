@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_CSITX_H_
-#define J7_CSITX_H_
+#ifndef VIDEO_IO_CSITX_H_
+#define VIDEO_IO_CSITX_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -366,5 +366,5 @@ void tivx_csitx_params_init(tivx_csitx_params_t *prms);
 }
 #endif
 
-#endif /* J7_CSITX_H_ */
+#endif /* VIDEO_IO_CSITX_H_ */
 

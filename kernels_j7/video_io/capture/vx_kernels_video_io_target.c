@@ -62,7 +62,7 @@
 
 #include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
-#include <TI/j7_capture.h>
+#include <TI/video_io_capture.h>
 #include "tivx_video_io_kernels.h"
 #include "tivx_kernels_target_utils.h"
 #include "tivx_video_io_capture_priv.h"

@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_VPAC_NF_H_
-#define J7_VPAC_NF_H_
+#ifndef HWA_VPAC_NF_H_
+#define HWA_VPAC_NF_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -288,5 +288,5 @@ void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas)
 }
 #endif
 
-#endif /* J7_VPAC_NF_H_ */
+#endif /* HWA_VPAC_NF_H_ */
 

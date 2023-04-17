@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_VPAC_VISS_FCP_H_
-#define J7_VPAC_VISS_FCP_H_
+#ifndef HWA_VPAC_VISS_FCP_H_
+#define HWA_VPAC_VISS_FCP_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -273,4 +273,4 @@ typedef struct {
 }
 #endif
 
-#endif /* J7_VPAC_VISS_FCP_H_ */
+#endif /* HWA_VPAC_VISS_FCP_H_ */

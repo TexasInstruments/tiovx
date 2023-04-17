@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2019 Texas Instruments Incorporated
+ * Copyright (c) 2020 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -59,56 +59,71 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#ifndef VISS_SERVER_REMOTE_H_
+#define VISS_SERVER_REMOTE_H_
 
-#ifndef J7_KERNELS_H_
-#define J7_KERNELS_H_
+#include <TI/tivx.h>
+#include "TI/tivx_mutex.h"
+#include "TI/hwa_kernels.h"
+#include <TI/hwa_vpac_viss.h>
 
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+/*******************************************************************************
+ *  Include files
+ *******************************************************************************
+ */
 
-#ifdef __cplusplus
-extern "C" {
+/*******************************************************************************
+ *  Defines
+ *******************************************************************************
+ */
+#ifndef x86_64
+
+#define VISS_SERVER_REMOTE_SERVICE_NAME   "com.ti.viss_server"
+#define VISS_CMD_PARAM_SIZE 128
+
 #endif
 
-/*!
- * \file
- * \brief The list of supported kernels in this kernel extension.
+/**
+ *  \brief RPC Commands application can send to AEWB
+ * \ingroup group_vision_function_imaging
  */
 
-/*! \brief Name for OpenVX Extension kernel module: hwa
- * \ingroup group_tivx_ext_top
+typedef enum
+{
+    VISS_CMD_GET_2A_PARAMS = 0,
+    VISS_CMD_SET_2A_PARAMS,
+    VISS_CMD_MAX,
+    VISS_CMD_FORCE32BITS          = 0x7FFFFFFF
+}VISS_COMMAND;
+
+int32_t VissServer_RemoteServiceHandler(char *service_name, uint32_t cmd,
+    void *prm, uint32_t prm_size, uint32_t flags);
+
+
+ /**
+ *******************************************************************************
+ *
+ * \brief Function to initialize remote VISS server.
+ * \return 0 in case of success
+ *         error otherwise
+ *
+ * \ingroup group_vision_function_viss
+ *******************************************************************************
  */
-#define TIVX_MODULE_NAME_HWA    "hwa"
+int32_t VissRemoteServer_Init();
 
-/*! End of group_vision_function_hwa */
-
-
-/*********************************
- *      Function Prototypes
- *********************************/
-
-/*!
- * \brief Used for the Application to load the hwa kernels into the context.
+ /**
+ *******************************************************************************
  *
- * This includes Capture, Display, VPAC, and DMPAC kernels
+ * \brief Function to de-initialize remote VISS server.
+ * \return 0 in case of success
+ *         error otherwise
  *
- * \ingroup group_vision_function_hwa
+ * \ingroup group_vision_function_imaging
+ *******************************************************************************
  */
-void tivxHwaLoadKernels(vx_context context);
+int32_t VissRemoteServer_DeInit();
 
-/*!
- * \brief Used for the Application to unload the hwa kernels from the context.
- *
- * This includes Capture, Display, VPAC, and DMPAC kernels
- *
- * \ingroup group_vision_function_hwa
- */
-void tivxHwaUnLoadKernels(vx_context context);
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* J7_KERNELS_H_ */
-
+#endif /* End of VISS_SERVER_REMOTE_H_*/
 

@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_DISPLAY_H_
-#define J7_DISPLAY_H_
+#ifndef VIDEO_IO_DISPLAY_H_
+#define VIDEO_IO_DISPLAY_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -234,5 +234,5 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
 }
 #endif
 
-#endif /* J7_DISPLAY_H_ */
+#endif /* VIDEO_IO_DISPLAY_H_ */
 

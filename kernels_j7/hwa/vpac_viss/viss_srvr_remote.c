@@ -61,7 +61,7 @@
  */
 #include <app_remote_service.h>
 #include <app_ipc.h>
-#include <TI/j7_viss_srvr_remote.h>
+#include <TI/hwa_viss_srvr_remote.h>
 #include <vhwa/include/vhwa_m2mViss.h>
 
 tivx_mutex             viss_aewb_lock[VHWA_M2M_VISS_MAX_HANDLES];

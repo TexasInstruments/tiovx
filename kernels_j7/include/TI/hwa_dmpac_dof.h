@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_DMPAC_DOF_H_
-#define J7_DMPAC_DOF_H_
+#ifndef HWA_DMPAC_DOF_H_
+#define HWA_DMPAC_DOF_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -443,6 +443,6 @@ void tivx_dmpac_dof_hts_bw_limit_params_init(
 }
 #endif
 
-#endif /* J7_DMPAC_DOF_H_ */
+#endif /* HWA_DMPAC_DOF_H_ */
 
 

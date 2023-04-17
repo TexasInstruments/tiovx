@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_VPAC_LDC_H_
-#define J7_VPAC_LDC_H_
+#ifndef HWA_VPAC_LDC_H_
+#define HWA_VPAC_LDC_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -533,6 +533,6 @@ void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms);
 }
 #endif
 
-#endif /* J7_VPAC_LDC_H_ */
+#endif /* HWA_VPAC_LDC_H_ */
 
 

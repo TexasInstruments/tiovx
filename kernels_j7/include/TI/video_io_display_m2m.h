@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_DISPLAY_M2M_H_
-#define J7_DISPLAY_M2M_H_
+#ifndef VIDEO_IO_DISPLAY_M2M_H_
+#define VIDEO_IO_DISPLAY_M2M_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -194,5 +194,5 @@ void tivx_display_m2m_params_init(tivx_display_m2m_params_t *prms);
 }
 #endif
 
-#endif /* J7_DISPLAY_M2M_H_ */
+#endif /* VIDEO_IO_DISPLAY_M2M_H_ */
 

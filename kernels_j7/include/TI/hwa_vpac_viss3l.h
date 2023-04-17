@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_VPAC3L_VISS_H_
-#define J7_VPAC3L_VISS_H_
+#ifndef HWA_VPAC3L_VISS_H_
+#define HWA_VPAC3L_VISS_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -358,5 +358,5 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
 }
 #endif
 
-#endif /* J7_VPAC3L_VISS_H_ */
+#endif /* HWA_VPAC3L_VISS_H_ */
 

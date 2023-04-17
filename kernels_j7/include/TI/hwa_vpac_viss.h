@@ -60,20 +60,20 @@
  *
  */
 
-#ifndef J7_VPAC_VISS_H_
-#define J7_VPAC_VISS_H_
+#ifndef HWA_VPAC_VISS_H_
+#define HWA_VPAC_VISS_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
 
-#include <TI/j7_vpac_viss_fcp.h>
+#include <TI/hwa_vpac_viss_fcp.h>
 
 #ifdef VPAC3
-#include <TI/j7_vpac_viss3.h>
+#include <TI/hwa_vpac_viss3.h>
 #elif defined (VPAC3L)
-#include <TI/j7_vpac_viss3l.h>
+#include <TI/hwa_vpac_viss3l.h>
 #else
-#include <TI/j7_vpac_viss1.h>
+#include <TI/hwa_vpac_viss1.h>
 #endif
 
 #ifdef __cplusplus
@@ -341,5 +341,5 @@ void tivx_h3a_aew_config_init(tivx_h3a_aew_config *prms);
 }
 #endif
 
-#endif /* J7_VPAC_VISS_H_ */
+#endif /* HWA_VPAC_VISS_H_ */
 

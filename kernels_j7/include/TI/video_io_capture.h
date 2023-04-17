@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_CAPTURE_H_
-#define J7_CAPTURE_H_
+#ifndef VIDEO_IO_CAPTURE_H_
+#define VIDEO_IO_CAPTURE_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -478,5 +478,5 @@ vx_status tivxCaptureRegisterErrorFrame(vx_node node, vx_reference ref);
 }
 #endif
 
-#endif /* J7_CAPTURE_H_ */
+#endif /* VIDEO_IO_CAPTURE_H_ */
 

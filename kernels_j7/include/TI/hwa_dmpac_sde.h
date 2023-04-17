@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef J7_DMPAC_SDE_H_
-#define J7_DMPAC_SDE_H_
+#ifndef HWA_DMPAC_SDE_H_
+#define HWA_DMPAC_SDE_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -193,4 +193,4 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
 }
 #endif
 
-#endif /* J7_DMPAC_SDE_H_ */
+#endif /* HWA_DMPAC_SDE_H_ */
