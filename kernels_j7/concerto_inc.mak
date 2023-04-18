@@ -7,10 +7,6 @@ ifeq ($(TARGET_CPU),x86_64)
 
 STATIC_LIBS += vx_vxu
 
-ifeq ($(BUILD_VIDEO_IO_KERNELS),yes)
-STATIC_LIBS += vx_kernels_video_io_tests vx_kernels_video_io
-endif
-
 STATIC_LIBS += vx_utils
 STATIC_LIBS += vx_tiovx_tidl_tests
 STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom tidl_avx_kernels

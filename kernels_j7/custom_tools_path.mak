@@ -5,14 +5,3 @@
 
 # set values of below to yes or no to include or exclude the modules from compile and link
 
-ifeq ($(SOC),am62a)
-	BUILD_VIDEO_IO_KERNELS=yes
-	BUILD_CAPTURE=yes
-	BUILD_CSITX=no
-	BUILD_DISPLAY=no
-else
-	BUILD_VIDEO_IO_KERNELS?=yes
-	BUILD_CAPTURE?=yes
-	BUILD_CSITX?=yes
-	BUILD_DISPLAY?=yes
-endif
