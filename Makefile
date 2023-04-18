@@ -103,8 +103,6 @@ vision_apps_utils:
 	BUILD_TARGET_MODE=no $(MAKE) -C $(VISION_APPS_PATH) cp_to_lib
 	BUILD_TARGET_MODE=no $(MAKE) -C $(APP_UTILS_PATH) app_utils_mem
 	BUILD_TARGET_MODE=no $(MAKE) -C $(APP_UTILS_PATH) cp_to_lib
-	BUILD_TARGET_MODE=no $(MAKE) -C $(IMAGING_PATH) app_utils_iss
-	BUILD_TARGET_MODE=no $(MAKE) -C $(IMAGING_PATH) cp_to_lib
 else
 vision_apps_utils:
 

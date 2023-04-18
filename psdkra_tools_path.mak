@@ -17,6 +17,7 @@ TIDL_PATH ?= $(PSDK_PATH)/tidl_$(SOC)_08_06_00_10/ti_dl
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_02_06_02_00
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
+VIDEO_IO_PATH ?= $(PSDK_PATH)/video_io
 
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
 MATHLIB_PATH     ?= $(PSDK_PATH)/mathlib_c66x_3_1_2_1
