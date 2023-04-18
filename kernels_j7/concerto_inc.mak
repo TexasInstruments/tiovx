@@ -11,55 +11,6 @@ ifeq ($(BUILD_VIDEO_IO_KERNELS),yes)
 STATIC_LIBS += vx_kernels_video_io_tests vx_kernels_video_io
 endif
 
-ifeq ($(BUILD_HWA_KERNELS),yes)
-ifneq ($(SOC),am62a)
-
-STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa vx_vxu
-
-ifeq ($(BUILD_DMPAC_SDE), yes)
-STATIC_LIBS += vx_target_kernels_dmpac_sde
-STATIC_LIBS += sde_hw
-endif
-
-ifeq ($(BUILD_VPAC_LDC), yes)
-STATIC_LIBS += vx_target_kernels_vpac_ldc
-STATIC_LIBS += ldc
-endif
-
-ifeq ($(BUILD_DMPAC_DOF),yes)
-    STATIC_LIBS += vx_target_kernels_dmpac_dof
-    STATIC_LIBS += vx_kernels_hwa_tests
-endif
-
-ifeq ($(BUILD_VPAC_MSC),yes)
-STATIC_LIBS += vx_target_kernels_vpac_msc
-STATIC_LIBS += scalar
-endif
-
-ifeq ($(BUILD_VPAC_NF),yes)
-STATIC_LIBS += vx_target_kernels_vpac_nf
-STATIC_LIBS += bl_filter_lib
-endif
-
-ifeq ($(BUILD_VPAC_VISS),yes)
-STATIC_LIBS += vx_target_kernels_vpac_viss
-STATIC_LIBS += rawfe nsf4 flexcc h3a ee utils glbce
-SYS_SHARED_LIBS += glbce
-endif
-
-ifeq ($(VPAC_VERSION), VPAC3)
-    STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3
-else ifeq ($(VPAC_VERSION), VPAC3L)
-    STATIC_LIBS += cac RawHistogram nsf4_wb flexcfa_vpac3 pcid
-else ifeq ($(VPAC_VERSION), VPAC1)
-    STATIC_LIBS += flexcfa
-endif
-
-STATIC_LIBS += vx_target_kernels_j7_arm
-
-endif #ifneq ($(SOC),am62a)
-endif #ifeq ($(BUILD_HWA_KERNELS),yes)
-
 STATIC_LIBS += vx_utils
 STATIC_LIBS += vx_tiovx_tidl_tests
 STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo tidl_priv_algo tidl_obj_algo tidl_custom tidl_avx_kernels
@@ -71,7 +22,6 @@ STATIC_LIBS += $(C7X_VERSION)-host-emulation
 
 SYS_SHARED_LIBS += rt dl png z
 
-LDIRS+=$(J7_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(CGT7X_ROOT)/host_emulation
 LDIRS+=$(MMALIB_PATH)/lib/$(C7X_VERSION)/$(TARGET_BUILD)
 LDIRS+=$(TIDL_PATH)/lib/$(SOC)/PC/algo/$(TARGET_BUILD)
@@ -85,11 +35,7 @@ LDIRS+= $(PDK_PATH)/packages/ti/drv/sciclient/lib/$(SOC)_hostemu/c7x-hostemu/$(T
 LDIRS+= $(PDK_PATH)/packages/ti/osal/lib/nonos/$(SOC)/c7x-hostemu/$(TARGET_BUILD)
 endif
 
-LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-STATIC_LIBS += ti_imaging_dcc
-
 LDIRS       += $(APP_UTILS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-STATIC_LIBS += app_utils_iss
 STATIC_LIBS += app_utils_mem
 LDIRS       += $(VISION_APPS_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += app_utils_init
