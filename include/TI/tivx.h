@@ -233,7 +233,7 @@ typedef enum _tivx_attribute_extensions_e {
 
     /*! \brief Query the strides from a vx_tensor object.
      * Read-Only. Can be read at initialization as well as at runtime.
-     * Use a <tt>\ref array of vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
+     * Use an array of <tt>\ref vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
      */
     TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xb
 
@@ -360,6 +360,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, const c
 /*!
  * \brief Set the number of sink buffers
  *
+ * \param [in] kernel Kernel reference
+ * \param [in] num_sink_bufs Number of sink buffers
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE kernel is not a valid reference
  *
  * \ingroup group_tivx_ext_host
  */
@@ -388,6 +394,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
 /*!
  * \brief UnRegister publish and unpublish functions if previously registered
  *
+ * \param [in] name Module name to unregister
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_FAILURE Unable to find module "name" in list of registered modules
+ *
  * \ingroup group_tivx_ext_host
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name);
@@ -395,12 +407,21 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name);
 /*!
  * \brief Return CPU ID of the CPU on which this API is called
  *
+ * \return A <tt>\ref vx_emum</tt> enumeration of the CPU_ID.
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_enum tivxGetSelfCpuId(void);
 
 /*!
  * \brief Query resource for resource stats
+ *
+ * \param [in] resource_name Name of the resource to query
+ * \param [out] stat Pointer to resource statistic returned from the query
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_FAILURE Unable to find "resource_name" in list of resources
  *
  * \ingroup group_tivx_ext_host
  */
