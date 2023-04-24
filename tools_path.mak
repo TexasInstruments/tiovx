@@ -1,11 +1,9 @@
 PSDK_PATH = $(abspath ..)
-APP_UTILS_PATH = $(PSDK_PATH)/app_utils
+APP_UTILS_PATH ?= $(PSDK_PATH)/app_utils
 
-# paths for components shared between tiovx and app_utils are specified in below
-# file in app_utils, ex, pdk, cgtools, ...
-
+# paths for components shared between app_utils, tiovx, imaging, video_io, ti-perception,
+# and vision_apps are specified in below file
 include $(APP_UTILS_PATH)/tools_path.mak
-include $(APP_UTILS_PATH)/build_flags.mak
 
 CUSTOM_KERNEL_PATH ?= $(TIOVX_PATH)/kernels_j7
 CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/source/platform

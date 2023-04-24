@@ -1,8 +1,5 @@
-# Valid values are: psdkra
-BUILD_SDK?=psdkra
-
-include $(BUILD_SDK)_tools_path.mak
-include $(TIOVX_PATH)/build_flags.mak
+include tools_path.mak
+include build_flags.mak
 
 # Project specific build defs (don't change across different combos):
 BUILD_DEFS :=

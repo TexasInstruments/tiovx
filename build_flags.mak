@@ -1,3 +1,8 @@
+# Inherit common build flags from root repo in SDK
+include $(APP_UTILS_PATH)/build_flags.mak
+
+# These flags are only needed within this repo
+
 # currently required to be set to yes
 BUILD_CONFORMANCE_TEST?=yes
 # currently required to be set to yes
@@ -14,13 +19,5 @@ BUILD_CT_TIOVX_IVISION=yes
 BUILD_CT_TIOVX_TIDL=yes
 BUILD_CT_TIOVX_TVM=yes
 
-BUILD_CT_TIOVX_HWA=yes
-BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS=yes
-
-BUILD_CT_TIOVX_VIDEO_IO=yes
-BUILD_CT_TIOVX_VIDEO_IO_CAPTURE_TESTS=no
-BUILD_CT_TIOVX_VIDEO_IO_DISPLAY_TESTS=no
-
 # Applied to target mode only
 BUILD_VLAB?=no
-

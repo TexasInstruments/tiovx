@@ -29,10 +29,8 @@ CSOURCES    := \
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 IDIRS += $(APP_UTILS_PATH)
 
-ifneq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
 DEFS += _DISABLE_TIDL
 IDIRS += $(CUSTOM_KERNEL_PATH)/include
-endif
 
 include $(FINALE)
 

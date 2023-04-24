@@ -121,7 +121,7 @@ static void tivxInitLocal(void)
         tivxRegisterTestKernelsTargetDspKernels();
     #endif
     #endif
-    #endif
+    #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
         ownObjDescInit();
 
@@ -179,7 +179,7 @@ static void tivxDeInitLocal(void)
             tivxUnRegisterTestKernelsTargetDspKernels();
         #endif
         #endif
-        #endif
+        #endif  /* #ifdef BUILD_CONFORMANCE_TEST */
 
             /* DeInitialize Target */
             ownTargetDeInit();
