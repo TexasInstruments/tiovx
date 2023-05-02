@@ -18,8 +18,8 @@ CSOURCES    := 	tivx_event.c \
 				../common/tivx_platform.c \
 				../common/tivx_host.c
 
-IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
+IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 ifeq ($(RTOS_SDK), mcu_plus_sdk)
     IDIRS       += $(MCU_PLUS_SDK_PATH)/source

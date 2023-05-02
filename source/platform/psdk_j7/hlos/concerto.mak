@@ -22,8 +22,8 @@ CSOURCES    := \
     ../common/tivx_mem.c                            \
     tivx_platform_hlos.c
 
-IDIRS       += $(TIOVX_PATH)/source/include
-IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
+IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/source/platform/psdk_j7/common
 IDIRS       += $(APP_UTILS_PATH)
 
 DEFS += TARGET_HLOS
