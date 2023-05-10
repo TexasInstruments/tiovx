@@ -283,7 +283,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_FAILURE;
 
-    if (((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region) || ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE))
+    if (((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region) || ((vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE == mem_heap_region))
     {
         /* Return success since there is not scratch mem region on PC */
         status = (vx_status)VX_SUCCESS;
