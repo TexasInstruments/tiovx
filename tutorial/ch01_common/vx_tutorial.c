@@ -119,7 +119,7 @@ void vx_tutorial_run_interactive()
 
     while(!done)
     {
-        printf(menu);
+        printf("%s", menu);
         ch = vx_tutorial_get_char();
         printf("\n");
 

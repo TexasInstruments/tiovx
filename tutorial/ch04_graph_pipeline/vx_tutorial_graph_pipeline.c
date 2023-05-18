@@ -90,7 +90,7 @@ void vx_tutorial_graph_pipeline_run_interactive()
 
     while(!done)
     {
-        printf(menu);
+        printf("%s", menu);
         ch = vx_tutorial_get_char();
         printf("\n");
 

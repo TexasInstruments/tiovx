@@ -290,7 +290,7 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
             {
                 num_targets++;
                 getNodeColor(graph->nodes[node_id], node_color_name_list[target_id]);
-                snprintf(target_name_list[target_id], TIVX_EXPORT_MAX_NODE_COLOR_NAME, target_name);
+                snprintf(target_name_list[target_id], TIVX_EXPORT_MAX_NODE_COLOR_NAME, "%s", target_name);
             }
         }
     }

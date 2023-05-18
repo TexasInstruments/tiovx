@@ -638,7 +638,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
     vx_status status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidReference(ref) != 0)
     {
-        snprintf(ref->name, VX_MAX_REFERENCE_NAME, name);
+        snprintf(ref->name, VX_MAX_REFERENCE_NAME, "%s", name);
         status = (vx_status)VX_SUCCESS;
     }
     else
