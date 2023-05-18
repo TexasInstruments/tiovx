@@ -279,7 +279,7 @@ void ownGraphCheckSupernodeCycles(tivx_graph_sort_context *context,
             else
             {
                 cur_node->incounter = (uint16_t)ownNodeGetNumInNodes(cur_node);
-                if((cur_node->incounter==0U))
+                if(cur_node->incounter==0U)
                 {
                     ownGraphSortStackPush(context, cur_node);
                 }

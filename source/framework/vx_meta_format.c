@@ -1035,7 +1035,7 @@ static vx_bool ownIsMetaFormatScalarEqual(
     if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->sc.type == meta2->sc.type) )
+        if ( meta1->sc.type == meta2->sc.type )
         {
             is_equal = (vx_bool)vx_true_e;
         }
@@ -1151,7 +1151,7 @@ static vx_bool ownIsMetaFormatThresholdEqual(
     if ( (ownIsValidSpecificReference((vx_reference)meta1, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) &&
          (ownIsValidSpecificReference((vx_reference)meta2, (vx_enum)VX_TYPE_META_FORMAT) == (vx_bool)vx_true_e) )
     {
-        if ( (meta1->thres.type  == meta2->thres.type) )
+        if ( meta1->thres.type  == meta2->thres.type )
         {
             is_equal = (vx_bool)vx_true_e;
         }
