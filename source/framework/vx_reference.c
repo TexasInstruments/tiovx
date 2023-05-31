@@ -1257,22 +1257,6 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         mem_ptr[j].host_ptr   = (uint64_t)(uintptr_t)addr[k];
                         mem_ptr[j].shared_ptr = shared_ptr[k];
 
-                        if (mem_ptr[j].host_ptr != (uint64_t)(uintptr_t)NULL)
-                        {
-                            void *hostPtr = (void*)(uintptr_t)mem_ptr[j].host_ptr;
-
-                            /* Perform a cache write back. */
-                            status = tivxMemBufferUnmap(hostPtr,
-                                                        mem_size[j],
-                                                        (vx_enum)TIVX_MEM_EXTERNAL,
-                                                        (vx_enum)VX_WRITE_ONLY);
-
-                            if (status != (vx_status)VX_SUCCESS)
-                            {
-                                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap() failed.\n");
-                            }
-                        }
-
                         k++;
 
                     } /* for (j = 0; j < num_planes[i]; j++) */
@@ -1293,22 +1277,6 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                     mem_ptr[i].host_ptr   = (uint64_t)(uintptr_t)addr[i];
                     mem_ptr[i].shared_ptr = shared_ptr[i];
-
-                    if (mem_ptr[i].host_ptr != (uint64_t)(uintptr_t)NULL)
-                    {
-                        void *hostPtr = (void*)(uintptr_t)mem_ptr[i].host_ptr;
-
-                        /* Perform a cache write back. */
-                        status = tivxMemBufferUnmap(hostPtr,
-                                                    mem_size[i],
-                                                    (vx_enum)TIVX_MEM_EXTERNAL,
-                                                    (vx_enum)VX_WRITE_ONLY);
-
-                        if (status != (vx_status)VX_SUCCESS)
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferUnmap() failed.\n");
-                        }
-                    }
                 }
             }
         }
