@@ -138,23 +138,20 @@ extern "C" {
 #define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ((uint32_t)-1)
 
 
-/*! \brief Struct containing config parameters of given static value
+/*! \brief Struct containing config parameters of given static resource. Allows
+*          for a log to be kept of the resources used throughout runtime.
  *
  * \ingroup group_tivx_ext_host
  */
 typedef struct _tivx_resource_stats_t {
 
-    /**< Maximum value of a macro */
-    uint32_t  max_value;
+    uint32_t  max_value; /**< Maximum system quantity of the resource */
 
-    /**< Value currently being used by a statically allocated array */
-    uint32_t  cur_used_value;
+    uint32_t  cur_used_value; /**< Count of times the resource is currently defined in statically allocated arrays */
 
-    /**< Highest value used at any point of the application */
-    uint32_t  max_used_value;
+    uint32_t  max_used_value; /**< Highest resource count during current runtime */
 
-    /**< Name of the macro */
-    char name[TIVX_RESOURCE_NAME_MAX];
+    char name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the resource */
 
 } tivx_resource_stats_t;
 
