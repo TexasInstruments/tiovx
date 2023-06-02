@@ -376,21 +376,14 @@ static int32_t findMacroSize(const char *resource_name)
 
 static int32_t getNumDigits(int32_t value)
 {
-    int32_t numDigits;
+    int32_t temp = value;
+    int32_t numDigits = 0;
 
-    if (value < 10)
-    {
-        numDigits = 1;
+    if (temp == 0) numDigits = 1;
+    while (temp) {
+        temp /= 10;
+        numDigits++;
     }
-    else if (value < 100)
-    {
-        numDigits = 2;
-    }
-    else
-    {
-        numDigits = 3;
-    }
-
     return numDigits;
 }
 
@@ -399,8 +392,8 @@ void tivxPrintAllResourceStats(void)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int32_t i, j;
     tivx_resource_stats_t stat;
-    printf("\n\nMAX VALUE NAME:                         MAX VALUE:   VALUE BEING USED:\n");
-    printf("----------------------------------------------------------------------\n");
+    printf("\n\nMAX VALUE NAME:                           MAX VALUE:   VALUE BEING USED:\n");
+    printf("------------------------------------------------------------------------\n");
     tivxMutexLock(g_tivx_log_resource_lock);
 
     for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
@@ -408,6 +401,7 @@ void tivxPrintAllResourceStats(void)
         int32_t name_length, numDigits;
         stat = g_tivx_resource_stats_table[i];
         name_length = findMacroSize(stat.name);
+        printf("| ");
         printf("%s ", stat.name);
         for (j = 0; j < ((int32_t)TIVX_RESOURCE_NAME_MAX - name_length); j++)
         {
@@ -420,17 +414,22 @@ void tivxPrintAllResourceStats(void)
             printf(" ");
         }
         printf("%d", stat.max_value);
-        for (j = 0; j < 4; j++)
+        for (j = 0; j < 3; j++)
         {
             printf(" ");
         }
         printf("|");
         numDigits = getNumDigits((int32_t)stat.max_used_value);
-        for (j = 0; j < (9 - numDigits); j++)
+        for (j = 0; j < (6 - numDigits); j++)
         {
             printf(" ");
         }
-        printf("%d\n", stat.max_used_value);
+        printf("%d", stat.max_used_value);
+        for (j = 0; j < 3; j++)
+        {
+            printf(" ");
+        }
+        printf("|\n");
     }
     tivxMutexUnlock(g_tivx_log_resource_lock);
 #endif
