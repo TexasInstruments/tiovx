@@ -181,7 +181,7 @@ typedef enum _tivx_attribute_extensions_e {
     /*! \brief Set/Query the kernel level timeout parameter.
      * Read-Write. Can be written at initialization as well as at runtime.
      * Use a <tt>\ref vx_uint32</tt> parameter.
-     * Refer to \ref TIVX_DEFAULT_KERNAL_TIMEOUT for details on the default
+     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
      * value used for this attribute.
      */
     TIVX_KERNEL_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x5,
@@ -191,7 +191,7 @@ typedef enum _tivx_attribute_extensions_e {
      * This timeout attribute affects the operation of the node CREATE and
      * DELETE target kernel functions.
      * Use a <tt>\ref vx_uint32</tt> parameter.
-     * Refer to \ref TIVX_DEFAULT_KERNAL_TIMEOUT for details on the default
+     * Refer to \ref TIVX_DEFAULT_KERNEL_TIMEOUT for details on the default
      * value used for this attribute.
      */
     TIVX_NODE_TIMEOUT = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0x6,

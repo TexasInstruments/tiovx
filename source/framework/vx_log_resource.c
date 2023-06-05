@@ -260,6 +260,21 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, "TIVX_DEFAULT_TILE_HEIGHT"
+    },
+    {
+        TIVX_DEFAULT_KERNEL_TIMEOUT, TIVX_EVENT_TIMEOUT_WAIT_FOREVER, 0, "TIVX_DEFAULT_KERNEL_TIMEOUT"
+    },
+    {
+        TIVX_DEFAULT_GRAPH_TIMEOUT, TIVX_EVENT_TIMEOUT_WAIT_FOREVER, 0, "TIVX_DEFAULT_GRAPH_TIMEOUT"
+    },
+    {
+        TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, "TIVX_MAX_CTRL_CMD_OBJECTS"
+    },
+    {
+        TIVX_MAX_KERNEL_ID, VX_KERNEL_MASK, 0, "TIVX_MAX_KERNEL_ID"
+    },
+    {
+        TIVX_MAX_LIBRARY_ID, VX_LIBRARY(VX_LIBRARY_MASK), 0, "TIVX_MAX_LIBRARY_ID"
     }
 };
 
@@ -378,9 +393,9 @@ static int32_t getNumDigits(int32_t value)
 {
     int32_t temp = value;
     int32_t numDigits = 0;
+    if (temp < 1) numDigits = (temp < 0) ? 2 : 1;
 
-    if (temp == 0) numDigits = 1;
-    while (temp) {
+    while (temp > 0) {
         temp /= 10;
         numDigits++;
     }

@@ -390,7 +390,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     kernel->signature.num_parameters = numParams;
                     kernel->local_data_size = 0;
                     kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
-                    kernel->timeout_val = TIVX_DEFAULT_KERNAL_TIMEOUT;
+                    kernel->timeout_val = TIVX_DEFAULT_KERNEL_TIMEOUT;
                     if(kernel->function != NULL)
                     {
                         kernel->is_target_kernel = (vx_bool)vx_false_e;

@@ -477,7 +477,7 @@ extern "C" {
  * overwritten for specific node instances by setting TIVX_NODE_TIMEOUT attribute.
  * \ingroup group_tivx_target_kernel_instance_cfg
  */
-#define TIVX_DEFAULT_KERNAL_TIMEOUT (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+#define TIVX_DEFAULT_KERNEL_TIMEOUT (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
 
 /*! \brief Default timeout value for graph level control event ACK waits.
  * This is the default timeout value used within the following APIs
