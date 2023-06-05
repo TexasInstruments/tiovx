@@ -369,7 +369,7 @@ extern "C" {
 /*!
  * \brief Max possible mapping via vxMapRawImagePatch supported
  *
- * \ingroup group_vx_raw_image_cfg
+ * \ingroup group_tivx_raw_image_cfg
  */
 #define TIVX_RAW_IMAGE_MAX_MAPS            (16u)
 
