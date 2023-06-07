@@ -134,7 +134,9 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
-    if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
+    if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) &&
+        ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE != mem_heap_region) &&
+        ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH_NON_CACHEABLE != mem_heap_region) )
     {
         uint32_t mem_offset;
 
