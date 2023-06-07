@@ -29,6 +29,15 @@ extern "C" {
  * \brief Implementation of Node object
  */
 
+/*! \brief Default tile height
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_DEFAULT_TILE_HEIGHT           (48u)
+
+/*! \brief Default tile width
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_DEFAULT_TILE_WIDTH            (64u)
 
 /*! \brief The internal representation of a node.
  * \ingroup group_vx_node

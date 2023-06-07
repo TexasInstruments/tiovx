@@ -29,6 +29,13 @@ extern "C" {
  * \brief Implementation of Kernel object
  */
 
+ /*! \brief Default timeout value for kernel level control event ACK waits.
+ * This is the default timeout value used for all node instances of this kernel
+ * when calling the node CREATE and DELETE target kernel functions, which can be
+ * overwritten for specific node instances by setting TIVX_NODE_TIMEOUT attribute.
+ * \ingroup group_tivx_target_kernel_instance_cfg
+ */
+#define TIVX_DEFAULT_KERNEL_TIMEOUT        (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
 
 /*! \brief The internal representation of the attributes associated with a run-time parameter.
  * \ingroup group_vx_kernel

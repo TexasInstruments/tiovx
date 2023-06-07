@@ -29,6 +29,14 @@ extern "C" {
  * \brief Implementation of Graph object
  */
 
+ /*! \brief Default timeout value for graph level control event ACK waits.
+ * This is the default timeout value used within the following APIs
+ * - vxWaitGraph()
+ * - vxGraphParameterDequeueDoneRef()
+ * \ingroup group_vx_graph_cfg
+ */
+#define TIVX_DEFAULT_GRAPH_TIMEOUT         (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
+
 /*! \brief The top level data for graph object
  * \ingroup group_vx_graph
  */

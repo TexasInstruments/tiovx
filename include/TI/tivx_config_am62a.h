@@ -61,7 +61,6 @@
 */
 
 
-
 #ifndef TIVX_CONFIG_AM62A_H_
 #define TIVX_CONFIG_AM62A_H_
 
@@ -69,314 +68,69 @@
 extern "C" {
 #endif
 
-/*! \brief Max parameters in a kernel
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_KERNEL_MAX_PARAMS      (64u)
 
-/*! \brief Max nodes taking output form a given node
- * \ingroup group_tivx_obj_desc_cfg
+/*! \brief Max number of kernel ID's
+ * \ingroup group_tivx_target_cfg
  */
-#define TIVX_NODE_MAX_OUT_NODES      (8u)
+#define TIVX_MAX_KERNEL_ID                 (VX_KERNEL_MASK)
 
-/*! \brief Max nodes feeding input to a given node
- * \ingroup group_tivx_obj_desc_cfg
+/*! \brief Max number of kernel library ID's
+ * \ingroup group_tivx_target_cfg
  */
-#define TIVX_NODE_MAX_IN_NODES      (8u)
+#define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
 
-/*! \brief Maximum number of objects supported in pyramid
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (64u)
 
-/*! \brief Maximum number of objects supported in object array
- * \ingroup group_tivx_obj_desc_cfg
+/*
+ * FRAMEWORK OBJECTS
  */
-#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32u)
+/*
+ * Context configuration resources
+ */
+/*! \brief Max number context objects supported
+ * \ingroup group_vx_context_cfg
+ */
+#define TIVX_CONTEXT_MAX_OBJECTS           (1u)
 
-/*! \brief Max possible nodes in graph
- * \ingroup group_tivx_obj_desc_cfg
+/*! \brief Max possible unique kernels in a context
+ * \ingroup group_vx_context_cfg
  */
-#define TIVX_GRAPH_MAX_NODES               (64u)
+#define TIVX_CONTEXT_MAX_KERNELS           (128u)
+
+/*! \brief Max possible user structs in a context
+ * \ingroup group_vx_context_cfg
+ */
+#define TIVX_CONTEXT_MAX_USER_STRUCTS      (128u)
+
+/*! \brief Max possible references in a context
+ * \ingroup group_vx_context_cfg
+ */
+#define TIVX_CONTEXT_MAX_REFERENCES        (512u + 256u + 64u + 8u + 32 + 64 + 32)
+
+
+/*
+ * Graph configuration resources
+ */
+/*! \brief Max possible delays in graph
+ * \ingroup group_vx_graph_cfg
+ */
+#define TIVX_GRAPH_MAX_DELAYS              (8u)
 
 /*! \brief Max possible super nodes in graph
- * \ingroup group_tivx_obj_desc_cfg
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_SUPER_NODES         (8u)
-
-/*! \brief Max possible pipeline depth of a graph
- *         The max value to be set by application is
- *         (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (16u)
-
-/*! \brief Max number of replicated nodes
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_NODE_MAX_REPLICATE            (64u)
-
-/*!
- * \brief Max number meta format objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_META_FORMAT_MAX_OBJECTS        (512u)
-
-/*!
- * \brief Max number context objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_CONTEXT_MAX_OBJECTS                    (1u)
-
-/*!
- * \brief Max number graph objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_GRAPH_MAX_OBJECTS                      (256u)
-
-/*!
- * \brief Max number super node objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_SUPER_NODE_MAX_OBJECTS                 (16u)
-
-/*!
- * \brief Max number node objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_NODE_MAX_OBJECTS                       (64u)
-
-/*!
- * \brief Max number kernel objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_KERNEL_MAX_OBJECTS                     (128u)
-
-/*!
- * \brief Max number array objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_ARRAY_MAX_OBJECTS                      (96u)
-
-/*!
- * \brief Max number user data objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS           (96u)
-
-/*!
- * \brief Max number raw image objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_RAW_IMAGE_MAX_OBJECTS                  (96u)
-
-/*!
- * \brief Max number convolution objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_CONVOLUTION_MAX_OBJECTS                (48u)
-
-/*!
- * \brief Max number delay objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_DELAY_MAX_OBJECTS                      (48u)
-
-/*!
- * \brief Max number distribution objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_DISTRIBUTION_MAX_OBJECTS               (48u)
-
-/*!
- * \brief Max number image objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_IMAGE_MAX_OBJECTS                      (512u + 1u)
-
-/*!
- * \brief Max number tensor objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_TENSOR_MAX_OBJECTS                     (256u)
-
-/*!
- * \brief Max number lut objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_LUT_MAX_OBJECTS                        (48u)
-
-/*!
- * \brief Max number matrix objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_MATRIX_MAX_OBJECTS                     (48u)
-
-/*!
- * \brief Max number pyramid objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_PYRAMID_MAX_OBJECTS                    (64u)
-
-/*!
- * \brief Max number remap objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_REMAP_MAX_OBJECTS                      (48u)
-
-/*!
- * \brief Max number scalar objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_SCALAR_MAX_OBJECTS                     (48u)
-
-/*!
- * \brief Max number threshold objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_THRESHOLD_MAX_OBJECTS                  (48u)
-
-/*!
- * \brief Max number error objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_ERROR_MAX_OBJECTS                      (30u)
-
-/*!
- * \brief Max number object arrays supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (256u)
-
-/*!
- * \brief Max number parameter objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_PARAMETER_MAX_OBJECTS                  (48u)
-
-/*!
- * \brief Max number data reference queue objects supported
- *
- * \ingroup group_tivx_obj_cfg
- */
-#define TIVX_DATA_REF_Q_MAX_OBJECTS                 (128u)
-
-/*!
- * \brief Max number of Target that can exist on a CPU
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (128u)
-
-/*!
- * \brief Max depth of queue associated with target
- * \note Since this parameter is only used on target, it can not yet
- *       be tracked for max usage, so generated report reports static value
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (96u)
-
-/*!
- * \brief Max possible references in a context
- *
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_REFERENCES     (512u + 256u + 64u + 8u + 32 + 64 + 32)
-
-
-/*!
- * \brief Max possible unique kernels in a context
- *
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_KERNELS     (128u)
-
-/*!
- * \brief Max possible user structs in a context
- *
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_USER_STRUCTS   (128u)
-
-/*! \brief Maximum targets a kernel can run on
- * \ingroup group_tivx_target_kernel_cfg
- */
-#define TIVX_MAX_TARGETS_PER_KERNEL     (32u)
-
-/*! \brief Maximum possible modules in system \
- * \ingroup group_vx_module_cfg
- */
-#define TIVX_MODULE_MAX        (16u)
-
-/*!
- * \brief Max target kernel that will be active on a CPU
- *       at the same time
- * \ingroup group_tivx_target_kernel_cfg
- */
-#define TIVX_TARGET_KERNEL_MAX     (256u)
-
-/*!
- * \brief Max levels supported for the pyramid
- *        Note: If this macro is changed, change #gOrbScaleFactor also
- *              in vx_pyramid file.
- * \ingroup group_vx_pyramid_cfg
- */
-#define TIVX_PYRAMID_MAX_LEVELS_ORB             (17u)
-
-/*!
- * \brief Max target kernel instances that will be active on a CPU
- *       at the same time
- * \ingroup group_tivx_target_kernel_instance_cfg
- */
-#define TIVX_TARGET_KERNEL_INSTANCE_MAX     (64u)
-
-/*!
- * \brief Max possible mapping via vxMapArray supported
- *
- * \ingroup group_vx_array_cfg
- */
-#define TIVX_ARRAY_MAX_MAPS     (16u)
-
-/*!
- * \brief Max possible mapping via vxMapUserDataObject supported
- *
- * \ingroup group_vx_user_data_object_cfg
- */
-#define TIVX_USER_DATA_OBJECT_MAX_MAPS     (16u)
-
-/*!
- * \brief Max possible mapping via vxMapRawImagePatch supported
- *
- * \ingroup group_tivx_raw_image_cfg
- */
-#define TIVX_RAW_IMAGE_MAX_MAPS            (16u)
 
 /*! \brief Max possible head nodes in graph
  * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_HEAD_NODES          (8u)
+
+/*! \brief Max possible pipeline depth of a graph
+ *  \note The max value to be set by application is
+ *         (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1)
+ * \ingroup group_vx_graph_cfg
+ */
+#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (16u)
 
 /*! \brief Max possible leaf nodes in graph
  * \ingroup group_vx_graph_cfg
@@ -393,114 +147,389 @@ extern "C" {
  */
 #define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (32u)
 
-/*! \brief Max possible delays in graph
+/*! \brief Max possible nodes in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_DELAYS              (8u)
+#define TIVX_GRAPH_MAX_NODES               (64u)
 
 /*! \brief Max possible data references in a graph
  * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DATA_REF            (128u)
 
-/*!
- * \brief Max possible sub images from a image
- *
- * \ingroup group_vx_image_cfg
+/*! \brief Max number graph objects supported
+ * \ingroup group_vx_graph_cfg
  */
-#define TIVX_IMAGE_MAX_SUBIMAGES     (16u)
+#define TIVX_GRAPH_MAX_OBJECTS             (256u)
 
-/*!
- * \brief Max possible sub images from a raw image
- *
- * \ingroup group_tivx_raw_image_cfg
+
+/*
+ * Node configuration resources
  */
-#define TIVX_RAW_IMAGE_MAX_SUBIMAGES     (16u)
-
-/*!
- * \brief Max possible mapping via vxMapImagePatch supported
- *
- * \ingroup group_vx_image_cfg
+/*! \brief Max nodes taking output form a given node
+ * \ingroup group_vx_node_cfg
  */
-#define TIVX_IMAGE_MAX_MAPS     (16u)
+#define TIVX_NODE_MAX_OUT_NODES            (8u)
 
-/*!
- * \brief Max possible mapping via vxMapTensorPatch supported
- *
- * \ingroup group_vx_tensor_cfg
+/*! \brief Max nodes feeding input to a given node
+ * \ingroup group_vx_node_cfg
  */
-#define TIVX_TENSOR_MAX_MAPS     (16u)
+#define TIVX_NODE_MAX_IN_NODES             (8u)
 
+/*! \brief Max number of replicated nodes
+ * \ingroup group_vx_node_cfg
+ */
+#define TIVX_NODE_MAX_REPLICATE            (64u)
+
+/*! \brief Max number node objects supported
+ * \ingroup group_vx_node_cfg
+ */
+#define TIVX_NODE_MAX_OBJECTS              (64u)
+
+
+/*
+ * DATA OBJECTS
+ */
+/*
+ * Array data object configuration resources
+ */
+/*! \brief Max possible mapping via vxMapArray supported
+ * \ingroup group_vx_array_cfg
+ */
+#define TIVX_ARRAY_MAX_MAPS                (16u)
+
+/*! \brief Max number array objects supported
+ * \ingroup group_vx_array_cfg
+ */
+#define TIVX_ARRAY_MAX_OBJECTS             (96u)
+
+
+/*
+ * Convolution data object configuration resources
+ */
+/*! \brief Max number convolution objects supported
+ * \ingroup group_vx_convolution_cfg
+ */
+#define TIVX_CONVOLUTION_MAX_OBJECTS       (48u)
+
+
+/*
+ * Distribution data object configuration resources
+ */
+/*! \brief Max number distribution objects supported
+ * \ingroup group_vx_distribution_cfg
+ */
+#define TIVX_DISTRIBUTION_MAX_OBJECTS      (48u)
+
+
+/*
+ * Delay data object configuration resources
+ */
 /*! \brief Maximum number of objects supported inside delay object
  * \ingroup group_vx_delay_cfg
  */
-#define TIVX_DELAY_MAX_OBJECT           (8u)
+#define TIVX_DELAY_MAX_OBJECT              (8u)
 
 /*! \brief Maximum number of parameter objects that can be associated with a delay
  * \ingroup group_vx_delay_cfg
  */
-#define TIVX_DELAY_MAX_PRM_OBJECT       (16u)
+#define TIVX_DELAY_MAX_PRM_OBJECT          (16u)
 
+/*! \brief Max number delay objects supported
+ * \ingroup group_vx_delay_cfg
+ */
+#define TIVX_DELAY_MAX_OBJECTS             (48u)
+
+
+/*
+ * Image data object configuration resources
+ */
+/*! \brief Max possible mapping via vxMapImagePatch supported
+ * \ingroup group_vx_image_cfg
+ */
+#define TIVX_IMAGE_MAX_MAPS                (16u)
+
+/*! \brief Max possible sub images from a image
+ * \ingroup group_vx_image_cfg
+ */
+#define TIVX_IMAGE_MAX_SUBIMAGES           (16u)
+
+/*! \brief Max number image objects supported
+ * \ingroup group_vx_image_cfg
+ */
+#define TIVX_IMAGE_MAX_OBJECTS             (512u + 1u)
+
+
+/*
+ * LUT data object configuration resources
+ */
+/*! \brief Max number LUT objects supported
+ * \ingroup group_vx_lut_cfg
+ */
+#define TIVX_LUT_MAX_OBJECTS               (48u)
+
+
+/*
+ * Matrix configuration resources
+ */
+/*! \brief Max number matrix objects supported
+ * \ingroup group_vx_matrix_cfg
+ */
+#define TIVX_MATRIX_MAX_OBJECTS            (48u)
+
+
+/*
+ * Object array configuration resources
+ */
+/*! \brief Maximum number of objects supported in object array
+ * \ingroup group_vx_object_array_cfg
+ */
+#define TIVX_OBJECT_ARRAY_MAX_ITEMS        (32u)
+
+/*! \brief Max number object arrays supported
+ * \ingroup group_vx_object_array_cfg
+ */
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS         (256u)
+
+
+/*
+ * Pyramid data object configuration resources
+ */
+/*! \brief Max levels supported for the pyramid
+ *  \note If this macro is changed, change #gOrbScaleFactor also
+ *        in vx_pyramid file.
+ * \ingroup group_vx_pyramid_cfg
+ */
+#define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
+
+/*! \brief Maximum number of objects supported in pyramid
+ * \ingroup group_vx_pyramid_cfg
+ */
+#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS     (64u)
+
+/*! \brief Max number pyramid objects supported
+ * \ingroup group_vx_pyramid_cfg
+ */
+#define TIVX_PYRAMID_MAX_OBJECTS           (64u)
+
+
+/*
+ * Raw image data object configuration resources
+ */
+/*! \brief Max possible sub images from a raw image
+ * \ingroup group_tivx_raw_image_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_SUBIMAGES       (16u)
+
+/*! \brief Max possible mapping via vxMapRawImagePatch supported
+ * \ingroup group_tivx_raw_image_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_MAPS            (16u)
+
+/*! \brief Max number raw image objects supported
+ * \ingroup group_tivx_raw_image_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_OBJECTS         (96u)
+
+
+/*
+ * Remap configuration resources
+ */
+/*! \brief Max number remap objects supported
+ * \ingroup group_vx_remap_cfg
+ */
+#define TIVX_REMAP_MAX_OBJECTS             (48u)
+
+
+/*
+ * Scalar configuration resources
+ */
+/*! \brief Max number scalar objects supported
+ * \ingroup group_vx_scalar_cfg
+ */
+#define TIVX_SCALAR_MAX_OBJECTS            (48u)
+
+
+/*
+ * Tensor configuration resources
+ */
+/*! \brief Max possible mapping via vxMapTensorPatch supported
+ * \ingroup group_vx_tensor_cfg
+ */
+#define TIVX_TENSOR_MAX_MAPS               (16u)
+
+/*! \brief Max number tensor objects supported
+ * \ingroup group_vx_tensor_cfg
+ */
+#define TIVX_TENSOR_MAX_OBJECTS            (256u)
+
+
+/*
+ * Threshold configuration resources
+ */
+/*! \brief Max number threshold objects supported
+ * \ingroup group_vx_threshold_cfg
+ */
+#define TIVX_THRESHOLD_MAX_OBJECTS         (48u)
+
+
+/*
+ * User data configuration resources
+ */
+/*! \brief Max possible mapping via vxMapUserDataObject supported
+ * \ingroup group_vx_user_data_cfg
+ */
+#define TIVX_USER_DATA_OBJECT_MAX_MAPS     (16u)
+
+/*! \brief Max number user data objects supported
+ * \ingroup group_vx_user_data_cfg
+ */
+#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS  (96u)
+
+
+/*
+ * MISCELLANEOUS OBJECTS
+ */
+/*
+ * Error configuration resources
+ */
+/*! \brief Max number error objects supported
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_ERROR_MAX_OBJECTS             (30u)
+
+
+/*
+ * Event queue configuration resources
+ */
 /*! \brief Max size of event queue
- * \ingroup group_vx_event_cfg
+ * \ingroup group_vx_misc_cfg
  */
-#define TIVX_EVENT_QUEUE_MAX_SIZE       (256u)
+#define TIVX_EVENT_QUEUE_MAX_SIZE          (256u)
 
+
+/*
+ * Kernel configuration resources
+ */
+/*! \brief Max parameters in a kernel
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_KERNEL_MAX_PARAMS             (64u)
+
+/*! \brief Max number kernel objects supported
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_KERNEL_MAX_OBJECTS            (128u)
+
+
+/*
+ * Meta configuration resources
+ */
+/*! \brief Max number meta format objects supported
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_META_FORMAT_MAX_OBJECTS       (512u)
+
+
+/*
+ * Module configuration resources
+ */
+/*! \brief Maximum possible modules in system
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_MODULE_MAX                    (16u)
+
+
+/*
+ * Parameter configuration resources
+ */
+/*! \brief Max number parameter objects supported
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_PARAMETER_MAX_OBJECTS         (48u)
+
+
+/*
+ * Reference queue configuration resources
+ */
+/*! \brief Max number data reference queue objects supported
+ * \ingroup group_vx_misc_cfg
+ */
+#define TIVX_DATA_REF_Q_MAX_OBJECTS        (128u)
+
+
+/*
+ * TI EXTENSIONS
+ */
+/*
+ * Control command configuration resources
+ */
+/*! \brief Max size of control command objects
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_MAX_CTRL_CMD_OBJECTS          (4u)
+
+
+/*
+ * Target configuration resources
+ */
 /*! \brief Max number of BAM user plugins on DSP (in addition to builtin vxlib plugins)
- * \ingroup group_tivx_target_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
-#define TIVX_MAX_DSP_BAM_USER_PLUGINS   (8u)
+#define TIVX_MAX_DSP_BAM_USER_PLUGINS      (8u)
 
-/*! \brief Max number of nodes per super node
- * \ingroup group_tivx_supernode_cfg
+/*!
+ * \brief Max depth of queue associated with target
+ * \note Since this parameter is only used on target, it can not yet
+ *       be tracked for max usage, so generated report reports static value
+ * \ingroup group_vx_ti_extensions_cfg
  */
-#define TIVX_SUPER_NODE_MAX_NODES   (16u)
+#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH    (96u)
+
+/*!
+ * \brief Max number of Target that can exist on a CPU
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_TARGET_MAX_TARGETS_IN_CPU     (128u)
+
+
+/*
+ * Target kernel configuration resources
+ */
+/*! \brief Maximum targets a kernel can run on
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_MAX_TARGETS_PER_KERNEL        (32u)
+
+/*! \brief Max target kernel instances that will be active on a CPU at the same time
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_TARGET_KERNEL_INSTANCE_MAX    (64u)
+
+/*! \brief Max target kernel that will be active on a CPU at the same time
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_TARGET_KERNEL_MAX             (256u)
+
+
+/*
+ * Super node configuration resources
+ */
+/*! \brief Max number of nodes per super node
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_SUPER_NODE_MAX_NODES          (16u)
 
 /*! \brief Max number of edges per super node
- * \ingroup group_tivx_supernode_cfg
+ * \ingroup group_vx_ti_extensions_cfg
  */
-#define TIVX_SUPER_NODE_MAX_EDGES   (16u)
+#define TIVX_SUPER_NODE_MAX_EDGES          (16u)
 
-/*! \brief Default tile width
- * \ingroup group_tivx_target_cfg
+/*! \brief Max number super node objects supported
+ * \ingroup group_vx_ti_extensions_cfg
  */
-#define TIVX_DEFAULT_TILE_WIDTH   (64u)
+#define TIVX_SUPER_NODE_MAX_OBJECTS        (16u)
 
-/*! \brief Default tile height
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_DEFAULT_TILE_HEIGHT  (48u)
-
-/*! \brief Default timeout value for kernel level control event ACK waits.
- * This is the default timeout value used for all node instances of this kernel
- * when calling the node CREATE and DELETE target kernel functions, which can be
- * overwritten for specific node instances by setting TIVX_NODE_TIMEOUT attribute.
- * \ingroup group_tivx_target_kernel_instance_cfg
- */
-#define TIVX_DEFAULT_KERNEL_TIMEOUT (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
-
-/*! \brief Default timeout value for graph level control event ACK waits.
- * This is the default timeout value used within the following APIs
- * - vxWaitGraph()
- * - vxGraphParameterDequeueDoneRef()
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_DEFAULT_GRAPH_TIMEOUT  (TIVX_EVENT_TIMEOUT_WAIT_FOREVER)
-
-/*! \brief Max size of control command objects
- * \ingroup group_vx_event_cfg
- */
-#define TIVX_MAX_CTRL_CMD_OBJECTS (4u)
-
-/*! \brief Max number of kernel ID's
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_MAX_KERNEL_ID (VX_KERNEL_MASK)
-
-/*! \brief Max number of kernel library ID's
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_MAX_LIBRARY_ID (VX_LIBRARY(VX_LIBRARY_MASK))
 
 #ifdef __cplusplus
 }
