@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2 J784S4 AM62A))
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721E J721S2 J784S4 AM62A))
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 A53 R5F C66 C71 C7120 C7504))
 ifeq ($(TARGET_OS), $(filter $(TARGET_OS), FREERTOS SAFERTOS))
 
@@ -53,7 +53,7 @@ CSOURCES += ../common/tivx_target_config_mpu1_0.c
 SKIPBUILD=0
 endif
 
-ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J7 J721S2 J784S4 AM62A))
+ifeq ($(TARGET_PLATFORM), $(filter $(TARGET_PLATFORM), J721E J721S2 J784S4 AM62A))
 ifeq ($(TARGET_CPU),R5F)
 CSOURCES += tivx_target_config_r5f.c
 SKIPBUILD=0
