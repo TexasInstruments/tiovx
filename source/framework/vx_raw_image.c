@@ -110,6 +110,7 @@ static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagep
     return offset;
 }
 
+/* Not used in current TIOVX spec, can be implemented and improved if/when it's added */
 #if 0
 static void ownLinkParentSubimage(tivx_raw_image parent, tivx_raw_image subimage)
 {
@@ -354,20 +355,24 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 
 static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t *params)
 {
-    vx_uint16 subimage_idx, map_idx, exp_idx;
+#if 0
+    vx_uint16 subimage_ndx;
+#endif
+    vx_uint16 map_idx, exp_idx;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;
     vx_imagepatch_addressing_t imagepatch_addr;
     vx_uint32 mem_size;
     vx_uint32 stride_y_multiplier = 1U;
 
     obj_desc = (tivx_obj_desc_raw_image_t *)image->base.obj_desc;
-
+/* Not used in current TIOVX spec, can be implemented and improved if/when it's added */
+#if 0
     image->parent = NULL;
     for(subimage_idx=0; subimage_idx<TIVX_RAW_IMAGE_MAX_SUBIMAGES; subimage_idx++)
     {
         image->subimages[subimage_idx] = NULL;
     }
-
+#endif
     for(map_idx=0; map_idx<TIVX_RAW_IMAGE_MAX_MAPS; map_idx++)
     {
         image->maps[map_idx].map_addr = NULL;
@@ -613,13 +618,14 @@ VX_API_ENTRY tivx_raw_image VX_API_CALL tivxCreateRawImage(vx_context context, t
 
 VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image* image)
 {
+/* Not used in current TIOVX spec, can be implemented and improved if/when it's added  */
+#if 0
     if (image != NULL)
     {
         tivx_raw_image this_image = image[0];
         if (ownIsValidSpecificReference((vx_reference)this_image, TIVX_TYPE_RAW_IMAGE) == (vx_bool)vx_true_e)
         {
             tivx_raw_image parent = this_image->parent;
-
             /* clear this image from its parent' subimages list */
             if ((NULL != parent) &&
                 (ownIsValidSpecificReference((vx_reference)parent, TIVX_TYPE_RAW_IMAGE) ==
@@ -638,6 +644,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image* image)
             }
         }
     }
+#endif
 
     return ownReleaseReferenceInt((vx_reference *)image, TIVX_TYPE_RAW_IMAGE, (vx_enum)VX_EXTERNAL, NULL);
 }

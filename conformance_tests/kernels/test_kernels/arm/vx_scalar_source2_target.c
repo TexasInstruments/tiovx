@@ -68,7 +68,7 @@
 #include "TI/tivx_target_kernel.h"
 #include <TI/tivx_task.h>
 
-#define MAX_OLD_OBJ_DESC    (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1U)
+#define MAX_OLD_OBJ_DESC    (TIVX_GRAPH_MAX_PIPELINE_DEPTH)
 
 typedef struct
 {

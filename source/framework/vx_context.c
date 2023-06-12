@@ -729,6 +729,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 }
             }
         }
+        ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", obj_id);
     }
     else
     {
@@ -948,6 +949,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 
             if(status == (vx_status)VX_SUCCESS)
             {
+                ownLogResourceAlloc("TIVX_CONTEXT_MAX_OBJECTS", 1);
                 /* set flag to disallow removal of built kernels
                  * via remove kernel API
                  */
@@ -1089,6 +1091,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             ownContextDeleteCmdObj(context);
 
             ownEventQueueDelete(&context->event_queue);
+
+            ownLogResourceFree("TIVX_CONTEXT_MAX_OBJECTS", 1);
 
             /*! \internal wipe away the context memory first */
             /* Normally destroy sem is part of release reference, but can't for context */

@@ -316,11 +316,6 @@ extern "C" {
 /*
  * Raw image data object configuration resources
  */
-/*! \brief Max possible sub images from a raw image
- * \ingroup group_tivx_raw_image_cfg
- */
-#define TIVX_RAW_IMAGE_MAX_SUBIMAGES       (16u)
-
 /*! \brief Max possible mapping via vxMapRawImagePatch supported
  * \ingroup group_tivx_raw_image_cfg
  */

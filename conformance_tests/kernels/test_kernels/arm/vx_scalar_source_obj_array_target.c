@@ -69,7 +69,7 @@
 #include "tivx_kernels_target_utils.h"
 #include <TI/tivx_task.h>
 
-#define NUM_CHANNELS (4U)
+#define NUM_CHANNELS (TIVX_OBJECT_ARRAY_MAX_ITEMS)
 
 typedef struct
 {
@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_object_array_t *out_object_array_desc;
-    tivx_obj_desc_scalar_t *out_scalar_desc[4];
+    tivx_obj_desc_scalar_t *out_scalar_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivx_obj_desc_scalar_t *scalar_out_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivx_obj_desc_t *out_object_array_desc_elem[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivxScalarSourceObjArrayParams *prms = NULL;

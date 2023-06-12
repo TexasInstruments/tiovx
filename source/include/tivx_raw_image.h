@@ -59,8 +59,10 @@ typedef struct _tivx_raw_image
     tivx_reference_t base;
     /*! \brief A pointer to a parent raw image object. */
     tivx_raw_image       parent;
-    /*! \brief The array of raw images derived form this raw image */
+#if 0
+    /*! \brief The array of raw images derived from this raw image */
     tivx_raw_image       subimages[TIVX_RAW_IMAGE_MAX_SUBIMAGES];
+#endif
     /*! \brief Mapping done via vxMapImagePatch() */
     tivx_raw_image_map_info_t maps[TIVX_RAW_IMAGE_MAX_MAPS];
     /*! \brief offset from mem_ptr to reach valid first pixel, in case raw image is created from ROI */

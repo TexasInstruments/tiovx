@@ -70,215 +70,200 @@ static tivx_mutex g_tivx_log_resource_lock;
 
 static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     {
-        TIVX_KERNEL_MAX_PARAMS, 0, 0, "TIVX_KERNEL_MAX_PARAMS"
+        TIVX_MAX_KERNEL_ID, VX_KERNEL_MASK, VX_KERNEL_MASK, VX_KERNEL_MASK, "TIVX_MAX_KERNEL_ID",
     },
     {
-        TIVX_NODE_MAX_OUT_NODES, 0, 0, "TIVX_NODE_MAX_OUT_NODES"
+        TIVX_MAX_LIBRARY_ID, VX_LIBRARY(VX_LIBRARY_MASK), VX_LIBRARY(VX_LIBRARY_MASK), VX_LIBRARY(VX_LIBRARY_MASK), "TIVX_MAX_LIBRARY_ID"
     },
     {
-        TIVX_NODE_MAX_IN_NODES, 0, 0, "TIVX_NODE_MAX_IN_NODES"
+        TIVX_CONTEXT_MAX_OBJECTS, 0, 0, 1, "TIVX_CONTEXT_MAX_OBJECTS"
     },
     {
-        TIVX_PYRAMID_MAX_LEVEL_OBJECTS, 0, 0, "TIVX_PYRAMID_MAX_LEVEL_OBJECTS"
+        TIVX_CONTEXT_MAX_KERNELS, 0, 0, 1, "TIVX_CONTEXT_MAX_KERNELS"
     },
     {
-        TIVX_OBJECT_ARRAY_MAX_ITEMS, 0, 0, "TIVX_OBJECT_ARRAY_MAX_ITEMS"
+        TIVX_CONTEXT_MAX_USER_STRUCTS, 0, 0, 1, "TIVX_CONTEXT_MAX_USER_STRUCTS"
     },
     {
-        TIVX_GRAPH_MAX_NODES, 0, 0, "TIVX_GRAPH_MAX_NODES"
+        TIVX_CONTEXT_MAX_REFERENCES, 0, 0, 25, "TIVX_CONTEXT_MAX_REFERENCES"
     },
     {
-        TIVX_GRAPH_MAX_SUPER_NODES, 0, 0, "TIVX_GRAPH_MAX_SUPER_NODES"
+        TIVX_GRAPH_MAX_DELAYS, 0, 0, 1, "TIVX_GRAPH_MAX_DELAYS"
     },
     {
-        TIVX_GRAPH_MAX_PIPELINE_DEPTH, 0, 0, "TIVX_GRAPH_MAX_PIPELINE_DEPTH"
+        TIVX_GRAPH_MAX_SUPER_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_SUPER_NODES"
     },
     {
-        TIVX_NODE_MAX_REPLICATE, 0, 0, "TIVX_NODE_MAX_REPLICATE"
+        TIVX_GRAPH_MAX_HEAD_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_HEAD_NODES"
     },
     {
-        TIVX_META_FORMAT_MAX_OBJECTS, 0, 0, "TIVX_META_FORMAT_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_PIPELINE_DEPTH, 0, 0, 1, "TIVX_GRAPH_MAX_PIPELINE_DEPTH"
     },
     {
-        TIVX_CONTEXT_MAX_OBJECTS, 0, 0, "TIVX_CONTEXT_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_LEAF_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_LEAF_NODES"
     },
     {
-        TIVX_GRAPH_MAX_OBJECTS, 0, 0, "TIVX_GRAPH_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_PARAMS, 0, 0, 1, "TIVX_GRAPH_MAX_PARAMS"
     },
     {
-        TIVX_SUPER_NODE_MAX_OBJECTS, 0, 0, "TIVX_SUPER_NODE_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_DATA_REF_QUEUE, 0, 0, 1, "TIVX_GRAPH_MAX_DATA_REF_QUEUE"
     },
     {
-        TIVX_NODE_MAX_OBJECTS, 0, 0, "TIVX_NODE_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_NODES"
     },
     {
-        TIVX_KERNEL_MAX_OBJECTS, 0, 0, "TIVX_KERNEL_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_DATA_REF, 0, 0, 1, "TIVX_GRAPH_MAX_DATA_REF"
     },
     {
-        TIVX_ARRAY_MAX_OBJECTS, 0, 0, "TIVX_ARRAY_MAX_OBJECTS"
+        TIVX_GRAPH_MAX_OBJECTS, 0, 0, 1, "TIVX_GRAPH_MAX_OBJECTS"
     },
     {
-        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_OBJECTS"
+        TIVX_NODE_MAX_OUT_NODES, 0, 0, 2, "TIVX_NODE_MAX_OUT_NODES"
     },
     {
-        TIVX_RAW_IMAGE_MAX_OBJECTS, 0, 0, "TIVX_RAW_IMAGE_MAX_OBJECTS"
+        TIVX_NODE_MAX_IN_NODES, 0, 0, 2, "TIVX_NODE_MAX_IN_NODES"
     },
     {
-        TIVX_CONVOLUTION_MAX_OBJECTS, 0, 0, "TIVX_CONVOLUTION_MAX_OBJECTS"
+        TIVX_NODE_MAX_REPLICATE, 0, 0, 0, "TIVX_NODE_MAX_REPLICATE"
     },
     {
-        TIVX_DELAY_MAX_OBJECTS, 0, 0, "TIVX_DELAY_MAX_OBJECTS"
+        TIVX_NODE_MAX_OBJECTS, 0, 0, 0, "TIVX_NODE_MAX_OBJECTS"
     },
     {
-        TIVX_DISTRIBUTION_MAX_OBJECTS, 0, 0, "TIVX_DISTRIBUTION_MAX_OBJECTS"
+        TIVX_ARRAY_MAX_MAPS, 0, 0, 1, "TIVX_ARRAY_MAX_MAPS"
     },
     {
-        TIVX_IMAGE_MAX_OBJECTS, 0, 0, "TIVX_IMAGE_MAX_OBJECTS"
+        TIVX_ARRAY_MAX_OBJECTS, 0, 0, 0, "TIVX_ARRAY_MAX_OBJECTS"
     },
     {
-        TIVX_TENSOR_MAX_OBJECTS, 0, 0, "TIVX_TENSOR_MAX_OBJECTS"
+        TIVX_CONVOLUTION_MAX_OBJECTS, 0, 0, 0, "TIVX_CONVOLUTION_MAX_OBJECTS"
     },
     {
-        TIVX_LUT_MAX_OBJECTS, 0, 0, "TIVX_LUT_MAX_OBJECTS"
+        TIVX_DISTRIBUTION_MAX_OBJECTS, 0, 0, 0, "TIVX_DISTRIBUTION_MAX_OBJECTS"
     },
     {
-        TIVX_MATRIX_MAX_OBJECTS, 0, 0, "TIVX_MATRIX_MAX_OBJECTS"
+        TIVX_DELAY_MAX_OBJECT, 0, 0, 0, "TIVX_DELAY_MAX_OBJECT"
     },
     {
-        TIVX_PYRAMID_MAX_OBJECTS, 0, 0, "TIVX_PYRAMID_MAX_OBJECTS"
+        TIVX_DELAY_MAX_PRM_OBJECT, 0, 0, 1, "TIVX_DELAY_MAX_PRM_OBJECT"
     },
     {
-        TIVX_REMAP_MAX_OBJECTS, 0, 0, "TIVX_REMAP_MAX_OBJECTS"
+        TIVX_DELAY_MAX_OBJECTS, 0, 0, 0, "TIVX_DELAY_MAX_OBJECTS"
     },
     {
-        TIVX_SCALAR_MAX_OBJECTS, 0, 0, "TIVX_SCALAR_MAX_OBJECTS"
+        TIVX_IMAGE_MAX_MAPS, 0, 0, 1, "TIVX_IMAGE_MAX_MAPS"
     },
     {
-        TIVX_THRESHOLD_MAX_OBJECTS, 0, 0, "TIVX_THRESHOLD_MAX_OBJECTS"
+        TIVX_IMAGE_MAX_SUBIMAGES, 0, 0, 1, "TIVX_IMAGE_MAX_SUBIMAGES"
     },
     {
-        TIVX_ERROR_MAX_OBJECTS, 0, 0, "TIVX_ERROR_MAX_OBJECTS"
+        TIVX_IMAGE_MAX_OBJECTS, 0, 0, 0, "TIVX_IMAGE_MAX_OBJECTS"
     },
     {
-        TIVX_OBJ_ARRAY_MAX_OBJECTS, 0, 0, "TIVX_OBJ_ARRAY_MAX_OBJECTS"
+        TIVX_LUT_MAX_OBJECTS, 0, 0, 0, "TIVX_LUT_MAX_OBJECTS"
     },
     {
-        TIVX_PARAMETER_MAX_OBJECTS, 0, 0, "TIVX_PARAMETER_MAX_OBJECTS"
+        TIVX_MATRIX_MAX_OBJECTS, 0, 0, 0, "TIVX_MATRIX_MAX_OBJECTS"
     },
     {
-        TIVX_DATA_REF_Q_MAX_OBJECTS, 0, 0, "TIVX_DATA_REF_Q_MAX_OBJECTS"
+        TIVX_OBJECT_ARRAY_MAX_ITEMS, 0, 0, 1, "TIVX_OBJECT_ARRAY_MAX_ITEMS"
     },
     {
-        TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, "TIVX_TARGET_MAX_TARGETS_IN_CPU"
+        TIVX_OBJ_ARRAY_MAX_OBJECTS, 0, 0, 0, "TIVX_OBJ_ARRAY_MAX_OBJECTS"
     },
     {
-        TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, "TIVX_TARGET_MAX_JOB_QUEUE_DEPTH"
+        TIVX_PYRAMID_MAX_LEVELS_ORB, 0, 0, 17, "TIVX_PYRAMID_MAX_LEVELS_ORB"
     },
     {
-        TIVX_CONTEXT_MAX_REFERENCES, 0, 0, "TIVX_CONTEXT_MAX_REFERENCES"
+        TIVX_PYRAMID_MAX_LEVEL_OBJECTS, 0, 0, 1, "TIVX_PYRAMID_MAX_LEVEL_OBJECTS"
     },
     {
-        TIVX_CONTEXT_MAX_KERNELS, 0, 0, "TIVX_CONTEXT_MAX_KERNELS"
+        TIVX_PYRAMID_MAX_OBJECTS, 0, 0, 0, "TIVX_PYRAMID_MAX_OBJECTS"
     },
     {
-        TIVX_CONTEXT_MAX_USER_STRUCTS, 0, 0, "TIVX_CONTEXT_MAX_USER_STRUCTS"
+        TIVX_RAW_IMAGE_MAX_MAPS, 0, 0, 1, "TIVX_RAW_IMAGE_MAX_MAPS"
     },
     {
-        TIVX_MAX_TARGETS_PER_KERNEL, 0, 0, "TIVX_MAX_TARGETS_PER_KERNEL"
+        TIVX_RAW_IMAGE_MAX_OBJECTS, 0, 0, 0, "TIVX_RAW_IMAGE_MAX_OBJECTS"
     },
     {
-        TIVX_MODULE_MAX, 0, 0, "TIVX_MODULE_MAX"
+        TIVX_REMAP_MAX_OBJECTS, 0, 0, 0, "TIVX_REMAP_MAX_OBJECTS"
     },
     {
-        TIVX_TARGET_KERNEL_MAX, 0, 0, "TIVX_TARGET_KERNEL_MAX"
+        TIVX_SCALAR_MAX_OBJECTS, 0, 0, 0, "TIVX_SCALAR_MAX_OBJECTS"
     },
     {
-        TIVX_PYRAMID_MAX_LEVELS_ORB, 0, 0, "TIVX_PYRAMID_MAX_LEVELS_ORB"
+        TIVX_TENSOR_MAX_MAPS, 0, 0, 1, "TIVX_TENSOR_MAX_MAPS"
     },
     {
-        TIVX_TARGET_KERNEL_INSTANCE_MAX, 0, 0, "TIVX_TARGET_KERNEL_INSTANCE_MAX"
+        TIVX_TENSOR_MAX_OBJECTS, 0, 0, 0, "TIVX_TENSOR_MAX_OBJECTS"
     },
     {
-        TIVX_ARRAY_MAX_MAPS, 0, 0, "TIVX_ARRAY_MAX_MAPS"
+        TIVX_THRESHOLD_MAX_OBJECTS, 0, 0, 0, "TIVX_THRESHOLD_MAX_OBJECTS"
     },
     {
-        TIVX_USER_DATA_OBJECT_MAX_MAPS, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_MAPS"
+        TIVX_USER_DATA_OBJECT_MAX_MAPS, 0, 0, 1, "TIVX_USER_DATA_OBJECT_MAX_MAPS"
     },
     {
-        TIVX_RAW_IMAGE_MAX_MAPS, 0, 0, "TIVX_RAW_IMAGE_MAX_MAPS"
+        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, 0, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_OBJECTS"
     },
     {
-        TIVX_GRAPH_MAX_HEAD_NODES, 0, 0, "TIVX_GRAPH_MAX_HEAD_NODES"
+        TIVX_ERROR_MAX_OBJECTS, 0, 0, 25, "TIVX_ERROR_MAX_OBJECTS"
     },
     {
-        TIVX_GRAPH_MAX_LEAF_NODES, 0, 0, "TIVX_GRAPH_MAX_LEAF_NODES"
+        TIVX_EVENT_QUEUE_MAX_SIZE, 0, 0, 1, "TIVX_EVENT_QUEUE_MAX_SIZE"
     },
     {
-        TIVX_GRAPH_MAX_PARAMS, 0, 0, "TIVX_GRAPH_MAX_PARAMS"
+        TIVX_KERNEL_MAX_PARAMS, 0, 0, 2, "TIVX_KERNEL_MAX_PARAMS"
     },
     {
-        TIVX_GRAPH_MAX_DATA_REF_QUEUE, 0, 0, "TIVX_GRAPH_MAX_DATA_REF_QUEUE"
+        TIVX_KERNEL_MAX_OBJECTS, 0, 0, 0, "TIVX_KERNEL_MAX_OBJECTS"
     },
     {
-        TIVX_GRAPH_MAX_DELAYS, 0, 0, "TIVX_GRAPH_MAX_DELAYS"
+        TIVX_META_FORMAT_MAX_OBJECTS, 0, 0, 0, "TIVX_META_FORMAT_MAX_OBJECTS"
     },
     {
-        TIVX_GRAPH_MAX_DATA_REF, 0, 0, "TIVX_GRAPH_MAX_DATA_REF"
+        TIVX_MODULE_MAX, 0, 0, 1, "TIVX_MODULE_MAX"
     },
     {
-        TIVX_IMAGE_MAX_SUBIMAGES, 0, 0, "TIVX_IMAGE_MAX_SUBIMAGES"
+        TIVX_PARAMETER_MAX_OBJECTS, 0, 0, 0, "TIVX_PARAMETER_MAX_OBJECTS"
     },
     {
-        TIVX_RAW_IMAGE_MAX_SUBIMAGES, 0, 0, "TIVX_RAW_IMAGE_MAX_SUBIMAGES"
+        TIVX_DATA_REF_Q_MAX_OBJECTS, 0, 0, 1, "TIVX_DATA_REF_Q_MAX_OBJECTS"
     },
     {
-        TIVX_IMAGE_MAX_MAPS, 0, 0, "TIVX_IMAGE_MAX_MAPS"
+        TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, 1, "TIVX_MAX_CTRL_CMD_OBJECTS"
     },
     {
-        TIVX_TENSOR_MAX_MAPS, 0, 0, "TIVX_TENSOR_MAX_MAPS"
+        TIVX_MAX_DSP_BAM_USER_PLUGINS, 0, 0, 0, "TIVX_MAX_DSP_BAM_USER_PLUGINS"
     },
     {
-        TIVX_DELAY_MAX_OBJECT, 0, 0, "TIVX_DELAY_MAX_OBJECT"
+        TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, 0, 0, 0, "TIVX_TARGET_MAX_JOB_QUEUE_DEPTH"
     },
     {
-        TIVX_DELAY_MAX_PRM_OBJECT, 0, 0, "TIVX_DELAY_MAX_PRM_OBJECT"
+        TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, 1, "TIVX_TARGET_MAX_TARGETS_IN_CPU"
     },
     {
-        TIVX_EVENT_QUEUE_MAX_SIZE, 0, 0, "TIVX_EVENT_QUEUE_MAX_SIZE"
+        TIVX_MAX_TARGETS_PER_KERNEL, 0, 0, 2, "TIVX_MAX_TARGETS_PER_KERNEL"
     },
     {
-        TIVX_MAX_DSP_BAM_USER_PLUGINS, 0, 0, "TIVX_MAX_DSP_BAM_USER_PLUGINS"
+        TIVX_TARGET_KERNEL_INSTANCE_MAX, 0, 0, 1, "TIVX_TARGET_KERNEL_INSTANCE_MAX"
     },
     {
-        TIVX_SUPER_NODE_MAX_NODES, 0, 0, "TIVX_SUPER_NODE_MAX_NODES"
+        TIVX_TARGET_KERNEL_MAX, 0, 0, 1 , "TIVX_TARGET_KERNEL_MAX"
     },
     {
-        TIVX_SUPER_NODE_MAX_EDGES, 0, 0, "TIVX_SUPER_NODE_MAX_EDGES"
+        TIVX_SUPER_NODE_MAX_NODES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_NODES"
     },
     {
-        TIVX_DEFAULT_TILE_WIDTH, TIVX_DEFAULT_TILE_WIDTH, TIVX_DEFAULT_TILE_WIDTH, "TIVX_DEFAULT_TILE_WIDTH"
+        TIVX_SUPER_NODE_MAX_EDGES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_EDGES"
     },
     {
-        TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, TIVX_DEFAULT_TILE_HEIGHT, "TIVX_DEFAULT_TILE_HEIGHT"
-    },
-    {
-        TIVX_DEFAULT_KERNEL_TIMEOUT, TIVX_EVENT_TIMEOUT_WAIT_FOREVER, 0, "TIVX_DEFAULT_KERNEL_TIMEOUT"
-    },
-    {
-        TIVX_DEFAULT_GRAPH_TIMEOUT, TIVX_EVENT_TIMEOUT_WAIT_FOREVER, 0, "TIVX_DEFAULT_GRAPH_TIMEOUT"
-    },
-    {
-        TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, "TIVX_MAX_CTRL_CMD_OBJECTS"
-    },
-    {
-        TIVX_MAX_KERNEL_ID, VX_KERNEL_MASK, 0, "TIVX_MAX_KERNEL_ID"
-    },
-    {
-        TIVX_MAX_LIBRARY_ID, VX_LIBRARY(VX_LIBRARY_MASK), 0, "TIVX_MAX_LIBRARY_ID"
+        TIVX_SUPER_NODE_MAX_OBJECTS, 0, 0, 16, "TIVX_SUPER_NODE_MAX_OBJECTS"
     }
 };
 
-#define TIVX_RESOURCE_STATS_TABLE_SIZE (sizeof(g_tivx_resource_stats_table)/sizeof(g_tivx_resource_stats_table[0]))
+#define TIVX_RESOURCE_STATS_TABLE_SIZE (dimof(g_tivx_resource_stats_table))
 
 void ownLogResourceInit(void)
 {
@@ -407,8 +392,8 @@ void tivxPrintAllResourceStats(void)
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     int32_t i, j;
     tivx_resource_stats_t stat;
-    printf("\n\nMAX VALUE NAME:                           MAX VALUE:   VALUE BEING USED:\n");
-    printf("------------------------------------------------------------------------\n");
+    printf("\n\n  MAX VALUE NAME:                         MAX VALUE:  VALUE USED:  REQ. VALUE:\n");
+    printf("-------------------------------------------------------------------------------\n");
     tivxMutexLock(g_tivx_log_resource_lock);
 
     for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
@@ -424,23 +409,34 @@ void tivxPrintAllResourceStats(void)
         }
         printf("|");
         numDigits = getNumDigits((int32_t)stat.max_value);
-        for (j = 0; j < (6 - numDigits); j++)
+        for (j = 0; j < (7 - numDigits); j++)
         {
             printf(" ");
         }
         printf("%d", stat.max_value);
-        for (j = 0; j < 3; j++)
+        for (j = 0; j < 4; j++)
         {
             printf(" ");
         }
         printf("|");
         numDigits = getNumDigits((int32_t)stat.max_used_value);
-        for (j = 0; j < (6 - numDigits); j++)
+        for (j = 0; j < (7 - numDigits); j++)
         {
             printf(" ");
         }
         printf("%d", stat.max_used_value);
-        for (j = 0; j < 3; j++)
+        for (j = 0; j < 4; j++)
+        {
+            printf(" ");
+        }
+        printf("|");
+        numDigits = getNumDigits((int32_t)stat.min_required_value);
+        for (j = 0; j < 7 - numDigits; j++)
+        {
+            printf(" ");
+        }
+        printf("%d", stat.min_required_value);
+        for (j = 0; j < 4; j++)
         {
             printf(" ");
         }
@@ -498,6 +494,11 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
             for (i = 0; i < (int32_t)TIVX_RESOURCE_STATS_TABLE_SIZE; i++)
             {
                 stat = g_tivx_resource_stats_table[i];
+                if (stat.max_used_value < stat.min_required_value) {
+                    fprintf(ofp, "/*This parameter was used less than its minimum value");
+                    fprintf(ofp, " requires. It has been set to its minimum value.*/\n");
+                    stat.max_used_value = stat.min_required_value;
+                }
                 fprintf(ofp, "#define ");
                 fprintf(ofp, "%s ", stat.name);
                 fprintf(ofp, "(%du)\n\n", stat.max_used_value);
@@ -520,4 +521,3 @@ vx_status tivxExportAllResourceMaxUsedValueToFile(void)
 #endif
     return status;
 }
-

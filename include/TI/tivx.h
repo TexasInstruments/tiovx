@@ -151,6 +151,8 @@ typedef struct _tivx_resource_stats_t {
 
     uint32_t  max_used_value; /**< Highest resource count during current runtime */
 
+    uint32_t  min_required_value; /**< Minimum value required for framework/tests to compile */
+
     char name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the resource */
 
 } tivx_resource_stats_t;

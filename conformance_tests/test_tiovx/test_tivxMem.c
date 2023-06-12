@@ -1056,8 +1056,8 @@ TEST(tivxMem, testReferenceImportNeg)
     }
 
     /* Nullify one of the addr[] entries. Import should fail. */
-    p = virtAddr[1];
-    virtAddr[1] = NULL;
+    p = virtAddr[0];
+    virtAddr[0] = NULL;
 
     vxStatus = tivxReferenceImportHandle(ref,
                                          (const void **)virtAddr,
@@ -1071,7 +1071,7 @@ TEST(tivxMem, testReferenceImportNeg)
     }
 
     /* Restore the Nullified entry. */
-    virtAddr[1] = p;
+    virtAddr[0] = p;
 
     /* Run the loop with [0..(numEntries+1)] values. */
     for (i = 0; i < numEntries+2; i++)
