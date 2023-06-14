@@ -82,7 +82,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
     endif
 endif
 
-CONCERTO_ROOT ?= concerto
+CONCERTO_ROOT ?= $(PSDK_BUILDER_PATH)/concerto
 BUILD_MULTI_PROJECT := 1
 BUILD_TARGET := target.mak
 BUILD_PLATFORM :=
