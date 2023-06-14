@@ -23,7 +23,7 @@
 #include <VX/vxu.h>
 #include <TI/tivx_config.h>
 
-#include "test_engine/test.h"
+#include "test_tiovx.h"
 
 TESTCASE(tivxArray, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -223,10 +223,17 @@ TEST(tivxArray, negativeTestAddArrayItems)
     vx_size stride = 1;
     vx_enum item_type = VX_TYPE_KEYPOINT;
     vx_size capacity = 1;
+    vx_graph graph = NULL;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxAddArrayItems(array, count, array_items, stride));
     ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
     ASSERT_EQ_VX_STATUS(VX_FAILURE, vxAddArrayItems(array, count, array_items, stride));
+    VX_CALL(vxReleaseArray(&array));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(array = vxCreateVirtualArray(graph, VX_TYPE_INVALID, 0), VX_TYPE_ARRAY);
+    ASSERT_EQ_VX_STATUS(VX_FAILURE, vxAddArrayItems(array, count, array_items, stride));
+    VX_CALL(vxReleaseGraph(&graph));
     VX_CALL(vxReleaseArray(&array));
 }
 
@@ -321,9 +328,26 @@ TEST(tivxArray, negativeTestCreateArray)
 
     vx_enum item_type = VX_TYPE_KEYPOINT;
     vx_size capacity = 0;
+    vx_uint32 count = 0;
+    vx_array array[TIVX_ARRAY_MAX_OBJECTS];
 
     ASSERT(NULL == vxCreateArray(NULL, item_type, capacity));
     ASSERT(NULL == vxCreateArray(context, item_type, capacity));
+
+    while (count < TIVX_ARRAY_MAX_OBJECTS) {
+
+        ASSERT_VX_OBJECT(array[count] = vxCreateArray(context, item_type, 1), VX_TYPE_ARRAY);
+        count++;
+    }
+
+    EXPECT_VX_ERROR(vxCreateArray(context, item_type, 1), VX_ERROR_NO_RESOURCES);
+
+    count = 0;
+    while (count < TIVX_ARRAY_MAX_OBJECTS) {
+
+    	VX_CALL(vxReleaseArray(&array[count]));
+    	count++;
+    }
 }
 
 TEST(tivxArray, negativeTestCreateVirtualArray)
@@ -334,6 +358,52 @@ TEST(tivxArray, negativeTestCreateVirtualArray)
     vx_size capacity = 0;
 
     ASSERT(NULL == vxCreateVirtualArray((vx_graph)(context), item_type, capacity));
+}
+
+TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
+{
+    #define KA 1024
+
+    vx_context context = context_->vx_context_;
+
+    vx_array array = NULL;
+    int i = 0;
+    vx_keypoint_t keypoint_array[KA];
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    uint32_t size = 1024U;
+    vx_status status = VX_SUCCESS;
+    tivx_shared_mem_ptr_t tsmp[2048];
+
+    for (i = 0; i < KA; i++) {
+
+        memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
+    }
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+
+    i = 0;
+    while (status != VX_ERROR_NO_MEMORY) {
+
+        status = tivxMemBufferAlloc(&tsmp[i], size, mheap_region);
+
+    	if (status == VX_SUCCESS) {
+
+    	    i++;
+    	}
+    }
+
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+
+    while (i) {
+
+        tivxMemBufferFree(&tsmp[i], size);
+        i--;
+    }
+
+    tivxMemBufferFree(&tsmp[i], size);
+
+    VX_CALL(vxReleaseArray(&array));
 }
 
 TESTCASE_TESTS(
@@ -347,6 +417,7 @@ TESTCASE_TESTS(
     negativeTestCopyArrayRange,
     negativeTestMapUnmapArrayRange,
     negativeTestCreateArray,
-    negativeTestCreateVirtualArray
+    negativeTestCreateVirtualArray,
+	negativeTestOwnAllocArrayBuffer
 )
 

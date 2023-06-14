@@ -75,6 +75,7 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 
             status = (vx_status)VX_SUCCESS;
         }
+#ifdef LDRA_UNTESTABLE_CODE
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
@@ -99,12 +100,15 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
                 VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
             }
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
         VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
     }
+#endif
 
     return (status);
 }
@@ -375,12 +379,14 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
     }
     else
     {
+#ifdef LDRA_UNTESTABLE_CODE
         if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+#endif
 
         if (new_num_items > obj_desc->num_items)
         {
@@ -426,12 +432,15 @@ vx_status VX_API_CALL vxCopyArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; user pointer is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+
+#ifdef LDRA_UNTESTABLE_CODE
         if (obj_desc->capacity == 0U)
         {
             /* Array is still not allocated */
             VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; capacity is 0\n");
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
+#endif
 
         if ((stride < obj_desc->item_size) ||
             (stride == 0U))
@@ -450,6 +459,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
 
+#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -459,6 +469,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
+#endif
 
         if ((vx_enum)(vx_enum)VX_MEMORY_TYPE_HOST != user_mem_type)
         {
@@ -536,6 +547,7 @@ vx_status VX_API_CALL vxMapArrayRange(
     }
     else
     {
+#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -545,6 +557,7 @@ vx_status VX_API_CALL vxMapArrayRange(
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
+#endif
 
         /* Not of condition */
         if (!((range_end > range_start) &&
@@ -625,6 +638,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
     }
     else
     {
+#ifdef LDRA_UNTESTABLE_CODE
         if ( (arr->base.is_virtual == (vx_bool)vx_true_e)
             &&
             (arr->base.is_accessible == (vx_bool)vx_false_e)
@@ -634,6 +648,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
             VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = (vx_status)VX_ERROR_OPTIMIZED_AWAY;
         }
+#endif
 
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
             (arr->maps[map_id].map_addr == NULL) ||
@@ -688,17 +703,22 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
                 }
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"Array object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
+
         VX_PRINT(VX_ZONE_ERROR,"Reference is not an array type\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     return status;
 }
