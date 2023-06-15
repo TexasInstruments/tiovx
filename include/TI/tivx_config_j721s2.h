@@ -295,13 +295,6 @@ extern "C" {
 /*
  * Pyramid data object configuration resources
  */
-/*! \brief Max levels supported for the pyramid
- *  \note If this macro is changed, change #gOrbScaleFactor also
- *        in vx_pyramid file.
- * \ingroup group_vx_pyramid_cfg
- */
-#define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
-
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_vx_pyramid_cfg
  */

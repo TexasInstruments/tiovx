@@ -172,9 +172,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_OBJ_ARRAY_MAX_OBJECTS, 0, 0, 0, "TIVX_OBJ_ARRAY_MAX_OBJECTS"
     },
     {
-        TIVX_PYRAMID_MAX_LEVELS_ORB, 0, 0, 17, "TIVX_PYRAMID_MAX_LEVELS_ORB"
-    },
-    {
         TIVX_PYRAMID_MAX_LEVEL_OBJECTS, 0, 0, 1, "TIVX_PYRAMID_MAX_LEVEL_OBJECTS"
     },
     {
