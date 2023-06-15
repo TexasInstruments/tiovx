@@ -497,25 +497,6 @@ extern "C" {
 #define TIVX_TARGET_KERNEL_MAX             (256u)
 
 
-/*
- * Super node configuration resources
- */
-/*! \brief Max number of nodes per super node
- * \ingroup group_vx_ti_extensions_cfg
- */
-#define TIVX_SUPER_NODE_MAX_NODES          (16u)
-
-/*! \brief Max number of edges per super node
- * \ingroup group_vx_ti_extensions_cfg
- */
-#define TIVX_SUPER_NODE_MAX_EDGES          (16u)
-
-/*! \brief Max number super node objects supported
- * \ingroup group_vx_ti_extensions_cfg
- */
-#define TIVX_SUPER_NODE_MAX_OBJECTS        (16u)
-
-
 #ifdef __cplusplus
 }
 #endif

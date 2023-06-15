@@ -231,9 +231,20 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     {
         TIVX_MAX_CTRL_CMD_OBJECTS, 0, 0, 1, "TIVX_MAX_CTRL_CMD_OBJECTS"
     },
+#if 0
     {
         TIVX_MAX_DSP_BAM_USER_PLUGINS, 0, 0, 0, "TIVX_MAX_DSP_BAM_USER_PLUGINS"
     },
+    {
+        TIVX_SUPER_NODE_MAX_NODES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_NODES"
+    },
+    {
+        TIVX_SUPER_NODE_MAX_EDGES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_EDGES"
+    },
+    {
+        TIVX_SUPER_NODE_MAX_OBJECTS, 0, 0, 16, "TIVX_SUPER_NODE_MAX_OBJECTS"
+    },
+#endif
     {
         TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, 0, 0, 0, "TIVX_TARGET_MAX_JOB_QUEUE_DEPTH"
     },
@@ -248,15 +259,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_TARGET_KERNEL_MAX, 0, 0, 1 , "TIVX_TARGET_KERNEL_MAX"
-    },
-    {
-        TIVX_SUPER_NODE_MAX_NODES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_NODES"
-    },
-    {
-        TIVX_SUPER_NODE_MAX_EDGES, 0, 0, 16, "TIVX_SUPER_NODE_MAX_EDGES"
-    },
-    {
-        TIVX_SUPER_NODE_MAX_OBJECTS, 0, 0, 16, "TIVX_SUPER_NODE_MAX_OBJECTS"
     }
 };
 
