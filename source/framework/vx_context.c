@@ -1543,7 +1543,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
     return status;
 }
 
-VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const vx_char string[VX_MAX_KERNEL_NAME])
+VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const vx_char *name)
 {
     vx_kernel kernel = NULL;
     uint32_t idx;
@@ -1561,7 +1561,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
             kernel = context->kerneltable[idx];
             if((ownIsValidSpecificReference((vx_reference)kernel, (vx_enum)VX_TYPE_KERNEL) != (vx_bool)vx_false_e)
                 &&
-                ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
+                ( strncmp(kernel->name, name, VX_MAX_KERNEL_NAME) == 0 )
                 )
             {
                 /* found match */
