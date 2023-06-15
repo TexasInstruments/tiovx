@@ -458,7 +458,7 @@ TEST(tivxTensor, negativeTestQueryTensor)
     vx_context context = context_->vx_context_;
 
     vx_tensor tensor = NULL;
-    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS, dims[TIVX_CONTEXT_MAX_TENSOR_DIMS], size = 0;
+    vx_size nod = TIVX_CONTEXT_MAX_TENSOR_DIMS, dims[TIVX_CONTEXT_MAX_TENSOR_DIMS] = {0}, size = 0;
     vx_enum dt = VX_TYPE_UINT8;
     vx_int8 fpp = 0;
     vx_enum attribute = VX_TENSOR_DEFAULT;

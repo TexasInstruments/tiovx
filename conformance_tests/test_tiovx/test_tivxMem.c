@@ -460,7 +460,7 @@ static vx_status testTivxMemFreeObject(vx_reference ref, vx_enum type)
 
 TEST(tivxMem, testTranslateAddrMemAlloc)
 {
-    void       *ptr;
+    void       *ptr = NULL;
     void       *phyAddr;
     void       *virtAddr;
     uint64_t    dmaBufFd;
@@ -499,7 +499,7 @@ cleanup:
 
 TEST(tivxMem, testTranslateAddrMalloc)
 {
-    void       *ptr;
+    void       *ptr = NULL;
     void       *phyAddr;
     void       *virtAddr;
     uint64_t    dmaBufFd;
@@ -980,7 +980,7 @@ TEST(tivxMem, testReferenceImportNeg)
     vx_context      context = context_->vx_context_;
     void           *virtAddr[TIVX_TEST_MAX_NUM_ADDR] = {NULL};
     void           *p;
-    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR];
+    uint32_t        size[TIVX_TEST_MAX_NUM_ADDR] = {0};
     vx_reference    ref = NULL;
     uint32_t        testFail = 0;
     vx_enum         type = VX_TYPE_IMAGE;

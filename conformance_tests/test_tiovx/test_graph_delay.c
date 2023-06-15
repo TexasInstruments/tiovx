@@ -615,7 +615,7 @@ TEST(tivxGraphDelay, testObjArr)
     vx_scalar scalar;
     vx_object_array obj_arr;
     vx_delay delay;
-    vx_uint8 scalar_val;
+    vx_uint8 scalar_val = 0;
 
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 

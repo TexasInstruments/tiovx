@@ -128,7 +128,7 @@ TEST(tivxContext, negativeTestGetKernelByName)
     vx_context context = context_->vx_context_;
 
     vx_kernel user_kernel;
-    vx_char kernel_name[10];
+    vx_char kernel_name[10] = {0};
 
     ASSERT(NULL == (user_kernel = vxGetKernelByName(NULL, kernel_name)));
 }
