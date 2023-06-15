@@ -42,6 +42,7 @@ CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security
 CFLAGS += -Wno-unused-but-set-variable
+CFLAGS += -Wno-maybe-uninitialized
 endif
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
