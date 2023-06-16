@@ -246,9 +246,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
 #endif
     {
-        TIVX_TARGET_MAX_JOB_QUEUE_DEPTH, 0, 0, 0, "TIVX_TARGET_MAX_JOB_QUEUE_DEPTH"
-    },
-    {
         TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, 1, "TIVX_TARGET_MAX_TARGETS_IN_CPU"
     },
     {

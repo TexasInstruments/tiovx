@@ -467,14 +467,6 @@ extern "C" {
 #define TIVX_MAX_DSP_BAM_USER_PLUGINS      (8u)
 
 /*!
- * \brief Max depth of queue associated with target
- * \note Since this parameter is only used on target, it can not yet
- *       be tracked for max usage, so generated report reports static value
- * \ingroup group_vx_ti_extensions_cfg
- */
-#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH    (96u)
-
-/*!
  * \brief Max number of Target that can exist on a CPU
  * \ingroup group_vx_ti_extensions_cfg
  */

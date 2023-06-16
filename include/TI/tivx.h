@@ -144,12 +144,6 @@ extern "C" {
  */
 #define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
 
-/*! \brief Struct containing config parameters of given static resource. Allows
-*          for a log to be kept of the resources used throughout runtime.
- *
- * \ingroup group_tivx_ext_host
- */
-
 /*
  * Super node configuration resources
  */
@@ -167,6 +161,12 @@ extern "C" {
  * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_SUPER_NODE_MAX_OBJECTS        (16u)
+
+/*! \brief Struct containing config parameters of given static resource. Allows
+*          for a log to be kept of the resources used throughout runtime.
+ *
+ * \ingroup group_tivx_ext_host
+ */
 
 typedef struct _tivx_resource_stats_t {
 
