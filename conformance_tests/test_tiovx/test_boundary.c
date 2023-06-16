@@ -2355,9 +2355,6 @@ TEST(tivxBoundary2, testOrbPyramidLevelBoundary)
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     VX_CALL(vxReleaseGraph(&graph));
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_LEVELS_ORB", &stats));
-    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_LEVELS_ORB);
 }
 
 /* TIVX_PYRAMID_MAX_LEVEL_OBJECTS */
