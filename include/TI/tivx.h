@@ -147,6 +147,16 @@ extern "C" {
 /*
  * Super node configuration resources
  */
+ /*! \brief Max possible super nodes in graph
+ * \ingroup group_vx_graph_cfg
+ */
+#define TIVX_GRAPH_MAX_SUPER_NODES         (8u)
+
+/*! \brief Max number of BAM user plugins on DSP (in addition to builtin vxlib plugins)
+ * \ingroup group_vx_ti_extensions_cfg
+ */
+#define TIVX_MAX_DSP_BAM_USER_PLUGINS      (8u)
+
 /*! \brief Max number of nodes per super node
  * \ingroup group_vx_ti_extensions_cfg
  */
