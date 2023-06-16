@@ -700,7 +700,37 @@ TEST(tivxNegativeBoundary2, negativeTestGraphParamBoundary)
 }
 
 /* TIVX_GRAPH_MAX_NODES */
-TEST(tivxNegativeBoundary, negativeTestNodeBoundary)
+TEST(tivxBoundary, testGraphNodeBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_kernel   src_kernel;
+    vx_node   src_node[TIVX_GRAPH_MAX_NODES];
+    int i;
+    vx_graph graph = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(src_kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+
+    for (i = 0; i < TIVX_GRAPH_MAX_NODES; i++)
+    {
+        ASSERT_VX_OBJECT(src_node[i] = vxCreateGenericNode(graph, src_kernel), VX_TYPE_NODE);
+    }
+
+    for (i = 0; i < TIVX_GRAPH_MAX_NODES; i++)
+    {
+        VX_CALL(vxReleaseNode(&src_node[i]));
+    }
+
+    VX_CALL(vxReleaseKernel(&src_kernel));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_NODES", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_NODES);
+}
+
+/* TIVX_GRAPH_MAX_NODES */
+TEST(tivxNegativeBoundary, negativeTestGraphNodeBoundary)
 {
     vx_context context = context_->vx_context_;
     vx_kernel   src_kernel;
@@ -726,40 +756,6 @@ TEST(tivxNegativeBoundary, negativeTestNodeBoundary)
 
     VX_CALL(vxReleaseKernel(&src_kernel));
     VX_CALL(vxReleaseGraph(&graph));
-}
-
-/* TIVX_GRAPH_MAX_NODES */
-/* TIVX_NODE_MAX_OBJECTS */
-TEST(tivxBoundary, testNodeBoundary)
-{
-    vx_context context = context_->vx_context_;
-    vx_kernel   src_kernel;
-    vx_node   src_node[TIVX_GRAPH_MAX_NODES];
-    int i;
-    vx_graph graph = 0;
-
-    ASSERT(TIVX_GRAPH_MAX_NODES == TIVX_NODE_MAX_OBJECTS);
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    ASSERT_VX_OBJECT(src_kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
-
-    for (i = 0; i < TIVX_GRAPH_MAX_NODES; i++)
-    {
-        ASSERT_VX_OBJECT(src_node[i] = vxCreateGenericNode(graph, src_kernel), VX_TYPE_NODE);
-    }
-
-    for (i = 0; i < TIVX_GRAPH_MAX_NODES; i++)
-    {
-        VX_CALL(vxReleaseNode(&src_node[i]));
-    }
-
-    VX_CALL(vxReleaseKernel(&src_kernel));
-    VX_CALL(vxReleaseGraph(&graph));
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_NODES", &stats));
-    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_NODES);
-
 }
 
 /* TIVX_GRAPH_MAX_OBJECTS */
@@ -1080,6 +1076,85 @@ TEST(tivxNegativeBoundary2, negativeTestReplicateBoundary)
     /* Asserting that max replicate nodes is greater than max allowed nodes
      * In this case, a negative test is impossible due to node restriction */
     ASSERT(TIVX_NODE_MAX_REPLICATE >= TIVX_GRAPH_MAX_NODES);
+}
+
+/* TIVX_NODE_MAX_OBJECTS */
+TEST(tivxBoundary2, testNodeObjectBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_kernel   src_kernel;
+    vx_node   src_node[TIVX_NODE_MAX_OBJECTS];
+    int graph_count = (TIVX_NODE_MAX_OBJECTS / TIVX_GRAPH_MAX_NODES) + 1;
+    int i, j, node_count=0;
+    vx_graph graph[graph_count];
+
+    ASSERT_VX_OBJECT(src_kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+
+    for (i = 0; i < graph_count; i++)
+    {
+        ASSERT_VX_OBJECT(graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && node_count < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            ASSERT_VX_OBJECT(src_node[node_count] = vxCreateGenericNode(graph[i], src_kernel), VX_TYPE_NODE);
+            node_count++;
+        }
+    }
+
+    node_count = 0;
+
+    for (i = 0; i < graph_count; i++)
+    {
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && node_count < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            VX_CALL(vxReleaseNode(&src_node[node_count]));
+            node_count++;
+        }
+        VX_CALL(vxReleaseGraph(&graph[i]));
+    }
+
+    VX_CALL(vxReleaseKernel(&src_kernel));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_NODE_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_NODE_MAX_OBJECTS);
+}
+
+/* TIVX_NODE_MAX_OBJECTS */
+TEST(tivxNegativeBoundary2, negativeTestNodeObjectBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_kernel   src_kernel;
+    vx_node   src_node[TIVX_NODE_MAX_OBJECTS+1];
+    int graph_count = (TIVX_NODE_MAX_OBJECTS / TIVX_GRAPH_MAX_NODES) + 1;
+    int i, j, node_count=0;
+    vx_graph graph[graph_count+1];
+
+    ASSERT_VX_OBJECT(src_kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+
+    for (i = 0; i < graph_count; i++)
+    {
+        ASSERT_VX_OBJECT(graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && node_count < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            ASSERT_VX_OBJECT(src_node[node_count] = vxCreateGenericNode(graph[i], src_kernel), VX_TYPE_NODE);
+            node_count++;
+        }
+    }
+    ASSERT_VX_OBJECT(graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+    EXPECT_VX_ERROR(src_node[TIVX_NODE_MAX_OBJECTS] = vxCreateGenericNode(graph[i], src_kernel), VX_ERROR_NO_RESOURCES);
+
+    node_count = 0;
+
+    for (i = 0; i < graph_count+1; i++)
+    {
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && node_count < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            VX_CALL(vxReleaseNode(&src_node[node_count]));
+            node_count++;
+        }
+        VX_CALL(vxReleaseGraph(&graph[i]));
+    }
+
+    VX_CALL(vxReleaseKernel(&src_kernel));
 }
 
 static
@@ -3676,7 +3751,7 @@ TESTCASE_TESTS(tivxBoundary,
         testRemapBoundary,
         testScalarBoundary,
         testThresholdBoundary,
-        testNodeBoundary,
+        testGraphNodeBoundary,
         testParameterBoundary,
         testGraphBoundary,
         testObjectArray,
@@ -3702,6 +3777,7 @@ TESTCASE_TESTS(tivxBoundary2,
         testGraphParamBoundary,
         testGraphDelayBoundary,
         testGraphMaxPipelineDepthBoundary,
+        testNodeObjectBoundary,
         testDelayMaxObjectBoundary,
         testDelayMaxPrmBoundary,
         testGraphDataRefBoundary,
@@ -3725,7 +3801,7 @@ TESTCASE_TESTS(tivxNegativeBoundary,
         negativeTestVirtualObjectArray,
         negativeTestParameterBoundary,
         negativeTestGraphBoundary,
-        negativeTestNodeBoundary,
+        negativeTestGraphNodeBoundary,
         negativeTestPyramidLevelBoundary,
         negativeTestVirtualPyramidLevelBoundary,
         negativeTestThresholdBoundary,
@@ -3758,6 +3834,7 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestDelayMaxObjectBoundary,
         negativeTestGraphMaxPipelineDepthBoundary,
         negativeTestGraphDataRefBoundary,
+        negativeTestNodeObjectBoundary,
         negativeTestKernelParamsBoundary,
         negativeTestEventQueueBoundary,
         negativeTestDelayMaxPrmBoundary,
