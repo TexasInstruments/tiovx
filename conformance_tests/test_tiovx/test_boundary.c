@@ -1073,9 +1073,14 @@ TEST(tivxBoundary2, testReplicateNodeBoundary)
 /* TIVX_NODE_MAX_REPLICATE */
 TEST(tivxNegativeBoundary2, negativeTestReplicateBoundary)
 {
-    /* Asserting that max replicate nodes is greater than max allowed nodes
-     * In this case, a negative test is impossible due to node restriction */
-    ASSERT(TIVX_NODE_MAX_REPLICATE >= TIVX_GRAPH_MAX_NODES);
+    /* Asserting that max replicate nodes is equal to the greater of object
+     * array max items and pyramid max level objects. A negative test is
+     * impossible in this case. If one more node than is allowed by the
+     * replicate max is created, more levels than allowed would be created
+     * within the pyramid or object array structure. The resulting error
+     * would be in regards to one of those instead of truly testing the
+     * replicate max value.*/
+    ASSERT(TIVX_NODE_MAX_REPLICATE == fmax(TIVX_OBJECT_ARRAY_MAX_ITEMS, TIVX_PYRAMID_MAX_LEVEL_OBJECTS));
 }
 
 /* TIVX_NODE_MAX_OBJECTS */
