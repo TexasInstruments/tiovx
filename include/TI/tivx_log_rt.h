@@ -89,7 +89,7 @@ extern "C" {
 vx_status VX_API_CALL tivxLogRtTraceEnable(vx_graph graph);
 
 /*!
- * \brief Sisable run-time logging of graph trace
+ * \brief Disable run-time logging of graph trace
  *
  *  - By default run-time logging is disabled.
  *  - This API MUST be called after graph executions have stopped and before calling vxReleaseGraph
