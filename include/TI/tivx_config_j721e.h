@@ -69,17 +69,6 @@ extern "C" {
 #endif
 
 
-/*! \brief Max number of kernel ID's
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_MAX_KERNEL_ID                 (VX_KERNEL_MASK)
-
-/*! \brief Max number of kernel library ID's
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
-
-
 /*
  * FRAMEWORK OBJECTS
  */

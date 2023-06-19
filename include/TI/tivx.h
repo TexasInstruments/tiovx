@@ -137,13 +137,6 @@ extern "C" {
  */
 #define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ((uint32_t)-1)
 
-/*! \brief Max levels supported for the pyramid
- *  \note If this macro is changed, change #gOrbScaleFactor also
- *        in vx_pyramid file.
- * \ingroup group_vx_pyramid_cfg
- */
-#define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
-
 /*
  * Super node configuration resources
  */
@@ -171,6 +164,28 @@ extern "C" {
  * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_SUPER_NODE_MAX_OBJECTS        (16u)
+
+/*
+ * The following parameters are publicly included to retain functionality
+ * within the boundary test cases.
+ */
+ /*! \brief Max levels supported for the pyramid
+ *  \note If this macro is changed, change #gOrbScaleFactor also
+ *        in vx_pyramid file.
+ * \ingroup group_vx_pyramid_cfg
+ */
+#define TIVX_PYRAMID_MAX_LEVELS_ORB        (17u)
+
+/*! \brief Max number of kernel ID's
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_MAX_KERNEL_ID                 (VX_KERNEL_MASK)
+
+/*! \brief Max number of kernel library ID's
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
+
 
 /*! \brief Struct containing config parameters of given static resource. Allows
 *          for a log to be kept of the resources used throughout runtime.

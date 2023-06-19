@@ -70,12 +70,6 @@ static tivx_mutex g_tivx_log_resource_lock;
 
 static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     {
-        TIVX_MAX_KERNEL_ID, VX_KERNEL_MASK, VX_KERNEL_MASK, VX_KERNEL_MASK, "TIVX_MAX_KERNEL_ID",
-    },
-    {
-        TIVX_MAX_LIBRARY_ID, VX_LIBRARY(VX_LIBRARY_MASK), VX_LIBRARY(VX_LIBRARY_MASK), VX_LIBRARY(VX_LIBRARY_MASK), "TIVX_MAX_LIBRARY_ID"
-    },
-    {
         TIVX_CONTEXT_MAX_OBJECTS, 0, 0, 1, "TIVX_CONTEXT_MAX_OBJECTS"
     },
     {
