@@ -68,6 +68,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -75,6 +76,7 @@ vx_status ownDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_refe
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         uint16_t queue_obj_desc_id, ref_obj_desc_id;
         tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
@@ -125,6 +127,7 @@ vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refer
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if((data_ref_q == NULL) || (ref == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -132,6 +135,7 @@ vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refer
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         uint16_t queue_obj_desc_id, ref_obj_desc_id;
 
@@ -170,6 +174,7 @@ vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 t
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(data_ref_q == NULL)
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -177,6 +182,7 @@ vx_status ownDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 t
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         status = tivxEventWait(data_ref_q->wait_done_ref_available_event, timeout);
     }
@@ -188,6 +194,7 @@ vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_ui
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -195,6 +202,7 @@ vx_status ownDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_ui
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         uint16_t queue_obj_desc_id;
 
@@ -214,6 +222,7 @@ vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_u
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -221,6 +230,7 @@ vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_u
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
+#endif
     {
         uint16_t queue_obj_desc_id;
 
@@ -264,11 +274,13 @@ vx_status ownDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t 
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "Invalid reference\n");
     }
+#endif
     return status;
 }
 
