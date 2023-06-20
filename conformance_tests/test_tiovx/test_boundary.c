@@ -642,7 +642,6 @@ TEST(tivxBoundary2, testGraphParamBoundary)
 
     for (i = 0; i < TIVX_GRAPH_MAX_PARAMS; i++)
     {
-        printf("%d ", i);
         VX_CALL(vxReleaseKernel(&kernels[i]));
         ASSERT(kernels[i] == NULL);
 
@@ -685,7 +684,6 @@ TEST(tivxNegativeBoundary2, negativeTestGraphParamBoundary)
 
     for (i = 0; i < TIVX_GRAPH_MAX_PARAMS; i++)
     {
-        printf("%d ", i);
         VX_CALL(vxReleaseKernel(&kernels[i]));
         ASSERT(kernels[i] == NULL);
 
@@ -2579,10 +2577,10 @@ TEST(tivxBoundary2, testMapRawImageBoundary)
     params.format[2].msb = 11;
     params.meta_height_before = 5;
     params.meta_height_after = 0;
-    vx_map_id mid;
+    vx_map_id mid[TIVX_RAW_IMAGE_MAX_MAPS];
     vx_rectangle_t rect;
     vx_imagepatch_addressing_t addr;
-    vx_uint32 pdata[TIVX_RAW_IMAGE_MAX_MAPS];
+    vx_uint32 *pdata[TIVX_RAW_IMAGE_MAX_MAPS];
     int i;
     for (i = 0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
@@ -2597,9 +2595,13 @@ TEST(tivxBoundary2, testMapRawImageBoundary)
     ASSERT_VX_OBJECT(src_raw = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
     for (i = 0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++) 
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch(src_raw, &rect, 0, &mid, &addr, (void *)(&pdata[i]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch(src_raw, &rect, 0, &mid[i], &addr, (void *)(&pdata[i]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
     }
-    VX_CALL(tivxUnmapRawImagePatch(src_raw, mid));
+    
+    for (i=0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++)
+    {
+        VX_CALL(tivxUnmapRawImagePatch(src_raw, mid[i]));
+    }
     VX_CALL(tivxReleaseRawImage(&src_raw));
 
     tivx_resource_stats_t stats;
@@ -2627,10 +2629,10 @@ TEST(tivxNegativeBoundary2, negativeTestMapRawImageBoundary)
     params.format[2].msb = 11;
     params.meta_height_before = 5;
     params.meta_height_after = 0;
-    vx_map_id mid;
+    vx_map_id mid[TIVX_RAW_IMAGE_MAX_OBJECTS + 1];
     vx_rectangle_t rect;
     vx_imagepatch_addressing_t addr;
-    vx_uint32 pdata[TIVX_RAW_IMAGE_MAX_MAPS + 1];
+    vx_uint32 *pdata[TIVX_RAW_IMAGE_MAX_MAPS + 1];
     int i;
     for (i = 0; i <= TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
@@ -2645,12 +2647,15 @@ TEST(tivxNegativeBoundary2, negativeTestMapRawImageBoundary)
     ASSERT_VX_OBJECT(src_raw = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
     for (i = 0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++) 
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch(src_raw, &rect, 0, &mid, &addr, (void *)(&pdata[i]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapRawImagePatch(src_raw, &rect, 0, &mid[i], &addr, (void *)(&pdata[i]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
     }
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxMapRawImagePatch(src_raw, &rect, 0, &mid, &addr, (void *)(&pdata[TIVX_RAW_IMAGE_MAX_MAPS]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
-
-    VX_CALL(tivxUnmapRawImagePatch(src_raw, mid));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxMapRawImagePatch(src_raw, &rect, 0, &mid[TIVX_RAW_IMAGE_MAX_MAPS], &addr, (void *)(&pdata[TIVX_RAW_IMAGE_MAX_MAPS]), VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+    
+    for (i=0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++)
+    {
+        VX_CALL(tivxUnmapRawImagePatch(src_raw, mid[i]));
+    }
     VX_CALL(tivxReleaseRawImage(&src_raw));
 }
 
@@ -2819,9 +2824,9 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     vx_size num_dims = 4;
     vx_size dim_length = 20;
     vx_size strides[num_dims];
-    vx_map_id mid;
+    vx_map_id mid[TIVX_TENSOR_MAX_MAPS];
     vx_size *dims = (vx_size*)ct_alloc_mem(num_dims * sizeof(vx_size));
-    vx_uint32 pdata[TIVX_TENSOR_MAX_MAPS];
+    vx_uint32 *pdata[TIVX_TENSOR_MAX_MAPS];
     int i;
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
@@ -2837,11 +2842,14 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     ASSERT_VX_OBJECT(src_tensor = vxCreateTensor(context, num_dims, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++) 
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid, strides, (void **)&pdata[i], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid[i], strides, (void **)&pdata[i], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    }
+    
+    for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
+    {
+        VX_CALL(tivxUnmapTensorPatch(src_tensor, mid[i]));
     }
 
-    VX_CALL(tivxUnmapTensorPatch(src_tensor, mid));
-    
     VX_CALL(vxReleaseTensor(&src_tensor));
     tivx_resource_stats_t stats;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_TENSOR_MAX_MAPS", &stats));
@@ -2858,9 +2866,9 @@ TEST(tivxNegativeBoundary2, negativeTestMapTensorBoundary)
     vx_size num_dims = 4;
     vx_size dim_length = 20;
     vx_size strides[num_dims];
-    vx_map_id mid;
+    vx_map_id mid[TIVX_TENSOR_MAX_MAPS + 1];
     vx_size *dims = (vx_size*)ct_alloc_mem(num_dims * sizeof(vx_size));
-    vx_uint32 pdata[TIVX_TENSOR_MAX_MAPS+1];
+    vx_uint32 *pdata[TIVX_TENSOR_MAX_MAPS + 1];
     int i;
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
@@ -2876,12 +2884,15 @@ TEST(tivxNegativeBoundary2, negativeTestMapTensorBoundary)
     ASSERT_VX_OBJECT(src_tensor = vxCreateTensor(context, num_dims, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++) 
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid, strides, (void **)&pdata[i], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid[i], strides, (void **)&pdata[i], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
     }
     
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid, strides, (void **)&pdata[TIVX_TENSOR_MAX_MAPS], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, tivxMapTensorPatch(src_tensor, num_dims, NULL, NULL, &mid[TIVX_TENSOR_MAX_MAPS], strides, (void **)&pdata[TIVX_TENSOR_MAX_MAPS], VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
 
-    VX_CALL(tivxUnmapTensorPatch(src_tensor, mid));
+    for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
+    {
+        VX_CALL(tivxUnmapTensorPatch(src_tensor, mid[i]));
+    }
     VX_CALL(vxReleaseTensor(&src_tensor));
 }
 
@@ -2995,7 +3006,7 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     vx_size offset = 0, size = 0;
     vx_map_id mid[TIVX_USER_DATA_OBJECT_MAX_MAPS];
     vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
-    vx_uint32 flags = 0, udata = 0, pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS + 1] = {0};
+    vx_uint32 flags = 0, udata = 0, *pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS] = {0};
     vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
     int i;
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
@@ -3025,9 +3036,9 @@ TEST(tivxNegativeBoundary2, negativeTestMapUserDataObjectBoundary)
     vx_context context = context_->vx_context_;
     vx_user_data_object src_user_data;
     vx_size offset = 0, size = 0;
-    vx_map_id mid;
+    vx_map_id mid[TIVX_USER_DATA_OBJECT_MAX_MAPS + 1];
     vx_enum usage = VX_READ_ONLY, user_mem_type = VX_MEMORY_TYPE_NONE;
-    vx_uint32 flags = 0, udata = 0, pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS+1];
+    vx_uint32 flags = 0, udata = 0, *pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS + 1];
     vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
     int i;
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
@@ -3038,12 +3049,15 @@ TEST(tivxNegativeBoundary2, negativeTestMapUserDataObjectBoundary)
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++) 
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapUserDataObject(src_user_data, offset, size, &mid, (void *)(&pdata[i]), usage, user_mem_type, flags));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapUserDataObject(src_user_data, offset, size, &mid[i], (void *)(&pdata[i]), usage, user_mem_type, flags));
     }
     
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxMapUserDataObject(src_user_data, offset, size, &mid, (void *)(&pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS]), usage, user_mem_type, flags));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxMapUserDataObject(src_user_data, offset, size, &mid[i], (void *)(&pdata[TIVX_USER_DATA_OBJECT_MAX_MAPS]), usage, user_mem_type, flags));
 
-    VX_CALL(vxUnmapUserDataObject(src_user_data, mid));
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
+    {
+        VX_CALL(vxUnmapUserDataObject(src_user_data, mid[i]));
+    }
 
     VX_CALL(vxReleaseUserDataObject(&src_user_data));
 }
