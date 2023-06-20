@@ -166,6 +166,250 @@ TEST(tivxNegativeBoundary, negativeTestReferenceBoundary)
     }
 }
 
+/* TIVX_CONTEXT_MAX_REFERENCES */
+TEST(tivxBoundary2, testContextReferenceBoundary)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_graph graph[TIVX_GRAPH_MAX_OBJECTS];
+    vx_node node[TIVX_NODE_MAX_OBJECTS];
+    vx_array array[TIVX_ARRAY_MAX_OBJECTS];
+    vx_convolution convolution[TIVX_CONVOLUTION_MAX_OBJECTS];
+    vx_delay delay[TIVX_DELAY_MAX_OBJECTS];
+    vx_distribution distribution[TIVX_DISTRIBUTION_MAX_OBJECTS];
+    vx_image image[TIVX_IMAGE_MAX_OBJECTS], exemplarImg;
+    vx_lut lut[TIVX_LUT_MAX_OBJECTS];
+    vx_matrix matrix[TIVX_MATRIX_MAX_OBJECTS];
+    vx_object_array obj_array[TIVX_OBJ_ARRAY_MAX_OBJECTS];
+    vx_pyramid pyramid[TIVX_PYRAMID_MAX_OBJECTS];
+    tivx_raw_image raw_image[TIVX_RAW_IMAGE_MAX_OBJECTS];
+    vx_remap remap[TIVX_REMAP_MAX_OBJECTS];
+    vx_scalar scalar[TIVX_SCALAR_MAX_OBJECTS];
+    vx_tensor tensor[TIVX_TENSOR_MAX_OBJECTS];
+    vx_threshold threshold[TIVX_THRESHOLD_MAX_OBJECTS];
+    vx_user_data_object user_data[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
+    vx_image data_ref_q[TIVX_DATA_REF_Q_MAX_OBJECTS];
+    vx_kernel kernel[TIVX_KERNEL_MAX_OBJECTS];
+    vx_meta_format meta_format[TIVX_META_FORMAT_MAX_OBJECTS];
+    vx_parameter parameter[TIVX_PARAMETER_MAX_OBJECTS];
+
+    int i, j, refCount=0, imgCount=0, nodeCount=0;
+
+    ASSERT_VX_OBJECT(kernel[0] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+    int graphCount = (TIVX_NODE_MAX_OBJECTS / TIVX_GRAPH_MAX_NODES) + 1;
+    for (i = 0; i < graphCount; i++)
+    {
+        ASSERT_VX_OBJECT(graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && nodeCount < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            ASSERT_VX_OBJECT(node[nodeCount] = vxCreateGenericNode(graph[i], kernel[0]), VX_TYPE_NODE);
+            nodeCount++;
+            refCount++;
+        }
+    }
+    VX_CALL(vxReleaseKernel(&kernel[0]));
+
+    ASSERT_VX_OBJECT(exemplarImg = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    for (i = 0; i < TIVX_OBJ_ARRAY_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(obj_array[i] = vxCreateObjectArray(context, (vx_reference)(exemplarImg), 1), VX_TYPE_OBJECT_ARRAY);
+        refCount++;
+        imgCount++;
+    }
+    VX_CALL(vxReleaseImage(&exemplarImg));
+
+    for (i = imgCount; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        refCount++;
+    }
+
+    vx_size dims[4];
+    for(i = 0; i < 4; i++)
+        dims[i] = 20;
+
+    for (i = 0; i < TIVX_TENSOR_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(tensor[i] = vxCreateTensor(context, 4, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_KERNEL_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(kernel[i] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
+        refCount++;
+    }
+
+    vx_char test_name[] = {'t', 'e', 's', 't', 'i', 'n', 'g'};
+    vx_uint32 udata = 0;
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(user_data[i] = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_ARRAY_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(array[i] = vxCreateArray(context, VX_TYPE_KEYPOINT, 4), VX_TYPE_ARRAY);
+        refCount++;
+    }
+
+    for (i = graphCount; i < TIVX_GRAPH_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_REMAP_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(remap[i] = vxCreateRemap(context, 32, 24, 16, 12), VX_TYPE_REMAP);
+        refCount++;
+    }
+
+    vx_int32 tmp = 0;
+    for (i = 0; i < TIVX_SCALAR_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(scalar[i] = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_THRESHOLD_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(threshold[i] = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_TYPE_THRESHOLD);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_CONVOLUTION_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(convolution[i] = vxCreateConvolution(context, 3, 3), VX_TYPE_CONVOLUTION);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_DISTRIBUTION_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(distribution[i] = vxCreateDistribution(context, 100, 5, 200), VX_TYPE_DISTRIBUTION);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_LUT_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(lut[i] = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
+        refCount++;
+    }
+
+    for (i = 0; i < TIVX_MATRIX_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(matrix[i] = vxCreateMatrix(context, VX_TYPE_FLOAT32, 3, 3), VX_TYPE_MATRIX);
+        refCount++;
+    }
+
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height_before = 5;
+    params.meta_height_after = 0;
+    for (i = 0; i < TIVX_RAW_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(raw_image[i] = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+        refCount++;
+    }
+
+
+    for (i = 0; i < TIVX_TENSOR_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseTensor(&tensor[i]));
+    }
+
+    for (i = 0; i < TIVX_OBJ_ARRAY_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseObjectArray(&obj_array[i]));
+    }
+
+    for (i = imgCount; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseImage(&image[i]));
+        refCount--;
+    }
+
+    for (i = 0; i < TIVX_KERNEL_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseKernel(&kernel[i]));
+    }
+
+    for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseUserDataObject(&user_data[i]));
+    }
+
+    for (i = 0; i < TIVX_ARRAY_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseArray(&array[i]));
+    }
+
+    nodeCount=0;
+    for (i = 0; i < graphCount; i++)
+    {
+        for (j = 0; j < TIVX_GRAPH_MAX_NODES && nodeCount < TIVX_NODE_MAX_OBJECTS; j++)
+        {
+            VX_CALL(vxReleaseNode(&node[nodeCount]));
+            nodeCount++;
+        }
+    }
+
+    for (i = 0; i < TIVX_GRAPH_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseGraph(&graph[i]));
+    }
+
+    for (i = 0; i < TIVX_REMAP_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseRemap(&remap[i]));
+    }
+
+    for (i = 0; i < TIVX_SCALAR_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseScalar(&scalar[i]));
+    }
+
+    for (i = 0; i < TIVX_THRESHOLD_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseThreshold(&threshold[i]));
+    }
+
+    for (i = 0; i < TIVX_CONVOLUTION_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseConvolution(&convolution[i]));
+    }
+
+    for (i = 0; i < TIVX_DISTRIBUTION_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseDistribution(&distribution[i]));
+    }
+
+    for (i = 0; i < TIVX_LUT_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseLUT(&lut[i]));
+    }
+
+    for (i = 0; i < TIVX_MATRIX_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseMatrix(&matrix[i]));
+    }
+
+    for (i = 0; i < TIVX_RAW_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(tivxReleaseRawImage(&raw_image[i]));
+    }
+}
+
 /* TIVX_GRAPH_MAX_DELAYS */
 TEST(tivxBoundary2, testGraphDelayBoundary)
 {
@@ -2606,6 +2850,7 @@ TEST(tivxBoundary2, testMapRawImageBoundary)
     for (i = 0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = i;
     }
 
     rect.start_x = 0;
@@ -2658,6 +2903,7 @@ TEST(tivxNegativeBoundary2, negativeTestMapRawImageBoundary)
     for (i = 0; i <= TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = 0;
     }
 
     rect.start_x = 0;
@@ -2852,6 +3098,7 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = i;
     }
     for (i = 0; i < num_dims; i++)
     {
@@ -2894,6 +3141,7 @@ TEST(tivxNegativeBoundary2, negativeTestMapTensorBoundary)
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = 0;
     }
     for(i = 0; i < num_dims; i++)
     {
@@ -3033,6 +3281,7 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = i;
     }
 
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
@@ -3042,6 +3291,7 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     }
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
+        mid[i] = i;
         VX_CALL(vxUnmapUserDataObject(src_user_data, mid[i]));
     }
     
@@ -3065,6 +3315,7 @@ TEST(tivxNegativeBoundary2, negativeTestMapUserDataObjectBoundary)
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
         pdata[i] = 0;
+        mid[i] = i;
     }
 
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
@@ -3830,7 +4081,8 @@ TESTCASE_TESTS(tivxBoundary2,
         testMapUserDataObjectBoundary,
         testUserDataObjectBoundary,
         testControlCommandsBoundary,
-        testGeneratedConfig
+        testGeneratedConfig,
+        testContextReferenceBoundary
         )
 
 
