@@ -562,6 +562,21 @@ TEST(tivxConvolve, negativeTestCreateConvolution)
     ASSERT(NULL == vxCreateConvolution(context, 3, 1));
 }
 
+TEST(tivxConvolve, negativeTestMemBufferAlloc)
+{
+    vx_context context = context_->vx_context_;
+
+    tivx_shared_mem_ptr_t tsmp;
+    uint32_t size = 1024U;
+    vx_enum mheap_region = TIVX_MEM_EXTERNAL;
+    vx_status status = VX_SUCCESS;
+
+    while (status != VX_ERROR_NO_MEMORY) {
+
+    	status = tivxMemBufferAlloc(&tsmp, size, mheap_region);
+    }
+}
+
 TESTCASE_TESTS(
     tivxConvolve,
     testGraphProcessing, 
@@ -570,6 +585,7 @@ TESTCASE_TESTS(
     negativeTestQueryConvolution,
     negativeTestSetConvolutionAttribute,
     negativeTestCopyConvolutionCoefficients,
-    negativeTestCreateConvolution
+    negativeTestCreateConvolution,
+	negativeTestMemBufferAlloc
 )
 

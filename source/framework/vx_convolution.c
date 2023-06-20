@@ -312,11 +312,15 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_convolution_t *obj_desc = NULL;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(ref->type == (vx_enum)VX_TYPE_CONVOLUTION)
+#endif
     {
         obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
 
+#ifdef LDRA_UNTESTABLE_CODE
         if(obj_desc != NULL)
+#endif
         {
             /* memory is not allocated, so allocate it */
             if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
@@ -340,17 +344,21 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
                 }
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "convolution object descriptor is null\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not a convolution\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     return status;
 }
