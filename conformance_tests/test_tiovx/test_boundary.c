@@ -1209,6 +1209,7 @@ TEST(tivxBoundary, testMapArray)
     vx_size num_items = 10;
     vx_size item_size = 0;
     void* array_items = 0;
+    vx_map_id map_id[TIVX_ARRAY_MAX_MAPS+1];
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
@@ -1229,21 +1230,25 @@ TEST(tivxBoundary, testMapArray)
     {
         vx_size stride = 0;
         void* ptr = 0;
-        vx_map_id map_id;
-        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
-        VX_CALL(vxUnmapArrayRange(array, map_id));
-        VX_CALL(vxUnmapArrayRange(array2, map_id));
+        VX_CALL(vxUnmapArrayRange(array, map_id[i]));
+        VX_CALL(vxUnmapArrayRange(array2, map_id[i]));
     }
 
     for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
     {
         vx_size stride = 0;
         void* ptr = 0;
-        vx_map_id map_id;
-        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    }
+
+    for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
+    {
+        VX_CALL(vxUnmapArrayRange(array, map_id[i]));
+        VX_CALL(vxUnmapArrayRange(array2, map_id[i]));
     }
 
     VX_CALL(vxReleaseArray(&array));
@@ -1266,7 +1271,7 @@ TEST(tivxNegativeBoundary, negativeTestMapArray)
     void* array_items = 0;
     vx_size stride = 0;
     void* ptr = 0;
-    vx_map_id map_id;
+    vx_map_id map_id[TIVX_ARRAY_MAX_MAPS+1];
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
@@ -1282,10 +1287,15 @@ TEST(tivxNegativeBoundary, negativeTestMapArray)
 
     for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
     {
-        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     }
 
-    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapArrayRange(array, 0, num_items, &map_id[i], &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
+    {
+        VX_CALL(vxUnmapArrayRange(array, map_id[i]));
+    }
 
     VX_CALL(vxReleaseArray(&array));
 }
@@ -1732,6 +1742,61 @@ TEST(tivxNegativeBoundary, negativeTestDelayBoundary)
 }
 
 /* TIVX_IMAGE_MAX_MAPS */
+TEST(tivxBoundary, testMapImage)
+{
+    int i, w = 128, h = 128;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_context context = context_->vx_context_;
+    vx_image image, image2;
+    vx_imagepatch_addressing_t addr;
+    vx_uint8 *pdata = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_map_id map_id[TIVX_IMAGE_MAX_MAPS+1];
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(image  = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+
+    /* image[0] gets 1 */
+
+    // Verifying that it is not restricted to max image maps as long as it frees memory in vxUnmapImagePatch
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS+1; i++)
+    {
+        pdata = NULL;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id[i], &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id[i], &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        *pdata = 1;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id[i]));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image2, map_id[i]));
+    }
+
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
+    {
+        pdata = NULL;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id[i], &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id[i], &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    }
+
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id[i]));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image2, map_id[i]));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseImage(&image2));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_MAPS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_MAPS);
+
+}
+
+/* TIVX_IMAGE_MAX_MAPS */
 TEST(tivxNegativeBoundary, negativeTestMapImage)
 {
     int i, w = 128, h = 128;
@@ -1741,7 +1806,7 @@ TEST(tivxNegativeBoundary, negativeTestMapImage)
     vx_imagepatch_addressing_t addr;
     vx_uint8 *pdata = 0;
     vx_rectangle_t rect = {0, 0, 1, 1};
-    vx_map_id map_id;
+    vx_map_id map_id[TIVX_IMAGE_MAX_MAPS+1];
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
@@ -1752,36 +1817,19 @@ TEST(tivxNegativeBoundary, negativeTestMapImage)
     for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
     {
         pdata = NULL;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id[i], &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     }
 
-    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id[TIVX_IMAGE_MAX_MAPS], &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id[i]));
+    }
 
     VX_CALL(vxReleaseImage(&image));
-}
-
-/* TIVX_IMAGE_MAX_OBJECTS */
-TEST(tivxBoundary, testImageBoundary)
-{
-    vx_context context = context_->vx_context_;
-    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS];
-    int i;
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT(vx_false_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
-    }
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        VX_CALL(vxReleaseImage(&src_image[i]));
-    }
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
-    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
 }
 
 /* TIVX_IMAGE_MAX_SUBIMAGES */
@@ -1914,102 +1962,6 @@ TEST(tivxBoundary2, testSubImageBoundary)
     ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_SUBIMAGES);
 }
 
-/* TIVX_IMAGE_MAX_MAPS */
-TEST(tivxBoundary, testMapImage)
-{
-    int i, w = 128, h = 128;
-    vx_df_image f = VX_DF_IMAGE_U8;
-    vx_context context = context_->vx_context_;
-    vx_image image, image2;
-    vx_imagepatch_addressing_t addr;
-    vx_uint8 *pdata = 0;
-    vx_rectangle_t rect = {0, 0, 1, 1};
-    vx_map_id map_id;
-
-    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
-
-    ASSERT_VX_OBJECT(image  = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
-
-    /* image[0] gets 1 */
-
-    // Verifying that it is not restricted to max image maps as long as it frees memory in vxUnmapImagePatch
-    for (i = 0; i < TIVX_IMAGE_MAX_MAPS+1; i++)
-    {
-        pdata = NULL;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
-                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id, &addr, (void **)&pdata,
-                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        *pdata = 1;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image2, map_id));
-    }
-
-    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
-    {
-        pdata = NULL;
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
-                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id, &addr, (void **)&pdata,
-                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-    }
-
-    VX_CALL(vxReleaseImage(&image));
-    VX_CALL(vxReleaseImage(&image2));
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_MAPS", &stats));
-    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_MAPS);
-
-}
-
-/* TIVX_IMAGE_MAX_OBJECTS */
-TEST(tivxBoundary, testVirtualImageBoundary)
-{
-    vx_context context = context_->vx_context_;
-    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS];
-    int i;
-    vx_graph graph = 0;
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT(vx_true_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
-    }
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        VX_CALL(vxReleaseImage(&src_image[i]));
-    }
-
-    VX_CALL(vxReleaseGraph(&graph));
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
-    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
-}
-
-/* TIVX_IMAGE_MAX_OBJECTS */
-TEST(tivxNegativeBoundary, negativeTestImageBoundary)
-{
-    vx_context context = context_->vx_context_;
-    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS+1];
-    int i;
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    }
-
-    EXPECT_VX_ERROR(src_image[TIVX_IMAGE_MAX_OBJECTS] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
-
-    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
-    {
-        VX_CALL(vxReleaseImage(&src_image[i]));
-    }
-}
-
 /* TIVX_IMAGE_MAX_SUBIMAGES */
 TEST(tivxNegativeBoundary, negativeTestSubImageBoundary)
 {
@@ -2088,6 +2040,75 @@ TEST(tivxNegativeBoundary, negativeTestSubImageBoundary)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_SUBIMAGES", &stats));
     ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_SUBIMAGES);
 
+}
+
+/* TIVX_IMAGE_MAX_OBJECTS */
+TEST(tivxBoundary, testVirtualImageBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS];
+    int i;
+    vx_graph graph = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT(vx_true_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
+    }
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+    }
+
+    VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
+}
+
+/* TIVX_IMAGE_MAX_OBJECTS */
+TEST(tivxBoundary, testImageBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS];
+    int i;
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT(vx_false_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
+    }
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+    }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
+}
+
+/* TIVX_IMAGE_MAX_OBJECTS */
+TEST(tivxNegativeBoundary, negativeTestImageBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_image   src_image[TIVX_IMAGE_MAX_OBJECTS+1];
+    int i;
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    EXPECT_VX_ERROR(src_image[TIVX_IMAGE_MAX_OBJECTS] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+    }
 }
 
 /* TIVX_IMAGE_MAX_OBJECTS */
