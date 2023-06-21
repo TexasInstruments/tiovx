@@ -79,9 +79,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_CONTEXT_MAX_USER_STRUCTS, 0, 0, 1, "TIVX_CONTEXT_MAX_USER_STRUCTS"
     },
     {
-        TIVX_CONTEXT_MAX_REFERENCES, 0, 0, 25, "TIVX_CONTEXT_MAX_REFERENCES"
-    },
-    {
         TIVX_GRAPH_MAX_DELAYS, 0, 0, 1, "TIVX_GRAPH_MAX_DELAYS"
     },
     {
@@ -250,6 +247,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_TARGET_KERNEL_MAX, 0, 0, 1 , "TIVX_TARGET_KERNEL_MAX"
+    },
+    {
+        TIVX_CONTEXT_MAX_REFERENCES, 0, 0, 25, "TIVX_CONTEXT_MAX_REFERENCES"
     }
 };
 

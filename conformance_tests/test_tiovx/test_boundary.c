@@ -322,7 +322,6 @@ TEST(tivxBoundary2, testContextReferenceBoundary)
         refCount++;
     }
 
-
     for (i = 0; i < TIVX_TENSOR_MAX_OBJECTS; i++)
     {
         VX_CALL(vxReleaseTensor(&tensor[i]));
@@ -2850,7 +2849,6 @@ TEST(tivxBoundary2, testMapRawImageBoundary)
     for (i = 0; i < TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = i;
     }
 
     rect.start_x = 0;
@@ -2903,7 +2901,6 @@ TEST(tivxNegativeBoundary2, negativeTestMapRawImageBoundary)
     for (i = 0; i <= TIVX_RAW_IMAGE_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = 0;
     }
 
     rect.start_x = 0;
@@ -3098,7 +3095,6 @@ TEST(tivxBoundary2, testMapTensorBoundary)
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = i;
     }
     for (i = 0; i < num_dims; i++)
     {
@@ -3141,7 +3137,6 @@ TEST(tivxNegativeBoundary2, negativeTestMapTensorBoundary)
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = 0;
     }
     for(i = 0; i < num_dims; i++)
     {
@@ -3281,7 +3276,6 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = i;
     }
 
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);
@@ -3291,7 +3285,6 @@ TEST(tivxBoundary2, testMapUserDataObjectBoundary)
     }
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
-        mid[i] = i;
         VX_CALL(vxUnmapUserDataObject(src_user_data, mid[i]));
     }
     
@@ -3315,7 +3308,6 @@ TEST(tivxNegativeBoundary2, negativeTestMapUserDataObjectBoundary)
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i++)
     {
         pdata[i] = 0;
-        mid[i] = i;
     }
 
     ASSERT_VX_OBJECT(src_user_data = vxCreateUserDataObject(context, test_name, sizeof(vx_uint32), &udata), VX_TYPE_USER_DATA_OBJECT);

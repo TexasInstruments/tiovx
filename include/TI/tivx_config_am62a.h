@@ -90,11 +90,6 @@ extern "C" {
  */
 #define TIVX_CONTEXT_MAX_USER_STRUCTS      (128u)
 
-/*! \brief Max possible references in a context
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_REFERENCES        (512u + 256u + 64u + 8u + 32 + 64 + 32)
-
 
 /*
  * Graph configuration resources
@@ -469,6 +464,39 @@ extern "C" {
  * \ingroup group_vx_ti_extensions_cfg
  */
 #define TIVX_TARGET_KERNEL_MAX             (256u)
+
+
+/*
+ * FRAMEWORK OBJECTS CONT.
+ */
+/*
+ * Context configuration resources cont.
+ */
+/*! \brief Max possible references in a context
+ * \ingroup group_vx_context_cfg
+ */
+#define TIVX_CONTEXT_MAX_REFERENCES        (TIVX_GRAPH_MAX_OBJECTS+ \
+                                            TIVX_NODE_MAX_OBJECTS+ \
+                                            TIVX_ARRAY_MAX_OBJECTS+ \
+                                            TIVX_CONVOLUTION_MAX_OBJECTS+ \
+                                            TIVX_DISTRIBUTION_MAX_OBJECTS+ \
+                                            TIVX_DELAY_MAX_OBJECTS+ \
+                                            TIVX_IMAGE_MAX_OBJECTS+ \
+                                            TIVX_LUT_MAX_OBJECTS+ \
+                                            TIVX_MATRIX_MAX_OBJECTS+ \
+                                            TIVX_OBJ_ARRAY_MAX_OBJECTS+ \
+                                            TIVX_PYRAMID_MAX_OBJECTS+ \
+                                            TIVX_RAW_IMAGE_MAX_OBJECTS+ \
+                                            TIVX_REMAP_MAX_OBJECTS+ \
+                                            TIVX_SCALAR_MAX_OBJECTS+ \
+                                            TIVX_TENSOR_MAX_OBJECTS+ \
+                                            TIVX_THRESHOLD_MAX_OBJECTS+ \
+                                            TIVX_USER_DATA_OBJECT_MAX_OBJECTS+ \
+                                            TIVX_DATA_REF_Q_MAX_OBJECTS+ \
+                                            TIVX_ERROR_MAX_OBJECTS+ \
+                                            TIVX_KERNEL_MAX_OBJECTS+ \
+                                            TIVX_META_FORMAT_MAX_OBJECTS+ \
+                                            TIVX_PARAMETER_MAX_OBJECTS)
 
 
 #ifdef __cplusplus
