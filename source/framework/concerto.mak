@@ -20,6 +20,7 @@ TARGET      := vx_framework
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include
+DEFS        += LDRA_UNTESTABLE_CODE
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
