@@ -179,7 +179,9 @@ static vx_reference ownCreateLutFromExemplar(
     tivxCheckStatus(&status, vxQueryLUT(exemplar, (vx_enum)VX_LUT_COUNT, &count,
         sizeof(count)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         lut = vxCreateLUT(context, data_type, count);
     }
@@ -203,7 +205,9 @@ static vx_reference ownCreateRemapFromExemplar(
     tivxCheckStatus(&status, vxQueryRemap(exemplar, (vx_enum)VX_REMAP_DESTINATION_HEIGHT, &dst_height,
         sizeof(dst_height)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         rem = vxCreateRemap(context, src_width, src_height, dst_width,
             dst_height);
@@ -225,7 +229,9 @@ static vx_reference ownCreateMatrixFromExemplar(
     tivxCheckStatus(&status, vxQueryMatrix(exemplar, (vx_enum)VX_MATRIX_COLUMNS, &columns,
         sizeof(columns)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         mat = vxCreateMatrix(context, type, columns, rows);
     }
@@ -249,7 +255,9 @@ static vx_reference ownCreatePyramidFromExemplar(
     tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_HEIGHT, &height, sizeof(height)));
     tivxCheckStatus(&status, vxQueryPyramid(exemplar, (vx_enum)VX_PYRAMID_FORMAT, &format, sizeof(format)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         pmd = vxCreatePyramid(context, levels, scale, width, height,
             format);
@@ -270,7 +278,9 @@ static vx_reference ownCreateImageFromExemplar(
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_HEIGHT, &height, sizeof(height)));
     tivxCheckStatus(&status, vxQueryImage(exemplar, (vx_enum)VX_IMAGE_FORMAT, &format, sizeof(format)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         img = vxCreateImage(context, width, height, format);
     }
@@ -289,7 +299,9 @@ static vx_reference ownCreateArrayFromExemplar(
     tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_ITEMTYPE, &type, sizeof(type)));
     tivxCheckStatus(&status, vxQueryArray(exemplar, (vx_enum)VX_ARRAY_CAPACITY, &capacity, sizeof(capacity)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         arr = vxCreateArray(context, type, capacity);
     }
@@ -306,7 +318,9 @@ static vx_reference ownCreateScalarFromExemplar(
 
     tivxCheckStatus(&status, vxQueryScalar(exemplar, (vx_enum)VX_SCALAR_TYPE, &type, sizeof(type)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         sc = vxCreateScalar(context, type, NULL);
     }
@@ -327,7 +341,9 @@ static vx_reference ownCreateDistributionFromExemplar(
     tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_RANGE, &range, sizeof(range)));
     tivxCheckStatus(&status, vxQueryDistribution(exemplar, (vx_enum)VX_DISTRIBUTION_BINS, &num_bins, sizeof(num_bins)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         dist = vxCreateDistribution(context, num_bins, offset, range);
     }
@@ -348,7 +364,9 @@ static vx_reference ownCreateThresholdFromExemplar(
     tivxCheckStatus(&status, vxQueryThreshold(exemplar, (vx_enum)VX_THRESHOLD_TYPE, &thr_type,
         sizeof(thr_type)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         thr = vxCreateThreshold(context, thr_type, data_type);
     }
@@ -384,14 +402,18 @@ static vx_reference ownCreateObjectArrayFromExemplar(
     vx_object_array objarr = NULL;
 
     tivxCheckStatus(&status, vxQueryObjectArray(exemplar, (vx_enum)VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count)));
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
+#ifdef LDRA_UNTESTABLE_CODE
         if(objarr_item_exemplar==NULL)
         {
             status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
         }
         else
+#endif
         {
             objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
             vxReleaseReference(&objarr_item_exemplar);
@@ -435,7 +457,9 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
     tivxCheckStatus(&status, vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_NAME, &type_name, sizeof(type_name)));
     tivxCheckStatus(&status, vxQueryUserDataObject(exemplar, (vx_enum)VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         user_data_object = vxCreateUserDataObject(context, type_name, size, NULL);
     }
@@ -458,7 +482,9 @@ static vx_reference ownCreateRawImageFromExemplar(
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_BEFORE, &params.meta_height_before, sizeof(params.meta_height_before)));
     tivxCheckStatus(&status, tivxQueryRawImage(exemplar, (vx_enum)TIVX_RAW_IMAGE_META_HEIGHT_AFTER, &params.meta_height_after, sizeof(params.meta_height_after)));
 
+#ifdef LDRA_UNTESTABLE_CODE
     if ((vx_status)VX_SUCCESS == status)
+#endif
     {
         img = tivxCreateRawImage(context, &params);
     }
