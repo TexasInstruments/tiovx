@@ -133,10 +133,12 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                 }
                 break;
             }
+#ifdef LDRA_UNTESTABLE_CODE
             else
             {
                 ptr = &((*ptr)->next);
             }
+#endif
         } while (1 == 1);
     }
 
@@ -181,10 +183,12 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                     *ptr = next;
                     do_break = (vx_bool)vx_true_e;
                 }
+#ifdef LDRA_UNTESTABLE_CODE
                 else
                 {
                    ptr = &((*ptr)->next);
                 }
+#endif
             }
             else
             {
@@ -265,7 +269,9 @@ static vx_status ownDestructDelay(vx_reference ref)
 {
     vx_delay delay = (vx_delay)ref;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(delay->base.type == (vx_enum)VX_TYPE_DELAY)
+#endif
     {
         ownReleaseRefFromDelay(delay, delay->count);
     }
@@ -279,13 +285,17 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
     vx_delay delay = (vx_delay)delay_ref;
     vx_reference ref;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(delay->base.type == (vx_enum)VX_TYPE_DELAY)
+#endif
     {
         for (i = 0u; i < delay->count; i++)
         {
             ref = delay->refs[i];
 
+#ifdef LDRA_UNTESTABLE_CODE
             if (ref != NULL)
+#endif
             {
                 status = (vx_status)VX_SUCCESS;
                 if(ref->mem_alloc_callback != NULL)
@@ -298,18 +308,22 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
                     break;
                 }
             }
+#ifdef LDRA_UNTESTABLE_CODE
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "delay reference %d is null\n", i);
                 status = (vx_status)VX_ERROR_INVALID_VALUE;
             }
+#endif
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not delay\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     return status;
 }
