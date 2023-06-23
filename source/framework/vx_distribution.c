@@ -316,10 +316,14 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
     vx_status status = (vx_status)VX_SUCCESS;
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
+#endif
     {
         obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+#ifdef LDRA_UNTESTABLE_CODE
         if(obj_desc != NULL)
+#endif
         {
             /* memory is not allocated, so allocate it */
             if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
@@ -343,17 +347,21 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
                 }
             }
         }
+#ifdef LDRA_UNTESTABLE_CODE
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "object descriptor is NULL\n");
             status = (vx_status)VX_ERROR_INVALID_VALUE;
         }
+#endif
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "reference type is not distribution\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
+#endif
 
     return status;
 }
@@ -362,10 +370,14 @@ static vx_status ownDestructDistribution(vx_reference ref)
 {
     tivx_obj_desc_distribution_t *obj_desc = NULL;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(ref->type == (vx_enum)VX_TYPE_DISTRIBUTION)
+#endif
     {
         obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
+#ifdef LDRA_UNTESTABLE_CODE
         if(obj_desc!=NULL)
+#endif
         {
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
