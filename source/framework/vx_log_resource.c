@@ -257,6 +257,35 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
 
 void ownLogResourceInit(void)
 {
+    /*
+    * Compile time checks to ensure parameter cohesion in case they are configured
+    */
+    /* Head nodes can't exceed the defined graph node maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_HEAD_NODES <= TIVX_GRAPH_MAX_NODES);
+
+    /* Leaf nodes can't exceed the defined graph node maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_LEAF_NODES <= TIVX_GRAPH_MAX_NODES);
+
+    /* Graph parameters can't exceed the defined paramater maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_PARAMS <= TIVX_PARAMETER_MAX_OBJECTS);
+
+    /* Graph data ref queues can't exceed the defined data ref queue maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_DATA_REF_QUEUE <= TIVX_DATA_REF_Q_MAX_OBJECTS);
+
+    /* Graph nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_NODES <= TIVX_NODE_MAX_OBJECTS);
+
+    /* Graph references can't exceed the defined context maximum */
+    BUILD_ASSERT(TIVX_GRAPH_MAX_DATA_REF <= TIVX_CONTEXT_MAX_REFERENCES);
+
+    /* Out nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(TIVX_NODE_MAX_OUT_NODES <= TIVX_NODE_MAX_OBJECTS);
+
+    /* In nodes can't exceed the defined node maximum */
+    BUILD_ASSERT(TIVX_NODE_MAX_IN_NODES <= TIVX_NODE_MAX_OBJECTS);
+
+    /* Subimages can't exceed the defined image object maximum */
+    BUILD_ASSERT(TIVX_IMAGE_MAX_SUBIMAGES <= TIVX_IMAGE_MAX_OBJECTS);
 #ifdef TIVX_RESOURCE_LOG_ENABLE
     tivxMutexCreate(&g_tivx_log_resource_lock);
 #endif

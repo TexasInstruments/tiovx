@@ -20,8 +20,6 @@ extern "C" {
  * \brief Vision SDK Platform APIs
  */
 
-#include <stdbool.h>
-
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
@@ -54,14 +52,6 @@ extern "C" {
  * \ingroup group_tivx_platform
  */
 #define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
-
-/*! \brief Macros for build time check
- * \ingroup group_tivx_platform
- */
-#define ASSERT_CONCAT_(a, b) a##b
-#define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
-#define BUILD_ASSERT(e) \
-     enum { ASSERT_CONCAT(assert_line_, __LINE__) = (bool)1/(!!(e)) }
 
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
