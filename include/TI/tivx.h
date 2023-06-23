@@ -284,7 +284,14 @@ typedef enum _tivx_attribute_extensions_e {
      * Read-Only. Can be read at initialization as well as at runtime.
      * Use an array of <tt>\ref vx_size * VX_TENSOR_NUMBER_OF_DIMS</tt> parameter.
      */
-    TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xb
+    TIVX_TENSOR_STRIDES = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xb,
+
+    /*! \brief Query the context number of user library ID's.
+     * Read-Only. Can be read at initialization as well as at runtime.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * By default, this value is set to 0.
+     */
+    TIVX_CONTEXT_NUM_USER_LIBRARY_ID = VX_ATTRIBUTE_BASE(VX_ID_TI, (vx_enum)0) + 0xc
 
 } tivx_attribute_extensions_e;
 

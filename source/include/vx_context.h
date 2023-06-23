@@ -94,6 +94,8 @@ typedef struct _vx_context {
     vx_uint32           num_dynamic_user_kernel_id;
     /*! \brief Flag indicating whether corresponding dynamic_user_library_id is being used */
     vx_bool             is_dynamic_user_library_id_used[TIVX_MAX_LIBRARY_ID];
+    /*! \brief Number of dynamic_user_library_id's being used */
+    vx_uint32           num_dynamic_user_library_id;
     /*! \brief The immediate mode enumeration */
     vx_enum             imm_target_enum;
     /*! \brief The immediate mode target string */

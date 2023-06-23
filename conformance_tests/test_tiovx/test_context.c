@@ -64,6 +64,8 @@ TEST(tivxContext, negativeTestQueryContext)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER_POLICY, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNEL_TABLE, ptr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, ptr, size));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxQueryContext(context, TIVX_CONTEXT_NUM_USER_LIBRARY_ID, ptr, size));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxQueryContext(context, VX_CONTEXT_DEFAULT_ATTRIBUTE, ptr, size));
 }
 
@@ -91,11 +93,19 @@ TEST(tivxContext, negativeTestDirective)
     vx_context context = context_->vx_context_;
 
     vx_enum directive = VX_DIRECTIVE_DEFAULT;
+    vx_array array = NULL;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size capacity = 1;
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxDirective(NULL, directive));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDirective((vx_reference)(context), VX_DIRECTIVE_DISABLE_PERFORMANCE));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDirective((vx_reference)(context), VX_DIRECTIVE_ENABLE_PERFORMANCE));
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxDirective((vx_reference)(context), directive));
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, capacity), VX_TYPE_ARRAY);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxDirective((vx_reference)(array), VX_DIRECTIVE_DISABLE_PERFORMANCE));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxDirective((vx_reference)(array), VX_DIRECTIVE_ENABLE_PERFORMANCE));
+    VX_CALL(vxReleaseArray(&array));
 }
 
 TEST(tivxContext, negativeTestRegisterUserStruct)
@@ -167,6 +177,27 @@ TEST(tivxContext, negativeTestAllocateUserKernelId)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAllocateUserKernelId(context, &keID));
 }
 
+TEST(tivxContext, negativeTestAllocateUserKernelLibraryId)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_enum klID = 0;
+    vx_uint32 i = 0;
+    vx_status status = VX_SUCCESS;
+
+    vx_uint32 init_num_user_klibrary_id = 0;
+    vx_uint32 num_user_klibrary_id = 0;
+
+    VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_KERNEL_ID, &init_num_user_klibrary_id, sizeof(init_num_user_klibrary_id)));
+
+    for (i = init_num_user_klibrary_id; i < TIVX_MAX_LIBRARY_ID-1; i++) {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxAllocateUserKernelLibraryId(context, &klID));
+        VX_CALL(vxQueryContext(context, TIVX_CONTEXT_NUM_USER_LIBRARY_ID, &num_user_klibrary_id, sizeof(num_user_klibrary_id)));
+        ASSERT(num_user_klibrary_id==(i+1));
+    }
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_RESOURCES, vxAllocateUserKernelLibraryId(context, &klID));
+}
+
 TESTCASE_TESTS(
     tivxContext,
     negativeTestReleaseContext,
@@ -177,6 +208,7 @@ TESTCASE_TESTS(
     negativeTestSetImmediateModeTarget,
     negativeTestGetKernelByName,
     negativeTestGetKernelByEnum,
-    negativeTestAllocateUserKernelId
+    negativeTestAllocateUserKernelId,
+    negativeTestAllocateUserKernelLibraryId
 )
 

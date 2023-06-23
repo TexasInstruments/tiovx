@@ -61,12 +61,14 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     vx_kernel kernel;
     uint32_t num_kernel_info = 0, idx;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if( ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Context is invalid\n");
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
+#endif
     {
         ownContextLock(context);
 
@@ -210,6 +212,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
         {
             status1 = ownObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd[i]);
 
+#ifdef LDRA_UNTESTABLE_CODE
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -217,12 +220,14 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
                          i);
                 status = status1;
             }
+#endif
         }
 
         if (context->cmd_ack_event[i] != NULL)
         {
             status1 = tivxEventDelete(&context->cmd_ack_event[i]);
 
+#ifdef LDRA_UNTESTABLE_CODE
             if (status1 != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR,
@@ -234,11 +239,13 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
                     status = status1;
                 }
             }
+#endif
         }
     }
 
     status1 = tivxQueueDelete(&context->free_queue);
 
+#ifdef LDRA_UNTESTABLE_CODE
     if (status1 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -249,9 +256,11 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
             status = status1;
         }
     }
+#endif
 
     status1 = tivxQueueDelete(&context->pend_queue);
 
+#ifdef LDRA_UNTESTABLE_CODE
     if (status1 != (vx_status)VX_SUCCESS)
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -262,6 +271,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
             status = status1;
         }
     }
+#endif
 
     return status;
 }
@@ -481,6 +491,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
@@ -492,6 +503,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
+#endif
     {
         ownContextLock(context);
 
@@ -526,6 +538,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     vx_status status = (vx_status)VX_SUCCESS;
     uint32_t idx;
 
+#ifdef LDRA_UNTESTABLE_CODE
     if(ownIsValidContext(context) == (vx_bool)vx_false_e)
     {
         VX_PRINT(VX_ZONE_ERROR,"Invalid context\n");
@@ -537,6 +550,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
         status = (vx_status)VX_ERROR_INVALID_REFERENCE;
     }
     else
+#endif
     {
         ownContextLock(context);
 
@@ -554,10 +568,12 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                     context->num_unique_kernels--;
                     ownLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                 }
+#ifdef LDRA_UNTESTABLE_CODE
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"deallocate user kernel id failed\n");
                 }
+#endif
 
                 break;
             }
@@ -690,12 +706,14 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                            obj_id,
                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+#ifdef LDRA_UNTESTABLE_CODE
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Failed to release the object desc id.\n");
                         status = (vx_status)VX_FAILURE;
                     }
+#endif
                 }
                 else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
                 {
@@ -706,12 +724,14 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                                            obj_id,
                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+#ifdef LDRA_UNTESTABLE_CODE
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Failed to queue the object desc in pend queue.\n");
                         status = (vx_status)VX_FAILURE;
                     }
+#endif
                 }
 
                 if (status != (vx_status)VX_SUCCESS)
@@ -731,6 +751,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         }
         ownLogSetResourceUsedValue("TIVX_MAX_CTRL_CMD_OBJECTS", obj_id);
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
@@ -745,6 +766,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
                 "Invalid Context\n");
         }
     }
+#endif
 
     return status;
 }
@@ -808,12 +830,14 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                            obj_id,
                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+#ifdef LDRA_UNTESTABLE_CODE
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Failed to release the object desc id.\n");
                         status = (vx_status)VX_FAILURE;
                     }
+#endif
                 }
                 else if (status == (vx_status)TIVX_ERROR_EVENT_TIMEOUT)
                 {
@@ -824,11 +848,13 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
                                            obj_id,
                                            TIVX_EVENT_TIMEOUT_NO_WAIT);
 
+#ifdef LDRA_UNTESTABLE_CODE
                     if (status1 != (vx_status)VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,
                                  "Failed to queue the object desc in pend queue.\n");
                     }
+#endif
                 }
 
                 if (status != (vx_status)VX_SUCCESS)
@@ -847,11 +873,13 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
             }
         }
     }
+#ifdef LDRA_UNTESTABLE_CODE
     else
     {
         VX_PRINT(VX_ZONE_ERROR,"invalid parameters\n");
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
+#endif
 
     return status;
 }
@@ -899,6 +927,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             }
             context->num_unique_kernels = 0;
             context->num_dynamic_user_kernel_id = 0;
+            context->num_dynamic_user_library_id = 0;
             context->log_enabled = (vx_bool)vx_false_e;
             context->base.release_callback =
                 (tivx_reference_release_callback_f)&vxReleaseContext;
@@ -923,12 +952,14 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                         vx_bool ret;
                         ownIncrementReference(&context->base, (vx_enum)VX_EXTERNAL);
                         ret = ownCreateConstErrors(context);
+#ifdef LDRA_UNTESTABLE_CODE
                         if ((vx_bool)vx_false_e==ret)
                         {
                             status = (vx_status)VX_ERROR_NO_RESOURCES;
                             VX_PRINT(VX_ZONE_ERROR,"error object not created\n");
                         }
                         else
+#endif
                         {
                             g_context_handle = context;
                         }
@@ -1080,6 +1111,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             }
 
             /* By now, all external and internal references should be removed */
+#ifdef LDRA_UNTESTABLE_CODE
             for (r = 0; r < dimof(context->reftable); r++)
             {
                 if(context->reftable[r] != NULL)
@@ -1087,6 +1119,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                         VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                 }
             }
+#endif
 
             ownContextDeleteCmdObj(context);
 
@@ -1306,6 +1339,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_CONTEXT_NUM_USER_LIBRARY_ID:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = context->num_dynamic_user_library_id;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query context number of user kernel ID's failed\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
                 break;
@@ -1371,12 +1415,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
         {
             context = reference->context;
         }
+#ifdef LDRA_UNTESTABLE_CODE
         if (ownIsValidContext(context) == (vx_bool)vx_false_e)
         {
             VX_PRINT(VX_ZONE_ERROR,"context is invalid\n");
             status = (vx_status)VX_ERROR_INVALID_REFERENCE;
         }
         else
+#endif
         {
             switch (directive)
             {
@@ -1486,13 +1532,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
 
         ownContextLock(context);
 
-        for(idx=0; idx<(TIVX_MAX_LIBRARY_ID-1); idx++)
+        status = (vx_status)VX_ERROR_NO_RESOURCES;
+        for(idx=1; idx<(TIVX_MAX_LIBRARY_ID); idx++)
         {
             if (context->is_dynamic_user_library_id_used[idx] == (vx_bool)vx_false_e)
             {
-                *pLibraryId = (int32_t)(idx+1);
+                *pLibraryId = (int32_t)(idx);
                 status = (vx_status)VX_SUCCESS;
-                context->is_dynamic_user_library_id_used[idx+1] = (vx_bool)vx_true_e;
+                context->is_dynamic_user_library_id_used[idx] = (vx_bool)vx_true_e;
+                context->num_dynamic_user_library_id++;
                 break;
             }
         }
