@@ -92,7 +92,7 @@ extern "C" {
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (1024U)
+#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (2048u)
 
 
 #if defined (SOC_J721E)
