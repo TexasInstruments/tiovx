@@ -222,7 +222,6 @@ vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_u
 {
     vx_status status = (vx_status)VX_SUCCESS;
 
-#ifdef LDRA_UNTESTABLE_CODE
     if((data_ref_q == NULL) || (count == NULL))
     {
         VX_PRINT(VX_ZONE_ERROR,
@@ -230,7 +229,6 @@ vx_status ownDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_u
         status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
     }
     else
-#endif
     {
         uint16_t queue_obj_desc_id;
 
