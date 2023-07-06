@@ -345,8 +345,8 @@ TEST(tivxArray, negativeTestCreateArray)
     count = 0;
     while (count < TIVX_ARRAY_MAX_OBJECTS) {
 
-    	VX_CALL(vxReleaseArray(&array[count]));
-    	count++;
+        VX_CALL(vxReleaseArray(&array[count]));
+        count++;
     }
 }
 
