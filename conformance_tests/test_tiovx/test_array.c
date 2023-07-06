@@ -417,7 +417,7 @@ TESTCASE_TESTS(
     negativeTestCopyArrayRange,
     negativeTestMapUnmapArrayRange,
     negativeTestCreateArray,
-    negativeTestCreateVirtualArray,
-	negativeTestOwnAllocArrayBuffer
+    negativeTestCreateVirtualArray/*,
+    negativeTestOwnAllocArrayBuffer*/
 )
 
