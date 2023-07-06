@@ -239,23 +239,23 @@ TEST(tivxArray, negativeTestAddArrayItems)
 
 TEST(tivxArray, negativeTestTruncateArray)
 {
-    #define KA 2
+    #define KA_TRUNCATE 2
 
     vx_context context = context_->vx_context_;
 
     vx_array array = NULL;
-    vx_size new_num_items = KA + 1;
+    vx_size new_num_items = KA_TRUNCATE + 1;
     vx_enum item_type = VX_TYPE_KEYPOINT;
     vx_size capacity = 1;
     int i = 0;
-    vx_keypoint_t keypoint_array[KA];
+    vx_keypoint_t keypoint_array[KA_TRUNCATE];
 
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxTruncateArray(array, new_num_items));
-    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
-    for (i = 0; i < KA; i++) {
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA_TRUNCATE * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+    for (i = 0; i < KA_TRUNCATE; i++) {
         memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
     }
-    VX_CALL(vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+    VX_CALL(vxAddArrayItems(array, KA_TRUNCATE, keypoint_array, sizeof(vx_keypoint_t)));
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, vxTruncateArray(array, new_num_items));
     VX_CALL(vxReleaseArray(&array));
 }
@@ -362,7 +362,7 @@ TEST(tivxArray, negativeTestCreateVirtualArray)
 
 TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
 {
-    #define KA 1024
+    #define KA_ALLOC 1024
 
     vx_context context = context_->vx_context_;
 
@@ -375,12 +375,12 @@ TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
     vx_status status = VX_SUCCESS;
     tivx_shared_mem_ptr_t tsmp[2048];
 
-    for (i = 0; i < KA; i++) {
+    for (i = 0; i < KA_ALLOC; i++) {
 
         memset(&keypoint_array[i], 0, sizeof(vx_keypoint_t));
     }
 
-    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, (KA_ALLOC * sizeof(vx_keypoint_t))), VX_TYPE_ARRAY);
 
     i = 0;
     while (status != VX_ERROR_NO_MEMORY) {
@@ -393,7 +393,7 @@ TEST(tivxArray, negativeTestOwnAllocArrayBuffer)
     	}
     }
 
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxAddArrayItems(array, KA, keypoint_array, sizeof(vx_keypoint_t)));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_NO_MEMORY, vxAddArrayItems(array, KA_ALLOC, keypoint_array, sizeof(vx_keypoint_t)));
 
     while (i) {
 
