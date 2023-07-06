@@ -109,7 +109,7 @@ void tivx_print(vx_enum zone, const char *format, ...)
     {
         uint32_t size;
         char string[1024];
-        va_list ap;
+        va_list ap = {0};
 
         va_start(ap, format);
 
