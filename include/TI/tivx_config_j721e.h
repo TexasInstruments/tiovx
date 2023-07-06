@@ -276,6 +276,9 @@ extern "C" {
 #define TIVX_OBJ_ARRAY_MAX_OBJECTS         (256u)
 
 
+/*
+ * Pyramid data object configuration resources
+ */
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_vx_pyramid_cfg
  */
@@ -419,6 +422,9 @@ extern "C" {
 
 
 /*
+ * TI EXTENSIONS
+ */
+ /*
  * Reference queue configuration resources
  */
 /*! \brief Max number data reference queue objects supported
@@ -427,9 +433,6 @@ extern "C" {
 #define TIVX_DATA_REF_Q_MAX_OBJECTS        (128u)
 
 
-/*
- * TI EXTENSIONS
- */
 /*
  * Control command configuration resources
  */
