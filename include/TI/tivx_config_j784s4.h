@@ -119,7 +119,7 @@ extern "C" {
 /*! \brief Max possible parameters in graph
  * \ingroup group_vx_graph_cfg
  */
-#define TIVX_GRAPH_MAX_PARAMS              (16u)
+#define TIVX_GRAPH_MAX_PARAMS              (32u)
 
 /*! \brief Max data ref queue in graph
  * \ingroup group_vx_graph_cfg
