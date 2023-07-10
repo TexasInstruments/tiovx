@@ -395,7 +395,7 @@ extern "C" {
 /*! \brief Max number meta format objects supported
  * \ingroup group_vx_misc_cfg
  */
-#define TIVX_META_FORMAT_MAX_OBJECTS       (512u)
+#define TIVX_META_FORMAT_MAX_OBJECTS       (1024u)
 
 
 /*
