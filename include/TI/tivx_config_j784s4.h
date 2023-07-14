@@ -236,7 +236,7 @@ extern "C" {
 /*! \brief Max number image objects supported
  * \ingroup group_vx_image_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS             (512u + 1u)
+#define TIVX_IMAGE_MAX_OBJECTS             (1024u + 1u)
 
 
 /*
@@ -268,7 +268,7 @@ extern "C" {
 /*! \brief Max number object arrays supported
  * \ingroup group_vx_object_array_cfg
  */
-#define TIVX_OBJ_ARRAY_MAX_OBJECTS         (256u)
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS         (512u)
 
 
 /*
