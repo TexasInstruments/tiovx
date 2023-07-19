@@ -99,13 +99,13 @@ kernel.setParameterRelationship(["IN_THRESHOLD",     "OUT_THRESHOLD"],    [Attri
     Attribute.Threshold.THRESHOLD_LOWER, Attribute.Threshold.THRESHOLD_UPPER, Attribute.Threshold.TRUE_VALUE, Attribute.Threshold.FALSE_VALUE, \
     Attribute.Threshold.DATA_TYPE])
 kernel.setParameterRelationship(["IN_OBJECT_ARRAY",  "OUT_OBJECT_ARRAY"], [Attribute.ObjectArray.NUMITEMS, Attribute.ObjectArray.ITEMTYPE])
+kernel.setParameterRelationship(["IN_TENSOR",  "OUT_TENSOR"], [Attribute.Tensor.DATA_TYPE])
 
 # Setting target cores
 kernel.setTarget(Target.MCU2_0)
 kernel.setTarget(Target.MCU2_1)
 kernel.setTarget(Target.MPU_0)
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 kernel.setTarget(Target.DSP_C7_1)
 
 code.export(kernel)

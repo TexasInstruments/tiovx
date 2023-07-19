@@ -77,7 +77,6 @@ kernel.setTarget(Target.MCU2_0)
 kernel.setTarget(Target.MCU2_1)
 kernel.setTarget(Target.MPU_0)
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 kernel.setTarget(Target.DSP_C7_1)
 
 code.export(kernel)

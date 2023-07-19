@@ -121,7 +121,6 @@ kernel.allocateLocalMemory("in_obj_arr_opt_scratch_mem2", [Attribute.ObjectArray
 kernel.allocateLocalMemory("scratch_mem", ["2*4"])
 
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
 code.exportDiagram(kernel)

@@ -14,7 +14,6 @@ kernel.setParameter(Type.ENUM, Direction.INPUT, ParamState.REQUIRED, "CHANNEL")
 kernel.setParameter(Type.IMAGE, Direction.OUTPUT, ParamState.REQUIRED, "OUT")
 
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
 code.exportDiagram(kernel)
@@ -30,7 +29,6 @@ kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.OPTIONAL, "SRC3")
 kernel.setParameter(Type.IMAGE, Direction.OUTPUT, ParamState.REQUIRED, "DST", do_map_unmap_all_planes=True)
 
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
 code.exportDiagram(kernel)

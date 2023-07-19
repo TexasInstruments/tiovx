@@ -20,6 +20,5 @@ kernel.allocateLocalMemory("scratch_mem", ["2*4"])
 kernel.allocateLocalMemory("scratch_mem", ["3*4"])
 
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 
 code.export(kernel)

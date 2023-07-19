@@ -17,6 +17,5 @@ kernel.setParameter(Type.IMAGE,   Direction.OUTPUT, ParamState.OPTIONAL, "IN_IMA
 kernel.allocateLocalMemory("img_scratch_mem", [Attribute.Array.CAPACITY], "IN_IMAGE")
 
 kernel.setTarget(Target.DSP1)
-kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
