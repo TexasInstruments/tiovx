@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2023 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -66,6 +66,9 @@
 
 static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
+own_execute_user_kernel_f      g_executeUserKernel_f = (own_execute_user_kernel_f)NULL;
+own_target_cmd_desc_handler_f  g_target_cmd_desc_handler_for_host_f = (own_target_cmd_desc_handler_f)NULL;
+
 static tivx_target ownTargetAllocHandle(vx_enum target_id);
 static void ownTargetFreeHandle(tivx_target *target_handle);
 static vx_status ownTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
@@ -73,8 +76,8 @@ static tivx_target ownTargetGetHandle(vx_enum target_id);
 static void ownTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
 static vx_bool ownTargetNodeDescCanNodeExecute(const tivx_obj_desc_node_t *node_obj_desc);
 static void ownTargetNodeDescTriggerNextNodes(const tivx_obj_desc_node_t *node_obj_desc);
+static void ownTargetNodeDescNodeExecuteKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
 static void ownTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
-static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
 static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc);
 static vx_status ownTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
 static vx_status ownTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
@@ -82,9 +85,6 @@ static vx_status ownTargetNodeDescNodeControl(
     const tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
 static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
-static void ownTargetSetGraphStateAbandon(
-    const tivx_obj_desc_node_t *node_obj_desc);
 static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
 static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static void VX_CALLBACK ownTargetTaskMain(void *app_var);
@@ -263,6 +263,22 @@ static void ownTargetNodeDescTriggerNextNodes(
             {
                 ownObjDescSend( next_node_obj_desc->target_id, next_node_obj_desc_id);
             }
+        }
+    }
+}
+
+static void ownTargetNodeDescNodeExecuteKernel(
+    tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
+{
+    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
+    {
+        ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
+    }
+    else
+    {
+        if(NULL != g_executeUserKernel_f)
+        {
+            g_executeUserKernel_f(node_obj_desc, prm_obj_desc_id);
         }
     }
 }
@@ -515,18 +531,6 @@ static void ownTargetNodeDescNodeExecuteTargetKernel(
 
 }
 
-static void ownTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
-{
-    vx_reference prm_ref[TIVX_KERNEL_MAX_PARAMS];
-    uint32_t i;
-
-    for(i=0; i<node_obj_desc->num_params; i++)
-    {
-        prm_ref[i] = ownReferenceGetHandleFromObjDescId(prm_obj_desc_id[i]);
-    }
-    node_obj_desc->exe_status = (uint32_t)ownNodeUserKernelExecute((vx_node)(uintptr_t)node_obj_desc->base.host_ref, prm_ref);
-}
-
 static vx_bool ownTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_obj_desc_node_t *prev_node_obj_desc;
@@ -629,15 +633,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
                 for (buf_idx = 0; buf_idx < ((int32_t)num_bufs - 1); buf_idx++)
                 {
                     ownTargetNodeDescAcquireAllParametersForPipeup(node_obj_desc, prm_obj_desc_id);
-
-                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
-                    {
-                        ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
-                    }
-                    else
-                    {
-                        ownTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
-                    }
+                    ownTargetNodeDescNodeExecuteKernel(node_obj_desc, prm_obj_desc_id);
                 }
 
                 node_obj_desc->source_state = (vx_enum)VX_NODE_STATE_STEADY;
@@ -663,14 +659,7 @@ static void ownTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_
 
                 ownLogRtTraceNodeExeStart(beg_time, node_obj_desc);
 
-                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) != 0)
-                {
-                    ownTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
-                }
-                else
-                {
-                    ownTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
-                }
+                ownTargetNodeDescNodeExecuteKernel(node_obj_desc, prm_obj_desc_id);
 
                 end_time = tivxPlatformGetTimeInUsecs();
 
@@ -1037,56 +1026,6 @@ static void ownTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static vx_action ownTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
-{
-    vx_action action;
-    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
-    vx_bool is_send_graph_complete_event = (vx_bool)vx_false_e;
-
-    /* return action is ignored */
-    action = ownNodeExecuteUserCallback(node);
-
-    /* if this is leaf node, check if graph is completed */
-    if(ownNodeGetNumOutNodes(node)==0U)
-    {
-        /* check if graph represetned by this node at this pipeline_id
-         * is completed and do graph
-         * completion handling
-         */
-        is_send_graph_complete_event = ownCheckGraphCompleted(node->graph, node_obj_desc->pipeline_id);
-
-    }
-
-    /* first do all booking keeping and then send event q events */
-    /* send completion event if enabled */
-    ownNodeCheckAndSendCompletionEvent(node_obj_desc, timestamp);
-
-    /* if an error occurred within the node, then send an error completion event */
-    if ((vx_status)VX_SUCCESS != (vx_status)node_obj_desc->exe_status)
-    {
-        ownNodeCheckAndSendErrorEvent(node_obj_desc, timestamp, (vx_status)node_obj_desc->exe_status);
-    }
-
-    /* Clearing node status now that it has been sent as an error event */
-    node_obj_desc->exe_status = 0;
-
-    /* first we let any node events to go thru before sending graph events */
-    if(is_send_graph_complete_event!= 0)
-    {
-        ownSendGraphCompletedEvent(node->graph);
-    }
-
-    return (action);
-}
-
-static void ownTargetSetGraphStateAbandon(
-    const tivx_obj_desc_node_t *node_obj_desc)
-{
-    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
-
-    ownSetGraphState(node->graph, node_obj_desc->pipeline_id, (vx_enum)VX_GRAPH_STATE_ABANDONED);
-}
-
 static void ownTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
 {
     if( tivxFlagIsBitSet( cmd_obj_desc->flags, TIVX_CMD_FLAG_SEND_ACK) != 0)
@@ -1103,7 +1042,6 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
-    vx_action action;
     vx_status status = (vx_status)VX_SUCCESS;
 
     switch(cmd_obj_desc->cmd_id)
@@ -1153,42 +1091,19 @@ static void ownTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 ownTargetCmdDescHandleAck(cmd_obj_desc);
             }
             break;
-
+        /* TIVX_CMD_NODE_USER_CALLBACK command is initated by the command sent from target via: \ref ownTargetNodeDescSendComplete()
+           It is always executed on HOST target to check if there is any user callback, and if so executes it, otherwise, does nothing */
         case (vx_enum)TIVX_CMD_NODE_USER_CALLBACK:
-            node_obj_desc_id = cmd_obj_desc->obj_desc_id[0];
-            node_obj_desc = (tivx_obj_desc_node_t*)ownObjDescGet(node_obj_desc_id);
-
-            if( ownObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) != 0)
-            {
-                uint64_t timestamp;
-
-                tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
-
-                action = ownTargetCmdDescHandleUserCallback(node_obj_desc, timestamp);
-
-                if (action == (vx_enum)VX_ACTION_ABANDON)
-                {
-                    ownTargetSetGraphStateAbandon(node_obj_desc);
-                }
-            }
-            /* No ack for user callback command */
-            break;
+        /* TIVX_CMD_DATA_REF_CONSUMED command is initated by the command sent from target via: \ref ownTargetNodeDescReleaseAllParameters()
+           if the data reference consumed event flag is enabled for a given data reference. It is always executed on HOST target */
         case (vx_enum)TIVX_CMD_DATA_REF_CONSUMED:
-        {
-            tivx_data_ref_queue data_ref_q;
-
-            data_ref_q = (tivx_data_ref_queue)ownReferenceGetHandleFromObjDescId(cmd_obj_desc->obj_desc_id[0]);
-
-            if( data_ref_q != NULL )
+            /* These 2 commands are only executed on the "HOST" target, therefore using function pointer that is registered
+               via ownRegisterFunctionsForHost(), which is called from tivxHostInit function, to avoid linking of symbols not needed
+               on non-host CPUs */
+            if(NULL != g_target_cmd_desc_handler_for_host_f)
             {
-                uint64_t timestamp;
-
-                tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
-
-                ownDataRefQueueSendRefConsumedEvent(data_ref_q, timestamp);
+                g_target_cmd_desc_handler_for_host_f(cmd_obj_desc);
             }
-            /* No ack for this command */
-        }
             break;
         default:
 

@@ -255,6 +255,36 @@ typedef struct _tivx_target_create_params
 } tivx_target_create_params_t;
 
 /*!
+* \brief The pointer to the user kernel wrapper within the tiovx framework. This is only executable
+* on the host, therefore putting a function pointer that gets initialized to non-NULL only when 
+* \ref ownRegisterFunctionsForHost is called from hostInit.
+* \param [in] node_obj_desc The node object descriptor.
+* \param [in] prm_obj_desc_id The array of parameter references.
+* \ingroup group_tivx_target
+*/
+typedef void(*own_execute_user_kernel_f)(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+
+/*!
+* \brief The pointer to the handler of a subset of cases that the target command handler needs to service on the same
+* core that the host runs on. This is only executable on the host, therefore putting a function pointer that gets
+* initialized to non-NULL only when \ref ownRegisterFunctionsForHost is called from hostInit.
+* \param [in] cmd_obj_desc The command object descriptor to handle.
+* \ingroup group_tivx_target
+*/
+typedef void(*own_target_cmd_desc_handler_f)(tivx_obj_desc_cmd_t *cmd_obj_desc);
+
+/*!
+ * \brief Register Various functions within target files to be linked for host usage
+ *
+ * \details Registers functions that only makes sense on the host.  This is done to optimize
+ *          memory footprint so the linker on the non-host cores can optimize out symbols needed on the host.
+ *          This currently registers \ref own_execute_user_kernel_f and \ref own_target_cmd_desc_handler_f.
+ *
+ * \ingroup group_tivx_target
+ */
+ void ownRegisterFunctionsForHost(void);
+
+/*!
  * \brief Get CPU ID associated with given target ID
  *
  * \param target_id [in] Target ID

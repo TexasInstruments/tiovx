@@ -75,6 +75,10 @@ void tivxHostInit(void)
 {
     if (0U == g_init_status)
     {
+        /* This function registers functions that only makes sense on the host.  This is done to optimize
+           memory footprint so the linker on the non-host cores can optimize out symbols needed on the host.
+         */
+        ownRegisterFunctionsForHost();
         ownObjectInit();
         tivxRegisterOpenVXCoreKernels();
         tivxRegisterOpenVXExtKernels();
