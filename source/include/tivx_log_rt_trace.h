@@ -66,7 +66,6 @@
 #ifndef TIVX_LOG_RT_TRACE_H_
 #define TIVX_LOG_RT_TRACE_H_
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -77,6 +76,33 @@ extern "C" {
  * \ingroup group_tivx_log_rt_trace
  */
 
+#include <tivx_log_rt_if.h>
+
+/** \brief Event logger queue header, structure size MUST be 64b aligned */
+typedef struct {
+
+    uint32_t rd_index;     /**< queue read index within event log */
+    uint32_t wr_index;     /**< queue write index within event log */
+    uint32_t count;        /**< number of element in queue */
+    uint32_t rsv[1];       /**< used to aligned to 64b */
+
+} tivx_log_rt_queue_t;
+
+/** \brief Event logger object */
+typedef struct {
+
+    vx_bool is_valid; /**< vx_true_e: event logging is valid and can be used, else event logging is not supported */
+
+    void    *log_rt_shm_base; /**< base address of shared memory */
+    uint32_t log_rt_shm_size; /**< size of shared memory */
+
+    tivx_log_rt_queue_t *queue; /**< pointer to queue header within shared memory */
+    tivx_log_rt_index_t *index; /**< pointer to identifier index within shared memory */
+
+    tivx_log_rt_entry_t *event_log_base; /**< pointer to event log within shared memory */
+    uint32_t event_log_max_entries; /**< max possible events in event log */
+
+} tivx_log_rt_obj_t;
 
 /*!
  * \brief Init run-time logger module
