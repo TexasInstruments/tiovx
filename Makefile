@@ -126,7 +126,7 @@ endif
 	-rm $(TIOVX_PATH)/docs/test_reports/* -f
 	$(MKDIR) $(TIOVX_PATH)/docs/test_reports/
 	$(MKDIR) $(TIOVX_PATH)/docs/static_analysis/
-	$(COPY) tiovx_dev/internal_docs/relnotes_archive/test_reports_$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
+	$(COPY) tiovx_dev/internal_docs/test_reports/$(SOC)/* $(TIOVX_PATH)/docs/test_reports/.
 	$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/images/*.pdf $(TIOVX_PATH)/docs/user_guide/.
 	$(COPY) tiovx_dev/internal_docs/static_analysis_tiovx.csv $(TIOVX_PATH)/docs/static_analysis/.
 
