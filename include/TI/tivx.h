@@ -738,17 +738,20 @@ vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
  * \param [in] node_cmd_id Node specific control command id, refer to node
  *             specific interface file
  * \param [in,out] ref[] Node parameter,
- *             This is an array of references, required as parameters for
- *             this control command.
- *             They can be any OpenVX object, created using create API.
- *             It is bidirectional parameters, can be used for INPUT,
- *             OUTPUT or both.
- *             These parameters are list of references,
- *             which are required for the control command on the given node.
- *             Refer to node documentation to get details about the parameters
- *             required for given control command.
- *             Caller of this API should explicitely release these refs after
- *             their usage is completed.
+ *             - This is an array of references, required as parameters for
+ *               this control command.
+ *             - They can be any OpenVX object, created using create API.
+ *             - They are bidirectional parameters, can be used for INPUT,
+ *               OUTPUT or both.
+ *             - These parameters are a list of references,
+ *               which are required for the control command on the given node.
+ *             - Refer to node documentation to get details about the parameters
+ *               required for given control command.
+ *             - This reference must be allocated before calling this API.
+ *               This can be done by calling either the vxMap/vxUnmap API or
+ *               the vxCopy API associated with this data object.
+ *             - Caller of this API should explicitly release these refs after
+ *               their usage is completed.
  * \param [in] num_refs Number of valid entries/references in ref[] array
  *
  *
@@ -777,17 +780,20 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  * \param [in] node_cmd_id Node specific control command id, refer to node
  *             specific interface file
  * \param [in,out] ref[] Node parameter,
- *             This is an array of references, required as parameters for
- *             this control command.
- *             They can be any OpenVX object, created using create API.
- *             It is bidirectional parameters, can be used for INPUT,
- *             OUTPUT or both.
- *             These parameters are list of references,
- *             which are required for the control command on the given node.
- *             Refer to node documentation to get details about the parameters
- *             required for given control command.
- *             Caller of this API should explicitely release these refs after
- *             their usage is completed.
+ *             - This is an array of references, required as parameters for
+ *               this control command.
+ *             - They can be any OpenVX object, created using create API.
+ *             - They are bidirectional parameters, can be used for INPUT,
+ *               OUTPUT or both.
+ *             - These parameters are a list of references,
+ *               which are required for the control command on the given node.
+ *             - Refer to node documentation to get details about the parameters
+ *               required for given control command.
+ *             - This reference must be allocated before calling this API.
+ *               This can be done by calling either the vxMap/vxUnmap API or
+ *               the vxCopy API associated with this data object.
+ *             - Caller of this API should explicitly release these refs after
+ *               their usage is completed.
  * \param [in] num_refs Number of valid entries/references in ref[] array
  * \param [in] timeout Timeout in units of msecs, use
  *             TIVX_EVENT_TIMEOUT_WAIT_FOREVER to wait forever
