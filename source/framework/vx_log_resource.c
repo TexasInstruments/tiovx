@@ -82,9 +82,6 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_GRAPH_MAX_DELAYS, 0, 0, 1, "TIVX_GRAPH_MAX_DELAYS"
     },
     {
-        TIVX_GRAPH_MAX_SUPER_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_SUPER_NODES"
-    },
-    {
         TIVX_GRAPH_MAX_HEAD_NODES, 0, 0, 1, "TIVX_GRAPH_MAX_HEAD_NODES"
     },
     {
