@@ -64,13 +64,13 @@
 #define TIVX_SOC_H_
 
 #if   defined(SOC_J721E)
-#include <TI/tivx_soc_j721e.h>
+#include <TI/soc/tivx_soc_j721e.h>
 #elif defined(SOC_J721S2)
-#include <TI/tivx_soc_j721s2.h>
+#include <TI/soc/tivx_soc_j721s2.h>
 #elif defined(SOC_J784S4)
-#include <TI/tivx_soc_j784s4.h>
+#include <TI/soc/tivx_soc_j784s4.h>
 #elif defined(SOC_AM62A)
-#include <TI/tivx_soc_am62a.h>
+#include <TI/soc/tivx_soc_am62a.h>
 #else
 #error Must define SOC_<SOC_NAME>, options: SOC_J721E, SOC_J721S2, SOC_J784S4, SOC_AM62A
 #endif
