@@ -1515,87 +1515,75 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxObjectBoundary)
  * Therefore, asserting that it must be >= to these values */
 TEST(tivxBoundary2, testDelayMaxPrmBoundary)
 {
-    if ( (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_IN_NODES) &&
-         (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_OUT_NODES) )
+    vx_context context = context_->vx_context_;
+    vx_delay   src_delay;
+    vx_graph   graph = 0;
+    vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT];
+    vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT];
+    int i;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_kernel kernels[] = {
+        vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
+        vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
+    };
+
+    ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
     {
-
-        vx_context context = context_->vx_context_;
-        vx_delay   src_delay;
-        vx_graph   graph = 0;
-        vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT];
-        vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT];
-        int i;
-
-        ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        vx_kernel kernels[] = {
-            vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
-            vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
-        };
-
-        ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
-        {
-            ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        }
-
-        box_nodes = vxCreateGenericNode(graph, kernels[0]);
-        med_nodes = vxCreateGenericNode(graph, kernels[1]);
-
-        VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
-        VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
-        VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-        VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
-        {
-            med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
-            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
-        }
-
-        VX_CALL(vxRegisterAutoAging(graph, src_delay));
-
-        VX_CALL(vxReleaseImage(&in_image));
-        VX_CALL(vxReleaseImage(&out_image));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
-        {
-            VX_CALL(vxReleaseImage(&out_image2[i]));
-        }
-
-        VX_CALL(vxReleaseDelay(&src_delay));
-
-        for (i = 0; i < dimof(kernels); i++)
-        {
-            VX_CALL(vxReleaseKernel(&kernels[i]));
-        }
-
-        VX_CALL(vxReleaseNode(&box_nodes));
-        VX_CALL(vxReleaseNode(&med_nodes));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
-        {
-            VX_CALL(vxReleaseNode(&med_nodes2[i]));
-        }
-
-        VX_CALL(vxReleaseImage(&image));
-
-        VX_CALL(vxReleaseGraph(&graph));
-
+        ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
-    else
+
+    box_nodes = vxCreateGenericNode(graph, kernels[0]);
+    med_nodes = vxCreateGenericNode(graph, kernels[1]);
+
+    VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
+    VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
+    VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+    VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
     {
-        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
-        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES);
-        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+        med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
+        VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+        VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
     }
+
+    VX_CALL(vxRegisterAutoAging(graph, src_delay));
+
+    VX_CALL(vxReleaseImage(&in_image));
+    VX_CALL(vxReleaseImage(&out_image));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+    {
+        VX_CALL(vxReleaseImage(&out_image2[i]));
+    }
+
+    VX_CALL(vxReleaseDelay(&src_delay));
+
+    for (i = 0; i < dimof(kernels); i++)
+    {
+        VX_CALL(vxReleaseKernel(&kernels[i]));
+    }
+
+    VX_CALL(vxReleaseNode(&box_nodes));
+    VX_CALL(vxReleaseNode(&med_nodes));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+    {
+        VX_CALL(vxReleaseNode(&med_nodes2[i]));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* TIVX_DELAY_MAX_PRM_OBJECT */
@@ -1603,91 +1591,79 @@ TEST(tivxBoundary2, testDelayMaxPrmBoundary)
  * Therefore, asserting that it must be >= to these values */
 TEST(tivxNegativeBoundary2, negativeTestDelayMaxPrmBoundary)
 {
-    if ( (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_IN_NODES) &&
-         (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_OUT_NODES) )
+    vx_context context = context_->vx_context_;
+    vx_delay   src_delay;
+    vx_graph   graph = 0;
+    vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT+1];
+    vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT+1];
+    int i;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_kernel kernels[] = {
+        vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
+        vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
+    };
+
+    ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
     {
-
-        vx_context context = context_->vx_context_;
-        vx_delay   src_delay;
-        vx_graph   graph = 0;
-        vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT+1];
-        vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT+1];
-        int i;
-
-        ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        vx_kernel kernels[] = {
-            vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
-            vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
-        };
-
-        ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-
-        ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
-        {
-            ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        }
-
-        box_nodes = vxCreateGenericNode(graph, kernels[0]);
-        med_nodes = vxCreateGenericNode(graph, kernels[1]);
-
-        VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
-        VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
-        VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-        VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
-        {
-            med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
-            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
-        }
-
-        med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT] = vxCreateGenericNode(graph, kernels[1]);
-        EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-        //VX_CALL(vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 1, (vx_reference)out_image2[i]));
-
-        VX_CALL(vxRegisterAutoAging(graph, src_delay));
-
-        VX_CALL(vxReleaseImage(&in_image));
-        VX_CALL(vxReleaseImage(&out_image));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
-        {
-            VX_CALL(vxReleaseImage(&out_image2[i]));
-        }
-
-        VX_CALL(vxReleaseDelay(&src_delay));
-
-        for (i = 0; i < dimof(kernels); i++)
-        {
-            VX_CALL(vxReleaseKernel(&kernels[i]));
-        }
-
-        VX_CALL(vxReleaseNode(&box_nodes));
-        VX_CALL(vxReleaseNode(&med_nodes));
-
-        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
-        {
-            VX_CALL(vxReleaseNode(&med_nodes2[i]));
-        }
-
-        VX_CALL(vxReleaseImage(&image));
-
-        VX_CALL(vxReleaseGraph(&graph));
-
+        ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
-    else
+
+    box_nodes = vxCreateGenericNode(graph, kernels[0]);
+    med_nodes = vxCreateGenericNode(graph, kernels[1]);
+
+    VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
+    VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
+    VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+    VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
     {
-        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
-        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES);
-        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+        med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
+        VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+        VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
     }
+
+    med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT] = vxCreateGenericNode(graph, kernels[1]);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+    //VX_CALL(vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 1, (vx_reference)out_image2[i]));
+
+    VX_CALL(vxRegisterAutoAging(graph, src_delay));
+
+    VX_CALL(vxReleaseImage(&in_image));
+    VX_CALL(vxReleaseImage(&out_image));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
+    {
+        VX_CALL(vxReleaseImage(&out_image2[i]));
+    }
+
+    VX_CALL(vxReleaseDelay(&src_delay));
+
+    for (i = 0; i < dimof(kernels); i++)
+    {
+        VX_CALL(vxReleaseKernel(&kernels[i]));
+    }
+
+    VX_CALL(vxReleaseNode(&box_nodes));
+    VX_CALL(vxReleaseNode(&med_nodes));
+
+    for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
+    {
+        VX_CALL(vxReleaseNode(&med_nodes2[i]));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* TIVX_DELAY_MAX_OBJECTS */
