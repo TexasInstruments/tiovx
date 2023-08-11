@@ -234,16 +234,24 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
 #endif
     {
-        TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, 1, "TIVX_TARGET_MAX_TARGETS_IN_CPU"
+        /*Minimum value set to parameter max; Value is not logged correctly on
+        evm because value is set from the target, not from the host*/
+        TIVX_TARGET_MAX_TARGETS_IN_CPU, 0, 0, TIVX_TARGET_MAX_TARGETS_IN_CPU, "TIVX_TARGET_MAX_TARGETS_IN_CPU"
     },
     {
-        TIVX_MAX_TARGETS_PER_KERNEL, 0, 0, 2, "TIVX_MAX_TARGETS_PER_KERNEL"
+        /*Minimum value set to parameter max; Value is not logged correctly on
+        evm because value is set from the target, not from the host*/
+        TIVX_MAX_TARGETS_PER_KERNEL, 0, 0, TIVX_MAX_TARGETS_PER_KERNEL, "TIVX_MAX_TARGETS_PER_KERNEL"
     },
     {
-        TIVX_TARGET_KERNEL_INSTANCE_MAX, 0, 0, 1, "TIVX_TARGET_KERNEL_INSTANCE_MAX"
+        /*Minimum value set to parameter max; Value is not logged correctly on
+        evm because value is set from the target, not from the host*/
+        TIVX_TARGET_KERNEL_INSTANCE_MAX, 0, 0, TIVX_TARGET_KERNEL_INSTANCE_MAX, "TIVX_TARGET_KERNEL_INSTANCE_MAX"
     },
     {
-        TIVX_TARGET_KERNEL_MAX, 0, 0, 1 , "TIVX_TARGET_KERNEL_MAX"
+        /*Minimum value set to parameter max; Value is not logged correctly on
+        evm because value is set from the target, not from the host*/
+        TIVX_TARGET_KERNEL_MAX, 0, 0, TIVX_TARGET_KERNEL_MAX , "TIVX_TARGET_KERNEL_MAX"
     },
     {
         TIVX_CONTEXT_MAX_REFERENCES, 0, 0, 25, "TIVX_CONTEXT_MAX_REFERENCES"
