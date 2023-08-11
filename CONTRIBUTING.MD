@@ -124,6 +124,8 @@ Each functional change (new feature or bug fix) must be supplied with correspond
 
 **bosch is also contributing**
 
+**bosch is also contributing 2**
+
 ## Git COMMIT Messages
 
 COMMIT messages are important for both reviewers and future contributors to be able to understand what was done in a commit, and why the change was done.  Therefore, the COMMIT message shall answer the following questions as part of the comments:
