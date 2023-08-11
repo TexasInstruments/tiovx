@@ -41,12 +41,12 @@ As this project is intended to be used in production safety-critical systems, ma
 
 ## Links to Important Resources
 
-* **Docs:** 
+* **Docs:**
   * [TIOVX User Guide](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/) - TI's TIOVX user guide from latest release
-  * [OpenVX 1.1 Specification](https://www.khronos.org/registry/OpenVX/specs/1.1/html/index.html) - Khronos OpenVX 1.1 Specification 
+  * [OpenVX 1.1 Specification](https://www.khronos.org/registry/OpenVX/specs/1.1/html/index.html) - Khronos OpenVX 1.1 Specification
   * [Resources](https://software-dl.ti.com/jacinto7/esd/processor-sdk-rtos-jacinto7/latest/exports/docs/tiovx/docs/user_guide/RESOURCES.html) - Sub-page from TIOVX user guide which contains several useful links to OpenVX standard specifications, videos, tutorials, presentations, papers, and FAQs.
 
-* **Software/Hardware Questions and Support:** 
+* **Software/Hardware Questions and Support:**
   * [TI E2E Forum](https://e2e.ti.com/support/processors-group/processors/f/processors-forum) - Forum where you can search and ask questions of the broader TI community of developers.
 
 * **Questions about contributions:**  You can file issues on this github project as per this document.
@@ -112,7 +112,7 @@ Please note, that this project is the TI maintained implementation of OpenVX.  I
 
 Whether contributions are for fixing bugs, or adding enhancements, please open a [pull request](). If you are not sure whether your changes are correct or you want to get early discussion going prior to completing, you can either mark it as [draft](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests) or create an issue to discuss the problem and possible ways to fix it prior to publishing a PR.
 
-We recommend to use the [Fork and Pull Request workflow](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).  
+We recommend to use the [Fork and Pull Request workflow](https://docs.github.com/en/get-started/quickstart/contributing-to-projects).
 
 **Acceptance Criteria**: Please ensure that your contribution adheres to the requirements and recommendations listed in this document.  As this project is intended to be used in production safety-critical systems, maintainers are required to assess the value, quality, and risk associated with each proposed submission.  For example, it may be that a feature may be rejected based on the high cost of the ongoing maintenance associated with it when compared to the probability of it being used in multiple production systems.  Users are always free to maintain their own forks.
 
@@ -121,6 +121,8 @@ In time, we hope to deploy auto checkers on each Pull Request to give feedback f
 **Responsiveness**: Maintainers of this project have responsibilities beyond maintaining this project.  Therefore the responsiveness evaluating community posted bugs and features may vary.
 
 Each functional change (new feature or bug fix) must be supplied with corresponding tests. See [Testing](#testing) for more information about testing. NFC (non-functional change) PRs can be accepted without new tests.
+
+**bosch is also contributing**
 
 ## Git COMMIT Messages
 
@@ -133,7 +135,7 @@ The format of the commit message shall be as follows:
 ```
 [Unique ISSUE Identifier] Summary line
 
-- Bulleted list of comments describing if it is a 
+- Bulleted list of comments describing if it is a
   bug fix or a feature, what is being changed, and why.
 ```
 The "Unique ISSUE Identifier" for TI internal contributions have used JIRA issues historically.  External contributions can use github issue identifiers (either bug or enhancements) for traceability and ease of linking to the associated issue.
@@ -210,7 +212,7 @@ If you want to add tests for framework features, then they should be added to th
 ```
 tiovx/conformance_tests/test_tiovx
 ```
-For adding tests to the kernels, use the respective kernels test folder.  For example, for kernels added to tiovx repo, the following is the appropriate test folder: 
+For adding tests to the kernels, use the respective kernels test folder.  For example, for kernels added to tiovx repo, the following is the appropriate test folder:
 ```
 kernels/openvx-ext/test
 ```
