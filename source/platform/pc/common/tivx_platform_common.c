@@ -64,6 +64,7 @@
 
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
+#include <app_mem_map.h>
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -97,6 +98,14 @@ static tivx_platform_info_t g_tivx_platform_info =
 
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
+
+
+int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
+{
+    *shm_size = TIOVX_OBJ_DESC_MEM_SIZE;
+    /* Always returns 0 for successful status as size is #defined */
+    return 0;
+}
 
 vx_status ownPlatformInit(void)
 {

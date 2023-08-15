@@ -144,7 +144,8 @@ tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref)
         if((vx_enum)tmp_obj_desc->type==(vx_enum)TIVX_OBJ_DESC_INVALID)
         {
             tivx_obj_desc_memset(tmp_obj_desc, 0, (uint32_t)sizeof(tivx_obj_desc_shm_entry_t));
-
+            ownLogResourceAlloc("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
+            ownTableIncrementValue(type);
             /* init entry that is found */
             tmp_obj_desc->obj_desc_id = (uint16_t)idx;
             tmp_obj_desc->scope_obj_desc_id = (vx_enum)TIVX_OBJ_DESC_INVALID;
@@ -184,6 +185,8 @@ vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc)
     {
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
         {
+            ownLogResourceFree("TIVX_PLAT_MAX_OBJ_DESC_SHM_INST", 1);
+            ownTableDecrementValue((*obj_desc)->type);
             /* valid object descriptor, free it */
             (*obj_desc)->type = (vx_enum)TIVX_OBJ_DESC_INVALID;
 

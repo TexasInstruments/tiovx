@@ -95,6 +95,7 @@ TESTCASE(tivxBoundary)
 TESTCASE(tivxBoundary2)
 TESTCASE(tivxNegativeBoundary)
 TESTCASE(tivxNegativeBoundary2)
+TESTCASE(tivxFrameworkTest)
 TESTCASE(tivxRemap)
 TESTCASE(tivxReplicate)
 TESTCASE(tivxLaplacianPyramid)
@@ -113,4 +114,3 @@ TESTCASE(tivxNestedUserNode)
 #endif
 TESTCASE(tivxTgKnl)
 #endif
-

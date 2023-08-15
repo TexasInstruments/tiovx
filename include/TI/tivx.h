@@ -175,9 +175,22 @@ extern "C" {
  */
 #define TIVX_MAX_LIBRARY_ID                (VX_LIBRARY(VX_LIBRARY_MASK))
 
+/*! \brief Max number of data objects that contribute to a configuration
+ *         parameter's memory footprint
+ *
+ * \ingroup group_tivx_ext_host
+ */
+#define TIVX_MAX_CONFIG_PARAM_OBJECTS (12u)
+
+/*! \brief Number of dimensions of a configuration parameter's object type array
+ *
+ * \ingroup group_tivx_ext_host
+ */
+#define TIVX_CONFIG_PARAM_OBJECT_TYPE_DIM (2u)
+
 
 /*! \brief Struct containing config parameters of given static resource. Allows
-*          for a log to be kept of the resources used throughout runtime.
+ *         for a log to be kept of the resources used throughout runtime.
  *
  * \ingroup group_tivx_ext_host
  */
@@ -192,7 +205,14 @@ typedef struct _tivx_resource_stats_t {
 
     uint32_t  min_required_value; /**< Minimum value required for framework/tests to compile */
 
-    char name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the resource */
+    char      name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the resource */
+
+    uint32_t   object_types[TIVX_CONFIG_PARAM_OBJECT_TYPE_DIM][TIVX_MAX_CONFIG_PARAM_OBJECTS];
+    /**< Data objects with arrays of current parameter's length and multiplication factors */
+
+    vx_bool   is_obj_desc; /**< Flag to indicate parameter's object descriptor status */
+
+    vx_bool   is_size_cumulative; /**< Flag to indicate if a parameter is a total size or part of a bigger size */
 
 } tivx_resource_stats_t;
 
@@ -491,9 +511,55 @@ void tivxPrintAllResourceStats(void);
  *
  *        dot -Tjpg -o./graph.jpg graph.txt
  *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS Output was successfully written to file
+ * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_status tivxExportAllResourceMaxUsedValueToFile(void);
+
+/*!
+ * \brief Exports memory consumption information to console or a specified file
+ *
+ * \param [in] outputFile Character pointer to indicate name of file where output is desired
+ *
+ *        Note: The file name can be set to NULL if console output is desired
+ * \param [in] unit Character pointer to indicate the units desired in memory output
+ *
+ *        Note: The unit options are "B", "KB", "MB", or "all". Any other choice is set to "all"
+ * \param [in] displayMode Enum representing the desired mode of display
+ *
+ *        Note: The mode options are defined in tivx_memory_logging_e
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS Output was output to the console or was successfully written to file
+ * \retval VX_FAILURE Unable to open output file, or TIVX_LOG_RESOURCE_ENABLE was not defined
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum displayMode);
+
+/*! \brief Enumerations of memory consumption tool's display modes
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_memory_logging_e {
+
+    /*! \brief Default display mode; Outputs only total global and obj desc memory */
+    TIVX_MEM_LOG_DEFAULT = 0,
+
+    /*! \brief Obj Desc display mode; Outputs only the object descriptor memory info */
+    TIVX_MEM_LOG_OBJECT_DESCRIPTOR = 1,
+
+    /*! \brief Global display mode; Outputs only the TIOVX global memory info */
+    TIVX_MEM_LOG_GLOBAL = 2,
+
+    /*! \brief All display mode; Outputs all possible information */
+    TIVX_MEM_LOG_ALL = 3
+
+} tivx_memory_logging_e;
 
 
 /*! \brief Macro to find size of array

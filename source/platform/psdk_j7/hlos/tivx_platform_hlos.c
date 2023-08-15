@@ -56,6 +56,11 @@ static tivx_platform_info_t g_tivx_platform_info =
 
 tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
 
+int32_t tivxPlatformGetShmSize(uint32_t * shm_size)
+{
+    return appIpcGetTiovxObjDescSharedMemInfo((void**)&gTivxObjDescShmEntry, shm_size);
+}
+
 void tivxPlatformResetObjDescTableInfo(void);
 
 vx_status ownPlatformInit(void)

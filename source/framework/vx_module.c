@@ -166,6 +166,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(const char *name)
             g_module_table[idx].publish = NULL;
             g_module_table[idx].unpublish = NULL;
             status = (vx_status)VX_SUCCESS;
+            ownLogResourceFree("TIVX_MODULE_MAX", 1);
             break;
         }
     }

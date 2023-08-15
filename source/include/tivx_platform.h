@@ -105,6 +105,55 @@ typedef enum {
 } tivx_platform_lock_type_e;
 
 /*!
+ * \brief Get size of TIOVX object descriptor memory carveout
+ *
+ * \param shm_size [in] Adress of unsigned int to hold size of shared memory
+ *
+ * \return 0 for success status
+ *
+ * \ingroup group_tivx_platform
+ */
+int32_t tivxPlatformGetShmSize (uint32_t * shm_size);
+
+/*! \brief Struct containing object descriptor allocation counts. Allows
+ *         for a log to be kept of the object descriptors used throughout
+ *         runtime.
+ *
+ * \ingroup group_tivx_platform
+ */
+typedef struct _tivx_shm_obj_count_t {
+
+    uint32_t  value; /**< Count of times the resource is currently allocated */
+
+    uint32_t  max_value; /**< Highest resource count during current runtime */
+
+    char      name[TIVX_RESOURCE_NAME_MAX]; /**< Name of the object descriptor */
+
+    vx_enum   object_type; /**< Current resource's enumeration */
+
+    vx_bool   is_configured; /**< Flag to indicate a resource's max exists in tivx_config.h*/
+
+} tivx_shm_obj_count_t;
+
+/*!
+ * \brief Increment count of given resource
+ *
+ * \param resource_name [in] Enum of resource whose count should be updated
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownTableIncrementValue(vx_enum resource_name);
+
+/*!
+ * \brief Decrement count of given resource
+ *
+ * \param resource_name [in] Enum of resource whose count should be updated
+ *
+ * \ingroup group_tivx_platform
+ */
+void ownTableDecrementValue(vx_enum resource_name);
+
+/*!
  * \brief Convert a target name to a specific target ID
  *
  * \param target_name [in] Target name

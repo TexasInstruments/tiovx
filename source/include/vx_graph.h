@@ -48,6 +48,56 @@ extern "C" {
  */
 #define TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP (0x00000001u)
 
+/*! \brief The list of graph parameters. */
+typedef struct {
+    /*! \brief The reference to the node which has the parameter */
+    vx_node node;
+    /*! \brief The index to the parameter on the node. */
+    uint32_t  index;
+    /*! \brief vx_true_e, enqueue operation is supported on this parameter */
+    vx_bool queue_enable;
+    /*! \brief when queue_enable = vx_true_e, this hold the max buffers that can be enqueued */
+    uint32_t num_buf;
+    /*! \brief data ref queue handle when queueing is enabled at this graph parameter */
+    tivx_data_ref_queue data_ref_queue;
+    /*! \brief references that can be queued into data ref queue */
+    vx_reference refs_list[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
+    /*! \brief flag to control event send enable/disable */
+    vx_bool is_enable_send_ref_consumed_event;
+    /*! Value returned with graph parameter consumed event */
+    uint32_t graph_consumed_app_value;
+    /*! \brief Set to an enum value in \ref vx_type_e. */
+    vx_enum type;
+} tivx_parameters_t;
+
+/*! \brief The list of data refs other than graph parameters. */
+typedef struct {
+    /*! \brief The reference to the node which has the data ref queue */
+    vx_node node;
+    /*! \brief The index to the parameter on the node. */
+    uint32_t  index;
+    /*! \brief this hold the max buffers that can be enqueued */
+    uint32_t num_buf;
+    /*! \brief data ref queue handle */
+    tivx_data_ref_queue data_ref_queue;
+    /*! \brief references that can be queued into data ref queue */
+    vx_reference refs_list[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
+} tivx_data_ref_q_list_t;
+
+/*! \brief The list of delay data refs other than graph parameters. */
+typedef struct {
+    /*! \brief The reference to the node which has the data ref queue */
+    vx_node node;
+    /*! \brief The index to the parameter on the node. */
+    uint32_t  index;
+    /*! \brief data ref queue handle */
+    tivx_data_ref_queue data_ref_queue;
+    /*! \brief delay associated with this data ref queue */
+    vx_delay delay_ref;
+    /*! \brief delay slot index associated with this data ref queue */
+    uint32_t delay_slot_index;
+} tivx_delay_data_ref_q_list_t;
+
 /*! \brief The top level data for graph object
  * \ingroup group_vx_graph
  */
@@ -81,58 +131,19 @@ typedef struct _vx_graph {
     uint32_t num_leaf_nodes;
 
     /*! \brief The list of graph parameters. */
-    struct {
-        /*! \brief The reference to the node which has the parameter */
-        vx_node node;
-        /*! \brief The index to the parameter on the node. */
-        uint32_t  index;
-        /*! \brief vx_true_e, enqueue operation is supported on this parameter */
-        vx_bool queue_enable;
-        /*! \brief when queue_enable = vx_true_e, this hold the max buffers that can be enqueued */
-        uint32_t num_buf;
-        /*! \brief data ref queue handle when queueing is enabled at this graph parameter */
-        tivx_data_ref_queue data_ref_queue;
-        /*! \brief references that can be queued into data ref queue */
-        vx_reference refs_list[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
-        /*! \brief flag to control event send enable/disable */
-        vx_bool is_enable_send_ref_consumed_event;
-        /*! Value returned with graph parameter consumed event */
-        uint32_t graph_consumed_app_value;
-        /*! \brief Set to an enum value in \ref vx_type_e. */
-        vx_enum type;
-    } parameters[TIVX_GRAPH_MAX_PARAMS];
+    tivx_parameters_t parameters[TIVX_GRAPH_MAX_PARAMS];
+
     /*! \brief The number of graph parameters. */
     uint32_t      num_params;
 
     /*! \brief The list of data refs other than graph parameters. */
-    struct {
-        /*! \brief The reference to the node which has the data ref queue */
-        vx_node node;
-        /*! \brief The index to the parameter on the node. */
-        uint32_t  index;
-        /*! \brief this hold the max buffers that can be enqueued */
-        uint32_t num_buf;
-        /*! \brief data ref queue handle */
-        tivx_data_ref_queue data_ref_queue;
-        /*! \brief references that can be queued into data ref queue */
-        vx_reference refs_list[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
-    } data_ref_q_list[TIVX_GRAPH_MAX_DATA_REF_QUEUE];
+    tivx_data_ref_q_list_t data_ref_q_list[TIVX_GRAPH_MAX_DATA_REF_QUEUE];
+
     /*! \brief The number of graph parameters. */
     uint32_t      num_data_ref_q;
 
-    /*! \brief The list of data refs other than graph parameters. */
-    struct {
-        /*! \brief The reference to the node which has the data ref queue */
-        vx_node node;
-        /*! \brief The index to the parameter on the node. */
-        uint32_t  index;
-        /*! \brief data ref queue handle */
-        tivx_data_ref_queue data_ref_queue;
-        /*! \brief delay associated with this data ref queue */
-        vx_delay delay_ref;
-        /*! \brief delay slot index associated with this data ref queue */
-        uint32_t delay_slot_index;
-    } delay_data_ref_q_list[TIVX_GRAPH_MAX_DATA_REF_QUEUE];
+    /*! \brief The list of delay data refs other than graph parameters. */
+    tivx_delay_data_ref_q_list_t delay_data_ref_q_list[TIVX_GRAPH_MAX_DATA_REF_QUEUE];
     /*! \brief The number of graph parameters. */
     uint32_t      num_delay_data_ref_q;
 

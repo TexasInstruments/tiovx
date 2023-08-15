@@ -44,11 +44,13 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)VX_TYPE_BOOL,          sizeof(vx_bool)},
     {(vx_enum)VX_TYPE_SIZE,          sizeof(vx_size)},
     {(vx_enum)VX_TYPE_DF_IMAGE,      sizeof(vx_df_image)},
+    {(vx_enum)TIVX_TYPE_UINTPTR,     sizeof(uintptr_t)},
     /* Structures */
     {(vx_enum)VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
     {(vx_enum)VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
     {(vx_enum)VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
     {(vx_enum)VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
+    {(vx_enum)TIVX_TYPE_EVENT,       sizeof(tivx_event)},
     /* Pseudo Objects */
     {(vx_enum)VX_TYPE_META_FORMAT,   sizeof(tivx_meta_format_t)},
     /* Framework Objects */
@@ -58,11 +60,11 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)VX_TYPE_NODE,          sizeof(tivx_node_t)},
     {(vx_enum)VX_TYPE_PARAMETER,     sizeof(tivx_parameter_t)},
     {(vx_enum)VX_TYPE_KERNEL,        sizeof(tivx_kernel_t)},
-    {TIVX_TYPE_SUPER_NODE,  sizeof(tivx_super_node_t)},
+    {(vx_enum)TIVX_TYPE_SUPER_NODE,  sizeof(tivx_super_node_t)},
     /* data objects */
     {(vx_enum)VX_TYPE_ARRAY,         sizeof(tivx_array_t)},
-    {VX_TYPE_USER_DATA_OBJECT, sizeof(tivx_user_data_object_t)},
-    {TIVX_TYPE_RAW_IMAGE, sizeof(tivx_raw_image_t)},
+    {(vx_enum)VX_TYPE_USER_DATA_OBJECT, sizeof(tivx_user_data_object_t)},
+    {(vx_enum)TIVX_TYPE_RAW_IMAGE, sizeof(tivx_raw_image_t)},
     {(vx_enum)VX_TYPE_CONVOLUTION,   sizeof(tivx_convolution_t)},
     {(vx_enum)VX_TYPE_DELAY,         sizeof(tivx_delay_t)},
     {(vx_enum)VX_TYPE_DISTRIBUTION,  sizeof(tivx_distribution_t)},
@@ -75,6 +77,20 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {(vx_enum)VX_TYPE_SCALAR,        sizeof(tivx_scalar_t)},
     {(vx_enum)VX_TYPE_THRESHOLD,     sizeof(tivx_threshold_t)},
     {(vx_enum)TIVX_TYPE_DATA_REF_Q,  sizeof(tivx_data_ref_queue_t)},
+    {(vx_enum)TIVX_TYPE_ARRAY_MAP_INFO,  sizeof(tivx_array_map_info_t)},
+    {(vx_enum)TIVX_TYPE_IMAGE_MAP_INFO,  sizeof(tivx_image_map_info_t)},
+    {(vx_enum)TIVX_TYPE_RAW_IMAGE_MAP_INFO,  sizeof(tivx_raw_image_map_info_t)},
+    {(vx_enum)TIVX_TYPE_TENSOR_MAP_INFO,  sizeof(tivx_tensor_map_info_t)},
+    {(vx_enum)TIVX_TYPE_USER_DATA_OBJECT_MAP_INFO,  sizeof(tivx_user_data_object_map_info_t)},
+    {(vx_enum)TIVX_TYPE_EVENT_QUEUE_ELEMENT,  sizeof(tivx_event_queue_elem_t)},
+    {(vx_enum)TIVX_TYPE_TARGET,  sizeof(tivx_target_t)},
+    {(vx_enum)TIVX_TYPE_TARGET_KERNEL_INSTANCE,  sizeof(tivx_target_kernel_instance_t)},
+    {(vx_enum)TIVX_TYPE_TARGET_KERNEL,  sizeof(tivx_target_kernel_t)},
+    {(vx_enum)TIVX_TYPE_DELAY_PARAM,  sizeof(tivx_delay_param_t)},
+    {(vx_enum)TIVX_TYPE_CONTEXT_USER_STRUCTS,  sizeof(tivx_user_structs_t)},
+    {(vx_enum)TIVX_TYPE_GRAPH_PARAMETERS,  sizeof(tivx_parameters_t)},
+    {(vx_enum)TIVX_TYPE_DATA_REF_QUEUE_LIST,  sizeof(tivx_data_ref_q_list_t)},
+    {(vx_enum)TIVX_TYPE_DELAY_DATA_REF_QUEUE_LIST,  sizeof(tivx_delay_data_ref_q_list_t)}
 };
 
 vx_size ownSizeOfEnumType(vx_enum item_type)

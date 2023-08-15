@@ -28,6 +28,7 @@ CSOURCES    := \
 
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 IDIRS += $(APP_UTILS_PATH)
+IDIRS += $(VISION_APPS_PATH)/platform/$(SOC)/rtos
 
 DEFS += _DISABLE_TIDL
 IDIRS += $(CUSTOM_KERNEL_PATH)/include

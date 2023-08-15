@@ -36,6 +36,8 @@ TESTCASE(tivxNegativeBoundary, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxBoundary2, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tivxNegativeBoundary2, CT_VXContext, ct_setup_vx_context, 0)
 
+TESTCASE(tivxFrameworkTest, CT_VXContext, ct_setup_vx_context, 0)
+
 /* TIVX_CONTEXT_MAX_OBJECTS */
 TEST(tivxBoundary, testContext)
 {
@@ -766,6 +768,7 @@ TEST(tivxNegativeBoundary, negativeTestGraphBoundary)
     for (i = 0; i < TIVX_GRAPH_MAX_OBJECTS; i++)
     {
         ASSERT_VX_OBJECT(src_graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        VX_CALL(vxVerifyGraph(src_graph[i]));
     }
 
     EXPECT_VX_ERROR(src_graph[TIVX_GRAPH_MAX_OBJECTS] = vxCreateGraph(context), VX_ERROR_NO_RESOURCES);
@@ -1017,6 +1020,7 @@ TEST(tivxBoundary, testGraphBoundary)
     for (i = 0; i < TIVX_GRAPH_MAX_OBJECTS; i++)
     {
         ASSERT_VX_OBJECT(src_graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
+        VX_CALL(vxVerifyGraph(src_graph[i]));
     }
 
     for (i = 0; i < TIVX_GRAPH_MAX_OBJECTS; i++)
@@ -1336,6 +1340,8 @@ TEST(tivxBoundary, testVirtualArrayBoundary)
         ASSERT_VX_OBJECT(src_array[i] = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 4), VX_TYPE_ARRAY);
     }
 
+    VX_CALL(vxVerifyGraph(graph));
+
     for (i = 0; i < TIVX_ARRAY_MAX_OBJECTS; i++)
     {
         VX_CALL(vxReleaseArray(&src_array[i]));
@@ -1381,6 +1387,8 @@ TEST(tivxNegativeBoundary, negativeTestVirtualArrayBoundary)
     {
         ASSERT_VX_OBJECT(src_array[i] = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 4), VX_TYPE_ARRAY);
     }
+
+    VX_CALL(vxVerifyGraph(graph));
 
     EXPECT_VX_ERROR(src_array[TIVX_ARRAY_MAX_OBJECTS] = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 4), VX_ERROR_NO_RESOURCES);
 
@@ -1632,7 +1640,9 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxPrmBoundary)
 
     med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT] = vxCreateGenericNode(graph, kernels[1]);
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
-    //VX_CALL(vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 1, (vx_reference)out_image2[i]));
+
+    med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT] = vxCreateGenericNode(graph, kernels[1]);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
 
     VX_CALL(vxRegisterAutoAging(graph, src_delay));
 
@@ -2032,6 +2042,8 @@ TEST(tivxBoundary, testVirtualImageBoundary)
         ASSERT(vx_true_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
     }
 
+    VX_CALL(vxVerifyGraph(graph));
+
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
     {
         VX_CALL(vxReleaseImage(&src_image[i]));
@@ -2099,6 +2111,8 @@ TEST(tivxNegativeBoundary, negativeTestVirtualImageBoundary)
     {
         ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
+
+    VX_CALL(vxVerifyGraph(graph));
 
     EXPECT_VX_ERROR(src_image[TIVX_IMAGE_MAX_OBJECTS] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
 
@@ -2224,6 +2238,8 @@ TEST(tivxBoundary, testVirtualObjectArrayItems)
 
     ASSERT_VX_OBJECT(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)image, TIVX_OBJECT_ARRAY_MAX_ITEMS), VX_TYPE_OBJECT_ARRAY);
 
+    VX_CALL(vxVerifyGraph(graph));
+
     VX_CALL(vxReleaseObjectArray(&src_object_array));
 
     VX_CALL(vxReleaseImage(&image));
@@ -2284,6 +2300,8 @@ TEST(tivxNegativeBoundary, negativeTestVirtualObjectArrayItems)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
 
+    VX_CALL(vxVerifyGraph(graph));
+
     EXPECT_VX_ERROR(src_object_array = vxCreateVirtualObjectArray(graph, (vx_reference)lut, TIVX_OBJECT_ARRAY_MAX_ITEMS+1), VX_ERROR_NO_RESOURCES);
 
     VX_CALL(vxReleaseLUT(&lut));
@@ -2331,6 +2349,8 @@ TEST(tivxNegativeBoundary, negativeTestVirtualObjectArray)
         ASSERT_VX_OBJECT(src_object_array[i] = vxCreateVirtualObjectArray(graph, (vx_reference)image, 1), VX_TYPE_OBJECT_ARRAY);
     }
 
+    VX_CALL(vxVerifyGraph(graph));
+
     EXPECT_VX_ERROR(src_object_array[TIVX_OBJ_ARRAY_MAX_OBJECTS] = vxCreateVirtualObjectArray(graph, (vx_reference)image, 1), VX_ERROR_NO_RESOURCES);
 
     for (i = 0; i < TIVX_OBJ_ARRAY_MAX_OBJECTS; i++)
@@ -2360,6 +2380,8 @@ TEST(tivxBoundary, testVirtualObjectArray)
         ASSERT_VX_OBJECT(src_object_array[i] = vxCreateVirtualObjectArray(graph, (vx_reference)image, 2), VX_TYPE_OBJECT_ARRAY);
     }
 
+    VX_CALL(vxVerifyGraph(graph));
+
     for (i = 0; i < TIVX_OBJ_ARRAY_MAX_OBJECTS; i++)
     {
         VX_CALL(vxReleaseObjectArray(&src_object_array[i]));
@@ -2387,6 +2409,8 @@ TEST(tivxBoundary, testVirtualPyramidBoundary)
     {
         ASSERT_VX_OBJECT(src_pyr[i] = vxCreateVirtualPyramid(graph, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     }
+
+    VX_CALL(vxVerifyGraph(graph));
 
     for (i = 0; i < TIVX_PYRAMID_MAX_OBJECTS; i++)
     {
@@ -2425,6 +2449,7 @@ TEST(tivxBoundary2, testOrbPyramidLevelBoundary)
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     ASSERT_VX_OBJECT(src_pyr = vxCreateVirtualPyramid(graph, TIVX_PYRAMID_MAX_LEVELS_ORB, VX_SCALE_PYRAMID_ORB, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     VX_CALL(vxReleaseGraph(&graph));
@@ -2440,6 +2465,7 @@ TEST(tivxBoundary, testVirtualPyramidLevelBoundary)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(src_pyr = vxCreateVirtualPyramid(graph, TIVX_PYRAMID_MAX_LEVEL_OBJECTS, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     VX_CALL(vxReleaseGraph(&graph));
@@ -2542,6 +2568,8 @@ TEST(tivxNegativeBoundary, negativeTestVirtualPyramidBoundary)
     {
         ASSERT_VX_OBJECT(src_pyr[i] = vxCreateVirtualPyramid(graph, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     }
+
+    VX_CALL(vxVerifyGraph(graph));
 
     EXPECT_VX_ERROR(src_pyr[TIVX_PYRAMID_MAX_OBJECTS] = vxCreateVirtualPyramid(graph, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
 
@@ -3735,17 +3763,15 @@ TEST(tivxNegativeBoundary2, negativeTestEventQueueBoundary)
 }
 
 /* Testing parameters use by the framework */
-TEST(tivxBoundary2, testGeneratedConfig)
+TEST(tivxFrameworkTest, testGeneratedConfig)
 {
     tivxPrintAllResourceStats();
     tivxExportAllResourceMaxUsedValueToFile();
 }
 
-/* Testing parameters use by the framework */
-TEST(tivxNegativeBoundary2, testGeneratedConfig)
+TEST(tivxFrameworkTest, testMemoryConsumption)
 {
-    tivxPrintAllResourceStats();
-    tivxExportAllResourceMaxUsedValueToFile();
+    tivxExportMemoryConsumption(NULL, "", TIVX_MEM_LOG_ALL);
 }
 
 TESTCASE_TESTS(tivxBoundary,
@@ -3803,8 +3829,7 @@ TESTCASE_TESTS(tivxBoundary2,
         testTensorBoundary,
         testMapUserDataObjectBoundary,
         testUserDataObjectBoundary,
-        testControlCommandsBoundary,
-        testGeneratedConfig
+        testControlCommandsBoundary
         )
 
 
@@ -3858,6 +3883,10 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestMapUserDataObjectBoundary,
         negativeTestUserDataObjectBoundary,
         negativeTestMapRawImageBoundary,
-        negativeTestControlCommandsBoundary,
-        testGeneratedConfig
+        negativeTestControlCommandsBoundary
+        )
+
+TESTCASE_TESTS(tivxFrameworkTest,
+        testGeneratedConfig,
+        testMemoryConsumption
         )
