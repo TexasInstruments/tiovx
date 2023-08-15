@@ -1511,8 +1511,6 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxObjectBoundary)
 }
 
 /* TIVX_DELAY_MAX_PRM_OBJECT */
-/* Note: TIVX_NODE_MAX_IN_NODES and TIVX_NODE_MAX_OUT_NODES restrict this from being fully tested
- * Therefore, asserting that it must be >= to these values */
 TEST(tivxBoundary2, testDelayMaxPrmBoundary)
 {
     vx_context context = context_->vx_context_;
