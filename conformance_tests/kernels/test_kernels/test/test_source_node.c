@@ -1409,7 +1409,7 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourcePipeline, Arg, STREAMING_PARAMETERS)
     /* enqueue buf for pipeup but dont trigger graph execution */
     for(buf_id=0; buf_id<num_buf-1; buf_id++)
     {
-        tivxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar[buf_id], 1, TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP);
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar[buf_id], 1);
     }
 
     /* after pipeup, now enqueue a buffer to trigger graph scheduling */
@@ -1509,7 +1509,7 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSinkPipeline, Arg, STREAMING_PARAMETE
     /* enqueue buf for pipeup but dont trigger graph execution */
     for(buf_id=0; buf_id<num_buf-2; buf_id++)
     {
-        tivxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar[buf_id], 1, TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP);
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar[buf_id], 1);
     }
 
     /* after pipeup, now enqueue a buffer to trigger graph scheduling */

@@ -6664,20 +6664,6 @@ TEST(tivxGraphPipelineLdra, negativeTestGraphParameterDequeueDoneRef)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-TEST(tivxGraphPipelineLdra, negativeTestGraphParameterEnqueueReadyRef)
-{
-    vx_context context = context_->vx_context_;
-
-    vx_graph graph = NULL;
-    vx_reference ref = NULL;
-    vx_uint32 gpi = 0, num_refs = 0, flags = 0;
-
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxGraphParameterEnqueueReadyRef(graph, gpi, &ref, num_refs, flags));
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxGraphParameterEnqueueReadyRef(graph, gpi, &ref, 1, flags));
-    VX_CALL(vxReleaseGraph(&graph));
-}
-
 TEST(tivxGraphPipelineLdra, negativeTestSetGraphPipelineDepth)
 {
     vx_context context = context_->vx_context_;
@@ -6742,7 +6728,6 @@ TESTCASE_TESTS(
     negativeTestSetGraphScheduleConfig,
     negativeTestGraphParameterCheckDoneRef,
     negativeTestGraphParameterDequeueDoneRef,
-    negativeTestGraphParameterEnqueueReadyRef,
     negativeTestSetGraphPipelineDepth
 )
 
