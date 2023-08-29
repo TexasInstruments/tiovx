@@ -56,6 +56,44 @@ TEST(tivxReference, testSetTimestamp)
     VX_CALL(vxReleaseImage(&image));
 }
 
+TEST(tivxReference, testSetInvalid)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_uint64 timestamp;
+	vx_bool invalid = vx_true_e;
+	vx_bool is_invalid = vx_false_e;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    VX_CALL(tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_INVALID, &invalid, sizeof(invalid)));
+
+    VX_CALL(vxQueryReference((vx_reference)image, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
+
+    ASSERT(invalid==is_invalid);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+TEST(tivxReference, testSetValid)
+{
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_uint64 timestamp;
+	vx_bool invalid = vx_false_e;
+	vx_bool is_invalid = vx_true_e;
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    VX_CALL(tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_INVALID, &invalid, sizeof(invalid)));
+
+    VX_CALL(vxQueryReference((vx_reference)image, TIVX_REFERENCE_INVALID, &is_invalid, sizeof(is_invalid)));
+
+    ASSERT(invalid==is_invalid);
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TEST(tivxReference, testQueryInvalidFlag)
 {
     vx_context context = context_->vx_context_;
@@ -220,6 +258,8 @@ TESTCASE_TESTS(
     tivxReference,
     testQueryTimestamp,
     testSetTimestamp,
+    testSetInvalid,
+    testSetValid,
     testQueryInvalidFlag,
     testIsReferenceMetaFormatEqualPass,
     testIsReferenceMetaFormatEqualFail1,
