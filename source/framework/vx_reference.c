@@ -551,6 +551,28 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetReferenceAttribute(vx_reference ref, v
                     status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case (vx_enum)TIVX_REFERENCE_INVALID:
+                if ((VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U) && (NULL != ref->obj_desc)))
+                {
+                    vx_bool is_ref_invalid;
+                    
+                    is_ref_invalid = *(const vx_bool *)ptr;
+                    
+                    if ((vx_bool)vx_true_e == is_ref_invalid)
+                    {
+						tivxFlagBitSet(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);
+					}
+					else
+					{
+						tivxFlagBitClear(&ref->obj_desc->flags, TIVX_REF_FLAG_IS_INVALID);	
+					}
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "error setting reference validity\n");
+                    status = (vx_status)VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid attribute\n");
                 status = (vx_status)VX_ERROR_NOT_SUPPORTED;
