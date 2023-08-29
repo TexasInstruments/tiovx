@@ -784,13 +784,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
 VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
 {
     vx_context context = NULL;
-    if (ownIsValidReference(reference) == (vx_bool)vx_true_e)
-    {
-        context = reference->context;
-    }
-    else if (ownIsValidContext((vx_context)reference) == (vx_bool)vx_true_e)
+    if (ownIsValidContext((vx_context)reference) == (vx_bool)vx_true_e)
     {
         context = (vx_context)reference;
+    }
+    else if (ownIsValidReference(reference) == (vx_bool)vx_true_e)
+    {
+        context = reference->context;
     }
     else
     {

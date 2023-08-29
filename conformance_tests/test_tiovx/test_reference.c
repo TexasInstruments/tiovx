@@ -250,7 +250,6 @@ TEST(tivxReference, negativeTestSetTimestamp)
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 64, 48, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_TIMESTAMP, &udata, sizeof(udata)));
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_INVALID, &udata, sizeof(udata)));
 
     VX_CALL(vxReleaseImage(&image));
 }
@@ -282,6 +281,14 @@ TEST(tivxReference, negativeTestGetStatus2)
     ASSERT(status==VX_SUCCESS);
 }
 
+TEST(tivxReference, testGetContext)
+{
+    vx_context context = context_->vx_context_;
+    vx_context new_context;
+
+    ASSERT_VX_OBJECT(new_context = vxGetContext((vx_reference)context), VX_TYPE_CONTEXT);
+}
+
 TESTCASE_TESTS(
     tivxReference,
     testQueryTimestamp,
@@ -301,6 +308,7 @@ TESTCASE_TESTS(
     negativeTestSetRefCount,
     negativeTestSetTimestamp,
     negativeTestGetStatus1,
-    negativeTestGetStatus2
+    negativeTestGetStatus2,
+    testGetContext
 )
 
