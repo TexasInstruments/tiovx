@@ -899,7 +899,8 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * <tt>\ref tivxReferenceExportHandle</tt> for retrieving the current handles before invoking this function.
  *
  * The following conditions regarding 'addr' must be TRUE:
- * - allocated using appMemAlloc()/tivxMemAlloc() on ARM
+ * - allocated using appMemAlloc()/tivxMemAlloc() on ARM using the APP_MEM_HEAP_DDR/TIVX_MEM_EXTERNAL memory region respectively
+ * - freed using appMemFree()/tivxMemFree() on ARM
  * - memory block is contiguous
  *
  * Only the following reference object types are supported:
