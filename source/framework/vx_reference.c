@@ -738,6 +738,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
         VX_PRINT(VX_ZONE_ERROR, "Reference is NULL\n");
         status = (vx_status)VX_ERROR_NO_RESOURCES;
     }
+    else if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_true_e)
+    {
+        status = (vx_status)VX_SUCCESS;
+    }
     else if (ownIsValidReference(ref) == (vx_bool)vx_true_e)
     {
         if (ref->type == (vx_enum)VX_TYPE_ERROR)
@@ -750,13 +754,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
             status = (vx_status)VX_SUCCESS;
         }
     }
-    else if (ownIsValidContext((vx_context)ref) == (vx_bool)vx_true_e)
-    {
-        status = (vx_status)VX_SUCCESS;
-    }
     else
     {
-        /* do nothing */
+        /* do nothing and return failure */
     }
 
     return status;

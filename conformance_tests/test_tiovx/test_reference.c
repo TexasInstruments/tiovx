@@ -272,6 +272,16 @@ TEST(tivxReference, negativeTestGetStatus1)
     context = vxCreateContext();
 }
 
+TEST(tivxReference, negativeTestGetStatus2)
+{
+    vx_context context = context_->vx_context_;
+    vx_status status;
+ 
+    status = vxGetStatus((vx_reference)context);
+
+    ASSERT(status==VX_SUCCESS);
+}
+
 TESTCASE_TESTS(
     tivxReference,
     testQueryTimestamp,
@@ -290,6 +300,7 @@ TESTCASE_TESTS(
     negativeTestGetReferenceParent,
     negativeTestSetRefCount,
     negativeTestSetTimestamp,
-    negativeTestGetStatus1
+    negativeTestGetStatus1,
+    negativeTestGetStatus2
 )
 
