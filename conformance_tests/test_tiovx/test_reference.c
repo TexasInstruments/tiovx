@@ -20,6 +20,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include "shared_functions.h"
+#include <TI/tivx_config.h>
 
 TESTCASE(tivxReference, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -231,7 +232,7 @@ TEST(tivxReference, negativeTestGetReferenceParent)
     ASSERT(ret == NULL);
 }
 
-TEST(tivxReference, negativeTestSetTimestamp)
+TEST(tivxReference, negativeTestSetRefCount)
 {
     vx_reference ref = NULL;
     vx_enum attribute = VX_REFERENCE_DEFAULT;
@@ -241,7 +242,7 @@ TEST(tivxReference, negativeTestSetTimestamp)
     ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, tivxSetReferenceAttribute(ref, VX_REFERENCE_COUNT, &udata, size));
 }
 
-TEST(tivxReference, negativeTestSetTimestamp1)
+TEST(tivxReference, negativeTestSetTimestamp)
 {
     vx_context context = context_->vx_context_;
     vx_image image;
@@ -252,6 +253,23 @@ TEST(tivxReference, negativeTestSetTimestamp1)
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, tivxSetReferenceAttribute((vx_reference)image, TIVX_REFERENCE_INVALID, &udata, sizeof(udata)));
 
     VX_CALL(vxReleaseImage(&image));
+}
+
+TEST(tivxReference, negativeTestGetStatus1)
+{
+    vx_context context = context_->vx_context_;
+    vx_status status;
+    vx_image   src_image;
+
+	ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    VX_CALL(vxReleaseContext(&context));
+
+    status = vxGetStatus((vx_reference)src_image);
+
+    ASSERT(status==VX_FAILURE);
+
+    context = vxCreateContext();
 }
 
 TESTCASE_TESTS(
@@ -270,7 +288,8 @@ TESTCASE_TESTS(
     negativeTestRetainReference,
     negativeTestHint,
     negativeTestGetReferenceParent,
+    negativeTestSetRefCount,
     negativeTestSetTimestamp,
-    negativeTestSetTimestamp1
+    negativeTestGetStatus1
 )
 
