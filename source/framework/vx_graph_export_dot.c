@@ -297,7 +297,14 @@ static void exportTargetLegend(FILE *fp, vx_graph graph)
 
     for (target_id = 0; target_id < num_targets; target_id++)
     {
+        #if defined(LINUX) || defined(QNX)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wformat-truncation"
+        #endif
         TIVX_EXPORT_WRITELN(fp, "        <TR><TD bgcolor=\"%s\">%s</TD></TR>", node_color_name_list[target_id], target_name_list[target_id]);
+        #if defined(LINUX) || defined(QNX)
+        #pragma GCC diagnostic pop
+        #endif
     }
 
     TIVX_EXPORT_WRITELN(fp, "        </TABLE>>];\n");
@@ -327,9 +334,20 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
                )
             {
-                snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
+                #if defined(LINUX) || defined(QNX)
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wformat-truncation"
+                #endif
+                snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+                #if defined(LINUX) || defined(QNX)
+                #pragma GCC diagnostic pop
+                #endif
             }
         }
+        #if defined(LINUX) || defined(QNX)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wformat-truncation"
+        #endif
         TIVX_EXPORT_WRITELN(fp, "%s [shape=record %s, label=\"{%s %s %s}\"]",
                 ref->name,
                 is_virtual,
@@ -337,6 +355,9 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 is_virtual_label,
                 is_replicated_label
                 );
+        #if defined(LINUX) || defined(QNX)
+        #pragma GCC diagnostic pop
+        #endif
         if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
                 ||
             (ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_OBJECT_ARRAY) == (vx_bool)vx_true_e)
@@ -393,6 +414,10 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
         }
         if(ref->obj_desc != NULL)
         {
+            #if defined(LINUX) || defined(QNX)
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat-truncation"
+            #endif
             TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record %s, label=\"{%s %s %s | desc %d}\"]",
                 ref->obj_desc->obj_desc_id,
                 is_virtual,
@@ -401,6 +426,9 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
                 is_replicated_label,
                 ref->obj_desc->obj_desc_id
                 );
+            #if defined(LINUX) || defined(QNX)
+            #pragma GCC diagnostic pop
+            #endif
         }
         if ((ownIsValidSpecificReference(ref->scope, (vx_enum)VX_TYPE_PYRAMID) == (vx_bool)vx_true_e)
             ||
@@ -434,6 +462,10 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
         {
             if(ref->obj_desc[pipe_id] != NULL)
             {
+                #if defined(LINUX) || defined(QNX)
+                #pragma GCC diagnostic push
+                #pragma GCC diagnostic ignored "-Wformat-truncation"
+                #endif
                 char auto_age_delay_string[64]="";
                 uint32_t flags;
 
@@ -475,6 +507,9 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
                         }
                     }
                 }
+                #if defined(LINUX) || defined(QNX)
+                #pragma GCC diagnostic pop
+                #endif
             }
         }
     }

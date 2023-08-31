@@ -27,7 +27,6 @@ CFLAGS += --display_error_number
 endif
 
 ifeq ($(HOST_COMPILER), $(filter $(HOST_COMPILER), GCC_LINUX_ARM GCC_QNX_ARM))
-CFLAGS += -Wno-format-truncation
 CFLAGS += -Wno-sizeof-pointer-memaccess
 endif
 
@@ -54,10 +53,6 @@ ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 
-endif
-
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
-CFLAGS += -Wno-format-truncation
 endif
 
 endif

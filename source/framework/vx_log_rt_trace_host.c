@@ -364,7 +364,14 @@ vx_status tivxLogRtTraceExportToFile(char *filename)
 void tivxLogRtTraceKernelInstanceAddEvent(vx_node node, uint16_t event_index, char *event_name)
 {
     char name[TIVX_LOG_RT_EVENT_NAME_MAX];
+    #if defined(LINUX) || defined(QNX)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
+    #endif
     snprintf(name, TIVX_LOG_RT_EVENT_NAME_MAX, "%s_%s", node->base.name, event_name);
+    #if defined(LINUX) || defined(QNX)
+    #pragma GCC diagnostic pop
+    #endif
 
     if(vx_false_e == ownLogRtTraceFindEventName(name))
     {
