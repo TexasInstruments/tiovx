@@ -1196,7 +1196,14 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
         target->task_params.priority = params->task_priority;
         target->task_params.task_main = &ownTargetTaskMain;
         target->task_params.app_var = target;
+        #if defined(LINUX)
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wstringop-truncation"
+        #endif
         strncpy(target->task_params.task_name, params->task_name, TIVX_MAX_TASK_NAME);
+        #if defined(LINUX)
+        #pragma GCC diagnostic pop
+        #endif
         target->task_params.task_name[TIVX_MAX_TASK_NAME-1U] = '\0';
 
         target->targetExitRequest = (vx_bool)vx_false_e;

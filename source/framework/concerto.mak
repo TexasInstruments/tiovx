@@ -29,7 +29,6 @@ endif
 ifeq ($(HOST_COMPILER), $(filter $(HOST_COMPILER), GCC_LINUX_ARM GCC_QNX_ARM))
 CFLAGS += -Wno-format-truncation
 CFLAGS += -Wno-sizeof-pointer-memaccess
-CFLAGS += -Wno-stringop-truncation
 endif
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))
@@ -58,7 +57,6 @@ endif
 endif
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
-CFLAGS += -Wno-stringop-truncation
 CFLAGS += -Wno-format-truncation
 endif
 
