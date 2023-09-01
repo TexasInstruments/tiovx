@@ -1484,7 +1484,10 @@ vx_status tivxExportMemoryConsumption(char * outputFile, char * unit, vx_enum di
             printOutput(ofp, "python gen_new_linker_mem_map.py\n");
 
             char buffer[TIVX_CONFIG_PATH_LENGTH];
+            #pragma GCC diagnostic push
+            #pragma GCC diagnostic ignored "-Wformat-truncation"
             snprintf(buffer, TIVX_CONFIG_PATH_LENGTH, "chmod +x %s", outputFileName);
+            #pragma GCC diagnostic pop
             system(buffer);
         }
         fclose(ofp);
