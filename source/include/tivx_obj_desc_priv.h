@@ -139,6 +139,10 @@ extern "C" {
 #define TIVX_OBJ_DESC_ID_MASK            (0x0000FFFFu)
 
 
+/*! \brief Mask for storing Object Descriptor id in 32bit variable
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_BIDIR_FLAG         (0x10000U)
 
 
 /*!

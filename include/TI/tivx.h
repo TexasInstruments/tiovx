@@ -66,6 +66,7 @@
 #include <VX/vx.h>
 #include <VX/vx_khr_pipelining.h>
 #include <VX/vx_khr_user_data_object.h>
+#include <VX/vx_khr_bidirectional_parameters.h>
 #include <TI/tivx_debug.h>
 #include <TI/tivx_log_rt.h>
 #include <TI/tivx_kernels.h>
