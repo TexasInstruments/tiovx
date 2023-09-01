@@ -569,18 +569,25 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
                 node->local_data_set_allow = (vx_bool)vx_false_e;
             }
-            if(((vx_bool)vx_true_e == node->local_data_ptr_is_alloc)
-                &&
-                (NULL != node->local_data_ptr)
-                &&
-                (0U != node->local_data_size)
-                )
+            if(status==(vx_status)VX_SUCCESS)
             {
-                tivxMemFree(node->local_data_ptr, (uint32_t)node->local_data_size,
-                    (vx_enum)TIVX_MEM_EXTERNAL);
-                node->local_data_ptr = NULL;
-                node->local_data_size = 0;
-                node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
+                if(((vx_bool)vx_true_e == node->local_data_ptr_is_alloc)
+                    &&
+                    (NULL != node->local_data_ptr)
+                    &&
+                    (0U != node->local_data_size)
+                    )
+                {
+                    status = tivxMemFree(node->local_data_ptr, (uint32_t)node->local_data_size,
+                        (vx_enum)TIVX_MEM_EXTERNAL);
+                    node->local_data_ptr = NULL;
+                    node->local_data_size = 0;
+                    node->local_data_ptr_is_alloc = (vx_bool)vx_false_e;
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Target kernel, deinitialize callback failed\n");
             }
         }
         else

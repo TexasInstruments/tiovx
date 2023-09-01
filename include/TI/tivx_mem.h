@@ -340,7 +340,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region);
  *
  * \ingroup group_tivx_mem
  */
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region);
+vx_status tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region);
 
 /*!
  * \brief Get memory segment information

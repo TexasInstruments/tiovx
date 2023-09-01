@@ -136,10 +136,9 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
+vx_status tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = (vx_status)VX_SUCCESS;
-    int32_t ret_val;
     uint32_t heap_id;
 
     switch (mem_heap_region)
@@ -173,13 +172,15 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 
     if ((vx_status)VX_SUCCESS == status)
     {
-        ret_val = appMemFree(heap_id, ptr, size);
+        status = appMemFree(heap_id, ptr, size);
 
-        if (0 != ret_val)
+        if (0 != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "Mem free failed\n");
         }
     }
+
+    return status;
 }
 
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)

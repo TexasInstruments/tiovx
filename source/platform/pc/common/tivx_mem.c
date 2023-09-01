@@ -170,8 +170,10 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
+vx_status tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
+    vx_status status = VX_SUCCESS;
+
     if( ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL != mem_heap_region) && ((vx_enum)(vx_enum)TIVX_MEM_EXTERNAL_SCRATCH != mem_heap_region) )
     {
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation
@@ -186,10 +188,12 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 #ifdef DISABLE_APP_UTILS_DEP
             free(ptr);
 #else
-            (void)appMemFree(mem_heap_region, ptr, size);
+            status = appMemFree(mem_heap_region, ptr, size);
 #endif
         }
     }
+
+    return status;
 }
 
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)

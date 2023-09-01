@@ -929,7 +929,7 @@ int32_t tivx_utils_bmp_read(const char                     *filename,
 
     if (buf)
     {
-        tivxMemFree(buf, memBlkSize, TIVX_MEM_EXTERNAL);
+        status |= tivxMemFree(buf, memBlkSize, TIVX_MEM_EXTERNAL);
     }
 
     return status;
@@ -959,7 +959,7 @@ int32_t tivx_utils_bmp_read_release(tivx_utils_bmp_image_params_t  *imgParams)
 
     if (status == 0)
     {
-        tivxMemFree(imgParams->data, imgParams->dataSize, TIVX_MEM_EXTERNAL);
+        status = tivxMemFree(imgParams->data, imgParams->dataSize, TIVX_MEM_EXTERNAL);
     }
 
     return status;
@@ -1176,7 +1176,7 @@ int32_t tivx_utils_bmp_write(const char    *filename,
 
     if (buf)
     {
-        tivxMemFree(buf, memBlkSize, TIVX_MEM_EXTERNAL);
+        status |= tivxMemFree(buf, memBlkSize, TIVX_MEM_EXTERNAL);
     }
 
     return status;
