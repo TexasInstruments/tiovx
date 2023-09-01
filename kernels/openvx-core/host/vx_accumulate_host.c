@@ -258,7 +258,7 @@ vx_status tivxAddKernelAccumulate(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
-                        (vx_enum)VX_OUTPUT,
+                        (vx_enum)VX_BIDIRECTIONAL,
                         (vx_enum)VX_TYPE_IMAGE,
                         (vx_enum)VX_PARAMETER_STATE_REQUIRED
             );

@@ -74,7 +74,7 @@
 #define TIVX_EXPORT_MAX_NODE_COLOR_NAME (64u)
 
 #define TIVX_EXPORT_WRITELN(fp, message, ...) do { \
-    (void)snprintf(line, TIVX_EXPORT_MAX_FILENAME, message"\n", ##__VA_ARGS__); \
+    (void)snprintf(line, TIVX_EXPORT_MAX_LINE_SIZE, message"\n", ##__VA_ARGS__); \
     (void)fwrite(line, 1, strlen(line), fp); \
     } while (1 == 0)
 
@@ -652,16 +652,23 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
                             ref = ref->scope;
                             exportDataRef(fp, ref);
                         }
-                        if(dir==(vx_enum)VX_INPUT)
+                        if((vx_enum)VX_INPUT == dir)
                         {
                             TIVX_EXPORT_WRITELN(fp, "%s -> _%s %s",
                                 ref->name,
                                 node->base.name,
                                 replicated_label);
                         }
-                        else
+                        else if ((vx_enum)VX_OUTPUT == dir)
                         {
                             TIVX_EXPORT_WRITELN(fp, "_%s -> %s %s",
+                                node->base.name,
+                                ref->name,
+                                replicated_label );
+                        }
+                        else /* Bidirectional */
+                        {
+                            TIVX_EXPORT_WRITELN(fp, "_%s -> %s [dir=both]%s",
                                 node->base.name,
                                 ref->name,
                                 replicated_label );
@@ -675,7 +682,7 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
                                 );
 
                         /* optional parameter */
-                        if(dir==(vx_enum)VX_INPUT)
+                        if ((vx_enum)VX_INPUT == dir)
                         {
                             TIVX_EXPORT_WRITELN(fp, "null_%s_%d -> _%s %s",
                                 node->base.name,
@@ -683,13 +690,22 @@ static vx_status ownExportGraphTopLevelToDot(vx_graph graph, const char *output_
                                 node->base.name,
                                 replicated_label);
                         }
-                        else
+                        else if ((vx_enum)VX_OUTPUT == dir)
                         {
                             TIVX_EXPORT_WRITELN(fp, "_%s -> null_%s_%d %s",
                                 node->base.name,
                                 node->base.name,
                                 data_id,
                                 replicated_label);
+                        }
+                        else
+                        {
+                                TIVX_EXPORT_WRITELN(fp, "_%s -> null_%s_%d [dir=both]%s",
+                                node->base.name,
+                                node->base.name,
+                                data_id,
+                                replicated_label);
+
                         }
                     }
                 }
@@ -982,14 +998,14 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
                     {
                         char replicated_label[32]="";
                         vx_bool is_replicated;
-
+                        vx_enum prm_dir = ownNodeGetParameterDir(node, data_id);
                         is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                         if(is_replicated != 0)
                         {
                             (void)snprintf(replicated_label, 32, "[label=\" replicated\"]");
                         }
 
-                        if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
+                        if ((vx_enum)VX_INPUT == prm_dir)
                         {
                             if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                             {
@@ -1008,18 +1024,23 @@ static vx_status ownExportGraphFirstPipelineToDot(vx_graph graph, const char *ou
                         }
                         else
                         {
+                            char * edge_dir = "";
+                            if((vx_enum)VX_BIDIRECTIONAL == prm_dir)
+                            {
+                                edge_dir = "[dir=both]";
+                            }
                             if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                             {
                                 if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
+                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s%s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], edge_dir, replicated_label);
                                 }
                             }
                             else
                             {
                                 if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
+                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s%s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], edge_dir, replicated_label);
                                 }
                             }
                         }
@@ -1333,6 +1354,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                         {
                             char replicated_label[32]="";
                             vx_bool is_replicated;
+                            vx_enum prm_dir = ownNodeGetParameterDir(node, data_id);
 
                             is_replicated = tivxFlagIsBitSet(node_desc->is_prm_replicated, ((uint32_t)1<<(uint32_t)data_id));
                             if(is_replicated != 0)
@@ -1340,7 +1362,7 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                                 (void)snprintf(replicated_label, 32, "[label=\" replicated\"]");
                             }
 
-                            if(tivxFlagIsBitSet(node_desc->is_prm_input, ((uint32_t)1<<(uint32_t)data_id)) != 0)
+                            if((vx_enum)VX_INPUT == prm_dir)
                             {
                                 if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                                 {
@@ -1359,18 +1381,23 @@ static vx_status ownExportGraphPipelineToDot(vx_graph graph, const char *output_
                             }
                             else
                             {
+                                char * edge_dir = "";
+                                if((vx_enum)VX_BIDIRECTIONAL == prm_dir)
+                                {
+                                    edge_dir = "[dir=both]";
+                                }
                                 if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, ((uint32_t)1<<(uint32_t)data_id)) != 0)
                                 {
                                     if((vx_enum)node_desc->data_ref_q_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
-                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
+                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s%s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], edge_dir, replicated_label);
                                     }
                                 }
                                 else
                                 {
                                     if((vx_enum)node_desc->data_id[data_id]!=(vx_enum)TIVX_OBJ_DESC_INVALID)
                                     {
-                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
+                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s%s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], edge_dir, replicated_label);
                                     }
                                 }
                             }

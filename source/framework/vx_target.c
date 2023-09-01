@@ -238,6 +238,7 @@ static vx_bool ownTargetNodeDescCanNodeExecute(
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
                 can_execute = (vx_bool)vx_false_e;
+                break;
             }
         }
     }
@@ -1257,7 +1258,7 @@ vx_status ownTargetCreate(vx_enum target_id, const tivx_target_create_params_t *
                  * as the status check is covered in previous check
                  * in tivxQueueCreate
                  */
-                (void)tivxQueueDelete(&target->job_queue_handle);   
+                (void)tivxQueueDelete(&target->job_queue_handle);
             }
         }
 
@@ -1407,7 +1408,8 @@ void ownTargetSetTimestamp(
     {
         if (NULL != obj_desc[prm_id])
         {
-            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_true_e)
+           if ((tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))==(vx_bool)vx_true_e) ||
+                (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id))==(vx_bool)vx_true_e))
             {
                 obj_timestamp = obj_desc[prm_id]->timestamp;
 

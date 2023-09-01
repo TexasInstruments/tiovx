@@ -52,7 +52,10 @@ vx_bool ownIsValidDirection(vx_enum dir)
 {
     vx_bool is_valid;
 
-    if ((dir == (vx_enum)VX_INPUT) || (dir == (vx_enum)VX_OUTPUT)) /* Bidirectional is not valid for user kernels */
+    if ((dir == (vx_enum)VX_INPUT) ||
+        (dir == (vx_enum)VX_OUTPUT) ||
+        (dir == (vx_enum)VX_BIDIRECTIONAL) /* Bidirectional is valid for user kernels with the bidirectional parameters extension*/
+       )
     {
         is_valid = (vx_bool)vx_true_e;
     }

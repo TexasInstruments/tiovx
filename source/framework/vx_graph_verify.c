@@ -115,8 +115,9 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         if((check != 0U) && (ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref) != (vx_bool)vx_false_e))
         {
             /* increment num_in_node count for ref */
-            if(prm_dir==(uint32_t)VX_INPUT)
+            if((uint32_t)VX_OUTPUT != prm_dir)
             {
+                /* Input or bidirectional */
                 graph->data_ref_num_in_nodes[i]++;
             }
             status = (vx_status)VX_SUCCESS;
@@ -129,14 +130,10 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         /* 'ref' not present in 'data_ref' list so add it */
         graph->data_ref[i] = ref;
         graph->data_ref_num_in_nodes[i] = 0;
-        graph->data_ref_num_out_nodes[i] = 0;
-        if(prm_dir==(uint32_t)VX_INPUT)
+        if((uint32_t)VX_OUTPUT != prm_dir)
         {
+            /* input */
             graph->data_ref_num_in_nodes[i]++;
-        }
-        else
-        {
-            graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
         ownLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", (uint16_t)graph->num_data_ref);
@@ -292,7 +289,7 @@ static vx_status ownGraphValidRectCallback(
     {
         ref = node->parameters[i];
 
-        if( (node->kernel->signature.directions[i] == (vx_enum)VX_INPUT)
+        if( ((vx_enum)VX_OUTPUT != node->kernel->signature.directions[i])
             &&
             (NULL != ref)
             &&
@@ -314,7 +311,7 @@ static vx_status ownGraphValidRectCallback(
             ref = node->parameters[i];
             mf = meta[i];
 
-            if( (node->kernel->signature.directions[i] == (vx_enum)VX_OUTPUT)
+            if( ((vx_enum)VX_INPUT != node->kernel->signature.directions[i])
                 &&
                 (NULL != ref)
                 &&
@@ -402,7 +399,7 @@ static vx_status ownGraphInitVirtualNode(
 
         if( (ref != NULL) && (mf != NULL) )
         {
-            if ((node->kernel->signature.directions[i] == (vx_enum)VX_OUTPUT) &&
+            if (((vx_enum)VX_OUTPUT == node->kernel->signature.directions[i]) &&
                 ((vx_bool)vx_true_e == ref->is_virtual))
             {
                 if ((ref->scope->type == (vx_enum)VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
@@ -733,98 +730,152 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     vx_reference ref1, ref2;
     vx_status status = (vx_status)VX_SUCCESS;
 
-    for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+    for (node_cur_idx = 0; (node_cur_idx < graph->num_nodes) && ((vx_status)VX_SUCCESS == status); node_cur_idx++)
     {
         node_cur = graph->nodes[node_cur_idx];
-
-        for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
+        uint32_t num_node_params = ownNodeGetNumParameters(node_cur);
+        if (TIVX_KERNEL_MAX_PARAMS < num_node_params)
+        {
+            /* HARD limit on the number of kernel parameters that can be processed */
+            VX_PRINT(VX_ZONE_ERROR, "No more than TIVX_KERNEL_MAX_PARAMS parameters are allowed per kernel!");
+            status = (vx_status)VX_ERROR_NO_RESOURCES;
+        }
+        for (prm_cur_idx = 0;
+             (prm_cur_idx < num_node_params) &&
+               ((vx_status)VX_SUCCESS == status);
+             prm_cur_idx++)
         {
             prm_cur_dir = (uint32_t)ownNodeGetParameterDir(node_cur, prm_cur_idx);
-
             ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
-
             if( (ref1) && ((prm_cur_dir == (uint32_t)VX_OUTPUT) || (prm_cur_dir == (uint32_t)VX_BIDIRECTIONAL)) )
             {
+                vx_uint32 outputs_attached = 0U;
+                vx_uint32 inputs_attached = 0U;
+                vx_uint32 biputs_attached = 0U;
+                /* No read-only object can be modified: Special check for uniform images. */
+                if ((ref1->type == (vx_enum)VX_TYPE_IMAGE) &&
+                    ((vx_enum)TIVX_IMAGE_UNIFORM ==(vx_enum)((tivx_obj_desc_image_t *)ref1->obj_desc)->create_type))
+                {
+                    status = (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,"Cannot write to uniform image at node index %d failed\n", node_cur_idx);
+                }
                 /* for each output, see if it matches any node input data */
-                for(node_next_idx=(node_cur_idx+1U)%graph->num_nodes;
-                    node_next_idx!=node_cur_idx;
-                    node_next_idx=(node_next_idx+1U)%graph->num_nodes)
+                for (node_next_idx = 0; (node_next_idx < graph->num_nodes) && ((vx_status)VX_SUCCESS == status); node_next_idx++)
                 {
                     node_next = graph->nodes[node_next_idx];
-
-                    for(prm_next_idx=0; prm_next_idx < ownNodeGetNumParameters(node_next); prm_next_idx++)
+                    for (prm_next_idx = 0;
+                         (prm_next_idx < ownNodeGetNumParameters(node_next)) &&
+                           ((vx_status)VX_SUCCESS == status);
+                         prm_next_idx++)
                     {
                         prm_next_dir = (uint32_t)ownNodeGetParameterDir(node_next, prm_next_idx);
-
                         ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
-
-                        if(ref2 != NULL)
+                        if (ref2 != NULL)
                         {
-                            if( (prm_next_dir == (uint32_t)VX_INPUT) || (prm_next_dir == (uint32_t)VX_BIDIRECTIONAL) )
+                            if (ownGraphCheckIsRefMatch(graph, ref1, ref2) != 0)
                             {
-                                /* check if input data reference of next node is equal to
-                                   output data reference of current */
-                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) != 0 )
+                                if (node_cur_idx == node_next_idx)
                                 {
-                                    /* add node_next as output node for current node if not already added */
-                                    status = ownNodeAddOutNode(node_cur, node_next);
-
-                                    if(status == (vx_status)VX_SUCCESS)
+                                    if (prm_cur_idx != prm_next_idx)
                                     {
-                                        /* add node_current as input node for next node if not already added */
-                                        status = ownNodeAddInNode(node_next, node_cur);
-                                        if (status != (vx_status)VX_SUCCESS)
+                                    /* We have an error: output connected to same node */
+                                        status = (vx_status)VX_FAILURE;
+                                        VX_PRINT(VX_ZONE_ERROR,"Output of node connected to same node at index %d failed\n", node_cur_idx);
+                                    }
+                                }
+                                else if (prm_cur_dir == prm_next_dir)
+                                {
+                                    /* We have an error: two modifiers or two writers of the same edge */
+                                    status = (vx_status)VX_FAILURE;
+                                    VX_PRINT(VX_ZONE_ERROR,"Two modifiers or two writers of the same edge, nodes %d and %d\n", node_cur_idx, node_next_idx);
+                                }
+                                else if ((uint32_t)VX_INPUT == prm_next_dir)
+                                {
+                                    ++inputs_attached;
+                                    /* add node_next as output node for current node if not already added */
+                                    /* but we don't do it if this parameter is an output attached to a bidirectional */
+                                    if (0U == biputs_attached)
+                                    {
+                                        status = ownNodeAddOutNode(node_cur, node_next);
+                                        if(status == (vx_status)VX_SUCCESS)
                                         {
-                                            VX_PRINT(VX_ZONE_ERROR,"Add in node at index %d failed\n", node_cur_idx);
+                                            /* add node_current as input node for next node if not already added */
+                                            status = ownNodeAddInNode(node_next, node_cur);
+                                            if (status != (vx_status)VX_SUCCESS)
+                                            {
+                                                VX_PRINT(VX_ZONE_ERROR,"Add in node at index %d failed\n", node_cur_idx);
+                                            }
                                         }
+                                        else
+                                        {
+                                            VX_PRINT(VX_ZONE_ERROR,"Add out node at index %d failed\n", node_cur_idx);
+                                        }
+                                    }
+                                }
+                                else if ((vx_enum)VX_BIDIRECTIONAL == (vx_enum)prm_next_dir)
+                                {
+                                    /* Current node must be an output, proceed as if it was the only input attached */
+                                    /* We must make the bidirectional parameter node the only one following the
+                                       output parameter node; to do this we go through all the out nodes and replace
+                                       the output parameter node by the bidirectional parameter node in the in node list */
+                                    ++biputs_attached;
+                                    uint32_t i;
+                                    for (i = 0; (i < ownNodeGetNumOutNodes(node_cur)) && ((vx_status)VX_SUCCESS == status); ++i)
+                                    {
+                                        vx_node out_node = ownNodeGetNextNode(node_cur, i);
+                                        if ((vx_node)NULL != out_node)
+                                        {
+                                          status = ownNodeReplaceInNode(out_node, node_cur, node_next);
+                                        }
+                                        else
+                                        {
+                                          status = (vx_status)VX_FAILURE;
+                                        }
+                                    }
+                                    if ((vx_status)VX_SUCCESS != (vx_status)status)
+                                    {
+                                        VX_PRINT(VX_ZONE_ERROR, "Failed to replace input node %d with input node %d\n", node_cur_idx, node_next_idx);
                                     }
                                     else
                                     {
-                                        VX_PRINT(VX_ZONE_ERROR,"Add out node at index %d failed\n", node_cur_idx);
+                                        node_cur->obj_desc[0]->num_out_nodes = 0;
+                                        node_next->obj_desc[0]->num_in_nodes = 0;
+                                        status = ownNodeAddOutNode(node_cur, node_next);
+                                        if ((vx_status)VX_SUCCESS == (vx_status)status)
+                                        {
+                                            status = ownNodeAddInNode(node_next, node_cur);
+                                            if ((vx_status)VX_SUCCESS != (vx_status)status)
+                                            {
+                                                VX_PRINT(VX_ZONE_ERROR, "Add in node for bidirectional at index %d failed\n", node_cur_idx);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            VX_PRINT(VX_ZONE_ERROR, "Add out node for bidirectional at index %d failed\n", node_cur_idx);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            if( prm_next_dir == (uint32_t)VX_OUTPUT )
-                            {
-                                vx_reference parent_ref_node_cur, parent_ref_node_next;
-
-                                parent_ref_node_cur = NULL;
-                                parent_ref_node_next = NULL;
-
-                                if(0 != node_cur->replicated_flags[prm_cur_idx])
+                                else
                                 {
-                                    parent_ref_node_cur = ref1->scope;
+                                    /* prm_cur_dir must be bidirectional and prm_next_dir must be an output; here
+                                       we count the number of times that the bidirectional has an output attached. */
+                                    ++outputs_attached;
                                 }
-
-                                if(0 != node_next->replicated_flags[prm_next_idx])
-                                {
-                                    parent_ref_node_next = ref2->scope;
-                                }
-
-                                /* check if any output of next node matches current node
-                                 * This would mean two nodes output to same data object which is not allowed
-                                 */
-                                if( (ownGraphIsRefMatch(graph, ref1, ref2) != (vx_bool)vx_false_e) ||
-                                    (ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) != (vx_bool)vx_false_e) ||
-                                    (ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) != (vx_bool)vx_false_e))
-                                {
-                                    status = (vx_status)VX_FAILURE;
-                                    VX_PRINT(VX_ZONE_ERROR,"Output of next node matches current node at index %d failed\n", node_cur_idx);
-                                }
-                            }
-                            else
-                            {
-                                /* Do nothing as there is no other
-                                   direction possible */
                             }
                         }
                     }
                 }
+                if ((prm_cur_dir == (uint32_t)VX_BIDIRECTIONAL) &&
+                    (ref1->is_virtual == (vx_bool)vx_true_e) &&
+                    ( (outputs_attached != 1U) || (inputs_attached == 0U)))
+                {
+                    /* A virtual bidirectional parameter must be connected to exactly one output and at least one input */
+                    status = (vx_status)VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,"Virtual bidirectional parameter must be connected to an output and at least one input at index %d failed\n", node_cur_idx);
+                }
             }
         }
     }
-
     return status;
 }
 
@@ -1637,33 +1688,33 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
 
     /* Dont make a data ref queue if below is true
      * - if node parameter is input
-     * - or node parameter is output but this is a leaf node
+     * - or if this is a leaf node
      *   - Note: exception here is if it is a delay b/c the delay slot in question
      *           may not be connected to another node
      * - or no node reference specified at the node,index
      * Here no data ref queue is required since if user really wanted to access
-     * the data ref, user would have a graph parameter out of this node,index
+     * the data ref, user would have a graph parameter out of this node, index
      */
-    if((ownNodeGetParameterDir(node, index) != (vx_enum)VX_OUTPUT) /* input parameter */
+    if((ownNodeGetParameterDir(node, index) == (vx_enum)VX_INPUT) /* input parameter */
         || (param_ref == NULL) /* no reference specified at node,index */
-        || ((ownGraphGetNumInNodes(graph, node, index) == 0U) && /* leaf parameter and not a delay */
-             !(ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
+        || (   (ownGraphGetNumInNodes(graph, node, index) == 0U)
+            && !((param_ref->delay != NULL) /* leaf parameter and not a delay */
+            && (ownIsValidSpecificReference((vx_reference)param_ref->delay, (vx_enum)VX_TYPE_DELAY) != (vx_bool)vx_false_e))
+           )
         )
     {
         skip_add_data_ref_q = (vx_bool)vx_true_e;
     }
-
-    if(skip_add_data_ref_q==(vx_bool)vx_false_e)
+    else
     {
         uint32_t i;
-
-        /* check if (node, index) is a graph parameter and if queueing is already enabled,
+        /* check if there is any graph parameter with the same reference and with queueing already enabled,
         * if yes then do nothing */
-        for(i=0; i<graph->num_params; i++)
+        for(i = 0; i < graph->num_params; i++)
         {
-            if((graph->parameters[i].node==node) &&
-                (graph->parameters[i].index==index) &&
-                (graph->parameters[i].queue_enable == (vx_bool)vx_true_e))
+            vx_reference gparam_ref;
+            gparam_ref = ownNodeGetParameterRef(graph->parameters[i].node, graph->parameters[i].index);
+            if ((param_ref == gparam_ref) && (graph->parameters[i].queue_enable == (vx_bool)vx_true_e))
             {
                 skip_add_data_ref_q = (vx_bool)vx_true_e;
                 break;
