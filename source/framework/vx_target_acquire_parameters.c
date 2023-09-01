@@ -362,7 +362,7 @@ static void ownTargetNodeDescReleaseParameter(
 
     flags = data_ref_q_obj_desc->flags;
 
-    if(is_prm_input == (vx_bool)vx_true_e)
+    if((vx_bool)vx_true_e == is_prm_input)
     {
         data_ref_q_obj_desc->in_node_done_cnt++;
         if(data_ref_q_obj_desc->in_node_done_cnt==data_ref_q_obj_desc->num_in_nodes)
@@ -416,7 +416,7 @@ static void ownTargetNodeDescReleaseParameter(
     }
     else
     {
-        /* this is a output and is used as input but some other node */
+        /* this is a output or bidirectional and is used as input by some other node */
         data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
     }
     if((do_release_ref != (vx_bool)vx_false_e) || (do_release_ref_to_queue != (vx_bool)vx_false_e))
@@ -612,9 +612,10 @@ void ownTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, 
 
             if(0 != ownObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
             {
-                is_prm_input = tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id));
-
+                is_prm_input =    tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id))
+                               || tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id));
                 is_prm_released = (vx_bool)vx_false_e;
+
 
                 ownTargetNodeDescReleaseParameter(
                     node_obj_desc,

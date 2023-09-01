@@ -1040,7 +1040,7 @@ void ownGraphDetectAndSetNumBuf(vx_graph graph)
                     ref = ownNodeGetParameterRef(node_cur, prm_cur_idx);
                     prm_dir = (uint32_t)ownNodeGetParameterDir(node_cur, prm_cur_idx);
 
-                    if( (ref!=NULL) && ((vx_enum)prm_dir == VX_OUTPUT)) /* ref could be NULL due to optional parameters */
+                    if( (ref!=NULL) && ((vx_enum)prm_dir !=  (vx_enum)VX_INPUT)) /* ref could be NULL due to optional parameters */
                     {
                         is_ref_graph_param = (vx_bool)vx_false_e;
 

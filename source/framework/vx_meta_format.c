@@ -1293,7 +1293,7 @@ static vx_bool ownIsMetaFormatRawImageEqual(
                 is_equal = (vx_bool)vx_true_e;
             }
         }
-        else
+        if ((vx_bool)vx_false_e == is_equal)
         {
             VX_PRINT(VX_ZONE_INFO, "Raw Image object meta data are not equivalent!\n");
         }

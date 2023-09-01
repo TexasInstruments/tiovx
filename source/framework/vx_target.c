@@ -234,6 +234,7 @@ static vx_bool ownTargetNodeDescCanNodeExecute(
                         TIVX_NODE_FLAG_IS_EXECUTED) == (vx_bool)vx_false_e)
             {
                 can_execute = (vx_bool)vx_false_e;
+                break;
             }
         }
     }
@@ -1346,7 +1347,7 @@ void ownTargetSetTimestamp(
     {
         if (NULL != obj_desc[prm_id])
         {
-            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)))
+            if (tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)1U<<prm_id)) || tivxFlagIsBitSet(is_prm_input_flag, ((uint32_t)TIVX_OBJ_DESC_BIDIR_FLAG<<prm_id)))
             {
                 obj_timestamp = obj_desc[prm_id]->timestamp;
 
