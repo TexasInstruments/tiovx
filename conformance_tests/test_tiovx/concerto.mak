@@ -28,6 +28,9 @@ IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/kernels/test_kernels/include
 IDIRS       += $(HOST_ROOT)/conformance_tests/test_tiovx/utils
 
+# Note: This is required for TIVX_TEST_WAIVER_COMPLEXITY_AND_MAINTENANCE_COST_001
+IDIRS       += $(HOST_ROOT)/source/include
+
 CSOURCES    += utils/test_utils_file_bmp_rd_wr.c
 
 ifeq ($(HOST_COMPILER),TIARMCGT)

@@ -24,7 +24,15 @@
 #include <VX/vxu.h>
 #include <string.h>
 #include <math.h>
+#include <TI/tivx_mutex.h>
+#include <TI/tivx_queue.h>
 
+/* The below include files are used for TIVX_TEST_WAIVER_COMPLEXITY_AND_MAINTENANCE_COST_001
+ * described below */
+#include <tivx_event_queue.h>
+#include <tivx_obj_desc_priv.h>
+#include <vx_reference.h>
+#include <vx_context.h>
 
 #include "shared_functions.h"
 
@@ -3218,6 +3226,50 @@ TEST(tivxNegativeBoundary2, negativeTestControlCommandsBoundary)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/* TIVX_TEST_WAIVER_COMPLEXITY_AND_MAINTENANCE_COST_001
+ *
+ * Waiver Rationale: This test exposes the error checks within each
+ * OpenVX data object which checks for no object descriptors available
+ * while there are references available. This *could* be tested by other
+ * means, but for the following reasons this is being waived.
+ *
+ * 1. It would require overly complex logic for detecting the number of
+ *    data objects available vs the number of object descriptors available.
+ * 2. It would not scale well to multiple data objects.
+ * 3. It may need to be re-written if these object descriptor values ever
+ *    change.
+ */
+
+TEST(tivxNegativeBoundary2, negativeTestObjDescBoundary)
+{
+    extern tivx_obj_desc_t *ownObjDescAlloc(vx_enum type, vx_reference ref);
+    extern vx_status ownObjDescFree(tivx_obj_desc_t **obj_desc);
+
+    vx_context context = context_->vx_context_;
+    int i, j;
+    tivx_obj_desc_t *obj_desc[TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST] = {NULL};
+    vx_image img = NULL;
+
+    img = (vx_image)ownCreateReference(context, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, &context->base);
+
+    for (i = 0; i < TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST; i++)
+    {
+        obj_desc[i] = (tivx_obj_desc_t *)ownObjDescAlloc((vx_enum)TIVX_OBJ_DESC_IMAGE, (vx_reference)img);
+        if (NULL != obj_desc[i])
+        {
+            break;
+        }
+    }
+
+    for (j = 0; j < i; j++)
+    {
+        VX_CALL(ownObjDescFree((tivx_obj_desc_t**)&obj_desc[j]));
+    }
+
+    VX_CALL(ownReleaseReferenceInt((vx_reference*)&img, (vx_enum)VX_TYPE_IMAGE, (vx_enum)VX_EXTERNAL, NULL));
+}
+
+
 
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 2)
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME "org.khronos.openvx.test.own_user"
@@ -3883,7 +3935,8 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestMapUserDataObjectBoundary,
         negativeTestUserDataObjectBoundary,
         negativeTestMapRawImageBoundary,
-        negativeTestControlCommandsBoundary
+        negativeTestControlCommandsBoundary,
+        negativeTestObjDescBoundary
         )
 
 TESTCASE_TESTS(tivxFrameworkTest,
