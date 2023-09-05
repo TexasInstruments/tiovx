@@ -203,7 +203,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 
     if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
     {
-        tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
+        status = tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, alloc_size, (vx_enum)TIVX_MEM_EXTERNAL);
     }
 
     return (status);
