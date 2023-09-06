@@ -131,7 +131,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_control_f)(
 /*! \brief Allows users to add native kernels implementation to specific targets
  *
  *         This is different from vxAddUserKernel() in that this is called
- *         on the target CPU. This is a TI prorietary API and not part of
+ *         on the target CPU. This is a TI proprietary API and not part of
  *         OpenVX or TI OpenVX extention.
  *
  *         This allows users to implement and plugin specific
@@ -236,7 +236,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelTargetId(
 /*!
  * \brief Get the border mode for the target kernel instance
  *
- *        Used by the kernel implemention to get border mode
+ *        Used by the kernel implementation to get border mode
  *
  * \ingroup group_tivx_target_kernel
  */
@@ -292,7 +292,7 @@ static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_v
 }
 
 /*!
- * \brief Add real-time log event in host side initilize callback for user kernel
+ * \brief Add real-time log event in host side initialize callback for user kernel
  *
  * - This API is intended to be called from within the initialization callback
  *   of a user kernel.
@@ -302,7 +302,7 @@ static inline void tivxFlagBitClear(volatile uint32_t *flag_var, uint32_t flag_v
  *   index values across nodes without any issue (for example, event_index of 0 can be used at
  *   most once per node).
  *
- * \param [in] node         The node object that the event is to be asociated with
+ * \param [in] node         The node object that the event is to be associated with
  * \param [in] event_index  Unique identifier of specific event within node
  * \param [in] *event_name  The node object associated with the event
  *

@@ -107,7 +107,7 @@ vx_status VX_API_CALL tivxLogRtTraceDisable(vx_graph graph);
  * - Each time API is called, current log events are saved to the file 'filename'
  *   and existing log is cleared.
  * - Calling this API periodically avoids the event log from getting full.
- * - Thus this API allows to continously store data to a file on the filesystem, limited only by the
+ * - Thus this API allows to continuously store data to a file on the filesystem, limited only by the
  *   size of free space on the filesystem.
  * - The data stored in the file can be visualized by doing below
  * - Copy the saved file(s) to PC

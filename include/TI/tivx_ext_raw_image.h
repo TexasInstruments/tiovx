@@ -284,9 +284,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
  *
  * \param [in] raw_image           The reference to the raw image object that contains the patch to map.
  * \param [in] rect                The coordinates of raw image patch. The patch must be within the
- *                                 bounds of the image. (start_x, start_y) gives the coordinate of the topleft
+ *                                 bounds of the image. (start_x, start_y) gives the coordinate of the top left
  *                                 element inside the patch, while (end_x, end_y) give the coordinate of
- *                                 the bottomright element out of the patch. Must be 0 <= start < end.
+ *                                 the bottom right element out of the patch. Must be 0 <= start < end.
  *                                 Only valid when buffer_select is TIVX_RAW_IMAGE_PIXEL_BUFFER.
  * \param [in] exposure_index      The exposure index of the image object to be accessed.
  * \param [out] map_id             The address of a vx_map_id variable where the function

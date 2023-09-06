@@ -131,7 +131,7 @@ enum tivx_super_node_attribute_e {
  *            super node
  *          - All nodes in this super node must be part of the 'graph' graph reference.
  *
- *          If any of the following coniditions are violated, the object may
+ *          If any of the following conditions are violated, the object may
  *          successfully be created, but may return an error durring graph
  *          verification:
  *

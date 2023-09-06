@@ -105,7 +105,7 @@ typedef struct _vx_module
 
 
 /*!
- * \brief Returns number of resgistered modules
+ * \brief Returns number of registered modules
  *
  * \ingroup group_vx_module
  */

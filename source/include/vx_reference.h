@@ -44,19 +44,19 @@ typedef enum _tivx_reftype_e {
 } tivx_reftype_e;
 
 /*! \brief Callback type used to register different
- *    callbacks from object dervied from references
+ *    callbacks from object derived from references
  * \ingroup group_vx_reference
  */
 typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
 
 /*! \brief Callback type used to register release
- *    callbacks from object dervied from references
+ *    callbacks from object derived from references
  * \ingroup group_vx_reference
  */
 typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference *ref);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
- *  from tivx_reference_t must have a vx_reference_t as its first memeber
+ *  from tivx_reference_t must have a vx_reference_t as its first member
  *  to allow casting to this type.
  * \ingroup group_vx_reference
  */
@@ -94,12 +94,12 @@ typedef struct _vx_reference {
      */
     vx_uint32 internal_count;
 
-    /*! \brief Object specific function that is called to allcoate object memory
+    /*! \brief Object specific function that is called to allocate object memory
      */
     tivx_reference_callback_f mem_alloc_callback;
 
     /*! \brief Object specific function that is called to destroy an object
-     * when refernce count reaches zero
+     * when reference count reaches zero
      */
     tivx_reference_callback_f destructor_callback;
 

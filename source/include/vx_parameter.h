@@ -45,7 +45,7 @@ typedef struct _vx_parameter
     vx_uint32      index;
     /*! \brief Pointer to the node which this parameter is associated with */
     vx_node        node;
-    /*! \brief Pointer to the kernel which this parameter is associated with, if retreived from
+    /*! \brief Pointer to the kernel which this parameter is associated with, if retrieved from
      * \ref vxGetKernelParameterByIndex.
      */
     vx_kernel      kernel;

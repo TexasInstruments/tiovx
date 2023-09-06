@@ -107,7 +107,7 @@ typedef enum {
 /*!
  * \brief Get size of TIOVX object descriptor memory carveout
  *
- * \param shm_size [in] Adress of unsigned int to hold size of shared memory
+ * \param shm_size [in] Address of unsigned int to hold size of shared memory
  *
  * \return 0 for success status
  *

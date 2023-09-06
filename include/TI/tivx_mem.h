@@ -94,7 +94,7 @@ typedef enum _tivx_mem_heap_region_e
 
     /*! \brief Internal memory at L3 level.
      *
-     *  Typically visiable to all CPUs, limited in size.
+     *  Typically visible to all CPUs, limited in size.
      *  Typically used by kernels and in very rare cases by applications.
      */
     TIVX_MEM_INTERNAL_L3,
@@ -108,7 +108,7 @@ typedef enum _tivx_mem_heap_region_e
      *  memory contents are not preserved across kernel function calls
      *
      *  tivxMemAlloc() API will linearly allocate from this memory
-     *  segement. After each allocatation an internal
+     *  segment. After each allocation an internal
      *  offset will be incremented.
      *
      *  tivxMemFree() resets this offset to zero.
@@ -128,7 +128,7 @@ typedef enum _tivx_mem_heap_region_e
      *  memory contents are not preserved across kernel function calls
      *
      *  tivxMemAlloc() API will linearly allocate from this memory
-     *  segement. After each allocatation an internal
+     *  segment. After each allocation an internal
      *  offset will be incremented.
      *
      *  tivxMemFree() resets this offset to zero.
@@ -147,14 +147,14 @@ typedef enum _tivx_mem_heap_region_e
      */
     TIVX_MEM_EXTERNAL_SCRATCH,
 
-    /*! \brief External persistent non cachable memory
+    /*! \brief External persistent non cacheable memory
      *
      *  Typically large in size and can be used by kernels.
      *  as well as applications.  Must be reset and allocated
      *  each time it is used.
      */
     TIVX_MEM_EXTERNAL_PERSISTENT_NON_CACHEABLE,
-    /*! \brief External scratch non cachable memory
+    /*! \brief External scratch non cacheable memory
      *
      *  Typically large in size and can be used by kernels.
      *  as well as applications.  Must be reset and allocated
@@ -182,7 +182,7 @@ typedef struct _tivx_shared_mem_ptr_t {
     /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
     volatile uint32_t mem_heap_region;
 
-    /*! \brief Value of dmaBufFd correspods to the host_ptr,
+    /*! \brief Value of dmaBufFd corresponds to the host_ptr,
      *         This will be used by host/Linux CPU
      */
     volatile int32_t dma_buf_fd;
@@ -221,7 +221,7 @@ typedef struct _tivx_mem_stats_t {
      */
     vx_uint32 mem_size;
 
-    /*! \brief Max free block in memoru heap segment
+    /*! \brief Max free block in memory heap segment
      *         Set to 0 when free size cannot be determined.
      */
     vx_uint32 free_size;
@@ -253,8 +253,8 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size);
  * \brief Map an allocated buffer address
  *
  *        This is to ensure the memory pointed by the buffer is
- *        accesible to the caller and brought to a coherent state wrt caller
- *        by performing a cahce invalidate when necessary.
+ *        accessible to the caller and brought to a coherent state wrt caller
+ *        by performing a cache invalidate when necessary.
  *
  * \param [in] host_ptr Buffer memory to map
  * \param [in] size Size of memory to map in units of bytes
@@ -384,7 +384,7 @@ int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
 vx_status tivxMemTranslateVirtAddr(const void *virtAddr, uint64_t *fd, void **phyAddr);
 
 /**
- * \brief Translates a given file descriptor to a virtual and physical addresss.
+ * \brief Translates a given file descriptor to a virtual and physical address.
  *        The following conditions regarding 'fd' must be TRUE:
  *        - allocated using appMemAlloc()/tivxMemAlloc()
  *        - memory block is contiguous

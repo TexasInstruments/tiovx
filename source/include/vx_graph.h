@@ -279,7 +279,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph);
  * \param node  [in] the node to add
  * \param index [in] the index in graph at which to add the node
  *
- * \return VX_SUCCESS, on sucess
+ * \return VX_SUCCESS, on success
  *
  * \ingroup group_vx_graph
  */
@@ -290,7 +290,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
  * \param graph [in] graph object
  * \param super_node  [in] the super node to add
  *
- * \return VX_SUCCESS, on sucess
+ * \return VX_SUCCESS, on success
  *
  * \ingroup group_vx_graph
  */
@@ -301,7 +301,7 @@ vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node);
  * \param graph [in] graph object
  * \param node  [in] the node to remove
  *
- * \return VX_SUCCESS, on sucess
+ * \return VX_SUCCESS, on success
  *
  * \ingroup group_vx_graph
  */
@@ -345,7 +345,7 @@ vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference 
 
 /*! \brief Perform topological sort of graph nodes
  *
- * \param context    [in] context to use while seaching
+ * \param context    [in] context to use while searching
  * \param super_node [in] super node
  * \param num_nodes  [in] Number of nodes
  * \param has_cycle  [out] vx_true_e: Super node nodes are connected
@@ -448,7 +448,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule);
  */
 vx_status ownGraphScheduleGraphWrapper(vx_graph graph);
 
-/*! \brief Check if a previoulsy scehduled graph execution is complete
+/*! \brief Check if a previously scheduled graph execution is complete
  *
  * Called every time a leaf node completes execution.
  * When all leaf nodes complete execution a graph is said to be completed
@@ -519,7 +519,7 @@ void ownSendGraphCompletedEvent(vx_graph graph);
 vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref);
 
 /*!
- * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled sucessfully
+ * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled successfully
  *
  *  Value returned is minimum of number of refs enqueued at each graph parameter
  *  Valid only in VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL mode

@@ -123,7 +123,7 @@ vx_status ownObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id);
 vx_status ownObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_id);
 
 /*!
- * \brief Extract nodes blocked on this object descritor queue ID
+ * \brief Extract nodes blocked on this object descriptor queue ID
  *
  * Adds to out_blocked_nodes, make sure out_blocked_nodes->num_nodes is set to 0
  * before calling this API

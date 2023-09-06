@@ -63,7 +63,7 @@ typedef struct _vx_node {
     vx_bool replicated_flags[TIVX_KERNEL_MAX_PARAMS];
     /*! \brief reset valid rectangle */
     vx_bool valid_rect_reset;
-    /*! \brief Node completeion callback */
+    /*! \brief Node completion callback */
     vx_nodecomplete_f user_callback;
     /*! \brief to check if kernel is created */
     vx_bool is_kernel_created;
@@ -346,7 +346,7 @@ void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue 
  */
 void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id);
 
-/*! \brief Return number of buffers to alocate at a node,index
+/*! \brief Return number of buffers to allocate at a node,index
  *
  *  Valid only for output parameters
  *

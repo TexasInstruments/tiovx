@@ -166,77 +166,77 @@ extern "C" {
  */
 typedef enum _tivx_obj_desc_type_e {
 
-    /*! \brief Object desciptor that has information related to image object */
+    /*! \brief Object descriptor that has information related to image object */
     TIVX_OBJ_DESC_IMAGE         = 0x0,
 
-    /*! \brief Object desciptor that has information related to scalar object */
+    /*! \brief Object descriptor that has information related to scalar object */
     TIVX_OBJ_DESC_SCALAR        = 0x1,
 
-    /*! \brief Object desciptor that has information related to remap object */
+    /*! \brief Object descriptor that has information related to remap object */
     TIVX_OBJ_DESC_REMAP         = 0x2,
 
-    /*! \brief Object desciptor that has information related to node object */
+    /*! \brief Object descriptor that has information related to node object */
     TIVX_OBJ_DESC_NODE          = 0x3,
 
-    /*! \brief Object desciptor that has information related to command object */
+    /*! \brief Object descriptor that has information related to command object */
     TIVX_OBJ_DESC_CMD           = 0x4,
 
-    /*! \brief Object desciptor that has information related to matrix object */
+    /*! \brief Object descriptor that has information related to matrix object */
     TIVX_OBJ_DESC_MATRIX        = 0x5,
 
-    /*! \brief Object desciptor that has information related to Lut object */
+    /*! \brief Object descriptor that has information related to Lut object */
     TIVX_OBJ_DESC_LUT           = 0x6,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         Convolution object */
     TIVX_OBJ_DESC_CONVOLUTION   = 0x7,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         Distribution object */
     TIVX_OBJ_DESC_DISTRIBUTION  = 0x8,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         threshold object */
     TIVX_OBJ_DESC_THRESHOLD     = 0x9,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         Array object */
     TIVX_OBJ_DESC_ARRAY         = 0xA,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         Pyramid object */
     TIVX_OBJ_DESC_PYRAMID       = 0xB,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         Object Array object */
     TIVX_OBJ_DESC_OBJARRAY      = 0xC,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         kernel name */
     TIVX_OBJ_DESC_KERNEL_NAME   = 0xD,
 
-    /*! \brief Object desciptor queue */
+    /*! \brief Object descriptor queue */
     TIVX_OBJ_DESC_QUEUE         = 0xE,
 
-    /*! \brief Object desciptor data ref queue */
+    /*! \brief Object descriptor data ref queue */
     TIVX_OBJ_DESC_DATA_REF_Q    = 0xF,
 
-    /*! \brief Object desciptor graph */
+    /*! \brief Object descriptor graph */
     TIVX_OBJ_DESC_GRAPH         = 0x10,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         tensor object */
     TIVX_OBJ_DESC_TENSOR        = 0x11,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         user data object */
     TIVX_OBJ_DESC_USER_DATA_OBJECT = 0x12,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         raw image object */
     TIVX_OBJ_DESC_RAW_IMAGE     = 0x13,
 
-    /*! \brief Object desciptor that has information related to
+    /*! \brief Object descriptor that has information related to
         super node */
     TIVX_OBJ_DESC_SUPER_NODE   = 0x14,
 
@@ -294,12 +294,12 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief ID of object in shared memory */
     volatile uint16_t obj_desc_id;
 
-    /*! \brief Type of object descritor, see \ref tivx_obj_desc_type_e */
+    /*! \brief Type of object descriptor, see \ref tivx_obj_desc_type_e */
     volatile uint16_t type;
 
     /*! \brief object descriptor ID of the scope in which this object is created
      *         For element of pyramid and object array, this is obj_desc_id
-     *         of excompassing pyramid, object array
+     *         of encompassing pyramid, object array
      */
     volatile uint16_t scope_obj_desc_id;
 
@@ -403,7 +403,7 @@ typedef struct _tivx_obj_desc_node
     /*! \brief Number of nodes that are connected to output of this node */
     volatile uint32_t num_out_nodes;
 
-    /*! \brief Number of nodes that are connected to output of this node */
+    /*! \brief Number of nodes that are connected to input of this node */
     volatile uint32_t num_in_nodes;
 
     /*! \brief border mode */
@@ -924,7 +924,7 @@ tivx_obj_desc_t *tivxGetObjDescElement(tivx_obj_desc_t *obj_desc, uint16_t elem_
  *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
  *   used, it could result in an unaligned access. To avoid this, below functions
- *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   should be used in place of standard strncpy, memcpy, memset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignment should be avoided and below function used instead
  *
@@ -941,7 +941,7 @@ void tivx_obj_desc_strncpy(volatile void *dst, volatile void *src, uint32_t size
  *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
  *   used, it could result in an unaligned access. To avoid this, below functions
- *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   should be used in place of standard strncpy, memcpy, memset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignment should be avoided and below function used instead
  *
@@ -958,7 +958,7 @@ void tivx_obj_desc_memcpy(volatile void *dst, volatile void *src, uint32_t size)
  *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
  *   used, it could result in an unaligned access. To avoid this, below functions
- *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   should be used in place of standard strncpy, memcpy, memset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignment should be avoided and below function used instead
  *
@@ -976,7 +976,7 @@ void tivx_obj_desc_memset(volatile void *dst, uint8_t val, uint32_t size);
  *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
  *   used, it could result in an unaligned access. To avoid this, below functions
- *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   should be used in place of standard strncpy, memcpy, memset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignment should be avoided and below function used instead
  *
@@ -996,7 +996,7 @@ int32_t tivx_obj_desc_strncmp(volatile void *dst, volatile void *src, uint32_t s
  *   are properly aligned so making an access to obj desc fields is fine.
  *   But when APIs like strncpy, memcpy, memset are
  *   used, it could result in an unaligned access. To avoid this, below functions
- *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   should be used in place of standard strncpy, memcpy, memset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignment should be avoided and below function used instead
  *

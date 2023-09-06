@@ -692,7 +692,7 @@ vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, const char *output_fi
  * - The node parameter specified MUST be a output parameter.
  * - The node parameter specified MUST NOT be an enqueueable graph parameter.
  *
- * This API acts as a hint and framework may overide user specified settings
+ * This API acts as a hint and framework may override user specified settings
  * in case any of above conditions are not met.
  *
  * \param [in] node Node reference
@@ -740,7 +740,7 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
  * \brief Send node specific Control command
  * \details This API is used to send specific control command to the node.
  *          Refer to Node documentation for specific control command.
- *          Note that this API is blocking and does not return untill
+ *          Note that this API is blocking and does not return until
  *          command is executed by the node.
  *          This API is thread safe, ie multi commands can be sent to
  *          same or different nodes from different threads
@@ -781,7 +781,7 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  * \brief Send node specific Control command
  * \details This API is used to send specific control command to the node.
  *          Refer to Node documentation for specific control command.
- *          Note that this API blocks for atmost 'timeout' milli-seconds i.e.
+ *          Note that this API blocks for at most 'timeout' milli-seconds i.e.
  *          the API returns either when the command execution finishes or
  *          if the timeout occurs, whichever occurs first.
  *          This API is thread safe, ie multi commands can be sent to

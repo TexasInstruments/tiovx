@@ -93,10 +93,10 @@
 /** \brief Event indetifier to event name index */
 typedef struct {
 
-    uint64_t event_id;    /**< event indentifier */
+    uint64_t event_id;    /**< event identifier */
     uint16_t event_class; /**< event class */
     uint16_t rsv[3];      /**< used to aligned to 64b */
-    uint8_t  event_name[TIVX_LOG_RT_EVENT_NAME_MAX]; /**< event indentifier name */
+    uint8_t  event_name[TIVX_LOG_RT_EVENT_NAME_MAX]; /**< event identifier name */
 
 } tivx_log_rt_index_t;
 

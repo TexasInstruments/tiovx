@@ -119,7 +119,7 @@ typedef struct _tivx_data_ref_queue {
     uint32_t pipeline_depth;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
-    /*! \brief will user do enqueing/dequeueing or will graph rotate buffers internally */
+    /*! \brief will user do enqueueing/dequeueing or will graph rotate buffers internally */
     vx_bool enable_user_queueing;
     /*! \brief graph parameter index which is associated with this data ref */
     uint32_t graph_parameter_index;
@@ -139,7 +139,7 @@ typedef struct _tivx_data_ref_queue_create_params {
     uint32_t pipeline_depth;
     /*! \brief number of nodes that use this data reference as input */
     uint32_t num_in_nodes;
-    /*! \brief will user do enqueing/dequeueing or will graph rotate buffers internally */
+    /*! \brief will user do enqueueing/dequeueing or will graph rotate buffers internally */
     vx_bool enable_user_queueing;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
@@ -196,7 +196,7 @@ vx_status ownDataRefQueueDequeueDoneRef(tivx_data_ref_queue data_ref_q, vx_refer
 /*!
  * \brief Wait for 'DONE' queue to be non-empty
  *
- * if 'timeout' units of time elaspes then VX_FAILURE is returned
+ * if 'timeout' units of time elapses then VX_FAILURE is returned
  *
  * NOTE, this is a blocking API and block for 'timeout' units of time
  *

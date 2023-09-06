@@ -171,7 +171,7 @@ vx_status tivxQueueDelete(tivx_queue *queue);
  * \param queue [in] Pointer to queue object
  * \param data [in] element to add
  * \param timeout [in] Amount of time to wait,
- *            TIVX_QUEUE_FLAG_BLOCK_ON_PUT msut be set during create,
+ *            TIVX_QUEUE_FLAG_BLOCK_ON_PUT must be set during create,
  *            else function does not wait and returns error if queue is full
  *
  * \return VX_SUCCESS on success
@@ -186,7 +186,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout);
  * \param queue [in] Pointer to queue object
  * \param data [out] element that is extracted
  * \param timeout [in] Amount of time to wait,
- *            TIVX_QUEUE_FLAG_BLOCK_ON_GET msut be set during create,
+ *            TIVX_QUEUE_FLAG_BLOCK_ON_GET must be set during create,
  *            else function does not wait and returns error if queue is empty
  *
  * \return VX_SUCCESS on success
