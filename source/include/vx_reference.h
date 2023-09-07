@@ -189,12 +189,6 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
  */
 vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
 
-/*! \brief Returns the total reference count of the object.
- * \param [in] ref The reference to print.
- * \ingroup group_vx_reference
- */
-vx_uint32 ownTotalReferenceCount(vx_reference ref);
-
 /*! \brief Print reference information
  * \param [in] ref The reference.
  * \ingroup group_vx_reference

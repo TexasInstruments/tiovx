@@ -216,19 +216,6 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
     return result;
 }
 
-
-vx_uint32 ownTotalReferenceCount(vx_reference ref)
-{
-    vx_uint32 count = 0;
-    if (ref != NULL)
-    {
-        ownReferenceLock(ref);
-        count = ref->external_count + ref->internal_count;
-        ownReferenceUnlock(ref);
-    }
-    return count;
-}
-
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 count = 0u;
