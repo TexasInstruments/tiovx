@@ -918,7 +918,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size;
     uint64_t                shared_ptr[TIOVX_REF_MAX_NUM_MEM_ELEM] = {0};
-    uint32_t                numMemElem;
+    uint32_t                numMemElem, numPlanes, total_size = 0;
     uint32_t                numNulls;
     vx_status               status;
     vx_uint32               num_levels = 0;
@@ -927,7 +927,6 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     volatile uint32_t       num_planes[TIOVX_REF_MAX_NUM_MEM_ELEM];
     uint32_t                i;
     uint32_t                j;
-    uint32_t                k;
 
     status = (vx_status)VX_SUCCESS;
 
@@ -957,6 +956,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
     if (status == (vx_status)VX_SUCCESS)
     {
         numMemElem = 1;
+        numPlanes  = 1;
         mem_ptr    = NULL;
         mem_size   = NULL;
 
@@ -973,7 +973,11 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             }
             else
             {
-                numMemElem = obj_desc->planes;
+                numPlanes = obj_desc->planes;
+                for (i = 0; i < numPlanes; i++)
+                {
+                    total_size += obj_desc->mem_size[i];
+                }
                 mem_ptr    = obj_desc->mem_ptr;
                 mem_size   = obj_desc->mem_size;
             }
@@ -1123,6 +1127,8 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                     img_ref      = (vx_reference)pyramid->img[i];
                     img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
 
+                    numPlanes = img_obj_desc->planes;
+
                     if (img_obj_desc == NULL)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
@@ -1130,7 +1136,7 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
                         break;
                     }
 
-                    numMemElem      += img_obj_desc->planes;
+                    numMemElem++;
                     mem_ptr_arr[i]   = img_obj_desc->mem_ptr;
                     mem_size_arr[i]  = img_obj_desc->mem_size;
                     num_planes[i]    = img_obj_desc->planes;
@@ -1197,25 +1203,37 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
         {
             if (ref->type == (vx_enum)VX_TYPE_PYRAMID)
             {
-                k = 0;
                 for (i = 0; i < num_levels; i++)
                 {
+                    total_size = 0;
                     mem_size = mem_size_arr[i];
 
                     for (j = 0; j < num_planes[i]; j++)
                     {
-                        if (mem_size[j] != size[k])
-                        {
-                            VX_PRINT(VX_ZONE_ERROR,
-                                     "[Entry %d] Memory size mis-match: Expecting [%d] "
-                                     "but given [%d]\n",
-                                     k, mem_size[j], size[k]);
-
-                            status = (vx_status)VX_FAILURE;
-                        }
-
-                        k++;
+                        total_size += mem_size[j];
                     }
+
+                    if (total_size != size[i])
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,
+                                 "[Entry %d] Memory size mis-match: Expecting [%d] "
+                                 "but given [%d]\n",
+                                 i, total_size, size[i]);
+
+                        status = (vx_status)VX_FAILURE;
+                    }
+                }
+            }
+            else if (ref->type == (vx_enum)VX_TYPE_IMAGE)
+            {
+                if (total_size != size[0])
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "[Entry %d] Memory size mis-match: Expecting [%d] "
+                             "but given [%d]\n",
+                             i, total_size, size[0]);
+
+                    status = (vx_status)VX_FAILURE;
                 }
             }
             else
@@ -1250,28 +1268,38 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
             /* Update the object. */
             if (ref->type == (vx_enum)VX_TYPE_PYRAMID)
             {
-                k = 0;
                 for (i = 0; i < num_levels; i++)
                 {
                     mem_ptr  = mem_ptr_arr[i];
                     mem_size = mem_size_arr[i];
 
-                    for (j = 0; j < num_planes[i]; j++)
+                    if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
                     {
-                        mem_ptr[j].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                        VX_PRINT(VX_ZONE_INFO,
+                                 "Non-NULL handle detected. Overwriting.\n");
+                    }
 
-                        if (mem_ptr[j].host_ptr != (uint64_t)(uintptr_t)NULL)
+                    mem_ptr[0].host_ptr        = (uint64_t)(uintptr_t)addr[i];
+                    mem_ptr[0].shared_ptr      = shared_ptr[i];
+                    mem_ptr[0].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+
+                    for (j = 1; j < num_planes[i]; j++)
+                    {
+                        if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
                         {
-                            VX_PRINT(VX_ZONE_INFO,
-                                     "Non-NULL handle detected. Overwriting.\n");
+                            mem_ptr[j].host_ptr        = mem_ptr[j-1].host_ptr + mem_size[j-1];
+                            mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
+                                    mem_ptr[j].host_ptr,
+                                    (vx_enum)TIVX_MEM_EXTERNAL);
+                        }
+                        else
+                        {
+                            mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
+                            mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
                         }
 
-                        mem_ptr[j].host_ptr   = (uint64_t)(uintptr_t)addr[k];
-                        mem_ptr[j].shared_ptr = shared_ptr[k];
-
-                        k++;
-
-                    } /* for (j = 0; j < num_planes[i]; j++) */
+                        mem_ptr[j].mem_heap_region = (vx_enum)TIVX_MEM_EXTERNAL;
+                    } /* for (j = 1; j < num_planes[i]; j++) */
 
                 } /* for (i = 0; i < num_levels; i++) */
             }
@@ -1289,6 +1317,24 @@ vx_status tivxReferenceImportHandle(vx_reference ref, const void *addr[], const 
 
                     mem_ptr[i].host_ptr   = (uint64_t)(uintptr_t)addr[i];
                     mem_ptr[i].shared_ptr = shared_ptr[i];
+                    if (ref->type == (vx_enum)VX_TYPE_IMAGE)
+                    {
+                        for (j = 1; j < numPlanes; j++)
+                        {
+                            if (mem_ptr[0].host_ptr != (uint64_t)(uintptr_t)NULL)
+                            {
+                                mem_ptr[j].host_ptr        = mem_ptr[j-1].host_ptr + mem_size[j-1];
+                                mem_ptr[j].shared_ptr      = tivxMemHost2SharedPtr(
+                                        mem_ptr[j].host_ptr,
+                                        (vx_enum)TIVX_MEM_EXTERNAL);
+                            }
+                            else
+                            {
+                                mem_ptr[j].host_ptr        = (uint64_t)(uintptr_t)NULL;
+                                mem_ptr[j].shared_ptr      = (uint64_t)(uintptr_t)NULL;
+                            }
+                        } /* for (j = 1; j < numPlanes; j++) */
+                    } /* for (i = 0; i < numMemElem; i++) */
                 }
             }
         }
@@ -1307,7 +1353,7 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
 {
     tivx_shared_mem_ptr_t  *mem_ptr;
     volatile uint32_t      *mem_size = NULL;
-    uint32_t                numMemElem;
+    uint32_t                numMemElem, total_size = 0;
     uint32_t                i,j;
     vx_status               status;
 
@@ -1356,21 +1402,14 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
                 VX_PRINT(VX_ZONE_ERROR, "'obj_desc' is NULL.\n");
                 status = (vx_status)VX_FAILURE;
             }
-            else if (obj_desc->planes > max_entries)
-            {
-                /* Having more handles than needed is OK but not the
-                 * other way.
-                 */
-                VX_PRINT(VX_ZONE_ERROR,
-                         "max_entries [%d] less than num planes [%d].\n",
-                         max_entries, obj_desc->planes);
-                status = (vx_status)VX_FAILURE;
-            }
             else
             {
-                numMemElem = obj_desc->planes;
+                for (i = 0; i < obj_desc->planes; i++)
+                {
+                    total_size += obj_desc->mem_size[i];
+                }
                 mem_ptr    = obj_desc->mem_ptr;
-                mem_size   = obj_desc->mem_size;
+                mem_size   = &total_size;
             }
         }
         else if (ref->type == (vx_enum)VX_TYPE_TENSOR)
@@ -1500,8 +1539,6 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             vx_uint32                   num_levels;
             vx_pyramid                  pyramid;
             vx_reference                img_ref;
-            vx_uint32                   num_planes;
-            int32_t                     cnt;
 
             obj_desc = (tivx_obj_desc_pyramid_t *)ref->obj_desc;
 
@@ -1514,51 +1551,47 @@ vx_status tivxReferenceExportHandle(const vx_reference ref, void *addr[], uint32
             {
                 num_levels = obj_desc->num_levels;
                 pyramid    = (vx_pyramid)ref;
-                num_planes = 0;
-                cnt        = 0;
-                numMemElem = 0;
 
-                for (i = 0; i < num_levels; i++)
+                if (num_levels > max_entries)
                 {
-                    img_ref      = (vx_reference)pyramid->img[i];
-                    img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
-
-                    if (img_obj_desc == NULL)
+                    /* Having more handles than needed is OK but not the
+                     * other way.
+                     */
+                    VX_PRINT(VX_ZONE_ERROR,
+                             "max_entries [%d] less than num "
+                             "levels of pyramid [%d].\n",
+                              max_entries, num_levels);
+                    status = (vx_status)VX_FAILURE;
+                }
+                else
+                {
+                    for (i = 0; i < num_levels; i++)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
-                        status = (vx_status)VX_FAILURE;
-                        break;
-                    }
+                        img_ref      = (vx_reference)pyramid->img[i];
+                        img_obj_desc = (tivx_obj_desc_image_t *)img_ref->obj_desc;
+                        total_size   = 0;
 
-                    num_planes += img_obj_desc->planes;
+                        if (img_obj_desc == NULL)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "'img_obj_desc' is NULL.\n");
+                            status = (vx_status)VX_FAILURE;
+                            break;
+                        }
 
-                    if (num_planes > max_entries)
-                    {
-                        /* Having more handles than needed is OK but not the
-                         * other way.
-                         */
-                        VX_PRINT(VX_ZONE_ERROR,
-                                 "max_entries [%d] less than num "
-                                 "planes [%d].\n",
-                                  max_entries, num_planes);
-                        status = (vx_status)VX_FAILURE;
-                        break;
-                    }
+                        for (j = 0; j < img_obj_desc->planes; j++)
+                        {
+                            total_size += img_obj_desc->mem_size[j];
+                        }
 
-                    numMemElem += img_obj_desc->planes;
+                        addr[i] = (void *)
+                            (uintptr_t)img_obj_desc->mem_ptr[0].host_ptr;
+                        size[i] = total_size;
 
-                    for (j = 0; j < img_obj_desc->planes; j++)
-                    {
-                        addr[cnt] = (void *)
-                            (uintptr_t)img_obj_desc->mem_ptr[j].host_ptr;
-                        size[cnt] = img_obj_desc->mem_size[j];
-                        cnt++;
-                    }
+                    } /* for (i = 0; i < num_levels; i++) */
 
-                } /* for (i = 0; i < num_levels; i++) */
-
-                /* Update the entry count. */
-                *num_entries = numMemElem;
+                    /* Update the entry count. */
+                    *num_entries = num_levels;
+                }
             }
         }
         else

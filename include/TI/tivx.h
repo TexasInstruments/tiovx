@@ -899,34 +899,35 @@ VX_API_ENTRY vx_bool VX_API_CALL tivxIsReferenceMetaFormatEqual(vx_reference ref
  * <tt>\ref tivxReferenceExportHandle</tt> for retrieving the current handles before invoking this function.
  *
  * The following conditions regarding 'addr' must be TRUE:
- * - allocated using appMemAlloc()/tivxMemAlloc() on ARM using the APP_MEM_HEAP_DDR/TIVX_MEM_EXTERNAL memory region respectively
- * - freed using appMemFree()/tivxMemFree() on ARM
+ * - allocated using appMemAlloc or \ref tivxMemAlloc on ARM using the APP_MEM_HEAP_DDR or \ref TIVX_MEM_EXTERNAL memory region respectively
+ * - freed using appMemFree or \ref tivxMemFree on ARM
  * - memory block is contiguous
  *
  * Only the following reference object types are supported:
- * - VX_TYPE_IMAGE
- * - VX_TYPE_TENSOR
- * - VX_TYPE_USER_DATA_OBJECT
- * - VX_TYPE_ARRAY
- * - VX_TYPE_DISTRIBUTION
- * - VX_TYPE_MATRIX
- * - VX_TYPE_CONVOLUTION
- * - TIVX_TYPE_RAW_IMAGE
- * - TIVX_TYPE_PYRAMID
+ * - \ref VX_TYPE_IMAGE
+ * - \ref VX_TYPE_TENSOR
+ * - \ref VX_TYPE_USER_DATA_OBJECT
+ * - \ref VX_TYPE_ARRAY
+ * - \ref VX_TYPE_DISTRIBUTION
+ * - \ref VX_TYPE_MATRIX
+ * - \ref VX_TYPE_CONVOLUTION
+ * - \ref VX_TYPE_PYRAMID
+ * - \ref TIVX_TYPE_RAW_IMAGE
  *
- * For TIVX_TYPE_PYRAMID type, the references are packed for each level. If the image type has multiple
- * planes then all the handles for a given level are packed contiguously before the handles of the next
- * level. For example if the pyramid object has N levels and each level has image with X levels then the
- * packing will look like:
- * Level 0 Plane 0
- * Level 0 Plane 1
- * ...........
- * Level 0 Plane (X-1)
- * ...........
- * Level (N-1) Plane 0
- * Level (N-1) Plane 1
- * ...........
- * Level (N-1) Plane (X-1)
+ * The memory being imported to an OpenVX reference must adhere to the semantics of how the framework
+ * allocates memory.  This is of particular note for a few OpenVX objects listed below.
+ * 
+ * For \ref VX_TYPE_IMAGE references, multi-plane images shall be imported as a single entry.  The reason for
+ * this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
+ * if this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
+ * buffers.
+ * 
+ * For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and thus must be
+ * imported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
+ * images, these entries must be allocated as a single contiguous buffer with a size of all planes of the image.
+ * 
+ * For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
+ * buffers and thus must be imported as separate entries.
  *
  * \param [in,out] ref The reference object to be updated.
  * \param [in] addr An array of pointers for holding the handles. The entries can be NULL.
@@ -954,29 +955,30 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReferenceImportHandle(vx_reference ref, c
  * hold all the handles expected from the reference object.
  *
  * Only the following reference object types are supported:
- * - VX_TYPE_IMAGE
- * - VX_TYPE_TENSOR
- * - VX_TYPE_USER_DATA_OBJECT
- * - VX_TYPE_ARRAY
- * - VX_TYPE_DISTRIBUTION
- * - VX_TYPE_MATRIX
- * - VX_TYPE_CONVOLUTION
- * - TIVX_TYPE_RAW_IMAGE
- * - TIVX_TYPE_PYRAMID
- *
- * For TIVX_TYPE_PYRAMID type, the references are packed for each level. If the image type has multiple
- * planes then all the handles for a given level are packed contiguously before the handles of the next
- * level. For example if the pyramid object has N levels and each level has image with X levels then the
- * packing will look like:
- * Level 0 Plane 0
- * Level 0 Plane 1
- * ...........
- * Level 0 Plane (X-1)
- * ...........
- * Level (N-1) Plane 0
- * Level (N-1) Plane 1
- * ...........
- * Level (N-1) Plane (X-1)
+ * - \ref VX_TYPE_IMAGE
+ * - \ref VX_TYPE_TENSOR
+ * - \ref VX_TYPE_USER_DATA_OBJECT
+ * - \ref VX_TYPE_ARRAY
+ * - \ref VX_TYPE_DISTRIBUTION
+ * - \ref VX_TYPE_MATRIX
+ * - \ref VX_TYPE_CONVOLUTION
+ * - \ref VX_TYPE_PYRAMID
+ * - \ref TIVX_TYPE_RAW_IMAGE
+ * 
+ * The memory exported from an OpenVX reference adheres to the semantics of how the framework
+ * allocates memory.  This is of particular note for a few OpenVX objects listed below.
+ * 
+ * For \ref VX_TYPE_IMAGE references, multi-plane images are exported as a single entry.  The reason for
+ * this is that the framework allocates multi-plane images as a single contiguous memory buffer.  Therefore,
+ * once this is exported, it can also be freed as a single contiguous memory buffer rather than as separate
+ * buffers.
+ * 
+ * For \ref VX_TYPE_PYRAMID objects, each pyramid level is allocated as a separate buffer and will be
+ * exported as a single entry per level.  Additionally, in the case that the pyramid levels are multi-plane
+ * images, these entries are provided as a single contiguous buffer with a size of all planes of the image.
+ * 
+ * For \ref TIVX_TYPE_RAW_IMAGE objects with multiple exposures, these are allocated by the framework as separate
+ * buffers and thus are exported as separate entries.
  *
  * \param [in]  ref The reference object to export the handles from.
  * \param [out] addr An array of pointers for holding the handles.

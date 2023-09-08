@@ -70,7 +70,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
 {
     void                   *ptrs[VX_IPC_MAX_VX_PLANES];
     tivx_utils_ref_desc_t  *refDesc;
-    uint32_t                numPlanes;
+    uint32_t                numEntries;
     vx_status               vxStatus = VX_SUCCESS;
 
     /* Validate the arguments. */
@@ -97,7 +97,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
                                              ptrs,
                                              refDesc->handleSizes,
                                              VX_IPC_MAX_VX_PLANES,
-                                             &numPlanes);
+                                             &numEntries);
 
         if (vxStatus != (vx_status)VX_SUCCESS)
         {
@@ -126,19 +126,8 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             meta->img.format = obj_desc->format;
             meta->img.planes = obj_desc->planes;
 
-            /* For images, only plane[0] is allocated and plane[1]..plane[N-1]
-             * pointers are offset from plane[0]. Given this, we need to
-             * compute the size of the buffer allocated for the image available
-             * as plane[0] handle. The size is the sum of sizes of all
-             * the planes.
-             */
-            for (i = 1; i <  meta->img.planes; i++)
-            {
-                refDesc->handleSizes[0] += refDesc->handleSizes[i];
-            }
-
             /* Just translate plane[0] pointer. */
-            numPlanes = 1;
+            numEntries = 1;
         }
         else if (meta->type == (vx_enum)VX_TYPE_TENSOR)
         {
@@ -224,10 +213,6 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             tivx_obj_desc_image_t      *img_obj_desc;
             vx_reference                img_ref;
             vx_pyramid                  pyramid;
-            uint32_t                   *planeSizePtr;
-            uint32_t                    lHandleSizes[VX_IPC_MAX_VX_PLANES];
-            uint32_t                    cnt;
-            uint32_t                    j;
 
             pyramid      = (vx_pyramid)ref;
             obj_desc     = (tivx_obj_desc_pyramid_t *)ref->obj_desc;
@@ -241,57 +226,7 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             meta->pmd.format = obj_desc->format;
             meta->pmd.planes = img_obj_desc->planes;
 
-            /* For images, only plane[0] is allocated and plane[1]..plane[N-1]
-             * pointers are offset from plane[0]. Given this, we need to
-             * compute the size of the buffer allocated for the image available
-             * as plane[0] handle. The size is the sum of sizes of all
-             * the planes.
-             *
-             * At the end of the loop below,
-             * - lHandleSizes[0..meta->pmd.levels-1] will have the total
-             *   size of the image, across all planes, for each level.
-             * - lHandleSizes[meta->pmd.levels..] will have the sizes
-             *   corresponding to image planes [1..planes-1] for each level
-             *   packed consecutively.
-             *
-             * ex:- levels = 2 and each image has 3 planes
-             * lHandleSizes[0] --> total size of level 0 image across all 3 planes
-             * lHandleSizes[1] --> total size of level 1 image across all 3 planes
-             * lHandleSizes[2] --> size of level 0 image plane 1
-             * lHandleSizes[3] --> size of level 0 image plane 2
-             * lHandleSizes[4] --> size of level 1 image plane 1
-             * lHandleSizes[5] --> size of level 1 image plane 2
-             *
-             * All the above 6 entries will be transferred to the receiver but
-             * only the first two entries i.e. lHandleSizes[0,1] will be translated.
-             *
-             * The receiver then can use entries lHandleSizes[2..] to derive the
-             * individual plane sizes and adjust the image plane pointers.
-             */
-            planeSizePtr = &lHandleSizes[meta->pmd.levels];
-            for (i = 0, cnt = 0; i <  meta->pmd.levels; i++)
-            {
-                lHandleSizes[i] = refDesc->handleSizes[cnt];
-                ptrs[i]         = ptrs[cnt];
-                cnt++;
-
-                for (j = 1; j < meta->pmd.planes; j++)
-                {
-                    uint32_t    v = refDesc->handleSizes[cnt++];
-
-                    lHandleSizes[i] += v;
-                    *planeSizePtr++ = v;
-                }
-            }
-
-            memcpy(refDesc->handleSizes, lHandleSizes, sizeof(lHandleSizes));
-
-            /* Just translate plane[0] pointer of each level. A total
-             * of pyramid levels pointers would need to be translated.
-             * the receiving side will need to do the reverse oepration when
-             * building the images at each pyramid level.
-             */
-            numPlanes = meta->pmd.levels;
+            numEntries = meta->pmd.levels;
         }
         else
         {
@@ -299,9 +234,9 @@ vx_status tivx_utils_export_ref_for_ipc_xfer(const vx_reference         ref,
             vxStatus = (vx_status)VX_FAILURE;
         }
 
-        ipcMsg->numFd = numPlanes;
+        ipcMsg->numFd = numEntries;
 
-        for (i = 0; i < numPlanes; i++)
+        for (i = 0; i < numEntries; i++)
         {
             vxStatus = tivxMemTranslateVirtAddr(ptrs[i],
                                                 &fd64,
@@ -531,7 +466,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
     {
         for (i = 0; i < ipcMsg->numFd; i++)
         {
-            /* Translate FD correcponding to plane[i]. */
+            /* Translate FD corresponding to plane[i]. */
             vxStatus = tivxMemTranslateFd((uint64_t)ipcMsg->fd[i],
                                           refDesc->handleSizes[i],
                                           &ptrs[i],
@@ -540,7 +475,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
             if (vxStatus != (vx_status)VX_SUCCESS)
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMemTranslateFd() failed for "
-                         "plane [%d]\n", i);
+                         "FD [%d]\n", i);
                 break;
             }
         }
@@ -548,91 +483,6 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
 
     if (vxStatus == (vx_status)VX_SUCCESS)
     {
-        meta = &refDesc->meta;
-
-        /* Treat image and pyramid objects separately. Additional processing
-         * is necessary if the image has more than one plane. If the image has
-         * a single plane then the information after the translation is in the
-         * order expected by the import handle API.
-         *
-         * Similarly, if the images in the pyramid have just one single plane,
-         * then the translated handles are  in the correct order needed by the
-         * import handler API.
-         */
-        if ((meta->type == (vx_enum)VX_TYPE_IMAGE) &&
-            (meta->img.planes > 1))
-        {
-            /* Adjust the size of plane[0] that was manipulated before
-             * packing the information.
-             */
-            for (i = 1; i <  meta->img.planes; i++)
-            {
-                refDesc->handleSizes[0] -= refDesc->handleSizes[i];
-            }
-
-            /* Updated the plane pointers, plane[1]..plane[numPlanes-1]. Each
-             * one is offset from the previous plane by the size fo the
-             * previous plane.
-             */
-            for (i = 1; i < meta->img.planes; i++)
-            {
-                ptrs[i] = (uint8_t*)ptrs[i-1] + refDesc->handleSizes[i-1];
-            }
-
-            ipcMsg->numFd = meta->img.planes;
-        }
-        else if ((meta->type == (vx_enum)VX_TYPE_PYRAMID) &&
-                 (meta->pmd.planes > 1))
-        {
-            uint32_t   *planeSizePtr;
-            void       *lPtrs[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
-            uint32_t    lHandleSizes[VX_IPC_MAX_VX_PLANES] = {0};
-            uint32_t    cnt;
-            uint32_t    j;
-
-            planeSizePtr = &refDesc->handleSizes[meta->pmd.levels];
-            for (i = 0, cnt = 0; i < meta->pmd.levels; i++)
-            {
-                uint32_t   *p = &lHandleSizes[cnt++];
-
-                *p = refDesc->handleSizes[i];
-
-                for (j = 1; j < meta->pmd.planes; j++)
-                {
-                    uint32_t    v = *planeSizePtr++;
-
-                    *p                 -= v;
-                    lHandleSizes[cnt++] = v;
-                }
-
-                /* Make a copy of the translated base address for each image. */
-                lPtrs[i] = ptrs[i];
-            }
-
-            /* The 'ptrs' variable will have 'meta->pmd.levels'
-             * number of entries populated.
-             *
-             * We need to compute other offsets from these values and
-             * the lHandleSizes[] information.
-             */
-            for (i = 0, cnt = 0; i < meta->pmd.levels; i++)
-            {
-                /* Get the base address fromt the translated information. */
-                ptrs[cnt++] = lPtrs[i];
-
-                /* Generate the addresses for the rest of the planes. */
-                for (j = 1; j < meta->pmd.planes; j++)
-                {
-                    ptrs[cnt] = (uint8_t*)ptrs[cnt-1] + lHandleSizes[cnt-1];;
-                    cnt++;
-                }
-            }
-
-            memcpy(refDesc->handleSizes, lHandleSizes, sizeof(lHandleSizes));
-
-            ipcMsg->numFd = meta->pmd.levels * meta->pmd.planes;
-        }
-
         /* Import the reference handles. */
         vxStatus =
             tivxReferenceImportHandle(*ref,
@@ -643,7 +493,7 @@ vx_status tivx_utils_import_ref_from_ipc_xfer(vx_context                context,
         if (vxStatus != (vx_status)VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,
-                     "tivxReferenceImportHandle() failed.");
+                     "tivxReferenceImportHandle() failed.\n");
         }
     }
 
